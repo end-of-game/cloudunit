@@ -6,13 +6,20 @@ Thanks to CloudUnit PaaS's powerful provisioning and execution capabilities, cla
 
 CloudUnit takes care of the plumbing.
 
-It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers : Mysql, PostGre, Mongo
+It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
 It is available under the terms of either the GNU Public Licence 3.0
 
-http://www.cloudunit.fr/en
+You can find more informations there :
+* [English](http://www.cloudunit.fr/en)
+* [French](http://www.cloudunit.fr)
+
+You can test the platform online here (reseted all night)
+* https://cu-tests.cloudunit.io (user / password)
 
 ## Getting started
+
+TODO
 
 ## Usage examples
 
