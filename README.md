@@ -19,7 +19,9 @@ You can test the platform online here (reseted all night)
 
 ## Getting started
 
-TODO
+There are many installation guides
+* [Development](https://github.com/Treeptik/cloudunit/edit/master/guide-dev.md)
+* [Server](https://github.com/Treeptik/cloudunit/edit/master/guide-server.md)
 
 ## Usage examples
 
@@ -35,12 +37,13 @@ TODO : github pages
 - [ ] Minor releases for Tomcat and Jboss
 - [ ] FatJar support (SpringBoot, Vertx 3.x, standalone...)
 
-### Module
+### Modules
 - [ ] More release for Mysql, Postgre and Mongo
 - [ ] InfluxDB, time series database
 - [ ] Redis database
 - [ ] Apache Solr
-- 
+- [ ] Elastic search
+
 ### Docker capabilities
 - [ ] Migration to docker 1.8.2
 - [ ] Dedicated log native driver for CloudUnit
