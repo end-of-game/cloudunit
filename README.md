@@ -18,6 +18,27 @@ http://www.cloudunit.fr/en
 
 TODO : github pages
 
+## RoadMap
+
+### Platform infrastructure
+- [ ] HaProxy as replacement for Hipache
+- [ ] Integration of Consul or Etcd or ...
+
+### Servers 
+- [ ] Minor releases for Tomcat and Jboss
+- [ ] Jetty
+- [ ] FatJar support (SpringBoot, Vertx 3.x, standalone...)
+
+### Module
+- [ ] More release for Mysql, Postgre and Mongo
+- [ ] InfluxDB, time series database
+- [ ] Redis database
+- [ ] Apache Solr
+- 
+### Docker capabilities
+- [ ] Migration to docker 1.8.2
+- [ ] Dedicated log native driver for CloudUnit
+
 ## Under the hood
 
 TODO : @NMU
