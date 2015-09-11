@@ -26,7 +26,6 @@ TODO : github pages
 
 ### Servers 
 - [ ] Minor releases for Tomcat and Jboss
-- [ ] Jetty
 - [ ] FatJar support (SpringBoot, Vertx 3.x, standalone...)
 
 ### Module
@@ -44,6 +43,8 @@ TODO : github pages
 TODO : @NMU
 
 # Licensing
+
+TODO
 
 Copyright 2015 Treeptik
 
