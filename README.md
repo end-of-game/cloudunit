@@ -20,7 +20,8 @@ You can test the platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Development](https://github.com/Treeptik/cloudunit/edit/master/guide-dev.md)
+* [Demo](https://github.com/Treeptik/cloudunit/edit/master/guide-demo.md)
+* [Dev](https://github.com/Treeptik/cloudunit/edit/master/guide-dev.md)
 * [Server](https://github.com/Treeptik/cloudunit/edit/master/guide-server.md)
 
 ## Usage examples
