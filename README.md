@@ -28,26 +28,7 @@ There are many installation guides
 
 TODO : github pages
 
-## RoadMap
 
-### Platform infrastructure
-- [ ] HaProxy as replacement for Hipache
-- [ ] Integration of Consul or Etcd or ...
-
-### Servers 
-- [ ] Minor releases for Tomcat and Jboss
-- [ ] FatJar support (SpringBoot, Vertx 3.x, standalone...)
-
-### Modules
-- [ ] More release for Mysql, Postgre and Mongo
-- [ ] InfluxDB, time series database
-- [ ] Redis database
-- [ ] Apache Solr
-- [ ] Elastic search
-
-### Docker capabilities
-- [ ] Migration to docker 1.8.2
-- [ ] Dedicated log native driver for CloudUnit
 
 ## Under the hood
 
