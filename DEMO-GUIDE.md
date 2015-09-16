@@ -3,8 +3,8 @@
 A Vagrant box with a fresh version of CloudUnit is available.
 
 ## Requirements
-Virtualbox version 5.0.4+
-Vagrant plugin ?
+* Virtualbox version 5.0.4+
+* Vagrant plugin ?
 
 ## Start the box
 You can launch it in 2 commands:
