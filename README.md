@@ -26,7 +26,7 @@ There are many installation guides
 
 ## Usage examples
 
-There are many installation guides
+There are many user guides
 * [Overview](https://github.com/Treeptik/cloudunit/edit/master/USER-GUIDE.md)
 * [Spring petclinic](https://github.com/Treeptik/cloudunit/edit/master/products/SPRINGPETCLINIC.md)
 * [GWT-DEMO](https://github.com/Treeptik/cloudunit/edit/master/products/GWT-DEMO.md)
