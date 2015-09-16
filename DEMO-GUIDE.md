@@ -18,4 +18,4 @@ The default box IP address is 192.168.50.4, but if you want it to be reachable o
 ## Enjoy CloudUnit
 CloudUnit WebUI is available at the box IP. You can login with the credentials johndoe / abc2015.
 
-![login](https://github.com/Treeptik/CloudUnit/releases/download/0.9/CU-login.png)
+![login](https://github.com/Treeptik/CloudUnit-images/blob/master/CU-login.png)
