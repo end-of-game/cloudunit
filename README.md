@@ -20,15 +20,17 @@ You can test the platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Demo](https://github.com/Treeptik/cloudunit/edit/master/guide-demo.md)
-* [Dev](https://github.com/Treeptik/cloudunit/edit/master/guide-dev.md)
-* [Server](https://github.com/Treeptik/cloudunit/edit/master/guide-server.md)
+* [Demo](https://github.com/Treeptik/cloudunit/edit/master/DEMO-GUIDE.md)
+* [Dev](https://github.com/Treeptik/cloudunit/edit/master/DEV-GUIDE.md)
+* [Server](https://github.com/Treeptik/cloudunit/edit/master/SERVER-GUIDE.md)
 
 ## Usage examples
 
-TODO : github pages
-
-
+There are many installation guides
+* [Overview](https://github.com/Treeptik/cloudunit/edit/master/USER-GUIDE.md)
+* [Spring petclinic](https://github.com/Treeptik/cloudunit/edit/master/products/SPRINGPETCLINIC.md)
+* [GWT-DEMO](https://github.com/Treeptik/cloudunit/edit/master/products/GWT-DEMO.md)
+* [RollerBlog](https://github.com/Treeptik/cloudunit/edit/master/products/ROLLERBLOG.md)
 
 ## Under the hood
 
