@@ -9,7 +9,7 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 
 ## Installation from another host
 
-In this part, we assume you can ssh into the server. It will be installed from your machine, using Ansible. Ansible will ssh into the server and run all the commands it needs.
+In this part, we assume you can ssh into the server. It will be installed from your machine, using [Ansible](http://www.ansible.com/). Ansible will ssh into the server and run all the commands it needs.
 Unless specified, all the commands are to be run on your machine, and not on the server.
 
 ### Pre-requisites
