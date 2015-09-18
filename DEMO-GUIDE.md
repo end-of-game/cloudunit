@@ -1,6 +1,6 @@
 # Demo Vagrant box
 
-A Vagrant box with a fresh version of CloudUnit is available.
+This guide is relevant if you want to try CloudUnit without going through any complicated installation procedure. We provide a Vagrant box with CloudUnit version 1.0.
 
 ## Requirements
 * Virtualbox version 5.0.4+
