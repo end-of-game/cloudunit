@@ -51,7 +51,7 @@ Ansible prompts you for the ssh and the sudo passwords of the `admincu` user. In
 
 ### Shinken
 
-Our PaaS is monitored using [Shinken](http://www.shinken-monitoring.org/). Beacuse it contributes to the stability of our platform, we strongly recommend you to install it as well.
+Our PaaS is monitored using [Shinken](http://www.shinken-monitoring.org/). Because it contributes to the stability of our platform, we strongly recommend you to install it as well.
 
 * *On the server*, create a user called `shinken` and add it to the sudo group:
 ```
