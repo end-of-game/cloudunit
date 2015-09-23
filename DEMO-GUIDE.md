@@ -22,11 +22,11 @@ CloudUnit WebUI is available at the box IP. You can login with the credentials j
 
 ## CloudUnit Menu
 
-When you are connected in the CloudUnit application, the menu is everytime visible on the top of the application. You navigate in the application with this header menu.
+When you are connected in the CloudUnit application, the menu is everytime visible on the top of the application. You navigate in CloudUnit application with this header menu.
 
 ![login](https://github.com/Treeptik/CloudUnit-images/blob/master/cu-header.png)
 
-The first tab of the menu gets to the dashboard and the second to the shapshots. The two button of the right give access the account page and the deconnection. 
+The first tab of the menu gets to the dashboard and the second tab to the shapshots. The two buttons of the right give access to your account page and to the deconnection. 
 
 ## CloudUnit Dashboard
 
