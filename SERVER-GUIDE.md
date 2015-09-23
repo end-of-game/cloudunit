@@ -36,11 +36,11 @@ sudo adduser admincu sudo
 * Change directory into `CU-infrastrucuture` and edit the `hosts` file.
 In the line `CUserver ansible_ssh_host=server_ip_address`, replace `server_ip_address` by the server IP address.
 
-* *If your server is a KVM virtual machine*, edit the file `installCUserver.yml`. Replace `kvm: false` by `kvm: true`.
+* *If your server is a KVM virtual machine*, edit the file `playbooks/CU-server/installCUserver.yml`. Replace `kvm: false` by `kvm: true`.
 
 * Launch the CloudUnit installation playbook:
 ```
-ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass installCUserver.yml
+ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/installCUserver.yml
 SSH password:
 SUDO password[defaults to SSH password]:
  
@@ -61,7 +61,7 @@ sudo adduser shinken sudo
 
 * Launch the Shinken installation playbook:
 ```
-ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass shinken-standalone.yml
+ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/shinken-standalone.yml
 SSH password:
 SUDO password[defaults to SSH password]:
  
