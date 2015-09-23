@@ -1,0 +1,134 @@
+hipache:
+    image: tutum/hipache:0.3.1
+    ports:
+        - "80:80"
+    links:
+        - redis:redis
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+redis:
+    image: redis:3.0.1
+    command: redis-server --appendonly yes
+    ports:
+        - 6379:6379
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+mysql:
+    image: mysql:5.7.4
+    environment:
+        - MYSQL_ROOT_PASSWORD=AezohghooNgaegh8ei2jabib2nuj9yoe
+        - MYSQL_DATABASE=cloudunit
+    ports:
+        - 3306:3306
+    volumes_from:
+        - mysqldata
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+mysqldata:
+    image: ubuntu:14.04 
+    volumes: 
+        - /var/lib/mysql 
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro   
+
+testmysql:
+    image: mysql:5.7.4
+    environment:
+        - MYSQL_ROOT_PASSWORD=AezohghooNgaegh8ei2jabib2nuj9yoe
+        - MYSQL_DATABASE=testcloudunit
+    ports:
+        - 3307:3306
+    volumes_from:
+        - testmysqldata
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+testmysqldata:
+    image: ubuntu:14.04
+    volumes:
+        - /var/lib/mysql
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+skydock:
+    image: ubergarm/skyservices:no-expire
+    command: /bin/sh -c "sleep 3 ; /go/bin/skydock -environment cloud -s /docker.sock -domain unit -name cuplatform_skydns_1"
+    volumes:
+        - /var/run/docker.sock:/docker.sock 
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+skydns:
+    image: ubergarm/skyservices:no-expire
+    ports: 
+        - "172.17.42.1:53:53/udp"
+    command: /go/bin/skydns -http 0.0.0.0:8080 -dns 0.0.0.0:53 -nameserver 8.8.8.8:53 -domain unit
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+tomcat:
+    image: tomcat:7-jre8
+    volumes:
+        - ./tomcat:/usr/local/tomcat/webapps
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro 
+        - /var/log/cloudunit/tomcat/culogin.log:/var/log/culogin.log
+#TO_UNCOMMENT_IF_CU_KVM_TRUE        - /dev/urandom:/dev/random
+    environment:
+        - CU_SUB_DOMAIN
+        - CU_KVM
+
+cadvisor:
+    image: google/cadvisor:0.14.0
+    environment:
+        - DB_USER=root
+        - DB_PASS=root
+        - DB_NAME=cadvisor
+    ports:
+        - 8081:8080
+    volumes:
+        - /:/rootfs:ro
+        - /var/run:/var/run:rw
+        - /sys:/sys:ro
+        - /var/lib/docker:/var/lib/docker:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+    command: --housekeeping_interval=5s
+#    links:
+#        - influxdb:influxdb
+#    command: -storage_driver=influxdb -log_dir=/ -storage_driver_host=192.168.50.4:8086 -storage_driver_user="root" -storage_driver_password="root"
+
+nginx:
+    image: nginx:1.9.0
+    ports:
+        - "443:443"
+    links:
+        - tomcat:tomcat
+    volumes:
+        - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+        - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
+        - ./nginx/log:/var/log/nginx
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+registry:
+    image: registry:0.9.1
+    ports:
+        - "5000:5000"
+    volumes:
+        - /registry:/registry
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+    name: registry
+    environment:
+        - STORAGE_PATH=/registry
+        - GUNICORN_OPTS=["--preload"]

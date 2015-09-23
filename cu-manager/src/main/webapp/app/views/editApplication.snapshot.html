@@ -1,0 +1,57 @@
+<div class="tab-pane vertical-spacing" data-ng-controller="EditSnapShotCtrl as editSnapshot">
+  <div class="card large">
+    <div class="content">
+      <div class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+      </div>
+      <header class="title large">
+        <h3>Take a snapshot</h3>
+        <small class="help-block">Backup or duplicate your app at the current time frame. Manage your snapshots from the
+          <a href="#snapshot">snapshots view.</a></small>
+      </header>
+
+
+      <form class="form-wrapper" id="create-snapshot-form">
+        <div class="alert alert-danger" data-ng-show="editSnapshot.message">
+          <button type="button"
+                  class="close"
+                  ng-click="editSnapshot.message = null">
+            <span>&times;</span>
+          </button>
+          <p>{{editSnapshot.message}}</p>
+        </div>
+        <div class="input-group stack">
+          <label>Snapshot Name</label>
+          <input type="text" id="snapshop-name"
+                 data-ng-model="editSnapshot.newSnapshot.name"
+                 placeholder="Name">
+        </div>
+
+        <div class="input-group stack clearfix">
+          <label>Comment</label>
+
+          <div text-angular
+               ta-toolbar="[
+               ['h2','h3','p','pre'], ['bold','italics','underline','ul','ol','undo','redo','clear'], ['justifyLeft','justifyCenter','justifyRight','indent','outdent'],[]]"
+               ng-model="editSnapshot.newSnapshot.description"></div>
+        </div>
+
+        <div class="clearfix">
+          <p>{{editSnapshot.message}}</p>
+          <button class="config-snapshot-btn button raised primary pull-right"
+                  ripple=""
+                  data-ng-click="editSnapshot.createNewSnapShot(editApp.application.name, editSnapshot.newSnapshot)">
+            <span>Create</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+

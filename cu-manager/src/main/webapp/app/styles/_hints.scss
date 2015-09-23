@@ -1,0 +1,17 @@
+.hint {
+  color: $color-muted;
+  font-size: 12px;
+}
+
+.hint.error {
+  color: $color-error;
+  position: relative;
+}
+
+.hint.error:after {
+  font-family: "fontawesome";
+  content: "\f071";
+  position: absolute;
+  top: 0;
+  right: 0;
+}

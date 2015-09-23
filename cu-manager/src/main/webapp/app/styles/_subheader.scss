@@ -1,0 +1,52 @@
+.subheader {
+  @include clearfix();
+  margin-top: 8px;
+  margin-bottom: 8px;
+  .subhead {
+    float: left;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    margin-right: 16px;
+    color: $color-muted;
+    padding: $subheader-padding;
+    height: $subheader-height;
+  }
+}
+
+.subheader-form {
+  float: left;
+  padding: $subheader-padding;
+  height: $subheader-height;
+  @include clearfix();
+  .input-group {
+    color: $color-muted;
+    float: left;
+    margin-right: 72px;
+    .label {
+      float: left;
+      font-size: 16px;
+      padding-right: 8px;
+      overflow: visible;
+    }
+    .dropdown {
+      float: left;
+    }
+    input {
+      float: left;
+      margin-bottom: 0;
+      padding-top: 0;
+      width: auto;
+      font-size: 16px;
+      height: 27px;
+    }
+    .dropdown-toggle {
+      margin-bottom: 0;
+      padding-top: 0;
+    }
+    .dropdown-toggle:after {
+      top: 2px;
+    }
+  }
+}
+

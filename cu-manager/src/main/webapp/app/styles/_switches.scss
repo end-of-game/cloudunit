@@ -1,0 +1,73 @@
+.check {
+  padding: 8px 0;
+  label {
+    position: relative;
+    padding-left: 30px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  label:before, label:after {
+    font-family: 'fontawesome';
+    font-size: 16px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  label:after {
+    overflow: hidden;
+    opacity: 0;
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    display: none;
+  }
+}
+
+.check.inline {
+  display: inline-block;
+  & label {
+    padding-left: 18px;
+    padding-right: 16px;
+  }
+}
+
+.checkbox label:before {
+  content: '\e6ff';
+  /*unchecked*/
+  opacity: 0.54;
+}
+
+.check.checkbox label:after {
+  /*checked*/
+  content: '\e6fe';
+  max-width: 0;
+  /*transition*/
+  -webkit-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.check.radio label:before {
+  /*unchecked*/
+  content: '\f10c';
+}
+
+.check.radio input[type="radio"]:checked + label:before {
+  /*checked*/
+  content: '\f192';
+}
+
+.check.radio input[type="radio"]:disabled + label:before {
+  /*checked*/
+  content: '\f111';
+}
+
+.check.radio input[type="radio"]:disabled + label {
+  color: $color-disabled;
+}
+
+.check.checkbox input[type="checkbox"]:checked + label:after {
+  max-width: 16px;
+  opacity: 1;
+}

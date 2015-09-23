@@ -1,0 +1,8 @@
+.user-list > .table {
+  thead > tr > th {
+    vertical-align: top;
+  }
+  thead > tr > th.has-input{
+    vertical-align: middle;
+  }
+}

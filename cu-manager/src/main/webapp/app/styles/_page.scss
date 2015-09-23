@@ -1,0 +1,15 @@
+.page {
+  @include make-lg-column(9, 48px);
+}
+
+.page.offset {
+  @include make-lg-column(6, 48px);
+}
+
+.page.full {
+  @include make-lg-column(12, 48px);
+}
+
+.page-content {
+  @include clearfix();
+}

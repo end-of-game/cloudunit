@@ -1,0 +1,14 @@
+#error {
+  .card {
+    float: none;
+    left: 33.333333333333333%;
+    @include v-center();
+    .content {
+      height: 320px;
+      text-align: center !important;
+      .button {
+        float: right;
+      }
+    }
+  }
+}

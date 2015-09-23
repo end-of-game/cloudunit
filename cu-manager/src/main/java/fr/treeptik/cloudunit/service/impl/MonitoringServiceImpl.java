@@ -1,0 +1,171 @@
+package fr.treeptik.cloudunit.service.impl;
+
+import fr.treeptik.cloudunit.docker.model.DockerContainer;
+import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.MonitoringService;
+import fr.treeptik.cloudunit.utils.AuthentificationUtils;
+import fr.treeptik.cloudunit.utils.ContainerMapper;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Created by nicolas on 25/08/2014.
+ */
+@Service
+public class MonitoringServiceImpl implements MonitoringService {
+
+	private Logger logger = LoggerFactory
+			.getLogger(MonitoringServiceImpl.class);
+
+	// Dictionnaire pour mettre en relation une application avec un ou plusieurs
+	// volumes
+	private static ConcurrentHashMap<String, String> containerIdByName = new ConcurrentHashMap<>();
+
+	@Inject
+	private ContainerMapper containerMapper;
+
+	@Inject
+	private Environment env;
+
+	@Inject
+	private ApplicationService applicationService;
+
+	@Inject
+	private AuthentificationUtils authentificationUtils;
+
+	private String cAdvisorURL;
+
+	public String getFullContainerId(String containerName) {
+		return containerIdByName.get(containerName);
+	}
+
+	@Override
+	public String getJsonFromCAdvisor(String containerId) {
+		String result = "";
+		try {
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			String cAdvisorURL = env.getProperty("cadvisor.url");
+			HttpGet httpget = new HttpGet(cAdvisorURL
+					+ "/api/v1.0/containers/docker/" + containerId);
+			CloseableHttpResponse response = httpclient.execute(httpget);
+			try {
+				result = EntityUtils.toString(response.getEntity());
+				if (logger.isDebugEnabled()) {
+					logger.debug(result);
+				}
+			} finally {
+				response.close();
+			}
+		} catch (Exception e) {
+			logger.error(containerId, e);
+		}
+		return result;
+	}
+
+	@Override
+	public String getJsonMachineFromCAdvisor() {
+		String result = "";
+		try {
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			String cAdvisorURL = env.getProperty("cadvisor.url");
+			HttpGet httpget = new HttpGet(cAdvisorURL + "/api/v1.0/machine");
+			CloseableHttpResponse response = httpclient.execute(httpget);
+			try {
+				result = EntityUtils.toString(response.getEntity());
+				if (logger.isDebugEnabled()) {
+					logger.debug(result);
+				}
+			} finally {
+				response.close();
+			}
+		} catch (Exception e) {
+			logger.error("" + e);
+		}
+		return result;
+	}
+
+	/**
+	 * Methode qui permet de mettre en relation les containers Id et leur nom
+	 * 
+	 */
+	@Scheduled(fixedDelay = 10000)
+	public void generateRelationBetweenContainersNameAndFullId() {
+		try {
+			logger.debug("generateRelationBetweenContainersNameAndFullId");
+			if ("true".equals(System.getenv("CU_MAINTENANCE"))) {
+				return;
+			}
+			List<Application> applications = applicationService.findAll();
+			if (applications != null) {
+				for (Application application : applications)
+					try {
+						// Serveurs
+						List<Server> servers = application.getServers();
+						for (Server server : servers) {
+							DockerContainer dockerContainer = new DockerContainer();
+							dockerContainer.setName(server.getName());
+							dockerContainer.setImage(server.getImage()
+									.getName());
+							dockerContainer = DockerContainer.findOne(
+									dockerContainer,
+									application.getManagerHost());
+							server = containerMapper
+									.mapDockerContainerToServer(
+											dockerContainer, server);
+							containerIdByName.put(server.getName(),
+									server.getContainerFullID());
+						}
+						// Modules
+						List<Module> modules = application.getModules();
+						for (Module module : modules) {
+							DockerContainer dockerContainer = new DockerContainer();
+							dockerContainer.setName(module.getName());
+							dockerContainer.setImage(module.getImage()
+									.getName());
+							dockerContainer = DockerContainer.findOne(
+									dockerContainer,
+									application.getManagerHost());
+							module = containerMapper
+									.mapDockerContainerToModule(
+											dockerContainer, module);
+							containerIdByName.put(module.getName(),
+									module.getContainerFullID());
+						}
+					} catch (ErrorDockerJSONException ex) {
+						if ("docker : no such container".equalsIgnoreCase(ex
+								.getMessage())) {
+							// On ignore volontairement l'exception 'docker : no
+							// such container'
+						} else {
+							logger.error(application.toString(), ex);
+						}
+					} catch (Exception ex) {
+						// Si une application sort en erreur, il ne faut pas
+						// arrêter la suite des traitements
+						logger.error(application.toString(), ex);
+					}
+			}
+		} catch (Exception e) {
+			// On catch l'exception car traitement en background.
+			e.printStackTrace();
+			logger.error("" + e.getMessage());
+		}
+	}
+
+}

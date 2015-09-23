@@ -1,0 +1,41 @@
+[text-angular] {
+  margin-bottom: $padding-base-vertical;
+  @include clearfix;
+}
+
+[text-angular] > [text-angular-toolbar] {
+  background-color: lighten($color-bg-muted, 0.2);
+  padding: $padding-base-vertical 0;
+  margin-bottom: $padding-base-vertical * 2;
+  margin-left: 0;
+}
+
+[text-angular] > [text-angular-toolbar] > .btn-group:not(:nth-child(3)) {
+  border-right: 1px solid $color-muted;
+}
+
+[text-angular] > [text-angular-toolbar] > .btn-group > .btn {
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
+}
+
+[text-angular] > [text-angular-toolbar] > .btn-group > .btn.active {
+  box-shadow: none;
+  background-color: lighten($color-bg-muted, 0.5);
+}
+
+[text-angular] > [text-angular-toolbar] > .btn-group > .btn:focus {
+  font-weight: bold;
+  box-shadow: none;
+}
+
+[text-angular].ta-root.focussed > .ta-scroll-window.form-control,
+[text-angular].ta-root.focussed > .ta-scroll-window.form-control:focus {
+  box-shadow: none;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  outline: 0;
+  font-size: 14px;
+}

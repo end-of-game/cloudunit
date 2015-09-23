@@ -1,0 +1,145 @@
+package fr.treeptik.cloudunit.controller.users;
+
+import fr.treeptik.cloudunit.controller.servers.AbstractApplicationControllerTest;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.initializer.ApplicationContext;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
+import junit.framework.TestCase;
+import org.apache.http.HttpStatus;
+import org.junit.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.http.HttpSession;
+import java.util.Random;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+/**
+ * Created by nicolas on 08/09/15.
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(classes = {
+        ApplicationContext.class,
+        MockServletContext.class
+})
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class UserControllerTest extends TestCase {
+
+    private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
+
+    private final Logger logger = LoggerFactory
+            .getLogger(AbstractApplicationControllerTest.class);
+
+    @Autowired
+    private WebApplicationContext context;
+
+    private MockMvc mockMvc;
+
+    @Inject
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private Filter springSecurityFilterChain;
+
+    @Inject
+    private UserService userService;
+
+    private Authentication authentication;
+    private MockHttpSession session;
+
+    private static String applicationName;
+
+    @BeforeClass
+    public static void initEnv() {
+        applicationName = "App"+new Random().nextInt(1000);
+    }
+
+    @Before
+    public void setup() {
+        logger.info("setup");
+
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+                .addFilters(springSecurityFilterChain)
+                .build();
+
+        User user = null;
+        try {
+            user = userService.findByLogin("johndoe");
+        } catch (ServiceException e) {
+            logger.error(e.getLocalizedMessage());
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication result = authenticationManager.authenticate(authentication);
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        securityContext.setAuthentication(result);
+        session = new MockHttpSession();
+        session.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                securityContext);
+    }
+
+    @After
+    public void teardown() {
+        logger.info("teardown");
+
+        SecurityContextHolder.clearContext();
+        session.invalidate();
+    }
+
+    @Test
+    public void test00_userAuthenticatesSuccess() throws Exception {
+
+        logger.info("test00_userAuthenticates");
+
+        final String username = "johndoe";
+        mockMvc.perform(post("/user/authentication")
+                .param("j_username", username).param("j_password", "abc2015"))
+                .andExpect(new ResultMatcher() {
+                    public void match(MvcResult mvcResult) throws Exception {
+                        HttpSession session = mvcResult.getRequest().getSession();
+                        SecurityContext securityContext = (SecurityContext) session.getAttribute(SEC_CONTEXT_ATTR);
+                        Assert.assertEquals(securityContext.getAuthentication().getName(), username);
+                    }
+                });
+    }
+
+    @Test
+    public void test01_userAuthenticatesFail() throws Exception {
+
+        logger.info("test00_userAuthenticates");
+
+        final String username = "johndoe";
+        mockMvc.perform(post("/user/authentication")
+                .param("j_username", username).param("j_password", "XXXXXX"))
+                .andExpect(status().is(HttpStatus.SC_UNAUTHORIZED));
+    }
+
+}

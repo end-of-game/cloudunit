@@ -1,0 +1,155 @@
+<section id="snapshots" class="clearfix">
+  <header>
+    <div class="page-header">
+      <div class="page-title">
+        <h2 class="title">
+          Snapshots
+        </h2>
+      </div>
+      <div class="alert alert-danger" data-ng-show="snapshot.errorMsg">
+        <button type="button"
+                class="close"
+                ng-click="snapshot.errorMsg = false">
+          <span>&times;</span>
+        </button>
+        <p>{{snapshot.errorMsg}}</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-content">
+    <div class="page">
+      <div class="subheader">
+        <h3 class="subhead"
+            ng-show="!dashboard.search">
+          Snapshots timeline
+        </h3>
+      </div>
+
+      <div class="col-lg-10 col-lg-offset-3 col-md-10 col-md-offset-3 col-xs-12 snapshot-list">
+        <div class="no-data" ng-if="!snapshot.snapshots.length">
+          <h3 class="title">No snapshots created</h3>
+
+          <p>Create a snapshot from your application edit panel</p>
+        </div>
+
+        <div data-ng-repeat="(key, value) in snapshot.snapshots | groupBy: 'calendarDate'">
+          <h4 class="date-node">{{ key }}</h4>
+          <timeline ng-if="snapshot.snapshots.length" class="card">
+            <timeline-node side="{{$even ? 'left' : 'right'}}" ng-repeat="item in value | orderBy: '-date'">
+              <timeline-badge>{{ item.date | date:'HH:mm' }}</timeline-badge>
+              <timeline-panel class="content">
+                <timeline-heading>
+                  <timeline-title>{{item.tag}}</timeline-title>
+                </timeline-heading>
+                <timeline-content>
+                  <p>Origin: {{item.applicationName}}</p>
+
+                  <div class="action clearfix">
+                    <div class="secondary-action pull-right">
+                      <button class="icon-button secondary popover-toggle"
+                              ripple=""
+                              data-ng-hide="!item.description"
+                              tooltip-html-unsafe="{{item.description}}"
+                              tooltip-trigger="focus"
+                              tooltip-placement="{{$even ? 'right' : 'left'}}">
+                        <i class="icon-whhg comment2"></i>
+                      </button>
+                      <button class="toggle-modal icon-button secondary"
+                              data-toggle="modal"
+                              data-target="#delete-{{item.tag}}"
+                              data-keyboard="true"
+                              ripple=""
+                              tooltip=""
+                              data-title="Delete"
+                              data-placement="bottom">
+                        <i class="icon-whhg trash"></i>
+                      </button>
+                      <button class="toggle-modal icon-button primary"
+                              data-toggle="modal"
+                              data-target="#inputname-{{item.tag}}"
+                              data-keyboard="true"
+                              ripple=""
+                              tooltip=""
+                              data-title="Create new app from snapshot"
+                              data-placement="bottom"
+                              data-ng-click="snapshot.resetForm()">
+                        <i class="icon-whhg redo"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="modal card"
+                       id="inputname-{{item.tag}}"
+                       modaldismiss="">
+                    <div class="modal-inner content">
+                      <h3 class="title large">Create new application from {{item.tag}}</h3>
+
+                      <ng-form name="snapshot.cloneAppForm" novalidate="">
+                        <div class="input-group stack">
+                          <label>Application name</label>
+                          <input id="name"
+                                 name="name"
+                                 type="text"
+                                 data-ng-model="snapshot.applicationName"
+                                 data-ng-pattern="/^[a-zA-Z0-9]*$/"
+                                 data-ng-change="snapshot.isValid(snapshot.applicationName, item.type)"
+                                 required>
+
+                          <p data-ng-if="snapshot.cloneAppForm.name.$error.pattern && !snapshot.cloneAppForm.name.$pristine"
+                             class="hint format error">
+                            Use alphanumeric character only
+                          </p>
+
+                          <p class="hint error " data-ng-if="snapshot.message" data-ng-bind="snapshot.message"></p>
+                        </div>
+                        <div class="action">
+                          <div class="secondary-action">
+                            <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                            </button>
+                            <button type="submit" class="input-btn button primary"
+                                    data-ng-disabled="snapshot.message != ''"
+                                    data-dismiss="modal"
+                                    data-ng-click="snapshot.cloneTag(item)">
+                              Create
+                            </button>
+                          </div>
+                        </div>
+                      </ng-form>
+                    </div>
+                  </div>
+
+                  <div class="modal card"
+                       id="delete-{{item.tag}}"
+                       modaldismiss="">
+                    <div class="modal-inner content">
+                      <h3 class="title">Removal confirmation required for {{item.tag}}</h3>
+
+                      <p class="alert">Caution, <strong> this is a permanent action</strong>. Once you
+                        delete a snapshot, you cannot get it back. This snapshot will no longer be available.
+                      </p>
+
+                      <div class="action">
+                        <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                        </button>
+                        <button type="button" class="delete-btn button primary"
+                                data-ng-click="snapshot.deleteTag(item.tag)"
+                                data-dismiss="modal">
+                          I understand, permanently delete my snapshot
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </timeline-content>
+              </timeline-panel>
+            </timeline-node>
+          </timeline>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+

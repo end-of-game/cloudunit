@@ -1,0 +1,91 @@
+<div class="content">
+  <div class="lock"></div>
+  <h3 class="title">{{module.image.name}}</h3>
+
+  <p class="subhead">{{module.name}}</p>
+
+  <p class="status" data-ng-show="module.status === 'FAIL'">{{ module.status | formatAppStatus}} - Please contact support</p>
+
+  <div class="features">
+    <div class="readonly">
+      <label for="database">Database: </label>
+      <input class="blank"
+             id="database"
+             type="text"
+             value="{{module.moduleInfos.database}}"
+             readonly="" oneclickselect="">
+    </div>
+
+    <div class="readonly">
+      <label for="host">Host: </label>
+      <input id="host"
+             class="large"
+             type="text"
+             value="{{module.internalDNSName}}"
+             readonly="" oneclickselect="">
+    </div>
+
+    <div class="readonly">
+      <label for="username">User: </label>
+      <input id="username"
+             type="text"
+             value="{{module.moduleInfos.username}}"
+             readonly="" oneclickselect="">
+    </div>
+
+    <div class="readonly password">
+      <label for="password-{{$index}}">Password: </label>
+      <input id="password-{{$index}}"
+             type="text"
+             value="{{module.moduleInfos.password}}"
+             readonly=""
+             oneclickselect="">
+      <a href="" class="showPass-btn button-link" reveal-password=""><i class="icon-whhg eye"></i></a>
+    </div>
+  </div>
+
+  <div class="action">
+    <div class="secondary-action">
+      <button class="toggle-modal icon-button secondary pull-left"
+              data-toggle="modal"
+              data-target="#delete-{{module.name}}"
+              data-keyboard="true"
+              ripple=""
+              tooltip=""
+              data-title="Delete"
+              data-placement="bottom">
+        <i class="icon-whhg trash"></i>
+      </button>
+      <a class='phpmyadmin-link button primary'
+         target="_blank"
+         ripple=""
+         data-ng-href="{{ module.managerLocation }}">
+        <span>phpmyadmin</span>
+      </a>
+    </div>
+
+  </div>
+  <div class="modal"
+       id="delete-{{module.name}}"
+       modaldismiss="">
+    <div class="modal-inner">
+      <div class="content clearfix">
+        <h3 class="title">Removal confirmation required for {{module.name}}</h3>
+
+        <p class="alert">Caution, <strong> this is a permanent action</strong>. Once you
+          delete a module, you cannot get it back. This module will no longer be available.
+        </p>
+
+        <div class="actions pull-right">
+          <button type="button" class="button secondary" data-dismiss="modal">Cancel
+          </button>
+          <button type="button" class="remove-btn button primary"
+                  data-ng-click="modules.removeModule(editApp.application.name, module.name)"
+                  data-dismiss="modal">
+            I understand, permanently delete this module
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="tab-pane card large vertical-spacing" data-ng-controller="AliasCtrl as alias">
+  <div class="content clearfix">
+    <div class="alias-form col-lg-6 col-md-6 col-xs-12">
+      <h3 class="title large">Add new alias</h3>
+      <form id="add-alias"
+            name="addAliasForm"
+            class="clearfix" novalidate=""
+            data-ng-submit="alias.createAlias(editApp.application.name, alias.domain)">
+        <div class="input-group stack">
+          <label for="domain">Application URL</label>
+          <input id="domain"
+                 name="domain"
+                 type="text"
+                 data-ng-model="editApp.application.location"
+                 placeholder="mydomain.com"
+                 readonly>
+        </div>
+        <div class="input-group stack suffix">
+          <label for="new-alias">Domain name</label>
+          <input id="new-alias"
+                 name="alias"
+                 type="text"
+                 data-ng-model="alias.domain"
+                 ng-required=""
+                 placeholder="monalias">
+          <span class="suffix-text">{{editApp.application.domainName}}</span>
+          <p class="hint">Enter your custom domain name</p>
+          <p class="hint error" data-ng-show="alias.errorMsg">{{alias.errorMsg}}</p>
+        </div>
+        <div class="actions">
+          <div class="secondary-actions pull-right">
+            <button type="submit"
+                    class="alias-btn button primary raised"
+                    ripple="">
+              <span>Add an alias</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="alias-list col-lg-6 col-md-6 col-xs-12">
+      <h3 class="title large">Registered aliases</h3>
+      <p class="no-alias text-muted" data-ng-if="!editApp.application.aliases.length">No registered aliases</p>
+      <ul data-ng-if="editApp.application.aliases.length">
+        <li data-ng-repeat="aliase in editApp.application.aliases track by $index">
+          <a class="body-2" data-ng-href="http://{{editApp.application.aliases[$index]}}{{editApp.application.domainName}}" target="_blank">{{editApp.application.aliases[$index]}}{{editApp.application.domainName}}</a>
+          <button class="remove-alias-btn icon-button secondary"
+                  ripple=""
+                  tooltip=""
+                  data-title="Supprimer"
+                  data-placement="bottom"
+                  data-ng-click="alias.removeAlias(editApp.application.name, editApp.application.aliases[$index])">
+            <span class="icon-whhg circledelete"></span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
