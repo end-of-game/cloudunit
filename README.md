@@ -20,17 +20,17 @@ You can test the platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Demo](https://github.com/Treeptik/CloudUnit/blob/master/DEMO-GUIDE.md)
-* [Dev](https://github.com/Treeptik/cloudunit/blob/master/DEV-GUIDE.md)
-* [Server](https://github.com/Treeptik/cloudunit/blob/master/SERVER-GUIDE.md)
+* [Demo](https://github.com/Treeptik/CloudUnit/blob/master/documentation/DEMO-GUIDE.md)
+* [Dev](https://github.com/Treeptik/cloudunit/blob/master/documentation/DEV-GUIDE.md)
+* [Server](https://github.com/Treeptik/cloudunit/blob/master/documentation/SERVER-GUIDE.md)
 
 ## Usage examples
 
 There are many user guides
-* [Overview](https://github.com/Treeptik/cloudunit/blob/master/USER-GUIDE.md)
-* [Spring petclinic](https://github.com/Treeptik/cloudunit/blob/master/products/SPRINGPETCLINIC.md)
-* [GWT-DEMO](https://github.com/Treeptik/cloudunit/blob/master/products/GWT-DEMO.md)
-* [RollerBlog](https://github.com/Treeptik/cloudunit/blob/master/products/ROLLERBLOG.md)
+* [Overview](https://github.com/Treeptik/cloudunit/blob/master/documentation/USER-GUIDE.md)
+* [Spring petclinic](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/SPRINGPETCLINIC.md)
+* [GWT-DEMO](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/GWT-DEMO.md)
+* [RollerBlog](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/ROLLERBLOG.md)
 
 ## Under the hood
 
