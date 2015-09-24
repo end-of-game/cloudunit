@@ -19,7 +19,6 @@ import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.ModuleConfiguration;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
-import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,7 +40,7 @@ public class PostgreSQLModuleAction extends ModuleAction {
 		module.getModuleInfos().put("database",
 				module.getApplication().getName().toLowerCase());
 		module.getModuleInfos().put("dockerManagerAddress",
-				module.getApplication().getManagerHost());
+				module.getApplication().getManagerIp());
 
 		module.getModuleInfos().putAll(ModuleUtils.generateRamdomUserAccess());
 
@@ -74,21 +73,17 @@ public class PostgreSQLModuleAction extends ModuleAction {
 
 	@Override
 	public Module enableModuleManager(HipacheRedisUtils hipacheRedisUtils,
-			Module module, Environment env, Long instanceNumber) {
-		hipacheRedisUtils.createModuleManagerKey(module.getApplication(), env
-				.getProperty("redis.ip"), module.getContainerIP(), DEFAULT_MANAGER_PORT, module
+			Module module, Long instanceNumber) {
+		hipacheRedisUtils.createModuleManagerKey(module.getApplication(), module.getContainerIP(), DEFAULT_MANAGER_PORT, module
 				.getImage().getManagerName(), instanceNumber);
 		return module;
 	}
 
 	@Override
-	public void updateModuleManager(HipacheRedisUtils hipacheRedisUtils,
-			Environment env) {
-		hipacheRedisUtils.updatedAdminAddress(module.getApplication(), env
-				.getProperty("redis.ip"), module.getContainerIP(), DEFAULT_MANAGER_PORT, module
+	public void updateModuleManager(HipacheRedisUtils hipacheRedisUtils) {
+		hipacheRedisUtils.updatedAdminAddress(module.getApplication(), module.getContainerIP(), DEFAULT_MANAGER_PORT, module
 				.getImage().getManagerName(), Long.parseLong(module.getName()
 				.substring(module.getName().lastIndexOf("-") + 1)));
-
 	}
 
 	@Override

@@ -135,12 +135,12 @@ public class SnapshotServiceImpl implements SnapshotService {
 				dockerContainer.setImage(server.getImage().getName());
 				String id = (String) (objectMapper.readValue(DockerContainer
 						.commit(dockerContainer, snapshot.getUniqueTagName(),
-								application.getManagerHost(), server.getImage()
+								application.getManagerIp(), server.getImage()
 										.getPath()), HashMap.class)).get("Id");
 				DockerContainer.push(server.getImage().getPath(),
 						snapshot.getUniqueTagName(),
-						application.getManagerHost());
-				DockerContainer.deleteImage(id, application.getManagerHost());
+						application.getManagerIp());
+				DockerContainer.deleteImage(id, application.getManagerIp());
 			}
 
 			for (Module module : application.getModules()) {
@@ -169,11 +169,11 @@ public class SnapshotServiceImpl implements SnapshotService {
 				String id = (String) (objectMapper.readValue(
 						DockerContainer.commit(dockerContainer,
 								snapshot.getUniqueTagName(),
-								application.getManagerHost(), imageName),
+								application.getManagerIp(), imageName),
 						HashMap.class)).get("Id");
 				DockerContainer.push(imageName, snapshot.getUniqueTagName(),
-						application.getManagerHost());
-				DockerContainer.deleteImage(id, application.getManagerHost());
+						application.getManagerIp());
+				DockerContainer.deleteImage(id, application.getManagerIp());
 			}
 			snapshot.setImages(images);
 			snapshot = snapshotDAO.save(snapshot);
@@ -320,11 +320,11 @@ public class SnapshotServiceImpl implements SnapshotService {
 			DockerContainer dockerContainer = new DockerContainer();
 			dockerContainer.setName(module.getName() + "-data");
 			dockerContainer = DockerContainer.findOne(dockerContainer,
-					application.getManagerHost());
+					application.getManagerIp());
 			Map<String, String> configShell = new HashMap<>();
 			configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
 			configShell.put("dockerManagerAddress",
-					application.getManagerHost());
+					application.getManagerIp());
 			String rootPassword = module.getApplication().getUser()
 					.getPassword();
 			configShell.put("password", rootPassword);

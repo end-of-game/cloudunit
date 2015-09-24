@@ -139,7 +139,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 									.getName());
 							dockerContainer = DockerContainer.findOne(
 									dockerContainer,
-									application.getManagerHost());
+									application.getManagerIp());
 							server = containerMapper
 									.mapDockerContainerToServer(
 											dockerContainer, server);
@@ -155,7 +155,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 									.getName());
 							dockerContainer = DockerContainer.findOne(
 									dockerContainer,
-									application.getManagerHost());
+									application.getManagerIp());
 							module = containerMapper
 									.mapDockerContainerToModule(
 											dockerContainer, module);

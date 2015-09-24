@@ -18,7 +18,6 @@ package fr.treeptik.cloudunit.model.action;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.ModuleConfiguration;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,13 +58,12 @@ public class GitModuleAction extends ModuleAction {
 
 	@Override
 	public Module enableModuleManager(HipacheRedisUtils hipacheRedisUtils,
-			Module module, Environment env, Long instanceNumber) {
+			Module module, Long instanceNumber) {
 		return module;
 	}
 
 	@Override
-	public void updateModuleManager(HipacheRedisUtils hipacheRedisUtils,
-			Environment env) {
+	public void updateModuleManager(HipacheRedisUtils hipacheRedisUtils) {
 	}
 
 	@Override

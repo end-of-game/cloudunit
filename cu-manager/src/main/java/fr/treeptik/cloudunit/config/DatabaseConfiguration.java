@@ -52,6 +52,18 @@ public class DatabaseConfiguration {
 	private Logger logger = LoggerFactory
 			.getLogger(DatabaseConfiguration.class);
 
+	@Value("${database.url}")
+	private String databaseUrl;
+
+	@Value("${database.user}")
+	private String databaseUser;
+
+	@Value("${database.password}")
+	private String databasePassword;
+
+	@Value("${database.showSQL}")
+	private String databaseShowSQL;
+
 	@Inject
 	private Environment env;
 
@@ -61,18 +73,13 @@ public class DatabaseConfiguration {
 	@Bean
 	public DataSource dataSource() {
 		logger.debug("Configuring Datasource");
+		logger.debug("database.url:"+databaseUrl);
+		logger.debug("database.user:"+databaseUser);
 		HikariConfig config = new HikariConfig();
 		config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-		if (env.getProperty("database.url") == null
-				|| "".equals(env.getProperty("database.url"))) {
-			config.addDataSourceProperty("databaseName",
-					env.getProperty("cloudunit"));
-		} else {
-			config.addDataSourceProperty("url", env.getProperty("database.url"));
-		}
-		config.addDataSourceProperty("user", env.getProperty("database.user"));
-		config.addDataSourceProperty("password",
-				env.getProperty("database.password"));
+		config.addDataSourceProperty("url", databaseUrl);
+		config.addDataSourceProperty("user", databaseUser);
+		config.addDataSourceProperty("password", databasePassword);
 		// config.setAutoCommit(false);
 		return new HikariDataSource(config);
 	}
@@ -105,7 +112,7 @@ public class DatabaseConfiguration {
 		lcemfb.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
 		Properties jpaProperties = new Properties();
 		jpaProperties.put("hibernate.generate_statistics", true);
-		jpaProperties.put("hibernate.show_sql", false);
+		jpaProperties.put("hibernate.show_sql", Boolean.parseBoolean(databaseShowSQL));
 		lcemfb.setJpaProperties(jpaProperties);
 		lcemfb.setPackagesToScan("fr.treeptik.cloudunit.model");
 		lcemfb.afterPropertiesSet();
@@ -115,10 +122,9 @@ public class DatabaseConfiguration {
 	@Bean
 	public JpaVendorAdapter jpaVendorAdapter() {
 		HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-		jpaVendorAdapter.setShowSql(false);
+		jpaVendorAdapter.setShowSql(Boolean.parseBoolean(databaseShowSQL));
 		jpaVendorAdapter.setGenerateDdl(true);
-		jpaVendorAdapter
-				.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
+		jpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
 		return jpaVendorAdapter;
 	}
 

@@ -44,9 +44,6 @@ public interface ApplicationService {
 
     Application saveInDB(Application application) throws ServiceException;
 
-    void checkStatus(Application application, String status)
-            throws CheckException, ServiceException;
-
     boolean checkAppExist(User user, String applicationName)
             throws ServiceException, CheckException;
 

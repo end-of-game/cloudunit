@@ -29,8 +29,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -77,37 +77,35 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Inject
 	private MessageSource messageSource;
 
-	public ApplicationDAO getApplicationDAO() {
+    @Value("${cloudunit.max.apps:100}")
+    private String numberMaxApplications;
+
+    @Value("${docker.manager.ip:192.168.50.4:4243}")
+    private String dockerManagerIp;
+
+    @Value("${suffix.cloudunit.io}")
+    private String suffixCloudUnitIO;
+
+    public ApplicationDAO getApplicationDAO() {
 		return this.applicationDAO;
 	}
 
-	/**
-	 * check if the status passed in parameter is the as in db if it's case a
-	 * checkException is throws
-	 *
-	 * @throws ServiceException
-	 *             CheckException
-	 */
-	@Override
-	public void checkStatus(Application application, String status)
-			throws CheckException, ServiceException {
-		logger.info("--CHECK APP STATUS--");
-
-		if (application.getStatus().name().equalsIgnoreCase(status)) {
-			throw new CheckException("Error : Application "
-					+ application.getName() + " is already " + status + "ED");
-		}
-	}
-
+    /**
+     * Test if the user can create new applications because we limit the number per user
+     *
+     * @param application
+     * @param serverName
+     * @throws CheckException
+     * @throws ServiceException
+     */
 	@Override
 	public void checkCreate(Application application, String serverName)
 			throws CheckException, ServiceException {
-		logger.info("--CHECK APP COUNT--");
 
-		String maxApp = env.getProperty("max.apps");
+        logger.debug("--CHECK APP COUNT--");
 
-		if (this.countApp(application.getUser()) >= Integer.parseInt(maxApp)) {
-			throw new CheckException("You have already created your " + maxApp
+		if (this.countApp(application.getUser()) >= Integer.parseInt(numberMaxApplications)) {
+			throw new ServiceException("You have already created your " + numberMaxApplications
 					+ " apps into the Cloud");
 		}
 
@@ -128,6 +126,15 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	}
 
+    /**
+     * Test if the application already exists
+     *
+     * @param user
+     * @param applicationName
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
 	@Override
 	public boolean checkAppExist(User user, String applicationName)
 			throws ServiceException, CheckException {
@@ -144,12 +151,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 	 * status.PENDING of entity until it's really functionnal
 	 */
 	@Override
-	@Transactional(rollbackFor = ServiceException.class)
+	@Transactional
 	public Application saveInDB(Application application)
 			throws ServiceException {
-		logger.debug("--SAVE : " + application);
+		logger.debug("-- SAVE -- : " + application);
 		// Do not affect application with save return.
-		// You could lose the relationships
+		// You could lose the relationships.
 		applicationDAO.save(application);
 		return application;
 	}
@@ -166,7 +173,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 			throws ServiceException, CheckException {
 
 		Module moduleGit = ModuleFactory.getModule("git");
-		String containerGitAddress = env.getProperty("container.gitAddress");
+        // todo : externaliser la variable
+		String containerGitAddress = "/cloudunit/git/.git";
 
 		try {
 			// Assign fixed host ports for forwarding git ports (22)
@@ -227,10 +235,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 		String rootPassword = application.getUser().getPassword();
 		configShellModule.put("port", moduleGit.getSshPort());
 		configShellModule.put("dockerManagerAddress", moduleGit
-				.getApplication().getManagerHost());
+				.getApplication().getManagerIp());
 		configShellModule.put("password", rootPassword);
 		configShellModule.put("dockerManagerAddress",
-				application.getManagerHost());
+				application.getManagerIp());
 		logger.info("new server ip : " + server.getContainerIP());
 		try {
 			int counter = 0;
@@ -255,7 +263,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 			configShellServer.put("port", server.getSshPort());
 			configShellServer.put("dockerManagerAddress", server
-					.getApplication().getManagerHost());
+					.getApplication().getManagerIp());
 			configShellServer.put("password", rootPassword);
 			command = ". /cloudunit/scripts/rm-auth-keys.sh ";
 			logger.info("command shell to execute [" + command + "]");
@@ -299,7 +307,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					.getPassword());
 			configShell.put("port", moduleGit.getSshPort());
 			configShell.put("dockerManagerAddress",
-					application.getManagerHost());
+					application.getManagerIp());
 			configShell.put("userLogin", server.getApplication().getUser()
 					.getLogin());
 
@@ -409,19 +417,18 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 
 		application.setName(applicationName);
-		application.setUser(user);
-		application.setModules(new ArrayList<>());
+        application.setUser(user);
+        application.setModules(new ArrayList<>());
 
-		// verify if application exists already
+        // verify if application exists already
 		this.checkCreate(application, serverName);
 
-		// TODO
+		// todo : use a session flag
 		application.setStatus(Status.PENDING);
 
 		application = this.saveInDB(application);
 		serverService.checkMaxNumberReach(application);
 
-		String dockerManagerList = env.getProperty("docker.manager.list");
 		String dockerManagerPort = env.getProperty("docker.manager.port");
 		String managerIp = env.getProperty("cloudunit.manager.ip");
 		String javaVersion = env.getProperty("java.version.default");
@@ -441,18 +448,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 		try {
 			// BLOC APPLICATION
-
-			application.setDomainName(subdomain
-					+ env.getProperty("suffix.cloudunit.io"));
-
+			application.setDomainName(subdomain	+ suffixCloudUnitIO);
 			application = applicationDAO.save(application);
-			application.setManagerHost(this.assignManager(dockerManagerList),
-					dockerManagerPort);
-			application.setManagerIP(dockerManagerList);
+			application.setManagerIp(dockerManagerIp);
 			application.setManagerPort(dockerManagerPort);
 			application.setRestHost(managerIp);
 			application.setJvmRelease(javaVersion);
-			logger.info(application.getManagerIP());
+			logger.info(application.getManagerIp());
 
 			// BLOC SERVER
 			Server server = ServerFactory.getServer(serverName);
@@ -540,7 +542,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			for (Server server : listServers) {
 				serverService.remove(server.getName());
 				if (listServers.indexOf(server) == listServers.size() - 1) {
-					hipacheRedisUtils.removeRedisAppKey(application, redisIp);
+					hipacheRedisUtils.removeRedisAppKey(application);
 					applicationDAO.delete(server.getApplication());
 					portUtils.releaseProxyPorts(application);
 				}
@@ -715,14 +717,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 			String rootPassword = application.getUser().getPassword();
 			configShell.put("port", sshPort);
 			configShell.put("dockerManagerAddress",
-					application.getManagerHost());
+					application.getManagerIp());
 			configShell.put("password", rootPassword);
 
 			// send the file on container
 			shellUtils.sendFile(file, rootPassword, sshPort,
-					application.getManagerHost(), destFile);
+					application.getManagerIp(), destFile);
 
-		} catch (Exception e) {
+        } catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -746,14 +748,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 						.getPassword();
 				configShell.put("port", server.getSshPort());
 				configShell.put("dockerManagerAddress",
-						application.getManagerHost());
+						application.getManagerIp());
 				configShell.put("password", rootPassword);
 				String destFile = "/cloudunit/tmp/";
 
 				// send the file on container
 
 				shellUtils.sendFile(file, rootPassword, server.getSshPort(),
-						application.getManagerHost(), destFile);
+						application.getManagerIp(), destFile);
 
 				// call deployment script
 
@@ -801,7 +803,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			 */
 
 			listGitTagsOfApplication = GitUtils.listGitTagsOfApplication(
-					application, application.getManagerHost(),
+					application, application.getManagerIp(),
 					containerGitAddress);
 		} catch (GitAPIException e) {
 			application.setStatus(Status.FAIL);
@@ -834,12 +836,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 	}
 
-	private String assignManager(String managerList) {
-		Random random = new Random();
-		String[] tabs = managerList.split(";");
-		Integer randomValue = random.nextInt(tabs.length);
-		return tabs[randomValue];
-	}
 
 	@Override
 	public String initApplicationWithGitHub(String applicationName,
@@ -877,7 +873,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			configShell.put("port", application.getServers().get(0)
 					.getSshPort());
 			configShell.put("dockerManagerAddress",
-					application.getManagerHost());
+					application.getManagerIp());
 			configShell.put("userLogin", application.getUser().getLogin());
 			configShell.put("password", application.getUser().getPassword());
 
@@ -938,7 +934,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 						DockerContainer dockerContainer = new DockerContainer();
 						dockerContainer.setName(server.getName());
 						dockerContainer = DockerContainer.findOne(
-								dockerContainer, application.getManagerHost());
+								dockerContainer, application.getManagerIp());
 						server = containerMapper.mapDockerContainerToServer(
 								dockerContainer, server);
 						ContainerUnit containerUnit = new ContainerUnit(
@@ -959,7 +955,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 							dockerContainer.setName(module.getName());
 							dockerContainer = DockerContainer.findOne(
 									dockerContainer,
-									application.getManagerHost());
+									application.getManagerIp());
 							module = containerMapper
 									.mapDockerContainerToModule(
 											dockerContainer, module);
@@ -1010,7 +1006,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 						DockerContainer dockerContainer = new DockerContainer();
 						dockerContainer.setName(server.getName());
 						dockerContainer = DockerContainer.findOne(
-								dockerContainer, application.getManagerHost());
+								dockerContainer, application.getManagerIp());
 						server = containerMapper.mapDockerContainerToServer(
 								dockerContainer, server);
 						containers.add(server.getContainerID());
@@ -1023,7 +1019,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 							dockerContainer.setName(module.getName());
 							dockerContainer = DockerContainer.findOne(
 									dockerContainer,
-									application.getManagerHost());
+									application.getManagerIp());
 							module = containerMapper
 									.mapDockerContainerToModule(
 											dockerContainer, module);
@@ -1081,7 +1077,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 			Server server = application.getServers().get(0);
 			application.getAliases().add(alias);
-			hipacheRedisUtils.writeNewAlias(alias, application, redisIp, server
+			hipacheRedisUtils.writeNewAlias(alias, application, server
 					.getServerAction().getServerPort());
             applicationDAO.save(application);
 
@@ -1099,7 +1095,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			List<String> aliases = applicationDAO.findAllAliases(application
 					.getName());
 			for (String alias : aliases) {
-				hipacheRedisUtils.updateAlias(alias, application, redisIp,
+				hipacheRedisUtils.updateAlias(alias, application,
 						server.getServerAction().getServerPort());
 			}
 

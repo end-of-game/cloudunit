@@ -18,7 +18,6 @@ package fr.treeptik.cloudunit.model.action;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.ModuleConfiguration;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -51,16 +50,14 @@ public abstract class ModuleAction implements Serializable {
 	 * 
 	 * @param hipacheRedisUtils
 	 * @param parent
-	 * @param env
 	 * @param instanceNumber
 	 * @return
 	 */
 	public abstract Module enableModuleManager(
-			HipacheRedisUtils hipacheRedisUtils, Module parent,
-			Environment env, Long instanceNumber);
+			HipacheRedisUtils hipacheRedisUtils, Module parent, Long instanceNumber);
 
 	public abstract void updateModuleManager(
-			HipacheRedisUtils hipacheRedisUtils, Environment env);
+			HipacheRedisUtils hipacheRedisUtils);
 
 	public abstract void unsubscribeModuleManager(
 			HipacheRedisUtils hipacheRedisUtils);

@@ -58,7 +58,7 @@ public class Http401EntryPoint implements AuthenticationEntryPoint {
 
     public void generateLogTraceForFail2ban() {
         log.debug("generateLogTraceForFail2ban");
-        String filePath = environment.getProperty("fail2ban.login.file");
+        String filePath = "/var/log/culogin.log";
         try {
             Files.write(Paths.get(filePath), "Access Denied".getBytes(), StandardOpenOption.APPEND);
             Files.write(Paths.get(filePath), System.getProperty("line.separator").getBytes(), StandardOpenOption.APPEND);

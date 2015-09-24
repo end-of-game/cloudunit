@@ -33,8 +33,9 @@
 		<maven.surefire.report.plugin.version>2.18</maven.surefire.report.plugin.version>
 		<maven.enforcer.plugin.version>1.3.1</maven.enforcer.plugin.version>
 
-        <!-- vagrant specific properties -->
+        <!-- vagrant specific properties
         <box.ip>192.168.50.4</box.ip>
+        -->
 
         <!-- Dependencies properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,64 +46,51 @@
 
 		<!-- Deployment configuration -->
         <registry.location></registry.location>
-        <max.apps>100</max.apps>
-		<max.servers>1</max.servers>
 		<max.modules>4</max.modules>
 		<redis.port>6379</redis.port>
 		<docker.manager.port>4243</docker.manager.port>
 		<protocole>http</protocole>
 
-		<!-- String -->
-		<baseDir.mysql.backup>/cloudunit/cloudunit-backup/backup-</baseDir.mysql.backup>
-		<suffix.cloudunit.io>.cloudunit.dev</suffix.cloudunit.io>
-		<prefix.cloudunit.ssh>ssh</prefix.cloudunit.ssh>
-		<prefix.cloudunit.phpMyAdmin>phpmyadmin</prefix.cloudunit.phpMyAdmin>
-		<container.gitAddress>/cloudunit/git/.git</container.gitAddress>
-		<docker.uploadDir>/opt/VMDockerUpload</docker.uploadDir>
-		<script.host.path>/vagrant_cloudunit/cu-services/scriptHost/</script.host.path>
-		<java.version.default>7</java.version.default>
-		<fail2ban.login.file>/var/log/culogin.log</fail2ban.login.file>
-		<api.version>0.9</api.version>
-
-        <!-- Log4J configuration -->
-
-		<log.level.treeptik>info</log.level.treeptik>
-		<log.level.other>info</log.level.other>
-		<log.level.hibernate>error</log.level.hibernate>
-
-		<!-- cAdvisor configuration -->
+		<!-- cAdvisor configuration
 		<cadvisor.url>http://cuplatform_cadvisor_1.cadvisor.cloud.unit:8080</cadvisor.url>
+        -->
 
-		<!-- IP for registry -->
+		<!-- IP for registry : todo
 		<ip.for.registry>${box.ip}</ip.for.registry>
+        -->
 
 		<!-- DataSource configuration -->
-
+        <!--
 		<database.url>jdbc:mysql://${box.ip}:3306/cloudunit?useUnicode=true&amp;characterEncoding=UTF-8&amp;useFastDateParsing=false</database.url>
 		<database.url.test>jdbc:mysql://${box.ip}:3306/cloudunit?useUnicode=true&amp;characterEncoding=UTF-8&amp;useFastDateParsing=false</database.url.test>
 		<database.user>root</database.user>
 		<database.password>AezohghooNgaegh8ei2jabib2nuj9yoe</database.password>
+		-->
 
 		<!-- Mail configuration -->
+        <!--
 		<mail.apiKey>support.cloudunit@treeptik.fr</mail.apiKey>
 		<mail.secretKey>AQWZSX1234</mail.secretKey>
 		<mail.emailFrom>support.cloudunit@treeptik.fr</mail.emailFrom>
 		<mail.smtpHost>smtp.gmail.com</mail.smtpHost>
 		<mail.socketFactoryPort>587</mail.socketFactoryPort>
 		<mail.smtpPort>587</mail.smtpPort>
+		-->
 
 		<!-- String for mail -->
-
+        <!--
 		<mail.activation.url.prefix>https://admin.cloudunit.io/api/v0/user/activate/userEmail/</mail.activation.url.prefix>
 		<mail.subject.activation>Bienvenue sur CloudUnit</mail.subject.activation>
 		<mail.subject.change.email>Modification de votre Email</mail.subject.change.email>
 		<mail.subject.module.information>Information sur la Datasource</mail.subject.module.information>
+        -->
 
 		<!-- Tests configuration -->
-
+        <!--
 		<test.log.level.treeptik>error</test.log.level.treeptik>
 		<test.log.level.other>error</test.log.level.other>
 		<test.log.level.hibernate>error</test.log.level.hibernate>
+        -->
 
 		<!--
     		surefire argLine empty by default
@@ -479,16 +467,7 @@
 
 		<!-- Dev profile -->
 		<profile>
-			<id>vagrant</id>
-			<properties>
-				<redis.ip>${box.ip}</redis.ip>
-				<es.ip>${box.ip}</es.ip>
-				<cadvisor.url>http://${box.ip}:8081</cadvisor.url>
-				<docker.manager.list>${box.ip}</docker.manager.list>
-				<docker.manager.username>vagrant</docker.manager.username>
-				<docker.manager.password>vagrant</docker.manager.password>
-				<fail2ban.login.file>/tmp/culogin.log</fail2ban.login.file>
-			</properties>
+			<id>dev</id>
 			<build>
 				<resources>
 					<resource>
@@ -528,9 +507,8 @@
 				<documentation.services.basePath>http://admin1.cloudunit.io/api</documentation.services.basePath>
 				<mail.activation.url.prefix>https://admin1.cloudunit.io/api/v0/user/activate/userEmail/</mail.activation.url.prefix>
 				<database.url>jdbc:mysql://cuplatform_mysql_1.mysql.cloud.unit:3306/cloudunit?useUnicode=true&amp;characterEncoding=UTF-8&amp;useFastDateParsing=false</database.url>
-				<cloudunit.resthost>cuplatform_tomcat_1.tomcat.cloud.unit</cloudunit.resthost>
+				<cloudunit.manager.ip>cuplatform_tomcat_1.tomcat.cloud.unit</cloudunit.manager.ip>
 				<redis.ip>cuplatform_redis_1.redis.cloud.unit</redis.ip>
-				<redis.port>6379</redis.port>
 				<es.ip>172.17.42.1</es.ip>
 				<cadvisor.url>http://cuplatform_cadvisor_1.cadvisor.cloud.unit:8080</cadvisor.url>
 				<ip.for.registry>172.17.42.1</ip.for.registry>

@@ -30,7 +30,7 @@ import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +42,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class ServerServiceImpl implements ServerService {
-
-    @Inject
-    private Environment env;
 
     private Logger logger = LoggerFactory.getLogger(ServerServiceImpl.class);
 
@@ -75,6 +72,12 @@ public class ServerServiceImpl implements ServerService {
     @Inject
     private ContainerMapper containerMapper;
 
+    @Value("${cloudunit.max.servers:1}")
+    private String maxServers;
+
+    @Value("${suffix.cloudunit.io}")
+    private String suffixCloudUnitIO;
+
     public ServerDAO getServerDAO() {
         return this.serverDAO;
     }
@@ -84,12 +87,24 @@ public class ServerServiceImpl implements ServerService {
      * status.PENDING of entity until it's really functionnal
      */
     @Override
-    @Transactional(rollbackFor = ServiceException.class)
+    @Transactional
     public Server saveInDB(Server server) throws ServiceException {
         server = serverDAO.save(server);
         return server;
     }
 
+
+    /**
+     * Create a server with or without a tag.
+     * Tag parameter is needed for restore processus after cloning
+     * The idea is to use the same logic for a new server or another one coming from registry.
+     *
+     * @param server
+     * @param tagName
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
     @Override
     @Transactional
     public Server create(Server server, String tagName)
@@ -108,12 +123,11 @@ public class ServerServiceImpl implements ServerService {
                 + server.getName());
 
         // Initialize container informations :
-        String redisIp = env.getProperty("redis.ip");
         DockerContainer dockerContainer = new DockerContainer();
         Map<String, String> ports = new HashMap<String, String>();
 
         // General informations
-        String dockerManagerIP = server.getApplication().getManagerIP();
+        String dockerManagerIP = server.getApplication().getManagerIp();
         server.setStatus(Status.PENDING);
         server.setJvmOptions("");
         server.setStartDate(new Date());
@@ -158,12 +172,12 @@ public class ServerServiceImpl implements ServerService {
         try {
             // create a container and get informations
             DockerContainer.create(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             logger.debug("container : " + dockerContainer);
 
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             String subdomain = System.getenv("CU_SUB_DOMAIN");
             if (subdomain == null) {
@@ -171,19 +185,12 @@ public class ServerServiceImpl implements ServerService {
             }
             logger.info("env.CU_SUB_DOMAIN=" + subdomain);
 
-            server.getApplication().setSuffixCloudUnitIO(
-                    subdomain + env.getProperty("suffix.cloudunit.io"));
+            server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
+            DockerContainer.start(dockerContainer, application.getManagerIp());
+            dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
 
-            DockerContainer
-                    .start(dockerContainer, application.getManagerHost());
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
-
-            server = containerMapper.mapDockerContainerToServer(
-                    dockerContainer, server);
-
+            server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
             server = serverDAO.saveAndFlush(server);
-
             server = ServerFactory.updateServer(server);
 
             logger.info(server.getServerAction().getServerManagerPath());
@@ -192,7 +199,7 @@ public class ServerServiceImpl implements ServerService {
             logger.info(application.getLocation());
 
             hipacheRedisUtils.createRedisAppKey(server.getApplication(),
-                    redisIp, server.getContainerIP(), server.getServerAction()
+                    server.getContainerIP(), server.getServerAction()
                             .getServerPort(), server.getServerAction()
                             .getServerManagerPort());
 
@@ -214,7 +221,7 @@ public class ServerServiceImpl implements ServerService {
                 // Removing a creating container if an error has occurred with
                 // the database
                 DockerContainer.remove(dockerContainer,
-                        application.getManagerHost());
+                        application.getManagerIp());
             } catch (DockerJSONException e1) {
                 logger.error("ServerService Error : Create Server " + e1);
                 throw new ServiceException(e.getLocalizedMessage(), e1);
@@ -237,22 +244,26 @@ public class ServerServiceImpl implements ServerService {
         return server;
     }
 
+    /**
+     * Test if the user can create new server associated to this application
+     *
+     * @param application
+     * @throws ServiceException
+     * @throws CheckException
+     */
     public void checkMaxNumberReach(Application application)
             throws ServiceException, CheckException {
-        String maxServer = env.getProperty("max.servers");
         logger.info("check number of server of " + application.getName());
         if (application.getServers() != null) {
             try {
                 if (application.getServers().size() >= Integer
-                        .parseInt(maxServer)) {
+                        .parseInt(maxServers)) {
                     throw new CheckException("You have already created your "
-                            + maxServer + " server for your application");
+                            + maxServers + " server for your application");
                 }
-
             } catch (PersistenceException e) {
                 logger.error("ServerService Error : check number of server" + e);
-                throw new ServiceException("Error database : "
-                        + e.getLocalizedMessage(), e);
+                throw new ServiceException(e.getLocalizedMessage(), e);
             }
         }
     }
@@ -294,15 +305,13 @@ public class ServerServiceImpl implements ServerService {
         logger.debug("update : Methods parameters : " + server.toString());
         logger.info("ServerService : Starting updating Server "
                 + server.getName());
-        String redisIp = env.getProperty("redis.ip");
-
         try {
             server = serverDAO.save(server);
 
             Application application = server.getApplication();
-            String dockerManagerIP = application.getManagerIP();
+            String dockerManagerIP = application.getManagerIp();
 
-            hipacheRedisUtils.updateServerAddress(application, redisIp, server
+            hipacheRedisUtils.updateServerAddress(application, server
                             .getContainerIP(),
                     server.getServerAction().getServerPort(), server
                             .getServerAction().getServerManagerPort());
@@ -323,7 +332,6 @@ public class ServerServiceImpl implements ServerService {
     @Transactional
     public Server remove(String serverName) throws ServiceException {
         Server server = null;
-        String redisIp = env.getProperty("redis.ip");
         try {
             server = this.findByName(serverName);
 
@@ -340,7 +348,7 @@ public class ServerServiceImpl implements ServerService {
 
             if (server.getStatus().equals(Status.START)) {
                 DockerContainer.stop(dockerContainer,
-                        application.getManagerHost());
+                        application.getManagerIp());
                 Thread.sleep(1000);
             }
 
@@ -348,22 +356,22 @@ public class ServerServiceImpl implements ServerService {
             server = this.saveInDB(server);
 
             String imageName = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost()).getImage();
+                    application.getManagerIp()).getImage();
 
             DockerContainer.remove(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             try {
                 if (application.isAClone()) {
                     DockerContainer.deleteImage(imageName,
-                            application.getManagerHost());
+                            application.getManagerIp());
                 }
             } catch (DockerJSONException e) {
                 logger.info("Others apps use this docker images");
             }
 
             // Remove server on cloudunit :
-            hipacheRedisUtils.removeServerAddress(application, redisIp);
+            hipacheRedisUtils.removeServerAddress(application);
 
             serverDAO.delete(server);
 
@@ -449,8 +457,6 @@ public class ServerServiceImpl implements ServerService {
         logger.debug("start : Methods parameters : " + server);
         logger.info("ServerService : Starting Server " + server.getName());
 
-        String redisIp = env.getProperty("redis.ip");
-
         try {
             Application application = server.getApplication();
 
@@ -463,14 +469,14 @@ public class ServerServiceImpl implements ServerService {
                         .collect(Collectors.toList()));
             }
             DockerContainer
-                    .start(dockerContainer, application.getManagerHost());
+                    .start(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             server = containerMapper.mapDockerContainerToServer(
                     dockerContainer, server);
 
-            String dockerManagerIP = server.getApplication().getManagerIP();
+            String dockerManagerIP = server.getApplication().getManagerIp();
 
             server.setStatus(Status.START);
             server.setStartDate(new Date());
@@ -478,7 +484,7 @@ public class ServerServiceImpl implements ServerService {
 
             server = this.update(server);
             hipacheRedisUtils.updateServerAddress(server.getApplication(),
-                    redisIp, server.getContainerIP(), server.getServerAction()
+                    server.getContainerIP(), server.getServerAction()
                             .getServerPort(), server.getServerAction()
                             .getServerManagerPort());
 
@@ -492,7 +498,6 @@ public class ServerServiceImpl implements ServerService {
                             t -> hipacheRedisUtils.writeNewAlias(
                                     t.getPort(),
                                     effectiveApplication,
-                                    redisIp,
                                     effectiveServer.getListPorts().get(
                                             t + "/tcp")));
 
@@ -517,9 +522,9 @@ public class ServerServiceImpl implements ServerService {
             DockerContainer dockerContainer = new DockerContainer();
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
-            DockerContainer.stop(dockerContainer, application.getManagerHost());
+            DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
             server.setDockerState(dockerContainer.getState());
 
             server.setStatus(Status.STOP);
@@ -581,7 +586,7 @@ public class ServerServiceImpl implements ServerService {
 
         Map<String, String> configShell = new HashMap<>();
         configShell.put("port", server.getSshPort());
-        configShell.put("dockerManagerAddress", server.getApplication().getManagerHost());
+        configShell.put("dockerManagerAddress", server.getApplication().getManagerIp());
         // We don't need to set userLogin because shell script caller must be root.
         configShell.put("password", server.getApplication().getUser().getPassword());
 
@@ -632,8 +637,9 @@ public class ServerServiceImpl implements ServerService {
     }
 
     /**
-     * Change the jvm version
-     * @param applicationName
+     * Change the version of the jvm
+     *
+     * @param application
      * @param javaVersion
      * @throws CheckException
      * @throws ServiceException
@@ -654,7 +660,7 @@ public class ServerServiceImpl implements ServerService {
             try {
                 configShell.put("password", server.getApplication().getUser().getPassword());
                 configShell.put("port", server.getSshPort());
-                configShell.put("dockerManagerAddress", application.getManagerHost());
+                configShell.put("dockerManagerAddress", application.getManagerIp());
 
                 // Need to be root for shell call because we modify /etc/environme,t
                 command = "bash /cloudunit/scripts/change-java-version.sh " + javaVersion;
@@ -679,7 +685,7 @@ public class ServerServiceImpl implements ServerService {
                     .getPassword());
             configShell.put("port", moduleGit.getSshPort());
             configShell.put("dockerManagerAddress",
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             // Besoin des permissions ROOT
             command = "bash /cloudunit/scripts/change-java-version.sh "

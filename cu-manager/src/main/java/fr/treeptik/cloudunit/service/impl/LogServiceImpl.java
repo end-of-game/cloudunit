@@ -38,7 +38,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -64,13 +64,13 @@ public class LogServiceImpl implements LogService {
 	private ContainerMapper containerMapper;
 
 	@Inject
-	private Environment env;
-
-	@Inject
 	private ApplicationService applicationService;
 
 	@Inject
 	private AuthentificationUtils authentificationUtils;
+
+	@Value("${elasticsearch.ip}")
+	private String esIp;
 
 	@Override
 	public List<LogUnit> listByApp(String applicationName, String containerId,
@@ -81,12 +81,11 @@ public class LogServiceImpl implements LogService {
 					authentificationUtils.getAuthentificatedUser(),
 					applicationName);
 
-			String ipES = env.getProperty("es.ip");
 			Set<String> directories = volumesByContainer.get(containerId);
 			if (logger.isDebugEnabled()) {
 				logger.debug("" + directories);
 			}
-			lines = gatherRowsFromES(ipES, directories, source, nbRows);
+			lines = gatherRowsFromES(esIp, directories, source, nbRows);
 
 		} catch (Exception e) {
 			StringBuilder msgError = new StringBuilder(512);
@@ -109,7 +108,6 @@ public class LogServiceImpl implements LogService {
 					authentificationUtils.getAuthentificatedUser(),
 					applicationName);
 
-			String ipES = env.getProperty("es.ip");
 			List<String> listContainersId = applicationService
 					.listContainersId(applicationName);
 			for (String containerId : listContainersId) {
@@ -118,7 +116,7 @@ public class LogServiceImpl implements LogService {
 					Iterator<String> iterDir = directories.iterator();
 					while (iterDir.hasNext()) {
 						String directory = iterDir.next();
-						deleteRowsIntoES(ipES, directory);
+						deleteRowsIntoES(esIp, directory);
 					}
 				}
 			}
@@ -247,9 +245,7 @@ public class LogServiceImpl implements LogService {
 	@Scheduled(fixedDelay = 10000)
 	public void generateRelationBetweenApplicationAndVolumes() {
 		try {
-			if ("true".equals(System.getenv("CU_MAINTENANCE"))) {
-				return;
-			}
+			if ("true".equals(System.getenv("CU_MAINTENANCE"))) {return;}
 			List<Application> applications = applicationService.findAll();
 			if (applications != null) {
 				for (Application application : applications) {
@@ -266,7 +262,7 @@ public class LogServiceImpl implements LogService {
 									.getName());
 							dockerContainer = DockerContainer.findOne(
 									dockerContainer,
-									application.getManagerHost());
+									application.getManagerIp());
 							server = containerMapper
 									.mapDockerContainerToServer(
 											dockerContainer, server);
@@ -284,7 +280,7 @@ public class LogServiceImpl implements LogService {
 									.getName());
 							dockerContainer = DockerContainer.findOne(
 									dockerContainer,
-									application.getManagerHost());
+									application.getManagerIp());
 							module = containerMapper
 									.mapDockerContainerToModule(
 											dockerContainer, module);

@@ -38,8 +38,7 @@ import fr.treeptik.cloudunit.utils.FilesUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -56,9 +55,6 @@ public class FileServiceImpl implements FileService {
 
 	private Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
-	@Autowired
-	private Environment env;
-
 	@Inject
 	private AuthentificationUtils authentificationUtils;
 
@@ -74,6 +70,9 @@ public class FileServiceImpl implements FileService {
 	@Inject
 	private ServerService serverService;
 
+	@Value("${docker.manager.ip:192.168.50.4:4243}")
+	private String dockerManagerIp;
+
 	/**
 	 * Delete all resources (files and folders) for an application + container +
 	 * path.
@@ -86,12 +85,9 @@ public class FileServiceImpl implements FileService {
 	public void deleteFilesFromContainer(String applicationName,
 			String containerId, String path) throws ServiceException {
 		try {
-			String dockerManagerList = env.getProperty("docker.manager.list");
-			String dockerManagerPort = env.getProperty("docker.manager.port");
 			final DockerClient docker = DefaultDockerClient
 					.builder()
-					.uri("http://" + dockerManagerList + ":"
-							+ dockerManagerPort).build();
+					.uri("http://" + dockerManagerIp).build();
 			List<Container> containers = docker.listContainers();
 			for (Container container : containers) {
 				if (container.id().substring(0, 12).equals(containerId) == false) {
@@ -124,13 +120,9 @@ public class FileServiceImpl implements FileService {
 
 		List<SourceUnit> files = new ArrayList<>();
 		try {
-			String dockerManagerList = env.getProperty("docker.manager.list");
-			String dockerManagerPort = env.getProperty("docker.manager.port");
-
 			final DockerClient docker = DefaultDockerClient
 					.builder()
-					.uri("http://" + dockerManagerList + ":"
-							+ dockerManagerPort).build();
+					.uri("http://" + dockerManagerIp).build();
 			List<Container> containers = docker.listContainers();
 			for (Container container : containers) {
 				if (container.id().substring(0, 12).equals(containerId) == false) {
@@ -193,13 +185,9 @@ public class FileServiceImpl implements FileService {
 
 		List<FileUnit> files = new ArrayList<>();
 		try {
-			String dockerManagerList = env.getProperty("docker.manager.list");
-			String dockerManagerPort = env.getProperty("docker.manager.port");
-
 			final DockerClient docker = DefaultDockerClient
 					.builder()
-					.uri("http://" + dockerManagerList + ":"
-							+ dockerManagerPort).build();
+					.uri("http://" + dockerManagerIp).build();
 			List<Container> containers = docker.listContainers();
 			for (Container container : containers) {
 				// b10da42def6c1737c40b981b1692acb24e28414944b4017814713afb811ae51b
@@ -315,13 +303,13 @@ public class FileServiceImpl implements FileService {
 			String rootPassword = application.getUser().getPassword();
 			configShell.put("port", sshPort);
 			configShell.put("dockerManagerAddress",
-					application.getManagerHost());
+					application.getManagerIp());
 			configShell.put("password", rootPassword);
 
 			// send the file on container
 			shellUtils
 					.sendFile(file, rootPassword, sshPort,
-							application.getManagerHost(),
+							application.getManagerIp(),
 							convertDestPathFile(destFile));
 			/*
 			 * déporter ce script dans le container (au plus au niveau)
@@ -361,11 +349,11 @@ public class FileServiceImpl implements FileService {
 			String rootPassword = application.getUser().getPassword();
 			configShell.put("port", sshPort);
 			configShell.put("dockerManagerAddress",
-					application.getManagerHost());
+					application.getManagerIp());
 			configShell.put("password", rootPassword);
 
 			shellUtils.downloadFile(file, rootPassword, sshPort,
-                    application.getManagerHost(), convertDestPathFile(destFile)
+                    application.getManagerIp(), convertDestPathFile(destFile)
                             + originalName);
 
 		} catch (ServiceException | CheckException e) {

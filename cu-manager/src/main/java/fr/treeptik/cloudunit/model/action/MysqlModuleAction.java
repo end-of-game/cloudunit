@@ -19,7 +19,6 @@ import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.ModuleConfiguration;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
-import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -45,7 +44,7 @@ public class MysqlModuleAction extends ModuleAction {
 		module.getModuleInfos().put("database",
 				module.getApplication().getName().toLowerCase());
 		module.getModuleInfos().put("dockerManagerAddress",
-				module.getApplication().getManagerHost());
+				module.getApplication().getManagerIp());
 		module.getModuleInfos().putAll(ModuleUtils.generateRamdomUserAccess());
 	}
 
@@ -77,10 +76,9 @@ public class MysqlModuleAction extends ModuleAction {
 
 	@Override
 	public Module enableModuleManager(HipacheRedisUtils hipacheRedisUtils,
-			Module module, Environment env, Long instanceNumber) {
+			Module module, Long instanceNumber) {
 		hipacheRedisUtils.createModuleManagerKey(
 				module.getApplication(),
-				env.getProperty("redis.ip"),
 				module.getContainerIP(),
 				DEFAULT_MANAGER_PORT,
 				module.getImage().getManagerName(),
@@ -91,10 +89,8 @@ public class MysqlModuleAction extends ModuleAction {
 
 	@Override
 	public void updateModuleManager(
-			HipacheRedisUtils hipacheRedisUtils,
-			Environment env) {
+			HipacheRedisUtils hipacheRedisUtils) {
 		hipacheRedisUtils.updatedAdminAddress(module.getApplication(),
-				env.getProperty("redis.ip"),
 				module.getContainerIP(),
 				DEFAULT_MANAGER_PORT,
 				module.getImage().getManagerName(),

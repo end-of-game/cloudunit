@@ -71,9 +71,9 @@ public class Application implements Serializable {
 
 	private String domainName;
 
-	private String managerIP;
+	private String managerIp;
 	private String managerPort;
-	private String managerHost;
+
 	// version de java sous laquelle tourne les containers serveurs et git
 	// (maven)
 	private String jvmRelease;
@@ -196,12 +196,12 @@ public class Application implements Serializable {
 		return suffixCloudUnitIO;
 	}
 
-	public String getManagerIP() {
-		return managerIP;
+	public String getManagerIp() {
+		return managerIp;
 	}
 
-	public void setManagerIP(String managerIP) {
-		this.managerIP = managerIP;
+	public void setManagerIp(String managerIp) {
+		this.managerIp = managerIp;
 	}
 
 	public String getManagerPort() {
@@ -210,18 +210,6 @@ public class Application implements Serializable {
 
 	public void setManagerPort(String managerPort) {
 		this.managerPort = managerPort;
-	}
-
-	public String getManagerHost() {
-		return managerHost;
-	}
-
-	public void setManagerHost(String managerHost) {
-		this.managerHost = managerHost;
-	}
-
-	public void setManagerHost(String managerIP, String managerPort) {
-		this.managerHost = managerIP + ":" + managerPort;
 	}
 
 	public String getRestHost() {
@@ -279,9 +267,8 @@ public class Application implements Serializable {
 				", date=" + date +
 				", user=" + user +
 				", domainName='" + domainName + '\'' +
-				", managerIP='" + managerIP + '\'' +
+				", managerIP='" + managerIp + '\'' +
 				", managerPort='" + managerPort + '\'' +
-				", managerHost='" + managerHost + '\'' +
 				", jvmRelease='" + jvmRelease + '\'' +
 				", restHost='" + restHost + '\'' +
 				", gitContainerIP='" + gitContainerIP + '\'' +

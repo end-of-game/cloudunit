@@ -29,7 +29,7 @@ import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,9 +45,6 @@ import java.util.*;
 public class ModuleServiceImpl implements ModuleService {
 
     private Logger logger = LoggerFactory.getLogger(ModuleServiceImpl.class);
-
-    @Inject
-    private Environment env;
 
     @Inject
     private ModuleDAO moduleDAO;
@@ -81,6 +78,9 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Inject
     private SnapshotService snapshotService;
+
+    @Value("${suffix.cloudunit.io}")
+    private String suffixCloudUnitIO;
 
     public ModuleDAO getModuleDAO() {
         return this.moduleDAO;
@@ -130,7 +130,7 @@ public class ModuleServiceImpl implements ModuleService {
                     }
 
                     logger.info("dockerManagerAddress="
-                            + application.getManagerHost());
+                            + application.getManagerIp());
                     logger.info("password="
                             + server.getApplication().getUser().getPassword());
                     logger.info("port=" + server.getSshPort());
@@ -139,7 +139,7 @@ public class ModuleServiceImpl implements ModuleService {
                             .getUser().getPassword());
                     configShell.put("port", server.getSshPort());
                     configShell.put("dockerManagerAddress",
-                            application.getManagerHost());
+                            application.getManagerIp());
 
                     int counter = 0;
                     while (!server.getStatus().equals(Status.START)) {
@@ -375,9 +375,9 @@ public class ModuleServiceImpl implements ModuleService {
 
         try {
             DockerContainer.create(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             if (module.getImage().getImageType().equals("module")) {
                 List<String> volumesFrom = new ArrayList<>();
@@ -393,10 +393,10 @@ public class ModuleServiceImpl implements ModuleService {
             }
 
             dockerContainer = DockerContainer.start(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             module = containerMapper.mapDockerContainerToModule(
                     dockerContainer, module);
@@ -404,7 +404,7 @@ public class ModuleServiceImpl implements ModuleService {
             if (module.getApplication().getStatus().equals(Status.STOP)) {
 
                 DockerContainer.stop(dockerContainer,
-                        application.getManagerHost());
+                        application.getManagerIp());
                 module.setStatus(Status.STOP);
             }
 
@@ -479,9 +479,9 @@ public class ModuleServiceImpl implements ModuleService {
 
         try {
 
-            DockerContainer.create(dataContainer, application.getManagerHost());
+            DockerContainer.create(dataContainer, application.getManagerIp());
             dataContainer = DockerContainer.findOne(dataContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             /**
              * Création du volume entre l'hôte et le dossier de destination du
@@ -491,10 +491,10 @@ public class ModuleServiceImpl implements ModuleService {
              * supprimé.
              */
 
-            DockerContainer.start(dataContainer, application.getManagerHost());
+            DockerContainer.start(dataContainer, application.getManagerIp());
 
             dataContainer = DockerContainer.findOne(dataContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             if (tagName != null) {
                 this.restoreDataModule(module);
@@ -619,23 +619,23 @@ public class ModuleServiceImpl implements ModuleService {
             String imageId = "";
             if (module.getName().contains("git")) {
                 imageId = DockerContainer.findOneWithImageID(dockerContainer,
-                        application.getManagerHost()).getImageID();
+                        application.getManagerIp()).getImageID();
             } else {
                 DockerContainer dataContainer = new DockerContainer();
                 dataContainer.setName(dockerContainer.getName() + "-data");
                 imageId = DockerContainer.findOneWithImageID(dataContainer,
-                        application.getManagerHost()).getImageID();
+                        application.getManagerIp()).getImageID();
             }
 
             if (module.getStatus().equals(Status.START)) {
-                DockerContainer.stop(dockerContainer, application.getManagerHost());
+                DockerContainer.stop(dockerContainer, application.getManagerIp());
             }
-            DockerContainer.remove(dockerContainer,  application.getManagerHost());
+            DockerContainer.remove(dockerContainer,  application.getManagerIp());
 
             try {
                 if (application.isAClone()) {
                     DockerContainer.deleteImage(imageId,
-                            application.getManagerHost());
+                            application.getManagerIp());
                 }
             } catch (DockerJSONException e) {
                 logger.info("Others apps use this docker images");
@@ -658,7 +658,7 @@ public class ModuleServiceImpl implements ModuleService {
 
                     configShell.put("port", server.getSshPort());
                     configShell.put("dockerManagerAddress",
-                            application.getManagerHost());
+                            application.getManagerIp());
                     configShell.put("password", server.getApplication().getUser().getPassword());
 
                     String command;
@@ -744,15 +744,15 @@ public class ModuleServiceImpl implements ModuleService {
             }
 
             DockerContainer
-                    .start(dockerContainer, application.getManagerHost());
+                    .start(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             if (module.getImage().getImageType().equals("module")) {
                 dataDockerContainer.setName(module.getName() + "-data");
 
                 DockerContainer.start(dataDockerContainer,
-                        application.getManagerHost());
+                        application.getManagerIp());
             }
 
             module = containerMapper.mapDockerContainerToModule(
@@ -760,7 +760,7 @@ public class ModuleServiceImpl implements ModuleService {
 
             // Unsubscribe module manager
             module.getModuleAction()
-                    .updateModuleManager(hipacheRedisUtils, env);
+                    .updateModuleManager(hipacheRedisUtils);
 
             //module.setStartDate(new Date());
             //module.setStatus(Status.START);
@@ -790,9 +790,9 @@ public class ModuleServiceImpl implements ModuleService {
             DockerContainer dockerContainer = new DockerContainer();
             dockerContainer.setName(module.getName());
             dockerContainer.setImage(module.getImage().getName());
-            DockerContainer.stop(dockerContainer, application.getManagerHost());
+            DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             module.setDockerState(dockerContainer.getState());
             module.setStatus(Status.STOP);
@@ -902,33 +902,7 @@ public class ModuleServiceImpl implements ModuleService {
     public List<Module> findByAppAndUser(User user, String applicationName)
             throws ServiceException {
         try {
-
-            String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? ""
-                    : System.getenv("CU_SUB_DOMAIN");
-            logger.debug("env.CU_SUB_DOMAIN=" + subdomain);
-
-            List<Module> modules = moduleDAO.findByAppAndUser(user.getId(),
-                    applicationName);
-/*
-            for (Module module : modules) {
-                String managerLocation = "http://"
-                        + module.getImage().getManagerName()
-                        + module.getName().substring(
-                        module.getName().lastIndexOf("-") + 1) + "-"
-                        + module.getApplication().getName() + "-"
-                        + module.getApplication().getUser().getLogin() + "-"
-                        + module.getApplication().getUser().getOrganization()
-                        + subdomain + env.getProperty("suffix.cloudunit.io")
-                        + "/";
-
-                // Si ce n'est pas mongo, on laisse le suffixe.
-                if (module.getImage().getManagerName().contains("mongo") == false
-                        && module.getImage().getManagerName().contains("redis") == false) {
-                    managerLocation += module.getImage().getManagerName();
-                }
-                module.setManagerLocation(managerLocation);
-            }
-            */
+            List<Module> modules = moduleDAO.findByAppAndUser(user.getId(),  applicationName);
             return modules;
         } catch (PersistenceException e) {
             logger.error("Error ModuleService : error findByAppAndUser Method : "
@@ -943,11 +917,10 @@ public class ModuleServiceImpl implements ModuleService {
     public void addModuleManager(Module module, Long instanceNumber)
             throws ServiceException {
         try {
-            module = module.getModuleAction().enableModuleManager(hipacheRedisUtils, module, env, instanceNumber);
+            module = module.getModuleAction().enableModuleManager(hipacheRedisUtils, module, instanceNumber);
 
             String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-            String suffix = env.getProperty("suffix.cloudunit.io");
-            module.setManagerLocation(module.getModuleAction().getManagerLocation(subdomain, suffix));
+            module.setManagerLocation(module.getModuleAction().getManagerLocation(subdomain, suffixCloudUnitIO));
 
             // persist in database
             update(module);
@@ -966,8 +939,7 @@ public class ModuleServiceImpl implements ModuleService {
 
         logger.debug("restoreBackup  of module : : " + module);
 
-        String redisIp = env.getProperty("redis.ip");
-        String scriptHostPath = env.getProperty("script.host.path");
+        String scriptHostPath = "/vagrant_cloudunit/cu-services/scriptHost/";
         String dataContainerName = module.getName() + "-data";
         logger.info("logger.ModuleService : Starting finding data container for "
                 + dataContainerName);
@@ -978,7 +950,7 @@ public class ModuleServiceImpl implements ModuleService {
         dataContainer.setName(dataContainerName);
         try {
             dataContainer = DockerContainer.findOne(dataContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
         } catch (DockerJSONException e) {
             module.setStatus(Status.FAIL);
             this.saveInDB(module);
@@ -989,7 +961,7 @@ public class ModuleServiceImpl implements ModuleService {
 
         Map<String, String> configShell = new HashMap<>();
         configShell.put("port", "22");
-        configShell.put("dockerManagerAddress", application.getManagerHost());
+        configShell.put("dockerManagerAddress", application.getManagerIp());
         String command;
 
         try {
@@ -1007,15 +979,15 @@ public class ModuleServiceImpl implements ModuleService {
             dockerContainer.setName(module.getName());
             dockerContainer.setImage(module.getImage().getName());
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
 
             module = containerMapper.mapDockerContainerToModule(
                     dockerContainer, module);
 
             this.update(module);
 
-            hipacheRedisUtils.updatedAdminAddress(application, redisIp,
-                    application.getManagerIP(),
+            hipacheRedisUtils.updatedAdminAddress(application,
+                    application.getManagerIp(),
                     module.getListPorts().get("80/tcp"), module.getImage()
                             .getManagerName(), Long.parseLong(module.getName()
                             .substring(module.getName().lastIndexOf("-") + 1)));
@@ -1071,13 +1043,13 @@ public class ModuleServiceImpl implements ModuleService {
 
             configShell.put("port", module.getSshPort());
             configShell.put("dockerManagerAddress",
-                    application.getManagerHost());
+                    application.getManagerIp());
             String rootPassword = module.getApplication().getUser()
                     .getPassword();
             configShell.put("password", rootPassword);
 
             shellUtils.sendFile(file, "root", rootPassword,
-                    module.getSshPort(), application.getManagerIP(),
+                    module.getSshPort(), application.getManagerIp(),
                     "/cloudunit/software/tmp/initData.sql");
 
             shellUtils.executeShell(module.getModuleAction().getInitDataCmd(),
@@ -1166,11 +1138,11 @@ public class ModuleServiceImpl implements ModuleService {
             DockerContainer dockerContainer = new DockerContainer();
             dockerContainer.setName(module.getName() + "-data");
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerHost());
+                    application.getManagerIp());
             Map<String, String> configShell = new HashMap<>();
             configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
             configShell.put("dockerManagerAddress",
-                    application.getManagerHost());
+                    application.getManagerIp());
             String rootPassword = module.getApplication().getUser()
                     .getPassword();
             configShell.put("password", rootPassword);

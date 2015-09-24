@@ -283,7 +283,7 @@ public class UserServiceImpl implements UserService {
 				for (Server server : application.getServers()) {
 					configShell.put("port", server.getSshPort());
 					configShell.put("dockerManagerAddress", server
-							.getApplication().getManagerHost());
+							.getApplication().getManagerIp());
 					String command = "sh /cloudunit/scripts/change-password.sh "
 							+ userLogin + " " + newPassword;
 					configShell.put("password", application.getUser()
@@ -316,7 +316,7 @@ public class UserServiceImpl implements UserService {
 				for (Server server : application.getServers()) {
 					configShell.put("port", server.getSshPort());
 					configShell.put("dockerManagerAddress", server
-							.getApplication().getManagerHost());
+							.getApplication().getManagerIp());
 					configShell.put("password", server.getApplication()
 							.getUser().getPassword());
 
