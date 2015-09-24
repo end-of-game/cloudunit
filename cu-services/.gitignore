@@ -20,5 +20,5 @@ images/modules/mongo-2-6/mms-v1.7.0-community-linux.tar.gz
 images/modules/redis-3-0/redis-3.0.tar.gz
 images/modules/redis-3-0/phpredis.zip
 tar-images
-build-log
+pull-log
 run-log
