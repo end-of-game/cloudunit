@@ -315,11 +315,6 @@ public class ModuleServiceImpl implements ModuleService {
         }
 
         String imagePath = module.getImage().getPath();
-        String registryLocation = env.getProperty("registry.location");
-
-        if (registryLocation != null && registryLocation.trim().length() > 0) {
-            imagePath = registryLocation + "/" + imagePath;
-        }
         if (logger.isDebugEnabled()) {
             logger.info("imagePath:" + imagePath);
         }
@@ -467,17 +462,7 @@ public class ModuleServiceImpl implements ModuleService {
                 + module.getName());
 
         Map<String, String> ports = new HashMap<String, String>();
-
-        String registryLocation = env.getProperty("registry.location");
-        if (registryLocation != null && registryLocation.trim().length() > 0) {
-            imagePath = registryLocation + "/" + imagePath;
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("imagePath:" + imagePath);
-        }
-
-        logger.info("imagePath:" + imagePath);
-
+        logger.debug("imagePath:" + imagePath);
         DockerContainer dataContainer = DockerContainerBuilder
                 .dockerContainer()
                 .withName(dataContainerName)

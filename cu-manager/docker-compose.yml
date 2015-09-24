@@ -18,7 +18,7 @@ cujavabuild:
     - BUILDER_GID
   volumes:
     - .:/home/builder/app
-  command: mvn clean package -Pcloud-engine-with-containers -DskipTests
+  command: mvn clean package -Pproduction -DskipTests
   
 cunodebuild:
   build: images/cu-nodebuild

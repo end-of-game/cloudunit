@@ -9,13 +9,17 @@
 
 	<properties>
 
+        <!-- ++++++++++++++++++++++++ -->
+		<!-- User specific properties -->
+        <!-- ++++++++++++++++++++++++ -->
+        <!-- User must set this property with its own ip -->
+		<cloudunit.manager.ip>192.168.2.116</cloudunit.manager.ip>
+
 		<!-- Compiler plugin -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
 		<!-- Plugin versions -->
-
-		<!-- We use 3.1 until this is resolved https://jira.codehaus.org/browse/MCOMPILER-236 -->
 		<maven.compiler.plugin.version>3.1</maven.compiler.plugin.version>
 		<maven.source.plugin.version>2.4</maven.source.plugin.version>
 		<maven.resource.plugin.version>2.7</maven.resource.plugin.version>
@@ -29,7 +33,7 @@
 		<maven.surefire.report.plugin.version>2.18</maven.surefire.report.plugin.version>
 		<maven.enforcer.plugin.version>1.3.1</maven.enforcer.plugin.version>
 
-        <!-- User specific properties -->
+        <!-- vagrant specific properties -->
         <box.ip>192.168.50.4</box.ip>
 
         <!-- Dependencies properties -->
@@ -38,12 +42,10 @@
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
 		<hibernate.version>4.2.3.Final</hibernate.version>
 		<codahale.metrics.version>3.0.1</codahale.metrics.version>
-		<fail2ban.login.file>/var/log/culogin.log</fail2ban.login.file>
 
 		<!-- Deployment configuration -->
-
-		<registry.location></registry.location>
-		<max.apps>10</max.apps>
+        <registry.location></registry.location>
+        <max.apps>100</max.apps>
 		<max.servers>1</max.servers>
 		<max.modules>4</max.modules>
 		<redis.port>6379</redis.port>
@@ -59,7 +61,8 @@
 		<docker.uploadDir>/opt/VMDockerUpload</docker.uploadDir>
 		<script.host.path>/vagrant_cloudunit/cu-services/scriptHost/</script.host.path>
 		<java.version.default>7</java.version.default>
-        <api.version>0.9</api.version>
+		<fail2ban.login.file>/var/log/culogin.log</fail2ban.login.file>
+		<api.version>0.9</api.version>
 
         <!-- Log4J configuration -->
 
@@ -341,8 +344,6 @@
 			<version>0.1.50</version>
 		</dependency>
 
-
-
 		<!-- Mail -->
 		<!-- FreeMarker -->
 		<dependency>
@@ -476,71 +477,9 @@
 			</properties>
 		</profile>
 
-		<!-- Ledoc profile -->
-
-		<profile>
-			<id>ledoc</id>
-			<properties>
-				<cloudunit.resthost>192.168.1.4</cloudunit.resthost>
-			</properties>
-		</profile>
-		<!-- Fabien profile -->
-
-		<profile>
-			<id>fabien</id>
-			<properties>
-				<cloudunit.resthost>192.168.2.204</cloudunit.resthost>
-			</properties>
-		</profile>
-
-		<!-- Guillaume profile -->
-
-		<profile>
-			<id>guillaume</id>
-			<properties>
-				<cloudunit.resthost>192.168.2.101</cloudunit.resthost>
-				<box.ip>192.168.50.4</box.ip>
-			</properties>
-
-		</profile>
-
-		<profile>
-			<id>nicolas-linux</id>
-			<properties>
-				<cloudunit.resthost>192.168.2.116</cloudunit.resthost>
-			</properties>
-		</profile>
-
-		<!-- Claire profile -->
-		<profile>
-			<id>claire</id>
-			<properties>
-				<cloudunit.resthost>192.168.1.7</cloudunit.resthost>
-			</properties>
-		</profile>
-
-		<!-- Honoré profile -->
-		<profile>
-			<id>honore</id>
-			<properties>
-				<cloudunit.resthost>192.168.1.5</cloudunit.resthost>
-				<box.ip>192.168.1.117</box.ip>
-			</properties>
-		</profile>
-
-
-		<!-- Test profile -->
-
-		<profile>
-			<id>private-registry</id>
-			<properties>
-				<registry.location>registry.cloudunit.io:5000</registry.location>
-			</properties>
-		</profile>
-
 		<!-- Dev profile -->
 		<profile>
-			<id>dev</id>
+			<id>vagrant</id>
 			<properties>
 				<redis.ip>${box.ip}</redis.ip>
 				<es.ip>${box.ip}</es.ip>
@@ -584,7 +523,7 @@
 		<!-- dockerization profile -->
 
 		<profile>
-			<id>cloud-engine-with-containers</id>
+			<id>production</id>
 			<properties>
 				<documentation.services.basePath>http://admin1.cloudunit.io/api</documentation.services.basePath>
 				<mail.activation.url.prefix>https://admin1.cloudunit.io/api/v0/user/activate/userEmail/</mail.activation.url.prefix>

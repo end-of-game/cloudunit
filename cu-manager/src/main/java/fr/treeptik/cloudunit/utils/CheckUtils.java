@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * Created by nicolas on 18/08/2014.
  */
+@SuppressWarnings("ALL")
 public class CheckUtils {
 
 	private static final List<String> listJvmMemoriesAllowed = Arrays.asList("512", "1024", "2048", "3072");

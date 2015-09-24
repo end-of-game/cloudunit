@@ -423,7 +423,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 		String dockerManagerList = env.getProperty("docker.manager.list");
 		String dockerManagerPort = env.getProperty("docker.manager.port");
-		String restHost = env.getProperty("cloudunit.resthost");
+		String managerIp = env.getProperty("cloudunit.manager.ip");
 		String javaVersion = env.getProperty("java.version.default");
 		String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System
 				.getenv("CU_SUB_DOMAIN");
@@ -450,7 +450,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					dockerManagerPort);
 			application.setManagerIP(dockerManagerList);
 			application.setManagerPort(dockerManagerPort);
-			application.setRestHost(restHost);
+			application.setRestHost(managerIp);
 			application.setJvmRelease(javaVersion);
 			logger.info(application.getManagerIP());
 
@@ -494,9 +494,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	/**
-	 * Suppression d'une application
+	 * Remove an application
 	 *
-	 * @param applicationName
+	 * @param application
+	 * @param user
 	 * @return
 	 * @throws ServiceException
 	 */

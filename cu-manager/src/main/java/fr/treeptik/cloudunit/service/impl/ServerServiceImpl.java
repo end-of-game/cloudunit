@@ -136,19 +136,12 @@ public class ServerServiceImpl implements ServerService {
 
         String imagePath = registryPrefix + server.getImage().getPath()
                 + tagName.replace(":", "") + tagName;
-        String registryLocation = env.getProperty("registry.location");
-        if (registryLocation != null && registryLocation.trim().length() > 0) {
-            imagePath = registryLocation + "/" + imagePath;
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("imagePath:" + imagePath);
-        }
+
+        logger.debug("imagePath:" + imagePath);
 
         List<String> volumesFrom = new ArrayList<>();
-
         volumesFrom.add(server.getImage().getName());
         volumesFrom.add("java");
-
         dockerContainer = new DockerContainerBuilder()
                 .withName(containerName)
                 .withImage(imagePath)
@@ -230,13 +223,13 @@ public class ServerServiceImpl implements ServerService {
         } catch (DockerJSONException e) {
             StringBuilder msgError = new StringBuilder(512);
             msgError.append("server=").append(server);
-            msgError.append("tagName=").append(tagName);
+            msgError.append(", tagName=[").append(tagName).append("]");
             logger.error("" + msgError, e);
             throw new ServiceException(msgError.toString(), e);
         } catch (InterruptedException e) {
             StringBuilder msgError = new StringBuilder(512);
             msgError.append("server=").append(server);
-            msgError.append("tagName=").append(tagName);
+            msgError.append(", tagName=[").append(tagName).append("]");
             logger.error("" + msgError, e);
         }
         logger.info("ServerService : Server " + server.getName()
