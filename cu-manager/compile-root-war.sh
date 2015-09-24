@@ -13,11 +13,11 @@
 
 #!/bin/bash
 
-dir=~/.m2
 node_dir=src/main/webapp
+tomcat_dir=/home/admincu/cloudunit/cu-platform/tomcat
 
-if [ ! -d "$dir" ]; then
-	mkdir $dir
+if [ ! -d "$tomcat_dir" ]; then
+	mkdir $tomcat_dir
 fi
 
 if [ ! -d "$node_dir/node_modules" ]; then
