@@ -8,7 +8,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.provider "virtualbox" do |vb|
 		# vb.customize ["modifyvm", :id, "--memory", "4096"]
-		vb.customize ["modifyvm", :id, "--memory", "8092"]		
+		vb.customize ["modifyvm", :id, "--memory", "8092", "--cpus", "2"]		
 	end
 
 	config.vm.network "private_network", ip: "192.168.50.4"
@@ -25,21 +25,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 		dev.vm.provision "ansible" do |ansible|
 			ansible.verbose = "vvvv"
-			ansible.playbook = "../infrastructure/gestion-infrastructure/playbooks/dev-vagrant/vagrant1.yml"
+			ansible.playbook = "../infrastructure/CU-infrastructure/playbooks/dev-vagrant/vagrant1.yml"
 		end
 
 		dev.vm.provision :reload
 
 		dev.vm.provision "ansible" do |ansible|
 			ansible.verbose = "vvvv"
-			ansible.playbook = "../infrastructure/gestion-infrastructure/playbooks/dev-vagrant/vagrant2.yml"
+			ansible.playbook = "../infrastructure/CU-infrastructure/playbooks/dev-vagrant/vagrant2.yml"
 		end
 
 		dev.vm.provision :reload
 
 		dev.vm.provision "ansible" do |ansible|
 			ansible.verbose = "vvvv"
-			ansible.playbook = "../infrastructure/gestion-infrastructure/playbooks/dev-vagrant/vagrant3.yml"
+			ansible.playbook = "../infrastructure/CU-infrastructure/playbooks/dev-vagrant/vagrant3.yml"
 		end
 	end	
 
@@ -48,21 +48,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 		demo.vm.provision "ansible" do |ansible|
 			ansible.verbose = "vvvv"
-			ansible.playbook = "../infrastructure/gestion-infrastructure/playbooks/demo-vagrant/demovagrant1.yml"
+			ansible.playbook = "../infrastructure/CU-infrastructure/playbooks/demo-vagrant/demovagrant1.yml"
 		end
 
 		demo.vm.provision :reload
 
 		demo.vm.provision "ansible" do |ansible|
 			ansible.verbose = "vvvv"
-			ansible.playbook = "../infrastructure/gestion-infrastructure/playbooks/demo-vagrant/demovagrant2.yml"
+			ansible.playbook = "../infrastructure/CU-infrastructure/playbooks/demo-vagrant/demovagrant2.yml"
 		end
 
 		demo.vm.provision :reload
 
 		demo.vm.provision "ansible" do |ansible|
 			ansible.verbose = "vvvv"
-			ansible.playbook = "../infrastructure/gestion-infrastructure/playbooks/demo-vagrant/demovagrant3.yml"
+			ansible.playbook = "../infrastructure/CU-infrastructure/playbooks/demo-vagrant/demovagrant3.yml"
 		end
 
 	end	
