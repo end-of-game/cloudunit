@@ -15,13 +15,10 @@
 
 package fr.treeptik.cloudunit.initializer;
 
-/**
- * Created by nicolas on 09/09/15.
- */
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
@@ -64,7 +61,7 @@ import java.util.Locale;
 @PropertySource({"classpath:/config-maven.properties"})
 public class ApplicationContext extends WebMvcConfigurerAdapter {
 
-    private final Logger logger = org.slf4j.LoggerFactory.getLogger(ApplicationContext.class);
+    private final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
 
     // Max file size
     private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
