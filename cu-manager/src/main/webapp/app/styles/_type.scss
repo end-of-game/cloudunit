@@ -1,0 +1,102 @@
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+body {
+  background-color: $color-bg;
+  font-family: "Source Sans Pro", arial, sans-serif;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+h3 {
+  margin: 0;
+}
+
+ul {
+  list-style: none;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+menu {
+  padding: 0;
+}
+
+small {
+  color: $color-muted;
+}
+
+p {
+  font-size: 13px;
+  line-height: 24px;
+  margin: 0;
+}
+
+code, .code {
+  padding: 2px 4px;
+  font-size: 12px;
+  color: $color-muted;
+  background-color: transparent;
+  border-radius: 0;
+  font-family: "inconsolata", monospace;
+}
+
+mark {
+  background: transparent;
+  color: #f3bc65;
+  font-weight: 600;
+}
+
+a {
+  text-decoration: none !important;
+  color: $color-link;
+}
+
+a:hover {
+  color: $color-link-hover;
+}
+
+.body-2 {
+  font-size: 14px;
+}
+
+.display-1 {
+  font-size: 34px;
+  font-weight: 400;
+  color: $color-default;
+}
+
+.subhead {
+  font-size: 15px;
+  font-weight: 400;
+
+}
+
+.headline {
+  font-size: 24px;
+}
+
+
+.primary {
+  color: $color-primary;
+}
+
+.secondary {
+  color: $color-muted;
+}
+
+.no-data {
+  color: $color-muted;
+}

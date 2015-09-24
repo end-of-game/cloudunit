@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<!DOCTYPE configuration>
+<configuration>
+
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<charset>UTF-8</charset>
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] [%L] %-5level %logger{36} - %msg%n</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${env.HOME}/software/cloudunit/logs/application.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover. Make sure the path matches the one in the file element or else
+             the rollover logs are placed in the working directory. -->
+			<fileNamePattern>${env.HOME}/software/cloudunit/logs/application_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>5MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!-- keep 7 days' worth of history -->
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="fr.treeptik" level="warn" />
+	<logger name="fr.treeptik.cloudunit.controller" level="debug" />
+	<logger name="fr.treeptik.cloudunit.controller.MessageController" level="error" />
+	<logger name="fr.treeptik.cloudunit.service.impl.ApplicationServiceImpl" level="debug" />
+	<logger name="org.springframework" level="info" />
+	<logger name="org.springframework.security" level="info" />
+	<logger name="net.sf.ehcache" level="debug" />
+
+	<root level="info">
+		<appender-ref ref="console" />
+		<appender-ref ref="FILE"/>
+	</root>
+</configuration>

@@ -1,0 +1,107 @@
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+
+.tile {
+  .tile-content {
+    border-radius: 0;
+    padding: 0;
+    display: block;
+    text-decoration: none;
+    color: #fff;
+    overflow: hidden;
+    box-shadow: none;
+    border: 0;
+    position: relative;
+  }
+}
+
+.tile-sm {
+  @include make-md-column(2, .25rem);
+}
+
+.tile.module {
+  cursor: pointer;
+  .tile-content {
+    background-color: #02BAF2;
+    min-height: 25px;
+    width: 100%;
+    position: relative;
+    @include transition(all 0.3s);
+    .image, .text {
+      display: block;
+    }
+    .image {
+      text-align: center;
+      font-size: 72px;
+      padding: 48px;
+      overflow: hidden;
+    }
+    .text {
+      background-color: #009DCD;
+      min-height: 36px;
+      font-size: 16px;
+      padding: 16px;
+      font-weight: bold;
+      line-height: 16px;
+      @include transition(background-color 0.3s);
+    }
+    .spinner {
+      width: 100%;
+      left: 0;
+      text-align: center;
+      @include v-center();
+    }
+  }
+}
+
+.tile.module.disabled, .pending .tile.module {
+  .tile-content, .tile-content:disabled {
+    @include user-select(none);
+    cursor: not-allowed;
+    color: #eceff1 !important;
+    background-color: #cfd8dc;
+    .text {
+      background-color: #b0bec5;
+    }
+  }
+}
+
+.ribbon-wrapper {
+  width: 85px;
+  height: 85px;
+  overflow: hidden;
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  z-index: 99;
+  & .ribbon {
+    display: block;
+    font-size: 0.8em;
+    font-weight: 800;
+    text-align: center;
+    @include rotate(45deg);
+    position: relative;
+    padding: 2px 7px;
+    left: -10px;
+    top: 24px;
+    width: 120px;
+    background-color: #009DCD;
+    color: #FFF;
+    text-transform: uppercase;
+  }
+}
+
+

@@ -1,0 +1,38 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="tab-pane card large vertical-spacing" data-ng-controller="ModulesCtrl as modules">
+  <div class="content clearfix">
+    <h3 class="title large">Add a module</h3>
+
+    <div class="tile tile-sm module" data-ng-repeat="moduleImage in modules.moduleImages">
+      <button
+        class="tile-content"
+        ripple=""
+        click-once=""
+        data-ng-click="modules.addModule(editApp.application.name, moduleImage.name)">
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
+        </div>
+        <span class="image icon-tech {{ moduleImage.name | truncatestringfilter | lowercase }}"></span>
+        <span class="text">{{ moduleImage.name }} </span>
+      </button>
+    </div>
+  </div>
+</div>

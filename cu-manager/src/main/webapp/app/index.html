@@ -1,0 +1,250 @@
+<!doctype html>
+<!--
+  ~ LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<html class="no-js" id="ng-app" data-ng-app="webuiApp" data-ng-cloak="">
+<head>
+  <title>CloudUnit</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+  <!-- build:css(.) styles/vendor.css -->
+  <!-- bower:css -->
+  <link rel="stylesheet" href="bower_components/ng-table/ng-table.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css" />
+  <link rel="stylesheet" href="bower_components/textAngular/src/textAngular.css" />
+  <!-- endbower -->
+  <!-- endbuild -->
+  <!-- build:css(.tmp) styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css"/>
+  <!-- endbuild -->
+</head>
+<body data-ng-controller="MainCtrl as main" ng-class="{frozen: main.isFrozen}">
+<!--[if lt IE 10]>
+<div class="upgrade-browser" data-ng-init="browserOutdated = true">
+  <div class="card">
+    <div class="content">
+      <h2>Sorry, CloudUnit currently does not support Internet Explorer under version 10</h2>
+
+      <p class="browsehappy">
+        Please <a href="http://browsehappy.com/">upgrade
+        your browser</a> to improve your experience.</p>
+    </div>
+  </div>
+</div>
+<![endif]-->
+
+<div data-ng-hide="main.browserOutdated">
+  <header id="header" class="app-bar" data-ng-show="main.isLogged()">
+    <div class="app-bar-header">
+      <h1 class="app-bar-brand">
+        <a class="brand" href="#dashboard">
+          <img class="logo" src="styles/images/logo-cloudunit.png"></a>
+      </h1>
+      <ul class="primary-links">
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#snapshot">Snapshots</a></li>
+        <li>
+          <div class="dropdown" dropdown ng-controller="QuickEditCtrl as quickEdit">
+            <a class="dropdown-toggle"
+               dropdown-toggle
+               data-ng-click="quickEdit.getApplications()"> Quick Edit
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li data-ng-hide="quickEdit.list.length" class="no-data">No application found</li>
+              <li data-ng-repeat="item in quickEdit.list">
+                <a ng-href="#editApplication/{{item.name}}/overview"
+                   data-ng-bind="item.name">
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="app-bar-icons">
+      <ul class="icon-bar">
+        <li class="button-container">
+          <a data-ng-if="main.isAdmin" id="account-link" href="#account/admin" class="icon-button secondary" ripple=""
+             tooltip="" data-title="Account" data-placement="bottom">
+            <i class="icon-whhg useralt"></i>
+          </a>
+        </li>
+        <li>
+          <button id="logout-btn" class="icon-button secondary" data-ng-click="main.logout()" ripple="" tooltip=""
+                  data-title="Logout" data-placement="bottom">
+            <i class="icon-whhg exit"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="main">
+    <div data-ui-view></div>
+  </div>
+  <div class="lockscreen">
+    <div class="card">
+        <div class="alert alert-info">
+          <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+          </div>
+          <h3 class="title large">System busy</h3>
+          <p class="body">A process is running, this dialog will close automatically.</p>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- build:js(.) scripts/oldieshim.js -->
+<!--[if lt IE 9]>
+<script src="../bower_components/es5-shim/es5-shim.js"></script>
+<script src="../bower_components/json3/lib/json3.min.js"></script>
+<![endif]-->
+<!-- endbuild -->
+
+<!-- build:js(.) scripts/vendor.js -->
+<!-- bower:js -->
+<script src="bower_components/modernizr/modernizr.js"></script>
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/es5-shim/es5-shim.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/json3/lib/json3.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
+<script src="bower_components/angular-cookies/angular-cookies.js"></script>
+<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-animate/angular-animate.js"></script>
+<script src="bower_components/angular-touch/angular-touch.js"></script>
+<script src="bower_components/angular-route/angular-route.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="bower_components/angular-file-upload/angular-file-upload.js"></script>
+<script src="bower_components/ng-table/ng-table.js"></script>
+<script src="bower_components/moment/moment.js"></script>
+<script src="bower_components/angular-gravatar/build/md5.js"></script>
+<script src="bower_components/angular-gravatar/build/angular-gravatar.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/affix.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/alert.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/button.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/carousel.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/collapse.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/dropdown.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tab.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/transition.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/scrollspy.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/modal.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tooltip.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/popover.js"></script>
+<script src="bower_components/angular-utils-pagination/dirPagination.js"></script>
+<script src="bower_components/rangy/rangy-core.js"></script>
+<script src="bower_components/rangy/rangy-classapplier.js"></script>
+<script src="bower_components/rangy/rangy-highlighter.js"></script>
+<script src="bower_components/rangy/rangy-selectionsaverestore.js"></script>
+<script src="bower_components/rangy/rangy-serializer.js"></script>
+<script src="bower_components/rangy/rangy-textrange.js"></script>
+<script src="bower_components/textAngular/src/textAngular.js"></script>
+<script src="bower_components/textAngular/src/textAngular-sanitize.js"></script>
+<script src="bower_components/textAngular/src/textAngularSetup.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/angular-timeline/src/angular-timeline.js"></script>
+<script src="bower_components/angular-filter/dist/angular-filter.min.js"></script>
+<script src="bower_components/FileSaver/FileSaver.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
+
+<!-- build:js({.tmp,app}) scripts/scripts.js -->
+
+<!--Application configuration-->
+<script src="scripts/app.js"></script>
+<script src="scripts/config/routes.js"></script>
+<script src="scripts/config/cache.js"></script>
+<script src="scripts/config/gravatar-config.js"></script>
+
+<!--Modules-->
+<script src="scripts/modules/editApplication.module.js"></script>
+<script src="scripts/modules/account.module.js"></script>
+<script src="scripts/modules/filters.module.js"></script>
+
+<!--Controllers-->
+<script src="scripts/controllers/main.js"></script>
+<script src="scripts/controllers/dashboard.js"></script>
+<script src="scripts/controllers/login.js"></script>
+<script src="scripts/controllers/message.js"></script>
+<script src="scripts/controllers/snapshot.js"></script>
+<script src="scripts/controllers/quickEdit.js"></script>
+<script src="scripts/controllers/createApplication.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.alias.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.overview.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.modules.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.configJVM.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.deploy.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.logs.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.snapshot.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.monitoring.js"></script>
+<script src="scripts/controllers/editApplication/editApplication.explorer.js"></script>
+<script src="scripts/controllers/account/account.user.js"></script>
+<script src="scripts/controllers/account/account.admin.js"></script>
+<script src="scripts/controllers/account/account.list.js"></script>
+<script src="scripts/controllers/account/account.logs.js"></script>
+<script src="scripts/controllers/error.js"></script>
+
+<!--Services-->
+<script src="scripts/services/userService.js"></script>
+<script src="scripts/services/adminService.js"></script>
+<script src="scripts/services/applicationService.js"></script>
+<script src="scripts/services/moduleService.js"></script>
+<script src="scripts/services/imageService.js"></script>
+<script src="scripts/services/logService.js"></script>
+<script src="scripts/services/serverService.js"></script>
+<script src="scripts/services/messageService.js"></script>
+<script src="scripts/services/snapshotService.js"></script>
+<script src="scripts/services/monitoringService.js"></script>
+<script src="scripts/services/errorService.js"></script>
+<script src="scripts/services/explorerService.js"></script>
+
+<!--Directives-->
+<script src="scripts/directives/directives.module.js"></script>
+<script src="scripts/directives/showtabDirective.js"></script>
+<script src="scripts/directives/modalDismissDirective.js"></script>
+<script src="scripts/directives/tooltipDirective.js"></script>
+<script src="scripts/directives/freezeDirective.js"></script>
+<script src="scripts/directives/oneClickSelectDirective.js"></script>
+<script src="scripts/directives/selectBoxDirective.js"></script>
+<script src="scripts/directives/rippleDirective.js"></script>
+<script src="scripts/directives/clickOnceDirective.js"></script>
+<script src="scripts/directives/autocompleteFixDirective.js"></script>
+<script src="scripts/directives/closeModalDirective.js"></script>
+<script src="scripts/directives/revealPasswordDirective.js"></script>
+<script src="scripts/directives/reloadChartDirective.js"></script>
+
+<!--Filters-->
+<script src="scripts/filters/formatAppStatusFilter.js"></script>
+<script src="scripts/filters/truncateStringFilter.js"></script>
+<script src="scripts/filters/stringToBooleanFilter.js"></script>
+<script src="scripts/filters/formatDateCalendarFilter.js"></script>
+<script src="scripts/filters/uniqueFilter.js"></script>
+<script src="scripts/filters/formatUserRolesFilter.js"></script>
+<script src="scripts/filters/cleanPathFilter.js"></script>
+
+<!-- endbuild -->
+</body>
+</html>

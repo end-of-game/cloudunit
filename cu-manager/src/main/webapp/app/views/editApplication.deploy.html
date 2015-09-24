@@ -1,0 +1,104 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="tab-pane vertical-spacing" data-ng-controller="DeployCtrl as deploy">
+  <div class="card large">
+    <div class="content">
+      <h3 class="title large">Deploy a web archive</h3>
+
+      <div class="upload-form" data-ng-hide="uploader.queue[0].isUploading">
+        <div class="upload button raised primary" ripple="">
+          <span>Select file...</span>
+          <input type="file"
+                 id="upload-file"
+                 nv-file-select=""
+                 uploader="uploader"
+                 multiple="true"/>
+        </div>
+        <p class="hint">Upload a <code>.war</code> or <code>.ear</code> archive</p>
+      </div>
+
+      <div class="upload-meta" data-ng-show="uploader.queue[0] || uploader.queue[0].isUploaded">
+        <p class="hint">File name</p>
+
+        <p class="body-2">{{ uploader.queue[0].file.name }}</p>
+
+        <p class="hint">File size</p>
+
+        <p class="body-2">{{uploader.queue[0].file.size/1024/1024|number:2 }} MB</p>
+
+
+        <div class="upload-progress" data-ng-show="uploader.isUploading">
+          <p class="hint">Progress</p>
+          <div class="progress">
+            <div class="progress-bar"
+                 role="progressbar"
+                 ng-style="{ 'width': uploader.progress + '%' }">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-actions" data-ng-show="uploader.queue[0]">
+        <button type="button" class="cancel-btn icon-button secondary"
+                ng-click="deploy.uploader.cancelAll()"
+                data-ng-disabled="uploader.queue[0].isUploaded"
+                ripple=""
+                tooltip=""
+                data-title="Cancel"
+                data-placement="bottom">
+          <i class="icon-whhg forbidden"></i>
+        </button>
+        <button type="button" class="clear-btn icon-button secondary"
+                ng-click="uploader.clearQueue()"
+                data-ng-disabled="uploader.queue[0].isUploading"
+                ripple=""
+                tooltip=""
+                data-title="Clear"
+                data-placement="bottom">
+          <i class="icon-whhg trash"></i>
+        </button>
+        <button type="button"
+                class="upload-btn button primary raised"
+                ng-click="uploader.uploadAll()"
+                data-ng-disabled="uploader.queue[0].isReady || uploader.queue[0].isUploading"
+                ripple="">
+          <span>Deploy</span>
+        </button>
+      </div>
+      <div class="alert file-type-error" data-ng-if="deploy.errors.fileTypeError">
+        <button class="icon-button close" data-ng-click="deploy.errors.fileTypeError = false">
+          <span>&times;</span>
+        </button>
+        <p><strong>File type not allowed</strong> <br/>
+          Upload a .war ou .ear archive</p>
+      </div>
+      <div class="alert file-size-error" data-ng-if="deploy.errors.sizeError">
+        <button class="icon-button close" data-ng-click="deploy.errors.sizeError = false">
+          <span>&times;</span>
+        </button>
+        <p><strong>>Max file size exceeded </strong> <br/>
+          Files cannot be bigger than 286 MB</p>
+      </div>
+      <div class="alert cancel-deploy" data-ng-if="deploy.errors.cancelMessage">
+        <button class="icon-button close" data-ng-click="deploy.errors.cancelMessage = false">
+          <span>&times;</span>
+        </button>
+        <p><strong>Deployment cancelled</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,88 @@
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.check {
+  padding: 8px 0;
+  label {
+    position: relative;
+    padding-left: 30px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  label:before, label:after {
+    font-family: 'fontawesome';
+    font-size: 16px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  label:after {
+    overflow: hidden;
+    opacity: 0;
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    display: none;
+  }
+}
+
+.check.inline {
+  display: inline-block;
+  & label {
+    padding-left: 18px;
+    padding-right: 16px;
+  }
+}
+
+.checkbox label:before {
+  content: '\e6ff';
+  /*unchecked*/
+  opacity: 0.54;
+}
+
+.check.checkbox label:after {
+  /*checked*/
+  content: '\e6fe';
+  max-width: 0;
+  /*transition*/
+  -webkit-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.check.radio label:before {
+  /*unchecked*/
+  content: '\f10c';
+}
+
+.check.radio input[type="radio"]:checked + label:before {
+  /*checked*/
+  content: '\f192';
+}
+
+.check.radio input[type="radio"]:disabled + label:before {
+  /*checked*/
+  content: '\f111';
+}
+
+.check.radio input[type="radio"]:disabled + label {
+  color: $color-disabled;
+}
+
+.check.checkbox input[type="checkbox"]:checked + label:after {
+  max-width: 16px;
+  opacity: 1;
+}

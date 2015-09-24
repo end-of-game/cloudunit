@@ -1,0 +1,56 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div id="login" class="login">
+  <div class="tile tile-login">
+    <div class="tile-content">
+      <div class="tile-header">
+        <h1 class="brand">
+          <img class="logo" src="styles/images/logo-cloudunit.png">
+        </h1>
+      </div>
+      <form role="form" id="login-form" novalidate=""
+            data-ng-submit="login.check(login.user.username,  login.user.password)" autofill-fix>
+        <div class="alert alert-danger" data-ng-show="main.systemError">
+          <button type="button"
+                  class="close"
+                  ng-click="main.systemError = false">
+            <span>&times;</span>
+          </button>
+          <p>{{main.systemError}}</p>
+        </div>
+        <div class="input-group stack">
+          <label for="username">Username</label>
+          <input type="text"
+                 id="username"
+                 data-ng-model="login.user.username"
+                 required="">
+        </div>
+        <div class="input-group stack">
+          <label for="password">Password</label>
+          <input type="password"
+                 id="password"
+                 data-ng-model="login.user.password" required>
+        </div>
+        <button id="login-btn"
+                type="submit"
+                class="button primary raised pull-right"
+                data-ng-disabled="form.$invalid">
+          Login
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

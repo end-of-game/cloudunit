@@ -1,0 +1,103 @@
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+package fr.treeptik.cloudunit.service;
+
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.json.ui.ContainerUnit;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
+
+import java.io.File;
+import java.util.List;
+
+public interface ApplicationService {
+
+    Application findByNameAndUser(User user, String applicationName)
+            throws ServiceException, CheckException;
+
+    List<Application> findAll() throws ServiceException;
+
+    List<Application> findAllByUser(User user) throws ServiceException;
+
+    Long countApp(User user) throws ServiceException;
+
+    void isValid(String applicationName, String serverName)
+            throws ServiceException, CheckException;
+
+    void checkCreate(Application application, String serverName)
+            throws CheckException, ServiceException;
+
+    Application saveInDB(Application application) throws ServiceException;
+
+    void checkStatus(Application application, String status)
+            throws CheckException, ServiceException;
+
+    boolean checkAppExist(User user, String applicationName)
+            throws ServiceException, CheckException;
+
+    void setStatus(Application application, Status status)
+            throws ServiceException;
+
+    Application deploy(File file, Application application)
+            throws ServiceException, CheckException;
+
+    Application start(Application application) throws ServiceException;
+
+    Application stop(Application application) throws ServiceException;
+
+    List<String> listGitTagsOfApplication(String applicationName)
+            throws ServiceException;
+
+    Application saveGitPush(Application application, String login)
+            throws ServiceException, CheckException;
+
+    String initApplicationWithGitHub(String applicationName, String gitAddress)
+            throws ServiceException;
+
+    List<ContainerUnit> listContainers(String applicationName)
+            throws ServiceException;
+
+    List<String> listContainersId(String applicationName)
+            throws ServiceException;
+
+    List<String> getListAliases(Application application)
+            throws ServiceException;
+
+    void addNewAlias(Application application, String alias)
+            throws ServiceException, CheckException;
+
+    void updateAliases(Application application) throws ServiceException;
+
+    void removeAlias(Application application, String alias) throws ServiceException;
+
+    Application updateEnv(Application application, User user)
+            throws ServiceException;
+
+    Application postStart(Application application, User user)
+            throws ServiceException;
+
+    Application remove(Application application, User user)
+            throws ServiceException;
+
+    Application sshCopyIDToServer(Application application, User user)
+            throws ServiceException;
+
+    Application create(String applicationName, String login, String serverName, String tagName)
+            throws ServiceException, CheckException;
+
+}
