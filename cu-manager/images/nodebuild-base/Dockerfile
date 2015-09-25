@@ -11,18 +11,27 @@
 # nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
 # For any questions, contact us : contact@treeptik.fr
 
-FROM cloudunit/nodebuildbase
+FROM ubuntu:14.04
 
-ENV BUILDER_UID=builder_uid
-ENV BUILDER_GID=builder_gid
+# Dépendances Debian
+RUN apt-get update && apt-get install -y\
+    ruby-full\
+    nodejs\
+    nodejs-legacy\
+    git\
+    npm
 
-# Création de l'utilisateur builder
-RUN groupadd -r --gid $BUILDER_GID builder && useradd -m -r --uid $BUILDER_UID -g builder builder
-USER builder
+# Dépendances Ruby
+RUN gem install sass compass
 
-# Fix pour permettre de tirer correctement certaines dépendances
-RUN git config --global url."https://".insteadOf git://
+# Dépendances Node.js
+RUN npm install -g grunt grunt-cli bower
 
-WORKDIR /home/builder/app
+# Passage du système en UTF-8
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
-CMD ./build.sh
+RUN apt-get install -y git-core
