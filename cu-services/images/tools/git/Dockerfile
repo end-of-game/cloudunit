@@ -19,7 +19,6 @@ ENV JAVA_HOME /cloudunit/java/jdk1.7.0_55
 ENV PATH $JAVA_HOME/bin:$PATH
 RUN echo -n "JAVA_HOME=$JAVA_HOME\n" >> /etc/environment
 
-
 # VARIABLES ENVIRONNEMENT GIT
 RUN mkdir /cloudunit/git /cloudunit/config
 ENV CU_GIT_HOME /cloudunit/git

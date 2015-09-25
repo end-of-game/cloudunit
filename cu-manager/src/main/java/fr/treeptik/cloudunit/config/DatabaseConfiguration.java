@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
@@ -38,7 +37,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.SharedCacheMode;
 import javax.sql.DataSource;
@@ -63,9 +61,6 @@ public class DatabaseConfiguration {
 
 	@Value("${database.showSQL}")
 	private String databaseShowSQL;
-
-	@Inject
-	private Environment env;
 
 	@Value("classpath:/${database.script}")
 	private Resource dataScript;

@@ -20,7 +20,10 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.json.ui.HttpOk;
 import fr.treeptik.cloudunit.json.ui.JsonInput;
 import fr.treeptik.cloudunit.json.ui.JsonResponse;
-import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Snapshot;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.SnapshotService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
@@ -28,7 +31,6 @@ import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -158,23 +160,17 @@ public class SnapshotController {
 		authentificationUtils.forbidUser(user);
 
 		try {
-
 			snapshotService.cloneFromASnapshot(input.getApplicationName(), input.getTag());
 
-			Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
-
-			// redémarrage pour mettre à jour les variables d'environnement
-			applicationService.stop(application);
-			applicationService.start(application);
-
-			// Application démarrée
-			applicationService.setStatus(application, Status.START);
+            Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
+            applicationService.stop(application);
+            applicationService.setStatus(application, Status.STOP);
 
 		} finally {
 			// in all cases, we must allow the user to work again
 			authentificationUtils.allowUser(user);
 		}
 
-		return new HttpOk();
+        return new HttpOk();
 	}
 }

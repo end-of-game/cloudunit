@@ -22,7 +22,6 @@ import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.MonitoringService;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.ContainerMapper;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -31,7 +30,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +47,9 @@ public class MonitoringServiceImpl implements MonitoringService {
 	private Logger logger = LoggerFactory
 			.getLogger(MonitoringServiceImpl.class);
 
+	@Value("${cadvisor.url}")
+	private String cAdvisorURL;
+
 	// Dictionnaire pour mettre en relation une application avec un ou plusieurs
 	// volumes
 	private static ConcurrentHashMap<String, String> containerIdByName = new ConcurrentHashMap<>();
@@ -56,15 +58,7 @@ public class MonitoringServiceImpl implements MonitoringService {
 	private ContainerMapper containerMapper;
 
 	@Inject
-	private Environment env;
-
-	@Inject
 	private ApplicationService applicationService;
-
-	@Inject
-	private AuthentificationUtils authentificationUtils;
-
-	private String cAdvisorURL;
 
 	public String getFullContainerId(String containerName) {
 		return containerIdByName.get(containerName);
@@ -75,7 +69,6 @@ public class MonitoringServiceImpl implements MonitoringService {
 		String result = "";
 		try {
 			CloseableHttpClient httpclient = HttpClients.createDefault();
-			String cAdvisorURL = env.getProperty("cadvisor.url");
 			HttpGet httpget = new HttpGet(cAdvisorURL
 					+ "/api/v1.0/containers/docker/" + containerId);
 			CloseableHttpResponse response = httpclient.execute(httpget);
@@ -98,7 +91,6 @@ public class MonitoringServiceImpl implements MonitoringService {
 		String result = "";
 		try {
 			CloseableHttpClient httpclient = HttpClients.createDefault();
-			String cAdvisorURL = env.getProperty("cadvisor.url");
 			HttpGet httpget = new HttpGet(cAdvisorURL + "/api/v1.0/machine");
 			CloseableHttpResponse response = httpclient.execute(httpget);
 			try {

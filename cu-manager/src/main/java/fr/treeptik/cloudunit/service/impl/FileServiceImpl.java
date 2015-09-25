@@ -324,7 +324,7 @@ public class FileServiceImpl implements FileService {
 					+ ":"
 					+ authentificationUtils.getAuthentificatedUser().getLogin()
 					+ " " + convertDestPathFile(destFile) + originalName,
-					configShell, true);
+					configShell);
 		} catch (ServiceException | CheckException e) {
 			throw new ServiceException("error in send file into the container",
 					e);

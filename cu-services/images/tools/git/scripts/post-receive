@@ -22,26 +22,11 @@ echo Build Maven ....
 mvn clean package -DskipTests=true
 
 if [ $? != 0 ]; then
-	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
+	echo "Maven have encountered a problem - GIT HEAD reset on previous valid PUSH"
 	git reset HEAD^ --hard;
 	exit
 fi
 
-#
-# TAG DU PUSH
-#
-export DATE=$(date +%Y.%m.%d_%H.%M)
-export VERSION=date-$DATE-version-$COUNTGITPUSH
-echo tagging push on $VERSION
-
-cd $GIT_DIR
-git tag -a $VERSION -m"$VERSION"
-
-if [ $? != 0 ]; then
-	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
-	git reset HEAD^ --hard;
-	exit
-fi
 
 echo `expr $COUNTGITPUSH + $INCREMENT` > $CU_USER_CONFIG/countGitPush
 #
@@ -49,7 +34,7 @@ echo `expr $COUNTGITPUSH + $INCREMENT` > $CU_USER_CONFIG/countGitPush
 #
 curl -sL --connect-timeout 60 --data "applicationName=$CU_APP_NAME&userLogin=$CU_USER" http://$CU_REST_IP:8080/nopublic/git/push -o /dev/null
 if [ $? != 0 ]; then
-	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
+	echo "Curl to Manager encountered a problem - GIT HEAD reset on previous valid PUSH"
 	git reset HEAD^ --hard;
 	exit
 fi
@@ -74,7 +59,7 @@ echo Copy $fileName to Server
 scp -2 $filePath $CU_USER@$CU_SERVERS_IP:$WAR_PATH/$fileName
 
 if [ $? != 0 ]; then
-	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
+	echo "SCP have encountered a problem - GIT HEAD reset on previous valid PUSH"
 	git reset HEAD^ --hard;
 	exit
 fi
@@ -82,7 +67,7 @@ fi
 ssh -2 -T $CU_USER@$CU_SERVERS_IP 'bash /cloudunit/scripts/deploy.sh '"$fileName"' '"$CU_USER"''
 
 if [ $? != 0 ]; then
-	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
+	echo "SSH Deployment encountered a problem - GIT HEAD reset on previous valid PUSH"
 	git reset HEAD^ --hard;
 	exit
 fi

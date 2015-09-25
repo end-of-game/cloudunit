@@ -18,7 +18,7 @@ package fr.treeptik.cloudunit.controller;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.service.ImageService;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,8 +34,8 @@ public class ImageController {
 	@Inject
 	private ImageService imageService;
 
-	@Inject
-	private Environment env;
+	@Value("${api.version}")
+	private String apiVersion;
 
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
 	public @ResponseBody
@@ -58,7 +58,7 @@ public class ImageController {
 	@RequestMapping(value = "/version", method = RequestMethod.GET)
 	public @ResponseBody
 	String getVersion() {
-		return env.getProperty("api.version");
+		return apiVersion;
 	}
 
 }

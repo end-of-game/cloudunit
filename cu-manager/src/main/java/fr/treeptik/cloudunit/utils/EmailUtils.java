@@ -22,7 +22,9 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -33,16 +35,41 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
 @Component
 public class EmailUtils {
 
-	@Inject
-	private Environment env;
-
 	private Logger logger = LoggerFactory.getLogger(EmailUtils.class);
+
+	@Value("${mail.emailFrom}")
+	private String emailFrom;
+
+	@Value("${mail.apiKey}")
+	private String apiKey;
+
+	@Value("${mail.secretKey}")
+	private String secretKey;
+
+	@Value("${mail.smtpHost}")
+	private String smtpHost;
+
+	@Value("${mail.socketFactoryPort}")
+	private String socketFactoryPort;
+
+	@Value("${mail.smtpPort}")
+	private String smtpPort;
+
+    @Value("${email.force.redirect}")
+    private String emailForceRedirect;
+
+    @Inject
+    ApplicationContext applicationContext;
+
+	@Inject
+	MessageSource messageSource;
 
 	/**
 	 * Store general propreties (mailJet), create session and addressFrom
@@ -56,13 +83,6 @@ public class EmailUtils {
 			Map<String, Object> mapConfigEmail) throws AddressException,
 			MessagingException {
 
-		final String apiKey = env.getProperty("mail.apiKey");
-		final String secretKey = env.getProperty("mail.secretKey");
-		String emailFrom = env.getProperty("mail.emailFrom");
-		String mailSmtpHost = env.getProperty("mail.smtpHost");
-		String socketFactoryPort = env.getProperty("mail.socketFactoryPort");
-		String smtpPort = env.getProperty("mail.smtpPort");
-
 		Configuration configuration = new Configuration();
 		configuration.setClassForTemplateLoading(this.getClass(),
 				"/fr.treeptik.cloudunit.templates/");
@@ -70,7 +90,7 @@ public class EmailUtils {
 		Properties props = new Properties();
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.smtp.host", mailSmtpHost);
+		props.put("mail.smtp.host", smtpHost);
 		props.put("mail.smtp.socketFactory.port", socketFactoryPort);
 		props.put("mail.smtp.socketFactory.class",
 				"javax.net.ssl.SSLSocketFactory");
@@ -116,6 +136,7 @@ public class EmailUtils {
 					.constructModuleInformationsEmail(mapConfigEmail);
 
 		}
+        /*
 		if (emailType.equals("changeEmail")) {
 
 			mapConfigEmail = this.constructChangeEmail(mapConfigEmail);
@@ -125,7 +146,7 @@ public class EmailUtils {
 
 			mapConfigEmail = this.constructSendPasswordEmail(mapConfigEmail);
 		}
-
+        */
 		return mapConfigEmail;
 	}
 
@@ -153,8 +174,15 @@ public class EmailUtils {
 			body = (String) mapConfigEmail.get("body");
 
 			MimeMessage message = (MimeMessage) mapConfigEmail.get("message");
-			message.setRecipients(Message.RecipientType.TO,
-					InternetAddress.parse(user.getEmail()));
+
+            // For Spring vagrant profil, we redirect all emails
+            // If value is not set, we use the classic configuration
+            if (applicationContext.getEnvironment().acceptsProfiles("vagrant") && emailForceRedirect.trim().length()>0) {
+                message.setRecipients(Message.RecipientType.TO,	emailForceRedirect);
+            } else {
+                message.setRecipients(Message.RecipientType.TO,	InternetAddress.parse(user.getEmail()));
+            }
+
 			message.setContent(body, "text/html; charset=utf-8");
 
 			Transport.send(message);
@@ -170,8 +198,7 @@ public class EmailUtils {
 	private Map<String, Object> constructModuleInformationsEmail(
 			Map<String, Object> mapConfigEmail) throws MessagingException {
 
-		String subjectModuleInformationsEmail = env
-				.getProperty("mail.subject.module.information");
+		String subjectModuleInformationsEmail = messageSource.getMessage("mail.subject.module.information", null, Locale.ENGLISH);
 
 		User user = (User) mapConfigEmail.get("user");
 		Module module = (Module) mapConfigEmail.get("module");
@@ -266,13 +293,11 @@ public class EmailUtils {
 
 	}
 
+
 	private Map<String, Object> constructActivationEmail(
 			Map<String, Object> mapConfigEmail) throws MessagingException {
 
-		String activationUrlPrefix = env
-				.getProperty("mail.activation.url.prefix");
-		String subjectActivationEmail = env
-				.getProperty("mail.subject.activation");
+		String subjectActivationEmail = messageSource.getMessage("mail.subject.activation", null, Locale.ENGLISH);
 
 		Map<String, String> mapVariables = new HashMap<>();
 
@@ -286,7 +311,6 @@ public class EmailUtils {
 		logger.info("define Email of activation Email ");
 		logger.debug("defineActivationBody parameter : User " + user.toString());
 
-		mapVariables.put("activationUrlPrefix", activationUrlPrefix);
 		mapVariables.put("userLogin", user.getLogin());
 		mapVariables.put("userLastName", user.getLastName());
 		mapVariables.put("userFirstName", user.getFirstName());
@@ -313,8 +337,7 @@ public class EmailUtils {
 	private Map<String, Object> constructSendPasswordEmail(
 			Map<String, Object> mapConfigEmail) throws MessagingException {
 
-		String subjectSendPassword = env
-				.getProperty("mail.subject.send.password");
+		String subjectSendPassword = messageSource.getMessage("mail.subject.send.password", null, Locale.ENGLISH);
 
 		Map<String, String> mapVariables = new HashMap<>();
 
@@ -352,10 +375,7 @@ public class EmailUtils {
 	private Map<String, Object> constructChangeEmail(
 			Map<String, Object> mapConfigEmail) throws MessagingException {
 
-		String activationUrlPrefix = env
-				.getProperty("mail.activation.url.prefix");
-		String subjectChangeEmail = env
-				.getProperty("mail.subject.change.email");
+		String subjectChangeEmail = messageSource.getMessage("mail.subject.change.email", null, Locale.ENGLISH);
 
 		Map<String, String> mapVariables = new HashMap<>();
 
@@ -370,7 +390,6 @@ public class EmailUtils {
 		logger.debug("defineChangeEmailBody parameter : User "
 				+ user.toString());
 
-		mapVariables.put("activationUrlPrefix", activationUrlPrefix);
 		mapVariables.put("userLogin", user.getLogin());
 		mapVariables.put("userEmail", user.getEmail());
 

@@ -230,7 +230,7 @@ public class ModuleServiceImpl implements ModuleService {
                     }
                     logger.info("command shell to execute [" + command + "]");
 
-                    shellUtils.executeShell(command, configShell, true);
+                    shellUtils.executeShell(command, configShell);
 
                     if (module.getApplication().getStatus().equals(Status.STOP)) {
                         this.stopModule(module);
@@ -680,8 +680,8 @@ public class ModuleServiceImpl implements ModuleService {
                     }
 
                     logger.info("command shell to execute [" + command + "]");
-                    exitCode1 = shellUtils.executeShell(command, configShell,
-                            true);
+                    exitCode1 = shellUtils.executeShell(command, configShell
+                    );
 
                     if (exitCode1 != 0) {
                         server.setStatus(Status.FAIL);
@@ -971,7 +971,7 @@ public class ModuleServiceImpl implements ModuleService {
                     + module.getModuleInfos().get("password") + " "
                     + module.getApplication().getName() + " "
                     + module.getApplication().getUser().getPassword();
-            shellUtils.executeShell(command, configShell, false);
+            shellUtils.executeShell(command, configShell);
 
             logger.info(command);
 
@@ -1053,7 +1053,7 @@ public class ModuleServiceImpl implements ModuleService {
                     "/cloudunit/software/tmp/initData.sql");
 
             shellUtils.executeShell(module.getModuleAction().getInitDataCmd(),
-                    configShell, true);
+                    configShell);
 
             module.setStatus(Status.START);
             module = this.update(module);
@@ -1147,7 +1147,7 @@ public class ModuleServiceImpl implements ModuleService {
                     .getPassword();
             configShell.put("password", rootPassword);
             int code = shellUtils.executeShell(
-                    "/cloudunit/scripts/restore-data.sh", configShell, true);
+                    "/cloudunit/scripts/restore-data.sh", configShell);
             logger.info("The backup script return : " + code);
 
         } catch (ServiceException | CheckException | DockerJSONException

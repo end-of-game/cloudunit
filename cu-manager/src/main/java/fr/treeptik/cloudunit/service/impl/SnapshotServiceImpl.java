@@ -28,7 +28,7 @@ import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +41,6 @@ import java.util.*;
 public class SnapshotServiceImpl implements SnapshotService {
 
 	private Logger logger = LoggerFactory.getLogger(SnapshotServiceImpl.class);
-
-	@Inject
-	private Environment env;
 
 	@Inject
 	private ApplicationService applicationService;
@@ -68,6 +65,15 @@ public class SnapshotServiceImpl implements SnapshotService {
 
 	@Inject
 	private ServerService serverService;
+
+	@Value("${cloudunit.max.apps:100}")
+	private String numberMaxApplications;
+
+    @Value("${ip.for.registry}")
+    private String ipForRegistry;
+
+    @Value("${docker.manager.ip:192.168.50.4:4243}")
+    private String dockerManagerIp;
 
 	@Override
 	@Transactional
@@ -219,7 +225,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 				DockerContainer.deleteImageIntoTheRegistry(
 						image + snapshot.getUniqueTagName(),
 						snapshot.getUniqueTagName(),
-						env.getProperty("ip.for.registry") + ":5000");
+						ipForRegistry + ":5000");
 			}
 			snapshotDAO.delete(snapshotDAO.findByTagAndUser(login, tag));
 		} catch (DataAccessException | DockerJSONException e) {
@@ -234,9 +240,6 @@ public class SnapshotServiceImpl implements SnapshotService {
 	public Snapshot cloneFromASnapshot(String applicationName, String tag)
 			throws ServiceException, InterruptedException {
 
-		String maxApp = env.getProperty("max.apps");
-		String dockerManagerList = env.getProperty("docker.manager.list");
-		String dockerManagerPort = env.getProperty("docker.manager.port");
 		Snapshot snapshot = null;
 		// Tests préliminaires de la création d'une application
 		try {
@@ -248,10 +251,10 @@ public class SnapshotServiceImpl implements SnapshotService {
 				throw new CheckException("Please put an app name");
 			}
 
-			if (applicationService.countApp(user) >= Integer.parseInt(maxApp)) {
+			if (applicationService.countApp(user) >= Integer.parseInt(numberMaxApplications)) {
 				authentificationUtils.allowUser(user);
-				throw new CheckException("You have already created your "
-						+ maxApp + " apps into the Cloud");
+				throw new ServiceException("You have already created your "
+						+ numberMaxApplications + " apps into the Cloud");
 			}
 			if (applicationService.checkAppExist(user, applicationName)) {
 				authentificationUtils.allowUser(user);
@@ -259,25 +262,18 @@ public class SnapshotServiceImpl implements SnapshotService {
 			}
 
 			// récupération des images associées
+			DockerContainer.pull(imageService.findByName(snapshot.getType()).getPath(), snapshot.getUniqueTagName(), dockerManagerIp);
+			DockerContainer.pull("cloudunit/git", snapshot.getUniqueTagName(), dockerManagerIp);
 
-			DockerContainer.pull(imageService.findByName(snapshot.getType())
-					.getPath(), snapshot.getUniqueTagName(), dockerManagerList
-					+ ":" + dockerManagerPort);
-			DockerContainer.pull("cloudunit/git", snapshot.getUniqueTagName(),
-					dockerManagerList + ":" + dockerManagerPort);
-
-			// creation de la nouvelle app à partir de l'image taguée
-
+			// creation de la nouvelle app à partir de l'image tagée
 			Application application = applicationService.create(
-					applicationName, user.getLogin(), snapshot.getType(),
-					snapshot.getUniqueTagName());
+                    applicationName, user.getLogin(), snapshot.getType(),
+                    snapshot.getUniqueTagName());
 
 			// We need it to get lazy modules relationships
-			application = applicationService.findByNameAndUser(
-					application.getUser(), application.getName());
+			application = applicationService.findByNameAndUser(application.getUser(), application.getName());
 
-			Module moduleGit = moduleService.findGitModule(user.getLogin(),
-					application);
+			Module moduleGit = moduleService.findGitModule(user.getLogin(),	application);
 
 			for (Server server : application.getServers()) {
 				while (!server.getStatus().equals(Status.START)
@@ -286,7 +282,6 @@ public class SnapshotServiceImpl implements SnapshotService {
 					logger.info(" wait git and server sshd processus start");
 					logger.info("SSHDSTATUS = server : " + server.getStatus()
 							+ " - module : " + moduleGit.getStatus());
-
 					moduleGit = moduleService.findById(moduleGit.getId());
 					server = serverService.findById(server.getId());
 				}
@@ -300,7 +295,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 			application.setDeploymentStatus(snapshot.getDeploymentStatus());
 			applicationService.saveInDB(application);
 
-		} catch (ServiceException | CheckException | DockerJSONException e) {
+        } catch (ServiceException | CheckException | DockerJSONException e) {
 			StringBuilder msgError = new StringBuilder(1024);
 			msgError.append("applicationName=[").append(applicationName)
 					.append("]");
@@ -329,7 +324,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 					.getPassword();
 			configShell.put("password", rootPassword);
 			int code = shellUtils.executeShell(
-					"/cloudunit/scripts/backup-data.sh", configShell, true);
+					"/cloudunit/scripts/backup-data.sh", configShell);
 			logger.info("The backup script return : " + code);
 
 		} catch (Exception e) {
@@ -340,22 +335,19 @@ public class SnapshotServiceImpl implements SnapshotService {
 
 	private void restoreModule(Snapshot snapshot, Application application,
 			String tag) throws ServiceException {
-		String dockerManagerList = env.getProperty("docker.manager.list");
-		String dockerManagerPort = env.getProperty("docker.manager.port");
 
 		for (String key : snapshot.getAppConfig().keySet()) {
 
 			try {
 
-				DockerContainer.pull(key, snapshot.getUniqueTagName(),
-						dockerManagerList + ":" + dockerManagerPort);
+				DockerContainer.pull(key, snapshot.getUniqueTagName(), dockerManagerIp);
 				Module module = ModuleFactory.getModule(snapshot.getAppConfig()
 						.get(key).getName());
 				module.setApplication(application);
 				moduleService.checkImageExist(snapshot.getAppConfig().get(key)
-						.getName());
+                        .getName());
 				module.getImage().setName(
-						snapshot.getAppConfig().get(key).getName());
+                        snapshot.getAppConfig().get(key).getName());
 				module.setName(snapshot.getAppConfig().get(key).getName());
 				module = moduleService.initModule(application, module,
 						snapshot.getUniqueTagName());
@@ -384,8 +376,8 @@ public class SnapshotServiceImpl implements SnapshotService {
 				module.setModuleInfos(properties);
 				module = moduleService.saveInDB(module);
 				moduleService.stopModule(module);
+                Thread.sleep(5000);
 				moduleService.startModule(module);
-				Thread.sleep(5000);
 
 			} catch (DockerJSONException | CheckException
 					| InterruptedException e) {

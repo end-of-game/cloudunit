@@ -20,10 +20,9 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,10 +37,10 @@ import java.util.Properties;
 @Component
 public class ShellUtils {
 
-	@Inject
-	private Environment env;
-
 	private Logger logger = LoggerFactory.getLogger(ShellUtils.class);
+
+	@Value("${docker.manager.username}")
+	private String dockerUserManager;
 
 	/**
 	 * If you want to execute shell as cloudunit client you have to put in the
@@ -50,17 +49,14 @@ public class ShellUtils {
 	 * 
 	 * @param command
 	 * @param configShell
-	 * @param isContainer
 	 * @return
 	 * @throws DockerJSONException
 	 */
-	public int executeShell(String command, Map<String, String> configShell,
-			Boolean isContainer) throws RuntimeException {
-		return executeShell(command, configShell, isContainer, 0);
+	public int executeShell(String command, Map<String, String> configShell) throws RuntimeException {
+		return executeShell(command, configShell, 0);
 	}
 
-	public int executeShell(String command, Map<String, String> configShell,
-			Boolean isContainer, int nbCallRecursive) throws RuntimeException {
+	public int executeShell(String command, Map<String, String> configShell, int nbCallRecursive) throws RuntimeException {
 
 		int exitCode = -1;
 
@@ -77,9 +73,6 @@ public class ShellUtils {
 					+ msgError.toString());
 		}
 
-		String userName = env.getProperty("docker.manager.username");
-		String password = env.getProperty("docker.manager.password");
-
 		Session session = null;
 		Channel channel = null;
 		InputStream in = null;
@@ -89,23 +82,19 @@ public class ShellUtils {
 				.substring(0,
 						configShell.get("dockerManagerAddress").length() - 5);
 		try {
-			if (isContainer) {
-				if (configShell.containsKey("userLogin")) {
-					session = this.getSession(configShell.get("userLogin"),
-							configShell.get("password"), dockerManagerIP,
-							configShell.get("port"));
-					channel = session.openChannel("exec");
-				} else {
-					session = this.getSession("root",
-							configShell.get("password"), dockerManagerIP,
-							configShell.get("port"));
-					channel = session.openChannel("exec");
-				}
+
+			if (configShell.containsKey("userLogin")) {
+				session = this.getSession(configShell.get("userLogin"),
+						configShell.get("password"), dockerManagerIP,
+						configShell.get("port"));
+				channel = session.openChannel("exec");
 			} else {
-				session = this.getSession(userName, password, dockerManagerIP,
+				session = this.getSession("root",
+						configShell.get("password"), dockerManagerIP,
 						configShell.get("port"));
 				channel = session.openChannel("exec");
 			}
+
 			((ChannelExec) channel).setCommand(command);
 			channel.connect();
 
@@ -154,7 +143,7 @@ public class ShellUtils {
 			} catch (Exception ignore) {
 			}
 			logger.warn("Recursiv call with a 5 seconds pause : " + nbCallRecursive);
-			executeShell(command, configShell, isContainer, ++nbCallRecursive);
+			executeShell(command, configShell, ++nbCallRecursive);
 		} catch (IOException e) {
 			StringBuilder msgError = new StringBuilder();
 			msgError.append("command [").append(command)

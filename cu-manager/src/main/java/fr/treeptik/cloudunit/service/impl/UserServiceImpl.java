@@ -288,12 +288,12 @@ public class UserServiceImpl implements UserService {
 							+ userLogin + " " + newPassword;
 					configShell.put("password", application.getUser()
 							.getPassword());
-					shellUtils.executeShell(command, configShell, true);
+					shellUtils.executeShell(command, configShell);
 
 					String commandSource = "source /etc/environment";
 					logger.debug(commandSource);
 
-					shellUtils.executeShell(commandSource, configShell, true);
+					shellUtils.executeShell(commandSource, configShell);
 				}
 			}
 
@@ -328,7 +328,7 @@ public class UserServiceImpl implements UserService {
 							+ "\"" + rsa_pub_key + "\"";
 					logger.debug(command);
 
-					shellUtils.executeShell(command, configShell, true);
+					shellUtils.executeShell(command, configShell);
 				}
 			}
 

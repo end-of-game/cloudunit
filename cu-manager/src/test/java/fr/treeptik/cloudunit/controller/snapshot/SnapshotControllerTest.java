@@ -16,7 +16,7 @@
 package fr.treeptik.cloudunit.controller.snapshot;
 
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.initializer.ApplicationContext;
+import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import junit.framework.TestCase;
@@ -57,7 +57,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        ApplicationContext.class,
+        CloudUnitApplicationContext.class,
         MockServletContext.class
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

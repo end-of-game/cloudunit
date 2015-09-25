@@ -14,6 +14,8 @@
         <!-- ++++++++++++++++++++++++ -->
         <!-- User must set this property with its own ip -->
 		<cloudunit.manager.ip>192.168.2.116</cloudunit.manager.ip>
+		<!-- redirect all emails emitted by platform : associated with vagrant spring profile -->
+		<email.force.redirect>n.muller@treeptik.fr</email.force.redirect>
 
 		<!-- Compiler plugin -->
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -33,64 +35,12 @@
 		<maven.surefire.report.plugin.version>2.18</maven.surefire.report.plugin.version>
 		<maven.enforcer.plugin.version>1.3.1</maven.enforcer.plugin.version>
 
-        <!-- vagrant specific properties
-        <box.ip>192.168.50.4</box.ip>
-        -->
-
         <!-- Dependencies properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>4.1.7.RELEASE</spring.version>
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
 		<hibernate.version>4.2.3.Final</hibernate.version>
 		<codahale.metrics.version>3.0.1</codahale.metrics.version>
-
-		<!-- Deployment configuration -->
-        <registry.location></registry.location>
-		<max.modules>4</max.modules>
-		<redis.port>6379</redis.port>
-		<docker.manager.port>4243</docker.manager.port>
-		<protocole>http</protocole>
-
-		<!-- cAdvisor configuration
-		<cadvisor.url>http://cuplatform_cadvisor_1.cadvisor.cloud.unit:8080</cadvisor.url>
-        -->
-
-		<!-- IP for registry : todo
-		<ip.for.registry>${box.ip}</ip.for.registry>
-        -->
-
-		<!-- DataSource configuration -->
-        <!--
-		<database.url>jdbc:mysql://${box.ip}:3306/cloudunit?useUnicode=true&amp;characterEncoding=UTF-8&amp;useFastDateParsing=false</database.url>
-		<database.url.test>jdbc:mysql://${box.ip}:3306/cloudunit?useUnicode=true&amp;characterEncoding=UTF-8&amp;useFastDateParsing=false</database.url.test>
-		<database.user>root</database.user>
-		<database.password>AezohghooNgaegh8ei2jabib2nuj9yoe</database.password>
-		-->
-
-		<!-- Mail configuration -->
-        <!--
-		<mail.apiKey>support.cloudunit@treeptik.fr</mail.apiKey>
-		<mail.secretKey>AQWZSX1234</mail.secretKey>
-		<mail.emailFrom>support.cloudunit@treeptik.fr</mail.emailFrom>
-		<mail.smtpHost>smtp.gmail.com</mail.smtpHost>
-		<mail.socketFactoryPort>587</mail.socketFactoryPort>
-		<mail.smtpPort>587</mail.smtpPort>
-		-->
-
-		<!-- String for mail -->
-        <!--
-		<mail.activation.url.prefix>https://admin.cloudunit.io/api/v0/user/activate/userEmail/</mail.activation.url.prefix>
-		<mail.subject.activation>Bienvenue sur CloudUnit</mail.subject.activation>
-		<mail.subject.change.email>Modification de votre Email</mail.subject.change.email>
-		<mail.subject.module.information>Information sur la Datasource</mail.subject.module.information>
-        -->
-
-		<!-- Tests configuration -->
-        <!--
-		<test.log.level.treeptik>error</test.log.level.treeptik>
-		<test.log.level.other>error</test.log.level.other>
-		<test.log.level.hibernate>error</test.log.level.hibernate>
-        -->
 
 		<!--
     		surefire argLine empty by default

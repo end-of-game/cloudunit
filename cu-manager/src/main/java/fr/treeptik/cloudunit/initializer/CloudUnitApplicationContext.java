@@ -19,12 +19,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -35,7 +33,6 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
@@ -59,24 +56,21 @@ import java.util.Locale;
         "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl"
 })
 @PropertySource({"classpath:/config-maven.properties"})
-public class ApplicationContext extends WebMvcConfigurerAdapter {
+public class CloudUnitApplicationContext extends WebMvcConfigurerAdapter {
 
-    private final Logger logger = LoggerFactory.getLogger(ApplicationContext.class);
+    private final Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
 
     // Max file size
     private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
 
-    @Autowired
-    private Environment env;
-
-
+/*
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
                 .addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/");
     }
-
+*/
 
     @Bean
     public ViewResolver contentNegotiatingViewResolver() {

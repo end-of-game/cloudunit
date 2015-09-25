@@ -603,7 +603,7 @@ public class ServerServiceImpl implements ServerService {
                 String command = "bash /cloudunit/appconf/scripts/change-server-config.sh "
                         + jvmMemory + " " + "\"" + jvmOptions + "\"";
                 logger.info("command shell to execute [" + command + "]");
-                shellUtils.executeShell(command, configShell, true);
+                shellUtils.executeShell(command, configShell);
             }
 
             // If jvm release changes...
@@ -665,7 +665,7 @@ public class ServerServiceImpl implements ServerService {
                 // Need to be root for shell call because we modify /etc/environme,t
                 command = "bash /cloudunit/scripts/change-java-version.sh " + javaVersion;
                 logger.info("command shell to execute [" + command + "]");
-                shellUtils.executeShell(command, configShell, true);
+                shellUtils.executeShell(command, configShell);
 
             } catch (Exception e) {
                 server.setStatus(Status.FAIL);
@@ -692,7 +692,7 @@ public class ServerServiceImpl implements ServerService {
                     + javaVersion;
             logger.info("command shell to execute [" + command + "]");
 
-            shellUtils.executeShell(command, configShell, true);
+            shellUtils.executeShell(command, configShell);
 
             application.setJvmRelease(javaVersion);
             application = applicationService.saveInDB(application);

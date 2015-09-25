@@ -23,15 +23,10 @@ import fr.treeptik.cloudunit.json.ui.ContainerUnit;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -50,8 +44,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	private Logger logger = LoggerFactory
 			.getLogger(ApplicationServiceImpl.class);
-	@Inject
-	private Environment env;
+
 	@Inject
 	private ApplicationDAO applicationDAO;
 	@Inject
@@ -85,6 +78,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Value("${suffix.cloudunit.io}")
     private String suffixCloudUnitIO;
+
+	@Value("${java.version.default}")
+	private String javaVersionDefault;
 
     public ApplicationDAO getApplicationDAO() {
 		return this.applicationDAO;
@@ -199,8 +195,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 			// Update GIT respository informations in the current application
 			application.setGitAddress("ssh://"
 					+ AlphaNumericsCharactersCheckUtils
-							.convertToAlphaNumerics(application.getUser()
-									.getLogin()) + "@" + application.getName()
+					.convertToAlphaNumerics(application.getUser()
+							.getLogin()) + "@" + application.getName()
 					+ "." + application.getSuffixCloudUnitIO().substring(1)
 					+ ":" + application.getGitSshProxyPort()
 					+ containerGitAddress);
@@ -259,7 +255,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					+ server.getContainerIP();
 			logger.info("command shell to execute [" + command + "]");
 
-			shellUtils.executeShell(command, configShellModule, true);
+			shellUtils.executeShell(command, configShellModule);
 
 			configShellServer.put("port", server.getSshPort());
 			configShellServer.put("dockerManagerAddress", server
@@ -268,12 +264,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 			command = ". /cloudunit/scripts/rm-auth-keys.sh ";
 			logger.info("command shell to execute [" + command + "]");
 
-			shellUtils.executeShell(command, configShellServer, true);
+			shellUtils.executeShell(command, configShellServer);
 			String cleanCommand = server.getServerAction().cleanCommand();
 			if (cleanCommand != null) {
 				shellUtils.executeShell(
 						server.getServerAction().cleanCommand(),
-						configShellServer, true);
+						configShellServer);
 			}
 
 		} catch (Exception e) {
@@ -295,21 +291,23 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public Application sshCopyIDToServer(Application application, User user)
 			throws ServiceException {
-		logger.info("--ssh Copy ID To Server--");
 		String command = null;
 		Map<String, String> configShell = new HashMap<>();
 
 		Module moduleGit = moduleService.findGitModule(user.getLogin(),
 				application);
 
+		if (logger.isDebugEnabled()) {
+			logger.debug("--ssh Copy ID To Server--");
+			logger.debug("ssh port : " + moduleGit.getSshPort());
+			logger.debug("manager ip : " + application.getManagerIp());
+		}
+
 		for (Server server : application.getServers()) {
-			configShell.put("password", server.getApplication().getUser()
-					.getPassword());
+			configShell.put("password", server.getApplication().getUser().getPassword());
 			configShell.put("port", moduleGit.getSshPort());
-			configShell.put("dockerManagerAddress",
-					application.getManagerIp());
-			configShell.put("userLogin", server.getApplication().getUser()
-					.getLogin());
+			configShell.put("dockerManagerAddress",	application.getManagerIp());
+			configShell.put("userLogin", server.getApplication().getUser().getLogin());
 
 			try {
 				int counter = 0;
@@ -333,16 +331,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 						+ moduleGit.getApplication().getUser().getPassword();
 				logger.info("command shell to execute [" + command + "]");
 
-				shellUtils.executeShell(command, configShell, true);
+				shellUtils.executeShell(command, configShell);
 
 			} catch (Exception e) {
 				moduleGit.setStatus(Status.FAIL);
 				moduleGit = moduleService.saveInDB(moduleGit);
 				server.setStatus(Status.FAIL);
 				server = serverService.saveInDB(server);
-				logger.error("Error :  Error during permit git to access to server "
-						+ e);
-				e.printStackTrace();
+				logger.error("Error :  Error during permit git to access to server " + e);
 
 				throw new ServiceException(e.getLocalizedMessage(), e);
 			}
@@ -429,9 +425,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		application = this.saveInDB(application);
 		serverService.checkMaxNumberReach(application);
 
-		String dockerManagerPort = env.getProperty("docker.manager.port");
-		String managerIp = env.getProperty("cloudunit.manager.ip");
-		String javaVersion = env.getProperty("java.version.default");
 		String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System
 				.getenv("CU_SUB_DOMAIN");
 
@@ -451,9 +444,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			application.setDomainName(subdomain	+ suffixCloudUnitIO);
 			application = applicationDAO.save(application);
 			application.setManagerIp(dockerManagerIp);
-			application.setManagerPort(dockerManagerPort);
-			application.setRestHost(managerIp);
-			application.setJvmRelease(javaVersion);
+			application.setJvmRelease(javaVersionDefault);
 			logger.info(application.getManagerIp());
 
 			// BLOC SERVER
@@ -470,7 +461,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 			application.setServers(servers);
 
 			// BLOC MODULE
-
 			Module moduleGit = this.addGitContainer(application, tagName);
 			application.getModules().add(moduleGit);
 			application.setGitContainerIP(moduleGit.getContainerIP());
@@ -478,8 +468,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 			// Persistence for Application model
 			application = applicationDAO.save(application);
 
-			// Copy the ssh key from the server to git container to be able to
-			// deploy war with gitpush
+			// Copy the ssh key from the server to git container to be able to deploy war with gitpush
+			// During clone processus, env variables are not updated. We must wait for a restart before
+			// to copy the ssh keys for git push
 			if (tagName == null) {
 				this.sshCopyIDToServer(application, user);
 			}
@@ -507,7 +498,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Transactional
 	public Application remove(Application application, User user)
 			throws ServiceException {
-		String redisIp = env.getProperty("redis.ip");
 
 		try {
 			logger.info("Starting removing application "
@@ -605,8 +595,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 				server = serverService.startServer(server);
 			}
 
-			if (!application.getAliases().isEmpty()) {
-				this.updateAliases(application);
+			if (application.getAliases() != null && !application.getAliases().isEmpty()) {
+				updateAliases(application);
 			}
 			logger.info("ApplicationService : Application successfully started ");
 		} catch (PersistenceException e) {
@@ -762,7 +752,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 				code = shellUtils.executeShell(
 						"bash /cloudunit/scripts/deploy.sh " + file.getName()
 								+ " " + application.getUser().getLogin(),
-						configShell, true);
+						configShell);
 
 			}
 
@@ -779,43 +769,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 
 		return application;
-	}
-
-	@Override
-	public List<String> listGitTagsOfApplication(String applicationName)
-			throws ServiceException {
-		Application application = null;
-		List<String> listGitTagsOfApplication = null;
-
-		try {
-			application = this.findByNameAndUser(
-					authentificationUtils.getAuthentificatedUser(),
-					applicationName);
-			logger.debug("list Git Tags of Application  : Methods parameters : "
-					+ application.toString());
-			logger.info("Start list Git Tags of Application "
-					+ application.getName());
-
-			String containerGitAddress = env
-					.getProperty("container.gitAddress");
-			/**
-			 * TODO refactore
-			 */
-
-			listGitTagsOfApplication = GitUtils.listGitTagsOfApplication(
-					application, application.getManagerIp(),
-					containerGitAddress);
-		} catch (GitAPIException e) {
-			application.setStatus(Status.FAIL);
-			application = this.saveInDB(application);
-			logger.error("Error : Git process fail  - " + e);
-			throw new ServiceException(
-					"Error : Git process failed - list git tags ", e);
-		} catch (IOException e) {
-
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-		return listGitTagsOfApplication;
 	}
 
 	@Override
@@ -836,78 +789,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 	}
 
-
-	@Override
-	public String initApplicationWithGitHub(String applicationName,
-			String gitAddress) throws ServiceException {
-
-		Map<String, String> configShell = new HashMap<>();
-		Application application = null;
-		try {
-			application = this.findByNameAndUser(
-					authentificationUtils.getAuthentificatedUser(),
-					applicationName);
-
-			// check if there is no action currently on the entity
-			if (application.getStatus().equals(Status.PENDING)) {
-				return null;
-			}
-
-			JSONParser parser = new JSONParser();
-			Object obj = null;
-			try {
-				obj = parser.parse(gitAddress);
-				application.setStatus(Status.PENDING);
-				Server server = application.getServers().get(0);
-				server.setStatus(Status.PENDING);
-				application = this.saveInDB(application);
-			} catch (ParseException e) {
-				application.setStatus(Status.FAIL);
-				application = this.saveInDB(application);
-				logger.error("Git Initialisation - problem to parse Json - "
-						+ e);
-				e.printStackTrace();
-			}
-			JSONObject jsonObject = (JSONObject) obj;
-			gitAddress = (String) jsonObject.get("gitAddress");
-			configShell.put("port", application.getServers().get(0)
-					.getSshPort());
-			configShell.put("dockerManagerAddress",
-					application.getManagerIp());
-			configShell.put("userLogin", application.getUser().getLogin());
-			configShell.put("password", application.getUser().getPassword());
-
-			String command = "sh /cloudunit/scripts/gitInitPull.sh "
-					+ gitAddress;
-			logger.debug(command);
-			shellUtils.executeShell(command, configShell, true);
-			application = this.saveGitPush(application,
-					authentificationUtils.getAuthentificatedUser().getLogin());
-			application.setStatus(Status.START);
-			Server server = application.getServers().get(0);
-			server.setStatus(Status.START);
-
-			server = serverService.update(server);
-			/**
-			 * TODO a modifier quand on aura plusieurs servers
-			 */
-			application.getServers().get(0).setStatus(Status.START);
-
-		} catch (Exception e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-		return gitAddress;
-	}
-
-	/**
-	 * Liste des containers pour une application
-	 *
-	 * @param applicationName
-	 * @return
-	 * @throws ServiceException
-	 */
-	/**
-	 * Liste des containers pour une application
+	/** Liste des containers pour une application
 	 *
 	 * @param applicationName
 	 * @return
@@ -1072,9 +954,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					"This alias contains forbidden characters \"/\". Please remove them");
 		}
 
-		String redisIp = env.getProperty("redis.ip");
 		try {
-
 			Server server = application.getServers().get(0);
 			application.getAliases().add(alias);
 			hipacheRedisUtils.writeNewAlias(alias, application, server
@@ -1089,7 +969,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
     @Transactional
 	public void updateAliases(Application application) throws ServiceException {
-		String redisIp = env.getProperty("redis.ip");
 		try {
 			Server server = application.getServers().get(0);
 			List<String> aliases = applicationDAO.findAllAliases(application

@@ -57,14 +57,8 @@ public interface ApplicationService {
 
     Application stop(Application application) throws ServiceException;
 
-    List<String> listGitTagsOfApplication(String applicationName)
-            throws ServiceException;
-
     Application saveGitPush(Application application, String login)
             throws ServiceException, CheckException;
-
-    String initApplicationWithGitHub(String applicationName, String gitAddress)
-            throws ServiceException;
 
     List<ContainerUnit> listContainers(String applicationName)
             throws ServiceException;
