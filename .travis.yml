@@ -1,3 +1,7 @@
+env:
+  global:
+    - BRANCH=v1.1.0
+
 sudo: true
 
 install:
@@ -5,3 +9,4 @@ install:
 
 script:
   - ./run 'docker build -t test . && docker run test'
+  - ./run 'docker-compose up -d blog && docker ps'
