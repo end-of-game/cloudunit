@@ -1,4 +1,17 @@
+---
+language: java
+script: cd cu-manager && mvn test
+jdk:
+- openjdk7
+
 sudo: required
 
 services:
   - docker
+  
+branches:
+  only:
+  - master
+notifications:
+  email:
+    - cukes-devs@googlegroups.com
