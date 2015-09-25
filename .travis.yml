@@ -1,6 +1,5 @@
 ---
 language: java
-script: cu-manager/mvn test
 jdk:
 - oraclejdk8
 
@@ -9,9 +8,15 @@ sudo: required
 services:
   - docker
   
+before_install:
+  - docker ps -a
+  
 branches:
   only:
   - master
 notifications:
   email:
     - cukes-devs@googlegroups.com
+
+script: 
+  - cu-manager/mvn test -Dspring.profiles.active=vagrant
