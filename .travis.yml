@@ -16,7 +16,7 @@ branches:
   - master
 notifications:
   email:
-    - cukes-devs@googlegroups.com
+    - n.muller@treeptik.fr
 
 script: 
   - mvn test -Dspring.profiles.active=travis -f cu-manager/pom.xml
