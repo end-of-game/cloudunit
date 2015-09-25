@@ -22,7 +22,16 @@ notifications:
   email:
   - n.muller@treeptik.fr
 
+env:
+  global:
+    - DOCKER_VERSION=1.6.2  # Install Docker version 1.6.2
+    - DOCKER_VERSION=get.docker.com  # Install Docker using get.docker.com (may break)
+    - QUIET=1               # Less verbose logging
+    - UML_FIG=0             # Don't install fig
+    - UML_DOCKERCOMPOSE=1   # Install docker-compose
+
 script: 
   # - mvn test -Dspring.profiles.active=travis -f cu-manager/pom.xml
   - ./run 'docker-compose up -d blog && docker ps'
-  - ./run 'docker build -t test . && docker run test'
+  #- ./run 'docker build -t test . && docker run test'
+
