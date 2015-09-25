@@ -20,3 +20,4 @@ notifications:
 
 script: 
   - mvn test -Dspring.profiles.active=vagrant -f cu-manager/pom.xml
+  
