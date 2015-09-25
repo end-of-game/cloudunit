@@ -19,5 +19,5 @@ notifications:
     - cukes-devs@googlegroups.com
 
 script: 
-  - mvn test -Dspring.profiles.active=vagrant -f cu-manager/pom.xml
+  - mvn test -Dspring.profiles.active=travis -f cu-manager/pom.xml
   
