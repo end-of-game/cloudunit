@@ -11,14 +11,17 @@ services:
 before_install: 
   - docker version
   - docker ps -a
-  
+
+install:
+    - curl -sLo - http://j.mp/install-travis-docker | sh -xe
+
 branches:
   only:
   - master
 notifications:
   email:
-    - n.muller@treeptik.fr
+  - n.muller@treeptik.fr
 
 script: 
-  - mvn test -Dspring.profiles.active=travis -f cu-manager/pom.xml
-  
+  # - mvn test -Dspring.profiles.active=travis -f cu-manager/pom.xml
+  - ./run 'docker build -t test . && docker run test'
