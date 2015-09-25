@@ -1,6 +1,6 @@
 ---
 language: java
-script: cd cu-manager && mvn test
+script: cu-manager/mvn test
 jdk:
 - oraclejdk8
 
