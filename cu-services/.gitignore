@@ -21,4 +21,5 @@ images/modules/redis-3-0/redis-3.0.tar.gz
 images/modules/redis-3-0/phpredis.zip
 tar-images
 pull-log
+build-log
 run-log

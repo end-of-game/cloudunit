@@ -4,7 +4,10 @@ CONT_NAME=(java tomcat-6 tomcat-7 tomcat-8 jboss-7 jboss-8 jboss-5-1-0)
 IMAGE_NAME=(cloudunit/java cloudunit/tomcat-6 cloudunit/tomcat-7 cloudunit/tomcat-8 cloudunit/jboss-7 cloudunit/jboss-8 cloudunit/jboss-5-1-0)
 LOG_FILE=/home/admincu/cloudunit/cu-services/run-log
 
-rm $LOG_FILE
+if [ -f $LOG_FILE ]; then
+	rm $LOG_FILE
+fi
+
 for i in 0 1 2 3 4 5 6
 do
 	docker ps -a | grep ${CONT_NAME[$i]} | grep -q ${IMAGE_NAME[$i]}

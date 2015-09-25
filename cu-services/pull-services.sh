@@ -3,7 +3,9 @@
 LOG_FILE=/home/admincu/cloudunit/cu-services/pull-log
 CACHE=false
 
-rm $LOG_FILE
+if [ -f $LOG_FILE ]; then
+	rm $LOG_FILE
+fi
 
 while read line
 do
