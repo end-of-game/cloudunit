@@ -1,5 +1,5 @@
-cloudunit/base-12.04 -f images/base/Dockerfile.12.04 images/base/
-cloudunit/base-14.04 -f images/base/Dockerfile.14.04 images/base
+cloudunit/base-12.04 images/base-12.04
+cloudunit/base-14.04 images/base-14.04
 cloudunit/java images/tools/java
 cloudunit/git images/tools/git
 cloudunit/tomcat-base images/servers/binaries/tomcat-base

@@ -8,6 +8,13 @@ if [ -f $LOG_FILE ]; then
 	rm $LOG_FILE
 fi
 
+if [ -z "$(git describe --exact-match --tags 2>/dev/null)" ]; then
+	GIT_TAG=latest
+else
+	GIT_TAG=`git describe --exact-match --tags 2>/dev/null`
+fi
+
+
 for i in 0 1 2 3 4 5 6
 do
 	docker ps -a | grep ${CONT_NAME[$i]} | grep -q ${IMAGE_NAME[$i]}
@@ -16,6 +23,6 @@ do
 		echo -e "\nThe docker container ${CONT_NAME[$i]} has already been launched.\n" >> $LOG_FILE
 	else
 		echo -e "\nLaunching the docker container ${CONT_NAME[$i]}.\n" >> $LOG_FILE
-		docker run --name ${CONT_NAME[$i]} ${IMAGE_NAME[$i]}
+		docker run --name ${CONT_NAME[$i]} ${IMAGE_NAME[$i]}:$GIT_TAG
 	fi
 done
