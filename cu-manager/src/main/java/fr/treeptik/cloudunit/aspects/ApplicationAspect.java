@@ -25,7 +25,10 @@ import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.MessageUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.JoinPoint.StaticPart;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -35,7 +38,6 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -67,9 +69,9 @@ public class ApplicationAspect implements Serializable {
      * @throws ServiceException
      */
     @Before("execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))")
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))")
     public void beforeApplication(final JoinPoint joinPoint)
             throws MonitorException, ServiceException {
 
@@ -109,9 +111,9 @@ public class ApplicationAspect implements Serializable {
     }
 
     @AfterThrowing(pointcut = "execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))"
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))"
             , throwing = "e")
     public void afterThrowingApplication(final StaticPart staticPart,
                                          final Exception e) throws ServiceException {
@@ -144,9 +146,9 @@ public class ApplicationAspect implements Serializable {
 
 
     @AfterReturning(pointcut = "execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
-            "&& execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))", returning = "result")
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
+            "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))", returning = "result")
     public void afterReturningApplication(StaticPart staticPart, Object result)
             throws MonitorException {
 

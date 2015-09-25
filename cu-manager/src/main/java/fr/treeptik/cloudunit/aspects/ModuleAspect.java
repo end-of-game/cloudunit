@@ -80,7 +80,7 @@ public class ModuleAspect implements Serializable {
     private MessageSource messageSource;
 
     @Before("execution(* fr.treeptik.cloudunit.service.ModuleService.remove(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ModuleService.initModule(..))")
+            "|| execution(* fr.treeptik.cloudunit.service.ModuleService.initModule(..))")
     public void beforeModule(final JoinPoint joinPoint)
             throws MonitorException, ServiceException {
 
@@ -151,7 +151,7 @@ public class ModuleAspect implements Serializable {
     }
 
     @AfterThrowing(pointcut = "execution(* fr.treeptik.cloudunit.service.ModuleService.remove(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ModuleService.initModule(..))",
+            "|| execution(* fr.treeptik.cloudunit.service.ModuleService.initModule(..))",
             throwing = "e")
     public void afterThrowingModule(final StaticPart staticPart,
                                     final Exception e) throws ServiceException {

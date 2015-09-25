@@ -80,7 +80,7 @@ public class ServerAspect implements Serializable {
     }
 
     @AfterReturning(pointcut = "execution(* fr.treeptik.cloudunit.service.ServerService.create(..)) " +
-            "&& execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))",
+            "|| execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))",
             returning = "result")
     public void afterReturningServer(StaticPart staticPart, Object result)
             throws MonitorException {

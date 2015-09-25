@@ -24,7 +24,9 @@ import fr.treeptik.cloudunit.service.MessageService;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.MessageUtils;
 import org.aspectj.lang.JoinPoint.StaticPart;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -61,8 +63,8 @@ public class SnapshotAspect implements Serializable {
 
     // Before methods
     @AfterReturning(pointcut = "execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.create(..))" +
-            " && execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
-            " && execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
+            " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
+            " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
             returning = "result")
     public void afterReturningSnapshot(StaticPart staticPart, Object result)
             throws MonitorException {
@@ -96,8 +98,8 @@ public class SnapshotAspect implements Serializable {
     }
 
     @AfterThrowing(pointcut = "execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.create(..))" +
-            " && execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
-            " && execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
+            " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
+            " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
             throwing = "e")
     public void afterThrowingSnapshot(final StaticPart staticPart,
                                       final Exception e) throws ServiceException {
@@ -118,7 +120,6 @@ public class SnapshotAspect implements Serializable {
         }
         messageService.create(message);
     }
-
 
 
     private User getAuthentificatedUser() throws ServiceException {

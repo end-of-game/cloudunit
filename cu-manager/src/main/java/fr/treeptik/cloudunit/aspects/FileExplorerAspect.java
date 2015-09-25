@@ -62,7 +62,7 @@ public class FileExplorerAspect implements Serializable {
     private MessageSource messageSource;
 
     @AfterReturning("execution(* fr.treeptik.cloudunit.service.FileService.deleteFilesFromContainer(..))" +
-            " && execution(* fr.treeptik.cloudunit.service.FileService.sendFileToContainer(..))")
+            " || execution(* fr.treeptik.cloudunit.service.FileService.sendFileToContainer(..))")
     public void afterReturningFileExplorer(final JoinPoint joinPoint)
             throws ServiceException {
         Message message = new Message();

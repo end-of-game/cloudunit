@@ -40,10 +40,10 @@ public class GitModuleAction extends ModuleAction {
 	@Override
 	public List<String> createDockerCmd() {
 		return Arrays.asList("/bin/sh", "/cloudunit/scripts/start-service.sh",
-				module.getApplication().getUser().getLogin(), module
-						.getApplication().getUser().getPassword(), module
-						.getApplication().getRestHost(), module
-						.getApplication().getServers().get(0).getContainerIP(),
+				module.getApplication().getUser().getLogin(),
+				module.getApplication().getUser().getPassword(),
+				module.getApplication().getRestHost(),
+				module.getApplication().getServers().get(0).getContainerIP(),
 				module.getApplication().getName());
 	}
 
