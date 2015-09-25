@@ -1,7 +1,7 @@
 ---
 language: java
 jdk:
-- oraclejdk8
+  - oraclejdk8
 
 sudo: required
 
@@ -13,7 +13,7 @@ before_install:
   - docker ps -a
 
 install:
-    - curl -sLo - http://j.mp/install-travis-docker | sh -xe
+  - curl -sLo - http://j.mp/install-travis-docker | sh -xe
 
 branches:
   only:
@@ -24,4 +24,5 @@ notifications:
 
 script: 
   # - mvn test -Dspring.profiles.active=travis -f cu-manager/pom.xml
+  - ./run 'docker-compose up -d blog && docker ps'
   - ./run 'docker build -t test . && docker run test'
