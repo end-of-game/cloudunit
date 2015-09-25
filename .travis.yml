@@ -2,7 +2,7 @@
 language: java
 script: cd cu-manager && mvn test
 jdk:
-- openjdk7
+- oraclejdk8
 
 sudo: required
 
