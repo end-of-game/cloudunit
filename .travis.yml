@@ -3,6 +3,11 @@ sudo: true
 install:
 - curl -sLo - http://j.mp/install-travis-docker | sh -xe
 
+env:
+  global:
+    - DOCKER_VERSION=1.6.2
+    - DOCKER_VERSION=get.docker.com  # Install Docker using get.docker.com (may break)
+
 script:
 - ./run "docker version && docker info"
 - ./run docker run ubuntu /bin/echo hello world
