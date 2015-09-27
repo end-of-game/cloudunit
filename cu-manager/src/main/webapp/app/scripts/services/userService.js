@@ -78,15 +78,16 @@
     }
 
     function createLocalSession() {
-      $cookieStore.put('isLogged', 'true');
+      $rootScope.authenticated = true;
     }
 
     function deleteLocalSession() {
-      $cookieStore.remove('isLogged');
+      $rootScope.authenticated = false;
     }
 
     function isLogged() {
-      return $cookieStore.get('isLogged') !== undefined;
+      console.log("$rootScope.authenticated: " + $rootScope.authenticated);
+      return $rootScope.authenticated;
     }
 
     function getRole() {
