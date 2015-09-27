@@ -37,7 +37,6 @@ import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.MessageService;
-import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.MessageUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.JoinPoint.StaticPart;
@@ -47,18 +46,14 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Locale;
 
 @Aspect
 @Component
-public class ModuleAspect implements Serializable {
+public class ModuleAspect extends CloudUnitAbstractAspect implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -66,18 +61,10 @@ public class ModuleAspect implements Serializable {
     private final String createType = "CREATE";
     private final String deleteType = "REMOVE";
 
-    Locale locale = Locale.ENGLISH;
-
     private Logger logger = LoggerFactory.getLogger(ModuleAspect.class);
 
     @Inject
     private MessageService messageService;
-
-    @Inject
-    private UserService userService;
-
-    @Inject
-    private MessageSource messageSource;
 
     @Before("execution(* fr.treeptik.cloudunit.service.ModuleService.remove(..)) " +
             "|| execution(* fr.treeptik.cloudunit.service.ModuleService.initModule(..))")
@@ -171,14 +158,6 @@ public class ModuleAspect implements Serializable {
         if (message != null) {
             messageService.create(message);
         }
-    }
-
-
-    private User getAuthentificatedUser() throws ServiceException {
-        UserDetails principal = (UserDetails) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
-        User user = userService.findByLogin(principal.getUsername());
-        return user;
     }
 
 }

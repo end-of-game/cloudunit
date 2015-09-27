@@ -21,7 +21,6 @@ import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.MessageService;
-import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.MessageUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.JoinPoint.StaticPart;
@@ -31,29 +30,21 @@ import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Locale;
 
-public class ServerAspect implements Serializable {
+public class ServerAspect extends CloudUnitAbstractAspect implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private final String createType = "CREATE";
     private final String updateType = "UPDATE";
 
-    Locale locale = Locale.ENGLISH;
-
     private Logger logger = LoggerFactory.getLogger(ServerAspect.class);
 
     @Inject
     private MessageService messageService;
-
-    @Inject
-    private UserService userService;
 
     @Inject
     private MessageSource messageSource;
@@ -111,7 +102,7 @@ public class ServerAspect implements Serializable {
     @AfterThrowing(pointcut = "execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))", throwing = "e")
     public void afterThrowingServer(final StaticPart staticPart,
                                     final Exception e) throws ServiceException {
-        User user = this.getAuthentificatedUser();
+        User user = super.getAuthentificatedUser();
         Message message = null;
         logger.debug("CALLED CLASS : " + staticPart.getSignature().getName());
         switch (staticPart.getSignature().getName().toUpperCase()) {
@@ -123,14 +114,6 @@ public class ServerAspect implements Serializable {
         if (message != null) {
             messageService.create(message);
         }
-    }
-
-
-    private User getAuthentificatedUser() throws ServiceException {
-        UserDetails principal = (UserDetails) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
-        User user = userService.findByLogin(principal.getUsername());
-        return user;
     }
 
 }

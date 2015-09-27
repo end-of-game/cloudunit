@@ -19,7 +19,6 @@ import fr.treeptik.cloudunit.exception.MonitorException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.MessageService;
-import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.MessageUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.JoinPoint.StaticPart;
@@ -28,33 +27,23 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Locale;
 
 @Component
 @Aspect
-public class DeploymentAspect implements Serializable {
+public class DeploymentAspect extends CloudUnitAbstractAspect implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private final String createType = "CREATE";
 
-    // default locale
-    Locale locale = Locale.ENGLISH;
-
     private Logger logger = LoggerFactory.getLogger(DeploymentAspect.class);
+
     @Inject
     private MessageService messageService;
-    @Inject
-    private UserService userService;
-    @Inject
-    private MessageSource messageSource;
 
     // Before methods
     @Before("execution(* fr.treeptik.cloudunit.service.DeploymentService.create(..))")
@@ -110,14 +99,6 @@ public class DeploymentAspect implements Serializable {
             throw new MonitorException("Error afterReturningApplication", e);
 
         }
-    }
-
-
-    private User getAuthentificatedUser() throws ServiceException {
-        UserDetails principal = (UserDetails) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
-        User user = userService.findByLogin(principal.getUsername());
-        return user;
     }
 
 }

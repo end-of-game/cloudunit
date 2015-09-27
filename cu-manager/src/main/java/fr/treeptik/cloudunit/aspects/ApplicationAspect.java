@@ -21,7 +21,6 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.MessageService;
-import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.MessageUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.JoinPoint.StaticPart;
@@ -32,19 +31,14 @@ import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 @Component
 @Aspect
-public class ApplicationAspect implements Serializable {
+public class ApplicationAspect extends CloudUnitAbstractAspect implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,13 +46,12 @@ public class ApplicationAspect implements Serializable {
     private final String deleteType = "REMOVE";
     private final String startType = "START";
     private final String stopType = "STOP";
-    private final String restartType = "RESTART";
-    Locale locale = Locale.ENGLISH;
+
     private Logger logger = LoggerFactory.getLogger(ApplicationAspect.class);
+
     @Inject
     private MessageService messageService;
-    @Inject
-    private UserService userService;
+
     @Inject
     private MessageSource messageSource;
 
@@ -154,8 +147,6 @@ public class ApplicationAspect implements Serializable {
 
         try {
             if (result == null) return;
-            List<String> methods = Arrays.asList(createType, deleteType, startType, stopType, restartType);
-            if (!methods.contains(staticPart.getSignature().getName().toUpperCase())) return;
 
             Application application = (Application) result;
             User user = application.getUser();
@@ -188,13 +179,6 @@ public class ApplicationAspect implements Serializable {
         } catch (ServiceException e) {
             throw new MonitorException("Error afterReturningApplication", e);
         }
-    }
-
-    private User getAuthentificatedUser() throws ServiceException {
-        UserDetails principal = (UserDetails) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
-        User user = userService.findByLogin(principal.getUsername());
-        return user;
     }
 
 }

@@ -19,47 +19,27 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.MessageService;
-import fr.treeptik.cloudunit.service.UserService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Locale;
 
 @Aspect
 @Component
-public class FileExplorerAspect implements Serializable {
+public class FileExplorerAspect extends CloudUnitAbstractAspect implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private final String createType = "CREATE";
-    private final String updateType = "UPDATE";
-    private final String deleteType = "REMOVE";
-    private final String startType = "START";
-    private final String stopType = "STOP";
-    private final String restartType = "RESTART";
-
-    Locale locale = Locale.ENGLISH;
 
     private Logger logger = LoggerFactory.getLogger(FileExplorerAspect.class);
 
     @Inject
     private MessageService messageService;
-
-    @Inject
-    private UserService userService;
-
-    @Inject
-    private MessageSource messageSource;
 
     @AfterReturning("execution(* fr.treeptik.cloudunit.service.FileService.deleteFilesFromContainer(..))" +
             " || execution(* fr.treeptik.cloudunit.service.FileService.sendFileToContainer(..))")
@@ -87,11 +67,5 @@ public class FileExplorerAspect implements Serializable {
         messageService.create(message);
     }
 
-    private User getAuthentificatedUser() throws ServiceException {
-        UserDetails principal = (UserDetails) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
-        User user = userService.findByLogin(principal.getUsername());
-        return user;
-    }
 
 }
