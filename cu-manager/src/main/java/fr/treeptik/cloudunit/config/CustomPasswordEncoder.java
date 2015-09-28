@@ -15,14 +15,18 @@
 
 package fr.treeptik.cloudunit.config;
 
-import java.security.Key;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+
+/**
+ * Custom encoder for CloudUnit.
+ * We could not use any standard because we need a bijectiv algorith.
+ * We need to decrypt password from database to inject them into containers and shell scripts.
+ */
 public class CustomPasswordEncoder implements PasswordEncoder {
 
 	private static final String ALGO = "AES";
