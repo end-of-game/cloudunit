@@ -82,6 +82,12 @@ public class ModuleServiceImpl implements ModuleService {
     @Value("${suffix.cloudunit.io}")
     private String suffixCloudUnitIO;
 
+    @Value("${database.password}")
+    private String databasePassword;
+
+    @Value("${env.exec}")
+    private String envExec;
+
     public ModuleDAO getModuleDAO() {
         return this.moduleDAO;
     }
@@ -369,8 +375,7 @@ public class ModuleServiceImpl implements ModuleService {
             commandesSpe.add("ok");
             dockerContainer.setCmd(commandesSpe);
         } else {
-
-            dockerContainer.setCmd(module.getModuleAction().createDockerCmd());
+            dockerContainer.setCmd(module.getModuleAction().createDockerCmd(databasePassword, envExec));
         }
 
         try {
@@ -472,9 +477,9 @@ public class ModuleServiceImpl implements ModuleService {
                 .withPorts(ports)
                 .withCmd(
                         Arrays.asList("/bin/sh",
-                                "/cloudunit/scripts/start-service.sh", module
-                                        .getApplication().getUser().getLogin(),
-                                module.getApplication().getUser().getPassword()))
+                                "/cloudunit/scripts/start-service.sh",
+                                        module.getApplication().getUser().getLogin(),
+                                        module.getApplication().getUser().getPassword()))
                 .build();
 
         try {

@@ -37,8 +37,8 @@ public class RedisModuleAction extends ModuleAction {
 
 	@Override
 	public void initModuleInfos() {
-		module.getModuleInfos().put("dockerManagerAddress",
-				module.getApplication().getManagerIp());
+        module.getModuleInfos().put("dockerManagerAddress",
+		module.getApplication().getManagerIp());
 		module.getModuleInfos().putAll(ModuleUtils.generateRamdomUserAccess());
 	}
 
@@ -48,25 +48,36 @@ public class RedisModuleAction extends ModuleAction {
 	}
 
 	@Override
-	public List<String> createDockerCmd() {
-		return Arrays.asList(module.getApplication().getUser().getPassword(),
-				module.getApplication().getRestHost(), module.getApplication()
-						.getUser().getLogin(),
-				module.getModuleInfos().get("password"), module.getModuleInfos().get("username"));
+	public List<String> createDockerCmd(String databasePassword, String envExec) {
+		return Arrays.asList(
+			module.getApplication().getUser().getPassword(),
+			module.getApplication().getRestHost(),
+			module.getApplication().getUser().getLogin(),
+			module.getModuleInfos().get("password"),
+			module.getModuleInfos().get("username"),
+            databasePassword,
+            envExec);
 	}
 
 	@Override
 	public List<String> createDockerCmdForClone(Map<String, String> map) {
-		return Arrays.asList(module.getApplication().getUser().getPassword(),
-				module.getApplication().getRestHost(), module.getApplication()
-						.getUser().getLogin(), map.get("password"), module.getModuleInfos().get("username"));
+		return Arrays.asList(
+			module.getApplication().getUser().getPassword(),
+			module.getApplication().getRestHost(),
+			module.getApplication().getUser().getLogin(),
+			map.get("password"),
+			module.getModuleInfos().get("username"));
 	}
 
 	@Override
 	public Module enableModuleManager(HipacheRedisUtils hipacheRedisUtils,
-			Module module, Long instanceNumber) {
-		hipacheRedisUtils.createModuleManagerKey(module.getApplication(), module.getContainerIP(), DEFAULT_MANAGER_PORT, module
-				.getImage().getManagerName(), instanceNumber);
+		Module module, Long instanceNumber) {
+		hipacheRedisUtils.createModuleManagerKey(
+			module.getApplication(),
+			module.getContainerIP(),
+			DEFAULT_MANAGER_PORT,
+			module.getImage().getManagerName(),
+			instanceNumber);
 		return module;
 	}
 

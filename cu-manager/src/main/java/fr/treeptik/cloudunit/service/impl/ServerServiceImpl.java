@@ -78,6 +78,12 @@ public class ServerServiceImpl implements ServerService {
     @Value("${suffix.cloudunit.io}")
     private String suffixCloudUnitIO;
 
+    @Value("${database.password}")
+    private String databasePassword;
+
+    @Value("${env.exec}")
+    private String envExec;
+
     public ServerDAO getServerDAO() {
         return this.serverDAO;
     }
@@ -167,7 +173,7 @@ public class ServerServiceImpl implements ServerService {
                         Arrays.asList(user.getLogin(), user.getPassword(), server
                                         .getApplication().getRestHost(), server
                                         .getApplication().getName(),
-                                "jdk1.7.0_55")).build();
+                                "jdk1.7.0_55", databasePassword, envExec)).build();
 
         try {
             // create a container and get informations

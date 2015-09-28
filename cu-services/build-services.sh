@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LOG_FILE=/home/admincu/cloudunit/cu-services/build-log
-CACHE=true
+CACHE=false
 
 if [ $CACHE = true ]; then
 	BUILD_CMD="docker build --rm -t"

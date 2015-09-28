@@ -227,42 +227,34 @@ public class ApplicationServiceImpl implements ApplicationService {
 		Map<String, String> configShellModule = new HashMap<>();
 		Map<String, String> configShellServer = new HashMap<>();
 
-		Module moduleGit = moduleService.findGitModule(user.getLogin(),
-				application);
+		Module moduleGit = moduleService.findGitModule(user.getLogin(),	application);
 		Server server = application.getServers().get(0);
 
 		String rootPassword = application.getUser().getPassword();
 		configShellModule.put("port", moduleGit.getSshPort());
-		configShellModule.put("dockerManagerAddress", moduleGit
-				.getApplication().getManagerIp());
+		configShellModule.put("dockerManagerAddress", moduleGit.getApplication().getManagerIp());
 		configShellModule.put("password", rootPassword);
-		configShellModule.put("dockerManagerAddress",
-				application.getManagerIp());
+		configShellModule.put("dockerManagerAddress", application.getManagerIp());
 		logger.info("new server ip : " + server.getContainerIP());
 		try {
 			int counter = 0;
 			while (!server.getStatus().equals(Status.START)
 					|| !moduleGit.getStatus().equals(Status.START)) {
-				if (counter == 100) {
-					break;
-				}
+				if (counter == 100) { break; }
 				Thread.sleep(1000);
 				logger.info(" wait git and server sshd processus start");
-				logger.info("SSHDSTATUS = server : " + server.getStatus()
-						+ " - module : " + moduleGit.getStatus());
+				logger.info("SSHDSTATUS = server : " + server.getStatus() + " - module : " + moduleGit.getStatus());
 				moduleGit = moduleService.findById(moduleGit.getId());
 				server = serverService.findById(server.getId());
 				counter++;
 			}
-			command = ". /cloudunit/scripts/update-env.sh "
-					+ server.getContainerIP();
+			command = ". /cloudunit/scripts/update-env.sh "	+ server.getContainerIP();
 			logger.info("command shell to execute [" + command + "]");
 
 			shellUtils.executeShell(command, configShellModule);
 
 			configShellServer.put("port", server.getSshPort());
-			configShellServer.put("dockerManagerAddress", server
-					.getApplication().getManagerIp());
+			configShellServer.put("dockerManagerAddress", server.getApplication().getManagerIp());
 			configShellServer.put("password", rootPassword);
 			command = ". /cloudunit/scripts/rm-auth-keys.sh ";
 			logger.info("command shell to execute [" + command + "]");
@@ -274,7 +266,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 						server.getServerAction().cleanCommand(),
 						configShellServer);
 			}
-
 		} catch (Exception e) {
 			moduleGit.setStatus(Status.FAIL);
 			moduleGit = moduleService.saveInDB(moduleGit);

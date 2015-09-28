@@ -41,7 +41,7 @@ testmysql:
     image: mysql:5.7.4
     environment:
         - MYSQL_ROOT_PASSWORD=AezohghooNgaegh8ei2jabib2nuj9yoe
-        - MYSQL_DATABASE=testcloudunit
+        - MYSQL_DATABASE=cloudunit
     ports:
         - 3307:3306
     volumes_from:

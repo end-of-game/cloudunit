@@ -40,7 +40,7 @@ public abstract class ModuleAction implements Serializable {
 
 	public abstract String getInitDataCmd() throws IOException;
 
-	public abstract List<String> createDockerCmd();
+	public abstract List<String> createDockerCmd(String databasePassword, String envExec);
 
 	public abstract List<String> createDockerCmdForClone(Map<String, String> map);
 

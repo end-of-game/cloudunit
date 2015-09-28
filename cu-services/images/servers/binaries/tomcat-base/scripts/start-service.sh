@@ -8,6 +8,18 @@ export CU_REST_IP=$3
 export CU_DATABASE_NAME=$4
 export TOMCAT_HOME=/cloudunit/appconf
 export JAVA_HOME=/cloudunit/java/$5
+# Database password for Manager
+export MANAGER_DATABASE_PASSWORD=$6
+# To do difference between main and test env
+export ENV_EXEC=$7
+
+# ENVOI NOTIFICATION CHANGEMENT DE STATUS
+if [ $ENV_EXEC == "test" ];
+then
+    export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
+else
+    export MYSQL_ENDPOINT=cuplatform_mysql_1.mysql.cloud.unit
+fi
 
 pid1=0
 pid2=0
@@ -17,7 +29,7 @@ term_handler() {
     /cloudunit/scripts/cu-stop.sh
 	/cloudunit/scripts/waiting-for-shutdown.sh java 30
 	rm -rf $CATALINA_BASE/logs/*
-	$JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER cuplatform_mysql_1.mysql.cloud.unit $CU_DATABASE_NAME $CU_USER STOP
+	$JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER STOP $MANAGER_DATABASE_PASSWORD $ENV_EXEC
   fi
   if [ $pid2 -ne 0 ]; then
     kill -SIGTERM "$pid2"
@@ -77,7 +89,6 @@ if [ ! -f /init-service-ok ]; then
 	# Fin initialisation
 	touch /init-service-ok
 
-
 else
         #################
         # SECOND APPEL  #
@@ -106,7 +117,7 @@ done
 su - $CU_USER -c "/cloudunit/scripts/cu-start.sh" 
 
 # ENVOIE DE REST AU MANAGER
-$JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER cuplatform_mysql_1.mysql.cloud.unit $CU_DATABASE_NAME $CU_USER START
+$JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER START $MANAGER_DATABASE_PASSWORD $ENV_EXEC
 
 # The sshd pid could be double : father and son
 pid1=`pidof sshd | awk '{if ($2) {print $2;} else {print $1}}'`

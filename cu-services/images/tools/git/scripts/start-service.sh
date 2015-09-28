@@ -5,9 +5,23 @@ export ENV_FILE="/etc/environment"
 # Ajout des variables d'environnement
 export CU_USER=$1
 export CU_PASSWORD=$2
+# needed for gitpush
 export CU_REST_IP=$3
 export CU_SERVERS_IP=$4
 export CU_APP_NAME=$5
+# Database password for Manager
+export MANAGER_DATABASE_PASSWORD=$6
+# To do difference between main and test env
+export ENV_EXEC=$7
+
+# ENVOI NOTIFICATION CHANGEMENT DE STATUS
+if [ $ENV_EXEC == "test" ];
+then
+    export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
+else
+    export MYSQL_ENDPOINT=cuplatform_mysql_1.mysql.cloud.unit
+fi
+
 
 if [ ! -f /init-service-ok ]; then
 
@@ -75,10 +89,8 @@ fi
 # SECOND APPEL  #
 #################
 if [ -f /init-service-ok ]; then
-
     # variable signalant au manager quels scripts lancer
     step=restart
-
     # Redémarrage de openssh et apache
     echo "restarting"
 fi
@@ -98,8 +110,7 @@ done
 
 # Le montage /cloudunit n'appartient qu'a|  l'utilisateur créé
 chown -R $CU_USER:$CU_USER /cloudunit
-# ENVOI NOTIFICATION CHANGEMENT DE STATUS
-#/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER cuplatform_mysql_1.mysql.cloud.unit $CU_APP_NAME $CU_USER START
-/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE cuplatform_mysql_1.mysql.cloud.unit $HOSTNAME START
+
+/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
 
 tailf /var/log/faillog

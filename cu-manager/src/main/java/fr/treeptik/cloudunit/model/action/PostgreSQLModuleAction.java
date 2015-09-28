@@ -36,30 +36,28 @@ public class PostgreSQLModuleAction extends ModuleAction {
 
 	@Override
 	public void initModuleInfos() {
-
-		module.getModuleInfos().put("database",
-				module.getApplication().getName().toLowerCase());
-		module.getModuleInfos().put("dockerManagerAddress",
-				module.getApplication().getManagerIp());
-
+		module.getModuleInfos().put("database",	module.getApplication().getName().toLowerCase());
+		module.getModuleInfos().put("dockerManagerAddress",	module.getApplication().getManagerIp());
 		module.getModuleInfos().putAll(ModuleUtils.generateRamdomUserAccess());
-
 	}
 
 	@Override
-	public List<String> createDockerCmd() {
-		return Arrays.asList(module.getModuleInfos().get("username"), module
-				.getModuleInfos().get("password"),
-				module.getModuleInfos().get("database"), module
-						.getApplication().getUser().getPassword());
+	public List<String> createDockerCmd(String databasePassword, String envExec) {
+		return Arrays.asList(
+			module.getModuleInfos().get("username"),
+			module.getModuleInfos().get("password"),
+			module.getModuleInfos().get("database"),
+			module.getApplication().getUser().getPassword(),
+            databasePassword,
+            envExec);
 	}
 
 	@Override
 	public void unsubscribeModuleManager(HipacheRedisUtils hipacheRedisUtils) {
-		hipacheRedisUtils.removePhpMyAdminKey(module.getApplication(), module
-				.getImage().getManagerName(), Long.parseLong(module.getName()
-				.substring(module.getName().lastIndexOf("-") + 1)));
-
+		hipacheRedisUtils.removePhpMyAdminKey(
+			module.getApplication(),
+			module.getImage().getManagerName(),
+			Long.parseLong(module.getName().substring(module.getName().lastIndexOf("-") + 1)));
 	}
 
 	@Override
@@ -73,59 +71,63 @@ public class PostgreSQLModuleAction extends ModuleAction {
 
 	@Override
 	public Module enableModuleManager(HipacheRedisUtils hipacheRedisUtils,
-			Module module, Long instanceNumber) {
-		hipacheRedisUtils.createModuleManagerKey(module.getApplication(), module.getContainerIP(), DEFAULT_MANAGER_PORT, module
-				.getImage().getManagerName(), instanceNumber);
+		Module module, Long instanceNumber) {
+		hipacheRedisUtils.createModuleManagerKey(
+			module.getApplication(),
+			module.getContainerIP(),
+			DEFAULT_MANAGER_PORT,
+			module.getImage().getManagerName(),
+			instanceNumber);
 		return module;
 	}
 
 	@Override
 	public void updateModuleManager(HipacheRedisUtils hipacheRedisUtils) {
-		hipacheRedisUtils.updatedAdminAddress(module.getApplication(), module.getContainerIP(), DEFAULT_MANAGER_PORT, module
-				.getImage().getManagerName(), Long.parseLong(module.getName()
-				.substring(module.getName().lastIndexOf("-") + 1)));
+		hipacheRedisUtils.updatedAdminAddress(
+			module.getApplication(),
+			module.getContainerIP(),
+			DEFAULT_MANAGER_PORT,
+			module.getImage().getManagerName(),
+			Long.parseLong(module.getName().substring(module.getName().lastIndexOf("-") + 1)));
 	}
 
 	@Override
 	public ModuleConfiguration cloneProperties() {
 		ModuleConfiguration moduleConfiguration = new ModuleConfiguration();
 		moduleConfiguration.setName(module.getImage().getName());
-		moduleConfiguration.setPath(module.getImage().getPath() + "-"
-				+ module.getInstanceNumber() + "-data");
+		moduleConfiguration.setPath(module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data");
 		Map<String, String> properties = new HashMap<String, String>();
-		properties.put("username-" + module.getImage().getName(), module
-				.getModuleInfos().get("username"));
-		properties.put("password-" + module.getImage().getName(), module
-				.getModuleInfos().get("password"));
-		properties.put("database-" + module.getImage().getName(), module
-				.getModuleInfos().get("database"));
+		properties.put("username-" + module.getImage().getName(), module.getModuleInfos().get("username"));
+		properties.put("password-" + module.getImage().getName(), module.getModuleInfos().get("password"));
+		properties.put("database-" + module.getImage().getName(), module.getModuleInfos().get("database"));
 		moduleConfiguration.setProperties(properties);
 		return moduleConfiguration;
 	}
 
 	@Override
 	public List<String> createDockerCmdForClone(Map<String, String> map) {
-		return Arrays.asList(map.get("username"), map.get("password"),
-				module.getModuleInfos().get("database"), module
-						.getApplication().getUser().getPassword(), module
-						.getApplication().getRestHost(), module.getApplication().getUser().getLogin());
+		return Arrays.asList(
+			map.get("username"), map.get("password"),
+			module.getModuleInfos().get("database"),
+			module.getApplication().getUser().getPassword(),
+			module.getApplication().getRestHost(),
+			module.getApplication().getUser().getLogin());
 	}
 
 	@Override
 	public String getLogLocation() {
-		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public String getManagerLocation(String subdomain, String suffix) {
 		String managerLocation = "http://"
-				+ module.getImage().getManagerName()
-				+ module.getName().substring(
-				module.getName().lastIndexOf("-") + 1) + "-"
-				+ module.getApplication().getName() + "-"
-				+ module.getApplication().getUser().getLogin() + "-"
-				+ module.getApplication().getUser().getOrganization()
-				+ subdomain + suffix + "/"+ module.getImage().getManagerName();
+			+ module.getImage().getManagerName()
+			+ module.getName().substring(module.getName().lastIndexOf("-") + 1) + "-"
+			+ module.getApplication().getName() + "-"
+			+ module.getApplication().getUser().getLogin() + "-"
+			+ module.getApplication().getUser().getOrganization()
+			+ subdomain + suffix + "/"+ module.getImage().getManagerName();
 		return managerLocation;
 	}
 
