@@ -405,7 +405,7 @@
 		<profile>
 			<id>sonar</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<properties>
 				<sonar.jdbc.url>jdbc:mysql://localhost:3306/sonar</sonar.jdbc.url>
@@ -415,66 +415,12 @@
 			</properties>
 		</profile>
 
-		<!-- Dev profile -->
 		<profile>
-			<id>dev</id>
-			<build>
-				<resources>
-					<resource>
-						<directory>src/main/resources</directory>
-						<filtering>true</filtering>
-					</resource>
-				</resources>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-war-plugin</artifactId>
-						<version>2.5</version>
-						<configuration>
-							<failOnMissingWebXml>false</failOnMissingWebXml>
-							<packagingExcludes>Gruntfile.js,app/**,bower.json,protractor.conf.js,bower_components/**,node_modules/**,dist/**</packagingExcludes>
-							<warSourceExcludes>.*,npm-debug.log,.htaccess,.tmp/**,.sass-cache/**</warSourceExcludes>
-							<webResources>
-								<resource>
-									<directory>src/main/webapp/dist</directory>
-									<includes>
-										<include>**/*</include>
-									</includes>
-								</resource>
-							</webResources>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-
-		</profile>
-
-		<!-- dockerization profile -->
-
-		<profile>
-			<id>production</id>
-			<properties>
-				<documentation.services.basePath>http://admin1.cloudunit.io/api</documentation.services.basePath>
-				<mail.activation.url.prefix>https://admin1.cloudunit.io/api/v0/user/activate/userEmail/</mail.activation.url.prefix>
-				<database.url>jdbc:mysql://cuplatform_mysql_1.mysql.cloud.unit:3306/cloudunit?useUnicode=true&amp;characterEncoding=UTF-8&amp;useFastDateParsing=false</database.url>
-				<cloudunit.manager.ip>cuplatform_tomcat_1.tomcat.cloud.unit</cloudunit.manager.ip>
-				<redis.ip>cuplatform_redis_1.redis.cloud.unit</redis.ip>
-				<es.ip>172.17.42.1</es.ip>
-				<cadvisor.url>http://cuplatform_cadvisor_1.cadvisor.cloud.unit:8080</cadvisor.url>
-				<ip.for.registry>172.17.42.1</ip.for.registry>
-				<docker.manager.list>172.17.42.1</docker.manager.list>
-				<docker.manager.username>admincu</docker.manager.username>
-				<docker.manager.password>adcu</docker.manager.password>
-				<suffix.cloudunit.io>.cloudunit.io</suffix.cloudunit.io>
-				<container.gitAddress>/cloudunit/git/.git</container.gitAddress>
-				<script.host.path>/opt/cloudunit/scripts/</script.host.path>
-				<protocole>https</protocole>
-				<mail.apiKey>support.cloudunit@treeptik.fr</mail.apiKey>
-				<mail.secretKey>AQWZSX1234</mail.secretKey>
-				<mail.emailFrom>support.cloudunit@treeptik.fr</mail.emailFrom>
-			</properties>
-
-			<build>
+			<id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>

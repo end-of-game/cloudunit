@@ -17,8 +17,10 @@ package fr.treeptik.cloudunit.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,9 +42,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.io.IOException;
 
+/**
+ * Class for Security Rules with
+ */
 @Configuration
 @EnableWebSecurity
-// @EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Inject
@@ -96,57 +101,78 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
+        // Login Form
 		http.formLogin()
-				// .loginPage("/resources/index.html")
 				.loginProcessingUrl("/user/authentication")
 				.successHandler(ajaxAuthenticationSuccessHandler)
 				.failureHandler(ajaxAuthenticationFailureHandler)
 				.usernameParameter("j_username")
 				.passwordParameter("j_password").permitAll();
 
-		http.logout().logoutUrl("/user/logout")
+        // Logout
+		http.logout()
+                .logoutUrl("/user/logout")
 				.logoutSuccessHandler(ajaxLogoutSuccessHandler)
-				.deleteCookies("JSESSIONID").invalidateHttpSession(true)
-				.permitAll().and().csrf()
-                    .csrfTokenRepository(csrfTokenRepository()).and()
-                    .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
+				.deleteCookies("JSESSIONID").invalidateHttpSession(true).permitAll();
 
+        // CSRF protection
+        activateProtectionCRSF(http);
+        disableProtectionCRSF(http);
+
+        // Routes security
         http.authorizeRequests()
-				// .antMatchers("/resources/**").permitAll()
-				.antMatchers("/application/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/server/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/module/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/file/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/image/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/user/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/logs/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/snapshot/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/monitoring/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/messages/**")
-				.hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-				.antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
-				.antMatchers("/user/check", "/nopublic/**").permitAll().and()
-				.exceptionHandling()
-				.authenticationEntryPoint(authenticationEntryPoint);
+                .antMatchers("/application/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/server/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/module/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/file/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/image/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/logs/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/snapshot/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/monitoring/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/messages/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN").antMatchers("/user/check", "/nopublic/**").permitAll().and()
+				.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
 	}
 
+    /**
+     * Protection CSRF is critical for production env and vagrant usecases
+     *
+     * @param http
+     * @throws Exception
+     */
+
+    @Profile("{production, vagrant}")
+    private void activateProtectionCRSF(HttpSecurity http) throws Exception {
+        // CSRF protection
+        http.csrf()
+                .csrfTokenRepository(csrfTokenRepository()).and()
+                .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
+    }
+
+    /**
+     * Protection CSRF is not necessary to CI
+     *
+     * @param http
+     * @throws Exception
+     */
+    @Profile("test")
+    private void disableProtectionCRSF(HttpSecurity http) throws Exception {
+        http.csrf().disable();
+    }
+
+    /**
+     * Filter CRSF to add XSFR-TOKEN between exchange
+     *
+     * @return
+     */
     private Filter csrfHeaderFilter() {
         return new OncePerRequestFilter() {
             @Override
             protected void doFilterInternal(HttpServletRequest request,
                                             HttpServletResponse response, FilterChain filterChain)
                     throws ServletException, IOException {
-                CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class
-                        .getName());
+                CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
                 if (csrf != null) {
                     Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
                     String token = csrf.getToken();
@@ -168,6 +194,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return repository;
     }
 
+    /**
+     * Bijectiv Custome encoder
+     *
+     * @return
+     */
 	@Bean
 	public CustomPasswordEncoder passwordEncoder() {
 		return new CustomPasswordEncoder();

@@ -60,4 +60,6 @@ public class ApplicationConfig implements WebApplicationInitializer {
 
         servletContext.addListener(new ContextLoaderListener(rootContext));
     }
+
+
 }

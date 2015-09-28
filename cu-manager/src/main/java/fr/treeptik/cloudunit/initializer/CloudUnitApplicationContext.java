@@ -24,6 +24,7 @@ import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -40,6 +41,7 @@ import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -55,22 +57,14 @@ import java.util.Locale;
         "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
         "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl"
 })
-@PropertySource({"classpath:/config-maven.properties"})
+@PropertySource({"classpath:/application.properties"})
+@PropertySource({"classpath:/maven.properties"})
 public class CloudUnitApplicationContext extends WebMvcConfigurerAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
 
     // Max file size
     private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
-
-/*
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry
-                .addResourceHandler("/resources/**")
-                .addResourceLocations("/resources/");
-    }
-*/
 
     @Bean
     public ViewResolver contentNegotiatingViewResolver() {
@@ -136,13 +130,42 @@ public class CloudUnitApplicationContext extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer properties(){
+    @Profile("vagrant")
+    public static PropertySourcesPlaceholderConfigurer properties() throws Exception {
         PropertySourcesPlaceholderConfigurer pspc =
                 new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new ClassPathResource[ ]
-                { new ClassPathResource( "application.properties" ) };
+        Resource[] resources = new Resource[ ]
+                { new ClassPathResource("application-vagrant.properties" )};
+        pspc.setLocations( resources );
+        pspc.setIgnoreUnresolvablePlaceholders(true);
+        pspc.setLocalOverride(true);
+        return pspc;
+    }
+
+    @Bean
+    @Profile("production")
+    public static PropertySourcesPlaceholderConfigurer propertiesForProduction() throws Exception {
+        PropertySourcesPlaceholderConfigurer pspc =
+                new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new Resource[ ]
+                { new ClassPathResource("application-production.properties" ),
+                  new FileSystemResource( new File(System.getProperty("user.home")+"/.cloudunit/configuration.properties"))};
         pspc.setLocations( resources );
         pspc.setIgnoreUnresolvablePlaceholders( true );
+        pspc.setLocalOverride(true);
+        return pspc;
+    }
+
+    @Bean
+    @Profile("test")
+    public static PropertySourcesPlaceholderConfigurer propertiesForTest() throws Exception {
+        PropertySourcesPlaceholderConfigurer pspc =
+                new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new Resource[ ]
+                { new ClassPathResource("application-test.properties" ) };
+        pspc.setLocations( resources );
+        pspc.setIgnoreUnresolvablePlaceholders( true );
+        pspc.setLocalOverride(true);
         return pspc;
     }
 
