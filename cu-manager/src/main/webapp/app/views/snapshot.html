@@ -111,8 +111,9 @@
                                  data-ng-change="snapshot.isValid(snapshot.applicationName, item.type)"
                                  required>
 
-                          <p data-ng-if="snapshot.cloneAppForm.name.$error.pattern && !snapshot.cloneAppForm.name.$pristine"
-                             class="hint format error">
+                          <p
+                            data-ng-if="snapshot.cloneAppForm.name.$error.pattern && !snapshot.cloneAppForm.name.$pristine"
+                            class="hint format error">
                             Use alphanumeric character only
                           </p>
 

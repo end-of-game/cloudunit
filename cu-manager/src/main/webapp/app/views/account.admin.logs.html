@@ -47,7 +47,8 @@
           </tr>
           </thead>
           <tbody>
-          <tr dir-paginate="event in accountLogs.events | itemsPerPage: accountLogs.pageSize track by event.id" data-current-page="accountLogs.currentPage">
+          <tr dir-paginate="event in accountLogs.events | itemsPerPage: accountLogs.pageSize track by event.id"
+              data-current-page="accountLogs.currentPage">
             <td>{{event.type}}</td>
             <td>{{event.applicationName}}</td>
             <td>{{event.date | formatdatecalendar}}</td>

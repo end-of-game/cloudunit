@@ -22,7 +22,7 @@ var DashboardPage = (function () {
     this.findApplication = function (applicationName) {
       return element(by.id('application-' + applicationName));
     };
-    this.deleteApp = function(name){
+    this.deleteApp = function (name) {
       var appToDelete, toggleModal, modal;
       appToDelete = this.findApplication(name);
       toggleModal = appToDelete.element(by.css('.toggle-modal'));

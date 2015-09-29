@@ -69,7 +69,7 @@
     color: $color-default;
   }
 
-  .dropdown-menu >.no-data {
+  .dropdown-menu > .no-data {
     padding: 8px;
     color: $color-muted;
   }
@@ -85,7 +85,6 @@
   }
 
 }
-
 
 .has-input .dropdown.open .dropdown-menu {
   top: 12px;

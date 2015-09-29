@@ -12,20 +12,15 @@
  *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
  *     For any questions, contact us : contact@treeptik.fr
  */
-
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600);
 @import url(https://fonts.googleapis.com/css?family=Inconsolata);
-
 //bootstrap
 @import "../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap.scss";
 @import "../../bower_components/angular-timeline/src/angular-timeline.scss";
-
 // icon fonts
 @import "icons";
-
 // webui variables
 @import "variables";
-
 // webui components
 @import "utils";
 @import "input";

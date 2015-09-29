@@ -36,11 +36,14 @@
                data-ng-change="createApplication.isValid(createApplication.applicationName, createApplication.serverImageChoice.name)"
                required>
 
-        <p data-ng-if="createApplication.createAppForm.name.$error.pattern && !createApplication.createAppForm.name.$pristine" class="hint format error">
+        <p
+          data-ng-if="createApplication.createAppForm.name.$error.pattern && !createApplication.createAppForm.name.$pristine"
+          class="hint format error">
           Use alphanumeric character only
         </p>
 
-        <p class="hint error " data-ng-if="!createApplication.createAppForm.name.$pristine && createApplication.message" data-ng-bind="createApplication.message"></p>
+        <p class="hint error " data-ng-if="!createApplication.createAppForm.name.$pristine && createApplication.message"
+           data-ng-bind="createApplication.message"></p>
       </div>
       <div class="input-group stack">
         <div class="dropdown" dropdown="">

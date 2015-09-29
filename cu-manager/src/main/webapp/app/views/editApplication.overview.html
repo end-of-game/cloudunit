@@ -106,7 +106,8 @@
   <div class="subheader">
     <h3 class="subhead">Installed modules</h3>
   </div>
-  <div id="{{editApp.application.name}}-modules" class="modules-list clearfix" data-ng-controller="ModulesCtrl as modules">
+  <div id="{{editApp.application.name}}-modules" class="modules-list clearfix"
+       data-ng-controller="ModulesCtrl as modules">
     <div class="card small blank" data-ng-hide="editApp.application.modules.length > 1">
       <div class="content clearfix">
         <div class="no-data" ng-if="!snapshot.snapshots.length">

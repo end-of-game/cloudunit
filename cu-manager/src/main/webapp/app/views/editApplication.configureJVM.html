@@ -1,4 +1,3 @@
-
 <!--
   ~ LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
   ~     but CloudUnit is licensed too under a standard commercial license.
@@ -32,20 +31,21 @@
       <!-- --------------------------------------- -->
 
       <h3 class="title large">JVM configuration</h3>
+
       <div class="input-group stack">
         <div>
           <label>Set JVM memory</label>
         </div>
-      <div class="check radio inline" ng-repeat="memorySize in configjvm.jvmMemorySizes">
-        <input id="memory-{{configjvm.jvmMemorySizes[$index]}}"
-               type="radio"
-               ng-model="configjvm.selectedJvmMemory"
-               value="{{configjvm.jvmMemorySizes[$index]}}"
-               name="selectedJvmMemory"
-               data-ng-disabled="configjvm.application.status === 'PENDING'"/>
-        <label for="memory-{{configjvm.jvmMemorySizes[$index]}}">{{configjvm.jvmMemorySizes[$index]}} Mo</label>
-      </div>
+        <div class="check radio inline" ng-repeat="memorySize in configjvm.jvmMemorySizes">
+          <input id="memory-{{configjvm.jvmMemorySizes[$index]}}"
+                 type="radio"
+                 ng-model="configjvm.selectedJvmMemory"
+                 value="{{configjvm.jvmMemorySizes[$index]}}"
+                 name="selectedJvmMemory"
+                 data-ng-disabled="configjvm.application.status === 'PENDING'"/>
+          <label for="memory-{{configjvm.jvmMemorySizes[$index]}}">{{configjvm.jvmMemorySizes[$index]}} Mo</label>
         </div>
+      </div>
 
       <!-- --------------------------------------- -->
       <!--            SET JVM OPTIONS              -->
@@ -85,7 +85,6 @@
           </button>
         </div>
       </div>
-
 
 
     </form>

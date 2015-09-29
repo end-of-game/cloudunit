@@ -15,34 +15,34 @@
   -->
 
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			 xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" updateCheck="true"
-			 monitoring="autodetect" dynamicConfig="true">
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" updateCheck="true"
+         monitoring="autodetect" dynamicConfig="true">
 
-	<defaultCache maxElementsInMemory="10000" eternal="false"
-				  timeToIdleSeconds="300" timeToLiveSeconds="600" diskSpoolBufferSizeMB="30"
-				  maxElementsOnDisk="10000" diskExpiryThreadIntervalSeconds="120"
-				  memoryStoreEvictionPolicy="LRU" statistics="false">
-	</defaultCache>
+    <defaultCache maxElementsInMemory="10000" eternal="false"
+                  timeToIdleSeconds="300" timeToLiveSeconds="600" diskSpoolBufferSizeMB="30"
+                  maxElementsOnDisk="10000" diskExpiryThreadIntervalSeconds="120"
+                  memoryStoreEvictionPolicy="LRU" statistics="false">
+    </defaultCache>
 
-	<cache name="messageFindCache"
-		   eternal="false"
-		   diskSpoolBufferSizeMB="200"
-		   timeToIdleSeconds="300" timeToLiveSeconds="600"
-		   maxEntriesLocalHeap="100000">
-	</cache>
+    <cache name="messageFindCache"
+           eternal="false"
+           diskSpoolBufferSizeMB="200"
+           timeToIdleSeconds="300" timeToLiveSeconds="600"
+           maxEntriesLocalHeap="100000">
+    </cache>
 
-	<cache name="applicationListCache"
-		   eternal="false"
-		   diskSpoolBufferSizeMB="200"
-		   timeToIdleSeconds="300" timeToLiveSeconds="600"
-		   maxEntriesLocalHeap="100000">
-	</cache>
+    <cache name="applicationListCache"
+           eternal="false"
+           diskSpoolBufferSizeMB="200"
+           timeToIdleSeconds="300" timeToLiveSeconds="600"
+           maxEntriesLocalHeap="100000">
+    </cache>
 
-	<cache name="applicationDetailCache"
-		   eternal="false"
-		   diskSpoolBufferSizeMB="200"
-		   timeToIdleSeconds="300" timeToLiveSeconds="600"
-		   maxEntriesLocalHeap="100000">
-	</cache>
+    <cache name="applicationDetailCache"
+           eternal="false"
+           diskSpoolBufferSizeMB="200"
+           timeToIdleSeconds="300" timeToLiveSeconds="600"
+           maxEntriesLocalHeap="100000">
+    </cache>
 
 </ehcache>

@@ -67,14 +67,14 @@ module.exports = function (grunt) {
         files: ['scripts/**/*.js', 'test/unit/**/*.js'],
         tasks: ['karma:unit:run']
       }/*,
-      e2eTest: {
-          files: ['spec/{,*//*}*.js',
-                 '<%= yeoman.app %>/scripts/{,*//*}*.js',
-                  '<%= yeoman.app %>/{,*//*}*.html',
-                  '.tmp/styles/{,*//*}*.css',
-                  '<%= yeoman.app %>/images/{,*//*}*.{png,jpg,jpeg,gif,webp,svg}'],
-          tasks: ['test']
-         }*/
+       e2eTest: {
+       files: ['spec/{,*//*}*.js',
+       '<%= yeoman.app %>/scripts/{,*//*}*.js',
+       '<%= yeoman.app %>/{,*//*}*.html',
+       '.tmp/styles/{,*//*}*.css',
+       '<%= yeoman.app %>/images/{,*//*}*.{png,jpg,jpeg,gif,webp,svg}'],
+       tasks: ['test']
+       }*/
     },
 
     karma: {

@@ -23,6 +23,7 @@ var waitForPromise = (function () {
       return deferred.promise;
     });
   }
+
   return waitForPromise;
 })();
 

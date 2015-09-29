@@ -16,29 +16,29 @@
 exports.config = {
   seleniumAddress: 'http://localhost:4444/wd/hub',
   specs: [
-   '../test/e2e/dashboard/tomcat7.spec.js',
-   '../test/e2e/editApplication/editApplication.spec.js',
-   '../test/e2e/editApplication/editApplication.overview.spec.js',
-   '../test/e2e/editApplication/editApplication.alias.spec.js',
-   '../test/e2e/editApplication/editApplication.addModule.spec.js',
-   '../test/e2e/editApplication/editApplication.configJVM.spec.js',
-   '../test/e2e/editApplication/editApplication.deploy.spec.js'
-   ],
+    '../test/e2e/dashboard/tomcat7.spec.js',
+    '../test/e2e/editApplication/editApplication.spec.js',
+    '../test/e2e/editApplication/editApplication.overview.spec.js',
+    '../test/e2e/editApplication/editApplication.alias.spec.js',
+    '../test/e2e/editApplication/editApplication.addModule.spec.js',
+    '../test/e2e/editApplication/editApplication.configJVM.spec.js',
+    '../test/e2e/editApplication/editApplication.deploy.spec.js'
+  ],
 
   multiCapabilities: [
     /*{
-      'browserName': 'firefox'
-    },*/
+     'browserName': 'firefox'
+     },*/
     {
       'browserName': 'chrome',
       'chromeOptions': {
-               args: [],
-               extensions: []
+        args: [],
+        extensions: []
       }
     }
   ],
 
-  chromeDriver:'/usr/local/lib/node_modules/protractor/selenium/chromedriver',
+  chromeDriver: '/usr/local/lib/node_modules/protractor/selenium/chromedriver',
   params: {
     loginUser: {
       login: 'scott',

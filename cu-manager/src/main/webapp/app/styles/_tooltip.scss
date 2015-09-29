@@ -13,12 +13,9 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-
-
 .icon-button:hover .tooltip {
   visibility: visible !important;
 }
-
 
 .tooltip {
   position: absolute;
@@ -26,7 +23,7 @@
   font-family: sans-serif;
   padding: 8px;
   color: white;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0, 0, 0, 0.8);
   box-sizing: border-box;
   border-radius: 3px; /* TODO: not in spec. */
   white-space: nowrap;
@@ -35,7 +32,6 @@
   @include user-select(none);
   visibility: hidden;
 }
-
 
 .tooltip.noarrow::after {
   display: none;
@@ -73,23 +69,23 @@
 .tooltip.bottom:after {
   bottom: 100%;
   left: calc(50% - 4px);
-  border-bottom-color: rgba(0,0,0,0.8);
+  border-bottom-color: rgba(0, 0, 0, 0.8);
 }
 
 .tooltip.left:after {
   left: 100%;
   top: calc(50% - 4px);
-  border-left-color: rgba(0,0,0,0.8);
+  border-left-color: rgba(0, 0, 0, 0.8);
 }
 
 .tooltip.top:after {
   top: 100%;
   left: calc(50% - 4px);
-  border-top-color: rgba(0,0,0,0.8);
+  border-top-color: rgba(0, 0, 0, 0.8);
 }
 
 .tooltip.right:after {
   right: 100%;
   top: calc(50% - 4px);
-  border-right-color: rgba(0,0,0,0.8);
+  border-right-color: rgba(0, 0, 0, 0.8);
 }

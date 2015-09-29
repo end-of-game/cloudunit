@@ -29,8 +29,6 @@ public class LogUnit {
 
     private String source;
 
-    private String level;
-
     private String date;
 
     private String message;
@@ -42,7 +40,6 @@ public class LogUnit {
         } else {
             this.source = source;
         }
-        // TODO : BEGIN : Virer cette horreur pour que le plugin GROK de LogStash fasse le taf
         try {
             if (date != null && date.trim().length() > 0) {
                 Date tempDate = simpleDateFormatFrom.parse(date.replaceAll("Z$", "+0000"));
@@ -50,29 +47,6 @@ public class LogUnit {
             }
         } catch (Exception ignore) {
         }
-
-        // TODO : BEGIN : Virer cette horreur pour que le plugin GROK de LogStash fasse le taf
-        /*
-        if (message != null) {
-            if (message.startsWith("INFO:")) {
-                this.level = "INFO:";
-                this.message = message.substring(5);
-            } else if (message.startsWith("WARN:")) {
-                this.level = "WARN:";
-                this.message = message.substring(5);
-            } else if (message.startsWith("DEBUG:")) {
-                this.level = "DEBUG:";
-                this.message = message.substring(6);
-            } else if (message.startsWith("ERROR:")) {
-                this.level = "ERROR:";
-                this.message = message.substring(6);
-            } else {
-                this.level = "INFO";
-            }
-        }
-        */
-        // TODO : END : Virer cette horreur pour que le plugin GROK de LogStash fasse le taf
-
     }
 
     public String getDate() {
@@ -83,12 +57,37 @@ public class LogUnit {
         return message;
     }
 
-    public String getLevel() {
-        return level;
-    }
-
     public String getSource() {
         return source;
     }
 
+    @Override
+    public String toString() {
+        return "LogUnit{" +
+            "source='" + source + '\'' +
+            ", date='" + date + '\'' +
+            ", message='" + message + '\'' +
+            '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LogUnit)) return false;
+
+        LogUnit logUnit = (LogUnit) o;
+
+        if (this.source != null ? !this.source.equals(logUnit.source) : logUnit.source != null) return false;
+        if (this.date != null ? !this.date.equals(logUnit.date) : logUnit.date != null) return false;
+        return !(message != null ? !message.equals(logUnit.message) : logUnit.message != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.source != null ? this.source.hashCode() : 0;
+        result = 31 * result + (this.date != null ? this.date.hashCode() : 0);
+        result = 31 * result + (this.message != null ? this.message.hashCode() : 0);
+        return result;
+    }
 }

@@ -1,10 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>*|MC:SUBJECT|*</title>
- 	</head>
- 	
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>*|MC:SUBJECT|*</title>
+</head>
+
 <body style="margin: 0; padding: 0; background-color: #128abc" bgcolor="#128abc">
 
 <table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
@@ -26,7 +27,8 @@
                             <tbody>
                             <tr>
                                 <td style="text-align: left; color: #505c64; font-weight: bold; font-size: 18px;">
-                                    <img src="http://treeptik.fr/medias/logo-cloudunit.png" height="24px" alt="Logo de CloudUnit"> CloudUnit
+                                    <img src="http://treeptik.fr/medias/logo-cloudunit.png" height="24px"
+                                         alt="Logo de CloudUnit"> CloudUnit
                                 </td>
                             </tr>
                             </tbody>
@@ -53,9 +55,11 @@
                                                             <h2 style="font-size: 2em;margin: 24px;text-align: center;">
                                                                 Mongo database is installed</h2>
 
-                                                            <p>Hello <strong>${userLogin}</strong>, you asked about an database installation.</p>
+                                                            <p>Hello <strong>${userLogin}</strong>, you asked about an
+                                                                database installation.</p>
 
-                                                            <p>You will find there the informations to configure your dataSource</p>
+                                                            <p>You will find there the informations to configure your
+                                                                dataSource</p>
 
                                                         </td>
                                                     </tr>
@@ -95,47 +99,53 @@
                                                     <tr>
                                                         <td style="padding:5px 0 5px 5px;line-height:normal;color: #505c64; font-family: arial; font-size: 14px; border-color: #ffffff; background-color: #ffffff; ">
 
-                                                            <h4 style="text-align: center">Informations about your database</h4>
+                                                            <h4 style="text-align: center">Informations about your
+                                                                database</h4>
                                                             <ul style="list-style: none">
                                                                 <li><strong>Database name: </strong>
-                                                                    ${mongoDatabase}
+                                                                ${mongoDatabase}
                                                                 </li>
                                                                 <li><strong>Your Mongo user: </strong>
-                                                                    ${mongoUser}
+                                                                ${mongoUser}
                                                                 </li>
                                                                 <li><strong>Your Mongo password: </strong>
-                                                                    ${mongoPassword}
+                                                                ${mongoPassword}
                                                                 </li>
                                                                 <li><strong>Mongo name: </strong>
-                                                                    ${internalDNSName}
+                                                                ${internalDNSName}
                                                                 </li>
                                                                 <li><strong>Mongo port: </strong>
-                                                                   27017
+                                                                    27017
                                                                 </li>
-                                                                <li><strong>Complete link to access your database:</strong>
-                                                                    jdbc:mongo://${internalDNSName}:27017/${mongoDatabase}
+                                                                <li><strong>Complete link to access your
+                                                                    database:</strong>
+                                                                    jdbc:mongo://${internalDNSName}
+                                                                    :27017/${mongoDatabase}
                                                                 </li>
                                                             </ul>
-                                                            
-                                                            <h4 style="text-align: center">You can also use these environment variables to connect to your database</h4>
+
+                                                            <h4 style="text-align: center">You can also use these
+                                                                environment variables to connect to your database</h4>
                                                             <ul style="list-style: none">
                                                                 <li><strong>Database name: </strong>
-                                                                    ${r"${CU_DATABASE_NAME}"}
+                                                                ${r"${CU_DATABASE_NAME}"}
                                                                 </li>
                                                                 <li><strong>Your Mongo username: </strong>
-                                                                   ${r"${CU_DATABASE_USER_MONGO_"}${module_seq}}
+                                                                ${r"${CU_DATABASE_USER_MONGO_"}${module_seq}}
                                                                 </li>
                                                                 <li><strong>Your Mongo password: </strong>
-                                                                    ${r"${CU_DATABASE_PASSWORD_MONGO_"}${module_seq}}
+                                                                ${r"${CU_DATABASE_PASSWORD_MONGO_"}${module_seq}}
                                                                 </li>
                                                                 <li><strong>Domaine name: </strong>
-                                                                    ${r"${CU_DATABASE_DNS_MONGO_"}${module_seq}}
+                                                                ${r"${CU_DATABASE_DNS_MONGO_"}${module_seq}}
                                                                 </li>
                                                                 <li><strong>Mongo port: </strong>
-                                                                   27017
+                                                                    27017
                                                                 </li>
-                                                                <li><strong>Complete link to access your database:</strong>
-                                                                    jdbc:mongo://${r"${CU_DATABASE_DNS_MONGO_"}${module_seq}}:27017/${r"${CU_DATABASE_NAME}"}
+                                                                <li><strong>Complete link to access your
+                                                                    database:</strong>
+                                                                    jdbc:mongo://${r"${CU_DATABASE_DNS_MONGO_"}${module_seq}
+                                                                    }:27017/${r"${CU_DATABASE_NAME}"}
                                                                 </li>
 
                                                             </ul>
@@ -192,7 +202,8 @@
                                                         <td style="padding:5px 0 5px 5px;line-height:normal;color: #505c64; font-family: arial; font-size: 14px; border-color: #ffffff; background-color: #ffffff; ">
 
 
-                                                            <h4 style="font-size: 14px;margin: 0 0 10px;">Stay tuned:</h4>
+                                                            <h4 style="font-size: 14px;margin: 0 0 10px;">Stay
+                                                                tuned:</h4>
                                                             <!--<hr style="background-color: rgb(80, 92, 100);">-->
                                                             <table style="height: 15px; width: 258px;"
                                                                    class="cke_show_border" cellpadding="8">

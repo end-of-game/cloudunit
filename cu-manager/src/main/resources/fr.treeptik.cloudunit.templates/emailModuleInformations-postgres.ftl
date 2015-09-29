@@ -1,10 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>*|MC:SUBJECT|*</title>
- 	</head>
- 	
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>*|MC:SUBJECT|*</title>
+</head>
+
 <body style="margin: 0; padding: 0; background-color: #128abc" bgcolor="#128abc">
 
 <table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
@@ -26,7 +27,8 @@
                             <tbody>
                             <tr>
                                 <td style="text-align: left; color: #505c64; font-weight: bold; font-size: 18px;">
-                                    <img src="http://treeptik.fr/medias/logo-cloudunit.png" height="24px" alt="Logo de CloudUnit"> CloudUnit
+                                    <img src="http://treeptik.fr/medias/logo-cloudunit.png" height="24px"
+                                         alt="Logo de CloudUnit"> CloudUnit
                                 </td>
                             </tr>
                             </tbody>
@@ -52,11 +54,13 @@
 
 
                                                             <h2 style="font-size: 2em;margin: 24px;text-align: center;">
-                                                               POSTGRES database is installed</h2>
+                                                                POSTGRES database is installed</h2>
 
-                                                            <p>Hello <strong>${userLogin}</strong>, you asked about an database installation.</p>
+                                                            <p>Hello <strong>${userLogin}</strong>, you asked about an
+                                                                database installation.</p>
 
-                                                               <p>You will find there the informations to configure your dataSource</p>
+                                                            <p>You will find there the informations to configure your
+                                                                dataSource</p>
 
                                                         </td>
                                                     </tr>
@@ -96,49 +100,55 @@
                                                     <tr>
                                                         <td style="padding:5px 0 5px 5px;line-height:normal;color: #505c64; font-family: arial; font-size: 14px; border-color: #ffffff; background-color: #ffffff; ">
 
-                                                  <h4 style="text-align: center">Informations about your database</h4>
+                                                            <h4 style="text-align: center">Informations about your
+                                                                database</h4>
 
                                                             <ul style="list-style: none">
                                                                 <li><strong>Database name: </strong>
-                                                                    ${pgDatabase}
+                                                                ${pgDatabase}
                                                                 </li>
                                                                 <li><strong>Your Postgres username:</strong>
-                                                                    ${pgUser}
+                                                                ${pgUser}
                                                                 </li>
                                                                 <li><strong>Your Postgres password:</strong>
-                                                                    ${pgPassword}
+                                                                ${pgPassword}
                                                                 </li>
                                                                 <li><strong>Domaine name: </strong>
-                                                                    ${internalDNSName}
+                                                                ${internalDNSName}
                                                                 </li>
                                                                 <li><strong>Postgres port:</strong>
                                                                     5432
                                                                 </li>
-                                                                <li><strong>Lien pour configurer votre dataSource:</strong>
-                                                                    jdbc:postgresql://${internalDNSName}:5432/${pgDatabase}
+                                                                <li><strong>Lien pour configurer votre
+                                                                    dataSource:</strong>
+                                                                    jdbc:postgresql://${internalDNSName}
+                                                                    :5432/${pgDatabase}
                                                                 </li>
 
-                                                             </ul>
+                                                            </ul>
 
-													<h4 style="text-align: center">You can also use these environment variables to connect to your database</h4>
+                                                            <h4 style="text-align: center">You can also use these
+                                                                environment variables to connect to your database</h4>
                                                             <ul style="list-style: none">
                                                                 <li><strong>Database name: </strong>
-                                                                    ${r"${CU_DATABASE_NAME}"}
+                                                                ${r"${CU_DATABASE_NAME}"}
                                                                 </li>
                                                                 <li><strong>Your Postgres user: </strong>
-                                                                   ${r"${CU_DATABASE_USER_POSTGRESQL_"}${module_seq}}
+                                                                ${r"${CU_DATABASE_USER_POSTGRESQL_"}${module_seq}}
                                                                 </li>
                                                                 <li><strong>Your Postgres password: </strong>
-                                                                    ${r"${CU_DATABASE_PASSWORD_POSTGRESQL_"}${module_seq}}
+                                                                ${r"${CU_DATABASE_PASSWORD_POSTGRESQL_"}${module_seq}}
                                                                 </li>
                                                                 <li><strong>Domaine name: </strong>
-                                                                    ${r"${CU_DATABASE_DNS_POSTGRESQL_"}${module_seq}}
+                                                                ${r"${CU_DATABASE_DNS_POSTGRESQL_"}${module_seq}}
                                                                 </li>
                                                                 <li><strong>Postgres port: </strong>
-                                                                   3306
+                                                                    3306
                                                                 </li>
-                                                                <li><strong>Complete link to access your database:</strong>
-                                                                    jdbc:postgresql://${r"${CU_DATABASE_DNS_POSTGRESQL_"}${module_seq}}:3306/${r"${CU_DATABASE_NAME}"}
+                                                                <li><strong>Complete link to access your
+                                                                    database:</strong>
+                                                                    jdbc:postgresql://${r"${CU_DATABASE_DNS_POSTGRESQL_"}${module_seq}
+                                                                    }:3306/${r"${CU_DATABASE_NAME}"}
                                                                 </li>
 
                                                             </ul>

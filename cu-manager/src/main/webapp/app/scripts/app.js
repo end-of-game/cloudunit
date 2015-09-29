@@ -52,11 +52,11 @@
     ])
     .constant('moment', moment)
     // moment locale config
-    .config(function(){
+    .config(function () {
       moment.locale('en', {
         calendar: {
-          lastDay : '[Yesterday]',
-          sameDay : '[Today]'
+          lastDay: '[Yesterday]',
+          sameDay: '[Today]'
         }
       });
     });

@@ -122,10 +122,13 @@
               <p ng-show="!createUserForm.organization.$pristine && createUserForm.organization.$error.required"
                  class="hint error">
                 Required field</p>
-	<p ng-show="!createUserForm.organization.$pristine && createUserForm.organization.$error.maxlength" class="hint error">
+
+              <p ng-show="!createUserForm.organization.$pristine && createUserForm.organization.$error.maxlength"
+                 class="hint error">
                 Login too long</p>
 
-              <p ng-show="!createUserForm.organization.$pristine && createUserForm.organization.$error.pattern" class="hint error">Use
+              <p ng-show="!createUserForm.organization.$pristine && createUserForm.organization.$error.pattern"
+                 class="hint error">Use
                 alphanumeric characters only</p>
             </div>
             <div class="input-group stack">

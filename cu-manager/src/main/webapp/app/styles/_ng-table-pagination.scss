@@ -17,7 +17,7 @@
   @include clearfix();
 }
 
-.ng-table-counts.btn-group{
+.ng-table-counts.btn-group {
   margin-top: 0px;
   margin-bottom: 20px;
   display: inline-block;
@@ -41,7 +41,7 @@
       @include box-shadow(none);
     }
   }
-  .btn:first-child{
+  .btn:first-child {
     margin-left: 0px;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;

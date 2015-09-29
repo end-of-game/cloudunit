@@ -72,7 +72,8 @@
               <span>JVM configuration</span>
             </a>
           </li>
-          <li data-ng-class="{'active': editApp.currentTab === 'explorer', 'disabled':editApp.application.status==='STOP'}">
+          <li
+            data-ng-class="{'active': editApp.currentTab === 'explorer', 'disabled':editApp.application.status==='STOP'}">
             <a id="explorer-tab" data-ng-href="#editApplication/{{editApp.application.name}}/explorer" ripple="">
               <span>Explorer</span>
             </a>
@@ -83,7 +84,8 @@
             </a>
           </li>
 
-          <li data-ng-class="{'active': editApp.currentTab === 'monitoring', 'disabled':editApp.application.status==='STOP'}">
+          <li
+            data-ng-class="{'active': editApp.currentTab === 'monitoring', 'disabled':editApp.application.status==='STOP'}">
             <a id="monitoring-tab" data-ng-href="#editApplication/{{editApp.application.name}}/monitoring" ripple="">
               <span>Monitoring</span>
             </a>
