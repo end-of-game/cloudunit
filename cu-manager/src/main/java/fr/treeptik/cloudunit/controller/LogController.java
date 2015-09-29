@@ -15,10 +15,10 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import fr.treeptik.cloudunit.dto.LogUnit;
+import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.json.ui.LogUnit;
-import fr.treeptik.cloudunit.json.ui.SourceUnit;
 import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.service.LogService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;

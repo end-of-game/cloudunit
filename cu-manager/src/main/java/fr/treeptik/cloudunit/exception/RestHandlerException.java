@@ -16,7 +16,7 @@
 package fr.treeptik.cloudunit.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import fr.treeptik.cloudunit.json.ui.HttpErrorServer;
+import fr.treeptik.cloudunit.dto.HttpErrorServer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

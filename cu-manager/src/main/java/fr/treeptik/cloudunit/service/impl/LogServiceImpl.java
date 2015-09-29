@@ -16,9 +16,9 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
+import fr.treeptik.cloudunit.dto.LogUnit;
 import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.json.ui.LogUnit;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;

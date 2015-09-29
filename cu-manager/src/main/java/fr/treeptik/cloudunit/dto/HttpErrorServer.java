@@ -13,45 +13,16 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.json.ui;
+package fr.treeptik.cloudunit.dto;
 
-/**
- * Created by nicolas on 25/06/15.
- */
-public class SourceUnit {
+import org.apache.http.HttpStatus;
 
-    private String name;
+public class HttpErrorServer
+    extends JsonResponse {
 
-    public SourceUnit(String name) {
-        this.name = name;
-    }
+    private static final long serialVersionUID = 1L;
 
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        SourceUnit that = (SourceUnit) o;
-
-        return !(name != null ? !name.equals(that.name) : that.name != null);
-
-    }
-
-    @Override
-    public String toString() {
-        return "SourceUnit{" +
-            "name='" + name + '\'' +
-            '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+    public HttpErrorServer(String message) {
+        super(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, "");
     }
 }

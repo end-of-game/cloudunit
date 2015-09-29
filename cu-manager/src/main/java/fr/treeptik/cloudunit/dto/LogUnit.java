@@ -13,7 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.json.ui;
+package fr.treeptik.cloudunit.dto;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -15,7 +15,7 @@
 
 package fr.treeptik.cloudunit.filters.explorer;
 
-import fr.treeptik.cloudunit.json.ui.FileUnit;
+import fr.treeptik.cloudunit.dto.FileUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -15,9 +15,9 @@
 
 package fr.treeptik.cloudunit.service;
 
+import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.json.ui.FileUnit;
-import fr.treeptik.cloudunit.json.ui.SourceUnit;
 
 import java.io.File;
 import java.util.List;

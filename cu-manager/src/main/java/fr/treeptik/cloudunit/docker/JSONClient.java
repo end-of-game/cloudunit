@@ -15,7 +15,7 @@
 
 package fr.treeptik.cloudunit.docker;
 
-import fr.treeptik.cloudunit.json.ui.JsonResponse;
+import fr.treeptik.cloudunit.dto.JsonResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.http.HttpResponse;

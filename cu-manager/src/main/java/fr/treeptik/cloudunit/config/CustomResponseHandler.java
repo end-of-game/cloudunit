@@ -15,9 +15,9 @@
 
 package fr.treeptik.cloudunit.config;
 
+import fr.treeptik.cloudunit.dto.HttpErrorServer;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.json.ui.HttpErrorServer;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

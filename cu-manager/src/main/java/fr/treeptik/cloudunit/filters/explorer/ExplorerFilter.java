@@ -15,7 +15,7 @@
 
 package fr.treeptik.cloudunit.filters.explorer;
 
-import fr.treeptik.cloudunit.json.ui.FileUnit;
+import fr.treeptik.cloudunit.dto.FileUnit;
 
 /**
  * Created by nicolas on 08/06/15.

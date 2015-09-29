@@ -30,9 +30,9 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.json.ui.*;
 import fr.treeptik.cloudunit.manager.ApplicationManager;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;

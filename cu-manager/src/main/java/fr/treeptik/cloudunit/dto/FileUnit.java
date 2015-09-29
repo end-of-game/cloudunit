@@ -13,7 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.json.ui;
+package fr.treeptik.cloudunit.dto;
 
 /**
  * Created by nicolas on 20/05/15.

@@ -19,7 +19,7 @@ package fr.treeptik.cloudunit.filters.explorer;
  * Created by nicolas on 08/06/15.
  */
 
-import fr.treeptik.cloudunit.json.ui.FileUnit;
+import fr.treeptik.cloudunit.dto.FileUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

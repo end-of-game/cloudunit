@@ -13,43 +13,46 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.json.ui;
+package fr.treeptik.cloudunit.dto;
 
-/**
- * Created by nicolas on 27/08/2014.
- */
+import java.io.Serializable;
 
-/**
- * Represente le JSON retourné aux CLI et WebUI pour l'affichage
- * [
- * {name:'Instance-1', id:"a11cea6b5a16", type:"server"},
- * {name:'Instance-2', id:"bfrcea6c5rf8", type:"server"}
- * ];
- */
-public class ContainerUnit {
+public class JsonResponse
+    implements Serializable {
 
-    private String name;
+    private int status;
 
-    private String id;
+    private String message = "";
 
-    private String type;
+    private String location = "";
 
-    public ContainerUnit(final String name, final String id, final String type) {
-        this.name = name;
-        this.id = id;
-        this.type = type;
+    public JsonResponse(int status, String message, String location) {
+        this.status = status;
+        this.message = message;
+        this.location = location;
     }
 
-    public String getName() {
-        return name;
+    public String getLocation() {
+        return location;
     }
 
-    public String getId() {
-        return id;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getType() {
-        return type;
+    public int getStatus() {
+        return status;
     }
 
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

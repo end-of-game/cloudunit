@@ -30,11 +30,11 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.HttpOk;
+import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.json.ui.FileUnit;
-import fr.treeptik.cloudunit.json.ui.HttpOk;
-import fr.treeptik.cloudunit.json.ui.JsonResponse;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;

@@ -15,12 +15,12 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import fr.treeptik.cloudunit.dto.HttpErrorServer;
+import fr.treeptik.cloudunit.dto.HttpOk;
+import fr.treeptik.cloudunit.dto.JsonInputForAdmin;
+import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.json.ui.HttpErrorServer;
-import fr.treeptik.cloudunit.json.ui.HttpOk;
-import fr.treeptik.cloudunit.json.ui.JsonInputForAdmin;
-import fr.treeptik.cloudunit.json.ui.JsonResponse;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;

@@ -13,46 +13,21 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.json.ui;
+package fr.treeptik.cloudunit.dto;
 
-import java.io.Serializable;
+import org.apache.http.HttpStatus;
 
-public class JsonResponse
-    implements Serializable {
+/**
+ * Created by nicolas on 01/08/2014.
+ */
+public class HttpOk
+    extends JsonResponse {
 
-    private int status;
-
-    private String message = "";
-
-    private String location = "";
-
-    public JsonResponse(int status, String message, String location) {
-        this.status = status;
-        this.message = message;
-        this.location = location;
+    public HttpOk() {
+        super(HttpStatus.SC_OK, "", null);
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public HttpOk(String location) {
+        super(HttpStatus.SC_OK, "", location);
     }
 }

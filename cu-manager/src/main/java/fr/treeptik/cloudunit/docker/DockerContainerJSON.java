@@ -16,11 +16,11 @@
 package fr.treeptik.cloudunit.docker;
 
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
+import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.WarningDockerJSONException;
-import fr.treeptik.cloudunit.json.ui.JsonResponse;
 import fr.treeptik.cloudunit.utils.PortUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.simple.JSONArray;
