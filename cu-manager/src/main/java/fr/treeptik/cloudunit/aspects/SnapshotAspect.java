@@ -48,7 +48,7 @@ public class SnapshotAspect
 
     private final String cloneFromASnapshot = "CLONEFROMASNAPSHOT";
 
-    private Logger logger = LoggerFactory.getLogger( SnapshotAspect.class );
+    private final Logger logger = LoggerFactory.getLogger( SnapshotAspect.class );
 
     @Inject
     private MessageService messageService;
@@ -64,7 +64,7 @@ public class SnapshotAspect
         try
         {
             Snapshot snapshot = (Snapshot) result;
-            User user = super.getAuthentificatedUser();
+            User user = this.getAuthentificatedUser();
             Message message = null;
             switch ( staticPart.getSignature().getName().toUpperCase() )
             {
@@ -98,11 +98,11 @@ public class SnapshotAspect
                     " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
                     " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
                     throwing = "e" )
-    public void afterThrowingSnapshot( final StaticPart staticPart,
-                                       final Exception e )
+    public void afterThrowingSnapshot( StaticPart staticPart,
+                                       Exception e )
                     throws ServiceException
     {
-        User user = super.getAuthentificatedUser();
+        User user = this.getAuthentificatedUser();
         Message message = null;
         logger.debug( "CALLED CLASS : " + staticPart.getSignature().getName() );
         switch ( staticPart.getSignature().getName().toUpperCase() )

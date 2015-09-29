@@ -43,7 +43,7 @@ public class DeploymentAspect
 
     private final String createType = "CREATE";
 
-    private Logger logger = LoggerFactory.getLogger( DeploymentAspect.class );
+    private final Logger logger = LoggerFactory.getLogger( DeploymentAspect.class );
 
     @Inject
     private MessageService messageService;

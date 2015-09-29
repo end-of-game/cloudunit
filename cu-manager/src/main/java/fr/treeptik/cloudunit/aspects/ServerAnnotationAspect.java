@@ -43,7 +43,7 @@ public class ServerAnnotationAspect
         {
             UserDetails principal = (UserDetails) SecurityContextHolder
                             .getContext().getAuthentication().getPrincipal();
-            User user = userService.findByLogin( principal.getUsername() );
+            User user = this.userService.findByLogin( principal.getUsername() );
             System.out.println( "Executing myAdvice!! " + user );
 
         }

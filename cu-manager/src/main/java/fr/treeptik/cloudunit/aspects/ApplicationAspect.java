@@ -53,7 +53,7 @@ public class ApplicationAspect
 
     private final String stopType = "STOP";
 
-    private Logger logger = LoggerFactory.getLogger( ApplicationAspect.class );
+    private final Logger logger = LoggerFactory.getLogger( ApplicationAspect.class );
 
     @Inject
     private MessageService messageService;
@@ -70,7 +70,7 @@ public class ApplicationAspect
                     "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
                     "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
                     "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))" )
-    public void beforeApplication( final JoinPoint joinPoint )
+    public void beforeApplication( JoinPoint joinPoint )
                     throws MonitorException, ServiceException
     {
 
@@ -119,8 +119,8 @@ public class ApplicationAspect
                     "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
                     "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))"
                     , throwing = "e" )
-    public void afterThrowingApplication( final StaticPart staticPart,
-                                          final Exception e )
+    public void afterThrowingApplication( StaticPart staticPart,
+                                          Exception e )
                     throws ServiceException
     {
 
@@ -131,19 +131,23 @@ public class ApplicationAspect
         {
             case createType:
                 message = MessageUtils.writeAfterThrowingApplicationMessage( e,
-                                                                             user, createType, messageSource, locale );
+                                                                             user, createType, messageSource,
+                                                                             locale );
                 break;
             case deleteType:
                 message = MessageUtils.writeAfterThrowingApplicationMessage( e,
-                                                                             user, deleteType, messageSource, locale );
+                                                                             user, deleteType, messageSource,
+                                                                             locale );
                 break;
             case startType:
                 message = MessageUtils.writeAfterThrowingApplicationMessage( e,
-                                                                             user, startType, messageSource, locale );
+                                                                             user, startType, messageSource,
+                                                                             locale );
                 break;
             case stopType:
                 message = MessageUtils.writeAfterThrowingApplicationMessage( e,
-                                                                             user, stopType, messageSource, locale );
+                                                                             user, stopType, messageSource,
+                                                                             locale );
                 break;
         }
         if ( message != null )

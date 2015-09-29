@@ -45,7 +45,7 @@ public class ServerAspect
 
     private final String updateType = "UPDATE";
 
-    private Logger logger = LoggerFactory.getLogger( ServerAspect.class );
+    private final Logger logger = LoggerFactory.getLogger( ServerAspect.class );
 
     @Inject
     private MessageService messageService;
@@ -55,7 +55,7 @@ public class ServerAspect
 
     // Before methods
     @Before( "execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))" )
-    public void beforeServer( final JoinPoint joinPoint )
+    public void beforeServer( JoinPoint joinPoint )
                     throws MonitorException, ServiceException
     {
 
@@ -112,11 +112,11 @@ public class ServerAspect
     }
 
     @AfterThrowing( pointcut = "execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))", throwing = "e" )
-    public void afterThrowingServer( final StaticPart staticPart,
-                                     final Exception e )
+    public void afterThrowingServer( StaticPart staticPart,
+                                     Exception e )
                     throws ServiceException
     {
-        User user = super.getAuthentificatedUser();
+        User user = this.getAuthentificatedUser();
         Message message = null;
         logger.debug( "CALLED CLASS : " + staticPart.getSignature().getName() );
         switch ( staticPart.getSignature().getName().toUpperCase() )

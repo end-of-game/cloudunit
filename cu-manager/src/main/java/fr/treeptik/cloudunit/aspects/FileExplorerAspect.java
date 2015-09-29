@@ -39,18 +39,18 @@ public class FileExplorerAspect
 
     private static final long serialVersionUID = 1L;
 
-    private Logger logger = LoggerFactory.getLogger( FileExplorerAspect.class );
+    private final Logger logger = LoggerFactory.getLogger( FileExplorerAspect.class );
 
     @Inject
     private MessageService messageService;
 
     @AfterReturning( "execution(* fr.treeptik.cloudunit.service.FileService.deleteFilesFromContainer(..))" +
                     " || execution(* fr.treeptik.cloudunit.service.FileService.sendFileToContainer(..))" )
-    public void afterReturningFileExplorer( final JoinPoint joinPoint )
+    public void afterReturningFileExplorer( JoinPoint joinPoint )
                     throws ServiceException
     {
         Message message = new Message();
-        User user = this.getAuthentificatedUser();
+        User user = getAuthentificatedUser();
         message.setDate( new Date() );
         message.setType( Message.INFO );
         message.setAuthor( user );
@@ -69,7 +69,7 @@ public class FileExplorerAspect
                                                   + joinPoint.getArgs()[4].toString().replaceAll( "__", "/" ) );
                 break;
         }
-        messageService.create( message );
+        this.messageService.create( message );
     }
 
 }
