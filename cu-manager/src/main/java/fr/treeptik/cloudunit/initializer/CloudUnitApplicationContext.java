@@ -49,124 +49,139 @@ import java.util.Locale;
 @EnableAspectJAutoProxy
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"fr.treeptik.cloudunit.controller",
-        "fr.treeptik.cloudunit.dao", "fr.treeptik.cloudunit.docker",
-        "fr.treeptik.cloudunit.docker.model", "fr.treeptik.cloudunit.config",
-        "fr.treeptik.cloudunit.exception", "fr.treeptik.cloudunit.model",
-        "fr.treeptik.cloudunit.service", "fr.treeptik.cloudunit.service.impl",
-        "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
-        "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl"
-})
-@PropertySource({"classpath:/application.properties"})
-@PropertySource({"classpath:/maven.properties"})
-public class CloudUnitApplicationContext extends WebMvcConfigurerAdapter {
-
-    private final Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
+@ComponentScan( basePackages = { "fr.treeptik.cloudunit.controller",
+                "fr.treeptik.cloudunit.dao", "fr.treeptik.cloudunit.docker",
+                "fr.treeptik.cloudunit.docker.model", "fr.treeptik.cloudunit.config",
+                "fr.treeptik.cloudunit.exception", "fr.treeptik.cloudunit.model",
+                "fr.treeptik.cloudunit.service", "fr.treeptik.cloudunit.service.impl",
+                "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
+                "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl"
+} )
+@PropertySource( { "classpath:/application.properties" } )
+@PropertySource( { "classpath:/maven.properties" } )
+public class CloudUnitApplicationContext
+                extends WebMvcConfigurerAdapter
+{
 
     // Max file size
     private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
 
+    private final Logger logger = LoggerFactory.getLogger( CloudUnitApplicationContext.class );
+
     @Bean
-    public ViewResolver contentNegotiatingViewResolver() {
-        logger.debug("Configuring the ContentNegotiatingViewResolver");
+    @Profile( "vagrant" )
+    public static PropertySourcesPlaceholderConfigurer properties()
+                    throws Exception
+    {
+        PropertySourcesPlaceholderConfigurer pspc =
+                        new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new Resource[]
+                        { new ClassPathResource( "application-vagrant.properties" ) };
+        pspc.setLocations( resources );
+        pspc.setIgnoreUnresolvablePlaceholders( true );
+        pspc.setLocalOverride( true );
+        return pspc;
+    }
+
+    @Bean
+    @Profile( "production" )
+    public static PropertySourcesPlaceholderConfigurer propertiesForProduction()
+                    throws Exception
+    {
+        PropertySourcesPlaceholderConfigurer pspc =
+                        new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new Resource[]
+                        { new ClassPathResource( "application-production.properties" ),
+                                        new FileSystemResource( new File( System.getProperty( "user.home" )
+                                                                                          + "/.cloudunit/configuration.properties" ) ) };
+        pspc.setLocations( resources );
+        pspc.setIgnoreUnresolvablePlaceholders( true );
+        pspc.setLocalOverride( true );
+        return pspc;
+    }
+
+    @Bean
+    @Profile( "test" )
+    public static PropertySourcesPlaceholderConfigurer propertiesForTest()
+                    throws Exception
+    {
+        PropertySourcesPlaceholderConfigurer pspc =
+                        new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new Resource[]
+                        { new ClassPathResource( "application-test.properties" ) };
+        pspc.setLocations( resources );
+        pspc.setIgnoreUnresolvablePlaceholders( true );
+        pspc.setLocalOverride( true );
+        return pspc;
+    }
+
+    @Bean
+    public ViewResolver contentNegotiatingViewResolver()
+    {
+        logger.debug( "Configuring the ContentNegotiatingViewResolver" );
         ContentNegotiatingViewResolver viewResolver = new ContentNegotiatingViewResolver();
         List<ViewResolver> viewResolvers = new ArrayList<ViewResolver>();
 
         UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
-        urlBasedViewResolver.setViewClass(JstlView.class);
-        urlBasedViewResolver.setSuffix(".html");
-        viewResolvers.add(urlBasedViewResolver);
+        urlBasedViewResolver.setViewClass( JstlView.class );
+        urlBasedViewResolver.setSuffix( ".html" );
+        viewResolvers.add( urlBasedViewResolver );
 
-        viewResolver.setViewResolvers(viewResolvers);
+        viewResolver.setViewResolvers( viewResolvers );
 
         List<View> defaultViews = new ArrayList<View>();
-        defaultViews.add(new MappingJackson2JsonView());
-        viewResolver.setDefaultViews(defaultViews);
+        defaultViews.add( new MappingJackson2JsonView() );
+        viewResolver.setDefaultViews( defaultViews );
 
         return viewResolver;
     }
 
     @Override
     public void configureDefaultServletHandling(
-            DefaultServletHandlerConfigurer configurer) {
+                    DefaultServletHandlerConfigurer configurer )
+    {
         configurer.enable();
     }
 
-
-    private MappingJackson2HttpMessageConverter jacksonMessageConverter() {
+    private MappingJackson2HttpMessageConverter jacksonMessageConverter()
+    {
         MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
         ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new Hibernate4Module().enable(Hibernate4Module.Feature.USE_TRANSIENT_ANNOTATION));
-        messageConverter.setObjectMapper(mapper);
+        mapper.registerModule( new Hibernate4Module().enable( Hibernate4Module.Feature.USE_TRANSIENT_ANNOTATION ) );
+        messageConverter.setObjectMapper( mapper );
         return messageConverter;
     }
 
     @Override
     public void configureMessageConverters(
-            List<HttpMessageConverter<?>> converters) {
-        converters.add(jacksonMessageConverter());
-        super.configureMessageConverters(converters);
+                    List<HttpMessageConverter<?>> converters )
+    {
+        converters.add( jacksonMessageConverter() );
+        super.configureMessageConverters( converters );
     }
 
     @Bean
-    public SessionLocaleResolver localeResolver() {
+    public SessionLocaleResolver localeResolver()
+    {
         SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-        localeResolver.setDefaultLocale(Locale.ENGLISH);
+        localeResolver.setDefaultLocale( Locale.ENGLISH );
         return localeResolver;
     }
 
     @Bean
-    public MessageSource messageSource() {
+    public MessageSource messageSource()
+    {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("message");
+        messageSource.setBasename( "message" );
         return messageSource;
     }
 
     @Bean
-    public MultipartResolver multipartResolver() {
+    public MultipartResolver multipartResolver()
+    {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
+        multipartResolver.setMaxUploadSize( MAX_UPLOAD_SIZE );
         return multipartResolver;
-    }
-
-    @Bean
-    @Profile("vagrant")
-    public static PropertySourcesPlaceholderConfigurer properties() throws Exception {
-        PropertySourcesPlaceholderConfigurer pspc =
-                new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new Resource[ ]
-                { new ClassPathResource("application-vagrant.properties" )};
-        pspc.setLocations( resources );
-        pspc.setIgnoreUnresolvablePlaceholders(true);
-        pspc.setLocalOverride(true);
-        return pspc;
-    }
-
-    @Bean
-    @Profile("production")
-    public static PropertySourcesPlaceholderConfigurer propertiesForProduction() throws Exception {
-        PropertySourcesPlaceholderConfigurer pspc =
-                new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new Resource[ ]
-                { new ClassPathResource("application-production.properties" ),
-                  new FileSystemResource( new File(System.getProperty("user.home")+"/.cloudunit/configuration.properties"))};
-        pspc.setLocations( resources );
-        pspc.setIgnoreUnresolvablePlaceholders( true );
-        pspc.setLocalOverride(true);
-        return pspc;
-    }
-
-    @Bean
-    @Profile("test")
-    public static PropertySourcesPlaceholderConfigurer propertiesForTest() throws Exception {
-        PropertySourcesPlaceholderConfigurer pspc =
-                new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new Resource[ ]
-                { new ClassPathResource("application-test.properties" ) };
-        pspc.setLocations( resources );
-        pspc.setIgnoreUnresolvablePlaceholders( true );
-        pspc.setLocalOverride(true);
-        return pspc;
     }
 
 }

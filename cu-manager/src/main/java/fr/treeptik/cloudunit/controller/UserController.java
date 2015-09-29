@@ -17,10 +17,10 @@ package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.json.ui.HttpErrorServer;
 import fr.treeptik.cloudunit.json.ui.HttpOk;
 import fr.treeptik.cloudunit.json.ui.JsonInputForAdmin;
 import fr.treeptik.cloudunit.json.ui.JsonResponse;
-import fr.treeptik.cloudunit.json.ui.HttpErrorServer;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
@@ -38,180 +38,225 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 
 @Controller
-@RequestMapping("/user")
-public class UserController implements Serializable {
+@RequestMapping( "/user" )
+public class UserController
+                implements Serializable
+{
 
-	private static final long serialVersionUID = 1L;
-	private Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final long serialVersionUID = 1L;
 
-	@Inject
-	private UserService userService;
+    private Logger logger = LoggerFactory.getLogger( UserController.class );
 
-	@Inject
-	private AuthentificationUtils authentificationUtils;
+    @Inject
+    private UserService userService;
 
-	/**
-	 * Create an User account and send Email to activate it
-	 * 
-	 * @param
-	 * @return
-	 * @throws CheckException
-	 * @throws ServiceException
-	 * @throws UnsupportedEncodingException
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/signin", method = RequestMethod.POST)
-	public JsonResponse signin(@RequestBody User user) {
+    @Inject
+    private AuthentificationUtils authentificationUtils;
 
-		logger.debug("UserController - User : " + user);
+    /**
+     * Create an User account and send Email to activate it
+     *
+     * @param
+     * @return
+     * @throws CheckException
+     * @throws ServiceException
+     * @throws UnsupportedEncodingException
+     */
+    @ResponseBody
+    @RequestMapping( value = "/signin", method = RequestMethod.POST )
+    public JsonResponse signin( @RequestBody User user )
+    {
 
-		try {
-			userService.create(user);
-		} catch (ServiceException | CheckException e) {
-			return new HttpErrorServer(e.getMessage());
-		}
-		logger.info("Signin successfull");
-		JsonResponse response = new HttpOk();
+        logger.debug( "UserController - User : " + user );
 
-		return response;
-	}
+        try
+        {
+            userService.create( user );
+        }
+        catch ( ServiceException | CheckException e )
+        {
+            return new HttpErrorServer( e.getMessage() );
+        }
+        logger.info( "Signin successfull" );
+        JsonResponse response = new HttpOk();
 
-	@RequestMapping(method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse updateUser(
-			@RequestBody JsonInputForAdmin input) {
+        return response;
+    }
 
-		User user;
-		try {
-			user = userService.findByLogin(input.getLogin());
-			user.setEmail(input.getEmail());
-			user.setLastName(input.getLastName());
-			user.setFirstName(input.getFirstName());
-			user.setOrganization(input.getOrganization());
-			user = userService.update(user);
-		} catch (ServiceException e) {
-			return new HttpErrorServer(e.getMessage());
-		}
+    @RequestMapping( method = RequestMethod.PUT )
+    public
+    @ResponseBody
+    JsonResponse updateUser(
+                    @RequestBody JsonInputForAdmin input )
+    {
 
-		return new HttpOk();
-	}
+        User user;
+        try
+        {
+            user = userService.findByLogin( input.getLogin() );
+            user.setEmail( input.getEmail() );
+            user.setLastName( input.getLastName() );
+            user.setFirstName( input.getFirstName() );
+            user.setOrganization( input.getOrganization() );
+            user = userService.update( user );
+        }
+        catch ( ServiceException e )
+        {
+            return new HttpErrorServer( e.getMessage() );
+        }
 
-	@RequestMapping(value = "/send-password", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse sendPassword(
-			@RequestBody JsonInputForAdmin input) {
-		logger.info("--CALL SEND PASSWORD--");
-		User user = null;
-		try {
-			user = userService.findByLogin(input.getLogin());
-			userService.sendPassword(user);
-		} catch (ServiceException e) {
-			return new HttpErrorServer(e.getMessage());
-		}
-		return new HttpOk();
-	}
+        return new HttpOk();
+    }
 
-	@RequestMapping(value = "/change-password", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse changePassword(
-			@RequestBody JsonInputForAdmin input) throws CheckException {
-		User user = null;
-		try {
-			logger.info(input.getPassword());
-			logger.info(input.getNewPassword());
+    @RequestMapping( value = "/send-password", method = RequestMethod.POST )
+    public
+    @ResponseBody
+    JsonResponse sendPassword(
+                    @RequestBody JsonInputForAdmin input )
+    {
+        logger.info( "--CALL SEND PASSWORD--" );
+        User user = null;
+        try
+        {
+            user = userService.findByLogin( input.getLogin() );
+            userService.sendPassword( user );
+        }
+        catch ( ServiceException e )
+        {
+            return new HttpErrorServer( e.getMessage() );
+        }
+        return new HttpOk();
+    }
 
-			user = authentificationUtils.getAuthentificatedUser();
+    @RequestMapping( value = "/change-password", method = RequestMethod.PUT )
+    public
+    @ResponseBody
+    JsonResponse changePassword(
+                    @RequestBody JsonInputForAdmin input )
+                    throws CheckException
+    {
+        User user = null;
+        try
+        {
+            logger.info( input.getPassword() );
+            logger.info( input.getNewPassword() );
 
-			if (user.getLogin().isEmpty()) {
-				throw new CheckException(
-						"This functionnality is not available yet");
-			}
+            user = authentificationUtils.getAuthentificatedUser();
 
-			if (!user.getPassword().equalsIgnoreCase(input.getPassword())) {
-				throw new CheckException(
-						"Your current password is not correct. Please retry!");
-			}
+            if ( user.getLogin().isEmpty() )
+            {
+                throw new CheckException(
+                                "This functionnality is not available yet" );
+            }
 
-			user.setPassword(input.getNewPassword());
+            if ( !user.getPassword().equalsIgnoreCase( input.getPassword() ) )
+            {
+                throw new CheckException(
+                                "Your current password is not correct. Please retry!" );
+            }
 
-			userService.update(user);
+            user.setPassword( input.getNewPassword() );
 
-		} catch (ServiceException e) {
-			return new HttpErrorServer(e.getMessage());
-		}
-		return new HttpOk();
-	}
+            userService.update( user );
 
-	@RequestMapping(value = "/status", method = RequestMethod.GET)
-	public @ResponseBody User getStatus() throws ServiceException {
-		return authentificationUtils.getAuthentificatedUser();
-	}
+        }
+        catch ( ServiceException e )
+        {
+            return new HttpErrorServer( e.getMessage() );
+        }
+        return new HttpOk();
+    }
 
-	/**
-	 * Activate an User account
-	 * 
-	 * @param userEmail
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@RequestMapping(value = "/activate/login/{login}", method = RequestMethod.GET)
-	public @ResponseBody ModelAndView activationAccount(
-			@PathVariable String login) throws ServiceException, CheckException {
-		logger.info("--ACTIVATION OF ACCOUNT--");
-		logger.debug("UserController : User " + login);
+    @RequestMapping( value = "/status", method = RequestMethod.GET )
+    public
+    @ResponseBody
+    User getStatus()
+                    throws ServiceException
+    {
+        return authentificationUtils.getAuthentificatedUser();
+    }
 
-		User user = userService.findByLogin(login);
+    /**
+     * Activate an User account
+     *
+     * @param userEmail
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping( value = "/activate/login/{login}", method = RequestMethod.GET )
+    public
+    @ResponseBody
+    ModelAndView activationAccount(
+                    @PathVariable String login )
+                    throws ServiceException, CheckException
+    {
+        logger.info( "--ACTIVATION OF ACCOUNT--" );
+        logger.debug( "UserController : User " + login );
 
-		userService.activationAccount(user);
+        User user = userService.findByLogin( login );
 
-		logger.info("Activation successfull of account of " + login);
-		return new ModelAndView("redirect:/webui/#validated");
-	}
+        userService.activationAccount( user );
 
-	/**
-	 * Pass id_rsa.pub in json property with "rsa_pub_key" as key.
-	 * 
-	 * @param userEmail
-	 * @param rsa_pub_key
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@RequestMapping(value = "/userEmail/{userEmail}/authentificationGit", method = RequestMethod.POST)
-	public @ResponseBody String authentificationGit(
-			@PathVariable String userEmail, @RequestBody String rsa_pub_key)
-			throws ServiceException, CheckException {
+        logger.info( "Activation successfull of account of " + login );
+        return new ModelAndView( "redirect:/webui/#validated" );
+    }
 
-		logger.info("--GIT AUTHENTIFICATION --");
-		logger.debug("UserController - User " + userEmail + " rsa_pub_key : "
-				+ rsa_pub_key);
+    /**
+     * Pass id_rsa.pub in json property with "rsa_pub_key" as key.
+     *
+     * @param userEmail
+     * @param rsa_pub_key
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping( value = "/userEmail/{userEmail}/authentificationGit", method = RequestMethod.POST )
+    public
+    @ResponseBody
+    String authentificationGit(
+                    @PathVariable String userEmail, @RequestBody String rsa_pub_key )
+                    throws ServiceException, CheckException
+    {
 
-		JSONParser parser = new JSONParser();
-		Object obj = null;
-		try {
-			obj = parser.parse(rsa_pub_key);
-		} catch (ParseException e) {
-			logger.error("Git Authentification - problem to parse Json - " + e);
-			e.printStackTrace();
-		}
-		userEmail = this.replaceByArobase(userEmail);
-		JSONObject jsonObject = (JSONObject) obj;
-		rsa_pub_key = (String) jsonObject.get("rsa_pub_key");
-		User user = userService.findByEmail(userEmail).get(0);
-		userService.authentificationGit(user, rsa_pub_key);
+        logger.info( "--GIT AUTHENTIFICATION --" );
+        logger.debug( "UserController - User " + userEmail + " rsa_pub_key : "
+                                      + rsa_pub_key );
 
-		return "You are authentified on cloudunit git repository";
-	}
+        JSONParser parser = new JSONParser();
+        Object obj = null;
+        try
+        {
+            obj = parser.parse( rsa_pub_key );
+        }
+        catch ( ParseException e )
+        {
+            logger.error( "Git Authentification - problem to parse Json - " + e );
+            e.printStackTrace();
+        }
+        userEmail = this.replaceByArobase( userEmail );
+        JSONObject jsonObject = (JSONObject) obj;
+        rsa_pub_key = (String) jsonObject.get( "rsa_pub_key" );
+        User user = userService.findByEmail( userEmail ).get( 0 );
+        userService.authentificationGit( user, rsa_pub_key );
 
-	private String replaceByArobase(String sample) {
-		sample = sample.replace("%40", "@");
-		return sample;
-	}
+        return "You are authentified on cloudunit git repository";
+    }
 
-	public UserService getUserService() {
-		return userService;
-	}
+    private String replaceByArobase( String sample )
+    {
+        sample = sample.replace( "%40", "@" );
+        return sample;
+    }
 
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
+    public UserService getUserService()
+    {
+        return userService;
+    }
+
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
+    }
 
 }

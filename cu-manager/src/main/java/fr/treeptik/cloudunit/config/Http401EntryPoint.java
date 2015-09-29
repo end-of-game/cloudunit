@@ -33,32 +33,41 @@ import java.nio.file.StandardOpenOption;
  * Returns a 401 error code (Unauthorized) to the client.
  */
 @Component
-public class Http401EntryPoint implements AuthenticationEntryPoint {
+public class Http401EntryPoint
+                implements AuthenticationEntryPoint
+{
 
-    private final Logger log = LoggerFactory.getLogger(Http401EntryPoint.class);
+    private final Logger log = LoggerFactory.getLogger( Http401EntryPoint.class );
 
-    private final String GRUNT_PROBLEM_LOGIN = System.getenv("GRUNT_PROBLEM_LOGIN");
+    private final String GRUNT_PROBLEM_LOGIN = System.getenv( "GRUNT_PROBLEM_LOGIN" );
 
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException arg) throws IOException,
-            ServletException {
+    public void commence( HttpServletRequest request, HttpServletResponse response, AuthenticationException arg )
+                    throws IOException,
+                    ServletException
+    {
 
         // Maybe change the log level...
-        log.warn("Access Denied [ " + request.getRequestURL().toString() + "] : " + arg.getMessage());
+        log.warn( "Access Denied [ " + request.getRequestURL().toString() + "] : " + arg.getMessage() );
 
         // Trace message to ban intruders with fail2ban
         //generateLogTraceForFail2ban();
 
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access unauthorized");
+        response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Access unauthorized" );
     }
 
-    public void generateLogTraceForFail2ban() {
-        log.debug("generateLogTraceForFail2ban");
+    public void generateLogTraceForFail2ban()
+    {
+        log.debug( "generateLogTraceForFail2ban" );
         String filePath = "/var/log/culogin.log";
-        try {
-            Files.write(Paths.get(filePath), "Access Denied".getBytes(), StandardOpenOption.APPEND);
-            Files.write(Paths.get(filePath), System.getProperty("line.separator").getBytes(), StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            log.error("Cannot write to "+filePath+"", e.getMessage());
+        try
+        {
+            Files.write( Paths.get( filePath ), "Access Denied".getBytes(), StandardOpenOption.APPEND );
+            Files.write( Paths.get( filePath ), System.getProperty( "line.separator" ).getBytes(),
+                         StandardOpenOption.APPEND );
+        }
+        catch ( IOException e )
+        {
+            log.error( "Cannot write to " + filePath + "", e.getMessage() );
         }
     }
 }

@@ -21,9 +21,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RoleDAO extends JpaRepository<Role, Integer> {
+public interface RoleDAO
+                extends JpaRepository<Role, Integer>
+{
 
-	@Query("select r from Role r where r.description=:desc")
-	Role findByRole(@Param("desc") String description) throws DataAccessException;
+    @Query( "select r from Role r where r.description=:desc" )
+    Role findByRole( @Param( "desc" ) String description )
+                    throws DataAccessException;
 
 }

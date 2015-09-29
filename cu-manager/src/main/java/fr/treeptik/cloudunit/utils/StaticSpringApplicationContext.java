@@ -21,17 +21,22 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StaticSpringApplicationContext implements ApplicationContextAware  {
-    
-	private static ApplicationContext context;
+public class StaticSpringApplicationContext
+                implements ApplicationContextAware
+{
 
-    @SuppressWarnings("static-access")
-	public void setApplicationContext(ApplicationContext context) throws BeansException {
-    	this.context = context;
+    private static ApplicationContext context;
+
+    public static Object getBean( String beanName )
+    {
+        return context.getBean( beanName );
     }
 
-    public static Object getBean(String beanName) {
-      return context.getBean(beanName);
+    @SuppressWarnings( "static-access" )
+    public void setApplicationContext( ApplicationContext context )
+                    throws BeansException
+    {
+        this.context = context;
     }
 
 }

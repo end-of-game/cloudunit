@@ -23,10 +23,12 @@ import java.util.List;
 /**
  * Created by nicolas on 25/08/2014.
  */
-public interface LogService {
+public interface LogService
+{
 
-    public List<LogUnit> listByApp(String applicationName, String containerId, String source, Integer nbRows)
-            throws ServiceException;
+    public List<LogUnit> listByApp( String applicationName, String containerId, String source, Integer nbRows )
+                    throws ServiceException;
 
-    public int deleteLogsForApplication(String applicationName) throws ServiceException;
+    public int deleteLogsForApplication( String applicationName )
+                    throws ServiceException;
 }

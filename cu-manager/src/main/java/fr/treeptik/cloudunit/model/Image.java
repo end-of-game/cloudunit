@@ -22,143 +22,181 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-public class Image implements Serializable {
+public class Image
+                implements Serializable
+{
 
-	private static final long serialVersionUID = 1L;
+    public final static Integer DISABLED = 0;
 
-	public final static Integer DISABLED = 0;
-	public final static Integer ENABLED = 1;
+    public final static Integer ENABLED = 1;
 
-	public final static String MODULE = "module";
-	public final static String SERVER = "server";
+    public final static String MODULE = "module";
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
-	private String name;
-	private String path;
-	private String cmd;
-	private String version;
-	private Integer status;
-	private String imageType;
-	private String managerName;
-	@JsonIgnore
-	@OneToMany(mappedBy = "image")
-	private List<Module> modules;
-	@JsonIgnore
-	@OneToMany(mappedBy = "image")
-	private List<Server> servers;
+    public final static String SERVER = "server";
 
-	public Integer getId() {
-		return id;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    @Id
+    @GeneratedValue( strategy = GenerationType.AUTO )
+    private Integer id;
 
-	public String getName() {
-		return name;
-	}
+    private String name;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    private String path;
 
-	public String getPath() {
-		return path;
-	}
+    private String cmd;
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    private String version;
 
-	public List<Module> getModules() {
-		return modules;
-	}
+    private Integer status;
 
-	public void setModules(List<Module> modules) {
-		this.modules = modules;
-	}
+    private String imageType;
 
-	public List<Server> getServers() {
-		return servers;
-	}
+    private String managerName;
 
-	public void setServers(List<Server> servers) {
-		this.servers = servers;
-	}
+    @JsonIgnore
+    @OneToMany( mappedBy = "image" )
+    private List<Module> modules;
 
-	public String getVersion() {
-		return version;
-	}
+    @JsonIgnore
+    @OneToMany( mappedBy = "image" )
+    private List<Server> servers;
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public Integer getId()
+    {
+        return id;
+    }
 
-	public String getCmd() {
-		return cmd;
-	}
+    public void setId( Integer id )
+    {
+        this.id = id;
+    }
 
-	public void setCmd(String cmd) {
-		this.cmd = cmd;
-	}
+    public String getName()
+    {
+        return name;
+    }
 
-	public Integer getStatus() {
-		return status;
-	}
+    public void setName( String name )
+    {
+        this.name = name;
+    }
 
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
+    public String getPath()
+    {
+        return path;
+    }
 
-	public String getImageType() {
-		return imageType;
-	}
+    public void setPath( String path )
+    {
+        this.path = path;
+    }
 
-	public void setImageType(String imageType) {
-		this.imageType = imageType;
-	}
+    public List<Module> getModules()
+    {
+        return modules;
+    }
 
-	public String getManagerName() {
-		return managerName;
-	}
+    public void setModules( List<Module> modules )
+    {
+        this.modules = modules;
+    }
 
-	public void setManagerName(String managerName) {
-		this.managerName = managerName;
-	}
+    public List<Server> getServers()
+    {
+        return servers;
+    }
 
-	@Override
-	public String toString() {
-		return "Image [id=" + id + ", name=" + name + ", path=" + path
-				+ ", cmd=" + cmd + ", version=" + version + ", status="
-				+ status + ", imageType=" + imageType + "]";
-	}
+    public void setServers( List<Server> servers )
+    {
+        this.servers = servers;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
+    public String getVersion()
+    {
+        return version;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Image other = (Image) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+    public void setVersion( String version )
+    {
+        this.version = version;
+    }
+
+    public String getCmd()
+    {
+        return cmd;
+    }
+
+    public void setCmd( String cmd )
+    {
+        this.cmd = cmd;
+    }
+
+    public Integer getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus( Integer status )
+    {
+        this.status = status;
+    }
+
+    public String getImageType()
+    {
+        return imageType;
+    }
+
+    public void setImageType( String imageType )
+    {
+        this.imageType = imageType;
+    }
+
+    public String getManagerName()
+    {
+        return managerName;
+    }
+
+    public void setManagerName( String managerName )
+    {
+        this.managerName = managerName;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Image [id=" + id + ", name=" + name + ", path=" + path
+                        + ", cmd=" + cmd + ", version=" + version + ", status="
+                        + status + ", imageType=" + imageType + "]";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        return result;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+            return true;
+        if ( obj == null )
+            return false;
+        if ( getClass() != obj.getClass() )
+            return false;
+        Image other = (Image) obj;
+        if ( name == null )
+        {
+            if ( other.name != null )
+                return false;
+        }
+        else if ( !name.equals( other.name ) )
+            return false;
+        return true;
+    }
 
 }

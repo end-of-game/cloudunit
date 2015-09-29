@@ -41,166 +41,191 @@ import java.io.Serializable;
 import java.util.Locale;
 
 @Controller
-@RequestMapping("/module")
-public class ModuleController implements Serializable {
+@RequestMapping( "/module" )
+public class ModuleController
+                implements Serializable
+{
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Logger logger = LoggerFactory.getLogger(ModuleController.class);
+    Locale locale = LocaleContextHolder.getLocale();
 
-	@Inject
-	private ModuleService moduleService;
+    private Logger logger = LoggerFactory.getLogger( ModuleController.class );
 
-	@Inject
-	private ApplicationService applicationService;
+    @Inject
+    private ModuleService moduleService;
 
-	@Inject
-	private AuthentificationUtils authentificationUtils;
+    @Inject
+    private ApplicationService applicationService;
 
-	@Inject
-	private MessageSource messageSource;
+    @Inject
+    private AuthentificationUtils authentificationUtils;
 
-	Locale locale = LocaleContextHolder.getLocale();
+    @Inject
+    private MessageSource messageSource;
 
-	/**
-	 * Add a module to an existing application
-	 * 
-	 * @param input
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@RequestMapping(method = RequestMethod.POST)
-	public @ResponseBody
-	JsonResponse addModule(@RequestBody JsonInput input)
-			throws ServiceException, CheckException {
+    /**
+     * Add a module to an existing application
+     *
+     * @param input
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping( method = RequestMethod.POST )
+    public
+    @ResponseBody
+    JsonResponse addModule( @RequestBody JsonInput input )
+                    throws ServiceException, CheckException
+    {
 
-		String applicationName = input.getApplicationName();
-		logger.info("input.getApplicationName():" + applicationName);
-		logger.info("input.getImageName():" + input.getImageName());
+        String applicationName = input.getApplicationName();
+        logger.info( "input.getApplicationName():" + applicationName );
+        logger.info( "input.getImageName():" + input.getImageName() );
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user,
-				input.getApplicationName());
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser( user,
+                                                                        input.getApplicationName() );
 
-		// We must be sure there is no running action before starting new one
-		this.authentificationUtils.canStartNewAction(user, application, locale);
+        // We must be sure there is no running action before starting new one
+        this.authentificationUtils.canStartNewAction( user, application, locale );
 
-		// check if there is no action currently on the entity
-		Status previousStatus = application.getStatus();
+        // check if there is no action currently on the entity
+        Status previousStatus = application.getStatus();
 
-		try {
-			// Application occupée
-			applicationService.setStatus(application, Status.PENDING);
+        try
+        {
+            // Application occupée
+            applicationService.setStatus( application, Status.PENDING );
 
-			Module module = ModuleFactory.getModule(input.getImageName());
+            Module module = ModuleFactory.getModule( input.getImageName() );
 
-			moduleService.checkImageExist(input.getImageName());
+            moduleService.checkImageExist( input.getImageName() );
 
-			module.getImage().setName(input.getImageName());
-			module.setName(input.getImageName());
-			module.setApplication(application);
+            module.getImage().setName( input.getImageName() );
+            module.setName( input.getImageName() );
+            module.setApplication( application );
 
-			moduleService.initModule(application, module, null);
+            moduleService.initModule( application, module, null );
 
-			logger.info("--initModule " + input.getImageName() + " to "
-					+ input.getApplicationName() + " successful--");
+            logger.info( "--initModule " + input.getImageName() + " to "
+                                         + input.getApplicationName() + " successful--" );
 
-		} catch (Exception e) {
-			logger.error(input.toString(), e);
-		} finally {
-			applicationService.setStatus(application, previousStatus);
-		}
+        }
+        catch ( Exception e )
+        {
+            logger.error( input.toString(), e );
+        }
+        finally
+        {
+            applicationService.setStatus( application, previousStatus );
+        }
 
-		return new HttpOk();
-	}
+        return new HttpOk();
+    }
 
-	/**
-	 * Remove a module to an existing application
-	 * 
-	 * @param applicationName
-	 * @param moduleName
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@RequestMapping(value = "/{applicationName}/{moduleName}", method = RequestMethod.DELETE)
-	public @ResponseBody
-	JsonResponse removeModule(@PathVariable String applicationName,
-			@PathVariable String moduleName) throws ServiceException,
-			CheckException {
+    /**
+     * Remove a module to an existing application
+     *
+     * @param applicationName
+     * @param moduleName
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping( value = "/{applicationName}/{moduleName}", method = RequestMethod.DELETE )
+    public
+    @ResponseBody
+    JsonResponse removeModule( @PathVariable String applicationName,
+                               @PathVariable String moduleName )
+                    throws ServiceException,
+                    CheckException
+    {
 
-		if (logger.isInfoEnabled()) {
-			logger.info("applicationName:" + applicationName);
-			logger.info("moduleName:" + moduleName);
-		}
+        if ( logger.isInfoEnabled() )
+        {
+            logger.info( "applicationName:" + applicationName );
+            logger.info( "moduleName:" + moduleName );
+        }
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user,
-				applicationName);
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser( user,
+                                                                        applicationName );
 
-		// We must be sure there is no running action before starting new one
-		authentificationUtils.canStartNewAction(user, application, locale);
+        // We must be sure there is no running action before starting new one
+        authentificationUtils.canStartNewAction( user, application, locale );
 
-		Status previousApplicationStatus = application.getStatus();
-		try {
-			// Application occupée
-			applicationService.setStatus(application, Status.PENDING);
+        Status previousApplicationStatus = application.getStatus();
+        try
+        {
+            // Application occupée
+            applicationService.setStatus( application, Status.PENDING );
 
-			Module module = moduleService.findByName(moduleName);
-			moduleService.remove(application, user, module, true,
-					previousApplicationStatus);
+            Module module = moduleService.findByName( moduleName );
+            moduleService.remove( application, user, module, true,
+                                  previousApplicationStatus );
 
-			logger.info("-- removeModule " + applicationName + " to "
-					+ moduleName + " successful-- ");
+            logger.info( "-- removeModule " + applicationName + " to "
+                                         + moduleName + " successful-- " );
 
-		} catch (Exception e) {
-			// Application en erreur
-			logger.error(applicationName + " // " + moduleName, e);
-		} finally {
-			applicationService.setStatus(application,	previousApplicationStatus);
-		}
+        }
+        catch ( Exception e )
+        {
+            // Application en erreur
+            logger.error( applicationName + " // " + moduleName, e );
+        }
+        finally
+        {
+            applicationService.setStatus( application, previousApplicationStatus );
+        }
 
-		return new HttpOk();
-	}
+        return new HttpOk();
+    }
 
     @ResponseBody
-	@RequestMapping(value = "/{applicationName}/{moduleName}/initData",
-            method = RequestMethod.POST,
-            consumes = { "multipart/form-data" })
-	public JsonResponse deploy(@RequestPart("file") MultipartFile fileUpload,
-			@PathVariable final String applicationName,
-			@PathVariable final String moduleName, HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServiceException,
-			CheckException {
+    @RequestMapping( value = "/{applicationName}/{moduleName}/initData",
+                    method = RequestMethod.POST,
+                    consumes = { "multipart/form-data" } )
+    public JsonResponse deploy( @RequestPart( "file" ) MultipartFile fileUpload,
+                                @PathVariable final String applicationName,
+                                @PathVariable final String moduleName, HttpServletRequest request,
+                                HttpServletResponse response )
+                    throws IOException, ServiceException,
+                    CheckException
+    {
 
-		logger.info("initDb : applicationName = " + applicationName
-				+ ", moduleName = " + moduleName);
+        logger.info( "initDb : applicationName = " + applicationName
+                                     + ", moduleName = " + moduleName );
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user,
-				applicationName);
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser( user,
+                                                                        applicationName );
 
-		// We must be sure there is no running action before starting new one
-		this.authentificationUtils.canStartNewAction(user, application, locale);
+        // We must be sure there is no running action before starting new one
+        this.authentificationUtils.canStartNewAction( user, application, locale );
 
-		File file = null;
-		try {
+        File file = null;
+        try
+        {
 
-			// Application occupée
-			applicationService.setStatus(application, Status.PENDING);
+            // Application occupée
+            applicationService.setStatus( application, Status.PENDING );
 
-			file = File.createTempFile("script-",
-					fileUpload.getOriginalFilename());
-			fileUpload.transferTo(file);
+            file = File.createTempFile( "script-",
+                                        fileUpload.getOriginalFilename() );
+            fileUpload.transferTo( file );
 
-			moduleService.initDb(user, applicationName, moduleName, file);
+            moduleService.initDb( user, applicationName, moduleName, file );
 
-		} catch (IOException e) {
-			throw new ServiceException("initDb Error while creating file", e);
-		} finally {
-			applicationService.setStatus(application, Status.START);
-		}
-		return new HttpOk();
-	}
+        }
+        catch ( IOException e )
+        {
+            throw new ServiceException( "initDb Error while creating file", e );
+        }
+        finally
+        {
+            applicationService.setStatus( application, Status.START );
+        }
+        return new HttpOk();
+    }
 }

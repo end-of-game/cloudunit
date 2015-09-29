@@ -30,18 +30,21 @@ import java.io.IOException;
  * Spring Security success handler, specialized for Ajax requests.
  */
 @Component
-public class UserAjaxAuthenticationSuccessHandler extends
-		SimpleUrlAuthenticationSuccessHandler {
+public class UserAjaxAuthenticationSuccessHandler
+                extends
+                SimpleUrlAuthenticationSuccessHandler
+{
 
-	private Logger logger = LoggerFactory
-			.getLogger(UserAjaxAuthenticationSuccessHandler.class);
+    private Logger logger = LoggerFactory
+                    .getLogger( UserAjaxAuthenticationSuccessHandler.class );
 
-	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request,
-			HttpServletResponse response, Authentication authentication)
-			throws IOException, ServletException {
+    @Override
+    public void onAuthenticationSuccess( HttpServletRequest request,
+                                         HttpServletResponse response, Authentication authentication )
+                    throws IOException, ServletException
+    {
 
-		logger.info("SC_OK");
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+        logger.info( "SC_OK" );
+        response.setStatus( HttpServletResponse.SC_OK );
+    }
 }

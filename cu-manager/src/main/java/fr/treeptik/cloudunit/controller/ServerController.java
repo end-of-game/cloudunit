@@ -30,7 +30,6 @@ import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,94 +41,109 @@ import java.io.Serializable;
 import java.util.Locale;
 
 @Controller
-@RequestMapping("/server")
-public class ServerController implements Serializable {
+@RequestMapping( "/server" )
+public class ServerController
+                implements Serializable
+{
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Logger logger = LoggerFactory.getLogger(ServerController.class);
+    private final Locale locale = Locale.ENGLISH;
 
-	@Inject
-	private ApplicationService applicationService;
+    private Logger logger = LoggerFactory.getLogger( ServerController.class );
 
-	@Inject
-	private ServerService serverService;
+    @Inject
+    private ApplicationService applicationService;
 
-	@Inject
-	private AuthentificationUtils authentificationUtils;
+    @Inject
+    private ServerService serverService;
 
-	private final Locale locale = Locale.ENGLISH;
+    @Inject
+    private AuthentificationUtils authentificationUtils;
 
-	/**
-	 * Set the JVM Options and Memory
-	 * 
-	 * @param input
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@RequestMapping(value = "/configuration/jvm", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse setOptionsJVM(@RequestBody JsonInput input)
-			throws ServiceException, CheckException {
-
-		if (logger.isDebugEnabled()) { logger.debug("" + input); }
-
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user,
-				input.getApplicationName());
-
-		authentificationUtils.canStartNewAction(user, application, locale);
-
-		// Check the input for jvm options
-		boolean isApplicatioRunning = application.getStatus().equals(Status.START);
-		CheckUtils.checkJavaOpts(input.getJvmOptions(), input.getJvmMemory(), input.getJvmRelease());
-
-		applicationService.setStatus(application, Status.PENDING);
-
-		try {
-			for (Server server : application.getServers()) {
-				serverService.update(server, input.getJvmMemory(),
-						input.getJvmOptions(), input.getJvmRelease(),
-						false);
-			}
-		} catch (Exception e) {
-			applicationService.setStatus(application, Status.FAIL);
-		}
-
-		applicationService.setStatus(application, Status.START);
-
-		return new HttpOk();
-	}
-
-	/**
-	 *  Open a new port
+    /**
+     * Set the JVM Options and Memory
      *
-	 * @param input
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@RequestMapping(value = "/ports/open", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse openPort(@RequestBody JsonInput input)
-			throws ServiceException, CheckException {
+     * @param input
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping( value = "/configuration/jvm", method = RequestMethod.PUT )
+    public
+    @ResponseBody
+    JsonResponse setOptionsJVM( @RequestBody JsonInput input )
+                    throws ServiceException, CheckException
+    {
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user,
-				input.getApplicationName());
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "" + input );
+        }
 
-		authentificationUtils.canStartNewAction(user, application, locale);
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser( user,
+                                                                        input.getApplicationName() );
 
-		boolean isApplicatioRunning = application.getStatus().equals(Status.START);
+        authentificationUtils.canStartNewAction( user, application, locale );
 
-		applicationService.setStatus(application, Status.PENDING);
+        // Check the input for jvm options
+        boolean isApplicatioRunning = application.getStatus().equals( Status.START );
+        CheckUtils.checkJavaOpts( input.getJvmOptions(), input.getJvmMemory(), input.getJvmRelease() );
 
-		serverService.openPort(input.getApplicationName(),
-				input.getPortToOpen(), input.getAlias(), isApplicatioRunning);
+        applicationService.setStatus( application, Status.PENDING );
 
-		applicationService.setStatus(application, Status.START);
+        try
+        {
+            for ( Server server : application.getServers() )
+            {
+                serverService.update( server, input.getJvmMemory(),
+                                      input.getJvmOptions(), input.getJvmRelease(),
+                                      false );
+            }
+        }
+        catch ( Exception e )
+        {
+            applicationService.setStatus( application, Status.FAIL );
+        }
 
-		return new HttpOk();
-	}
+        applicationService.setStatus( application, Status.START );
+
+        return new HttpOk();
+    }
+
+    /**
+     * Open a new port
+     *
+     * @param input
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping( value = "/ports/open", method = RequestMethod.POST )
+    public
+    @ResponseBody
+    JsonResponse openPort( @RequestBody JsonInput input )
+                    throws ServiceException, CheckException
+    {
+
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser( user,
+                                                                        input.getApplicationName() );
+
+        authentificationUtils.canStartNewAction( user, application, locale );
+
+        boolean isApplicatioRunning = application.getStatus().equals( Status.START );
+
+        applicationService.setStatus( application, Status.PENDING );
+
+        serverService.openPort( input.getApplicationName(),
+                                input.getPortToOpen(), input.getAlias(), isApplicatioRunning );
+
+        applicationService.setStatus( application, Status.START );
+
+        return new HttpOk();
+    }
 
     /**
      * Close a network port
@@ -139,17 +153,20 @@ public class ServerController implements Serializable {
      * @throws ServiceException
      * @throws CheckException
      */
-	@RequestMapping(value = "/ports/close", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse closePort(@RequestBody JsonInput input)
-			throws ServiceException, CheckException {
+    @RequestMapping( value = "/ports/close", method = RequestMethod.POST )
+    public
+    @ResponseBody
+    JsonResponse closePort( @RequestBody JsonInput input )
+                    throws ServiceException, CheckException
+    {
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user,
-				input.getApplicationName());
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser( user,
+                                                                        input.getApplicationName() );
 
-		authentificationUtils.canStartNewAction(user, application, locale);
+        authentificationUtils.canStartNewAction( user, application, locale );
 
-		return new HttpOk();
-	}
+        return new HttpOk();
+    }
 
 }

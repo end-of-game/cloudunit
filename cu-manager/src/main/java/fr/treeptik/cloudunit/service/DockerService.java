@@ -20,12 +20,16 @@ import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ProviderException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 
-public interface DockerService {
+public interface DockerService
+{
 
-	public void checkAllContainersStatus() throws ServiceException, CheckException;
+    public void checkAllContainersStatus()
+                    throws ServiceException, CheckException;
 
-	void checkAllApplicationContainersStatus() throws ServiceException,
-			CheckException, DockerJSONException, ProviderException;
+    void checkAllApplicationContainersStatus()
+                    throws ServiceException,
+                    CheckException, DockerJSONException, ProviderException;
 
-	public String checkDockerInfos() throws ServiceException;
+    public String checkDockerInfos()
+                    throws ServiceException;
 }

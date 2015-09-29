@@ -24,70 +24,83 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GitModuleAction extends ModuleAction {
+public class GitModuleAction
+                extends ModuleAction
+{
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public GitModuleAction(Module module) {
-		super(module);
-	}
+    public GitModuleAction( Module module )
+    {
+        super( module );
+    }
 
-	@Override
-	public void initModuleInfos() {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void initModuleInfos()
+    {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public List<String> createDockerCmd(String databasePassword, String envExec) {
-		return Arrays.asList("/bin/sh", "/cloudunit/scripts/start-service.sh",
-				module.getApplication().getUser().getLogin(),
-				module.getApplication().getUser().getPassword(),
-				module.getApplication().getRestHost(),
-				module.getApplication().getServers().get(0).getContainerIP(),
-				module.getApplication().getName(),
-				databasePassword,
-                envExec);
-	}
+    @Override
+    public List<String> createDockerCmd( String databasePassword, String envExec )
+    {
+        return Arrays.asList( "/bin/sh", "/cloudunit/scripts/start-service.sh",
+                              module.getApplication().getUser().getLogin(),
+                              module.getApplication().getUser().getPassword(),
+                              module.getApplication().getRestHost(),
+                              module.getApplication().getServers().get( 0 ).getContainerIP(),
+                              module.getApplication().getName(),
+                              databasePassword,
+                              envExec );
+    }
 
-	@Override
-	public void unsubscribeModuleManager(HipacheRedisUtils hipacheRedisUtils) {
-	}
+    @Override
+    public void unsubscribeModuleManager( HipacheRedisUtils hipacheRedisUtils )
+    {
+    }
 
-	@Override
-	public String getInitDataCmd() {
-		return null;
-	}
+    @Override
+    public String getInitDataCmd()
+    {
+        return null;
+    }
 
-	@Override
-	public Module enableModuleManager(HipacheRedisUtils hipacheRedisUtils,
-			Module module, Long instanceNumber) {
-		return module;
-	}
+    @Override
+    public Module enableModuleManager( HipacheRedisUtils hipacheRedisUtils,
+                                       Module module, Long instanceNumber )
+    {
+        return module;
+    }
 
-	@Override
-	public void updateModuleManager(HipacheRedisUtils hipacheRedisUtils) {
-	}
+    @Override
+    public void updateModuleManager( HipacheRedisUtils hipacheRedisUtils )
+    {
+    }
 
-	@Override
-	public ModuleConfiguration cloneProperties() {
-		ModuleConfiguration moduleConfiguration = new ModuleConfiguration();
-		moduleConfiguration.setName("git");
-		return moduleConfiguration;
-	}
+    @Override
+    public ModuleConfiguration cloneProperties()
+    {
+        ModuleConfiguration moduleConfiguration = new ModuleConfiguration();
+        moduleConfiguration.setName( "git" );
+        return moduleConfiguration;
+    }
 
-	@Override
-	public List<String> createDockerCmdForClone(Map<String, String> map) {
-		return new ArrayList<>();
-	}
+    @Override
+    public List<String> createDockerCmdForClone( Map<String, String> map )
+    {
+        return new ArrayList<>();
+    }
 
-	@Override
-	public String getLogLocation() {
-		return null;
-	}
+    @Override
+    public String getLogLocation()
+    {
+        return null;
+    }
 
-	@Override
-	public String getManagerLocation(String subdomain, String suffix) {
-		return "";
-	}
+    @Override
+    public String getManagerLocation( String subdomain, String suffix )
+    {
+        return "";
+    }
 
 }

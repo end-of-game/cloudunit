@@ -22,50 +22,59 @@ import javax.persistence.*;
 import java.util.Map;
 
 @Entity
-public class ModuleConfiguration {
+public class ModuleConfiguration
+{
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+    @Id
+    @GeneratedValue( strategy = GenerationType.AUTO )
+    private Integer id;
 
-	@ElementCollection(fetch=FetchType.LAZY)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	private Map<String, String> properties;
+    @ElementCollection( fetch = FetchType.LAZY )
+    @LazyCollection( LazyCollectionOption.FALSE )
+    private Map<String, String> properties;
 
-	private String name;
+    private String name;
 
-	private String path;
+    private String path;
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId()
+    {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId( Integer id )
+    {
+        this.id = id;
+    }
 
-	public Map<String, String> getProperties() {
-		return properties;
-	}
+    public Map<String, String> getProperties()
+    {
+        return properties;
+    }
 
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
-	}
+    public void setProperties( Map<String, String> properties )
+    {
+        this.properties = properties;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName()
+    {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName( String name )
+    {
+        this.name = name;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public String getPath()
+    {
+        return path;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public void setPath( String path )
+    {
+        this.path = path;
+    }
 
 }

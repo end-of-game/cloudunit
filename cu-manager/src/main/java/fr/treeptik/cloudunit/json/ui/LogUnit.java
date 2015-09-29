@@ -21,31 +21,44 @@ import java.util.Date;
 /**
  * Created by nicolas on 25/08/2014.
  */
-public class LogUnit {
+public class LogUnit
+{
+
+    private static SimpleDateFormat simpleDateFormatFrom = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSZ" );
+
+    private static SimpleDateFormat simpleDateFormatTo = new SimpleDateFormat( "dd-MM-yyyy HH:mm:ss" );
 
     private String source;
+
     private String level;
+
     private String date;
+
     private String message;
 
-    private static SimpleDateFormat simpleDateFormatFrom = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    private static SimpleDateFormat simpleDateFormatTo = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
-
-    public LogUnit(final String source, final String date, final String message) {
+    public LogUnit( final String source, final String date, final String message )
+    {
         this.message = message;
-        if (source != null && source.contains("/")) {
-            this.source = source.substring(source.lastIndexOf("/")+1);
-        } else {
+        if ( source != null && source.contains( "/" ) )
+        {
+            this.source = source.substring( source.lastIndexOf( "/" ) + 1 );
+        }
+        else
+        {
             this.source = source;
         }
         // TODO : BEGIN : Virer cette horreur pour que le plugin GROK de LogStash fasse le taf
-        try {
-            if (date != null && date.trim().length() >0) {
-                Date tempDate = simpleDateFormatFrom.parse(date.replaceAll("Z$", "+0000"));
-                this.date = simpleDateFormatTo.format(tempDate);
+        try
+        {
+            if ( date != null && date.trim().length() > 0 )
+            {
+                Date tempDate = simpleDateFormatFrom.parse( date.replaceAll( "Z$", "+0000" ) );
+                this.date = simpleDateFormatTo.format( tempDate );
             }
-        } catch(Exception ignore) {}
+        }
+        catch ( Exception ignore )
+        {
+        }
 
         // TODO : BEGIN : Virer cette horreur pour que le plugin GROK de LogStash fasse le taf
         /*
@@ -71,19 +84,23 @@ public class LogUnit {
 
     }
 
-    public String getDate() {
+    public String getDate()
+    {
         return date;
     }
 
-    public String getMessage() {
+    public String getMessage()
+    {
         return message;
     }
 
-    public String getLevel() {
+    public String getLevel()
+    {
         return level;
     }
 
-    public String getSource() {
+    public String getSource()
+    {
         return source;
     }
 

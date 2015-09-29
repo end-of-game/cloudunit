@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.aspects;
 
-public @interface Loggable {
+public @interface Loggable
+{
 
 }

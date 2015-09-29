@@ -21,43 +21,53 @@ import javax.persistence.Id;
 import java.io.Serializable;
 
 @Entity
-public class ProxySshPort implements Serializable {
+public class ProxySshPort
+                implements Serializable
+{
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue
-	private Integer id;
+    @Id
+    @GeneratedValue
+    private Integer id;
 
-	private String portNumber;
-	private boolean used;
+    private String portNumber;
 
-	public ProxySshPort() {
-		super();
-	}
+    private boolean used;
 
-	public Integer getId() {
-		return id;
-	}
+    public ProxySshPort()
+    {
+        super();
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId()
+    {
+        return id;
+    }
 
-	public String getPortNumber() {
-		return portNumber;
-	}
+    public void setId( Integer id )
+    {
+        this.id = id;
+    }
 
-	public void setPortNumber(String portNumber) {
-		this.portNumber = portNumber;
-	}
+    public String getPortNumber()
+    {
+        return portNumber;
+    }
 
-	public boolean isUsed() {
-		return used;
-	}
+    public void setPortNumber( String portNumber )
+    {
+        this.portNumber = portNumber;
+    }
 
-	public void setUsed(boolean used) {
-		this.used = used;
-	}
+    public boolean isUsed()
+    {
+        return used;
+    }
+
+    public void setUsed( boolean used )
+    {
+        this.used = used;
+    }
 
 }

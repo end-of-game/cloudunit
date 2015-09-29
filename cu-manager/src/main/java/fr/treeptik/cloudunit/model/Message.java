@@ -24,111 +24,132 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 @Entity
-public class Message implements Serializable {
+public class Message
+                implements Serializable
+{
 
-	private static FastDateFormat DATE_FORMATER = FastDateFormat.getInstance(
-			"dd-MM-yyyy HH:mm:ss", TimeZone.getDefault(), Locale.getDefault());
+    public static final String INFO = "INFO";
 
-	public static final String INFO = "INFO";
+    public static final String ERROR = "ERROR";
 
-	public static final String ERROR = "ERROR";
+    private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+    private static FastDateFormat DATE_FORMATER = FastDateFormat.getInstance(
+                    "dd-MM-yyyy HH:mm:ss", TimeZone.getDefault(), Locale.getDefault() );
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date date;
+    @Id
+    @GeneratedValue( strategy = GenerationType.AUTO )
+    private Integer id;
 
-	@ManyToOne
-	private User author;
+    @Temporal( TemporalType.TIMESTAMP )
+    private Date date;
 
-	private String type;
+    @ManyToOne
+    private User author;
 
-	private String applicationName;
+    private String type;
 
-	@Column(columnDefinition = "text")
-	private String event;
+    private String applicationName;
 
-	private String action;
+    @Column( columnDefinition = "text" )
+    private String event;
 
-	public Message() {
-		this.date = new Date();
-	}
+    private String action;
 
-	@Override
-	public String toString() {
-		return "Message{" + "id=" + id + ", date=" + date + ", author="
-				+ author + ", type='" + type + '\'' + ", applicationName='"
-				+ applicationName + '\'' + ", event='" + event + '\''
-				+ ", action='" + action + '\'' + '}';
-	}
+    public Message()
+    {
+        this.date = new Date();
+    }
 
-	public String getAction() {
-		return "application.create";
-	}
+    public Message( Type type )
+    {
+        this.date = new Date();
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+        this.type = type.name();
+    }
 
-	public Message(Type type) {
-		this.date = new Date();
+    @Override
+    public String toString()
+    {
+        return "Message{" + "id=" + id + ", date=" + date + ", author="
+                        + author + ", type='" + type + '\'' + ", applicationName='"
+                        + applicationName + '\'' + ", event='" + event + '\''
+                        + ", action='" + action + '\'' + '}';
+    }
 
-		this.type = type.name();
-	}
+    public String getAction()
+    {
+        return "application.create";
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public void setAction( String action )
+    {
+        this.action = action;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId()
+    {
+        return id;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public void setId( Integer id )
+    {
+        this.id = id;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public Date getDate()
+    {
+        return date;
+    }
 
-	public String getDateAsString() {
-		return DATE_FORMATER.format(date);
-	}
+    public void setDate( Date date )
+    {
+        this.date = date;
+    }
 
-	public String getEvent() {
-		return event;
-	}
+    public String getDateAsString()
+    {
+        return DATE_FORMATER.format( date );
+    }
 
-	public void setEvent(String event) {
-		this.event = event;
-	}
+    public String getEvent()
+    {
+        return event;
+    }
 
-	public User getAuthor() {
-		return author;
-	}
+    public void setEvent( String event )
+    {
+        this.event = event;
+    }
 
-	public void setAuthor(User author) {
-		this.author = author;
-	}
+    public User getAuthor()
+    {
+        return author;
+    }
 
-	public String getApplicationName() {
-		return applicationName;
-	}
+    public void setAuthor( User author )
+    {
+        this.author = author;
+    }
 
-	public void setApplicationName(String applicationName) {
-		this.applicationName = applicationName;
-	}
+    public String getApplicationName()
+    {
+        return applicationName;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setApplicationName( String applicationName )
+    {
+        this.applicationName = applicationName;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
 
 }

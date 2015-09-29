@@ -28,37 +28,49 @@ import javax.inject.Inject;
 import java.util.List;
 
 @Controller
-@RequestMapping("/image")
-public class ImageController {
+@RequestMapping( "/image" )
+public class ImageController
+{
 
-	@Inject
-	private ImageService imageService;
+    @Inject
+    private ImageService imageService;
 
-	@Value("${api.version}")
-	private String apiVersion;
+    @Value( "${api.version}" )
+    private String apiVersion;
 
-	@RequestMapping(value = "/all", method = RequestMethod.GET)
-	public @ResponseBody
-	List<Image> listAllImages() throws ServiceException {
-		return imageService.findAll();
-	}
+    @RequestMapping( value = "/all", method = RequestMethod.GET )
+    public
+    @ResponseBody
+    List<Image> listAllImages()
+                    throws ServiceException
+    {
+        return imageService.findAll();
+    }
 
-	@RequestMapping(value = "/module/enabled", method = RequestMethod.GET)
-	public @ResponseBody
-	List<Image> listAllEnabledModuleImages() throws ServiceException {
-		return imageService.findEnabledImagesByType("module");
-	}
+    @RequestMapping( value = "/module/enabled", method = RequestMethod.GET )
+    public
+    @ResponseBody
+    List<Image> listAllEnabledModuleImages()
+                    throws ServiceException
+    {
+        return imageService.findEnabledImagesByType( "module" );
+    }
 
-	@RequestMapping(value = "/server/enabled", method = RequestMethod.GET)
-	public @ResponseBody
-	List<Image> listAllEnabledServerImages() throws ServiceException {
-		return imageService.findEnabledImagesByType("server");
-	}
+    @RequestMapping( value = "/server/enabled", method = RequestMethod.GET )
+    public
+    @ResponseBody
+    List<Image> listAllEnabledServerImages()
+                    throws ServiceException
+    {
+        return imageService.findEnabledImagesByType( "server" );
+    }
 
-	@RequestMapping(value = "/version", method = RequestMethod.GET)
-	public @ResponseBody
-	String getVersion() {
-		return apiVersion;
-	}
+    @RequestMapping( value = "/version", method = RequestMethod.GET )
+    public
+    @ResponseBody
+    String getVersion()
+    {
+        return apiVersion;
+    }
 
 }

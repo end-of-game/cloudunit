@@ -24,48 +24,51 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ModuleAction implements Serializable {
+public abstract class ModuleAction
+                implements Serializable
+{
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected String managerLocation;
+    protected String managerLocation;
 
-	protected Module module;
+    protected Module module;
 
-	public ModuleAction(Module module) {
-		this.module = module;
-	}
+    public ModuleAction( Module module )
+    {
+        this.module = module;
+    }
 
-	public abstract void initModuleInfos();
+    public abstract void initModuleInfos();
 
-	public abstract String getInitDataCmd() throws IOException;
+    public abstract String getInitDataCmd()
+                    throws IOException;
 
-	public abstract List<String> createDockerCmd(String databasePassword, String envExec);
+    public abstract List<String> createDockerCmd( String databasePassword, String envExec );
 
-	public abstract List<String> createDockerCmdForClone(Map<String, String> map);
+    public abstract List<String> createDockerCmdForClone( Map<String, String> map );
 
-	/**
-	 * 
-	 * add url to access to module manager (e.g phpMyAdmin)
-	 * 
-	 * @param hipacheRedisUtils
-	 * @param parent
-	 * @param instanceNumber
-	 * @return
-	 */
-	public abstract Module enableModuleManager(
-			HipacheRedisUtils hipacheRedisUtils, Module parent, Long instanceNumber);
+    /**
+     * add url to access to module manager (e.g phpMyAdmin)
+     *
+     * @param hipacheRedisUtils
+     * @param parent
+     * @param instanceNumber
+     * @return
+     */
+    public abstract Module enableModuleManager(
+                    HipacheRedisUtils hipacheRedisUtils, Module parent, Long instanceNumber );
 
-	public abstract void updateModuleManager(
-			HipacheRedisUtils hipacheRedisUtils);
+    public abstract void updateModuleManager(
+                    HipacheRedisUtils hipacheRedisUtils );
 
-	public abstract void unsubscribeModuleManager(
-			HipacheRedisUtils hipacheRedisUtils);
+    public abstract void unsubscribeModuleManager(
+                    HipacheRedisUtils hipacheRedisUtils );
 
-	public abstract ModuleConfiguration cloneProperties();
+    public abstract ModuleConfiguration cloneProperties();
 
-	public abstract String getLogLocation();
+    public abstract String getLogLocation();
 
-	public abstract String getManagerLocation(String subdomain, String suffix);
+    public abstract String getManagerLocation( String subdomain, String suffix );
 
 }

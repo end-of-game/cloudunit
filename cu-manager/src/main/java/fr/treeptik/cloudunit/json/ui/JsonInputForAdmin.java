@@ -17,85 +17,111 @@ package fr.treeptik.cloudunit.json.ui;
 
 import java.io.Serializable;
 
-public class JsonInputForAdmin implements Serializable {
+public class JsonInputForAdmin
+                implements Serializable
+{
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String login;
-	private String lastName;
-	private String firstName;
-	private String role;
-	private String email;
-	private String password;
-	private String organization;
-	private String newPassword;
+    private String login;
 
-	public JsonInputForAdmin() {
+    private String lastName;
 
-	}
+    private String firstName;
 
-	public String getLogin() {
-		return login;
-	}
+    private String role;
 
-	public void setLogin(String login) {
-		this.login = login;
-	}
+    private String email;
 
-	public String getLastName() {
-		return lastName;
-	}
+    private String password;
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    private String organization;
 
-	public String getFirstName() {
-		return firstName;
-	}
+    private String newPassword;
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public JsonInputForAdmin()
+    {
 
-	public String getRole() {
-		return role;
-	}
+    }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+    public String getLogin()
+    {
+        return login;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setLogin( String login )
+    {
+        this.login = login;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getLastName()
+    {
+        return lastName;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public void setLastName( String lastName )
+    {
+        this.lastName = lastName;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public String getFirstName()
+    {
+        return firstName;
+    }
 
-	public String getOrganization() {
-		return organization;
-	}
+    public void setFirstName( String firstName )
+    {
+        this.firstName = firstName;
+    }
 
-	public void setOrganization(String organization) {
-		this.organization = organization;
-	}
+    public String getRole()
+    {
+        return role;
+    }
 
-	public String getNewPassword() {
-		return newPassword;
-	}
+    public void setRole( String role )
+    {
+        this.role = role;
+    }
 
-	public void setNewPassword(String newPassword) {
-		this.newPassword = newPassword;
-	}
+    public String getEmail()
+    {
+        return email;
+    }
+
+    public void setEmail( String email )
+    {
+        this.email = email;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword( String password )
+    {
+        this.password = password;
+    }
+
+    public String getOrganization()
+    {
+        return organization;
+    }
+
+    public void setOrganization( String organization )
+    {
+        this.organization = organization;
+    }
+
+    public String getNewPassword()
+    {
+        return newPassword;
+    }
+
+    public void setNewPassword( String newPassword )
+    {
+        this.newPassword = newPassword;
+    }
 
 }

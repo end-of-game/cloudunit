@@ -23,19 +23,23 @@ import fr.treeptik.cloudunit.model.User;
 
 import java.util.List;
 
-public interface SnapshotService {
+public interface SnapshotService
+{
 
-	List<Snapshot> listAll(String login) throws ServiceException;
+    List<Snapshot> listAll( String login )
+                    throws ServiceException;
 
-	Snapshot remove(String tag, String login) throws ServiceException,
-			CheckException;
+    Snapshot remove( String tag, String login )
+                    throws ServiceException,
+                    CheckException;
 
-	Snapshot findOne(String tag, String login);
+    Snapshot findOne( String tag, String login );
 
-	Snapshot create(String applicationName, User user, String tag,
-			String description, Status previousStatus) throws ServiceException;
+    Snapshot create( String applicationName, User user, String tag,
+                     String description, Status previousStatus )
+                    throws ServiceException;
 
-	Snapshot cloneFromASnapshot(String applicationName, String tag)
-			throws ServiceException, InterruptedException;
+    Snapshot cloneFromASnapshot( String applicationName, String tag )
+                    throws ServiceException, InterruptedException;
 
 }

@@ -40,200 +40,223 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class JSONClient {
+public class JSONClient
+{
 
-	private Logger logger = LoggerFactory.getLogger(JSONClient.class);
+    private Logger logger = LoggerFactory.getLogger( JSONClient.class );
 
-	public JsonResponse sendGet(URI uri) throws IOException {
-		StringBuilder builder = new StringBuilder();
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet(uri);
-		HttpResponse response = httpclient.execute(httpGet);
-		LineIterator iterator = IOUtils.lineIterator(response.getEntity()
-				.getContent(), "UTF-8");
-		while (iterator.hasNext()) {
-			builder.append(iterator.nextLine());
-		}
-		JsonResponse jsonResponse = new JsonResponse(response.getStatusLine()
-				.getStatusCode(), builder.toString(), null);
-		return jsonResponse;
-	}
+    public JsonResponse sendGet( URI uri )
+                    throws IOException
+    {
+        StringBuilder builder = new StringBuilder();
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet( uri );
+        HttpResponse response = httpclient.execute( httpGet );
+        LineIterator iterator = IOUtils.lineIterator( response.getEntity()
+                                                              .getContent(), "UTF-8" );
+        while ( iterator.hasNext() )
+        {
+            builder.append( iterator.nextLine() );
+        }
+        JsonResponse jsonResponse = new JsonResponse( response.getStatusLine()
+                                                              .getStatusCode(), builder.toString(), null );
+        return jsonResponse;
+    }
 
-	public int sendPost(URI uri, String body, String contentType)
-			throws ClientProtocolException, IOException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("POST : uri  " + uri + " - body  :  " + body
-					+ " - contentype : " + contentType);
-		}
+    public int sendPost( URI uri, String body, String contentType )
+                    throws ClientProtocolException, IOException
+    {
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "POST : uri  " + uri + " - body  :  " + body
+                                          + " - contentype : " + contentType );
+        }
 
-		/**
-		 * TODO
-		 */
-		logger.info("POST : uri " + uri + " - body  :  " + body
-				+ " - contentype : " + contentType);
+        /**
+         * TODO
+         */
+        logger.info( "POST : uri " + uri + " - body  :  " + body
+                                     + " - contentype : " + contentType );
 
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost(uri);
-		httpPost.addHeader("content-type", contentType);
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost( uri );
+        httpPost.addHeader( "content-type", contentType );
 
-		httpPost.setEntity(new StringEntity(body));
+        httpPost.setEntity( new StringEntity( body ) );
 
-		StatusLine statusLine = httpclient.execute(httpPost).getStatusLine();
-		if (logger.isDebugEnabled()) {
-			logger.debug("POST : uri " + uri + " returns "
-					+ statusLine.getStatusCode());
-		}
+        StatusLine statusLine = httpclient.execute( httpPost ).getStatusLine();
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "POST : uri " + uri + " returns "
+                                          + statusLine.getStatusCode() );
+        }
 
-		logger.info("POST : uri " + uri + " returns "
-				+ statusLine.getStatusCode());
+        logger.info( "POST : uri " + uri + " returns "
+                                     + statusLine.getStatusCode() );
 
-		return statusLine.getStatusCode();
-	}
+        return statusLine.getStatusCode();
+    }
 
-	public int sendPostForStart(URI uri, String body, String contentType)
-			throws ClientProtocolException, IOException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("POST : uri  " + uri + " - body  :  " + body
-					+ " - contentype : " + contentType);
-		}
+    public int sendPostForStart( URI uri, String body, String contentType )
+                    throws ClientProtocolException, IOException
+    {
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "POST : uri  " + uri + " - body  :  " + body
+                                          + " - contentype : " + contentType );
+        }
 
-		/**
-		 * TODO
-		 */
-		logger.info("POST : uri " + uri + " - body  :  " + body
-				+ " - contentype : " + contentType);
+        /**
+         * TODO
+         */
+        logger.info( "POST : uri " + uri + " - body  :  " + body
+                                     + " - contentype : " + contentType );
 
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost(uri);
-		httpPost.addHeader("content-type", contentType);
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost( uri );
+        httpPost.addHeader( "content-type", contentType );
 
-		httpPost.setEntity(new StringEntity(body));
+        httpPost.setEntity( new StringEntity( body ) );
 
-		CloseableHttpResponse execute = httpclient.execute(httpPost);
-		if (logger.isDebugEnabled()) {
-			logger.debug("POST : uri " + uri + " returns "
-					+ execute.getStatusLine().getStatusCode());
-		}
+        CloseableHttpResponse execute = httpclient.execute( httpPost );
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "POST : uri " + uri + " returns "
+                                          + execute.getStatusLine().getStatusCode() );
+        }
 
-		StringWriter writer = new StringWriter();
+        StringWriter writer = new StringWriter();
 
-		if (execute.getEntity() != null)
+        if ( execute.getEntity() != null )
 
-			IOUtils.copy(execute.getEntity().getContent(), writer, "UTF-8");
+            IOUtils.copy( execute.getEntity().getContent(), writer, "UTF-8" );
 
-		if (writer.toString().contains("address")) {
-			this.sendPostForStart(uri, body, contentType);
-			return execute.getStatusLine().getStatusCode();
-		}
+        if ( writer.toString().contains( "address" ) )
+        {
+            this.sendPostForStart( uri, body, contentType );
+            return execute.getStatusLine().getStatusCode();
+        }
 
-		logger.info("POST : uri " + uri + " returns "
-				+ execute.getStatusLine().getStatusCode());
+        logger.info( "POST : uri " + uri + " returns "
+                                     + execute.getStatusLine().getStatusCode() );
 
-		return execute.getStatusLine().getStatusCode();
-	}
+        return execute.getStatusLine().getStatusCode();
+    }
 
-	public Map<String, Object> sendPostAndGetImageID(URI uri, String body,
-			String contentType) throws ClientProtocolException, IOException {
+    public Map<String, Object> sendPostAndGetImageID( URI uri, String body,
+                                                      String contentType )
+                    throws ClientProtocolException, IOException
+    {
 
-		Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("POST : uri  " + uri + " - body  :  " + body
-					+ " - contentype : " + contentType);
-		}
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "POST : uri  " + uri + " - body  :  " + body
+                                          + " - contentype : " + contentType );
+        }
 
-		/**
-		 * TODO
-		 */
-		logger.info("POST : uri " + uri + " - body  :  " + body
-				+ " - contentype : " + contentType);
+        /**
+         * TODO
+         */
+        logger.info( "POST : uri " + uri + " - body  :  " + body
+                                     + " - contentype : " + contentType );
 
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost(uri);
-		httpPost.addHeader("content-type", contentType);
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost( uri );
+        httpPost.addHeader( "content-type", contentType );
 
-		httpPost.setEntity(new StringEntity(body));
+        httpPost.setEntity( new StringEntity( body ) );
 
-		CloseableHttpResponse execute = httpclient.execute(httpPost);
+        CloseableHttpResponse execute = httpclient.execute( httpPost );
 
-		StatusLine statusLine = execute.getStatusLine();
+        StatusLine statusLine = execute.getStatusLine();
 
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(execute.getEntity().getContent(), writer, "UTF-8");
+        StringWriter writer = new StringWriter();
+        IOUtils.copy( execute.getEntity().getContent(), writer, "UTF-8" );
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("POST : uri " + uri + " returns "
-					+ statusLine.getStatusCode());
-		}
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "POST : uri " + uri + " returns "
+                                          + statusLine.getStatusCode() );
+        }
 
-		logger.info("POST : uri " + uri + " returns "
-				+ statusLine.getStatusCode());
-		response.put("code", statusLine.getStatusCode());
-		response.put("body", writer.toString());
-		return response;
-	}
+        logger.info( "POST : uri " + uri + " returns "
+                                     + statusLine.getStatusCode() );
+        response.put( "code", statusLine.getStatusCode() );
+        response.put( "body", writer.toString() );
+        return response;
+    }
 
-	public Map<String, Object> sendPostWithRegistryHost(URI uri, String body,
-			String contentType) throws ClientProtocolException, IOException {
+    public Map<String, Object> sendPostWithRegistryHost( URI uri, String body,
+                                                         String contentType )
+                    throws ClientProtocolException, IOException
+    {
 
-		Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<String, Object>();
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("POST : uri  " + uri + " - body  :  " + body
-					+ " - contentype : " + contentType);
-		}
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "POST : uri  " + uri + " - body  :  " + body
+                                          + " - contentype : " + contentType );
+        }
 
-		/**
-		 * TODO
-		 */
-		logger.info("POST : uri " + uri + " - body  :  " + body
-				+ " - contentype : " + contentType);
+        /**
+         * TODO
+         */
+        logger.info( "POST : uri " + uri + " - body  :  " + body
+                                     + " - contentype : " + contentType );
 
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		RequestConfig config = RequestConfig.custom()
-				.setSocketTimeout(1000 * 60 * 5)
-				.setConnectTimeout(1000 * 60 * 5).build();
-		HttpPost httpPost = new HttpPost(uri);
-		httpPost.setConfig(config);
-		httpPost.addHeader("content-type", contentType);
-		httpPost.addHeader("X-Registry-Auth", "1234");
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        RequestConfig config = RequestConfig.custom()
+                                            .setSocketTimeout( 1000 * 60 * 5 )
+                                            .setConnectTimeout( 1000 * 60 * 5 ).build();
+        HttpPost httpPost = new HttpPost( uri );
+        httpPost.setConfig( config );
+        httpPost.addHeader( "content-type", contentType );
+        httpPost.addHeader( "X-Registry-Auth", "1234" );
 
-		httpPost.setEntity(new StringEntity(body));
+        httpPost.setEntity( new StringEntity( body ) );
 
-		CloseableHttpResponse execute = httpclient.execute(httpPost);
+        CloseableHttpResponse execute = httpclient.execute( httpPost );
 
-		StatusLine statusLine = execute.getStatusLine();
+        StatusLine statusLine = execute.getStatusLine();
 
-		StringWriter writer = new StringWriter();
+        StringWriter writer = new StringWriter();
 
-		IOUtils.copy(execute.getEntity().getContent(), writer, "UTF-8");
+        IOUtils.copy( execute.getEntity().getContent(), writer, "UTF-8" );
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("POST : uri " + uri + " returns "
-					+ statusLine.getStatusCode());
-		}
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "POST : uri " + uri + " returns "
+                                          + statusLine.getStatusCode() );
+        }
 
-		logger.info("POST : uri " + uri + " returns "
-				+ statusLine.getStatusCode());
-		response.put("code", statusLine.getStatusCode());
-		response.put("body", writer.toString());
-		return response;
-	}
+        logger.info( "POST : uri " + uri + " returns "
+                                     + statusLine.getStatusCode() );
+        response.put( "code", statusLine.getStatusCode() );
+        response.put( "body", writer.toString() );
+        return response;
+    }
 
-	public int sendDelete(URI uri) throws ClientProtocolException, IOException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("DELETE : uri " + uri);
-		}
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpDelete httpDelete = new HttpDelete(uri);
-		StatusLine statusLine = httpClient.execute(httpDelete).getStatusLine();
-		if (logger.isDebugEnabled()) {
-			logger.debug("DELETE : uri " + uri + " returns "
-					+ statusLine.getStatusCode());
-		}
-		logger.info("DELETE : uri " + uri + " returns "
-				+ statusLine.getStatusCode());
+    public int sendDelete( URI uri )
+                    throws ClientProtocolException, IOException
+    {
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "DELETE : uri " + uri );
+        }
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpDelete httpDelete = new HttpDelete( uri );
+        StatusLine statusLine = httpClient.execute( httpDelete ).getStatusLine();
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "DELETE : uri " + uri + " returns "
+                                          + statusLine.getStatusCode() );
+        }
+        logger.info( "DELETE : uri " + uri + " returns "
+                                     + statusLine.getStatusCode() );
 
-		return statusLine.getStatusCode();
-	}
+        return statusLine.getStatusCode();
+    }
 }

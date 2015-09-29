@@ -15,12 +15,15 @@
 
 package fr.treeptik.cloudunit.exception;
 
-public class ErrorDockerJSONException extends DockerJSONException {
+public class ErrorDockerJSONException
+                extends DockerJSONException
+{
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    public ErrorDockerJSONException(String message) {
-        super(message);
+    public ErrorDockerJSONException( String message )
+    {
+        super( message );
     }
 
 }

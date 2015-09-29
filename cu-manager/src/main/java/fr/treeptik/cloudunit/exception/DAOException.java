@@ -15,11 +15,14 @@
 
 package fr.treeptik.cloudunit.exception;
 
-public class DAOException extends Exception {
+public class DAOException
+                extends Exception
+{
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public DAOException(String message, Throwable e) {
-		super(message, e);
-	}
+    public DAOException( String message, Throwable e )
+    {
+        super( message, e );
+    }
 }

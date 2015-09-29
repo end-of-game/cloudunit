@@ -33,67 +33,89 @@ import javax.persistence.PersistenceException;
 import java.util.List;
 
 @Service
-public class MessageServiceImpl implements MessageService {
+public class MessageServiceImpl
+                implements MessageService
+{
 
-	@Inject
-	private MessageDAO messageDAO;
+    @Inject
+    private MessageDAO messageDAO;
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public Message create(Message message) throws ServiceException {
-		try {
-			return messageDAO.saveAndFlush(message);
-		} catch (PersistenceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
+    @Override
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
+    public Message create( Message message )
+                    throws ServiceException
+    {
+        try
+        {
+            return messageDAO.saveAndFlush( message );
+        }
+        catch ( PersistenceException e )
+        {
+            throw new ServiceException( e.getLocalizedMessage(), e );
+        }
+    }
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void delete(Message message) throws ServiceException {
-		try {
-			messageDAO.delete(message);
-		} catch (PersistenceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
+    @Override
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
+    public void delete( Message message )
+                    throws ServiceException
+    {
+        try
+        {
+            messageDAO.delete( message );
+        }
+        catch ( PersistenceException e )
+        {
+            throw new ServiceException( e.getLocalizedMessage(), e );
+        }
+    }
 
-	@Override
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public List<Message> listByUser(User user, int nbRows)
-			throws ServiceException {
-		try {
-			Pageable pageable = new PageRequest(0, nbRows, sortByLastNameAsc());
-			Page<Message> requestedPage = messageDAO.listByUser(user, pageable);
-			return requestedPage.getContent();
-		} catch (PersistenceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
-	
-	@Override
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public List<Message> listByApp(User user, String applicationName,
-			int nbMessages) throws ServiceException {
-		try {
-			Pageable pageable = new PageRequest(0, nbMessages,
-					sortByLastNameAsc());
-			Page<Message> requestedPage = messageDAO.listByApp(user,
-					applicationName, pageable);
-			return requestedPage.getContent();
-		} catch (PersistenceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
+    @Override
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
+    public List<Message> listByUser( User user, int nbRows )
+                    throws ServiceException
+    {
+        try
+        {
+            Pageable pageable = new PageRequest( 0, nbRows, sortByLastNameAsc() );
+            Page<Message> requestedPage = messageDAO.listByUser( user, pageable );
+            return requestedPage.getContent();
+        }
+        catch ( PersistenceException e )
+        {
+            throw new ServiceException( e.getLocalizedMessage(), e );
+        }
+    }
 
-	/**
-	 * Returns a Sort object which sorts persons in ascending order by using the
-	 * last name.
-	 * 
-	 * @return
-	 */
-	private Sort sortByLastNameAsc() {
-		return new Sort(Sort.Direction.DESC, "date");
-	}
+    @Override
+    @Transactional( propagation = Propagation.REQUIRES_NEW )
+    public List<Message> listByApp( User user, String applicationName,
+                                    int nbMessages )
+                    throws ServiceException
+    {
+        try
+        {
+            Pageable pageable = new PageRequest( 0, nbMessages,
+                                                 sortByLastNameAsc() );
+            Page<Message> requestedPage = messageDAO.listByApp( user,
+                                                                applicationName, pageable );
+            return requestedPage.getContent();
+        }
+        catch ( PersistenceException e )
+        {
+            throw new ServiceException( e.getLocalizedMessage(), e );
+        }
+    }
+
+    /**
+     * Returns a Sort object which sorts persons in ascending order by using the
+     * last name.
+     *
+     * @return
+     */
+    private Sort sortByLastNameAsc()
+    {
+        return new Sort( Sort.Direction.DESC, "date" );
+    }
 
 }

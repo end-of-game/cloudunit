@@ -34,14 +34,18 @@ import org.springframework.context.MessageSource;
 import javax.inject.Inject;
 import java.io.Serializable;
 
-public class ServerAspect extends CloudUnitAbstractAspect implements Serializable {
+public class ServerAspect
+                extends CloudUnitAbstractAspect
+                implements Serializable
+{
 
     private static final long serialVersionUID = 1L;
 
     private final String createType = "CREATE";
+
     private final String updateType = "UPDATE";
 
-    private Logger logger = LoggerFactory.getLogger(ServerAspect.class);
+    private Logger logger = LoggerFactory.getLogger( ServerAspect.class );
 
     @Inject
     private MessageService messageService;
@@ -50,69 +54,81 @@ public class ServerAspect extends CloudUnitAbstractAspect implements Serializabl
     private MessageSource messageSource;
 
     // Before methods
-    @Before("execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))")
-    public void beforeServer(final JoinPoint joinPoint)
-            throws MonitorException, ServiceException {
+    @Before( "execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))" )
+    public void beforeServer( final JoinPoint joinPoint )
+                    throws MonitorException, ServiceException
+    {
 
         Server server = (Server) joinPoint.getArgs()[0];
         User user = getAuthentificatedUser();
         Message message = null;
         String applicationName = server.getApplication().getName();
 
-        switch (joinPoint.getSignature().getName().toUpperCase()) {
+        switch ( joinPoint.getSignature().getName().toUpperCase() )
+        {
             case updateType:
-                message = MessageUtils.writeBeforeApplicationMessage(user,
-                        applicationName, updateType);
+                message = MessageUtils.writeBeforeApplicationMessage( user,
+                                                                      applicationName, updateType );
                 break;
         }
-        logger.info(message.toString());
-        messageService.create(message);
+        logger.info( message.toString() );
+        messageService.create( message );
 
     }
 
-    @AfterReturning(pointcut = "execution(* fr.treeptik.cloudunit.service.ServerService.create(..)) " +
-            "|| execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))",
-            returning = "result")
-    public void afterReturningServer(StaticPart staticPart, Object result)
-            throws MonitorException {
-        try {
-            if (result == null) return;
+    @AfterReturning( pointcut = "execution(* fr.treeptik.cloudunit.service.ServerService.create(..)) " +
+                    "|| execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))",
+                    returning = "result" )
+    public void afterReturningServer( StaticPart staticPart, Object result )
+                    throws MonitorException
+    {
+        try
+        {
+            if ( result == null )
+                return;
             Server server = (Server) result;
             User user = server.getApplication().getUser();
             Message message = null;
-            switch (staticPart.getSignature().getName().toUpperCase()) {
+            switch ( staticPart.getSignature().getName().toUpperCase() )
+            {
                 case createType:
-                    message = MessageUtils.writeServerMessage(user, server,
-                            createType);
+                    message = MessageUtils.writeServerMessage( user, server,
+                                                               createType );
                     break;
                 case updateType:
-                    message = MessageUtils.writeServerMessage(user, server,
-                            updateType);
+                    message = MessageUtils.writeServerMessage( user, server,
+                                                               updateType );
                     break;
 
             }
-            logger.info(message.toString());
-            messageService.create(message);
+            logger.info( message.toString() );
+            messageService.create( message );
 
-        } catch (ServiceException e) {
-            throw new MonitorException("Error afterReturningApplication", e);
+        }
+        catch ( ServiceException e )
+        {
+            throw new MonitorException( "Error afterReturningApplication", e );
         }
     }
 
-    @AfterThrowing(pointcut = "execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))", throwing = "e")
-    public void afterThrowingServer(final StaticPart staticPart,
-                                    final Exception e) throws ServiceException {
+    @AfterThrowing( pointcut = "execution(* fr.treeptik.cloudunit.service.ServerService.updateType(..))", throwing = "e" )
+    public void afterThrowingServer( final StaticPart staticPart,
+                                     final Exception e )
+                    throws ServiceException
+    {
         User user = super.getAuthentificatedUser();
         Message message = null;
-        logger.debug("CALLED CLASS : " + staticPart.getSignature().getName());
-        switch (staticPart.getSignature().getName().toUpperCase()) {
+        logger.debug( "CALLED CLASS : " + staticPart.getSignature().getName() );
+        switch ( staticPart.getSignature().getName().toUpperCase() )
+        {
             case updateType:
-                message = MessageUtils.writeAfterThrowingModuleMessage(e, user,
-                        updateType);
+                message = MessageUtils.writeAfterThrowingModuleMessage( e, user,
+                                                                        updateType );
                 break;
         }
-        if (message != null) {
-            messageService.create(message);
+        if ( message != null )
+        {
+            messageService.create( message );
         }
     }
 

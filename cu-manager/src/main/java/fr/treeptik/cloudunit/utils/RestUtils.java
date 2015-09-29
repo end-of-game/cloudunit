@@ -23,42 +23,46 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-public class RestUtils {
+public class RestUtils
+{
 
-	private static Logger logger = LoggerFactory.getLogger(RestUtils.class);
+    private static Logger logger = LoggerFactory.getLogger( RestUtils.class );
 
-	public static String sendPutCommand(String url, Server server) {
-		String body = null;
+    public static String sendPutCommand( String url, Server server )
+    {
+        String body = null;
 
-		return body;
-	}
+        return body;
+    }
 
-	public static String sendGetCommand(String url) {
+    public static String sendGetCommand( String url )
+    {
 
-		RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
 
-		ResponseEntity<?> result = restTemplate.getForEntity(url, String.class);
-		String body = result.getBody().toString();
-		MediaType contentType = result.getHeaders().getContentType();
-		HttpStatus statusCode = result.getStatusCode();
-		logger.info("REST PUT COMMAND " + contentType + " " + statusCode);
-		return body;
-	}
+        ResponseEntity<?> result = restTemplate.getForEntity( url, String.class );
+        String body = result.getBody().toString();
+        MediaType contentType = result.getHeaders().getContentType();
+        HttpStatus statusCode = result.getStatusCode();
+        logger.info( "REST PUT COMMAND " + contentType + " " + statusCode );
+        return body;
+    }
 
-	@SuppressWarnings("rawtypes")
-	public static String sendPostCommand(String url, String volume) {
+    @SuppressWarnings( "rawtypes" )
+    public static String sendPostCommand( String url, String volume )
+    {
 
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add("Accept", "text/plain");
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		params.add("Binds", volume);
-		@SuppressWarnings("unchecked")
-		HttpEntity request = new HttpEntity(params, headers);
-		ResponseEntity<String> response = restTemplate.postForEntity(url,
-				request, String.class);
-		return response.toString();
-	}
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType( MediaType.APPLICATION_JSON );
+        headers.add( "Accept", "text/plain" );
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+        params.add( "Binds", volume );
+        @SuppressWarnings( "unchecked" )
+        HttpEntity request = new HttpEntity( params, headers );
+        ResponseEntity<String> response = restTemplate.postForEntity( url,
+                                                                      request, String.class );
+        return response.toString();
+    }
 
 }

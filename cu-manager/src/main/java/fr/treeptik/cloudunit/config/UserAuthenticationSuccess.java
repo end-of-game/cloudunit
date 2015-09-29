@@ -29,25 +29,31 @@ import javax.inject.Inject;
 import java.util.Date;
 
 @Component
-public class UserAuthenticationSuccess implements
-		ApplicationListener<AuthenticationSuccessEvent> {
+public class UserAuthenticationSuccess
+                implements
+                ApplicationListener<AuthenticationSuccessEvent>
+{
 
-	private Logger logger = LoggerFactory
-			.getLogger(UserAuthenticationSuccess.class);
+    private Logger logger = LoggerFactory
+                    .getLogger( UserAuthenticationSuccess.class );
 
-	@Inject
-	private UserService userService;
+    @Inject
+    private UserService userService;
 
-	@Override
-	public void onApplicationEvent(AuthenticationSuccessEvent event) {
-		try {
-			User user = userService.findByLogin(((UserDetails) event
-					.getAuthentication().getPrincipal()).getUsername());
-			user.setLastConnection(new Date());
-			userService.update(user);
-		} catch (ServiceException e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    public void onApplicationEvent( AuthenticationSuccessEvent event )
+    {
+        try
+        {
+            User user = userService.findByLogin( ( (UserDetails) event
+                            .getAuthentication().getPrincipal() ).getUsername() );
+            user.setLastConnection( new Date() );
+            userService.update( user );
+        }
+        catch ( ServiceException e )
+        {
+            e.printStackTrace();
+        }
+    }
 
 }

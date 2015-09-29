@@ -26,18 +26,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Component
-public class JsonDateSerializer extends JsonSerializer<Date> {
+public class JsonDateSerializer
+                extends JsonSerializer<Date>
+{
 
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm" );
 
-	@Override
-	public void serialize(Date date, JsonGenerator gen,
-			SerializerProvider provider) throws IOException,
-			JsonProcessingException {
+    @Override
+    public void serialize( Date date, JsonGenerator gen,
+                           SerializerProvider provider )
+                    throws IOException,
+                    JsonProcessingException
+    {
 
-		String formattedDate = dateFormat.format(date);
+        String formattedDate = dateFormat.format( date );
 
-		gen.writeString(formattedDate);
-	}
+        gen.writeString( formattedDate );
+    }
 }

@@ -36,12 +36,14 @@ import javax.inject.Inject;
 import java.io.Serializable;
 
 @Controller
-@RequestMapping("/nopublic")
-public class NoPublicController implements Serializable {
+@RequestMapping( "/nopublic" )
+public class NoPublicController
+                implements Serializable
+{
 
     private static final long serialVersionUID = 1L;
 
-    private Logger logger = LoggerFactory.getLogger(NoPublicController.class);
+    private Logger logger = LoggerFactory.getLogger( NoPublicController.class );
 
     @Inject
     private ApplicationService applicationService;
@@ -52,15 +54,17 @@ public class NoPublicController implements Serializable {
     @Inject
     private AuthentificationUtils authentificationUtils;
 
-
-    @RequestMapping(value = "/git/push", method = RequestMethod.POST)
-    public @ResponseBody JsonResponse saveGitPush(
-            @RequestParam String applicationName, @RequestParam String userLogin)
-            throws ServiceException, CheckException {
-        logger.info("--CALL SAVE GIT PUSH");
-        User user = userService.findByLogin(userLogin);
-        Application application = applicationService.findByNameAndUser(user, applicationName);
-        applicationService.saveGitPush(application, userLogin);
+    @RequestMapping( value = "/git/push", method = RequestMethod.POST )
+    public
+    @ResponseBody
+    JsonResponse saveGitPush(
+                    @RequestParam String applicationName, @RequestParam String userLogin )
+                    throws ServiceException, CheckException
+    {
+        logger.info( "--CALL SAVE GIT PUSH" );
+        User user = userService.findByLogin( userLogin );
+        Application application = applicationService.findByNameAndUser( user, applicationName );
+        applicationService.saveGitPush( application, userLogin );
         return new HttpOk();
     }
 

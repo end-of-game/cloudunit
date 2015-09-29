@@ -25,70 +25,79 @@ import fr.treeptik.cloudunit.model.User;
 import java.io.File;
 import java.util.List;
 
-public interface ApplicationService {
+public interface ApplicationService
+{
 
-    Application findByNameAndUser(User user, String applicationName)
-            throws ServiceException, CheckException;
+    Application findByNameAndUser( User user, String applicationName )
+                    throws ServiceException, CheckException;
 
-    List<Application> findAll() throws ServiceException;
+    List<Application> findAll()
+                    throws ServiceException;
 
-    List<Application> findAllByUser(User user) throws ServiceException;
+    List<Application> findAllByUser( User user )
+                    throws ServiceException;
 
-    Long countApp(User user) throws ServiceException;
+    Long countApp( User user )
+                    throws ServiceException;
 
-    void isValid(String applicationName, String serverName)
-            throws ServiceException, CheckException;
+    void isValid( String applicationName, String serverName )
+                    throws ServiceException, CheckException;
 
-    void checkCreate(Application application, String serverName)
-            throws CheckException, ServiceException;
+    void checkCreate( Application application, String serverName )
+                    throws CheckException, ServiceException;
 
-    Application saveInDB(Application application) throws ServiceException;
+    Application saveInDB( Application application )
+                    throws ServiceException;
 
-    boolean checkAppExist(User user, String applicationName)
-            throws ServiceException, CheckException;
+    boolean checkAppExist( User user, String applicationName )
+                    throws ServiceException, CheckException;
 
-    void setStatus(Application application, Status status)
-            throws ServiceException;
+    void setStatus( Application application, Status status )
+                    throws ServiceException;
 
-    Application deploy(File file, Application application)
-            throws ServiceException, CheckException;
+    Application deploy( File file, Application application )
+                    throws ServiceException, CheckException;
 
-    Application start(Application application) throws ServiceException;
+    Application start( Application application )
+                    throws ServiceException;
 
-    Application stop(Application application) throws ServiceException;
+    Application stop( Application application )
+                    throws ServiceException;
 
-    Application saveGitPush(Application application, String login)
-            throws ServiceException, CheckException;
+    Application saveGitPush( Application application, String login )
+                    throws ServiceException, CheckException;
 
-    List<ContainerUnit> listContainers(String applicationName)
-            throws ServiceException;
+    List<ContainerUnit> listContainers( String applicationName )
+                    throws ServiceException;
 
-    List<String> listContainersId(String applicationName)
-            throws ServiceException;
+    List<String> listContainersId( String applicationName )
+                    throws ServiceException;
 
-    List<String> getListAliases(Application application)
-            throws ServiceException;
+    List<String> getListAliases( Application application )
+                    throws ServiceException;
 
-    void addNewAlias(Application application, String alias)
-            throws ServiceException, CheckException;
+    void addNewAlias( Application application, String alias )
+                    throws ServiceException, CheckException;
 
-    void updateAliases(Application application) throws ServiceException;
+    void updateAliases( Application application )
+                    throws ServiceException;
 
-    void removeAlias(Application application, String alias) throws ServiceException;
+    void removeAlias( Application application, String alias )
+                    throws ServiceException;
 
-    Application updateEnv(Application application, User user)
-            throws ServiceException;
+    Application updateEnv( Application application, User user )
+                    throws ServiceException;
 
-    Application postStart(Application application, User user)
-            throws ServiceException;
+    Application postStart( Application application, User user )
+                    throws ServiceException;
 
-    Application remove(Application application, User user)
-            throws ServiceException;
+    Application remove( Application application, User user )
+                    throws ServiceException;
 
-    Application sshCopyIDToServer(Application application, User user)
-            throws ServiceException;
+    Application sshCopyIDToServer( Application application, User user )
+                    throws ServiceException;
 
-    Application create(String applicationName, String login, String serverName, String tagName)
-            throws ServiceException, CheckException;
+    Application create( String applicationName, String login, String serverName, String tagName )
+                    throws ServiceException, CheckException;
 
 }

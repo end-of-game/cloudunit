@@ -23,13 +23,16 @@ import fr.treeptik.cloudunit.model.Type;
 
 import java.util.List;
 
-public interface DeploymentService {
+public interface DeploymentService
+{
 
-	Deployment find(Deployment deployment) throws ServiceException;
+    Deployment find( Deployment deployment )
+                    throws ServiceException;
 
-	List<Deployment> findByApp(Application application) throws ServiceException;
+    List<Deployment> findByApp( Application application )
+                    throws ServiceException;
 
-	Deployment create(Application application, Type deploymentType)
-			throws ServiceException, CheckException;
+    Deployment create( Application application, Type deploymentType )
+                    throws ServiceException, CheckException;
 
 }

@@ -25,23 +25,26 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface MessageDAO extends JpaRepository<Message, Integer> {
+public interface MessageDAO
+                extends JpaRepository<Message, Integer>
+{
 
-	@Query("Select m from Message m where m.author=:user order by m.id DESC")
-	Page<Message> listByUser(@Param("user") User user, Pageable pageable)
-			throws DataAccessException;
+    @Query( "Select m from Message m where m.author=:user order by m.id DESC" )
+    Page<Message> listByUser( @Param( "user" ) User user, Pageable pageable )
+                    throws DataAccessException;
 
-	@Query("Select m from Message m where m.applicationName=:applicationName and m.author=:user order by m.id DESC")
-	Page<Message> listByApp(@Param("user") User user,
-			@Param("applicationName") String applicationName, Pageable pageable)
-			throws DataAccessException;
+    @Query( "Select m from Message m where m.applicationName=:applicationName and m.author=:user order by m.id DESC" )
+    Page<Message> listByApp( @Param( "user" ) User user,
+                             @Param( "applicationName" ) String applicationName, Pageable pageable )
+                    throws DataAccessException;
 
-	@Query("Select m from Message m  order by m.id DESC")
-	Page<Message> listAll(Pageable pageable) throws DataAccessException;
+    @Query( "Select m from Message m  order by m.id DESC" )
+    Page<Message> listAll( Pageable pageable )
+                    throws DataAccessException;
 
-	@Modifying
-	@Query("delete from Message m where m.author.id=:id")
-	void deleteAllUsersMessages(@Param("id") Integer id)
-			throws DataAccessException;
+    @Modifying
+    @Query( "delete from Message m where m.author.id=:id" )
+    void deleteAllUsersMessages( @Param( "id" ) Integer id )
+                    throws DataAccessException;
 
 }
