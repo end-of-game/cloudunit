@@ -38,7 +38,7 @@ TODO : @NMU
 
 # Licensing
 
-TODO
+All the source code is licensed under GNU AFFERO GENERAL PUBLIC LICENSE. License is available [here](/LICENSE)
 
 Copyright 2015 Treeptik
 
