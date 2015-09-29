@@ -227,7 +227,7 @@ public class HipacheRedisUtils
                             + serverPort );
 
 			/*
-			 * UPDATE THE ENTRY FOR SERVER MANAGER
+             * UPDATE THE ENTRY FOR SERVER MANAGER
 			 */
 
             String frontendServerManager = "frontend:manager-"

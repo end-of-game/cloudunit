@@ -39,6 +39,7 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.MessageService;
 import fr.treeptik.cloudunit.utils.MessageUtils;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.JoinPoint.StaticPart;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -76,36 +77,36 @@ public class ModuleAspect
                     throws MonitorException, ServiceException
     {
 
-        User user = this.getAuthentificatedUser();
+        User user = getAuthentificatedUser();
         Message message = null;
 
         Module module = null;
         switch ( joinPoint.getSignature().getName().toUpperCase() )
         {
 
-            case this.initModule:
+            case initModule:
                 Application application = (Application) joinPoint.getArgs()[0];
                 module = (Module) joinPoint.getArgs()[1];
                 if ( !module.getName().contains( "git" ) )
                 {
                     message = MessageUtils.writeBeforeModuleMessage( user,
                                                                      module.getName(), application.getName(),
-                                                                     this.createType );
-                    this.logger.info( message.toString() );
-                    this.messageService.create( message );
+                                                                     createType );
+                    logger.info( message.toString() );
+                    messageService.create( message );
                 }
                 break;
 
-            case this.deleteType:
+            case deleteType:
                 module = (Module) joinPoint.getArgs()[2];
                 if ( !module.getName().contains( "git" ) )
                 {
                     message = MessageUtils
                                     .writeBeforeModuleMessage( user, module.getName(),
                                                                ( (User) joinPoint.getArgs()[1] ).getLogin(),
-                                                               this.deleteType );
-                    this.logger.info( message.toString() );
-                    this.messageService.create( message );
+                                                               deleteType );
+                    logger.info( message.toString() );
+                    messageService.create( message );
                 }
                 break;
 
@@ -116,7 +117,7 @@ public class ModuleAspect
     @AfterReturning( pointcut = "execution(* fr.treeptik.cloudunit.service.ModuleService.remove(..)) " +
                     "&& execution(* fr.treeptik.cloudunit.service.ModuleService.initModule(..))",
                     returning = "result" )
-    public void afterReturningModule( JoinPoint.StaticPart staticPart, Object result )
+    public void afterReturningModule( StaticPart staticPart, Object result )
                     throws MonitorException
     {
         try
@@ -131,20 +132,20 @@ public class ModuleAspect
                 Message message = null;
                 switch ( staticPart.getSignature().getName().toUpperCase() )
                 {
-                    case this.initModule:
+                    case initModule:
                         message = MessageUtils.writeModuleMessage( user, module,
-                                                                   this.createType );
+                                                                   createType );
                         break;
 
-                    case this.deleteType:
+                    case deleteType:
                         message = MessageUtils.writeModuleMessage( user, module,
-                                                                   this.deleteType );
+                                                                   deleteType );
                         break;
                 }
                 if ( message != null )
                 {
-                    this.logger.info( message.toString() );
-                    this.messageService.create( message );
+                    logger.info( message.toString() );
+                    messageService.create( message );
                 }
             }
         }
@@ -158,27 +159,27 @@ public class ModuleAspect
     @AfterThrowing( pointcut = "execution(* fr.treeptik.cloudunit.service.ModuleService.remove(..)) " +
                     "|| execution(* fr.treeptik.cloudunit.service.ModuleService.initModule(..))",
                     throwing = "e" )
-    public void afterThrowingModule( JoinPoint.StaticPart staticPart,
+    public void afterThrowingModule( StaticPart staticPart,
                                      Exception e )
                     throws ServiceException
     {
-        User user = getAuthentificatedUser();
+        User user = this.getAuthentificatedUser();
         Message message = null;
-        this.logger.debug( "CALLED CLASS : " + staticPart.getSignature().getName() );
+        logger.debug( "CALLED CLASS : " + staticPart.getSignature().getName() );
         switch ( staticPart.getSignature().getName().toUpperCase() )
         {
-            case this.initModule:
+            case initModule:
                 message = MessageUtils.writeAfterThrowingModuleMessage( e, user,
-                                                                        this.initModule );
+                                                                        initModule );
                 break;
-            case this.deleteType:
+            case deleteType:
                 message = MessageUtils.writeAfterThrowingModuleMessage( e, user,
-                                                                        this.deleteType );
+                                                                        deleteType );
                 break;
         }
         if ( message != null )
         {
-            this.messageService.create( message );
+            messageService.create( message );
         }
     }
 

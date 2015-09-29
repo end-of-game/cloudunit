@@ -351,7 +351,7 @@ public class FileServiceImpl
                                        application.getManagerIp(),
                                        convertDestPathFile( destFile ) );
             /*
-			 * déporter ce script dans le container (au plus au niveau)
+             * déporter ce script dans le container (au plus au niveau)
 			 * 
 			 * renommer le fichier sur place et met les droits au user
 			 */
