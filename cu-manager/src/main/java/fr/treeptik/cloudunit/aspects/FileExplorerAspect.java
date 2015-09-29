@@ -33,43 +33,40 @@ import java.util.Date;
 @Aspect
 @Component
 public class FileExplorerAspect
-                extends CloudUnitAbstractAspect
-                implements Serializable
-{
+  extends CloudUnitAbstractAspect
+  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final Logger logger = LoggerFactory.getLogger( FileExplorerAspect.class );
+  private final Logger logger = LoggerFactory.getLogger(FileExplorerAspect.class);
 
     @Inject
     private MessageService messageService;
 
-    @AfterReturning( "execution(* fr.treeptik.cloudunit.service.FileService.deleteFilesFromContainer(..))" +
-                    " || execution(* fr.treeptik.cloudunit.service.FileService.sendFileToContainer(..))" )
-    public void afterReturningFileExplorer( JoinPoint joinPoint )
-                    throws ServiceException
-    {
+  @AfterReturning("execution(* fr.treeptik.cloudunit.service.FileService.deleteFilesFromContainer(..))" +
+    " || execution(* fr.treeptik.cloudunit.service.FileService.sendFileToContainer(..))")
+  public void afterReturningFileExplorer(JoinPoint joinPoint)
+    throws ServiceException {
         Message message = new Message();
         User user = getAuthentificatedUser();
-        message.setDate( new Date() );
-        message.setType( Message.INFO );
-        message.setAuthor( user );
-        message.setApplicationName( (String) joinPoint.getArgs()[0] );
+    message.setDate(new Date());
+    message.setType(Message.INFO);
+    message.setAuthor(user);
+    message.setApplicationName((String) joinPoint.getArgs()[0]);
 
-        switch ( joinPoint.getSignature().getName().toUpperCase() )
-        {
+    switch (joinPoint.getSignature().getName().toUpperCase()) {
             case "DELETEFILESFROMCONTAINER":
 
-                message.setEvent( user.getLogin() + " has removed this file : "
-                                                  + joinPoint.getArgs()[2] );
+              message.setEvent(user.getLogin() + " has removed this file : "
+                + joinPoint.getArgs()[2]);
                 break;
             case "SENDFILETOCONTAINER":
-                message.setEvent( user.getLogin() + " has send this file : "
-                                                  + joinPoint.getArgs()[3] + " at "
-                                                  + joinPoint.getArgs()[4].toString().replaceAll( "__", "/" ) );
+              message.setEvent(user.getLogin() + " has send this file : "
+                + joinPoint.getArgs()[3] + " at "
+                + joinPoint.getArgs()[4].toString().replaceAll("__", "/"));
                 break;
         }
-        this.messageService.create( message );
+    this.messageService.create(message);
     }
 
 }

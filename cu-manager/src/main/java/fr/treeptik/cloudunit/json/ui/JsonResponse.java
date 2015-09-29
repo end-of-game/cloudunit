@@ -18,8 +18,7 @@ package fr.treeptik.cloudunit.json.ui;
 import java.io.Serializable;
 
 public class JsonResponse
-                implements Serializable
-{
+    implements Serializable {
 
     private int status;
 
@@ -27,40 +26,33 @@ public class JsonResponse
 
     private String location = "";
 
-    public JsonResponse( int status, String message, String location )
-    {
+    public JsonResponse(int status, String message, String location) {
         this.status = status;
         this.message = message;
         this.location = location;
     }
 
-    public String getLocation()
-    {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation( String location )
-    {
+    public void setLocation(String location) {
         this.location = location;
     }
 
-    public int getStatus()
-    {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus( int status )
-    {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public String getMessage()
-    {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage( String message )
-    {
+    public void setMessage(String message) {
         this.message = message;
     }
 }

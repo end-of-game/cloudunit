@@ -39,10 +39,9 @@ import java.util.*;
 
 @Service
 public class SnapshotServiceImpl
-                implements SnapshotService
-{
+    implements SnapshotService {
 
-    private Logger logger = LoggerFactory.getLogger( SnapshotServiceImpl.class );
+    private Logger logger = LoggerFactory.getLogger(SnapshotServiceImpl.class);
 
     @Inject
     private ApplicationService applicationService;
@@ -68,103 +67,94 @@ public class SnapshotServiceImpl
     @Inject
     private ServerService serverService;
 
-    @Value( "${cloudunit.max.apps:100}" )
+    @Value("${cloudunit.max.apps:100}")
     private String numberMaxApplications;
 
-    @Value( "${ip.for.registry}" )
+    @Value("${ip.for.registry}")
     private String ipForRegistry;
 
-    @Value( "${docker.manager.ip:192.168.50.4:4243}" )
+    @Value("${docker.manager.ip:192.168.50.4:4243}")
     private String dockerManagerIp;
 
     @Override
     @Transactional
-    public Snapshot create( String applicationName, User user, String tag,
-                            String description, Status previousStatus )
-                    throws ServiceException
-    {
+    public Snapshot create(String applicationName, User user, String tag,
+                           String description, Status previousStatus)
+        throws ServiceException {
 
         Snapshot snapshot = new Snapshot();
         ObjectMapper objectMapper = new ObjectMapper();
-        try
-        {
+        try {
 
             Application application = applicationService.findByNameAndUser(
-                            user, applicationName );
+                user, applicationName);
 
-            if ( this.tagExists( tag, user.getLogin() ) )
-            {
-                applicationService.setStatus( application, previousStatus );
-                authentificationUtils.allowUser( user );
-                throw new CheckException( "this tag already exists" );
+            if (this.tagExists(tag, user.getLogin())) {
+                applicationService.setStatus(application, previousStatus);
+                authentificationUtils.allowUser(user);
+                throw new CheckException("this tag already exists");
             }
 
-            if ( tag.equalsIgnoreCase( "" ) || tag == null
-                            || tag.equalsIgnoreCase( " " ) )
-            {
-                applicationService.setStatus( application, previousStatus );
-                authentificationUtils.allowUser( user );
-                throw new CheckException( "You must put a tag name" );
+            if (tag.equalsIgnoreCase("") || tag == null
+                || tag.equalsIgnoreCase(" ")) {
+                applicationService.setStatus(application, previousStatus);
+                authentificationUtils.allowUser(user);
+                throw new CheckException("You must put a tag name");
             }
 
-            snapshot.setApplicationName( application.getName() );
-            snapshot.setDate( new Date() );
-            snapshot.setTag( tag );
-            snapshot.setDescription( description );
-            snapshot.setUser( application.getUser() );
-            snapshot.setDeploymentStatus( application.getDeploymentStatus() );
+            snapshot.setApplicationName(application.getName());
+            snapshot.setDate(new Date());
+            snapshot.setTag(tag);
+            snapshot.setDescription(description);
+            snapshot.setUser(application.getUser());
+            snapshot.setDeploymentStatus(application.getDeploymentStatus());
 
             /**
              * Pour se protéger des appels irraisonnés du webui
              */
 
             Map<String, ModuleConfiguration> config = new HashMap<>();
-            for ( Server server : application.getServers() )
-            {
-                snapshot = server.getServerAction().cloneProperties( snapshot );
+            for (Server server : application.getServers()) {
+                snapshot = server.getServerAction().cloneProperties(snapshot);
             }
-            for ( Module module : application.getModules() )
-            {
+            for (Module module : application.getModules()) {
 
-                if ( !module.getImage().getPath().contains( "git" ) )
-                {
+                if (!module.getImage().getPath().contains("git")) {
 
                     ModuleConfiguration moduleConfiguration = moduleConfigurationDAO
-                                    .saveAndFlush( module.getModuleAction()
-                                                         .cloneProperties() );
-                    config.put( moduleConfiguration.getPath(),
-                                moduleConfiguration );
+                        .saveAndFlush(module.getModuleAction()
+                            .cloneProperties());
+                    config.put(moduleConfiguration.getPath(),
+                        moduleConfiguration);
                 }
             }
-            snapshot.setAppConfig( config );
+            snapshot.setAppConfig(config);
 
             // Export des containers : commit + push
 
-            Thread.sleep( 5000 );
+            Thread.sleep(5000);
 
             List<String> images = new ArrayList<>();
 
-            for ( Server server : application.getServers() )
-            {
-                images.add( server.getImage().getPath() );
+            for (Server server : application.getServers()) {
+                images.add(server.getImage().getPath());
                 DockerContainer dockerContainer = new DockerContainer();
-                dockerContainer.setName( server.getName() );
-                dockerContainer.setImage( server.getImage().getName() );
-                String id = (String) ( objectMapper.readValue( DockerContainer
-                                                                               .commit( dockerContainer,
-                                                                                        snapshot.getUniqueTagName(),
-                                                                                        application.getManagerIp(),
-                                                                                        server.getImage()
-                                                                                              .getPath() ),
-                                                               HashMap.class ) ).get( "Id" );
-                DockerContainer.push( server.getImage().getPath(),
-                                      snapshot.getUniqueTagName(),
-                                      application.getManagerIp() );
-                DockerContainer.deleteImage( id, application.getManagerIp() );
+                dockerContainer.setName(server.getName());
+                dockerContainer.setImage(server.getImage().getName());
+                String id = (String) (objectMapper.readValue(DockerContainer
+                        .commit(dockerContainer,
+                            snapshot.getUniqueTagName(),
+                            application.getManagerIp(),
+                            server.getImage()
+                                .getPath()),
+                    HashMap.class)).get("Id");
+                DockerContainer.push(server.getImage().getPath(),
+                    snapshot.getUniqueTagName(),
+                    application.getManagerIp());
+                DockerContainer.deleteImage(id, application.getManagerIp());
             }
 
-            for ( Module module : application.getModules() )
-            {
+            for (Module module : application.getModules()) {
 
                 // commentaire de git
                 // if (module.getImage().getPath().contains("git")) {
@@ -173,96 +163,80 @@ public class SnapshotServiceImpl
 
                 String imageName = "";
                 String moduleName = "";
-                if ( module.getImage().getPath().contains( "git" ) )
-                {
+                if (module.getImage().getPath().contains("git")) {
                     moduleName = module.getName();
                     imageName = module.getImage().getPath();
-                }
-                else
-                {
+                } else {
                     moduleName = module.getName() + "-data";
 
                     imageName = module.getImage().getPath() + "-"
-                                    + module.getInstanceNumber() + "-data";
-                    this.backupModule( module );
+                        + module.getInstanceNumber() + "-data";
+                    this.backupModule(module);
                 }
-                images.add( imageName );
+                images.add(imageName);
                 DockerContainer dockerContainer = new DockerContainer();
-                dockerContainer.setName( moduleName );
-                dockerContainer.setImage( module.getImage().getName() );
-                String id = (String) ( objectMapper.readValue(
-                                DockerContainer.commit( dockerContainer,
-                                                        snapshot.getUniqueTagName(),
-                                                        application.getManagerIp(), imageName ),
-                                HashMap.class ) ).get( "Id" );
-                DockerContainer.push( imageName, snapshot.getUniqueTagName(),
-                                      application.getManagerIp() );
-                DockerContainer.deleteImage( id, application.getManagerIp() );
+                dockerContainer.setName(moduleName);
+                dockerContainer.setImage(module.getImage().getName());
+                String id = (String) (objectMapper.readValue(
+                    DockerContainer.commit(dockerContainer,
+                        snapshot.getUniqueTagName(),
+                        application.getManagerIp(), imageName),
+                    HashMap.class)).get("Id");
+                DockerContainer.push(imageName, snapshot.getUniqueTagName(),
+                    application.getManagerIp());
+                DockerContainer.deleteImage(id, application.getManagerIp());
             }
-            snapshot.setImages( images );
-            snapshot = snapshotDAO.save( snapshot );
+            snapshot.setImages(images);
+            snapshot = snapshotDAO.save(snapshot);
 
-        }
-        catch ( ServiceException | DockerJSONException | InterruptedException
-                        | IOException | CheckException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage(), e );
+        } catch (ServiceException | DockerJSONException | InterruptedException
+            | IOException | CheckException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
         }
         return snapshot;
     }
 
-    public Snapshot findByTagAndUser( String login, String tag )
-    {
-        return snapshotDAO.findByTagAndUser( login, tag );
+    public Snapshot findByTagAndUser(String login, String tag) {
+        return snapshotDAO.findByTagAndUser(login, tag);
     }
 
     @Override
-    public List<Snapshot> listAll( String login )
-                    throws ServiceException
-    {
-        try
-        {
-            return snapshotDAO.listAll( login );
-        }
-        catch ( DataAccessException e )
-        {
-            throw new ServiceException( "Error : " + e.getLocalizedMessage(), e );
+    public List<Snapshot> listAll(String login)
+        throws ServiceException {
+        try {
+            return snapshotDAO.listAll(login);
+        } catch (DataAccessException e) {
+            throw new ServiceException("Error : " + e.getLocalizedMessage(), e);
         }
     }
 
     @Override
     @Transactional
-    public Snapshot remove( String tag, String login )
-                    throws ServiceException,
-                    CheckException
-    {
+    public Snapshot remove(String tag, String login)
+        throws ServiceException,
+        CheckException {
 
         Snapshot snapshot = null;
-        try
-        {
+        try {
 
-            snapshot = snapshotDAO.findByTagAndUser( login, tag );
+            snapshot = snapshotDAO.findByTagAndUser(login, tag);
 
-            if ( snapshot == null )
-            {
-                throw new CheckException( "Error : this snapshot doesn't exist" );
+            if (snapshot == null) {
+                throw new CheckException("Error : this snapshot doesn't exist");
             }
 
-            List<String> images = snapshotDAO.findAllImagesFromASnapshot( login,
-                                                                          tag ).getImages();
+            List<String> images = snapshotDAO.findAllImagesFromASnapshot(login,
+                tag).getImages();
 
-            for ( String image : images )
-            {
+            for (String image : images) {
                 DockerContainer.deleteImageIntoTheRegistry(
-                                image + snapshot.getUniqueTagName(),
-                                snapshot.getUniqueTagName(),
-                                ipForRegistry + ":5000" );
+                    image + snapshot.getUniqueTagName(),
+                    snapshot.getUniqueTagName(),
+                    ipForRegistry + ":5000");
             }
-            snapshotDAO.delete( snapshotDAO.findByTagAndUser( login, tag ) );
-        }
-        catch ( DataAccessException | DockerJSONException e )
-        {
-            throw new ServiceException( "Error : " + e.getLocalizedMessage(), e );
+            snapshotDAO.delete(snapshotDAO.findByTagAndUser(login, tag));
+        } catch (DataAccessException | DockerJSONException e) {
+            throw new ServiceException("Error : " + e.getLocalizedMessage(), e);
 
         }
         return snapshot;
@@ -270,187 +244,166 @@ public class SnapshotServiceImpl
 
     @Override
     @Transactional
-    public Snapshot cloneFromASnapshot( String applicationName, String tag )
-                    throws ServiceException, InterruptedException
-    {
+    public Snapshot cloneFromASnapshot(String applicationName, String tag)
+        throws ServiceException, InterruptedException {
 
         Snapshot snapshot = null;
         // Tests préliminaires de la création d'une application
-        try
-        {
+        try {
             User user = authentificationUtils.getAuthentificatedUser();
-            snapshot = this.findByTagAndUser( user.getLogin(), tag );
+            snapshot = this.findByTagAndUser(user.getLogin(), tag);
 
-            if ( applicationName == null | applicationName.equalsIgnoreCase( "" ) )
-            {
-                authentificationUtils.allowUser( user );
-                throw new CheckException( "Please put an app name" );
+            if (applicationName == null | applicationName.equalsIgnoreCase("")) {
+                authentificationUtils.allowUser(user);
+                throw new CheckException("Please put an app name");
             }
 
-            if ( applicationService.countApp( user ) >= Integer.parseInt( numberMaxApplications ) )
-            {
-                authentificationUtils.allowUser( user );
-                throw new ServiceException( "You have already created your "
-                                                            + numberMaxApplications + " apps into the Cloud" );
+            if (applicationService.countApp(user) >= Integer.parseInt(numberMaxApplications)) {
+                authentificationUtils.allowUser(user);
+                throw new ServiceException("You have already created your "
+                    + numberMaxApplications + " apps into the Cloud");
             }
-            if ( applicationService.checkAppExist( user, applicationName ) )
-            {
-                authentificationUtils.allowUser( user );
-                throw new CheckException( "This application already exists" );
+            if (applicationService.checkAppExist(user, applicationName)) {
+                authentificationUtils.allowUser(user);
+                throw new CheckException("This application already exists");
             }
 
             // récupération des images associées
-            DockerContainer.pull( imageService.findByName( snapshot.getType() ).getPath(), snapshot.getUniqueTagName(),
-                                  dockerManagerIp );
-            DockerContainer.pull( "cloudunit/git", snapshot.getUniqueTagName(), dockerManagerIp );
+            DockerContainer.pull(imageService.findByName(snapshot.getType()).getPath(), snapshot.getUniqueTagName(),
+                dockerManagerIp);
+            DockerContainer.pull("cloudunit/git", snapshot.getUniqueTagName(), dockerManagerIp);
 
             // creation de la nouvelle app à partir de l'image tagée
             Application application = applicationService.create(
-                            applicationName, user.getLogin(), snapshot.getType(),
-                            snapshot.getUniqueTagName() );
+                applicationName, user.getLogin(), snapshot.getType(),
+                snapshot.getUniqueTagName());
 
             // We need it to get lazy modules relationships
-            application = applicationService.findByNameAndUser( application.getUser(), application.getName() );
+            application = applicationService.findByNameAndUser(application.getUser(), application.getName());
 
-            Module moduleGit = moduleService.findGitModule( user.getLogin(), application );
+            Module moduleGit = moduleService.findGitModule(user.getLogin(), application);
 
-            for ( Server server : application.getServers() )
-            {
-                while ( !server.getStatus().equals( Status.START )
-                                || !moduleGit.getStatus().equals( Status.START ) )
-                {
-                    Thread.sleep( 500 );
-                    logger.info( " wait git and server sshd processus start" );
-                    logger.info( "SSHDSTATUS = server : " + server.getStatus()
-                                                 + " - module : " + moduleGit.getStatus() );
-                    moduleGit = moduleService.findById( moduleGit.getId() );
-                    server = serverService.findById( server.getId() );
+            for (Server server : application.getServers()) {
+                while (!server.getStatus().equals(Status.START)
+                    || !moduleGit.getStatus().equals(Status.START)) {
+                    Thread.sleep(500);
+                    logger.info(" wait git and server sshd processus start");
+                    logger.info("SSHDSTATUS = server : " + server.getStatus()
+                        + " - module : " + moduleGit.getStatus());
+                    moduleGit = moduleService.findById(moduleGit.getId());
+                    server = serverService.findById(server.getId());
                 }
-                serverService.update( server,
-                                      snapshot.getJvmMemory().toString(),
-                                      snapshot.getJvmOptions(), snapshot.getJvmRelease(), false );
+                serverService.update(server,
+                    snapshot.getJvmMemory().toString(),
+                    snapshot.getJvmOptions(), snapshot.getJvmRelease(), false);
             }
 
-            restoreModule( snapshot, application, tag );
+            restoreModule(snapshot, application, tag);
 
-            application.setDeploymentStatus( snapshot.getDeploymentStatus() );
-            applicationService.saveInDB( application );
+            application.setDeploymentStatus(snapshot.getDeploymentStatus());
+            applicationService.saveInDB(application);
 
-        }
-        catch ( ServiceException | CheckException | DockerJSONException e )
-        {
-            StringBuilder msgError = new StringBuilder( 1024 );
-            msgError.append( "applicationName=[" ).append( applicationName )
-                    .append( "]" );
-            msgError.append( ", snapshot=[" ).append( snapshot ).append( "]" );
-            msgError.append( ", tag=[" ).append( tag ).append( "]" );
-            throw new ServiceException( msgError.toString(), e );
+        } catch (ServiceException | CheckException | DockerJSONException e) {
+            StringBuilder msgError = new StringBuilder(1024);
+            msgError.append("applicationName=[").append(applicationName)
+                .append("]");
+            msgError.append(", snapshot=[").append(snapshot).append("]");
+            msgError.append(", tag=[").append(tag).append("]");
+            throw new ServiceException(msgError.toString(), e);
         }
         return snapshot;
     }
 
-    private void backupModule( Module module )
-    {
+    private void backupModule(Module module) {
         Application application;
-        try
-        {
-            application = applicationService.findByNameAndUser( module
-                                                                                .getApplication().getUser(),
-                                                                module.getApplication()
-                                                                      .getName() );
+        try {
+            application = applicationService.findByNameAndUser(module
+                    .getApplication().getUser(),
+                module.getApplication()
+                    .getName());
             DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName( module.getName() + "-data" );
-            dockerContainer = DockerContainer.findOne( dockerContainer,
-                                                       application.getManagerIp() );
+            dockerContainer.setName(module.getName() + "-data");
+            dockerContainer = DockerContainer.findOne(dockerContainer,
+                application.getManagerIp());
             Map<String, String> configShell = new HashMap<>();
-            configShell.put( "port", dockerContainer.getPorts().get( "22/tcp" ) );
-            configShell.put( "dockerManagerAddress",
-                             application.getManagerIp() );
+            configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
+            configShell.put("dockerManagerAddress",
+                application.getManagerIp());
             String rootPassword = module.getApplication().getUser()
-                                        .getPassword();
-            configShell.put( "password", rootPassword );
+                .getPassword();
+            configShell.put("password", rootPassword);
             int code = shellUtils.executeShell(
-                            "/cloudunit/scripts/backup-data.sh", configShell );
-            logger.info( "The backup script return : " + code );
+                "/cloudunit/scripts/backup-data.sh", configShell);
+            logger.info("The backup script return : " + code);
 
-        }
-        catch ( Exception e )
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    private void restoreModule( Snapshot snapshot, Application application,
-                                String tag )
-                    throws ServiceException
-    {
+    private void restoreModule(Snapshot snapshot, Application application,
+                               String tag)
+        throws ServiceException {
 
-        for ( String key : snapshot.getAppConfig().keySet() )
-        {
+        for (String key : snapshot.getAppConfig().keySet()) {
 
-            try
-            {
+            try {
 
-                DockerContainer.pull( key, snapshot.getUniqueTagName(), dockerManagerIp );
-                Module module = ModuleFactory.getModule( snapshot.getAppConfig()
-                                                                 .get( key ).getName() );
-                module.setApplication( application );
-                moduleService.checkImageExist( snapshot.getAppConfig().get( key )
-                                                       .getName() );
+                DockerContainer.pull(key, snapshot.getUniqueTagName(), dockerManagerIp);
+                Module module = ModuleFactory.getModule(snapshot.getAppConfig()
+                    .get(key).getName());
+                module.setApplication(application);
+                moduleService.checkImageExist(snapshot.getAppConfig().get(key)
+                    .getName());
                 module.getImage().setName(
-                                snapshot.getAppConfig().get( key ).getName() );
-                module.setName( snapshot.getAppConfig().get( key ).getName() );
-                module = moduleService.initModule( application, module,
-                                                   snapshot.getUniqueTagName() );
+                    snapshot.getAppConfig().get(key).getName());
+                module.setName(snapshot.getAppConfig().get(key).getName());
+                module = moduleService.initModule(application, module,
+                    snapshot.getUniqueTagName());
                 Map<String, String> properties = new HashMap<>();
                 properties
-                                .put( "username",
-                                      snapshot.getAppConfig()
-                                              .get( key )
-                                              .getProperties()
-                                              .get( "username-"
-                                                                    + module.getImage().getName() ) );
+                    .put("username",
+                        snapshot.getAppConfig()
+                            .get(key)
+                            .getProperties()
+                            .get("username-"
+                                + module.getImage().getName()));
                 properties
-                                .put( "password",
-                                      snapshot.getAppConfig()
-                                              .get( key )
-                                              .getProperties()
-                                              .get( "password-"
-                                                                    + module.getImage().getName() ) );
+                    .put("password",
+                        snapshot.getAppConfig()
+                            .get(key)
+                            .getProperties()
+                            .get("password-"
+                                + module.getImage().getName()));
                 properties
-                                .put( "database",
-                                      snapshot.getAppConfig()
-                                              .get( key )
-                                              .getProperties()
-                                              .get( "database-"
-                                                                    + module.getImage().getName() ) );
-                module.setModuleInfos( properties );
-                module = moduleService.saveInDB( module );
-                moduleService.stopModule( module );
-                Thread.sleep( 5000 );
-                moduleService.startModule( module );
+                    .put("database",
+                        snapshot.getAppConfig()
+                            .get(key)
+                            .getProperties()
+                            .get("database-"
+                                + module.getImage().getName()));
+                module.setModuleInfos(properties);
+                module = moduleService.saveInDB(module);
+                moduleService.stopModule(module);
+                Thread.sleep(5000);
+                moduleService.startModule(module);
 
-            }
-            catch ( DockerJSONException | CheckException
-                            | InterruptedException e )
-            {
-                throw new ServiceException( e.getLocalizedMessage(), e );
+            } catch (DockerJSONException | CheckException
+                | InterruptedException e) {
+                throw new ServiceException(e.getLocalizedMessage(), e);
             }
 
         }
     }
 
     @Override
-    public Snapshot findOne( String tag, String login )
-    {
-        return snapshotDAO.findByTagAndUser( login, tag );
+    public Snapshot findOne(String tag, String login) {
+        return snapshotDAO.findByTagAndUser(login, tag);
     }
 
-    private boolean tagExists( String tag, String login )
-    {
-        if ( snapshotDAO.findByTagAndUser( login, tag ) != null )
-        {
+    private boolean tagExists(String tag, String login) {
+        if (snapshotDAO.findByTagAndUser(login, tag) != null) {
             return true;
         }
         return false;

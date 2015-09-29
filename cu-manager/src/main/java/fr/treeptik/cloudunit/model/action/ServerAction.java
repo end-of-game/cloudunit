@@ -21,15 +21,13 @@ import fr.treeptik.cloudunit.model.Snapshot;
 import java.io.Serializable;
 
 public abstract class ServerAction
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     protected Server parent;
 
-    public ServerAction( Server parent )
-    {
+    public ServerAction(Server parent) {
         this.parent = parent;
     }
 
@@ -39,7 +37,7 @@ public abstract class ServerAction
 
     public abstract String getServerPort();
 
-    public abstract Snapshot cloneProperties( Snapshot snapshot );
+    public abstract Snapshot cloneProperties(Snapshot snapshot);
 
     public abstract String cleanCommand();
 

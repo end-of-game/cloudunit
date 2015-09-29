@@ -25,14 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DockerContainer
-{
+public class DockerContainer {
 
     private static Logger logger = LoggerFactory
-                    .getLogger( DockerContainerJSON.class );
+        .getLogger(DockerContainerJSON.class);
 
     private static DockerContainerJSON dockerContainerJSON = (DockerContainerJSON) StaticSpringApplicationContext
-                    .getBean( "dockerContainerJSON" );
+        .getBean("dockerContainerJSON");
 
     private String id;
 
@@ -64,272 +63,230 @@ public class DockerContainer
 
     private Map<String, Map<String, String>[]> portBindings;
 
-    public DockerContainer()
-    {
+    public DockerContainer() {
 
     }
 
-    public static String checkDockerInfos( String hostAddress )
-                    throws DockerJSONException
-    {
-        String response = dockerContainerJSON.checkDockerInfos( hostAddress );
+    public static String checkDockerInfos(String hostAddress)
+        throws DockerJSONException {
+        String response = dockerContainerJSON.checkDockerInfos(hostAddress);
 
         return response;
     }
 
-    public static DockerContainer findOne( DockerContainer dockerContainer,
-                                           String hostIp )
-                    throws DockerJSONException
-    {
+    public static DockerContainer findOne(DockerContainer dockerContainer,
+                                          String hostIp)
+        throws DockerJSONException {
 
         dockerContainer = dockerContainerJSON.findOne(
-                        dockerContainer.getName(), hostIp );
+            dockerContainer.getName(), hostIp);
         return dockerContainer;
     }
 
     public static DockerContainer findOneWithImageID(
-                    DockerContainer dockerContainer, String hostIp )
-                    throws DockerJSONException
-    {
+        DockerContainer dockerContainer, String hostIp)
+        throws DockerJSONException {
 
         dockerContainer = dockerContainerJSON.findOneWithImageID(
-                        dockerContainer.getName(), hostIp );
+            dockerContainer.getName(), hostIp);
         return dockerContainer;
     }
 
-    public static String commit( DockerContainer dockerContainer, String tag,
-                                 String hostIp, String repo )
-                    throws DockerJSONException
-    {
-        return dockerContainerJSON.commit( dockerContainer.getName(), tag,
-                                           hostIp, repo );
+    public static String commit(DockerContainer dockerContainer, String tag,
+                                String hostIp, String repo)
+        throws DockerJSONException {
+        return dockerContainerJSON.commit(dockerContainer.getName(), tag,
+            hostIp, repo);
     }
 
-    public static void push( String image, String tag, String hostIp )
-                    throws DockerJSONException
-    {
-        dockerContainerJSON.push( "localhost:5000/" + image + tag, tag, hostIp );
+    public static void push(String image, String tag, String hostIp)
+        throws DockerJSONException {
+        dockerContainerJSON.push("localhost:5000/" + image + tag, tag, hostIp);
     }
 
-    public static void pull( String image, String tag, String hostIp )
-                    throws DockerJSONException
-    {
-        dockerContainerJSON.pull( "localhost:5000/" + image + tag, tag, hostIp );
+    public static void pull(String image, String tag, String hostIp)
+        throws DockerJSONException {
+        dockerContainerJSON.pull("localhost:5000/" + image + tag, tag, hostIp);
     }
 
-    public static void deleteImage( String id, String hostIp )
-                    throws DockerJSONException
-    {
-        dockerContainerJSON.deleteImage( id, hostIp );
+    public static void deleteImage(String id, String hostIp)
+        throws DockerJSONException {
+        dockerContainerJSON.deleteImage(id, hostIp);
     }
 
-    public static void deleteImageIntoTheRegistry( String repository,
-                                                   String tag, String registryIP )
-                    throws DockerJSONException
-    {
-        dockerContainerJSON.deleteImageIntoTheRegistry( registryIP, tag,
-                                                        repository );
+    public static void deleteImageIntoTheRegistry(String repository,
+                                                  String tag, String registryIP)
+        throws DockerJSONException {
+        dockerContainerJSON.deleteImageIntoTheRegistry(registryIP, tag,
+            repository);
     }
 
-    public static List<DockerContainer> listAllContainers( String hostAddress )
-                    throws DockerJSONException
-    {
+    public static List<DockerContainer> listAllContainers(String hostAddress)
+        throws DockerJSONException {
 
         List<DockerContainer> listContainers = dockerContainerJSON
-                        .listAllContainers( hostAddress );
+            .listAllContainers(hostAddress);
 
         return listContainers;
     }
 
-    public static DockerContainer create( DockerContainer dockerContainer,
-                                          String hostIp )
-                    throws DockerJSONException
-    {
-        dockerContainer = dockerContainerJSON.create( dockerContainer, hostIp );
+    public static DockerContainer create(DockerContainer dockerContainer,
+                                         String hostIp)
+        throws DockerJSONException {
+        dockerContainer = dockerContainerJSON.create(dockerContainer, hostIp);
         return dockerContainer;
     }
 
-    public static void remove( DockerContainer dockerContainer, String hostIp )
-                    throws DockerJSONException
-    {
+    public static void remove(DockerContainer dockerContainer, String hostIp)
+        throws DockerJSONException {
 
-        dockerContainerJSON.remove( dockerContainer.getName(), hostIp );
+        dockerContainerJSON.remove(dockerContainer.getName(), hostIp);
 
         /**
          * TODO : data temporaire
          */
-        if ( dockerContainer.getImage().contains( "mysql" )
-                        || dockerContainer.getImage().contains( "postgres" )
-                        || dockerContainer.getImage().contains( "mongo" )
-                        || dockerContainer.getImage().contains( "redis" ) )
-        {
-            dockerContainerJSON.remove( dockerContainer.getName() + "-data",
-                                        hostIp );
+        if (dockerContainer.getImage().contains("mysql")
+            || dockerContainer.getImage().contains("postgres")
+            || dockerContainer.getImage().contains("mongo")
+            || dockerContainer.getImage().contains("redis")) {
+            dockerContainerJSON.remove(dockerContainer.getName() + "-data",
+                hostIp);
         }
 
     }
 
-    public static DockerContainer start( DockerContainer dockerContainer,
-                                         String hostIp )
-                    throws DockerJSONException
-    {
-        dockerContainer = dockerContainerJSON.start( dockerContainer, hostIp );
+    public static DockerContainer start(DockerContainer dockerContainer,
+                                        String hostIp)
+        throws DockerJSONException {
+        dockerContainer = dockerContainerJSON.start(dockerContainer, hostIp);
         return dockerContainer;
     }
 
-    public static void stop( DockerContainer dockerContainer, String hostIp )
-                    throws DockerJSONException
-    {
+    public static void stop(DockerContainer dockerContainer, String hostIp)
+        throws DockerJSONException {
 
         // Stop du container application
-        logger.debug( "Stop dockerContainer : " + dockerContainer );
-        dockerContainerJSON.stop( dockerContainer, hostIp );
+        logger.debug("Stop dockerContainer : " + dockerContainer);
+        dockerContainerJSON.stop(dockerContainer, hostIp);
 
         // Stop du container de données associés
-        if ( dockerContainer.getImage().contains( "mysql" )
-                        || dockerContainer.getImage().contains( "postgres" )
-                        || dockerContainer.getImage().contains( "mongo" )
-                        || dockerContainer.getImage().contains( "redis" ) )
-        {
-            logger.debug( "Stop docker DataContainer : " + dockerContainer );
+        if (dockerContainer.getImage().contains("mysql")
+            || dockerContainer.getImage().contains("postgres")
+            || dockerContainer.getImage().contains("mongo")
+            || dockerContainer.getImage().contains("redis")) {
+            logger.debug("Stop docker DataContainer : " + dockerContainer);
             dockerContainer = dockerContainerJSON.findOne(
-                            dockerContainer.getName() + "-data", hostIp );
-            dockerContainerJSON.stop( dockerContainer, hostIp );
+                dockerContainer.getName() + "-data", hostIp);
+            dockerContainerJSON.stop(dockerContainer, hostIp);
         }
     }
 
-    public List<String> getVolumesFrom()
-    {
+    public List<String> getVolumesFrom() {
         return volumesFrom;
     }
 
-    public void setVolumesFrom( List<String> volumesFrom )
-    {
+    public void setVolumesFrom(List<String> volumesFrom) {
         this.volumesFrom = volumesFrom;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName( String name )
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getImage()
-    {
+    public String getImage() {
         return image;
     }
 
-    public void setImage( String image )
-    {
+    public void setImage(String image) {
         this.image = image;
     }
 
-    public Map<String, String> getPorts()
-    {
+    public Map<String, String> getPorts() {
         return ports;
     }
 
-    public void setPorts( Map<String, String> ports )
-    {
+    public void setPorts(Map<String, String> ports) {
         this.ports = ports;
     }
 
-    public List<String> getLinks()
-    {
+    public List<String> getLinks() {
         return links;
     }
 
-    public void setLinks( List<String> links )
-    {
+    public void setLinks(List<String> links) {
         this.links = links;
     }
 
-    public List<String> getCmd()
-    {
+    public List<String> getCmd() {
         return cmd;
     }
 
-    public void setCmd( List<String> cmd )
-    {
+    public void setCmd(List<String> cmd) {
         this.cmd = cmd;
     }
 
-    public Long getMemory()
-    {
+    public Long getMemory() {
         return memory;
     }
 
-    public void setMemory( Long memory )
-    {
+    public void setMemory(Long memory) {
         this.memory = memory;
     }
 
-    public Long getMemorySwap()
-    {
+    public Long getMemorySwap() {
         return memorySwap;
     }
 
-    public void setMemorySwap( Long memorySwap )
-    {
+    public void setMemorySwap(Long memorySwap) {
         this.memorySwap = memorySwap;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public void setId( String id )
-    {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getIp()
-    {
+    public String getIp() {
         return ip;
     }
 
-    public void setIp( String ip )
-    {
+    public void setIp(String ip) {
         this.ip = ip;
     }
 
-    public String getState()
-    {
+    public String getState() {
         return state;
     }
 
-    public void setState( String state )
-    {
+    public void setState(String state) {
         this.state = state;
     }
 
-    public Map<String, String> getVolumes()
-    {
+    public Map<String, String> getVolumes() {
         return volumes;
     }
 
-    public void setVolumes( Map<String, String> volumes )
-    {
+    public void setVolumes(Map<String, String> volumes) {
         this.volumes = volumes;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "DockerContainer [id=" + id + ", name=" + name + ", memory="
-                        + memory + ", memorySwap=" + memorySwap + ", image=" + image
-                        + ", ip=" + ip + ", state=" + state + ", ports=" + ports
-                        + ", volumes=" + volumes + ", volumesFrom=" + volumesFrom
-                        + ", links=" + links + ", cmd=" + cmd + "]";
+            + memory + ", memorySwap=" + memorySwap + ", image=" + image
+            + ", ip=" + ip + ", state=" + state + ", ports=" + ports
+            + ", volumes=" + volumes + ", volumesFrom=" + volumesFrom
+            + ", links=" + links + ", cmd=" + cmd + "]";
     }
 
-    public Map<String, Map<String, String>[]> getPortBindings()
-    {
+    public Map<String, Map<String, String>[]> getPortBindings() {
         return portBindings;
     }
 
@@ -338,51 +295,43 @@ public class DockerContainer
      * @param hostIP
      * @param hostPort
      */
-    @SuppressWarnings( "unchecked" )
-    public void setPortBindings( String containerPort_protocol, String hostIP,
-                                 String hostPort )
-    {
+    @SuppressWarnings("unchecked")
+    public void setPortBindings(String containerPort_protocol, String hostIP,
+                                String hostPort) {
         Map<String, Map<String, String>[]> portBindings;
 
-        if ( this.getPortBindings() == null )
-        {
+        if (this.getPortBindings() == null) {
             portBindings = new HashMap<>();
-        }
-        else
-        {
+        } else {
             portBindings = this.getPortBindings();
         }
 
         Map<String, String> mapHostIP = new HashMap<>();
         Map<String, String> mapHostPort = new HashMap<>();
-        mapHostIP.put( "HostIp", hostIP );
-        mapHostPort.put( "HostPort", hostPort );
+        mapHostIP.put("HostIp", hostIP);
+        mapHostPort.put("HostPort", hostPort);
 
         Map<String, String> portBindingsConf[] = (HashMap<String, String>[]) new HashMap[2];
         portBindingsConf[0] = mapHostIP;
         portBindingsConf[1] = mapHostPort;
-        portBindings.put( containerPort_protocol, portBindingsConf );
+        portBindings.put(containerPort_protocol, portBindingsConf);
 
         this.portBindings = portBindings;
     }
 
-    public String getImageID()
-    {
+    public String getImageID() {
         return imageID;
     }
 
-    public void setImageID( String imageID )
-    {
+    public void setImageID(String imageID) {
         this.imageID = imageID;
     }
 
-    public List<Integer> getPortsToOpen()
-    {
+    public List<Integer> getPortsToOpen() {
         return portsToOpen;
     }
 
-    public void setPortsToOpen( List<Integer> portsToOpen )
-    {
+    public void setPortsToOpen(List<Integer> portsToOpen) {
         this.portsToOpen = portsToOpen;
     }
 }

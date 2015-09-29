@@ -34,11 +34,10 @@ import javax.servlet.http.HttpServletResponse;
  * Created by nicolas on 25/08/2014.
  */
 @Controller
-@RequestMapping( "/monitoring" )
-public class MonitoringController
-{
+@RequestMapping("/monitoring")
+public class MonitoringController {
 
-    private Logger logger = LoggerFactory.getLogger( MonitoringController.class );
+    private Logger logger = LoggerFactory.getLogger(MonitoringController.class);
 
     @Inject
     private AuthentificationUtils authentificationUtils;
@@ -53,11 +52,10 @@ public class MonitoringController
      * @throws fr.treeptik.cloudunit.exception.ServiceException
      * @throws fr.treeptik.cloudunit.exception.CheckException
      */
-    @RequestMapping( value = "/api/machine", method = RequestMethod.GET )
+    @RequestMapping(value = "/api/machine", method = RequestMethod.GET)
     public String infoMachine()
-                    throws ServiceException,
-                    CheckException
-    {
+        throws ServiceException,
+        CheckException {
         return monitoringService.getJsonMachineFromCAdvisor();
     }
 
@@ -68,30 +66,25 @@ public class MonitoringController
      * @throws ServiceException
      * @throws CheckException
      */
-    @RequestMapping( value = "/api/containers/docker/{containerName}", method = RequestMethod.GET )
-    public void infoContainer( HttpServletRequest request, HttpServletResponse response,
-                               @PathVariable String containerName )
-                    throws ServiceException, CheckException
-    {
+    @RequestMapping(value = "/api/containers/docker/{containerName}", method = RequestMethod.GET)
+    public void infoContainer(HttpServletRequest request, HttpServletResponse response,
+                              @PathVariable String containerName)
+        throws ServiceException, CheckException {
         String containerId = monitoringService
-                        .getFullContainerId( containerName );
+            .getFullContainerId(containerName);
 
-        String responseFromCAdvisor = monitoringService.getJsonFromCAdvisor( containerId );
+        String responseFromCAdvisor = monitoringService.getJsonFromCAdvisor(containerId);
 
-        if ( logger.isDebugEnabled() )
-        {
-            logger.debug( "containerId=" + containerId );
-            logger.debug( "responseFromCAdvisor=" + responseFromCAdvisor );
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId=" + containerId);
+            logger.debug("responseFromCAdvisor=" + responseFromCAdvisor);
         }
 
-        try
-        {
-            response.getWriter().write( responseFromCAdvisor );
+        try {
+            response.getWriter().write(responseFromCAdvisor);
             response.flushBuffer();
-        }
-        catch ( Exception e )
-        {
-            logger.error( "error during write and flush response", containerName );
+        } catch (Exception e) {
+            logger.error("error during write and flush response", containerName);
         }
     }
 

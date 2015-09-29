@@ -42,54 +42,42 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
-public class GitUtils
-{
+public class GitUtils {
 
     private static CredentialsProvider configCredentialsForGit(
-                    final String userNameGit, final String password )
-    {
-        CredentialsProvider credentialsProvider = new CredentialsProvider()
-        {
+        final String userNameGit, final String password) {
+        CredentialsProvider credentialsProvider = new CredentialsProvider() {
 
             @Override
-            public boolean supports( CredentialItem... arg0 )
-            {
+            public boolean supports(CredentialItem... arg0) {
                 return true;
             }
 
             @Override
-            public boolean isInteractive()
-            {
+            public boolean isInteractive() {
                 return true;
             }
 
             @Override
-            public boolean get( URIish arg0, CredentialItem... items )
-                            throws UnsupportedCredentialItem
-            {
-                for ( CredentialItem item : items )
-                {
-                    if ( item instanceof CredentialItem.StringType )
-                    {
-                        ( (CredentialItem.StringType) item ).setValue( "YOUR_PASSPHRASE" );
-
+            public boolean get(URIish arg0, CredentialItem... items)
+                throws UnsupportedCredentialItem {
+                for (CredentialItem item : items) {
+                    if (item instanceof CredentialItem.StringType) {
+                        ((CredentialItem.StringType) item).setValue("YOUR_PASSPHRASE");
                         continue;
                     }
-                    if ( item instanceof CredentialItem.Username )
-                    {
-                        ( (CredentialItem.Username) item ).setValue( userNameGit );
+                    if (item instanceof CredentialItem.Username) {
+                        ((CredentialItem.Username) item).setValue(userNameGit);
                         continue;
                     }
 
-                    if ( item instanceof CredentialItem.Password )
-                    {
-                        ( (CredentialItem.Password) item ).setValue( password
-                                                                                     .toCharArray() );
+                    if (item instanceof CredentialItem.Password) {
+                        ((CredentialItem.Password) item).setValue(password
+                            .toCharArray());
                         continue;
                     }
-                    if ( item instanceof CredentialItem.YesNoType )
-                    {
-                        ( (CredentialItem.YesNoType) item ).setValue( true );
+                    if (item instanceof CredentialItem.YesNoType) {
+                        ((CredentialItem.YesNoType) item).setValue(true);
                         continue;
                     }
                 }
@@ -113,44 +101,42 @@ public class GitUtils
      * @throws IOException
      */
     public static List<String> listGitTagsOfApplication(
-                    Application application, String dockerManagerAddress, String containerGitAddress )
-                    throws GitAPIException, IOException
-    {
+        Application application, String dockerManagerAddress, String containerGitAddress)
+        throws GitAPIException, IOException {
 
         List<String> listTagsName = new ArrayList<>();
 
         User user = application.getUser();
-        String sshPort = application.getServers().get( 0 ).getSshPort();
+        String sshPort = application.getServers().get(0).getSshPort();
         String password = user.getPassword();
         String userNameGit = user.getLogin();
-        String dockerManagerIP = dockerManagerAddress.substring( 0, dockerManagerAddress.length() - 5 );
+        String dockerManagerIP = dockerManagerAddress.substring(0, dockerManagerAddress.length() - 5);
         String remoteRepository = "ssh://" + userNameGit + "@"
-                        + dockerManagerIP + ":" + sshPort + containerGitAddress;
+            + dockerManagerIP + ":" + sshPort + containerGitAddress;
 
-        Path myTempDirPath = Files.createTempDirectory( Paths.get( "/tmp" ), null );
+        Path myTempDirPath = Files.createTempDirectory(Paths.get("/tmp"), null);
         File gitworkDir = myTempDirPath.toFile();
 
         InitCommand initCommand = Git.init();
-        initCommand.setDirectory( gitworkDir );
+        initCommand.setDirectory(gitworkDir);
         initCommand.call();
-        FileRepository gitRepo = new FileRepository( gitworkDir );
-        LsRemoteCommand lsRemoteCommand = new LsRemoteCommand( gitRepo );
+        FileRepository gitRepo = new FileRepository(gitworkDir);
+        LsRemoteCommand lsRemoteCommand = new LsRemoteCommand(gitRepo);
 
         CredentialsProvider credentialsProvider = configCredentialsForGit(
-                        userNameGit, password );
+            userNameGit, password);
 
-        lsRemoteCommand.setCredentialsProvider( credentialsProvider );
-        lsRemoteCommand.setRemote( remoteRepository );
-        lsRemoteCommand.setTags( true );
+        lsRemoteCommand.setCredentialsProvider(credentialsProvider);
+        lsRemoteCommand.setRemote(remoteRepository);
+        lsRemoteCommand.setTags(true);
         Collection<Ref> collectionRefs = lsRemoteCommand.call();
-        List<Ref> listRefs = new ArrayList<>( collectionRefs );
+        List<Ref> listRefs = new ArrayList<>(collectionRefs);
 
-        for ( Ref ref : listRefs )
-        {
-            listTagsName.add( ref.getName() );
+        for (Ref ref : listRefs) {
+            listTagsName.add(ref.getName());
         }
-        Collections.sort( listTagsName );
-        FilesUtils.deleteDirectory( gitworkDir );
+        Collections.sort(listTagsName);
+        FilesUtils.deleteDirectory(gitworkDir);
 
         return listTagsName;
 
@@ -170,51 +156,49 @@ public class GitUtils
      * @throws GitAPIException
      * @throws IOException
      */
-    public static List<String> resetOnChosenGitTag( Application application,
-                                                    int indexChosen, String dockerManagerAddress,
-                                                    String containerGitAddress )
-                    throws InvalidRemoteException, TransportException, GitAPIException,
-                    IOException
-    {
+    public static List<String> resetOnChosenGitTag(Application application,
+                                                   int indexChosen, String dockerManagerAddress,
+                                                   String containerGitAddress)
+        throws InvalidRemoteException, TransportException, GitAPIException,
+        IOException {
         User user = application.getUser();
-        String sshPort = application.getServers().get( 0 ).getSshPort();
+        String sshPort = application.getServers().get(0).getSshPort();
         String password = user.getPassword();
         String userNameGit = user.getLogin();
-        String dockerManagerIP = dockerManagerAddress.substring( 0, dockerManagerAddress.length() - 5 );
+        String dockerManagerIP = dockerManagerAddress.substring(0, dockerManagerAddress.length() - 5);
         String remoteRepository = "ssh://" + userNameGit + "@"
-                        + dockerManagerIP + ":" + sshPort + containerGitAddress;
-        File gitworkDir = Files.createTempDirectory( "clone" ).toFile();
+            + dockerManagerIP + ":" + sshPort + containerGitAddress;
+        File gitworkDir = Files.createTempDirectory("clone").toFile();
         CloneCommand clone = Git.cloneRepository();
-        clone.setDirectory( gitworkDir );
+        clone.setDirectory(gitworkDir);
 
         CredentialsProvider credentialsProvider = configCredentialsForGit(
-                        userNameGit, password );
-        clone.setCredentialsProvider( credentialsProvider );
-        clone.setURI( remoteRepository );
+            userNameGit, password);
+        clone.setCredentialsProvider(credentialsProvider);
+        clone.setURI(remoteRepository);
         Git git = clone.call();
 
         ListTagCommand listTagCommand = git.tagList();
         List<Ref> listRefs = listTagCommand.call();
 
-        Ref ref = listRefs.get( indexChosen );
+        Ref ref = listRefs.get(indexChosen);
 
         ResetCommand resetCommand = git.reset();
-        resetCommand.setMode( ResetType.HARD );
-        resetCommand.setRef( ref.getName() );
+        resetCommand.setMode(ResetType.HARD);
+        resetCommand.setRef(ref.getName());
         resetCommand.call();
 
         PushCommand pushCommand = git.push();
-        pushCommand.setCredentialsProvider( credentialsProvider );
-        pushCommand.setForce( true );
+        pushCommand.setCredentialsProvider(credentialsProvider);
+        pushCommand.setForce(true);
 
         List<PushResult> listPushResults = (List<PushResult>) pushCommand
-                        .call();
+            .call();
         List<String> listPushResultsMessages = new ArrayList<>();
-        for ( PushResult pushResult : listPushResults )
-        {
-            listPushResultsMessages.add( pushResult.getMessages() );
+        for (PushResult pushResult : listPushResults) {
+            listPushResultsMessages.add(pushResult.getMessages());
         }
-        FilesUtils.deleteDirectory( gitworkDir );
+        FilesUtils.deleteDirectory(gitworkDir);
         return listPushResultsMessages;
     }
 }

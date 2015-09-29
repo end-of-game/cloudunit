@@ -34,76 +34,59 @@ import java.util.List;
 
 @Service
 public class MessageServiceImpl
-                implements MessageService
-{
+    implements MessageService {
 
     @Inject
     private MessageDAO messageDAO;
 
     @Override
-    @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public Message create( Message message )
-                    throws ServiceException
-    {
-        try
-        {
-            return messageDAO.saveAndFlush( message );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage(), e );
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Message create(Message message)
+        throws ServiceException {
+        try {
+            return messageDAO.saveAndFlush(message);
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
     @Override
-    @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public void delete( Message message )
-                    throws ServiceException
-    {
-        try
-        {
-            messageDAO.delete( message );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage(), e );
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void delete(Message message)
+        throws ServiceException {
+        try {
+            messageDAO.delete(message);
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
     @Override
-    @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public List<Message> listByUser( User user, int nbRows )
-                    throws ServiceException
-    {
-        try
-        {
-            Pageable pageable = new PageRequest( 0, nbRows, sortByLastNameAsc() );
-            Page<Message> requestedPage = messageDAO.listByUser( user, pageable );
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<Message> listByUser(User user, int nbRows)
+        throws ServiceException {
+        try {
+            Pageable pageable = new PageRequest(0, nbRows, sortByLastNameAsc());
+            Page<Message> requestedPage = messageDAO.listByUser(user, pageable);
             return requestedPage.getContent();
-        }
-        catch ( PersistenceException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage(), e );
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
     @Override
-    @Transactional( propagation = Propagation.REQUIRES_NEW )
-    public List<Message> listByApp( User user, String applicationName,
-                                    int nbMessages )
-                    throws ServiceException
-    {
-        try
-        {
-            Pageable pageable = new PageRequest( 0, nbMessages,
-                                                 sortByLastNameAsc() );
-            Page<Message> requestedPage = messageDAO.listByApp( user,
-                                                                applicationName, pageable );
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<Message> listByApp(User user, String applicationName,
+                                   int nbMessages)
+        throws ServiceException {
+        try {
+            Pageable pageable = new PageRequest(0, nbMessages,
+                sortByLastNameAsc());
+            Page<Message> requestedPage = messageDAO.listByApp(user,
+                applicationName, pageable);
             return requestedPage.getContent();
-        }
-        catch ( PersistenceException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage(), e );
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
@@ -113,9 +96,8 @@ public class MessageServiceImpl
      *
      * @return
      */
-    private Sort sortByLastNameAsc()
-    {
-        return new Sort( Sort.Direction.DESC, "date" );
+    private Sort sortByLastNameAsc() {
+        return new Sort(Sort.Direction.DESC, "date");
     }
 
 }

@@ -59,15 +59,14 @@ import java.util.List;
  * into SecuryConfiguration
  */
 @Controller
-@RequestMapping( "/admin" )
+@RequestMapping("/admin")
 public class AdministrationController
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private final Logger logger = LoggerFactory
-                    .getLogger( AdministrationController.class );
+        .getLogger(AdministrationController.class);
 
     @Inject
     private ImageService imageService;
@@ -94,20 +93,19 @@ public class AdministrationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping( value = "/user", method = RequestMethod.POST )
-    public JsonResponse createUser( @RequestBody JsonInputForAdmin input )
-                    throws ServiceException, CheckException
-    {
+    @RequestMapping(value = "/user", method = RequestMethod.POST)
+    public JsonResponse createUser(@RequestBody JsonInputForAdmin input)
+        throws ServiceException, CheckException {
 
-        User user = new User( input.getLogin(), input.getFirstName(),
-                              input.getLastName(), input.getOrganization(), input.getEmail(),
-                              input.getPassword() );
+        User user = new User(input.getLogin(), input.getFirstName(),
+            input.getLastName(), input.getOrganization(), input.getEmail(),
+            input.getPassword());
 
         // create a new user
-        user = this.userService.create( user );
+        user = this.userService.create(user);
 
         // activate the user account
-        this.userService.activationAccount( user );
+        this.userService.activationAccount(user);
 
         return new HttpOk();
     }
@@ -121,19 +119,17 @@ public class AdministrationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping( value = "/user/{login}", method = RequestMethod.DELETE )
-    public JsonResponse removeUser( @PathVariable String login )
-                    throws ServiceException, CheckException
-    {
-        User user = this.userService.findByLogin( login );
+    @RequestMapping(value = "/user/{login}", method = RequestMethod.DELETE)
+    public JsonResponse removeUser(@PathVariable String login)
+        throws ServiceException, CheckException {
+        User user = this.userService.findByLogin(login);
         String contextLogin = this.authentificationUtils
-                        .getAuthentificatedUser().getLogin();
-        if ( login.equalsIgnoreCase( contextLogin ) )
-        {
+            .getAuthentificatedUser().getLogin();
+        if (login.equalsIgnoreCase(contextLogin)) {
             throw new CheckException(
-                            "You can't delete your own account from this interface" );
+                "You can't delete your own account from this interface");
         }
-        this.userService.remove( user );
+        this.userService.remove(user);
         return new HttpOk();
     }
 
@@ -146,11 +142,10 @@ public class AdministrationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping( value = "/user/{login}", method = RequestMethod.GET )
-    public User findByLogin( @PathVariable String login )
-                    throws ServiceException, CheckException
-    {
-        return this.userService.findByLogin( login );
+    @RequestMapping(value = "/user/{login}", method = RequestMethod.GET)
+    public User findByLogin(@PathVariable String login)
+        throws ServiceException, CheckException {
+        return this.userService.findByLogin(login);
     }
 
     /**
@@ -161,10 +156,9 @@ public class AdministrationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping( value = "/users", method = RequestMethod.GET )
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public List<User> findAll()
-                    throws ServiceException, CheckException
-    {
+        throws ServiceException, CheckException {
         return this.userService.findAll();
     }
 
@@ -176,17 +170,15 @@ public class AdministrationController
      * @throws ServiceException
      * @throws CheckException
      */
-    @RequestMapping( value = "/user/rights", method = RequestMethod.POST )
-    public JsonResponse changeRights( @RequestBody JsonInputForAdmin input )
-                    throws ServiceException, CheckException
-    {
+    @RequestMapping(value = "/user/rights", method = RequestMethod.POST)
+    public JsonResponse changeRights(@RequestBody JsonInputForAdmin input)
+        throws ServiceException, CheckException {
         String login = this.authentificationUtils.getAuthentificatedUser()
-                                                 .getLogin();
-        if ( login.equalsIgnoreCase( input.getLogin() ) )
-        {
-            throw new CheckException( "You can't change your own rights" );
+            .getLogin();
+        if (login.equalsIgnoreCase(input.getLogin())) {
+            throw new CheckException("You can't change your own rights");
         }
-        this.userService.changeUserRights( input.getLogin(), input.getRole() );
+        this.userService.changeUserRights(input.getLogin(), input.getRole());
         return new HttpOk();
     }
 
@@ -198,11 +190,10 @@ public class AdministrationController
      * @throws ServiceException
      */
     @ResponseBody
-    @RequestMapping( value = "/images/imageName/{imageName}/enable", method = RequestMethod.POST )
-    public Image enableImage( @PathVariable String imageName )
-                    throws ServiceException
-    {
-        return this.imageService.enableImage( imageName );
+    @RequestMapping(value = "/images/imageName/{imageName}/enable", method = RequestMethod.POST)
+    public Image enableImage(@PathVariable String imageName)
+        throws ServiceException {
+        return this.imageService.enableImage(imageName);
     }
 
     /**
@@ -213,11 +204,10 @@ public class AdministrationController
      * @throws ServiceException
      */
     @ResponseBody
-    @RequestMapping( value = "/images/imageName/{imageName}/disable", method = RequestMethod.POST )
-    public Image disableImage( @PathVariable String imageName )
-                    throws ServiceException
-    {
-        return this.imageService.disableImage( imageName );
+    @RequestMapping(value = "/images/imageName/{imageName}/disable", method = RequestMethod.POST)
+    public Image disableImage(@PathVariable String imageName)
+        throws ServiceException {
+        return this.imageService.disableImage(imageName);
     }
 
     /**
@@ -229,17 +219,16 @@ public class AdministrationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping( value = "/module/restore", method = RequestMethod.POST )
-    public JsonResponse restoreBackup( @RequestBody JsonInput input )
-                    throws ServiceException, CheckException
-    {
+    @RequestMapping(value = "/module/restore", method = RequestMethod.POST)
+    public JsonResponse restoreBackup(@RequestBody JsonInput input)
+        throws ServiceException, CheckException {
 
-        logger.info( "input.getModuleName():" + input.getModuleName() );
+        logger.info("input.getModuleName():" + input.getModuleName());
 
-        CheckUtils.validateInput( input.getModuleName(),
-                                  "Le nom du module doit être renseigné." );
+        CheckUtils.validateInput(input.getModuleName(),
+            "Le nom du module doit être renseigné.");
         final JsonResponse response = new HttpOk();
-        this.moduleService.restoreBackup( input.getModuleName() );
+        this.moduleService.restoreBackup(input.getModuleName());
         return response;
     }
 
@@ -253,14 +242,13 @@ public class AdministrationController
      * @throws ServiceException
      */
     @ResponseBody
-    @RequestMapping( value = "/messages/rows/{rows}/login/{login}", method = RequestMethod.GET )
-    public List<Message> listMessages( @PathVariable String login,
-                                       @PathVariable String rows )
-                    throws NumberFormatException,
-                    ServiceException
-    {
-        return messageService.listByUser( userService.findByLogin( login ),
-                                          Integer.parseInt( rows ) );
+    @RequestMapping(value = "/messages/rows/{rows}/login/{login}", method = RequestMethod.GET)
+    public List<Message> listMessages(@PathVariable String login,
+                                      @PathVariable String rows)
+        throws NumberFormatException,
+        ServiceException {
+        return messageService.listByUser(userService.findByLogin(login),
+            Integer.parseInt(rows));
     }
 
 }

@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class ModuleAction
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,19 +33,18 @@ public abstract class ModuleAction
 
     protected Module module;
 
-    public ModuleAction( Module module )
-    {
+    public ModuleAction(Module module) {
         this.module = module;
     }
 
     public abstract void initModuleInfos();
 
     public abstract String getInitDataCmd()
-                    throws IOException;
+        throws IOException;
 
-    public abstract List<String> createDockerCmd( String databasePassword, String envExec );
+    public abstract List<String> createDockerCmd(String databasePassword, String envExec);
 
-    public abstract List<String> createDockerCmdForClone( Map<String, String> map );
+    public abstract List<String> createDockerCmdForClone(Map<String, String> map);
 
     /**
      * add url to access to module manager (e.g phpMyAdmin)
@@ -57,18 +55,18 @@ public abstract class ModuleAction
      * @return
      */
     public abstract Module enableModuleManager(
-                    HipacheRedisUtils hipacheRedisUtils, Module parent, Long instanceNumber );
+        HipacheRedisUtils hipacheRedisUtils, Module parent, Long instanceNumber);
 
     public abstract void updateModuleManager(
-                    HipacheRedisUtils hipacheRedisUtils );
+        HipacheRedisUtils hipacheRedisUtils);
 
     public abstract void unsubscribeModuleManager(
-                    HipacheRedisUtils hipacheRedisUtils );
+        HipacheRedisUtils hipacheRedisUtils);
 
     public abstract ModuleConfiguration cloneProperties();
 
     public abstract String getLogLocation();
 
-    public abstract String getManagerLocation( String subdomain, String suffix );
+    public abstract String getManagerLocation(String subdomain, String suffix);
 
 }

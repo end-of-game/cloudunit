@@ -24,18 +24,17 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * Created by nicolas on 21/09/15.
  */
-public interface ApplicationManager
-{
+public interface ApplicationManager {
 
-    public void create( final String applicationName, final String userLogin, final String serverName )
-                    throws ServiceException, CheckException;
+    public void create(final String applicationName, final String userLogin, final String serverName)
+        throws ServiceException, CheckException;
 
-    public void start( Application application, User user )
-                    throws ServiceException, CheckException;
+    public void start(Application application, User user)
+        throws ServiceException, CheckException;
 
-    public void stop( Application application, User user )
-                    throws ServiceException, CheckException;
+    public void stop(Application application, User user)
+        throws ServiceException, CheckException;
 
-    public void deploy( MultipartFile fileUpload, Application application )
-                    throws ServiceException, CheckException;
+    public void deploy(MultipartFile fileUpload, Application application)
+        throws ServiceException, CheckException;
 }

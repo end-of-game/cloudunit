@@ -25,18 +25,17 @@ import java.util.Map;
 
 @Entity
 public class Snapshot
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String tag;
 
-    @Column( columnDefinition = "TEXT" )
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String applicationName;
@@ -54,7 +53,7 @@ public class Snapshot
     @ManyToOne
     private User user;
 
-    @Temporal( TemporalType.TIMESTAMP )
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     @ElementCollection
@@ -65,163 +64,134 @@ public class Snapshot
     @JsonIgnore
     private List<String> images;
 
-    public Integer getId()
-    {
+    public Integer getId() {
         return id;
     }
 
-    public void setId( Integer id )
-    {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getTag()
-    {
+    public String getTag() {
         return tag;
     }
 
-    public void setTag( String tag )
-    {
-        if ( tag != null )
-        {
+    public void setTag(String tag) {
+        if (tag != null) {
             tag = tag.toLowerCase();
         }
         this.tag = tag;
     }
 
     @JsonIgnore
-    public String getUniqueTagName()
-    {
+    public String getUniqueTagName() {
         return user.getLogin() + "-" + tag;
     }
 
-    public String getApplicationName()
-    {
+    public String getApplicationName() {
         return applicationName;
     }
 
-    public void setApplicationName( String applicationName )
-    {
+    public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
     }
 
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 
-    public void setUser( User user )
-    {
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public Date getDate()
-    {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate( Date date )
-    {
+    public void setDate(Date date) {
         this.date = date;
     }
 
-    public Map<String, ModuleConfiguration> getAppConfig()
-    {
+    public Map<String, ModuleConfiguration> getAppConfig() {
         return appConfig;
     }
 
-    public void setAppConfig( Map<String, ModuleConfiguration> appConfig )
-    {
+    public void setAppConfig(Map<String, ModuleConfiguration> appConfig) {
         this.appConfig = appConfig;
     }
 
-    public List<String> getImages()
-    {
+    public List<String> getImages() {
         return images;
     }
 
-    public void setImages( List<String> images )
-    {
+    public void setImages(List<String> images) {
         this.images = images;
     }
 
-    public String getType()
-    {
+    public String getType() {
         return type;
     }
 
-    public void setType( String type )
-    {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public String getJvmRelease()
-    {
+    public String getJvmRelease() {
         return jvmRelease;
     }
 
-    public void setJvmRelease( String jvmRelease )
-    {
+    public void setJvmRelease(String jvmRelease) {
         this.jvmRelease = jvmRelease;
     }
 
-    public String getJvmOptions()
-    {
+    public String getJvmOptions() {
         return jvmOptions;
     }
 
-    public void setJvmOptions( String jvmOptions )
-    {
+    public void setJvmOptions(String jvmOptions) {
         this.jvmOptions = jvmOptions;
     }
 
-    public Long getJvmMemory()
-    {
+    public Long getJvmMemory() {
         return jvmMemory;
     }
 
-    public void setJvmMemory( Long jvmMemory )
-    {
+    public void setJvmMemory(Long jvmMemory) {
         this.jvmMemory = jvmMemory;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription( String description )
-    {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getDeploymentStatus()
-    {
+    public String getDeploymentStatus() {
         return deploymentStatus;
     }
 
-    public void setDeploymentStatus( String deploymentStatus )
-    {
+    public void setDeploymentStatus(String deploymentStatus) {
         this.deploymentStatus = deploymentStatus;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Snapshot{" +
-                        "id=" + id +
-                        ", tag='" + tag + '\'' +
-                        ", applicationName='" + applicationName + '\'' +
-                        ", type='" + type + '\'' +
-                        ", jvmRelease='" + jvmRelease + '\'' +
-                        ", jvmOptions='" + jvmOptions + '\'' +
-                        ", jvmMemory=" + jvmMemory +
-                        ", deploymentStatus='" + deploymentStatus + '\'' +
-                        ", user=" + user +
-                        ", date=" + date +
-                        ", appConfig=" + appConfig +
-                        ", images=" + images +
-                        '}';
+            "id=" + id +
+            ", tag='" + tag + '\'' +
+            ", applicationName='" + applicationName + '\'' +
+            ", type='" + type + '\'' +
+            ", jvmRelease='" + jvmRelease + '\'' +
+            ", jvmOptions='" + jvmOptions + '\'' +
+            ", jvmMemory=" + jvmMemory +
+            ", deploymentStatus='" + deploymentStatus + '\'' +
+            ", user=" + user +
+            ", date=" + date +
+            ", appConfig=" + appConfig +
+            ", images=" + images +
+            '}';
     }
 
 }

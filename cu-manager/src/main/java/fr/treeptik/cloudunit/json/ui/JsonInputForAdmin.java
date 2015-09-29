@@ -18,8 +18,7 @@ package fr.treeptik.cloudunit.json.ui;
 import java.io.Serializable;
 
 public class JsonInputForAdmin
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,88 +38,71 @@ public class JsonInputForAdmin
 
     private String newPassword;
 
-    public JsonInputForAdmin()
-    {
+    public JsonInputForAdmin() {
 
     }
 
-    public String getLogin()
-    {
+    public String getLogin() {
         return login;
     }
 
-    public void setLogin( String login )
-    {
+    public void setLogin(String login) {
         this.login = login;
     }
 
-    public String getLastName()
-    {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName( String lastName )
-    {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public String getFirstName()
-    {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName( String firstName )
-    {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getRole()
-    {
+    public String getRole() {
         return role;
     }
 
-    public void setRole( String role )
-    {
+    public void setRole(String role) {
         this.role = role;
     }
 
-    public String getEmail()
-    {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail( String email )
-    {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getPassword()
-    {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword( String password )
-    {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getOrganization()
-    {
+    public String getOrganization() {
         return organization;
     }
 
-    public void setOrganization( String organization )
-    {
+    public void setOrganization(String organization) {
         this.organization = organization;
     }
 
-    public String getNewPassword()
-    {
+    public String getNewPassword() {
         return newPassword;
     }
 
-    public void setNewPassword( String newPassword )
-    {
+    public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
     }
 

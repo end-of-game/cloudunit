@@ -29,26 +29,21 @@ import javax.inject.Inject;
  * Created by nicolas on 31/08/15.
  */
 @Aspect
-public class ServerAnnotationAspect
-{
+public class ServerAnnotationAspect {
 
     @Inject
     private UserService userService;
 
-    @After( "@annotation(fr.treeptik.cloudunit.aspects.Loggable)" )
-    public void myAdvice( JoinPoint point )
-    {
+  @After("@annotation(fr.treeptik.cloudunit.aspects.Loggable)")
+  public void myAdvice(JoinPoint point) {
 
-        try
-        {
+    try {
             UserDetails principal = (UserDetails) SecurityContextHolder
-                            .getContext().getAuthentication().getPrincipal();
-            User user = this.userService.findByLogin( principal.getUsername() );
-            System.out.println( "Executing myAdvice!! " + user );
+              .getContext().getAuthentication().getPrincipal();
+      User user = this.userService.findByLogin(principal.getUsername());
+      System.out.println("Executing myAdvice!! " + user);
 
-        }
-        catch ( Exception e )
-        {
+    } catch (Exception e) {
             e.printStackTrace();
         }
 

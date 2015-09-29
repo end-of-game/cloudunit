@@ -20,27 +20,22 @@ package fr.treeptik.cloudunit.exception;
  * Code error 4xx
  */
 public class CheckException
-                extends Exception
-{
+    extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public CheckException()
-    {
+    public CheckException() {
     }
 
-    public CheckException( String message )
-    {
-        super( message );
+    public CheckException(String message) {
+        super(message);
     }
 
-    public CheckException( Throwable e )
-    {
-        super( e );
+    public CheckException(Throwable e) {
+        super(e);
     }
 
-    public CheckException( String message, Throwable e )
-    {
-        super( message, e );
+    public CheckException(String message, Throwable e) {
+        super(message, e);
     }
 }

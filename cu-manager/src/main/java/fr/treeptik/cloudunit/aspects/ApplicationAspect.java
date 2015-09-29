@@ -39,9 +39,8 @@ import java.io.Serializable;
 @Component
 @Aspect
 public class ApplicationAspect
-                extends CloudUnitAbstractAspect
-                implements Serializable
-{
+  extends CloudUnitAbstractAspect
+  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,7 +52,7 @@ public class ApplicationAspect
 
     private final String stopType = "STOP";
 
-    private final Logger logger = LoggerFactory.getLogger( ApplicationAspect.class );
+  private final Logger logger = LoggerFactory.getLogger(ApplicationAspect.class);
 
     @Inject
     private MessageService messageService;
@@ -66,143 +65,128 @@ public class ApplicationAspect
      * @throws MonitorException
      * @throws ServiceException
      */
-    @Before( "execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))" )
-    public void beforeApplication( JoinPoint joinPoint )
-                    throws MonitorException, ServiceException
-    {
+    @Before("execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
+      "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
+      "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
+      "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))")
+    public void beforeApplication(JoinPoint joinPoint)
+      throws MonitorException, ServiceException {
 
         String applicationName = null;
-        if ( joinPoint.getArgs()[0] instanceof String )
-        {
+      if (joinPoint.getArgs()[0] instanceof String) {
             applicationName = (String) joinPoint.getArgs()[0];
-        }
-        else if ( joinPoint.getArgs()[0] instanceof Application )
-        {
-            applicationName = ( (Application) joinPoint.getArgs()[0] ).getName();
+      } else if (joinPoint.getArgs()[0] instanceof Application) {
+        applicationName = ((Application) joinPoint.getArgs()[0]).getName();
         }
 
         Message message = null;
         User user = getAuthentificatedUser();
 
-        switch ( joinPoint.getSignature().getName().toUpperCase() )
-        {
+      switch (joinPoint.getSignature().getName().toUpperCase()) {
             case createType:
-                message = MessageUtils.writeBeforeApplicationMessage( user,
-                                                                      applicationName, createType );
+              message = MessageUtils.writeBeforeApplicationMessage(user,
+                applicationName, createType);
                 break;
             case deleteType:
-                message = MessageUtils.writeBeforeApplicationMessage( user,
-                                                                      applicationName, deleteType );
+              message = MessageUtils.writeBeforeApplicationMessage(user,
+                applicationName, deleteType);
                 break;
             case startType:
-                message = MessageUtils.writeBeforeApplicationMessage( user,
-                                                                      applicationName, startType );
+              message = MessageUtils.writeBeforeApplicationMessage(user,
+                applicationName, startType);
                 break;
             case stopType:
-                message = MessageUtils.writeBeforeApplicationMessage( user,
-                                                                      applicationName, stopType );
+              message = MessageUtils.writeBeforeApplicationMessage(user,
+                applicationName, stopType);
                 break;
         }
-        if ( message != null )
-        {
-            logger.info( message.toString() );
-            messageService.create( message );
+      if (message != null) {
+        logger.info(message.toString());
+        messageService.create(message);
         }
 
     }
 
-    @AfterThrowing( pointcut = "execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))"
-                    , throwing = "e" )
-    public void afterThrowingApplication( StaticPart staticPart,
-                                          Exception e )
-                    throws ServiceException
-    {
+  @AfterThrowing(pointcut = "execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
+    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
+    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
+    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))"
+    , throwing = "e")
+  public void afterThrowingApplication(StaticPart staticPart,
+                                       Exception e)
+    throws ServiceException {
 
         User user = this.getAuthentificatedUser();
         Message message = null;
-        logger.debug( "CALLED CLASS : " + staticPart.getSignature().getName() );
-        switch ( staticPart.getSignature().getName().toUpperCase() )
-        {
+    logger.debug("CALLED CLASS : " + staticPart.getSignature().getName());
+    switch (staticPart.getSignature().getName().toUpperCase()) {
             case createType:
-                message = MessageUtils.writeAfterThrowingApplicationMessage( e,
-                                                                             user, createType, messageSource,
-                                                                             locale );
+              message = MessageUtils.writeAfterThrowingApplicationMessage(e,
+                user, createType, messageSource,
+                locale);
                 break;
             case deleteType:
-                message = MessageUtils.writeAfterThrowingApplicationMessage( e,
-                                                                             user, deleteType, messageSource,
-                                                                             locale );
+              message = MessageUtils.writeAfterThrowingApplicationMessage(e,
+                user, deleteType, messageSource,
+                locale);
                 break;
             case startType:
-                message = MessageUtils.writeAfterThrowingApplicationMessage( e,
-                                                                             user, startType, messageSource,
-                                                                             locale );
+              message = MessageUtils.writeAfterThrowingApplicationMessage(e,
+                user, startType, messageSource,
+                locale);
                 break;
             case stopType:
-                message = MessageUtils.writeAfterThrowingApplicationMessage( e,
-                                                                             user, stopType, messageSource,
-                                                                             locale );
+              message = MessageUtils.writeAfterThrowingApplicationMessage(e,
+                user, stopType, messageSource,
+                locale);
                 break;
         }
-        if ( message != null )
-        {
-            messageService.create( message );
+    if (message != null) {
+      messageService.create(message);
         }
     }
 
-    @AfterReturning( pointcut = "execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
-                    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))", returning = "result" )
-    public void afterReturningApplication( StaticPart staticPart, Object result )
-                    throws MonitorException
-    {
+  @AfterReturning(pointcut = "execution(* fr.treeptik.cloudunit.service.ApplicationService.remove(..)) " +
+    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.create(..)) " +
+    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.start(..))" +
+    "|| execution(* fr.treeptik.cloudunit.service.ApplicationService.stop(..))", returning = "result")
+  public void afterReturningApplication(StaticPart staticPart, Object result)
+    throws MonitorException {
 
-        try
-        {
-            if ( result == null )
+    try {
+      if (result == null)
                 return;
 
             Application application = (Application) result;
             User user = application.getUser();
             Message message = null;
 
-            switch ( staticPart.getSignature().getName().toUpperCase() )
-            {
+      switch (staticPart.getSignature().getName().toUpperCase()) {
 
                 case createType:
                     message = MessageUtils.writeAfterReturningApplicationMessage(
-                                    user, application, createType );
+                      user, application, createType);
                     break;
                 case deleteType:
                     message = MessageUtils.writeAfterReturningApplicationMessage(
-                                    user, application, deleteType );
+                      user, application, deleteType);
                     break;
                 case startType:
                     message = MessageUtils.writeAfterReturningApplicationMessage(
-                                    user, application, startType );
+                      user, application, startType);
                     break;
                 case stopType:
                     message = MessageUtils.writeAfterReturningApplicationMessage(
-                                    user, application, stopType );
+                      user, application, stopType);
                     break;
             }
-            if ( message != null )
-            {
-                logger.info( message.toString() );
-                messageService.create( message );
+      if (message != null) {
+        logger.info(message.toString());
+        messageService.create(message);
             }
 
-        }
-        catch ( ServiceException e )
-        {
-            throw new MonitorException( "Error afterReturningApplication", e );
+    } catch (ServiceException e) {
+      throw new MonitorException("Error afterReturningApplication", e);
         }
     }
 

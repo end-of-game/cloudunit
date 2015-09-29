@@ -38,11 +38,10 @@ import java.util.List;
 import java.util.Locale;
 
 @RestController
-@RequestMapping( "/snapshot" )
-public class SnapshotController
-{
+@RequestMapping("/snapshot")
+public class SnapshotController {
 
-    private final Logger logger = LoggerFactory.getLogger( SnapshotController.class );
+    private final Logger logger = LoggerFactory.getLogger(SnapshotController.class);
 
     // Default Locale
     private final Locale locale = Locale.ENGLISH;
@@ -59,54 +58,47 @@ public class SnapshotController
     @Inject
     private MessageSource messageSource;
 
-    @RequestMapping( method = RequestMethod.POST )
-    public JsonResponse create( @RequestBody JsonInput input )
-                    throws ServiceException, CheckException
-    {
+    @RequestMapping(method = RequestMethod.POST)
+    public JsonResponse create(@RequestBody JsonInput input)
+        throws ServiceException, CheckException {
 
-        CheckUtils.validateSyntaxInput( input.getTag(), this.messageSource
-                        .getMessage( "check.snapshot.name", null, Locale.ENGLISH ) );
+        CheckUtils.validateSyntaxInput(input.getTag(), this.messageSource
+            .getMessage("check.snapshot.name", null, Locale.ENGLISH));
 
         Application application;
         User user = null;
-        try
-        {
+        try {
 
             user = authentificationUtils.getAuthentificatedUser();
-            application = applicationService.findByNameAndUser( user, input.getApplicationName() );
+            application = applicationService.findByNameAndUser(user, input.getApplicationName());
 
             // To be protected from WebUI uncontrolled requests (angularjs timeout)
-            if ( application.getUser().getStatus()
-                            .equals( User.STATUS_NOT_ALLOWED ) )
-            {
-                logger.info( "Dispatch request" );
+            if (application.getUser().getStatus()
+                .equals(User.STATUS_NOT_ALLOWED)) {
+                logger.info("Dispatch request");
                 return new HttpOk();
             }
 
-            authentificationUtils.forbidUser( user );
+            authentificationUtils.forbidUser(user);
 
             // We must be sure there is no running action before starting new one
-            this.authentificationUtils.canStartNewAction( null, application, locale );
+            this.authentificationUtils.canStartNewAction(null, application, locale);
 
             Status previousStatus = application.getStatus();
 
-            applicationService.setStatus( application, Status.PENDING );
+            applicationService.setStatus(application, Status.PENDING);
             snapshotService.create(
-                            input.getApplicationName(),
-                            user,
-                            input.getTag(),
-                            input.getDescription(),
-                            previousStatus );
-            applicationService.setStatus( application, previousStatus );
+                input.getApplicationName(),
+                user,
+                input.getTag(),
+                input.getDescription(),
+                previousStatus);
+            applicationService.setStatus(application, previousStatus);
 
-        }
-        catch ( ServiceException | CheckException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage() );
-        }
-        finally
-        {
-            authentificationUtils.allowUser( user );
+        } catch (ServiceException | CheckException e) {
+            throw new ServiceException(e.getLocalizedMessage());
+        } finally {
+            authentificationUtils.allowUser(user);
         }
         return new HttpOk();
 
@@ -118,12 +110,11 @@ public class SnapshotController
      * @return
      * @throws ServiceException
      */
-    @RequestMapping( method = RequestMethod.GET, value = "/list" )
+    @RequestMapping(method = RequestMethod.GET, value = "/list")
     public List<Snapshot> listAll()
-                    throws ServiceException
-    {
+        throws ServiceException {
         User user = authentificationUtils.getAuthentificatedUser();
-        return snapshotService.listAll( user.getLogin() );
+        return snapshotService.listAll(user.getLogin());
     }
 
     /**
@@ -134,12 +125,11 @@ public class SnapshotController
      * @throws ServiceException
      * @throws CheckException
      */
-    @RequestMapping( method = RequestMethod.DELETE, value = "/{tag}" )
-    public JsonResponse remove( @PathVariable String tag )
-                    throws ServiceException, CheckException
-    {
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{tag}")
+    public JsonResponse remove(@PathVariable String tag)
+        throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
-        snapshotService.remove( tag, user.getLogin() );
+        snapshotService.remove(tag, user.getLogin());
         return new HttpOk();
     }
 
@@ -152,40 +142,34 @@ public class SnapshotController
      * @throws ServiceException
      * @throws InterruptedException
      */
-    @RequestMapping( method = RequestMethod.POST, value = "/clone" )
-    public JsonResponse clone( @RequestBody JsonInput input )
-                    throws ServiceException, InterruptedException, CheckException
-    {
+    @RequestMapping(method = RequestMethod.POST, value = "/clone")
+    public JsonResponse clone(@RequestBody JsonInput input)
+        throws ServiceException, InterruptedException, CheckException {
 
-        if ( logger.isInfoEnabled() )
-        {
-            logger.info( input.toString() );
-            logger.info( input.getClientSource() );
+        if (logger.isInfoEnabled()) {
+            logger.info(input.toString());
+            logger.info(input.getClientSource());
         }
 
         User user = authentificationUtils.getAuthentificatedUser();
-        if ( user.getStatus().equals( User.STATUS_NOT_ALLOWED ) )
-        {
-            logger.warn( "Request dispatched" );
+        if (user.getStatus().equals(User.STATUS_NOT_ALLOWED)) {
+            logger.warn("Request dispatched");
             return null;
         }
 
         // Forbid the user for any other action
-        authentificationUtils.forbidUser( user );
+        authentificationUtils.forbidUser(user);
 
-        try
-        {
-            snapshotService.cloneFromASnapshot( input.getApplicationName(), input.getTag() );
+        try {
+            snapshotService.cloneFromASnapshot(input.getApplicationName(), input.getTag());
 
-            Application application = applicationService.findByNameAndUser( user, input.getApplicationName() );
-            applicationService.stop( application );
-            applicationService.setStatus( application, Status.STOP );
+            Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
+            applicationService.stop(application);
+            applicationService.setStatus(application, Status.STOP);
 
-        }
-        finally
-        {
+        } finally {
             // in all cases, we must allow the user to work again
-            authentificationUtils.allowUser( user );
+            authentificationUtils.allowUser(user);
         }
 
         return new HttpOk();

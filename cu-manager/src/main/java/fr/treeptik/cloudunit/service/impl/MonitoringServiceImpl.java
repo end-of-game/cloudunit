@@ -43,17 +43,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class MonitoringServiceImpl
-                implements MonitoringService
-{
+    implements MonitoringService {
 
     // Dictionnaire pour mettre en relation une application avec un ou plusieurs
     // volumes
     private static ConcurrentHashMap<String, String> containerIdByName = new ConcurrentHashMap<>();
 
     private Logger logger = LoggerFactory
-                    .getLogger( MonitoringServiceImpl.class );
+        .getLogger(MonitoringServiceImpl.class);
 
-    @Value( "${cadvisor.url}" )
+    @Value("${cadvisor.url}")
     private String cAdvisorURL;
 
     @Inject
@@ -62,66 +61,49 @@ public class MonitoringServiceImpl
     @Inject
     private ApplicationService applicationService;
 
-    public String getFullContainerId( String containerName )
-    {
-        return containerIdByName.get( containerName );
+    public String getFullContainerId(String containerName) {
+        return containerIdByName.get(containerName);
     }
 
     @Override
-    public String getJsonFromCAdvisor( String containerId )
-    {
+    public String getJsonFromCAdvisor(String containerId) {
         String result = "";
-        try
-        {
+        try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpGet httpget = new HttpGet( cAdvisorURL
-                                                           + "/api/v1.0/containers/docker/" + containerId );
-            CloseableHttpResponse response = httpclient.execute( httpget );
-            try
-            {
-                result = EntityUtils.toString( response.getEntity() );
-                if ( logger.isDebugEnabled() )
-                {
-                    logger.debug( result );
+            HttpGet httpget = new HttpGet(cAdvisorURL
+                + "/api/v1.0/containers/docker/" + containerId);
+            CloseableHttpResponse response = httpclient.execute(httpget);
+            try {
+                result = EntityUtils.toString(response.getEntity());
+                if (logger.isDebugEnabled()) {
+                    logger.debug(result);
                 }
-            }
-            finally
-            {
+            } finally {
                 response.close();
             }
-        }
-        catch ( Exception e )
-        {
-            logger.error( containerId, e );
+        } catch (Exception e) {
+            logger.error(containerId, e);
         }
         return result;
     }
 
     @Override
-    public String getJsonMachineFromCAdvisor()
-    {
+    public String getJsonMachineFromCAdvisor() {
         String result = "";
-        try
-        {
+        try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpGet httpget = new HttpGet( cAdvisorURL + "/api/v1.0/machine" );
-            CloseableHttpResponse response = httpclient.execute( httpget );
-            try
-            {
-                result = EntityUtils.toString( response.getEntity() );
-                if ( logger.isDebugEnabled() )
-                {
-                    logger.debug( result );
+            HttpGet httpget = new HttpGet(cAdvisorURL + "/api/v1.0/machine");
+            CloseableHttpResponse response = httpclient.execute(httpget);
+            try {
+                result = EntityUtils.toString(response.getEntity());
+                if (logger.isDebugEnabled()) {
+                    logger.debug(result);
                 }
-            }
-            finally
-            {
+            } finally {
                 response.close();
             }
-        }
-        catch ( Exception e )
-        {
-            logger.error( "" + e );
+        } catch (Exception e) {
+            logger.error("" + e);
         }
         return result;
     }
@@ -129,83 +111,62 @@ public class MonitoringServiceImpl
     /**
      * Methode qui permet de mettre en relation les containers Id et leur nom
      */
-    @Scheduled( fixedDelay = 10000 )
-    public void generateRelationBetweenContainersNameAndFullId()
-    {
-        try
-        {
-            logger.debug( "generateRelationBetweenContainersNameAndFullId" );
-            if ( "true".equals( System.getenv( "CU_MAINTENANCE" ) ) )
-            {
+    @Scheduled(fixedDelay = 10000)
+    public void generateRelationBetweenContainersNameAndFullId() {
+        try {
+            logger.debug("generateRelationBetweenContainersNameAndFullId");
+            if ("true".equals(System.getenv("CU_MAINTENANCE"))) {
                 return;
             }
             List<Application> applications = applicationService.findAll();
-            if ( applications != null )
-            {
-                for ( Application application : applications )
-                    try
-                    {
+            if (applications != null) {
+                for (Application application : applications)
+                    try {
                         // Serveurs
                         List<Server> servers = application.getServers();
-                        for ( Server server : servers )
-                        {
+                        for (Server server : servers) {
                             DockerContainer dockerContainer = new DockerContainer();
-                            dockerContainer.setName( server.getName() );
-                            dockerContainer.setImage( server.getImage()
-                                                            .getName() );
+                            dockerContainer.setName(server.getName());
+                            dockerContainer.setImage(server.getImage()
+                                .getName());
                             dockerContainer = DockerContainer.findOne(
-                                            dockerContainer,
-                                            application.getManagerIp() );
+                                dockerContainer,
+                                application.getManagerIp());
                             server = containerMapper
-                                            .mapDockerContainerToServer(
-                                                            dockerContainer, server );
-                            containerIdByName.put( server.getName(),
-                                                   server.getContainerFullID() );
+                                .mapDockerContainerToServer(
+                                    dockerContainer, server);
+                            containerIdByName.put(server.getName(),
+                                server.getContainerFullID());
                         }
                         // Modules
                         List<Module> modules = application.getModules();
-                        for ( Module module : modules )
-                        {
+                        for (Module module : modules) {
                             DockerContainer dockerContainer = new DockerContainer();
-                            dockerContainer.setName( module.getName() );
-                            dockerContainer.setImage( module.getImage()
-                                                            .getName() );
+                            dockerContainer.setName(module.getName());
+                            dockerContainer.setImage(module.getImage()
+                                .getName());
                             dockerContainer = DockerContainer.findOne(
-                                            dockerContainer,
-                                            application.getManagerIp() );
+                                dockerContainer,
+                                application.getManagerIp());
                             module = containerMapper
-                                            .mapDockerContainerToModule(
-                                                            dockerContainer, module );
-                            containerIdByName.put( module.getName(),
-                                                   module.getContainerFullID() );
+                                .mapDockerContainerToModule(
+                                    dockerContainer, module);
+                            containerIdByName.put(module.getName(),
+                                module.getContainerFullID());
                         }
-                    }
-                    catch ( ErrorDockerJSONException ex )
-                    {
-                        if ( "docker : no such container".equalsIgnoreCase( ex
-                                                                                            .getMessage() ) )
-                        {
-                            // On ignore volontairement l'exception 'docker : no
-                            // such container'
+                    } catch (ErrorDockerJSONException ex) {
+                        if (!"docker : no such container".equalsIgnoreCase(ex.getMessage())) {
+                            logger.error(application.toString(), ex);
                         }
-                        else
-                        {
-                            logger.error( application.toString(), ex );
-                        }
-                    }
-                    catch ( Exception ex )
-                    {
+                    } catch (Exception ex) {
                         // Si une application sort en erreur, il ne faut pas
                         // arrêter la suite des traitements
-                        logger.error( application.toString(), ex );
+                        logger.error(application.toString(), ex);
                     }
             }
-        }
-        catch ( Exception e )
-        {
+        } catch (Exception e) {
             // On catch l'exception car traitement en background.
-            e.printStackTrace();
-            logger.error( "" + e.getMessage() );
+            logger.error("" + e.getMessage());
         }
     }
 

@@ -36,9 +36,8 @@ import java.io.Serializable;
 @Component
 @Aspect
 public class SnapshotAspect
-                extends CloudUnitAbstractAspect
-                implements Serializable
-{
+  extends CloudUnitAbstractAspect
+  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,79 +47,72 @@ public class SnapshotAspect
 
     private final String cloneFromASnapshot = "CLONEFROMASNAPSHOT";
 
-    private final Logger logger = LoggerFactory.getLogger( SnapshotAspect.class );
+  private final Logger logger = LoggerFactory.getLogger(SnapshotAspect.class);
 
     @Inject
     private MessageService messageService;
 
     // Before methods
-    @AfterReturning( pointcut = "execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.create(..))" +
-                    " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
-                    " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
-                    returning = "result" )
-    public void afterReturningSnapshot( StaticPart staticPart, Object result )
-                    throws MonitorException
-    {
-        try
-        {
+    @AfterReturning(pointcut = "execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.create(..))" +
+      " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
+      " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
+      returning = "result")
+    public void afterReturningSnapshot(StaticPart staticPart, Object result)
+      throws MonitorException {
+      try {
             Snapshot snapshot = (Snapshot) result;
             User user = this.getAuthentificatedUser();
             Message message = null;
-            switch ( staticPart.getSignature().getName().toUpperCase() )
-            {
+        switch (staticPart.getSignature().getName().toUpperCase()) {
                 case createType:
-                    message = MessageUtils.writeSnapshotMessage( user, snapshot,
-                                                                 createType );
+                  message = MessageUtils.writeSnapshotMessage(user, snapshot,
+                    createType);
                     break;
                 case deleteType:
-                    message = MessageUtils.writeSnapshotMessage( user, snapshot,
-                                                                 deleteType );
+                  message = MessageUtils.writeSnapshotMessage(user, snapshot,
+                    deleteType);
                     break;
 
                 case cloneFromASnapshot:
-                    message = MessageUtils.writeSnapshotMessage( user, snapshot,
-                                                                 cloneFromASnapshot );
+                  message = MessageUtils.writeSnapshotMessage(user, snapshot,
+                    cloneFromASnapshot);
                     break;
 
             }
-            logger.info( message.toString() );
-            messageService.create( message );
+        logger.info(message.toString());
+        messageService.create(message);
 
-        }
-        catch ( ServiceException e )
-        {
-            throw new MonitorException( "Error afterReturningSnapshot", e );
+      } catch (ServiceException e) {
+        throw new MonitorException("Error afterReturningSnapshot", e);
 
         }
     }
 
-    @AfterThrowing( pointcut = "execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.create(..))" +
-                    " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
-                    " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
-                    throwing = "e" )
-    public void afterThrowingSnapshot( StaticPart staticPart,
-                                       Exception e )
-                    throws ServiceException
-    {
+  @AfterThrowing(pointcut = "execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.create(..))" +
+    " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.remove(..))" +
+    " || execution(!java.util.List fr.treeptik.cloudunit.service.SnapshotService.cloneFromASnapshot(..))",
+    throwing = "e")
+  public void afterThrowingSnapshot(StaticPart staticPart,
+                                    Exception e)
+    throws ServiceException {
         User user = this.getAuthentificatedUser();
         Message message = null;
-        logger.debug( "CALLED CLASS : " + staticPart.getSignature().getName() );
-        switch ( staticPart.getSignature().getName().toUpperCase() )
-        {
+    logger.debug("CALLED CLASS : " + staticPart.getSignature().getName());
+    switch (staticPart.getSignature().getName().toUpperCase()) {
             case createType:
-                message = MessageUtils.writeAfterThrowingSnapshotMessage( e, user,
-                                                                          createType );
+              message = MessageUtils.writeAfterThrowingSnapshotMessage(e, user,
+                createType);
                 break;
             case deleteType:
-                message = MessageUtils.writeAfterThrowingSnapshotMessage( e, user,
-                                                                          deleteType );
+              message = MessageUtils.writeAfterThrowingSnapshotMessage(e, user,
+                deleteType);
                 break;
             case cloneFromASnapshot:
-                message = MessageUtils.writeAfterThrowingSnapshotMessage( e, user,
-                                                                          cloneFromASnapshot );
+              message = MessageUtils.writeAfterThrowingSnapshotMessage(e, user,
+                cloneFromASnapshot);
                 break;
         }
-        messageService.create( message );
+    messageService.create(message);
     }
 
 }

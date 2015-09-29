@@ -19,8 +19,7 @@ import fr.treeptik.cloudunit.model.ModuleConfiguration;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ModuleConfigurationDAO
-                extends
-                JpaRepository<ModuleConfiguration, Integer>
-{
+    extends
+    JpaRepository<ModuleConfiguration, Integer> {
 
 }

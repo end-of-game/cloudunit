@@ -43,103 +43,95 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories( "fr.treeptik.cloudunit.dao" )
+@EnableJpaRepositories("fr.treeptik.cloudunit.dao")
 @EnableTransactionManagement
-public class DatabaseConfiguration
-{
+public class DatabaseConfiguration {
 
     private Logger logger = LoggerFactory
-                    .getLogger( DatabaseConfiguration.class );
+        .getLogger(DatabaseConfiguration.class);
 
-    @Value( "${database.url}" )
+    @Value("${database.url}")
     private String databaseUrl;
 
-    @Value( "${database.user}" )
+    @Value("${database.user}")
     private String databaseUser;
 
-    @Value( "${database.password}" )
+    @Value("${database.password}")
     private String databasePassword;
 
-    @Value( "${database.showSQL}" )
+    @Value("${database.showSQL}")
     private String databaseShowSQL;
 
-    @Value( "classpath:/${database.script}" )
+    @Value("classpath:/${database.script}")
     private Resource dataScript;
 
     @Bean
-    public DataSource dataSource()
-    {
-        logger.debug( "Configuring Datasource" );
-        logger.debug( "database.url:" + databaseUrl );
-        logger.debug( "database.user:" + databaseUser );
+    public DataSource dataSource() {
+        logger.debug("Configuring Datasource");
+        logger.debug("database.url:" + databaseUrl);
+        logger.debug("database.user:" + databaseUser);
         HikariConfig config = new HikariConfig();
-        config.setDataSourceClassName( "com.mysql.jdbc.jdbc2.optional.MysqlDataSource" );
-        config.addDataSourceProperty( "url", databaseUrl );
-        config.addDataSourceProperty( "user", databaseUser );
-        config.addDataSourceProperty( "password", databasePassword );
+        config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        config.addDataSourceProperty("url", databaseUrl);
+        config.addDataSourceProperty("user", databaseUser);
+        config.addDataSourceProperty("password", databasePassword);
         // config.setAutoCommit(false);
-        return new HikariDataSource( config );
+        return new HikariDataSource(config);
     }
 
     @Bean
     public DataSourceInitializer dataSourceInitializer(
-                    final DataSource dataSource )
-    {
+        final DataSource dataSource) {
         final DataSourceInitializer initializer = new DataSourceInitializer();
-        initializer.setDataSource( dataSource );
-        initializer.setDatabasePopulator( databasePopulator() );
+        initializer.setDataSource(dataSource);
+        initializer.setDatabasePopulator(databasePopulator());
         return initializer;
     }
 
-    private DatabasePopulator databasePopulator()
-    {
+    private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.setSqlScriptEncoding( "utf-8" );
-        populator.addScript( dataScript );
+        populator.setSqlScriptEncoding("utf-8");
+        populator.addScript(dataScript);
         return populator;
     }
 
     @Bean
-    public EntityManagerFactory entityManagerFactory()
-    {
-        logger.debug( "Configuring EntityManager" );
+    public EntityManagerFactory entityManagerFactory() {
+        logger.debug("Configuring EntityManager");
         LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
-        lcemfb.setPersistenceProvider( new HibernatePersistence() );
-        lcemfb.setPersistenceUnitName( "persistenceUnit" );
-        lcemfb.setDataSource( dataSource() );
-        lcemfb.setJpaDialect( new HibernateJpaDialect() );
-        lcemfb.setJpaVendorAdapter( jpaVendorAdapter() );
-        lcemfb.setSharedCacheMode( SharedCacheMode.ENABLE_SELECTIVE );
+        lcemfb.setPersistenceProvider(new HibernatePersistence());
+        lcemfb.setPersistenceUnitName("persistenceUnit");
+        lcemfb.setDataSource(dataSource());
+        lcemfb.setJpaDialect(new HibernateJpaDialect());
+        lcemfb.setJpaVendorAdapter(jpaVendorAdapter());
+        lcemfb.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
         Properties jpaProperties = new Properties();
-        jpaProperties.put( "hibernate.generate_statistics", true );
-        jpaProperties.put( "hibernate.show_sql", Boolean.parseBoolean( databaseShowSQL ) );
-        lcemfb.setJpaProperties( jpaProperties );
-        lcemfb.setPackagesToScan( "fr.treeptik.cloudunit.model" );
+        jpaProperties.put("hibernate.generate_statistics", true);
+        jpaProperties.put("hibernate.show_sql", Boolean.parseBoolean(databaseShowSQL));
+        lcemfb.setJpaProperties(jpaProperties);
+        lcemfb.setPackagesToScan("fr.treeptik.cloudunit.model");
         lcemfb.afterPropertiesSet();
         return lcemfb.getObject();
     }
 
     @Bean
-    public JpaVendorAdapter jpaVendorAdapter()
-    {
+    public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-        jpaVendorAdapter.setShowSql( Boolean.parseBoolean( databaseShowSQL ) );
-        jpaVendorAdapter.setGenerateDdl( true );
-        jpaVendorAdapter.setDatabasePlatform( "org.hibernate.dialect.MySQLDialect" );
+        jpaVendorAdapter.setShowSql(Boolean.parseBoolean(databaseShowSQL));
+        jpaVendorAdapter.setGenerateDdl(true);
+        jpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
         return jpaVendorAdapter;
     }
 
     @Bean
-    public HibernateExceptionTranslator hibernateExceptionTranslator()
-    {
+    public HibernateExceptionTranslator hibernateExceptionTranslator() {
         return new HibernateExceptionTranslator();
     }
 
-    @Bean( name = "transactionManager" )
-    public PlatformTransactionManager annotationDrivenTransactionManager()
-    {
+    @Bean(name = "transactionManager")
+    public PlatformTransactionManager annotationDrivenTransactionManager() {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
-        jpaTransactionManager.setEntityManagerFactory( entityManagerFactory() );
+        jpaTransactionManager.setEntityManagerFactory(entityManagerFactory());
         return jpaTransactionManager;
     }
 }

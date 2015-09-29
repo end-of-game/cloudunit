@@ -28,62 +28,51 @@ import java.security.Key;
  * We need to decrypt password from database to inject them into containers and shell scripts.
  */
 public class CustomPasswordEncoder
-                implements PasswordEncoder
-{
+    implements PasswordEncoder {
 
     private static final String ALGO = "AES";
 
-    private static final byte[] keyValue = new byte[] { 'C', 'l', 'O', 'u',
-                    'D', 'U', 'n', 'I', 't', '2', '0', '1', '5', '0', '0', '0' };
+    private static final byte[] keyValue = new byte[]{'C', 'l', 'O', 'u',
+        'D', 'U', 'n', 'I', 't', '2', '0', '1', '5', '0', '0', '0'};
 
     private static Key generateKey()
-                    throws Exception
-    {
-        Key key = new SecretKeySpec( keyValue, ALGO );
+        throws Exception {
+        Key key = new SecretKeySpec(keyValue, ALGO);
         return key;
     }
 
     @Override
-    public String encode( CharSequence sequence )
-    {
+    public String encode(CharSequence sequence) {
         Cipher cipher;
         String encryptedString = null;
-        try
-        {
-            cipher = Cipher.getInstance( ALGO );
-            cipher.init( Cipher.ENCRYPT_MODE, generateKey() );
-            encryptedString = Base64.encodeBase64String( cipher.doFinal( sequence
-                                                                                         .toString().getBytes() ) );
-        }
-        catch ( Exception e )
-        {
+        try {
+            cipher = Cipher.getInstance(ALGO);
+            cipher.init(Cipher.ENCRYPT_MODE, generateKey());
+            encryptedString = Base64.encodeBase64String(cipher.doFinal(sequence
+                .toString().getBytes()));
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return encryptedString;
     }
 
-    public String decode( CharSequence pass )
-    {
+    public String decode(CharSequence pass) {
         Cipher cipher;
         String decryptString = null;
-        try
-        {
-            byte[] encryptText = Base64.decodeBase64( pass.toString() );
-            cipher = Cipher.getInstance( ALGO );
-            cipher.init( Cipher.DECRYPT_MODE, generateKey() );
-            decryptString = new String( cipher.doFinal( encryptText ) );
-        }
-        catch ( Exception e )
-        {
+        try {
+            byte[] encryptText = Base64.decodeBase64(pass.toString());
+            cipher = Cipher.getInstance(ALGO);
+            cipher.init(Cipher.DECRYPT_MODE, generateKey());
+            decryptString = new String(cipher.doFinal(encryptText));
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return decryptString;
     }
 
     @Override
-    public boolean matches( CharSequence sequence, String toMatch )
-    {
-        return this.encode( sequence ).equalsIgnoreCase( toMatch );
+    public boolean matches(CharSequence sequence, String toMatch) {
+        return this.encode(sequence).equalsIgnoreCase(toMatch);
     }
 
 }

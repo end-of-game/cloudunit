@@ -27,8 +27,7 @@ import java.util.List;
 
 @Entity
 public class User
-                implements Serializable
-{
+    implements Serializable {
 
     public static final Integer STATUS_MAIL_NOT_CONFIRMED = 0;
 
@@ -41,10 +40,10 @@ public class User
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column( unique = true, nullable = false )
+    @Column(unique = true, nullable = false)
     private String login;
 
     private String firstName;
@@ -53,15 +52,15 @@ public class User
 
     private String organization;
 
-    @Temporal( TemporalType.TIMESTAMP )
-    @JsonSerialize( using = JsonDateSerializer.class )
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = JsonDateSerializer.class)
     private Date signin;
 
-    @Temporal( TemporalType.TIMESTAMP )
-    @JsonSerialize( using = JsonDateSerializer.class )
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = JsonDateSerializer.class)
     private Date lastConnection;
 
-    @Column( unique = true, nullable = false )
+    @Column(unique = true, nullable = false)
     private String email;
 
     @JsonIgnore
@@ -73,20 +72,18 @@ public class User
     private Role role;
 
     @JsonIgnore
-    @OneToMany( mappedBy = "user" )
+    @OneToMany(mappedBy = "user")
     private List<Application> applications;
 
-    public User()
-    {
+    public User() {
 
     }
 
     // Constructeur pour administration
 
-    public User( Integer id, String firstName, String lastName,
-                 String organization, Date signin, String email, String password,
-                 Integer status, Role role, List<Application> applications )
-    {
+    public User(Integer id, String firstName, String lastName,
+                String organization, Date signin, String email, String password,
+                Integer status, Role role, List<Application> applications) {
         super();
         this.id = id;
         this.firstName = firstName;
@@ -100,9 +97,8 @@ public class User
         this.applications = applications;
     }
 
-    public User( String login, String firstName, String lastName,
-                 String organization, String email, String password )
-    {
+    public User(String login, String firstName, String lastName,
+                String organization, String email, String password) {
         this.login = login;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -111,159 +107,130 @@ public class User
         this.password = password;
     }
 
-    public Integer getId()
-    {
+    public Integer getId() {
         return id;
     }
 
-    public void setId( Integer id )
-    {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getFirstName()
-    {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName( String firstName )
-    {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getLastName()
-    {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName( String lastName )
-    {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public String getOrganization()
-    {
+    public String getOrganization() {
         return organization;
     }
 
-    public void setOrganization( String organization )
-    {
+    public void setOrganization(String organization) {
         this.organization = organization;
     }
 
-    public Date getSignin()
-    {
+    public Date getSignin() {
         return signin;
     }
 
-    public void setSignin( Date signin )
-    {
+    public void setSignin(Date signin) {
         this.signin = signin;
     }
 
-    public String getEmail()
-    {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail( String email )
-    {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getPassword()
-    {
-        return new CustomPasswordEncoder().decode( password );
+    public String getPassword() {
+        return new CustomPasswordEncoder().decode(password);
     }
 
-    public void setPassword( String password )
-    {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public Integer getStatus()
-    {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus( Integer status )
-    {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public Role getRole()
-    {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole( Role role )
-    {
+    public void setRole(Role role) {
         this.role = role;
     }
 
-    public List<Application> getApplications()
-    {
+    public List<Application> getApplications() {
         return applications;
     }
 
-    public void setApplications( List<Application> applications )
-    {
+    public void setApplications(List<Application> applications) {
         this.applications = applications;
     }
 
-    public String getLogin()
-    {
+    public String getLogin() {
         return login;
     }
 
-    public void setLogin( String login )
-    {
+    public void setLogin(String login) {
         this.login = login;
     }
 
-    public Date getLastConnection()
-    {
+    public Date getLastConnection() {
         return lastConnection;
     }
 
-    public void setLastConnection( Date lastConnection )
-    {
+    public void setLastConnection(Date lastConnection) {
         this.lastConnection = lastConnection;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "User [id=" + id + ", firstName=" + firstName + ", lastName="
-                        + lastName + ", signin=" + signin + ", email=" + email
-                        + ", password=***" + ", status=" + status + "]";
+            + lastName + ", signin=" + signin + ", email=" + email
+            + ", password=***" + ", status=" + status + "]";
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( id == null ) ? 0 : id.hashCode() );
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals( Object obj )
-    {
-        if ( this == obj )
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        if ( obj == null )
+        if (obj == null)
             return false;
-        if ( getClass() != obj.getClass() )
+        if (getClass() != obj.getClass())
             return false;
         User other = (User) obj;
-        if ( id == null )
-        {
-            if ( other.id != null )
+        if (id == null) {
+            if (other.id != null)
                 return false;
-        }
-        else if ( !id.equals( other.id ) )
+        } else if (!id.equals(other.id))
             return false;
         return true;
     }

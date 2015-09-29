@@ -32,22 +32,20 @@ import java.io.IOException;
  */
 @Component
 public class UserAjaxLogoutSuccessHandler
-                extends
-                AbstractAuthenticationTargetUrlRequestHandler
-                implements
-                LogoutSuccessHandler
-{
+    extends
+    AbstractAuthenticationTargetUrlRequestHandler
+    implements
+    LogoutSuccessHandler {
 
     private Logger logger = LoggerFactory
-                    .getLogger( UserAjaxLogoutSuccessHandler.class );
+        .getLogger(UserAjaxLogoutSuccessHandler.class);
 
     @Override
-    public void onLogoutSuccess( HttpServletRequest request,
-                                 HttpServletResponse response, Authentication authentication )
-                    throws IOException, ServletException
-    {
+    public void onLogoutSuccess(HttpServletRequest request,
+                                HttpServletResponse response, Authentication authentication)
+        throws IOException, ServletException {
 
-        logger.info( "SC_OK" );
-        response.setStatus( HttpServletResponse.SC_OK );
+        logger.info("SC_OK");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }

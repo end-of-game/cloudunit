@@ -26,8 +26,7 @@ import java.util.Map;
  * TODO : reprendre pour factoriser les méthodes et les objets. Etendre Module
  * en fonction de la BDD
  */
-public class ModuleUtils
-{
+public class ModuleUtils {
 
     /**
      * Ajoute des informations spécifiques pour un module MEMCACHED
@@ -35,9 +34,8 @@ public class ModuleUtils
      * @param module
      * @return
      */
-    public static Module addMemcachedSpecificInformations( Module module )
-    {
-        module.getModuleInfos().put( "linkAlias", "memcached1" );
+    public static Module addMemcachedSpecificInformations(Module module) {
+        module.getModuleInfos().put("linkAlias", "memcached1");
         return module;
     }
 
@@ -47,11 +45,10 @@ public class ModuleUtils
      * @param module
      * @return
      */
-    public static Module addOracleSpecificInformations( Module module )
-    {
-        module.getModuleInfos().put( "database",
-                                     module.getApplication().getName().toLowerCase() );
-        module.getModuleInfos().putAll( generateRamdomUserAccess() );
+    public static Module addOracleSpecificInformations(Module module) {
+        module.getModuleInfos().put("database",
+            module.getApplication().getName().toLowerCase());
+        module.getModuleInfos().putAll(generateRamdomUserAccess());
         return module;
     }
 
@@ -60,16 +57,15 @@ public class ModuleUtils
      *
      * @return
      */
-    public static Map<String, String> generateRamdomUserAccess()
-    {
+    public static Map<String, String> generateRamdomUserAccess() {
         Map<String, String> map = new HashMap<String, String>();
         SecureRandom random = new SecureRandom();
         String username = "admin"
-                        + new BigInteger( 130, random ).toString( 32 ).substring( 2, 10 );
-        String password = new BigInteger( 130, random ).toString( 32 ).substring( 2,
-                                                                                  10 );
-        map.put( "username", username );
-        map.put( "password", password );
+            + new BigInteger(130, random).toString(32).substring(2, 10);
+        String password = new BigInteger(130, random).toString(32).substring(2,
+            10);
+        map.put("username", username);
+        map.put("password", password);
         return map;
     }
 

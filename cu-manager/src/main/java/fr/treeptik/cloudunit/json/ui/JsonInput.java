@@ -21,8 +21,7 @@ import java.io.Serializable;
  * Created by nicolas on 31/07/2014.
  */
 public class JsonInput
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,159 +53,129 @@ public class JsonInput
 
     private String portToOpen;
 
-    public static long getSerialVersionUID()
-    {
+    public static long getSerialVersionUID() {
         return serialVersionUID;
     }
 
-    public String getJvmRelease()
-    {
+    public String getJvmRelease() {
         return jvmRelease;
     }
 
-    public void setJvmRelease( String jvmRelease )
-    {
+    public void setJvmRelease(String jvmRelease) {
         this.jvmRelease = jvmRelease;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "JsonInput{" + "applicationName='" + applicationName + '\''
-                        + ", jvmMemory='" + jvmMemory + '\'' + ", jvmOptions='"
-                        + jvmOptions + '\'' + ", serverName='" + serverName + '\''
-                        + ", imageName='" + imageName + '\'' + ", login='" + login
-                        + '\'' + ", location='" + location + '\'' + ", moduleName='"
-                        + moduleName + '\'' + ", alias='" + alias + '\'' + '}';
+            + ", jvmMemory='" + jvmMemory + '\'' + ", jvmOptions='"
+            + jvmOptions + '\'' + ", serverName='" + serverName + '\''
+            + ", imageName='" + imageName + '\'' + ", login='" + login
+            + '\'' + ", location='" + location + '\'' + ", moduleName='"
+            + moduleName + '\'' + ", alias='" + alias + '\'' + '}';
     }
 
-    public String getLocation()
-    {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation( String location )
-    {
+    public void setLocation(String location) {
         this.location = location;
     }
 
-    public String getApplicationName()
-    {
+    public String getApplicationName() {
         return applicationName;
     }
 
-    public void setApplicationName( String applicationName )
-    {
+    public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
     }
 
-    public String getJvmMemory()
-    {
+    public String getJvmMemory() {
         return jvmMemory;
     }
 
-    public void setJvmMemory( String jvmMemory )
-    {
+    public void setJvmMemory(String jvmMemory) {
         this.jvmMemory = jvmMemory;
     }
 
-    public String getJvmOptions()
-    {
+    public String getJvmOptions() {
         return jvmOptions;
     }
 
-    public void setJvmOptions( String jvmOptions )
-    {
+    public void setJvmOptions(String jvmOptions) {
         this.jvmOptions = jvmOptions;
     }
 
-    public String getServerName()
-    {
+    public String getServerName() {
         return serverName;
     }
 
-    public void setServerName( String serverName )
-    {
+    public void setServerName(String serverName) {
         this.serverName = serverName;
     }
 
-    public String getImageName()
-    {
+    public String getImageName() {
         return imageName;
     }
 
-    public void setImageName( String imageName )
-    {
+    public void setImageName(String imageName) {
         this.imageName = imageName;
     }
 
-    public String getModuleName()
-    {
+    public String getModuleName() {
         return moduleName;
     }
 
-    public void setModuleName( String moduleName )
-    {
+    public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
 
-    public String getLogin()
-    {
+    public String getLogin() {
         return login;
     }
 
-    public void setLogin( String login )
-    {
+    public void setLogin(String login) {
         this.login = login;
     }
 
-    public String getAlias()
-    {
+    public String getAlias() {
         return alias;
     }
 
-    public void setAlias( String alias )
-    {
+    public void setAlias(String alias) {
         this.alias = alias;
     }
 
-    public String getTag()
-    {
+    public String getTag() {
         return tag;
     }
 
-    public void setTag( String tag )
-    {
+    public void setTag(String tag) {
         this.tag = tag;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription( String description )
-    {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getClientSource()
-    {
+    public String getClientSource() {
         return clientSource;
     }
 
-    public void setClientSource( String clientSource )
-    {
+    public void setClientSource(String clientSource) {
         this.clientSource = clientSource;
     }
 
-    public String getPortToOpen()
-    {
+    public String getPortToOpen() {
         return portToOpen;
     }
 
-    public void setPortToOpen( String portToOpen )
-    {
+    public void setPortToOpen(String portToOpen) {
         this.portToOpen = portToOpen;
     }
 

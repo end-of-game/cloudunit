@@ -25,8 +25,7 @@ import java.util.Date;
 
 @Entity
 public class Deployment
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,8 +33,8 @@ public class Deployment
     @GeneratedValue
     private Integer id;
 
-    @Temporal( TemporalType.TIMESTAMP )
-    @JsonSerialize( using = JsonDateSerializer.class )
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = JsonDateSerializer.class)
     private Date date;
 
     @JsonIgnore
@@ -44,43 +43,35 @@ public class Deployment
 
     private Type type;
 
-    public Integer getId()
-    {
+    public Integer getId() {
         return id;
     }
 
-    public void setId( Integer id )
-    {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Date getDate()
-    {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate( Date date )
-    {
+    public void setDate(Date date) {
         this.date = date;
     }
 
-    public Application getApplication()
-    {
+    public Application getApplication() {
         return application;
     }
 
-    public void setApplication( Application application )
-    {
+    public void setApplication(Application application) {
         this.application = application;
     }
 
-    public Type getType()
-    {
+    public Type getType() {
         return type;
     }
 
-    public void setType( Type type )
-    {
+    public void setType(Type type) {
         this.type = type;
     }
 

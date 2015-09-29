@@ -26,18 +26,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CustomResponseHandler
-{
+public class CustomResponseHandler {
 
-    @ExceptionHandler( { CheckException.class, ServiceException.class,
-                    NoSuchMessageException.class, NumberFormatException.class,
-                    ClassCastException.class } )
-    @ResponseStatus( value = HttpStatus.INTERNAL_SERVER_ERROR )
+    @ExceptionHandler({CheckException.class, ServiceException.class,
+        NoSuchMessageException.class, NumberFormatException.class,
+        ClassCastException.class})
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public
     @ResponseBody
-    HttpErrorServer handleException( CheckException e )
-    {
-        return new HttpErrorServer( e.getMessage() );
+    HttpErrorServer handleException(CheckException e) {
+        return new HttpErrorServer(e.getMessage());
     }
 
 }

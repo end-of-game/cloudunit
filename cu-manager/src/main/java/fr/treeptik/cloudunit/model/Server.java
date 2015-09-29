@@ -29,9 +29,8 @@ import java.util.Map;
 
 @Entity
 public class Server
-                extends Container
-                implements Serializable
-{
+    extends Container
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,10 +50,9 @@ public class Server
     @JsonIgnore
     private ServerAction serverAction;
 
-    public Server( Integer id, Date startDate, String name, String containerID,
-                   Long memorySize, String containerIP, String dockerState,
-                   Status status, Image image, Map<String, String> listPorts )
-    {
+    public Server(Integer id, Date startDate, String name, String containerID,
+                  Long memorySize, String containerIP, String dockerState,
+                  Status status, Image image, Map<String, String> listPorts) {
         super();
         this.id = id;
         this.startDate = startDate;
@@ -67,74 +65,61 @@ public class Server
         this.image = image;
     }
 
-    public Server()
-    {
+    public Server() {
     }
 
     @PostLoad
-    public void initServerActionFromJPA()
-    {
-        ServerFactory.updateServer( this );
+    public void initServerActionFromJPA() {
+        ServerFactory.updateServer(this);
     }
 
-    public Long getJvmMemory()
-    {
+    public Long getJvmMemory() {
         return jvmMemory;
     }
 
-    public void setJvmMemory( Long jvmMemory )
-    {
+    public void setJvmMemory(Long jvmMemory) {
         this.jvmMemory = jvmMemory;
     }
 
-    public String getJvmOptions()
-    {
+    public String getJvmOptions() {
         return jvmOptions;
     }
 
-    public void setJvmOptions( String opts )
-    {
+    public void setJvmOptions(String opts) {
         this.jvmOptions = opts;
     }
 
-    public String getManagerLocation()
-    {
+    public String getManagerLocation() {
         return managerLocation;
     }
 
-    public void setManagerLocation( String managerLocation )
-    {
+    public void setManagerLocation(String managerLocation) {
         this.managerLocation = managerLocation;
     }
 
-    public ServerAction getServerAction()
-    {
+    public ServerAction getServerAction() {
         return serverAction;
     }
 
-    public void setServerAction( ServerAction serverAction )
-    {
+    public void setServerAction(ServerAction serverAction) {
         this.serverAction = serverAction;
     }
 
-    public String getJvmRelease()
-    {
+    public String getJvmRelease() {
         return jvmRelease;
     }
 
-    public void setJvmRelease( String jvmRelease )
-    {
+    public void setJvmRelease(String jvmRelease) {
         this.jvmRelease = jvmRelease;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Server [id=" + id + ", startDate=" + startDate + ", name="
-                        + name + ", cloudId=" + containerID + ", memorySize="
-                        + memorySize + ", containerIP=" + containerIP
-                        + ", dockerState=" + dockerState + ", image=" + image
-                        + ", status=" + status + "]";
+            + name + ", cloudId=" + containerID + ", memorySize="
+            + memorySize + ", containerIP=" + containerIP
+            + ", dockerState=" + dockerState + ", image=" + image
+            + ", status=" + status + "]";
     }
 
 }

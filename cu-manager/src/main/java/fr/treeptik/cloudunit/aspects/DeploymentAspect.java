@@ -35,88 +35,72 @@ import java.io.Serializable;
 @Component
 @Aspect
 public class DeploymentAspect
-                extends CloudUnitAbstractAspect
-                implements Serializable
-{
+    extends CloudUnitAbstractAspect
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private final String createType = "CREATE";
 
-    private final Logger logger = LoggerFactory.getLogger( DeploymentAspect.class );
+    private final Logger logger = LoggerFactory.getLogger(DeploymentAspect.class);
 
     @Inject
     private MessageService messageService;
 
     // Before methods
-    @Before( "execution(* fr.treeptik.cloudunit.service.DeploymentService.create(..))" )
-    public void beforeDeployment( JoinPoint joinPoint )
-                    throws MonitorException
-    {
-        try
-        {
+    @Before("execution(* fr.treeptik.cloudunit.service.DeploymentService.create(..))")
+    public void beforeDeployment(JoinPoint joinPoint)
+        throws MonitorException {
+        try {
             User user = null;
-            if ( !joinPoint.getArgs()[1].equals( Type.GITPUSH ) )
-            {
+            if (!joinPoint.getArgs()[1].equals(Type.GITPUSH)) {
                 user = this.getAuthentificatedUser();
-            }
-            else
-            {
+            } else {
                 // TODO : BUG to fix :: we don't notice the deployment with git : bug with spring cache and aop.
                 return;
             }
             Application application = (Application) joinPoint.getArgs()[0];
             Message message = null;
-            switch ( joinPoint.getSignature().getName().toUpperCase() )
-            {
+            switch (joinPoint.getSignature().getName().toUpperCase()) {
                 case createType:
-                    message = MessageUtils.writeBeforeDeploymentMessage( user,
-                                                                         application, createType );
+                    message = MessageUtils.writeBeforeDeploymentMessage(user,
+                        application, createType);
                     break;
             }
-            if ( message != null )
-            {
-                logger.info( message.toString() );
-                messageService.create( message );
+            if (message != null) {
+                logger.info(message.toString());
+                messageService.create(message);
             }
 
-        }
-        catch ( ServiceException e )
-        {
-            throw new MonitorException( "Error afterReturningApplication", e );
+        } catch (ServiceException e) {
+            throw new MonitorException("Error afterReturningApplication", e);
 
         }
     }
 
-    @AfterReturning( pointcut = "execution(* fr.treeptik.cloudunit.service.DeploymentService.create(..))", returning = "result" )
-    public void afterReturningDeployment( StaticPart staticPart, Object result )
-                    throws MonitorException
-    {
-        try
-        {
-            if ( result == null )
+    @AfterReturning(pointcut = "execution(* fr.treeptik.cloudunit.service.DeploymentService.create(..))", returning = "result")
+    public void afterReturningDeployment(StaticPart staticPart, Object result)
+        throws MonitorException {
+        try {
+            if (result == null)
                 return;
             Deployment deployment = (Deployment) result;
             User user = deployment.getApplication().getUser();
             Message message = null;
-            switch ( staticPart.getSignature().getName().toUpperCase() )
-            {
+            switch (staticPart.getSignature().getName().toUpperCase()) {
                 case createType:
-                    message = MessageUtils.writeDeploymentMessage( user, deployment,
-                                                                   createType );
+                    message = MessageUtils.writeDeploymentMessage(user, deployment,
+                        createType);
                     break;
             }
 
-            if ( message != null )
-            {
-                logger.info( message.toString() );
-                messageService.create( message );
+            if (message != null) {
+                logger.info(message.toString());
+                messageService.create(message);
             }
 
-        }
-        catch ( ServiceException e )
-        {
-            throw new MonitorException( "Error afterReturningApplication", e );
+        } catch (ServiceException e) {
+            throw new MonitorException("Error afterReturningApplication", e);
 
         }
     }

@@ -32,11 +32,10 @@ import javax.inject.Inject;
 import java.util.Locale;
 
 @Component
-public class AuthentificationUtils
-{
+public class AuthentificationUtils {
 
     private Logger logger = LoggerFactory
-                    .getLogger( AuthentificationUtils.class );
+        .getLogger(AuthentificationUtils.class);
 
     @Inject
     private UserService userService;
@@ -45,25 +44,22 @@ public class AuthentificationUtils
     private MessageSource messageSource;
 
     public User getAuthentificatedUser()
-                    throws ServiceException
-    {
+        throws ServiceException {
         Authentication auth = SecurityContextHolder.getContext()
-                                                   .getAuthentication();
-        return userService.findByLogin( auth.getName() );
+            .getAuthentication();
+        return userService.findByLogin(auth.getName());
     }
 
-    public void allowUser( User user )
-                    throws ServiceException
-    {
-        user.setStatus( User.STATUS_ACTIF );
-        userService.update( user );
+    public void allowUser(User user)
+        throws ServiceException {
+        user.setStatus(User.STATUS_ACTIF);
+        userService.update(user);
     }
 
-    public void forbidUser( User user )
-                    throws ServiceException
-    {
-        user.setStatus( User.STATUS_NOT_ALLOWED );
-        userService.update( user );
+    public void forbidUser(User user)
+        throws ServiceException {
+        user.setStatus(User.STATUS_NOT_ALLOWED);
+        userService.update(user);
     }
 
     /**
@@ -73,23 +69,20 @@ public class AuthentificationUtils
      * @throws ServiceException
      * @throws CheckException
      */
-    public void canStartNewAction( User user, Application application,
-                                   Locale locale )
-                    throws CheckException
-    {
+    public void canStartNewAction(User user, Application application,
+                                  Locale locale)
+        throws CheckException {
 
-        if ( user != null && user.getStatus().equals( User.STATUS_NOT_ALLOWED ) )
-        {
+        if (user != null && user.getStatus().equals(User.STATUS_NOT_ALLOWED)) {
             throw new CheckException(
-                            "You have launched a backup or a restore operation and it is still performing. Please wait a moment to continue" );
+                "You have launched a backup or a restore operation and it is still performing. Please wait a moment to continue");
         }
 
         // check if there is no action currently on the entity
-        if ( application != null
-                        && application.getStatus().equals( Status.PENDING ) )
-        {
-            throw new CheckException( this.messageSource.getMessage(
-                            "app.pending", null, locale ) );
+        if (application != null
+            && application.getStatus().equals(Status.PENDING)) {
+            throw new CheckException(this.messageSource.getMessage(
+                "app.pending", null, locale));
         }
     }
 

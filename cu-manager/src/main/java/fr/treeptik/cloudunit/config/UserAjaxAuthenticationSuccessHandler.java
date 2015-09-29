@@ -31,20 +31,18 @@ import java.io.IOException;
  */
 @Component
 public class UserAjaxAuthenticationSuccessHandler
-                extends
-                SimpleUrlAuthenticationSuccessHandler
-{
+    extends
+    SimpleUrlAuthenticationSuccessHandler {
 
     private Logger logger = LoggerFactory
-                    .getLogger( UserAjaxAuthenticationSuccessHandler.class );
+        .getLogger(UserAjaxAuthenticationSuccessHandler.class);
 
     @Override
-    public void onAuthenticationSuccess( HttpServletRequest request,
-                                         HttpServletResponse response, Authentication authentication )
-                    throws IOException, ServletException
-    {
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response, Authentication authentication)
+        throws IOException, ServletException {
 
-        logger.info( "SC_OK" );
-        response.setStatus( HttpServletResponse.SC_OK );
+        logger.info("SC_OK");
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }

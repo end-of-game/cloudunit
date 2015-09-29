@@ -25,8 +25,7 @@ import java.io.Serializable;
 
 @Component
 public class ContainerMapper
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,74 +38,68 @@ public class ContainerMapper
      * @return
      */
     private Container mapDockerContainerToContainer(
-                    DockerContainer dockerContainer, Container container )
-    {
+        DockerContainer dockerContainer, Container container) {
 
-        container.setContainerID( dockerContainer.getId().substring( 0, 12 ) );
-        container.setContainerFullID( dockerContainer.getId() );
-        container.setName( dockerContainer.getName() );
-        container.setMemorySize( dockerContainer.getMemory() );
-        container.setMemorySize( dockerContainer.getMemorySwap() );
-        container.setContainerIP( dockerContainer.getIp() );
+        container.setContainerID(dockerContainer.getId().substring(0, 12));
+        container.setContainerFullID(dockerContainer.getId());
+        container.setName(dockerContainer.getName());
+        container.setMemorySize(dockerContainer.getMemory());
+        container.setMemorySize(dockerContainer.getMemorySwap());
+        container.setContainerIP(dockerContainer.getIp());
 
-        container.setDockerState( dockerContainer.getState() );
+        container.setDockerState(dockerContainer.getState());
 
         // Set sshPort and delete it from global list port.
-        container.setSshPort( dockerContainer.getPorts().get( "22/tcp" ) );
-        dockerContainer.getPorts().remove( "22/tcp" );
+        container.setSshPort(dockerContainer.getPorts().get("22/tcp"));
+        dockerContainer.getPorts().remove("22/tcp");
 
-        container.setListPorts( dockerContainer.getPorts() );
+        container.setListPorts(dockerContainer.getPorts());
 
-        container.setVolumes( dockerContainer.getVolumes() );
-        container.setVolumesFrom( dockerContainer.getVolumesFrom() );
+        container.setVolumes(dockerContainer.getVolumes());
+        container.setVolumesFrom(dockerContainer.getVolumesFrom());
 
         return container;
 
     }
 
     private Container mapDockerContainerToContainer(
-                    DockerContainer dockerContainer )
-    {
+        DockerContainer dockerContainer) {
 
         Container container = new Container();
 
-        this.mapDockerContainerToContainer( dockerContainer, container );
+        this.mapDockerContainerToContainer(dockerContainer, container);
 
         return container;
 
     }
 
-    public Server mapDockerContainerToServer( DockerContainer dockerContainer )
-    {
+    public Server mapDockerContainerToServer(DockerContainer dockerContainer) {
 
-        Server server = (Server) mapDockerContainerToContainer( dockerContainer );
-
-        return server;
-
-    }
-
-    public Server mapDockerContainerToServer( DockerContainer dockerContainer,
-                                              Server server )
-    {
-
-        mapDockerContainerToContainer( dockerContainer, server );
+        Server server = (Server) mapDockerContainerToContainer(dockerContainer);
 
         return server;
 
     }
 
-    public Module mapDockerContainerToModule( DockerContainer dockerContainer )
-    {
+    public Server mapDockerContainerToServer(DockerContainer dockerContainer,
+                                             Server server) {
 
-        return (Module) mapDockerContainerToContainer( dockerContainer );
+        mapDockerContainerToContainer(dockerContainer, server);
+
+        return server;
 
     }
 
-    public Module mapDockerContainerToModule( DockerContainer dockerContainer,
-                                              Module module )
-    {
+    public Module mapDockerContainerToModule(DockerContainer dockerContainer) {
 
-        return (Module) mapDockerContainerToContainer( dockerContainer, module );
+        return (Module) mapDockerContainerToContainer(dockerContainer);
+
+    }
+
+    public Module mapDockerContainerToModule(DockerContainer dockerContainer,
+                                             Module module) {
+
+        return (Module) mapDockerContainerToContainer(dockerContainer, module);
 
     }
 

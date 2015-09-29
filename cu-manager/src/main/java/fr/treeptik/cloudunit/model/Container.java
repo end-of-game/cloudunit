@@ -25,8 +25,7 @@ import java.util.*;
 
 @MappedSuperclass
 public class Container
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,8 +33,8 @@ public class Container
     @GeneratedValue
     protected Integer id;
 
-    @Temporal( TemporalType.TIMESTAMP )
-    @JsonSerialize( using = JsonDateSerializer.class )
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = JsonDateSerializer.class)
     protected Date startDate;
 
     protected String name;
@@ -61,10 +60,10 @@ public class Container
      * it's being modified and not yet in operational state or FAIL if a problem
      * has been detected on this server.
      */
-    @Enumerated( EnumType.STRING )
+    @Enumerated(EnumType.STRING)
     protected Status status;
 
-    @ManyToOne( fetch = FetchType.LAZY )
+    @ManyToOne(fetch = FetchType.LAZY)
     protected Image image;
 
     /**
@@ -89,189 +88,151 @@ public class Container
 
     private String sshPort;
 
-    @OneToMany( cascade = CascadeType.REMOVE )
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JsonIgnore
     private Set<PortToOpen> portsToOpen;
 
-    public Container()
-    {
+    public Container() {
     }
 
-    public Integer getId()
-    {
+    public Integer getId() {
         return id;
     }
 
-    public void setId( Integer id )
-    {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Date getStartDate()
-    {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate( Date startDate )
-    {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName( String name )
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getContainerID()
-    {
+    public String getContainerID() {
         return containerID;
     }
 
-    public void setContainerID( String containerID )
-    {
+    public void setContainerID(String containerID) {
         this.containerID = containerID;
     }
 
-    public String getContainerFullID()
-    {
+    public String getContainerFullID() {
         return containerFullId;
     }
 
-    public void setContainerFullID( String containerFullId )
-    {
+    public void setContainerFullID(String containerFullId) {
         this.containerFullId = containerFullId;
     }
 
-    public Long getMemorySize()
-    {
+    public Long getMemorySize() {
         return memorySize;
     }
 
-    public void setMemorySize( Long memorySize )
-    {
+    public void setMemorySize(Long memorySize) {
         this.memorySize = memorySize;
     }
 
-    public String getContainerIP()
-    {
+    public String getContainerIP() {
         return containerIP;
     }
 
-    public void setContainerIP( String containerIP )
-    {
+    public void setContainerIP(String containerIP) {
         this.containerIP = containerIP;
     }
 
-    public String getDockerState()
-    {
+    public String getDockerState() {
         return dockerState;
     }
 
-    public void setDockerState( String dockerState )
-    {
+    public void setDockerState(String dockerState) {
         this.dockerState = dockerState;
     }
 
-    public Status getStatus()
-    {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus( Status status )
-    {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
-    public Image getImage()
-    {
+    public Image getImage() {
         return image;
     }
 
-    public void setImage( Image image )
-    {
+    public void setImage(Image image) {
         this.image = image;
     }
 
-    public Map<String, String> getListPorts()
-    {
+    public Map<String, String> getListPorts() {
         return listPorts;
     }
 
-    public void setListPorts( Map<String, String> listPorts )
-    {
+    public void setListPorts(Map<String, String> listPorts) {
         this.listPorts = listPorts;
     }
 
-    public Application getApplication()
-    {
+    public Application getApplication() {
         return application;
     }
 
-    public void setApplication( Application application )
-    {
+    public void setApplication(Application application) {
         this.application = application;
     }
 
-    public String getSshPort()
-    {
+    public String getSshPort() {
         return sshPort;
     }
 
-    public void setSshPort( String sshPort )
-    {
+    public void setSshPort(String sshPort) {
         this.sshPort = sshPort;
     }
 
-    public String getInternalDNSName()
-    {
+    public String getInternalDNSName() {
         return internalDNSName;
     }
 
-    public void setInternalDNSName( String internalDNSName )
-    {
+    public void setInternalDNSName(String internalDNSName) {
         this.internalDNSName = internalDNSName;
     }
 
-    public Map<String, String> getVolumes()
-    {
+    public Map<String, String> getVolumes() {
         return volumes;
     }
 
-    public void setVolumes( Map<String, String> volumes )
-    {
+    public void setVolumes(Map<String, String> volumes) {
         this.volumes = volumes;
     }
 
-    public List<String> getVolumesFrom()
-    {
+    public List<String> getVolumesFrom() {
         return volumesFrom;
     }
 
-    public void setVolumesFrom( List<String> volumesFrom )
-    {
+    public void setVolumesFrom(List<String> volumesFrom) {
         this.volumesFrom = volumesFrom;
     }
 
-    public List<PortToOpen> getPortsToOpen()
-    {
-        if ( portsToOpen != null )
-        {
-            return new ArrayList<>( portsToOpen );
-        }
-        else
-        {
+    public List<PortToOpen> getPortsToOpen() {
+        if (portsToOpen != null) {
+            return new ArrayList<>(portsToOpen);
+        } else {
             return new ArrayList<>();
         }
     }
 
-    public void setPortsToOpen( List<PortToOpen> portsToOpen )
-    {
-        this.portsToOpen = new HashSet<>( portsToOpen );
+    public void setPortsToOpen(List<PortToOpen> portsToOpen) {
+        this.portsToOpen = new HashSet<>(portsToOpen);
     }
 
 }

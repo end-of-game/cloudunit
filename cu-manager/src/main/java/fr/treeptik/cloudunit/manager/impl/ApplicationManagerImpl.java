@@ -40,10 +40,9 @@ import java.util.Locale;
  */
 @Component
 public class ApplicationManagerImpl
-                implements ApplicationManager
-{
+    implements ApplicationManager {
 
-    private Logger logger = LoggerFactory.getLogger( ApplicationManagerImpl.class );
+    private Logger logger = LoggerFactory.getLogger(ApplicationManagerImpl.class);
 
     @Inject
     private ServerService serverService;
@@ -66,64 +65,53 @@ public class ApplicationManagerImpl
      * @throws ServiceException
      * @throws CheckException
      */
-    public void create( final String applicationName, final String userLogin, final String serverName )
-                    throws ServiceException, CheckException
-    {
+    public void create(final String applicationName, final String userLogin, final String serverName)
+        throws ServiceException, CheckException {
 
         Application application = applicationService.create(
-                        applicationName, userLogin, serverName, null );
+            applicationName, userLogin, serverName, null);
 
         // Wait for the server has a status START (set by shell agent)
-        for ( Server server : application.getServers() )
-        {
+        for (Server server : application.getServers()) {
             int counter = 0;
-            while ( !server.getStatus().equals( Status.START ) )
-            {
-                if ( counter == 60 )
-                {
+            while (!server.getStatus().equals(Status.START)) {
+                if (counter == 60) {
                     break;
                 }
-                try
-                {
-                    Thread.sleep( 1000 );
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // ignore
                 }
-                catch ( InterruptedException e )
-                {
-                }
-                server = serverService.findById( server.getId() );
+                server = serverService.findById(server.getId());
                 counter++;
             }
         }
 
         // Recopy ssh key and update redis
-        applicationService.postStart( application, application.getUser() );
+        applicationService.postStart(application, application.getUser());
 
         int counter = 0;
-        while ( counter < 60 )
-        {
+        while (++counter < 60) {
             boolean allStarted = true;
             // All modules must be started before application
-            for ( Module module : application.getModules() )
-            {
-                module = moduleService.findById( module.getId() );
-                while ( !module.getStatus().equals( Status.START ) )
-                {
+            for (Module module : application.getModules()) {
+                module = moduleService.findById(module.getId());
+                while (!module.getStatus().equals(Status.START)) {
                     allStarted = false;
                 }
             }
-            if ( allStarted )
+            if (allStarted)
                 break;
-            try
-            {
-                Thread.sleep( 1000 );
-            }
-            catch ( InterruptedException e )
-            {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // ignore
             }
         }
 
         // Application is now started
-        applicationService.setStatus( application, Status.START );
+        applicationService.setStatus(application, Status.START);
     }
 
     /**
@@ -133,73 +121,57 @@ public class ApplicationManagerImpl
      * @throws ServiceException
      * @throws CheckException
      */
-    public void start( Application application, User user )
-                    throws ServiceException, CheckException
-    {
+    public void start(Application application, User user)
+        throws ServiceException, CheckException {
 
-        try
-        {
+        try {
             // Application occupée
-            applicationService.setStatus( application, Status.PENDING );
+            applicationService.setStatus(application, Status.PENDING);
 
             // Application en cours de démarrage
-            applicationService.start( application );
+            applicationService.start(application);
 
             // Wait for the server has a status START (set by shell agent)
-            for ( Server server : application.getServers() )
-            {
+            for (Server server : application.getServers()) {
                 int counter = 0;
-                while ( !server.getStatus().equals( Status.START ) )
-                {
-                    if ( counter == 60 )
-                    {
+                while (!server.getStatus().equals(Status.START)) {
+                    if (counter == 60) {
                         break;
                     }
-                    try
-                    {
-                        Thread.sleep( 1000 );
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
                     }
-                    catch ( InterruptedException e )
-                    {
-                    }
-                    server = serverService.findById( server.getId() );
+                    server = serverService.findById(server.getId());
                     counter++;
                 }
             }
 
             // Recopy ssh key and update redis
-            applicationService.postStart( application, application.getUser() );
+            applicationService.postStart(application, application.getUser());
 
             int counter = 0;
-            while ( counter < 60 )
-            {
+            while (counter < 60) {
                 boolean allStarted = true;
                 // All modules must be started before application
-                for ( Module module : application.getModules() )
-                {
-                    module = moduleService.findById( module.getId() );
-                    while ( !module.getStatus().equals( Status.START ) )
-                    {
+                for (Module module : application.getModules()) {
+                    module = moduleService.findById(module.getId());
+                    while (!module.getStatus().equals(Status.START)) {
                         allStarted = false;
                     }
                 }
-                if ( allStarted )
+                if (allStarted)
                     break;
-                try
-                {
-                    Thread.sleep( 1000 );
-                }
-                catch ( InterruptedException e )
-                {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
                 }
             }
 
-            applicationService.setStatus( application, Status.START );
+            applicationService.setStatus(application, Status.START);
 
-        }
-        catch ( ServiceException e )
-        {
-            applicationService.setStatus( application, Status.FAIL );
+        } catch (ServiceException e) {
+            applicationService.setStatus(application, Status.FAIL);
         }
     }
 
@@ -210,25 +182,21 @@ public class ApplicationManagerImpl
      * @throws ServiceException
      * @throws CheckException
      */
-    public void stop( Application application, User user )
-                    throws ServiceException, CheckException
-    {
-        try
-        {
+    public void stop(Application application, User user)
+        throws ServiceException, CheckException {
+        try {
             // Application occupée
-            applicationService.setStatus( application, Status.PENDING );
+            applicationService.setStatus(application, Status.PENDING);
 
             // Arrêt de l'application
-            applicationService.stop( application );
+            applicationService.stop(application);
 
             // application stop
-            applicationService.setStatus( application, Status.STOP );
+            applicationService.setStatus(application, Status.STOP);
 
-        }
-        catch ( ServiceException e )
-        {
+        } catch (ServiceException e) {
             // Anomaly
-            applicationService.setStatus( application, Status.FAIL );
+            applicationService.setStatus(application, Status.FAIL);
         }
     }
 
@@ -238,43 +206,35 @@ public class ApplicationManagerImpl
      * @param fileUpload
      * @param application
      */
-    public void deploy( MultipartFile fileUpload, Application application )
-                    throws ServiceException, CheckException
-    {
-        try
-        {
+    public void deploy(MultipartFile fileUpload, Application application)
+        throws ServiceException, CheckException {
+        try {
             // Deployment processus with verification for format file
-            if ( FilesUtils.isAuthorizedFileForDeployment( fileUpload.getOriginalFilename() ) )
-            {
+            if (FilesUtils.isAuthorizedFileForDeployment(fileUpload.getOriginalFilename())) {
 
-                File file = File.createTempFile( "deployment-",
-                                                 FilesUtils.setSuffix( fileUpload.getOriginalFilename() ) );
-                fileUpload.transferTo( file );
+                File file = File.createTempFile("deployment-",
+                    FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
+                fileUpload.transferTo(file);
 
-                if ( application.getStatus().equals( Status.STOP ) )
-                {
-                    throw new CheckException( messageSource.getMessage( "app.stop", null, Locale.ENGLISH ) );
+                if (application.getStatus().equals(Status.STOP)) {
+                    throw new CheckException(messageSource.getMessage("app.stop", null, Locale.ENGLISH));
                 }
 
                 // Application busy
-                applicationService.setStatus( application, Status.PENDING );
+                applicationService.setStatus(application, Status.PENDING);
 
                 // Deployment
-                applicationService.deploy( file, application );
+                applicationService.deploy(file, application);
 
                 // application is started
-                applicationService.setStatus( application, Status.START );
+                applicationService.setStatus(application, Status.START);
 
+            } else {
+                throw new CheckException(messageSource.getMessage("check.war.ear", null, Locale.ENGLISH));
             }
-            else
-            {
-                throw new CheckException( messageSource.getMessage( "check.war.ear", null, Locale.ENGLISH ) );
-            }
-        }
-        catch ( IOException e )
-        {
-            applicationService.setStatus( application, Status.FAIL );
-            throw new ServiceException( e.getMessage() );
+        } catch (IOException e) {
+            applicationService.setStatus(application, Status.FAIL);
+            throw new ServiceException(e.getMessage());
         }
     }
 }

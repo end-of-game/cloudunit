@@ -27,8 +27,7 @@ import java.util.Locale;
 /**
  * Created by nicolas on 27/09/15.
  */
-public class CloudUnitAbstractAspect
-{
+public class CloudUnitAbstractAspect {
 
     protected Locale locale = Locale.ENGLISH;
 
@@ -36,11 +35,10 @@ public class CloudUnitAbstractAspect
     protected UserService userService;
 
     protected User getAuthentificatedUser()
-                    throws ServiceException
-    {
+        throws ServiceException {
         UserDetails principal = (UserDetails) SecurityContextHolder
-                        .getContext().getAuthentication().getPrincipal();
-        User user = userService.findByLogin( principal.getUsername() );
+            .getContext().getAuthentication().getPrincipal();
+        User user = userService.findByLogin(principal.getUsername());
         return user;
     }
 }

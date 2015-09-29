@@ -35,12 +35,11 @@ import java.util.Properties;
  * TODO : COMMENT
  */
 @Component
-public class ShellUtils
-{
+public class ShellUtils {
 
-    private Logger logger = LoggerFactory.getLogger( ShellUtils.class );
+    private Logger logger = LoggerFactory.getLogger(ShellUtils.class);
 
-    @Value( "${docker.manager.username}" )
+    @Value("${docker.manager.username}")
     private String dockerUserManager;
 
     /**
@@ -53,31 +52,27 @@ public class ShellUtils
      * @return
      * @throws DockerJSONException
      */
-    public int executeShell( String command, Map<String, String> configShell )
-                    throws RuntimeException
-    {
-        return executeShell( command, configShell, 0 );
+    public int executeShell(String command, Map<String, String> configShell)
+        throws RuntimeException {
+        return executeShell(command, configShell, 0);
     }
 
-    public int executeShell( String command, Map<String, String> configShell, int nbCallRecursive )
-                    throws RuntimeException
-    {
+    public int executeShell(String command, Map<String, String> configShell, int nbCallRecursive)
+        throws RuntimeException {
 
         int exitCode = -1;
 
-        if ( nbCallRecursive > 0 )
-        {
-            logger.warn( "Recursiv call : " + nbCallRecursive
-                                         + " for command : " + command );
+        if (nbCallRecursive > 0) {
+            logger.warn("Recursiv call : " + nbCallRecursive
+                + " for command : " + command);
         }
 
         // On évite un trop grand nombre d'appel récursifCoquille sur jboss
-        if ( nbCallRecursive >= 3 )
-        {
+        if (nbCallRecursive >= 3) {
             StringBuilder msgError = new StringBuilder();
-            msgError.append( "command=" ).append( command );
-            throw new RuntimeException( "No way to execute the command :"
-                                                        + msgError.toString() );
+            msgError.append("command=").append(command);
+            throw new RuntimeException("No way to execute the command :"
+                + msgError.toString());
         }
 
         Session session = null;
@@ -85,112 +80,85 @@ public class ShellUtils
         InputStream in = null;
 
         Map<String, String> map = new HashMap<>();
-        String dockerManagerIP = configShell.get( "dockerManagerAddress" )
-                                            .substring( 0,
-                                                        configShell.get( "dockerManagerAddress" ).length() - 5 );
-        try
-        {
+        String dockerManagerIP = configShell.get("dockerManagerAddress")
+            .substring(0,
+                configShell.get("dockerManagerAddress").length() - 5);
+        try {
 
-            if ( configShell.containsKey( "userLogin" ) )
-            {
-                session = this.getSession( configShell.get( "userLogin" ),
-                                           configShell.get( "password" ), dockerManagerIP,
-                                           configShell.get( "port" ) );
-                channel = session.openChannel( "exec" );
-            }
-            else
-            {
-                session = this.getSession( "root",
-                                           configShell.get( "password" ), dockerManagerIP,
-                                           configShell.get( "port" ) );
-                channel = session.openChannel( "exec" );
+            if (configShell.containsKey("userLogin")) {
+                session = this.getSession(configShell.get("userLogin"),
+                    configShell.get("password"), dockerManagerIP,
+                    configShell.get("port"));
+                channel = session.openChannel("exec");
+            } else {
+                session = this.getSession("root",
+                    configShell.get("password"), dockerManagerIP,
+                    configShell.get("port"));
+                channel = session.openChannel("exec");
             }
 
-            ( (ChannelExec) channel ).setCommand( command );
+            ((ChannelExec) channel).setCommand(command);
             channel.connect();
 
             in = channel.getInputStream();
 
             byte[] tmp = new byte[1024];
-            while ( true )
-            {
-                while ( in.available() > 0 )
-                {
-                    int i = in.read( tmp, 0, 1024 );
-                    if ( i < 0 )
-                    {
-                        System.out.print( new String( tmp, 0, i ) );
+            while (true) {
+                while (in.available() > 0) {
+                    int i = in.read(tmp, 0, 1024);
+                    if (i < 0) {
+                        System.out.print(new String(tmp, 0, i));
                         break;
                     }
-                    map.put( "Line " + i, new String( tmp, 0, i ) );
-                    String str = new String( tmp, 0, i );
+                    map.put("Line " + i, new String(tmp, 0, i));
+                    String str = new String(tmp, 0, i);
                     // displays the output of the command executed.
-                    System.out.print( str );
+                    System.out.print(str);
                 }
-                if ( channel.isClosed() )
-                {
-                    if ( in.available() > 0 )
-                    {
+                if (channel.isClosed()) {
+                    if (in.available() > 0) {
 
-                        int i = in.read( tmp, 0, 1024 );
-                        System.out.print( new String( tmp, 0, i ) );
+                        int i = in.read(tmp, 0, 1024);
+                        System.out.print(new String(tmp, 0, i));
                     }
                     exitCode = channel.getExitStatus();
-                    logger.debug( "exit-status: " + exitCode );
+                    logger.debug("exit-status: " + exitCode);
                     break;
                 }
-                try
-                {
-                    Thread.sleep( 1000 );
-                }
-                catch ( Exception e )
-                {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
                     // ignore
                 }
             }
 
-            if ( exitCode != 0 )
-            {
-                throw new JSchException( "ERROR : Error during execution of ["
-                                                         + command + "] - exitCode = " + exitCode, null );
-            }
-            else
-            {
-                logger.info( "command [" + command + "] execute correctly" );
+            if (exitCode != 0) {
+                throw new JSchException("ERROR : Error during execution of ["
+                    + command + "] - exitCode = " + exitCode, null);
+            } else {
+                logger.info("command [" + command + "] execute correctly");
             }
 
-        }
-        catch ( JSchException jex )
-        {
-            try
-            {
-                Thread.sleep( 5000 );
+        } catch (JSchException jex) {
+            try {
+                Thread.sleep(5000);
+            } catch (Exception ignore) {
             }
-            catch ( Exception ignore )
-            {
-            }
-            logger.warn( "Recursiv call with a 5 seconds pause : " + nbCallRecursive );
-            executeShell( command, configShell, ++nbCallRecursive );
-        }
-        catch ( IOException e )
-        {
+            logger.warn("Recursiv call with a 5 seconds pause : " + nbCallRecursive);
+            executeShell(command, configShell, ++nbCallRecursive);
+        } catch (IOException e) {
             StringBuilder msgError = new StringBuilder();
-            msgError.append( "command [" ).append( command )
-                    .append( "] maybe in error" );
-            throw new RuntimeException( msgError.toString() );
-        }
-        finally
-        {
-            if ( channel != null )
+            msgError.append("command [").append(command)
+                .append("] maybe in error");
+            throw new RuntimeException(msgError.toString());
+        } finally {
+            if (channel != null)
                 channel.disconnect();
-            if ( session != null )
+            if (session != null)
                 session.disconnect();
-            try
-            {
+            try {
                 in.close();
-            }
-            catch ( Exception ignore )
-            {
+            } catch (Exception ignore) {
             }
         }
         return exitCode;
@@ -207,57 +175,43 @@ public class ShellUtils
      * @param destParentDirectory
      * @throws CheckException
      */
-    public void sendFile( File file, String rootPassword, String sshPort,
-                          String dockerManagerAddress, String destParentDirectory )
-                    throws CheckException
-    {
+    public void sendFile(File file, String rootPassword, String sshPort,
+                         String dockerManagerAddress, String destParentDirectory)
+        throws CheckException {
 
         Channel channel = null;
         FileInputStream fileInputStream = null;
-        try
-        {
+        try {
 
-            String dockerManagerIP = dockerManagerAddress.substring( 0,
-                                                                     dockerManagerAddress.length() - 5 );
-            channel = this.getSession( "root", rootPassword, dockerManagerIP,
-                                       sshPort ).openChannel( "sftp" );
+            String dockerManagerIP = dockerManagerAddress.substring(0,
+                dockerManagerAddress.length() - 5);
+            channel = this.getSession("root", rootPassword, dockerManagerIP,
+                sshPort).openChannel("sftp");
 
             channel.connect();
-            fileInputStream = new FileInputStream( file );
+            fileInputStream = new FileInputStream(file);
             ChannelSftp sftpChannel = (ChannelSftp) channel;
             sftpChannel
-                            .put( fileInputStream, destParentDirectory + file.getName(),
-                                  ChannelSftp.OVERWRITE );
+                .put(fileInputStream, destParentDirectory + file.getName(),
+                    ChannelSftp.OVERWRITE);
 
-            logger.debug( "File send correctly" );
+            logger.debug("File send correctly");
 
-        }
-        catch ( IOException | SftpException | JSchException e )
-        {
-            logger.error( e.getMessage() );
-            throw new CheckException( "Error during file copying" );
-        }
-        finally
-        {
-            try
-            {
-                if ( fileInputStream != null )
-                {
+        } catch (IOException | SftpException | JSchException e) {
+            logger.error(e.getMessage());
+            throw new CheckException("Error during file copying");
+        } finally {
+            try {
+                if (fileInputStream != null) {
                     fileInputStream.close();
                 }
+            } catch (Exception ignore) {
             }
-            catch ( Exception ignore )
-            {
-            }
-            try
-            {
-                if ( channel != null )
-                {
+            try {
+                if (channel != null) {
                     channel.disconnect();
                 }
-            }
-            catch ( Exception ignore )
-            {
+            } catch (Exception ignore) {
             }
         }
     }
@@ -272,41 +226,31 @@ public class ShellUtils
      * @param completeFilePath
      * @throws CheckException
      */
-    public void downloadFile( File file, String rootPassword, String sshPort,
-                              String dockerManagerAddress, String completeFilePath )
-                    throws CheckException
-    {
+    public void downloadFile(File file, String rootPassword, String sshPort,
+                             String dockerManagerAddress, String completeFilePath)
+        throws CheckException {
         Channel channel = null;
-        try
-        {
-            String dockerManagerIP = dockerManagerAddress.substring( 0,
-                                                                     dockerManagerAddress.length() - 5 );
-            channel = this.getSession( "root", rootPassword, dockerManagerIP,
-                                       sshPort ).openChannel( "sftp" );
+        try {
+            String dockerManagerIP = dockerManagerAddress.substring(0,
+                dockerManagerAddress.length() - 5);
+            channel = this.getSession("root", rootPassword, dockerManagerIP,
+                sshPort).openChannel("sftp");
             channel.connect();
             ChannelSftp sftpChannel = (ChannelSftp) channel;
             // file source, file destination
-            sftpChannel.get( completeFilePath, file.getAbsolutePath() );
+            sftpChannel.get(completeFilePath, file.getAbsolutePath());
 
-            logger.debug( "File received correctly" );
+            logger.debug("File received correctly");
 
-        }
-        catch ( SftpException | JSchException e )
-        {
-            logger.error( e.getMessage() );
-            throw new CheckException( "Error during file downloading" );
-        }
-        finally
-        {
-            try
-            {
-                if ( channel != null )
-                {
+        } catch (SftpException | JSchException e) {
+            logger.error(e.getMessage());
+            throw new CheckException("Error during file downloading");
+        } finally {
+            try {
+                if (channel != null) {
                     channel.disconnect();
                 }
-            }
-            catch ( Exception ignore )
-            {
+            } catch (Exception ignore) {
             }
         }
     }
@@ -321,21 +265,20 @@ public class ShellUtils
      * @return
      * @throws JSchException
      */
-    private Session getSession( String userName, String password,
-                                String dockerManagerAddress, String port )
-                    throws JSchException
-    {
-        logger.info( "parameters - IP : " + dockerManagerAddress + ", port : "
-                                     + port + ", username : " + userName + ", password : "
-                                     + password );
+    private Session getSession(String userName, String password,
+                               String dockerManagerAddress, String port)
+        throws JSchException {
+        logger.info("parameters - IP : " + dockerManagerAddress + ", port : "
+            + port + ", username : " + userName + ", password : "
+            + password);
 
         JSch jSch = new JSch();
-        Session session = jSch.getSession( userName, dockerManagerAddress,
-                                           Integer.parseInt( port ) );
+        Session session = jSch.getSession(userName, dockerManagerAddress,
+            Integer.parseInt(port));
         Properties config = new Properties();
-        config.put( "StrictHostKeyChecking", "no" );
-        session.setConfig( config );
-        session.setPassword( password );
+        config.put("StrictHostKeyChecking", "no");
+        session.setConfig(config);
+        session.setPassword(password);
         session.connect();
         return session;
     }
@@ -351,55 +294,41 @@ public class ShellUtils
      * @param destPathFie
      * @throws CheckException
      */
-    public void sendFile( File file, String userName, String password,
-                          String sshPort, String addressIp, String destPathFie )
-                    throws CheckException
-    {
+    public void sendFile(File file, String userName, String password,
+                         String sshPort, String addressIp, String destPathFie)
+        throws CheckException {
 
-        logger.debug( "Send file " + file.getAbsolutePath() + " To Host "
-                                      + userName + "@+" + addressIp + ":" + destPathFie );
+        logger.debug("Send file " + file.getAbsolutePath() + " To Host "
+            + userName + "@+" + addressIp + ":" + destPathFie);
 
         FileInputStream fileInputStream = null;
         Channel channel = null;
-        try
-        {
+        try {
 
-            channel = this.getSession( userName, password, addressIp, sshPort )
-                          .openChannel( "sftp" );
+            channel = this.getSession(userName, password, addressIp, sshPort)
+                .openChannel("sftp");
             channel.connect();
-            fileInputStream = new FileInputStream( file );
+            fileInputStream = new FileInputStream(file);
             ChannelSftp sftpChannel = (ChannelSftp) channel;
             sftpChannel
-                            .put( fileInputStream, destPathFie, ChannelSftp.OVERWRITE );
+                .put(fileInputStream, destPathFie, ChannelSftp.OVERWRITE);
 
-            logger.debug( "File send correctly" );
+            logger.debug("File send correctly");
 
-        }
-        catch ( IOException | SftpException | JSchException e )
-        {
-            throw new CheckException( "Error during file copying" );
-        }
-        finally
-        {
-            try
-            {
-                if ( fileInputStream != null )
-                {
+        } catch (IOException | SftpException | JSchException e) {
+            throw new CheckException("Error during file copying");
+        } finally {
+            try {
+                if (fileInputStream != null) {
                     fileInputStream.close();
                 }
+            } catch (Exception ignore) {
             }
-            catch ( Exception ignore )
-            {
-            }
-            try
-            {
-                if ( channel != null )
-                {
+            try {
+                if (channel != null) {
                     channel.disconnect();
                 }
-            }
-            catch ( Exception ignore )
-            {
+            } catch (Exception ignore) {
             }
         }
     }

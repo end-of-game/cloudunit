@@ -22,24 +22,20 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 @Component
 public final class DoNotTruncateMyUrls
-                implements BeanPostProcessor
-{
+    implements BeanPostProcessor {
 
     @Override
-    public Object postProcessBeforeInitialization( Object bean, String beanName )
-                    throws BeansException
-    {
-        if ( bean instanceof RequestMappingHandlerMapping )
-        {
-            ( (RequestMappingHandlerMapping) bean ).setUseSuffixPatternMatch( false );
+    public Object postProcessBeforeInitialization(Object bean, String beanName)
+        throws BeansException {
+        if (bean instanceof RequestMappingHandlerMapping) {
+            ((RequestMappingHandlerMapping) bean).setUseSuffixPatternMatch(false);
         }
         return bean;
     }
 
     @Override
-    public Object postProcessAfterInitialization( Object bean, String beanName )
-                    throws BeansException
-    {
+    public Object postProcessAfterInitialization(Object bean, String beanName)
+        throws BeansException {
         return bean;
     }
 

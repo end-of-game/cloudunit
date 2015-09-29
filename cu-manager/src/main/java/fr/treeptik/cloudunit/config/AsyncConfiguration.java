@@ -31,32 +31,29 @@ import java.util.concurrent.Executor;
 @EnableAsync
 @EnableScheduling
 public class AsyncConfiguration
-                implements AsyncConfigurer
-{
+    implements AsyncConfigurer {
 
     private final Logger log = LoggerFactory
-                    .getLogger( AsyncConfiguration.class );
+        .getLogger(AsyncConfiguration.class);
 
     @Override
     @Bean
-    public Executor getAsyncExecutor()
-    {
-        log.debug( "Creating Async Task Executor" );
+    public Executor getAsyncExecutor() {
+        log.debug("Creating Async Task Executor");
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize( 5 );
-        executor.setMaxPoolSize( 50 );
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(50);
 
-        executor.setWaitForTasksToCompleteOnShutdown( true );
+        executor.setWaitForTasksToCompleteOnShutdown(true);
 
-        executor.setQueueCapacity( 10000 );
-        executor.setThreadNamePrefix( "cloudunit-Executor-" );
+        executor.setQueueCapacity(10000);
+        executor.setThreadNamePrefix("cloudunit-Executor-");
         executor.initialize();
         return executor;
     }
 
     @Override
-    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler()
-    {
+    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return null;
     }
 }

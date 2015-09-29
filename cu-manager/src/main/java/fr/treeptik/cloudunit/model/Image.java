@@ -23,8 +23,7 @@ import java.util.List;
 
 @Entity
 public class Image
-                implements Serializable
-{
+    implements Serializable {
 
     public final static Integer DISABLED = 0;
 
@@ -37,7 +36,7 @@ public class Image
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String name;
@@ -55,146 +54,121 @@ public class Image
     private String managerName;
 
     @JsonIgnore
-    @OneToMany( mappedBy = "image" )
+    @OneToMany(mappedBy = "image")
     private List<Module> modules;
 
     @JsonIgnore
-    @OneToMany( mappedBy = "image" )
+    @OneToMany(mappedBy = "image")
     private List<Server> servers;
 
-    public Integer getId()
-    {
+    public Integer getId() {
         return id;
     }
 
-    public void setId( Integer id )
-    {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName( String name )
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getPath()
-    {
+    public String getPath() {
         return path;
     }
 
-    public void setPath( String path )
-    {
+    public void setPath(String path) {
         this.path = path;
     }
 
-    public List<Module> getModules()
-    {
+    public List<Module> getModules() {
         return modules;
     }
 
-    public void setModules( List<Module> modules )
-    {
+    public void setModules(List<Module> modules) {
         this.modules = modules;
     }
 
-    public List<Server> getServers()
-    {
+    public List<Server> getServers() {
         return servers;
     }
 
-    public void setServers( List<Server> servers )
-    {
+    public void setServers(List<Server> servers) {
         this.servers = servers;
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion( String version )
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
-    public String getCmd()
-    {
+    public String getCmd() {
         return cmd;
     }
 
-    public void setCmd( String cmd )
-    {
+    public void setCmd(String cmd) {
         this.cmd = cmd;
     }
 
-    public Integer getStatus()
-    {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus( Integer status )
-    {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public String getImageType()
-    {
+    public String getImageType() {
         return imageType;
     }
 
-    public void setImageType( String imageType )
-    {
+    public void setImageType(String imageType) {
         this.imageType = imageType;
     }
 
-    public String getManagerName()
-    {
+    public String getManagerName() {
         return managerName;
     }
 
-    public void setManagerName( String managerName )
-    {
+    public void setManagerName(String managerName) {
         this.managerName = managerName;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Image [id=" + id + ", name=" + name + ", path=" + path
-                        + ", cmd=" + cmd + ", version=" + version + ", status="
-                        + status + ", imageType=" + imageType + "]";
+            + ", cmd=" + cmd + ", version=" + version + ", status="
+            + status + ", imageType=" + imageType + "]";
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals( Object obj )
-    {
-        if ( this == obj )
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        if ( obj == null )
+        if (obj == null)
             return false;
-        if ( getClass() != obj.getClass() )
+        if (getClass() != obj.getClass())
             return false;
         Image other = (Image) obj;
-        if ( name == null )
-        {
-            if ( other.name != null )
+        if (name == null) {
+            if (other.name != null)
                 return false;
-        }
-        else if ( !name.equals( other.name ) )
+        } else if (!name.equals(other.name))
             return false;
         return true;
     }

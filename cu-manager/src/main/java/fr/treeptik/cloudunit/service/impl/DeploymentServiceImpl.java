@@ -33,8 +33,7 @@ import java.util.List;
 
 @Service
 public class DeploymentServiceImpl
-                implements DeploymentService
-{
+    implements DeploymentService {
 
     @Inject
     private DeploymentDAO deploymentDAO;
@@ -44,53 +43,41 @@ public class DeploymentServiceImpl
 
     @Override
     @Transactional
-    public Deployment create( Application application, Type deploymentType )
-                    throws ServiceException, CheckException
-    {
-        try
-        {
+    public Deployment create(Application application, Type deploymentType)
+        throws ServiceException, CheckException {
+        try {
             Deployment deployment = new Deployment();
-            deployment.setApplication( application );
-            deployment.setType( deploymentType );
-            deployment.setDate( new Date() );
-            application = applicationService.findByNameAndUser( application
-                                                                                .getUser(), application.getName() );
-            application.setDeploymentStatus( Application.ALREADY_DEPLOYED );
-            application = applicationService.saveInDB( application );
-            return deploymentDAO.save( deployment );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage(), e );
+            deployment.setApplication(application);
+            deployment.setType(deploymentType);
+            deployment.setDate(new Date());
+            application = applicationService.findByNameAndUser(application
+                .getUser(), application.getName());
+            application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
+            application = applicationService.saveInDB(application);
+            return deploymentDAO.save(deployment);
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
     @Override
-    public Deployment find( Deployment deployment )
-                    throws ServiceException
-    {
-        try
-        {
-            return deploymentDAO.findOne( deployment.getId() );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage(), e );
+    public Deployment find(Deployment deployment)
+        throws ServiceException {
+        try {
+            return deploymentDAO.findOne(deployment.getId());
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
     @Override
-    public List<Deployment> findByApp( Application application )
-                    throws ServiceException
-    {
-        try
-        {
-            return deploymentDAO.findAllByApplication( application );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new ServiceException( e.getLocalizedMessage()
-                                                        + application.getName(), e );
+    public List<Deployment> findByApp(Application application)
+        throws ServiceException {
+        try {
+            return deploymentDAO.findAllByApplication(application);
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage()
+                + application.getName(), e);
         }
     }
 }

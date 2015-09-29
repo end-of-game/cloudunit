@@ -22,8 +22,7 @@ import java.io.Serializable;
 
 @Entity
 public class ProxySshPort
-                implements Serializable
-{
+    implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,38 +34,31 @@ public class ProxySshPort
 
     private boolean used;
 
-    public ProxySshPort()
-    {
+    public ProxySshPort() {
         super();
     }
 
-    public Integer getId()
-    {
+    public Integer getId() {
         return id;
     }
 
-    public void setId( Integer id )
-    {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getPortNumber()
-    {
+    public String getPortNumber() {
         return portNumber;
     }
 
-    public void setPortNumber( String portNumber )
-    {
+    public void setPortNumber(String portNumber) {
         this.portNumber = portNumber;
     }
 
-    public boolean isUsed()
-    {
+    public boolean isUsed() {
         return used;
     }
 
-    public void setUsed( boolean used )
-    {
+    public void setUsed(boolean used) {
         this.used = used;
     }
 

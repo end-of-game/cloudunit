@@ -24,13 +24,12 @@ import java.util.List;
 /**
  * Created by nicolas on 18/08/2014.
  */
-@SuppressWarnings( "ALL" )
-public class CheckUtils
-{
+@SuppressWarnings("ALL")
+public class CheckUtils {
 
-    private static final List<String> listJvmMemoriesAllowed = Arrays.asList( "512", "1024", "2048", "3072" );
+    private static final List<String> listJvmMemoriesAllowed = Arrays.asList("512", "1024", "2048", "3072");
 
-    private static final List<String> listJvmReleaseAllowed = Arrays.asList( "jdk1.7.0_55", "jdk1.8.0_25" );
+    private static final List<String> listJvmReleaseAllowed = Arrays.asList("jdk1.7.0_55", "jdk1.8.0_25");
 
     /**
      * Valid classic input
@@ -39,15 +38,13 @@ public class CheckUtils
      * @param message
      * @throws CheckException
      */
-    public static void validateInput( String field, String message )
-                    throws CheckException
-    {
-        if ( field == null
-                        || field.trim().length() == 0
-                        || "undefined".equals( field )
-                        || field.length() > 25 )
-        {
-            throw new CheckException( message + " : " + field );
+    public static void validateInput(String field, String message)
+        throws CheckException {
+        if (field == null
+            || field.trim().length() == 0
+            || "undefined".equals(field)
+            || field.length() > 25) {
+            throw new CheckException(message + " : " + field);
         }
     }
 
@@ -58,16 +55,14 @@ public class CheckUtils
      * @param message
      * @throws CheckException
      */
-    public static void validateSyntaxInput( String field, String message )
-                    throws CheckException
-    {
-        if ( field == null
-                        || field.trim().length() == 0
-                        || "undefined".equals( field )
-                        || field.length() > 25
-                        || !StringUtils.isAlphanumeric( field ) )
-        {
-            throw new CheckException( message + " : " + field );
+    public static void validateSyntaxInput(String field, String message)
+        throws CheckException {
+        if (field == null
+            || field.trim().length() == 0
+            || "undefined".equals(field)
+            || field.length() > 25
+            || !StringUtils.isAlphanumeric(field)) {
+            throw new CheckException(message + " : " + field);
         }
     }
 
@@ -79,24 +74,20 @@ public class CheckUtils
      * @param jvmRelease
      * @throws CheckException
      */
-    public static void checkJavaOpts( String jvmOpts, String jvmMemory, String jvmRelease )
-                    throws CheckException
-    {
+    public static void checkJavaOpts(String jvmOpts, String jvmMemory, String jvmRelease)
+        throws CheckException {
 
-        if ( jvmOpts.toLowerCase().contains( "xms" )
-                        || jvmOpts.toLowerCase().contains( "xmx" ) )
-        {
-            throw new CheckException( "You are not allowed to change memory with java opts" );
+        if (jvmOpts.toLowerCase().contains("xms")
+            || jvmOpts.toLowerCase().contains("xmx")) {
+            throw new CheckException("You are not allowed to change memory with java opts");
         }
 
-        if ( !listJvmMemoriesAllowed.contains( jvmMemory ) )
-        {
-            throw new CheckException( "You are not allowed to set this jvm memory size : [" + jvmMemory + "]" );
+        if (!listJvmMemoriesAllowed.contains(jvmMemory)) {
+            throw new CheckException("You are not allowed to set this jvm memory size : [" + jvmMemory + "]");
         }
 
-        if ( !listJvmReleaseAllowed.contains( jvmRelease ) )
-        {
-            throw new CheckException( "You are not allowed to set this jvm release : [" + jvmRelease + "]" );
+        if (!listJvmReleaseAllowed.contains(jvmRelease)) {
+            throw new CheckException("You are not allowed to set this jvm release : [" + jvmRelease + "]");
         }
 
     }

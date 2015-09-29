@@ -47,10 +47,9 @@ import java.io.IOException;
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity( prePostEnabled = true )
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration
-                extends WebSecurityConfigurerAdapter
-{
+    extends WebSecurityConfigurerAdapter {
 
     @Inject
     private DataSource dataSource;
@@ -70,80 +69,76 @@ public class SecurityConfiguration
     @Bean
     @Override
     public AuthenticationManager authenticationManager()
-                    throws Exception
-    {
+        throws Exception {
         return super.authenticationManager();
     }
 
     @Override
-    public void configure( WebSecurity web )
-                    throws Exception
-    {
+    public void configure(WebSecurity web)
+        throws Exception {
         web.ignoring()
-           .antMatchers( "/bower_components/*/**", "i18n/**", "css/**",
-                         "*.css", "*.js" )
-           .antMatchers( "/fonts/**" )
-           .antMatchers( "/resources/**" )
-           .antMatchers( "/images/**" )
-           .antMatchers( "/scripts/**" )
-           .antMatchers( "/api-docs", "/api-docs/*", "/styles/**",
-                         "/user/signin", "/user/activate/userEmail/**" );
+            .antMatchers("/bower_components/*/**", "i18n/**", "css/**",
+                "*.css", "*.js")
+            .antMatchers("/fonts/**")
+            .antMatchers("/resources/**")
+            .antMatchers("/images/**")
+            .antMatchers("/scripts/**")
+            .antMatchers("/api-docs", "/api-docs/*", "/styles/**",
+                "/user/signin", "/user/activate/userEmail/**");
     }
 
     @Override
-    public void configure( AuthenticationManagerBuilder auth )
-                    throws Exception
-    {
+    public void configure(AuthenticationManagerBuilder auth)
+        throws Exception {
         auth.jdbcAuthentication()
-            .passwordEncoder( passwordEncoder() )
-            .dataSource( dataSource )
+            .passwordEncoder(passwordEncoder())
+            .dataSource(dataSource)
             .usersByUsernameQuery(
-                            "Select login, password, 'true' as enabled from User where login=? and status!=0" )
+                "Select login, password, 'true' as enabled from User where login=? and status!=0")
             .authoritiesByUsernameQuery(
-                            "Select u.login, r.description From Role r join User u on u.role_id=r.id where u.login=?" );
+                "Select u.login, r.description From Role r join User u on u.role_id=r.id where u.login=?");
 
-        auth.inMemoryAuthentication().withUser( "john" ).password( "doe" )
-            .roles( "ADMIN, USER" );
+        auth.inMemoryAuthentication().withUser("john").password("doe")
+            .roles("ADMIN, USER");
     }
 
     @Override
-    protected void configure( HttpSecurity http )
-                    throws Exception
-    {
+    protected void configure(HttpSecurity http)
+        throws Exception {
 
         // Login Form
         http.formLogin()
-            .loginProcessingUrl( "/user/authentication" )
-            .successHandler( ajaxAuthenticationSuccessHandler )
-            .failureHandler( ajaxAuthenticationFailureHandler )
-            .usernameParameter( "j_username" )
-            .passwordParameter( "j_password" ).permitAll();
+            .loginProcessingUrl("/user/authentication")
+            .successHandler(ajaxAuthenticationSuccessHandler)
+            .failureHandler(ajaxAuthenticationFailureHandler)
+            .usernameParameter("j_username")
+            .passwordParameter("j_password").permitAll();
 
         // Logout
         http.logout()
-            .logoutUrl( "/user/logout" )
-            .logoutSuccessHandler( ajaxLogoutSuccessHandler )
-            .deleteCookies( "JSESSIONID" ).invalidateHttpSession( true ).permitAll();
+            .logoutUrl("/user/logout")
+            .logoutSuccessHandler(ajaxLogoutSuccessHandler)
+            .deleteCookies("JSESSIONID").invalidateHttpSession(true).permitAll();
 
         // CSRF protection
-        activateProtectionCRSF( http );
-        disableProtectionCRSF( http );
+        activateProtectionCRSF(http);
+        disableProtectionCRSF(http);
 
         // Routes security
         http.authorizeRequests()
-            .antMatchers( "/application/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/server/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/module/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/file/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/image/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/user/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/logs/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/snapshot/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/monitoring/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/messages/**" ).hasAnyAuthority( "ROLE_USER", "ROLE_ADMIN" )
-            .antMatchers( "/admin/**" ).hasAnyAuthority( "ROLE_ADMIN" ).antMatchers( "/user/check",
-                                                                                     "/nopublic/**" ).permitAll().and()
-            .exceptionHandling().authenticationEntryPoint( authenticationEntryPoint );
+            .antMatchers("/application/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/server/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/module/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/file/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/image/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/logs/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/snapshot/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/monitoring/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/messages/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN").antMatchers("/user/check",
+            "/nopublic/**").permitAll().and()
+            .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
     }
 
     /**
@@ -153,14 +148,13 @@ public class SecurityConfiguration
      * @throws Exception
      */
 
-    @Profile( "{production, vagrant}" )
-    private void activateProtectionCRSF( HttpSecurity http )
-                    throws Exception
-    {
+    @Profile("{production, vagrant}")
+    private void activateProtectionCRSF(HttpSecurity http)
+        throws Exception {
         // CSRF protection
         http.csrf()
-            .csrfTokenRepository( csrfTokenRepository() ).and()
-            .addFilterAfter( csrfHeaderFilter(), CsrfFilter.class );
+            .csrfTokenRepository(csrfTokenRepository()).and()
+            .addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
     }
 
     /**
@@ -169,10 +163,9 @@ public class SecurityConfiguration
      * @param http
      * @throws Exception
      */
-    @Profile( "test" )
-    private void disableProtectionCRSF( HttpSecurity http )
-                    throws Exception
-    {
+    @Profile("test")
+    private void disableProtectionCRSF(HttpSecurity http)
+        throws Exception {
         http.csrf().disable();
     }
 
@@ -181,37 +174,31 @@ public class SecurityConfiguration
      *
      * @return
      */
-    private Filter csrfHeaderFilter()
-    {
-        return new OncePerRequestFilter()
-        {
+    private Filter csrfHeaderFilter() {
+        return new OncePerRequestFilter() {
             @Override
-            protected void doFilterInternal( HttpServletRequest request,
-                                             HttpServletResponse response, FilterChain filterChain )
-                            throws ServletException, IOException
-            {
-                CsrfToken csrf = (CsrfToken) request.getAttribute( CsrfToken.class.getName() );
-                if ( csrf != null )
-                {
-                    Cookie cookie = WebUtils.getCookie( request, "XSRF-TOKEN" );
+            protected void doFilterInternal(HttpServletRequest request,
+                                            HttpServletResponse response, FilterChain filterChain)
+                throws ServletException, IOException {
+                CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+                if (csrf != null) {
+                    Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
                     String token = csrf.getToken();
-                    if ( cookie == null || token != null
-                                    && !token.equals( cookie.getValue() ) )
-                    {
-                        cookie = new Cookie( "XSRF-TOKEN", token );
-                        cookie.setPath( "/" );
-                        response.addCookie( cookie );
+                    if (cookie == null || token != null
+                        && !token.equals(cookie.getValue())) {
+                        cookie = new Cookie("XSRF-TOKEN", token);
+                        cookie.setPath("/");
+                        response.addCookie(cookie);
                     }
                 }
-                filterChain.doFilter( request, response );
+                filterChain.doFilter(request, response);
             }
         };
     }
 
-    private CsrfTokenRepository csrfTokenRepository()
-    {
+    private CsrfTokenRepository csrfTokenRepository() {
         HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
-        repository.setHeaderName( "X-XSRF-TOKEN" );
+        repository.setHeaderName("X-XSRF-TOKEN");
         return repository;
     }
 
@@ -221,8 +208,7 @@ public class SecurityConfiguration
      * @return
      */
     @Bean
-    public CustomPasswordEncoder passwordEncoder()
-    {
+    public CustomPasswordEncoder passwordEncoder() {
         return new CustomPasswordEncoder();
     }
 }

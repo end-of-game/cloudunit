@@ -30,28 +30,23 @@ import java.util.Date;
 
 @Component
 public class UserAuthenticationSuccess
-                implements
-                ApplicationListener<AuthenticationSuccessEvent>
-{
+    implements
+    ApplicationListener<AuthenticationSuccessEvent> {
 
     private Logger logger = LoggerFactory
-                    .getLogger( UserAuthenticationSuccess.class );
+        .getLogger(UserAuthenticationSuccess.class);
 
     @Inject
     private UserService userService;
 
     @Override
-    public void onApplicationEvent( AuthenticationSuccessEvent event )
-    {
-        try
-        {
-            User user = userService.findByLogin( ( (UserDetails) event
-                            .getAuthentication().getPrincipal() ).getUsername() );
-            user.setLastConnection( new Date() );
-            userService.update( user );
-        }
-        catch ( ServiceException e )
-        {
+    public void onApplicationEvent(AuthenticationSuccessEvent event) {
+        try {
+            User user = userService.findByLogin(((UserDetails) event
+                .getAuthentication().getPrincipal()).getUsername());
+            user.setLastConnection(new Date());
+            userService.update(user);
+        } catch (ServiceException e) {
             e.printStackTrace();
         }
     }

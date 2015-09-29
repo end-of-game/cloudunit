@@ -25,8 +25,7 @@ import java.util.TimeZone;
 
 @Entity
 public class Message
-                implements Serializable
-{
+    implements Serializable {
 
     public static final String INFO = "INFO";
 
@@ -35,13 +34,13 @@ public class Message
     private static final long serialVersionUID = 1L;
 
     private static FastDateFormat DATE_FORMATER = FastDateFormat.getInstance(
-                    "dd-MM-yyyy HH:mm:ss", TimeZone.getDefault(), Locale.getDefault() );
+        "dd-MM-yyyy HH:mm:ss", TimeZone.getDefault(), Locale.getDefault());
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Temporal( TemporalType.TIMESTAMP )
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
     @ManyToOne
@@ -51,104 +50,86 @@ public class Message
 
     private String applicationName;
 
-    @Column( columnDefinition = "text" )
+    @Column(columnDefinition = "text")
     private String event;
 
     private String action;
 
-    public Message()
-    {
+    public Message() {
         this.date = new Date();
     }
 
-    public Message( Type type )
-    {
+    public Message(Type type) {
         this.date = new Date();
 
         this.type = type.name();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Message{" + "id=" + id + ", date=" + date + ", author="
-                        + author + ", type='" + type + '\'' + ", applicationName='"
-                        + applicationName + '\'' + ", event='" + event + '\''
-                        + ", action='" + action + '\'' + '}';
+            + author + ", type='" + type + '\'' + ", applicationName='"
+            + applicationName + '\'' + ", event='" + event + '\''
+            + ", action='" + action + '\'' + '}';
     }
 
-    public String getAction()
-    {
+    public String getAction() {
         return "application.create";
     }
 
-    public void setAction( String action )
-    {
+    public void setAction(String action) {
         this.action = action;
     }
 
-    public Integer getId()
-    {
+    public Integer getId() {
         return id;
     }
 
-    public void setId( Integer id )
-    {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Date getDate()
-    {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate( Date date )
-    {
+    public void setDate(Date date) {
         this.date = date;
     }
 
-    public String getDateAsString()
-    {
-        return DATE_FORMATER.format( date );
+    public String getDateAsString() {
+        return DATE_FORMATER.format(date);
     }
 
-    public String getEvent()
-    {
+    public String getEvent() {
         return event;
     }
 
-    public void setEvent( String event )
-    {
+    public void setEvent(String event) {
         this.event = event;
     }
 
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor( User author )
-    {
+    public void setAuthor(User author) {
         this.author = author;
     }
 
-    public String getApplicationName()
-    {
+    public String getApplicationName() {
         return applicationName;
     }
 
-    public void setApplicationName( String applicationName )
-    {
+    public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
     }
 
-    public String getType()
-    {
+    public String getType() {
         return type;
     }
 
-    public void setType( String type )
-    {
+    public void setType(String type) {
         this.type = type;
     }
 

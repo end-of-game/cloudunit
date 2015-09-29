@@ -26,8 +26,7 @@ package fr.treeptik.cloudunit.json.ui;
  * {name:'Instance-2', id:"bfrcea6c5rf8", type:"server"}
  * ];
  */
-public class ContainerUnit
-{
+public class ContainerUnit {
 
     private String name;
 
@@ -35,25 +34,21 @@ public class ContainerUnit
 
     private String type;
 
-    public ContainerUnit( final String name, final String id, final String type )
-    {
+    public ContainerUnit(final String name, final String id, final String type) {
         this.name = name;
         this.id = id;
         this.type = type;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public String getType()
-    {
+    public String getType() {
         return type;
     }
 

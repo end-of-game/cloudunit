@@ -32,21 +32,19 @@ import java.io.IOException;
  */
 @Component
 public class UserAjaxAuthenticationFailureHandler
-                extends
-                SimpleUrlAuthenticationFailureHandler
-{
+    extends
+    SimpleUrlAuthenticationFailureHandler {
 
     private Logger logger = LoggerFactory
-                    .getLogger( UserAjaxAuthenticationFailureHandler.class );
+        .getLogger(UserAjaxAuthenticationFailureHandler.class);
 
     @Override
-    public void onAuthenticationFailure( HttpServletRequest request,
-                                         HttpServletResponse response, AuthenticationException exception )
-                    throws IOException, ServletException
-    {
+    public void onAuthenticationFailure(HttpServletRequest request,
+                                        HttpServletResponse response, AuthenticationException exception)
+        throws IOException, ServletException {
 
-        logger.warn( "Authentication failed" );
-        response.sendError( HttpServletResponse.SC_UNAUTHORIZED,
-                            "Authentication failed" );
+        logger.warn("Authentication failed");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+            "Authentication failed");
     }
 }

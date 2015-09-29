@@ -24,20 +24,17 @@ import javax.servlet.http.HttpSessionListener;
 
 @WebListener
 public class CustomHttpSessionListener
-                implements HttpSessionListener
-{
+    implements HttpSessionListener {
 
     private Logger logger = LoggerFactory
-                    .getLogger( CustomHttpSessionListener.class );
+        .getLogger(CustomHttpSessionListener.class);
 
-    public void sessionCreated( HttpSessionEvent sessionEvent )
-    {
-        logger.info( "Session Created:: ID=" + sessionEvent.getSession().getId() );
+    public void sessionCreated(HttpSessionEvent sessionEvent) {
+        logger.info("Session Created:: ID=" + sessionEvent.getSession().getId());
     }
 
-    public void sessionDestroyed( HttpSessionEvent sessionEvent )
-    {
-        logger.info( "Session Destroyed:: ID="
-                                     + sessionEvent.getSession().getId() );
+    public void sessionDestroyed(HttpSessionEvent sessionEvent) {
+        logger.info("Session Destroyed:: ID="
+            + sessionEvent.getSession().getId());
     }
 }
