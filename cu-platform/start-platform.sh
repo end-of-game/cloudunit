@@ -71,7 +71,7 @@ else
 		sleep 1
 	done
 
-	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
+#	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
 
 	if [ $PROFILE == "prod" ]; then
 		if [ "$CU_KVM" == "true" ]; then
