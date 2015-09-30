@@ -1,6 +1,7 @@
 /.vagrant
 .idea
 *.class
+cloudunit/cloudunit.iml
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

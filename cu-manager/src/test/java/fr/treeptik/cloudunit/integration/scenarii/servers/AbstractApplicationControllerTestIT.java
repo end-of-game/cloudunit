@@ -286,6 +286,17 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats.andExpect(status().is4xxClientError());
     }
 
+    public void test06_createAliasTest() throws Exception {
+        logger.info("create an alias for the application : " + applicationName);
+        final String jsonString = "{\"applicationName\":\""+applicationName
+                + "\", \"serverName\":\""+release+"\"}";
+        ResultActions resultats = this.mockMvc
+                .perform(
+                        post("/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+    }
+
 
     //@Test(timeout = 30000)
     public void test09_DeleteApplication() throws Exception {
@@ -298,4 +309,6 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     // TODO : ajout alias, suppression alias, deploiement helloworld from github
+
+
 }
