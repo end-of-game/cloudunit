@@ -297,5 +297,5 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats.andExpect(status().isOk());
     }
 
-
+    // TODO : ajout alias, suppression alias, deploiement helloworld from github
 }
