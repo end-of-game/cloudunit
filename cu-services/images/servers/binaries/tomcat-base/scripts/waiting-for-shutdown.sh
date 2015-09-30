@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -x
+
 SHUTDOWN_WAIT=$2  
 pid=`pidof $1`
 if [ -n "$pid" ]

@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -x
+
 export CATALINA_HOME="/cloudunit/binaries"
 export CATALINA_BASE="/cloudunit/appconf"
 

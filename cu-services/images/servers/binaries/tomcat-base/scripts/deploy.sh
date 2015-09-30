@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export TOMCAT_HOME=/cloudunit/appconf
 export WAR_NAME=$1
 # We need it for git

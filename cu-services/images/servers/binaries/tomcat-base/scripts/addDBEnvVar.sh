@@ -1,5 +1,7 @@
 #!/bin/bash
-        
+
+set -x
+
 export ENV_FILE=/etc/environment
 
 echo -n "CU_DATABASE_USER_$4=$1\n" >> $ENV_FILE

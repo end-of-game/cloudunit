@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export ENV_FILE="/etc/environment"
 # Ajout des variables d'environnement
 export CU_USER=$1
@@ -117,7 +119,7 @@ done
 su - $CU_USER -c "/cloudunit/scripts/cu-start.sh" 
 
 # ENVOIE DE REST AU MANAGER
-$JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER START $MANAGER_DATABASE_PASSWORD $ENV_EXEC
+$JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER START $MANAGER_DATABASE_PASSWORD
 
 # The sshd pid could be double : father and son
 pid1=`pidof sshd | awk '{if ($2) {print $2;} else {print $1}}'`

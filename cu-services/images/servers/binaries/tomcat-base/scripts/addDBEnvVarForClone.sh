@@ -1,5 +1,7 @@
 #!/bin/bash
-        
+
+set -x
+
 export ENV_FILE=/etc/environment
 
 sed -i -e 's/^CU_DATABASE_USER_'$4'=.*$/CU_DATABASE_USER_'$4'="'$1'/g' $ENV_FILE

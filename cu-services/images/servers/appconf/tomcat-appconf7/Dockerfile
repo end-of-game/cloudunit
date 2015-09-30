@@ -11,7 +11,10 @@ RUN mkdir -p /cloudunit/appconf/lib-ext
 RUN mkdir -p /cloudunit/appconf/scripts
 
 ADD scripts/ /cloudunit/appconf/scripts
-RUN chmod +x /cloudunit/appconf/scripts/*
+RUN chmod +x /cloudunit/appconf/scripts/*/
+/:q
+;q::q:q
+
 
 LABEL upgrade="commit"
 

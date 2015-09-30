@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -x
+
 export env_file=/etc/environment
 
 sed -i "/CU_DATABASE_USER_$1/d" $env_file 

@@ -485,21 +485,16 @@ public class ServerServiceImpl
                     .map(t -> Integer.parseInt(t.getPort()))
                     .collect(Collectors.toList()));
             }
-            DockerContainer
-                .start(dockerContainer, application.getManagerIp());
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                application.getManagerIp());
-
-            server = containerMapper.mapDockerContainerToServer(
-                dockerContainer, server);
+            DockerContainer.start(dockerContainer, application.getManagerIp());
+            dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
+            server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
 
             String dockerManagerIP = server.getApplication().getManagerIp();
-
-            server.setStatus(Status.START);
             server.setStartDate(new Date());
             application = applicationDAO.saveAndFlush(application);
 
             server = this.update(server);
+
             hipacheRedisUtils.updateServerAddress(server.getApplication(),
                 server.getContainerIP(), server.getServerAction()
                     .getServerPort(),

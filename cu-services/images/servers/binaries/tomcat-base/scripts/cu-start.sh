@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export CATALINA_HOME="/cloudunit/binaries"
 export CATALINA_BASE="/cloudunit/appconf"
 
@@ -34,7 +36,7 @@ RETURN=1
 until [ "$RETURN" -eq "0" ];
 do
         echo -e "\nWaiting for tomcat to start"
-        grep 'org.apache.catalina.startup.Catalina.start Server startup in' /cloudunit/appconf/logs/catalina.out
+        grep 'Server startup in' /cloudunit/appconf/logs/catalina.out
         RETURN=$?
         sleep 1
 done
