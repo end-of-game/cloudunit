@@ -6,7 +6,12 @@ RUN wget https://github.com/Treeptik/cloudunit/releases/download/0.9/tomcat-appc
 	&& tar -xvf /tmp/tomcat-appconf6.tar.gz -C /cloudunit && rm /tmp/tomcat-appconf6.tar.gz
 
 # ajout du dossier lib-ext
+
 RUN mkdir -p /cloudunit/appconf/lib-ext
+RUN mkdir -p /cloudunit/appconf/scripts
+
+ADD scripts/ /cloudunit/appconf/scripts
+RUN chmod +x /cloudunit/appconf/scripts/*
 
 LABEL upgrade="commit"
 
