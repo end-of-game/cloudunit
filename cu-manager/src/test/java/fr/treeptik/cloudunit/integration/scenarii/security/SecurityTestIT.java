@@ -35,6 +35,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -48,6 +50,7 @@ import javax.servlet.Filter;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -66,7 +69,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * We tests between the profils the security for each route.
  *
  */
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@ActiveProfiles("integration")
+@DirtiesContext
 public class SecurityTestIT extends TestCase {
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
@@ -88,8 +94,8 @@ public class SecurityTestIT extends TestCase {
     @Inject
     private UserService userService;
 
-    private Authentication authentication;
-    private MockHttpSession session;
+    private MockHttpSession session1;
+    private MockHttpSession session2;
 
     private static String applicationName;
 
@@ -103,50 +109,58 @@ public class SecurityTestIT extends TestCase {
 
     @Before
     public void setup() {
-        logger.info("setup");
+        logger.info("*********************************");
+        logger.info("             setup               ");
+        logger.info("*********************************");
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .addFilters(springSecurityFilterChain)
                 .build();
 
         // If user1 is null (first test) we create its session and its application
-        if (user1 == null) {
-            try {
-                this.user1 = userService.findByLogin("usertest1");
-                Authentication authentication = new UsernamePasswordAuthenticationToken(user1.getLogin(), user1.getPassword());
-                Authentication result = authenticationManager.authenticate(authentication);
-                SecurityContext securityContext = SecurityContextHolder.getContext();
-                securityContext.setAuthentication(result);
-                session = new MockHttpSession();
-                session.setAttribute(
-                        HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                        securityContext);
-            } catch (ServiceException e) {
-                logger.error(e.getLocalizedMessage());
-            }
-        } else {
-            // After the first tests, all others are for User2
-            try {
-                User user2 = userService.findByLogin("usertest2");
-                Authentication authentication = new UsernamePasswordAuthenticationToken(user2.getLogin(), user2.getPassword());
-                Authentication result = authenticationManager.authenticate(authentication);
-                SecurityContext securityContext = SecurityContextHolder.getContext();
-                securityContext.setAuthentication(result);
-                session = new MockHttpSession();
-                session.setAttribute(
-                        HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                        securityContext);
-            } catch (ServiceException e) {
-                logger.error(e.getLocalizedMessage());
-            }
+        try {
+            logger.info("Create session for user1 : " + user1);
+            // we affect the user to skip this branch too
+            User user1 = userService.findByLogin("usertest1");
+            Authentication authentication = new UsernamePasswordAuthenticationToken(user1.getLogin(), user1.getPassword());
+            Authentication result = authenticationManager.authenticate(authentication);
+            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+            securityContext.setAuthentication(result);
+            session1 = new MockHttpSession();
+            session1.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                securityContext);
+        } catch (ServiceException e) {
+            logger.error(e.getLocalizedMessage());
         }
+
+        // After the first tests, all others are for User2
+        try {
+            logger.info("Create session for user2");
+            User user2 = userService.findByLogin("usertest2");
+            Authentication authentication = new UsernamePasswordAuthenticationToken(user2.getLogin(), user2.getPassword());
+            Authentication result = authenticationManager.authenticate(authentication);
+            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+            securityContext.setAuthentication(result);
+            session2 = new MockHttpSession();
+            session2.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                securityContext);
+        } catch (ServiceException e) {
+            logger.error(e.getLocalizedMessage());
+        }
+
+
     }
 
     @After
     public void teardown() {
-        logger.info("teardown");
+        logger.info("*********************************");
+        logger.info("             teardown            ");
+        logger.info("*********************************");
         SecurityContextHolder.clearContext();
-        session.invalidate();
+        session1.invalidate();
+        session2.invalidate();
     }
 
     /**
@@ -155,12 +169,14 @@ public class SecurityTestIT extends TestCase {
      */
     @Test
     public void test00_createApplicationUser1() throws Exception {
-        logger.info("Create an application for User1");
+        logger.info("*********************************");
+        logger.info(" Create an application for User1 ");
+        logger.info("*********************************");
         final String jsonString = "{\"applicationName\":\""+applicationName
                 + "\", \"serverName\":\""+"tomcat-8"+"\"}";
         ResultActions resultats = this.mockMvc
                 .perform(
-                        post("/application").session(session)
+                    post("/application").session(session1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonString));
         resultats.andExpect(status().isOk());
@@ -170,13 +186,15 @@ public class SecurityTestIT extends TestCase {
 
     @Test
     public void test10_User2triesToStopApplicationUser1() throws Exception {
-        logger.info("User2 attemps to stop the application's User1");
+        logger.info("************************************************");
+        logger.info(" User2 attemps to stop the application's User1  ");
+        logger.info("************************************************");
         final String jsonString = "{\"applicationName\":\""+applicationName+"\"}";
         this.mockMvc
                 .perform(
-                        post("/application/stop").session(session)
+                    post("/application/stop").session(session2)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonString))
+                        .content(jsonString)).andDo(print())
                 .andExpect(status().is5xxServerError());
     }
 }
