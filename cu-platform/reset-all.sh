@@ -26,5 +26,5 @@ if [ "$1" != "-y" ]; then
 fi
 	docker kill $(docker ps -aq)
 	docker rm -vf $(docker ps -aq)
-	cd /home/admincu/cloudunit/cu-platform && sudo rm -rf /registry/* /var/log/cloudunit && ./start-platform.sh 
+	cd /home/admincu/cloudunit/cu-platform && sudo rm -rf /registry/* /var/log/cloudunit && ./start-platform.sh true
 	cd /home/admincu/cloudunit/cu-services && ./run-services.sh
