@@ -34,7 +34,6 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
-import junit.framework.TestCase;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -78,14 +77,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
-public class SimpleLongRunnerTestIT extends TestCase {
+/**
+ * To Launch manually
+ */
+public class SimpleLongRunnerTestMR {
 
     protected String release = "tomcat-8";
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-        .getLogger(SimpleLongRunnerTestIT.class);
+        .getLogger(SimpleLongRunnerTestMR.class);
 
     @Autowired
     private WebApplicationContext context;

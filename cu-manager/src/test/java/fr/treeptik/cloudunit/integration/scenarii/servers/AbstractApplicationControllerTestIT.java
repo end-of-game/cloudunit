@@ -19,7 +19,6 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
-import junit.framework.TestCase;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -46,6 +45,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
+import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -63,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
-public abstract class AbstractApplicationControllerTestIT extends TestCase {
+public abstract class AbstractApplicationControllerTestIT {
 
     protected String release;
 
@@ -93,7 +93,7 @@ public abstract class AbstractApplicationControllerTestIT extends TestCase {
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "app931";
+        applicationName = "App" + new Random().nextInt(1000);
     }
 
     @Before
