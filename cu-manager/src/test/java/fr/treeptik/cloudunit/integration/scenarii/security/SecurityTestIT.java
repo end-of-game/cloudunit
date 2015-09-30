@@ -13,9 +13,8 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.controller.security;
+package fr.treeptik.cloudunit.integration.scenarii.security;
 
-import fr.treeptik.cloudunit.controller.servers.AbstractApplicationControllerTest;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
@@ -68,12 +67,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SecurityTest extends TestCase {
+public class SecurityTestIT extends TestCase {
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-            .getLogger(AbstractApplicationControllerTest.class);
+        .getLogger(SecurityTestIT.class);
 
     @Autowired
     private WebApplicationContext context;

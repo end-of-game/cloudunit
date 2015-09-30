@@ -1,5 +1,20 @@
 /*
  * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ * but CloudUnit is licensed too under a standard commercial license.
+ * Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ * If you are not sure whether the GPL is right for you,
+ * you can always test our software under the GPL and inspect the source code before you contact us
+ * about purchasing a commercial license.
+ *
+ * LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ * or promote products derived from this project without prior written permission from Treeptik.
+ * Products or services derived from this software may not be called "CloudUnit"
+ * nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ * For any questions, contact us : contact@treeptik.fr
+ */
+
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
  *     but CloudUnit is licensed too under a standard commercial license.
  *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
  *     If you are not sure whether the GPL is right for you,
@@ -43,14 +58,14 @@ import javax.persistence.SharedCacheMode;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+@Profile("test")
 @Configuration
 @EnableJpaRepositories("fr.treeptik.cloudunit.dao")
 @EnableTransactionManagement
-@Profile({"vagrant", "integration", "production"})
-public class DatabaseConfiguration {
+public class DatabaseConfigurationTest {
 
     private Logger logger = LoggerFactory
-        .getLogger(DatabaseConfiguration.class);
+        .getLogger(DatabaseConfigurationTest.class);
 
     @Value("${database.url}")
     private String databaseUrl;
@@ -73,6 +88,7 @@ public class DatabaseConfiguration {
         logger.debug("database.url:" + databaseUrl);
         logger.debug("database.user:" + databaseUser);
         HikariConfig config = new HikariConfig();
+
         config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         config.addDataSourceProperty("url", databaseUrl);
         config.addDataSourceProperty("user", databaseUser);
@@ -121,7 +137,7 @@ public class DatabaseConfiguration {
         HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
         jpaVendorAdapter.setShowSql(Boolean.parseBoolean(databaseShowSQL));
         jpaVendorAdapter.setGenerateDdl(true);
-        jpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
+        jpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
         return jpaVendorAdapter;
     }
 

@@ -13,7 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.controller.servers;
+package fr.treeptik.cloudunit.integration.scenarii.servers;
 
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
@@ -46,7 +46,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
-import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -63,15 +62,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         MockServletContext.class
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-@ActiveProfiles("test")
-public abstract class  AbstractApplicationControllerTest extends TestCase {
+@ActiveProfiles("integration")
+public abstract class AbstractApplicationControllerTestIT extends TestCase {
 
     protected String release;
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-            .getLogger(AbstractApplicationControllerTest.class);
+        .getLogger(AbstractApplicationControllerTestIT.class);
 
     @Autowired
     private WebApplicationContext context;
@@ -94,7 +93,7 @@ public abstract class  AbstractApplicationControllerTest extends TestCase {
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "App"+new Random().nextInt(1000);
+        applicationName = "app931";
     }
 
     @Before

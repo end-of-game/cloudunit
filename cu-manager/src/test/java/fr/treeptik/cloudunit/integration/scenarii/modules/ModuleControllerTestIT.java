@@ -13,7 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.long_term;
+package fr.treeptik.cloudunit.integration.scenarii.modules;
 
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
@@ -49,6 +49,7 @@ import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -61,14 +62,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         MockServletContext.class
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SimpleLongRunnerTest extends TestCase {
-
-    protected String release = "tomcat-8";
+public class ModuleControllerTestIT extends TestCase {
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-            .getLogger(SimpleLongRunnerTest.class);
+        .getLogger(ModuleControllerTestIT.class);
 
     @Autowired
     private WebApplicationContext context;
@@ -122,32 +121,114 @@ public class SimpleLongRunnerTest extends TestCase {
     @After
     public void teardown() {
         logger.info("teardown");
+
         SecurityContextHolder.clearContext();
         session.invalidate();
     }
 
-
     @Test
-    public void test00_CreateThenDeleteApplication() throws Exception {
-        int i = 0;
-        while(i++<1000) {
-            logger.info("Create Tomcat server");
-            final String jsonString = "{\"applicationName\":\"" + applicationName
-                    + "\", \"serverName\":\"" + release + "\"}";
+    public void test010_CreateApplication() throws Exception {
+        logger.info("test01_CreateApplication");
+
+        long startTime = System.currentTimeMillis();
+        logger.info("Create Tomcat server");
+
+        final String jsonString = "{\"applicationName\":\""+applicationName
+                + "\", \"serverName\":\"tomcat-8\"}";
+        try {
             ResultActions resultats = this.mockMvc
                     .perform(
                             post("/application").session(session)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(jsonString));
             resultats.andExpect(status().isOk());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new ServiceException(ex.getMessage());
+        }
+        long endTime = System.currentTimeMillis();
+        logger.info("End (timex:" + (endTime - startTime) + " millis).");
+    }
 
-            logger.info("Delete application : " + applicationName);
+    /**
+     * We cannot create an application with an empty name.
+     * @throws Exception
+     */
+    @Test
+    public void test011_FailCreateEmptyNameApplication() throws Exception {
+        logger.info("test01_CreateApplication");
 
-            resultats = this.mockMvc
+        long startTime = System.currentTimeMillis();
+        logger.info("Create Tomcat server");
+
+        final String jsonString = "{\"applicationName\":\", \"serverName\":\"tomcat-8\"}";
+        try {
+            ResultActions resultats = this.mockMvc
+                    .perform(
+                            post("/application").session(session)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(jsonString));
+            resultats.andExpect(status().is4xxClientError()).andDo(print());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new ServiceException(ex.getMessage());
+        }
+        long endTime = System.currentTimeMillis();
+        logger.info("End (timex:" + (endTime - startTime) + " millis).");
+    }
+
+    @Test
+    public void test02_StopApplicationTest() throws ServiceException {
+
+        final String jsonString = "{\"applicationName\":\""+applicationName+"\"}";
+        try {
+            this.mockMvc
+                    .perform(
+                            post("/application/stop").session(session)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(jsonString))
+                    .andExpect(status().isOk());
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            throw new ServiceException("Error test02StopApplicationTest", ex);
+        }
+    }
+
+    @Test
+    public void test03_StartApplicationTest() throws ServiceException {
+
+        final String jsonString = "{\"applicationName\":\""+applicationName+"\"}";
+        try {
+            this.mockMvc
+                    .perform(
+                            post("/application/start").session(session)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(jsonString))
+                    .andExpect(status().isOk());
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            throw new ServiceException("Error test02StopApplicationTest", ex);
+        }
+    }
+
+    @Test
+    public void test04_DeleteApplication() throws Exception {
+        logger.info("test02_deleteApplication");
+
+        long startTime = System.currentTimeMillis();
+        logger.info("Delete Tomcat server");
+        try {
+            ResultActions resultats = this.mockMvc
                     .perform(
                             delete("/application/" + applicationName).session(session)
                                     .contentType(MediaType.MULTIPART_FORM_DATA));
             resultats.andExpect(status().isOk());
+        } catch (Exception ex) {
+            throw new ServiceException(ex.getMessage());
         }
+        long endTime = System.currentTimeMillis();
+        logger.info("End (timex:" + (endTime - startTime) + " millis).");
     }
+
+
 }

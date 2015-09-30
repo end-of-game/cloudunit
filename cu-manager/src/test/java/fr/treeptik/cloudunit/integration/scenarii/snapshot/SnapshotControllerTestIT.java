@@ -13,7 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.controller.snapshot;
+package fr.treeptik.cloudunit.integration.scenarii.snapshot;
 
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
@@ -61,12 +61,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         MockServletContext.class
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SnapshotControllerTest extends TestCase {
+public class SnapshotControllerTestIT extends TestCase {
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-            .getLogger(SnapshotControllerTest.class);
+        .getLogger(SnapshotControllerTestIT.class);
 
     @Autowired
     private WebApplicationContext context;

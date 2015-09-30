@@ -80,7 +80,6 @@ public class LogUnit {
         if (this.source != null ? !this.source.equals(logUnit.source) : logUnit.source != null) return false;
         if (this.date != null ? !this.date.equals(logUnit.date) : logUnit.date != null) return false;
         return !(message != null ? !message.equals(logUnit.message) : logUnit.message != null);
-
     }
 
     @Override

@@ -15,7 +15,7 @@ export MANAGER_DATABASE_PASSWORD=$6
 export ENV_EXEC=$7
 
 # ENVOI NOTIFICATION CHANGEMENT DE STATUS
-if [ $ENV_EXEC == "test" ];
+if [ $ENV_EXEC="integration" ];
 then
     export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
 else
@@ -97,7 +97,7 @@ fi
 
 
 # Démarrage de rsyslog, ssh et apache
-rsyslogd
+#rsyslogd
 /usr/sbin/sshd
 
 . /etc/apache2/envvars && /usr/sbin/apache2ctl start
@@ -110,7 +110,9 @@ done
 
 # Le montage /cloudunit n'appartient qu'a|  l'utilisateur créé
 chown -R $CU_USER:$CU_USER /cloudunit
-
+echo /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
 /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+
+touch /cloudunit/scripts/done.txt
 
 tailf /var/log/faillog

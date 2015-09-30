@@ -12,7 +12,7 @@ export MANAGER_DATABASE_PASSWORD=$7
 # To do difference between main and test env
 export ENV_EXEC=$8
 
-if [ $ENV_EXEC == "test" ];
+if [ $ENV_EXEC="integration" ];
 then
     export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
 else
@@ -24,8 +24,6 @@ MYSQL_CMD2="mysql -h127.0.0.1 -P3306 -uroot -p$CU_PASSWORD -e 'select 1 from dua
 
 if [ ! -f /cloudunit/database/init-service-ok ]; then
 
-	echo "PREMIER APPEL !!"
-
 	# Création de l'utilisateur ssh (johndoe) et définition du password
 	useradd -d $CU_USER_HOME -s /bin/bash $CU_USERNAME_SSH
 	echo "$CU_USERNAME_SSH:$CU_ROOT_PASSWORD" | chpasswd && echo "root:$CU_ROOT_PASSWORD" | chpasswd
@@ -33,6 +31,7 @@ if [ ! -f /cloudunit/database/init-service-ok ]; then
 	# Création du MYSQL_HOME / transfert de l'arborescence MySQL
 	cp -rfp /var/lib/mysql/* $CU_DATABASE_HOME
 	chown -R mysql:mysql $CU_DATABASE_HOME
+
 fi
 
 	# Démarrage de mysql

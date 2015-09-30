@@ -42,6 +42,8 @@
 		<hibernate.version>4.2.3.Final</hibernate.version>
 		<codahale.metrics.version>3.0.1</codahale.metrics.version>
 
+        <skip.integration.tests>true</skip.integration.tests>
+        <skip.unit.tests>false</skip.unit.tests>
 		<!--
     		surefire argLine empty by default
     		it will be populated by plugin contributing to the surefire and failsafe argument line.
@@ -159,7 +161,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 
 		<!-- Mysql -->
 
@@ -402,6 +403,26 @@
 
 	<profiles>
 
+        <profile>
+            <id>integration</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>**/*IT.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*Test.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
 		<profile>
 			<id>sonar</id>
 			<activation>
@@ -471,8 +492,24 @@
 				<filtering>true</filtering>
 			</testResource>
 		</testResources>
+
 		<plugins>
-			<plugin>
+
+            <!-- Used for unit tests and IT tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven.compiler.plugin.version}</version>
@@ -482,24 +519,8 @@
 					<optimize>true</optimize>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${maven.surefire.plugin.version}</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<artifactId>surefire-junit4</artifactId>
-						<version>${maven.surefire.report.plugin.version}</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<includes>
-						<include>**/*.class</include>
-					</includes>
-				</configuration>
-			</plugin>
-			<plugin>
+
+            <plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
 				<version>1.4</version>
@@ -511,7 +532,7 @@
 					<complianceLevel>1.8</complianceLevel>
 					<encoding>UTF-8</encoding>
 					<verbose>false</verbose>
-					<aspectLibraries>
+                    <aspectLibraries>s
 						<aspectLibrary>
 							<groupId>org.springframework.security</groupId>
 							<artifactId>spring-security-aspects</artifactId>
@@ -530,15 +551,6 @@
 						<version>1.7.0</version>
 					</dependency>
 				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>

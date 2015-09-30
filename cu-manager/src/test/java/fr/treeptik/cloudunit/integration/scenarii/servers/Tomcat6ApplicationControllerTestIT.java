@@ -13,15 +13,15 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.controller.servers;
+package fr.treeptik.cloudunit.integration.scenarii.servers;
 
 /**
  * Created by nicolas on 18/09/15.
  */
-public class Tomcat7ApplicationControllerTest extends AbstractApplicationControllerTest {
+public class Tomcat6ApplicationControllerTestIT extends AbstractApplicationControllerTestIT {
 
-    public Tomcat7ApplicationControllerTest() {
-        super.release = "tomcat-7";
+    public Tomcat6ApplicationControllerTestIT() {
+        super.release = "tomcat-6";
     }
 
 }

@@ -14,7 +14,7 @@ export MANAGER_DATABASE_PASSWORD=$6
 export ENV_EXEC=$7
 
 # ENVOI NOTIFICATION CHANGEMENT DE STATUS
-if [ $ENV_EXEC == "test" ];
+if [ $ENV_EXEC="integration" ];
 then
     export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
 else

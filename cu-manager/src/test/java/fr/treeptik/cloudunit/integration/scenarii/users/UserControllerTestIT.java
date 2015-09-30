@@ -13,20 +13,20 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.controller.modules;
+package fr.treeptik.cloudunit.integration.scenarii.users;
 
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import junit.framework.TestCase;
+import org.apache.http.HttpStatus;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,17 +39,17 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
+import javax.servlet.http.HttpSession;
 import java.util.Random;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -61,13 +61,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         CloudUnitApplicationContext.class,
         MockServletContext.class
 })
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ModuleControllerTest extends TestCase {
+public class UserControllerTestIT extends TestCase {
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-            .getLogger(ModuleControllerTest.class);
+        .getLogger(UserControllerTestIT.class);
 
     @Autowired
     private WebApplicationContext context;
@@ -127,108 +128,31 @@ public class ModuleControllerTest extends TestCase {
     }
 
     @Test
-    public void test010_CreateApplication() throws Exception {
-        logger.info("test01_CreateApplication");
+    public void test00_userAuthenticatesSuccess() throws Exception {
 
-        long startTime = System.currentTimeMillis();
-        logger.info("Create Tomcat server");
+        logger.info("test00_userAuthenticates");
 
-        final String jsonString = "{\"applicationName\":\""+applicationName
-                + "\", \"serverName\":\"tomcat-8\"}";
-        try {
-            ResultActions resultats = this.mockMvc
-                    .perform(
-                            post("/application").session(session)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonString));
-            resultats.andExpect(status().isOk());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new ServiceException(ex.getMessage());
-        }
-        long endTime = System.currentTimeMillis();
-        logger.info("End (timex:" + (endTime - startTime) + " millis).");
-    }
-
-    /**
-     * We cannot create an application with an empty name.
-     * @throws Exception
-     */
-    @Test
-    public void test011_FailCreateEmptyNameApplication() throws Exception {
-        logger.info("test01_CreateApplication");
-
-        long startTime = System.currentTimeMillis();
-        logger.info("Create Tomcat server");
-
-        final String jsonString = "{\"applicationName\":\", \"serverName\":\"tomcat-8\"}";
-        try {
-            ResultActions resultats = this.mockMvc
-                    .perform(
-                            post("/application").session(session)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonString));
-            resultats.andExpect(status().is4xxClientError()).andDo(print());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new ServiceException(ex.getMessage());
-        }
-        long endTime = System.currentTimeMillis();
-        logger.info("End (timex:" + (endTime - startTime) + " millis).");
+        final String username = "johndoe";
+        mockMvc.perform(post("/user/authentication")
+                .param("j_username", username).param("j_password", "abc2015"))
+                .andExpect(new ResultMatcher() {
+                    public void match(MvcResult mvcResult) throws Exception {
+                        HttpSession session = mvcResult.getRequest().getSession();
+                        SecurityContext securityContext = (SecurityContext) session.getAttribute(SEC_CONTEXT_ATTR);
+                        Assert.assertEquals(securityContext.getAuthentication().getName(), username);
+                    }
+                });
     }
 
     @Test
-    public void test02_StopApplicationTest() throws ServiceException {
+    public void test01_userAuthenticatesFail() throws Exception {
 
-        final String jsonString = "{\"applicationName\":\""+applicationName+"\"}";
-        try {
-            this.mockMvc
-                    .perform(
-                            post("/application/stop").session(session)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonString))
-                    .andExpect(status().isOk());
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            throw new ServiceException("Error test02StopApplicationTest", ex);
-        }
+        logger.info("test00_userAuthenticates");
+
+        final String username = "johndoe";
+        mockMvc.perform(post("/user/authentication")
+                .param("j_username", username).param("j_password", "XXXXXX"))
+                .andExpect(status().is(HttpStatus.SC_UNAUTHORIZED));
     }
-
-    @Test
-    public void test03_StartApplicationTest() throws ServiceException {
-
-        final String jsonString = "{\"applicationName\":\""+applicationName+"\"}";
-        try {
-            this.mockMvc
-                    .perform(
-                            post("/application/start").session(session)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonString))
-                    .andExpect(status().isOk());
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-            throw new ServiceException("Error test02StopApplicationTest", ex);
-        }
-    }
-
-    @Test
-    public void test04_DeleteApplication() throws Exception {
-        logger.info("test02_deleteApplication");
-
-        long startTime = System.currentTimeMillis();
-        logger.info("Delete Tomcat server");
-        try {
-            ResultActions resultats = this.mockMvc
-                    .perform(
-                            delete("/application/" + applicationName).session(session)
-                                    .contentType(MediaType.MULTIPART_FORM_DATA));
-            resultats.andExpect(status().isOk());
-        } catch (Exception ex) {
-            throw new ServiceException(ex.getMessage());
-        }
-        long endTime = System.currentTimeMillis();
-        logger.info("End (timex:" + (endTime - startTime) + " millis).");
-    }
-
 
 }

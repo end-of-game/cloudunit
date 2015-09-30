@@ -98,6 +98,20 @@ public class CloudUnitApplicationContext
     }
 
     @Bean
+    @Profile("integration")
+    public static PropertySourcesPlaceholderConfigurer propertiesForIntegration()
+        throws Exception {
+        PropertySourcesPlaceholderConfigurer pspc =
+            new PropertySourcesPlaceholderConfigurer();
+        Resource[] resources = new Resource[]
+            {new ClassPathResource("application-integration.properties")};
+        pspc.setLocations(resources);
+        pspc.setIgnoreUnresolvablePlaceholders(true);
+        pspc.setLocalOverride(true);
+        return pspc;
+    }
+
+    @Bean
     @Profile("test")
     public static PropertySourcesPlaceholderConfigurer propertiesForTest()
         throws Exception {

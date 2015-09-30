@@ -15,6 +15,8 @@
 
 package fr.treeptik.cloudunit.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -50,6 +52,8 @@ import java.io.IOException;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration
     extends WebSecurityConfigurerAdapter {
+
+    private Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     @Inject
     private DataSource dataSource;
@@ -98,8 +102,7 @@ public class SecurityConfiguration
             .authoritiesByUsernameQuery(
                 "Select u.login, r.description From Role r join User u on u.role_id=r.id where u.login=?");
 
-        auth.inMemoryAuthentication().withUser("john").password("doe")
-            .roles("ADMIN, USER");
+        //auth.inMemoryAuthentication().withUser("john").password("doe").roles("ADMIN, USER");
     }
 
     @Override
@@ -139,6 +142,11 @@ public class SecurityConfiguration
             .antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN").antMatchers("/user/check",
             "/nopublic/**").permitAll().and()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
+
+        if ("true".equals(System.getProperty("httpsOnly"))) {
+            logger.info("launching the application in HTTPS-only mode");
+            http.requiresChannel().anyRequest().requiresSecure();
+        }
     }
 
     /**
