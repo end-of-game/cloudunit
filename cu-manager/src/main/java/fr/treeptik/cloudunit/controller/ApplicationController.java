@@ -58,15 +58,18 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Controller about Application lifecycle
- * Application is the main concept for CloudUnit : it composed by Server, Module and Metadata
+ * Controller about Application lifecycle Application is the main concept for CloudUnit : it composed by Server, Module
+ * and Metadata
  */
 @Controller
-@RequestMapping("/application")
+@RequestMapping( "/application" )
 public class ApplicationController
-    implements Serializable {
+    implements Serializable
+{
 
-    private final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
+    private static final long serialVersionUID = 1L;
+
+    private final Logger logger = LoggerFactory.getLogger( ApplicationController.class );
 
     @Inject
     private ApplicationService applicationService;
@@ -93,23 +96,22 @@ public class ApplicationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping(value = "/verify/{applicationName}/{serverName}", method = RequestMethod.GET)
-    public JsonResponse isValid(@PathVariable String applicationName,
-                                @PathVariable String serverName)
-        throws ServiceException,
-        CheckException {
+    @RequestMapping( value = "/verify/{applicationName}/{serverName}", method = RequestMethod.GET )
+    public JsonResponse isValid( @PathVariable String applicationName, @PathVariable String serverName )
+        throws ServiceException, CheckException
+    {
 
-        if (this.logger.isInfoEnabled()) {
-            this.logger.info("applicationName:" + applicationName);
-            this.logger.info("serverName:" + serverName);
+        if ( this.logger.isInfoEnabled() )
+        {
+            this.logger.info( "applicationName:" + applicationName );
+            this.logger.info( "serverName:" + serverName );
         }
 
-        CheckUtils.validateInput(applicationName, this.messageSource
-            .getMessage("check.app.name", null, Locale.ENGLISH));
-        CheckUtils.validateInput(serverName, this.messageSource.getMessage(
-            "check.server.name", null, Locale.ENGLISH));
+        CheckUtils.validateInput( applicationName,
+                                  this.messageSource.getMessage( "check.app.name", null, Locale.ENGLISH ) );
+        CheckUtils.validateInput( serverName, this.messageSource.getMessage( "check.server.name", null, Locale.ENGLISH ) );
 
-        applicationService.isValid(applicationName, serverName);
+        applicationService.isValid( applicationName, serverName );
 
         return new HttpOk();
     }
@@ -124,25 +126,27 @@ public class ApplicationController
      * @throws InterruptedException
      */
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST)
-    public JsonResponse createApplication(@RequestBody JsonInput input)
-        throws ServiceException, CheckException, InterruptedException {
+    @RequestMapping( method = RequestMethod.POST )
+    public JsonResponse createApplication( @RequestBody JsonInput input )
+        throws ServiceException, CheckException, InterruptedException
+    {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(input.toString());
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( input.toString() );
         }
 
-        CheckUtils.validateSyntaxInput(input.getApplicationName(),
-            messageSource.getMessage("check.app.name", null, Locale.ENGLISH));
-        CheckUtils.validateInput(input.getServerName(),
-            messageSource.getMessage("check.server.name", null, Locale.ENGLISH));
+        CheckUtils.validateSyntaxInput( input.getApplicationName(),
+                                        messageSource.getMessage( "check.app.name", null, Locale.ENGLISH ) );
+        CheckUtils.validateInput( input.getServerName(),
+                                  messageSource.getMessage( "check.server.name", null, Locale.ENGLISH ) );
 
         User user = this.authentificationUtils.getAuthentificatedUser();
 
         // We must be sure there is no running action before starting new one
-        authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
+        authentificationUtils.canStartNewAction( user, null, Locale.ENGLISH );
 
-        applicationManager.create(input.getApplicationName(), input.getLogin(), input.getServerName());
+        applicationManager.create( input.getApplicationName(), input.getLogin(), input.getServerName() );
 
         return new HttpOk();
     }
@@ -157,27 +161,30 @@ public class ApplicationController
      * @throws InterruptedException
      */
     @ResponseBody
-    @RequestMapping(value = "/start", method = RequestMethod.POST)
-    public JsonResponse startApplication(@RequestBody JsonInput input)
-        throws ServiceException, CheckException, InterruptedException {
+    @RequestMapping( value = "/start", method = RequestMethod.POST )
+    public JsonResponse startApplication( @RequestBody JsonInput input )
+        throws ServiceException, CheckException, InterruptedException
+    {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(input.toString());
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( input.toString() );
         }
 
         String applicationName = input.getApplicationName();
         User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, applicationName);
+        Application application = applicationService.findByNameAndUser( user, applicationName );
 
-        if (application != null && application.getStatus().equals(Status.START)) {
+        if ( application != null && application.getStatus().equals( Status.START ) )
+        {
             // If appliction is already start, we return the status
-            return new HttpErrorServer("application already started");
+            return new HttpErrorServer( "application already started" );
         }
 
         // We must be sure there is no running action before starting new one
-        authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+        authentificationUtils.canStartNewAction( user, application, Locale.ENGLISH );
 
-        applicationManager.start(application, user);
+        applicationManager.start( application, user );
 
         return new HttpOk();
     }
@@ -192,23 +199,25 @@ public class ApplicationController
      */
     @CloudUnitSecurable
     @ResponseBody
-    @RequestMapping(value = "/stop", method = RequestMethod.POST)
-    public JsonResponse stopApplication(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+    @RequestMapping( value = "/stop", method = RequestMethod.POST )
+    public JsonResponse stopApplication( @RequestBody JsonInput input )
+        throws ServiceException, CheckException
+    {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(input.toString());
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( input.toString() );
         }
 
         String name = input.getApplicationName();
         User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, name);
+        Application application = applicationService.findByNameAndUser( user, name );
 
         // We must be sure there is no running action before starting new one
-        authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+        authentificationUtils.canStartNewAction( user, application, Locale.ENGLISH );
 
         // stop the application
-        applicationManager.stop(application, user);
+        applicationManager.stop( application, user );
 
         return new HttpOk();
     }
@@ -223,35 +232,38 @@ public class ApplicationController
      */
     @CloudUnitSecurable
     @ResponseBody
-    @RequestMapping(value = "/{name}", method = RequestMethod.DELETE)
-    public JsonResponse deleteApplication(@PathVariable String name)
-        throws ServiceException, CheckException {
+    @RequestMapping( value = "/{name}", method = RequestMethod.DELETE )
+    public JsonResponse deleteApplication( @PathVariable String name )
+        throws ServiceException, CheckException
+    {
 
-        logger.debug("Want to delete the application : " + name);
+        logger.debug( "Want to delete the application : " + name );
 
         User user = this.authentificationUtils.getAuthentificatedUser();
-        Application application = this.applicationService.findByNameAndUser(
-            user, name);
+        Application application = this.applicationService.findByNameAndUser( user, name );
 
         // We must be sure there is no running action before starting new one
-        this.authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+        this.authentificationUtils.canStartNewAction( user, application, Locale.ENGLISH );
 
-        try {
+        try
+        {
             // Application busy
-            applicationService.setStatus(application, Status.PENDING);
+            applicationService.setStatus( application, Status.PENDING );
 
-            logger.info("delete logs for this application");
-            logService.deleteLogsForApplication(name);
+            logger.info( "delete logs for this application" );
+            logService.deleteLogsForApplication( name );
 
-            logger.info("delete application :" + name);
-            applicationService.remove(application, user);
+            logger.info( "delete application :" + name );
+            applicationService.remove( application, user );
 
-        } catch (ServiceException e) {
-            logger.error(application.toString(), e);
-            applicationService.setStatus(application, Status.FAIL);
+        }
+        catch ( ServiceException e )
+        {
+            logger.error( application.toString(), e );
+            applicationService.setStatus( application, Status.FAIL );
         }
 
-        logger.debug("Application " + name + " is deleted.");
+        logger.debug( "Application " + name + " is deleted." );
 
         return new HttpOk();
     }
@@ -263,14 +275,15 @@ public class ApplicationController
      * @throws ServiceException
      */
     @ResponseBody
-    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
-    public Application detail(@PathVariable String name)
-        throws ServiceException, CheckException {
+    @RequestMapping( value = "/{name}", method = RequestMethod.GET )
+    public Application detail( @PathVariable String name )
+        throws ServiceException, CheckException
+    {
 
-        logger.debug("name : " + name);
+        logger.debug( "name : " + name );
 
         User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, name);
+        Application application = applicationService.findByNameAndUser( user, name );
         return application;
     }
 
@@ -281,15 +294,16 @@ public class ApplicationController
      * @throws ServiceException
      */
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping( method = RequestMethod.GET )
     public List<Application> findAllByUser()
-        throws ServiceException {
-        logger.debug("--CALL LIST USER APPLICATIONS--");
+        throws ServiceException
+    {
+        logger.debug( "--CALL LIST USER APPLICATIONS--" );
 
         User user = this.authentificationUtils.getAuthentificatedUser();
-        List<Application> applications = applicationService.findAllByUser(user);
+        List<Application> applications = applicationService.findAllByUser( user );
 
-        logger.debug("Number of applications " + applications.size());
+        logger.debug( "Number of applications " + applications.size() );
         return applications;
     }
 
@@ -302,25 +316,23 @@ public class ApplicationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping(value = "/{applicationName}/deploy", method = RequestMethod.POST, consumes = {
-        "multipart/form-data"})
-    public JsonResponse deploy(@RequestPart("file") MultipartFile fileUpload,
-                               @PathVariable String applicationName, HttpServletRequest request,
-                               HttpServletResponse response)
-        throws IOException, ServiceException,
-        CheckException {
+    @RequestMapping( value = "/{applicationName}/deploy", method = RequestMethod.POST, consumes = { "multipart/form-data" } )
+    public JsonResponse deploy( @RequestPart( "file" ) MultipartFile fileUpload, @PathVariable String applicationName,
+                                HttpServletRequest request, HttpServletResponse response )
+        throws IOException, ServiceException, CheckException
+    {
 
-        logger.info("applicationName = " + applicationName + "file = " + fileUpload.getOriginalFilename());
+        logger.info( "applicationName = " + applicationName + "file = " + fileUpload.getOriginalFilename() );
 
         User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, applicationName);
+        Application application = applicationService.findByNameAndUser( user, applicationName );
 
         // We must be sure there is no running action before starting new one
-        authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+        authentificationUtils.canStartNewAction( user, application, Locale.ENGLISH );
 
-        applicationManager.deploy(fileUpload, application);
+        applicationManager.deploy( fileUpload, application );
 
-        logger.info("--DEPLOY APPLICATION WAR ENDED--");
+        logger.info( "--DEPLOY APPLICATION WAR ENDED--" );
         return new HttpOk();
     }
 
@@ -333,13 +345,12 @@ public class ApplicationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping(value = "/{applicationName}/containers", method = RequestMethod.GET)
-    public List<ContainerUnit> listContainer(
-        @PathVariable String applicationName)
-        throws ServiceException,
-        CheckException {
-        logger.debug("applicationName:" + applicationName);
-        return applicationService.listContainers(applicationName);
+    @RequestMapping( value = "/{applicationName}/containers", method = RequestMethod.GET )
+    public List<ContainerUnit> listContainer( @PathVariable String applicationName )
+        throws ServiceException, CheckException
+    {
+        logger.debug( "applicationName:" + applicationName );
+        return applicationService.listContainers( applicationName );
     }
 
     /**
@@ -350,14 +361,14 @@ public class ApplicationController
      * @throws CheckException
      */
     @ResponseBody
-    @RequestMapping(value = "/{name}/alias", method = RequestMethod.GET)
-    public List<String> aliases(@PathVariable String name)
-        throws ServiceException, CheckException {
-        logger.debug("application.name = " + name);
+    @RequestMapping( value = "/{name}/alias", method = RequestMethod.GET )
+    public List<String> aliases( @PathVariable String name )
+        throws ServiceException, CheckException
+    {
+        logger.debug( "application.name = " + name );
         User user = this.authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(
-            user, name);
-        return applicationService.getListAliases(application);
+        Application application = applicationService.findByNameAndUser( user, name );
+        return applicationService.getListAliases( application );
     }
 
     /**
@@ -370,24 +381,27 @@ public class ApplicationController
      */
     @CloudUnitSecurable
     @ResponseBody
-    @RequestMapping(value = "/alias", method = RequestMethod.POST)
-    public JsonResponse addAlias(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+    @RequestMapping( value = "/alias", method = RequestMethod.POST )
+    public JsonResponse addAlias( @RequestBody JsonInput input )
+        throws ServiceException, CheckException
+    {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(input.toString());
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( input.toString() );
         }
 
         User user = this.authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
+        Application application = applicationService.findByNameAndUser( user, input.getApplicationName() );
 
-        CheckUtils.validateInput(input.getApplicationName(), messageSource.getMessage("check.app.name", null, Locale.ENGLISH));
-        CheckUtils.validateInput(input.getAlias(), messageSource.getMessage("check.alias.name", null, Locale.ENGLISH));
+        CheckUtils.validateInput( input.getApplicationName(),
+                                  messageSource.getMessage( "check.app.name", null, Locale.ENGLISH ) );
+        CheckUtils.validateInput( input.getAlias(), messageSource.getMessage( "check.alias.name", null, Locale.ENGLISH ) );
 
         // We must be sure there is no running action before starting new one
-        this.authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+        this.authentificationUtils.canStartNewAction( user, application, Locale.ENGLISH );
 
-        this.applicationService.addNewAlias(application, input.getAlias());
+        this.applicationService.addNewAlias( application, input.getAlias() );
 
         return new HttpOk();
     }
@@ -403,33 +417,37 @@ public class ApplicationController
      */
     @CloudUnitSecurable
     @ResponseBody
-    @RequestMapping(value = "/{applicationName}/alias/{alias}", method = RequestMethod.DELETE)
-    public JsonResponse removeAlias(@PathVariable String applicationName,
-                                    @PathVariable String alias)
-        throws ServiceException, CheckException {
+    @RequestMapping( value = "/{applicationName}/alias/{alias}", method = RequestMethod.DELETE )
+    public JsonResponse removeAlias( @PathVariable String applicationName, @PathVariable String alias )
+        throws ServiceException, CheckException
+    {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("application.name=" + applicationName);
-            logger.debug("alias.name=" + alias);
+        if ( logger.isDebugEnabled() )
+        {
+            logger.debug( "application.name=" + applicationName );
+            logger.debug( "alias.name=" + alias );
+
         }
 
-        CheckUtils.validateInput(applicationName, messageSource.getMessage("check.app.name", null, Locale.ENGLISH));
-        CheckUtils.validateInput(alias, messageSource.getMessage("check.alias.name", null, Locale.ENGLISH));
+        CheckUtils.validateInput( applicationName, messageSource.getMessage( "check.app.name", null, Locale.ENGLISH ) );
+        CheckUtils.validateInput( alias, messageSource.getMessage( "check.alias.name", null, Locale.ENGLISH ) );
 
-        if (applicationName != null) {
+        if ( applicationName != null )
+        {
             applicationName = applicationName.toLowerCase();
         }
-        if (alias != null) {
+        if ( alias != null )
+        {
             alias = alias.toLowerCase();
         }
 
         User user = this.authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, applicationName);
+        Application application = applicationService.findByNameAndUser( user, applicationName );
 
         // We must be sure there is no running action before starting new one
-        authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
+        authentificationUtils.canStartNewAction( user, null, Locale.ENGLISH );
 
-        applicationService.removeAlias(application, alias);
+        applicationService.removeAlias( application, alias );
 
         return new HttpOk();
     }

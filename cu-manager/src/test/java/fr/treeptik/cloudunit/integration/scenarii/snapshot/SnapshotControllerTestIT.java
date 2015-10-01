@@ -63,8 +63,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SnapshotControllerTestIT extends TestCase {
 
-    private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
-
     private final Logger logger = LoggerFactory
         .getLogger(SnapshotControllerTestIT.class);
 

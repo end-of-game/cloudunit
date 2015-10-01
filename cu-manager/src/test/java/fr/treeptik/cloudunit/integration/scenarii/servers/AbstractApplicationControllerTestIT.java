@@ -23,16 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Random;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -45,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -59,7 +53,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -80,8 +73,6 @@ public abstract class AbstractApplicationControllerTestIT
 {
 
     protected String release;
-
-    private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory.getLogger( AbstractApplicationControllerTestIT.class );
 
@@ -104,8 +95,6 @@ public abstract class AbstractApplicationControllerTestIT
     private MockHttpSession session;
 
     private static String applicationName;
-
-    private final String alias = "myAlias";
 
     @BeforeClass
     public static void initEnv()
@@ -167,7 +156,7 @@ public abstract class AbstractApplicationControllerTestIT
      *
      * @throws Exception
      */
-    // @Test
+    @Test
     public void test011_FailCreateEmptyNameApplication()
         throws Exception
     {
@@ -194,7 +183,7 @@ public abstract class AbstractApplicationControllerTestIT
         resultats.andExpect( status().is4xxClientError() ).andDo( print() );
     }
 
-    // @Test(timeout = 30000)
+    @Test( timeout = 30000 )
     public void test02_StopApplicationTest()
         throws Exception
     {
@@ -205,7 +194,7 @@ public abstract class AbstractApplicationControllerTestIT
         resultats.andExpect( status().isOk() );
     }
 
-    // @Test( timeout = 30000 )
+    @Test( timeout = 30000 )
     public void test03_StartApplicationTest()
         throws Exception
     {
@@ -216,7 +205,7 @@ public abstract class AbstractApplicationControllerTestIT
         resultats.andExpect( status().isOk() );
     }
 
-    // @Test( timeout = 60000 )
+    @Test( timeout = 60000 )
     public void test040_ChangeJvmMemorySizeApplicationTest()
         throws Exception
     {
@@ -229,7 +218,7 @@ public abstract class AbstractApplicationControllerTestIT
         resultats.andExpect( status().isOk() );
     }
 
-    // @Test( timeout = 30000 )
+    @Test( timeout = 30000 )
     public void test041_ChangeInvalidJvmMemorySizeApplicationTest()
         throws Exception
     {
@@ -242,7 +231,7 @@ public abstract class AbstractApplicationControllerTestIT
         resultats.andExpect( status().is4xxClientError() );
     }
 
-    // @Test( timeout = 30000 )
+    @Test( timeout = 30000 )
     public void test043_ChangeEmptyJvmMemorySizeApplicationTest()
         throws Exception
     {
@@ -255,7 +244,7 @@ public abstract class AbstractApplicationControllerTestIT
         resultats.andExpect( status().is4xxClientError() );
     }
 
-    // @Test( timeout = 60000 )
+    @Test( timeout = 60000 )
     public void test050_ChangeJvmOptionsApplicationTest()
         throws Exception
     {
@@ -274,7 +263,7 @@ public abstract class AbstractApplicationControllerTestIT
                                                                                                                                                                                                  "$.servers[0].jvmOptions" ).value( "-Dkey1=value1" ) );
     }
 
-    // @Test( timeout = 30000 )
+    @Test( timeout = 30000 )
     public void test051_ChangeFailWithXmsJvmOptionsApplicationTest()
         throws Exception
     {
@@ -287,7 +276,7 @@ public abstract class AbstractApplicationControllerTestIT
         resultats.andExpect( status().is4xxClientError() );
     }
 
-    // @Test(timeout = 30000)
+    @Test( timeout = 30000 )
     public void test09_DeleteApplication()
         throws Exception
     {
@@ -297,22 +286,4 @@ public abstract class AbstractApplicationControllerTestIT
         resultats.andExpect( status().isOk() );
     }
 
-    // TODO : ajout alias, suppression alias, deploiement helloworld from github
-
-    @Test( timeout = 30000 )
-    public void test061_DeploySimpleApplicationTest()
-        throws Exception
-    {
-        logger.info( "Deploy an helloworld application" );
-        File file = new File( "/home/guillaume/Downloads/helloworld.war" );
-        MockMultipartFile fileToDeploy = new MockMultipartFile( "file", file.getName(),"multipart/form-data", new FileInputStream( file ) );
-        
-        ResultActions resultats =
-            this.mockMvc.perform( MockMvcRequestBuilders
-                                  .fileUpload( "/application/" + applicationName + "/deploy" )
-                                  .file( fileToDeploy ).session( session )
-                                  .contentType( MediaType.MULTIPART_FORM_DATA ) )
-                                  .andDo( print() );
-        resultats.andExpect( status().is2xxSuccessful() );
-    }
 }
