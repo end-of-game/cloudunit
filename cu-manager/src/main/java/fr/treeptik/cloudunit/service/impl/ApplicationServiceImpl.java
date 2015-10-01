@@ -23,6 +23,7 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -965,15 +966,16 @@ public class ApplicationServiceImpl
                 "This alias is already used by another application on this CloudUnit instance");
         }
 
+        alias = alias.toLowerCase();
         if (alias.startsWith("https://") || alias.startsWith("http://")
             || alias.startsWith("ftp://")) {
             alias = alias
                 .substring(alias.lastIndexOf("//") + 2, alias.length());
         }
 
-        if (alias.contains("/")) {
+        if (!StringUtils.isAlphanumeric(alias)) {
             throw new CheckException(
-                "This alias contains forbidden characters \"/\". Please remove them");
+                "This alias must be alphanumeric. Please remove all other characters");
         }
 
         try {

@@ -221,6 +221,7 @@ public class ApplicationController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/{name}", method = RequestMethod.DELETE)
     public JsonResponse deleteApplication(@PathVariable String name)
@@ -300,6 +301,7 @@ public class ApplicationController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/deploy", method = RequestMethod.POST, consumes = {
         "multipart/form-data"})
@@ -367,6 +369,7 @@ public class ApplicationController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/alias", method = RequestMethod.POST)
     public JsonResponse addAlias(@RequestBody JsonInput input)
@@ -396,6 +399,7 @@ public class ApplicationController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/{name}/alias/{alias}", method = RequestMethod.DELETE)
     public JsonResponse removeAlias(@PathVariable String name,
