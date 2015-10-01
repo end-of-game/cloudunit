@@ -301,7 +301,6 @@ public class ApplicationController
      * @throws ServiceException
      * @throws CheckException
      */
-    @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/deploy", method = RequestMethod.POST, consumes = {
         "multipart/form-data"})
@@ -311,7 +310,7 @@ public class ApplicationController
         throws IOException, ServiceException,
         CheckException {
 
-        logger.debug("applicationName = " + applicationName);
+        logger.info("applicationName = " + applicationName + "file = " + fileUpload.getOriginalFilename());
 
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
