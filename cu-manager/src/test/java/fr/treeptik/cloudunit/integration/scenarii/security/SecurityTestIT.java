@@ -49,7 +49,7 @@ import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.util.Random;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -74,8 +74,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration")
 @DirtiesContext
 public class SecurityTestIT extends TestCase {
-
-    private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
         .getLogger(SecurityTestIT.class);
@@ -185,9 +183,9 @@ public class SecurityTestIT extends TestCase {
     // ALL TESTS ARE FOR USER 2 NOW
 
     @Test
-    public void test10_User2triesToStopApplicationUser1() throws Exception {
+    public void test10_User2triesToManageApplicationUser1() throws Exception {
         logger.info("************************************************");
-        logger.info(" User2 attemps to stop the application's User1  ");
+        logger.info(" User2 attemps to manage the application's User1  ");
         logger.info("************************************************");
         final String jsonString = "{\"applicationName\":\""+applicationName+"\"}";
         this.mockMvc
@@ -196,5 +194,59 @@ public class SecurityTestIT extends TestCase {
                                 .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString)).andDo(print())
                 .andExpect(status().is5xxServerError());
+
+        this.mockMvc
+            .perform(
+                post("/application/start").session(session2)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonString)).andDo(print())
+            .andExpect(status().is5xxServerError());
+
+        this.mockMvc
+            .perform(
+                delete("/application/" + applicationName).session(session2)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonString)).andDo(print())
+            .andExpect(status().is5xxServerError());
     }
+
+    @Test
+    public void test11_User2triesToManageAliasForApplicationUser1() throws Exception {
+
+        logger.info("************************************************");
+        logger.info(" User2 attemps to manage the application's User1  ");
+        logger.info("************************************************");
+
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\",\"alias\":\"myAlias\"}";
+        // create the alias
+        ResultActions resultats = this.mockMvc
+            .perform(
+                post("/application/alias").session(session2)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonString)).andDo(print());
+        resultats.andExpect(status().is5xxServerError());
+
+        // delete the alias
+        resultats = this.mockMvc
+            .perform(
+                delete("/application/" + applicationName + "/alias/myalias").session(session2)
+                    .contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats.andExpect(status().is5xxServerError());
+    }
+
+    @Test
+    public void test12_User2triesToChangeConfigForApplicationUser1() throws Exception {
+
+        logger.info("************************************************");
+        logger.info(" User2 attemps to manage the application's User1  ");
+        logger.info("************************************************");
+
+        final String jsonString =
+            "{\"applicationName\":\"" + applicationName
+                + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\",\"location\":\"webui\"}";
+        ResultActions resultats =
+            this.mockMvc.perform(put("/server/configuration/jvm").session(session2).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
+        resultats.andExpect(status().is5xxServerError());
+    }
+
 }
