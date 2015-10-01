@@ -30,6 +30,7 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -189,6 +190,7 @@ public class ApplicationController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/stop", method = RequestMethod.POST)
     public JsonResponse stopApplication(@RequestBody JsonInput input)
