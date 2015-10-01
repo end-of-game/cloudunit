@@ -352,7 +352,7 @@ public class ApplicationController
     @RequestMapping(value = "/{name}/alias", method = RequestMethod.GET)
     public List<String> aliases(@PathVariable String name)
         throws ServiceException, CheckException {
-        logger.debug("alias.nale = " + name);
+        logger.debug("application.name = " + name);
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(
             user, name);
