@@ -1,13 +1,12 @@
-env:
-  global:
-    - BRANCH=v1.1.0
-    - DOCKER_VERSION=1.6.2
+sudo: required
 
-sudo: true
+language: java
 
-install:
-  - curl -sLo - http://j.mp/install-travis-docker | sh -xe
+services:
+  - docker
+
+before_install:
+- docker ps -a
 
 script:
-  - ./run 'docker build -t test . && docker run test'
-  - ./run 'docker-compose up -d blog && docker ps'
+- mvn test -f cu-manager/pom.xml
