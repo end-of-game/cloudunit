@@ -55,7 +55,8 @@ import java.util.Locale;
     "fr.treeptik.cloudunit.exception", "fr.treeptik.cloudunit.model",
     "fr.treeptik.cloudunit.service", "fr.treeptik.cloudunit.service.impl",
     "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
-    "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl"
+    "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl",
+    "fr.treeptik.cloudunit.validator"
 })
 @PropertySource({"classpath:/application.properties"})
 @PropertySource({"classpath:/maven.properties"})
@@ -66,6 +67,13 @@ public class CloudUnitApplicationContext
     private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
 
     private final Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
+
+    /*
+    @Override
+    public void addFormatters(FormatterRegistry formatterRegistry) {
+        formatterRegistry.addConverter(new StringToJsonInputConverter());
+    }
+    */
 
     @Bean
     @Profile("vagrant")
