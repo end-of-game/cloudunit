@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonInput;
 import fr.treeptik.cloudunit.dto.JsonResponse;
@@ -68,10 +69,10 @@ public class ServerController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @RequestMapping(value = "/configuration/jvm", method = RequestMethod.PUT)
-    public
     @ResponseBody
-    JsonResponse setOptionsJVM(@RequestBody JsonInput input)
+    public JsonResponse setOptionsJVM(@RequestBody JsonInput input)
         throws ServiceException, CheckException {
 
         if (logger.isDebugEnabled()) {
@@ -113,10 +114,10 @@ public class ServerController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @RequestMapping(value = "/ports/open", method = RequestMethod.POST)
-    public
     @ResponseBody
-    JsonResponse openPort(@RequestBody JsonInput input)
+    public JsonResponse openPort(@RequestBody JsonInput input)
         throws ServiceException, CheckException {
 
         User user = authentificationUtils.getAuthentificatedUser();
@@ -145,15 +146,17 @@ public class ServerController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @RequestMapping(value = "/ports/close", method = RequestMethod.POST)
-    public
     @ResponseBody
-    JsonResponse closePort(@RequestBody JsonInput input)
+    public JsonResponse closePort(@RequestBody JsonInput input)
         throws ServiceException, CheckException {
 
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user,
             input.getApplicationName());
+
+        // todo
 
         authentificationUtils.canStartNewAction(user, application, locale);
 
