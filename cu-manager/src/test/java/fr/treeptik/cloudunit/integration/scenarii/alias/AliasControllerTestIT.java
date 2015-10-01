@@ -63,8 +63,7 @@ import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.util.Random;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -147,7 +146,9 @@ public class AliasControllerTestIT {
 
         if (!isAppCreated) {
             try {
-                logger.info("Create Tomcat server");
+                logger.info("**********************************");
+                logger.info("       Create Tomcat server       ");
+                logger.info("**********************************");
                 String jsonString = "{\"applicationName\":\"" + applicationName1
                     + "\", \"serverName\":\"" + release + "\"}";
                 ResultActions resultats = mockMvc
@@ -177,14 +178,19 @@ public class AliasControllerTestIT {
 
     @After
     public void teardown() {
-        logger.info("teardown");
+        logger.info("**********************************");
+        logger.info("           teardown               ");
+        logger.info("**********************************");
+
         SecurityContextHolder.clearContext();
         session.invalidate();
     }
 
     @Test(timeout = 120000)
     public void test00_createAliasTest() throws Exception {
+        logger.info("*********************************************************");
         logger.info("create an alias for the application : " + applicationName1);
+        logger.info("*********************************************************");
         String alias = "myapp";
         String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
         ResultActions resultats = this.mockMvc
@@ -194,6 +200,7 @@ public class AliasControllerTestIT {
                     .content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
+        // List the alias for the application to verify it is really created into database
         resultats = this.mockMvc
             .perform(
                 get("/application/" + applicationName1.toLowerCase() + "/alias").session(session)
@@ -202,8 +209,9 @@ public class AliasControllerTestIT {
         resultats.andDo(print())
             .andExpect(jsonPath("$[0]").value(alias));
 
-
-        logger.info("create an alias for the application : " + applicationName2);
+        logger.info("*********************************************************");
+        logger.info("Cannot create an alias it is exists already for app : " + applicationName2);
+        logger.info("*********************************************************");
 
         jsonString = "{\"applicationName\":\"" + applicationName2 + "\",\"alias\":\"" + alias + "\"}";
         resultats = this.mockMvc
@@ -213,7 +221,9 @@ public class AliasControllerTestIT {
                     .content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
 
-        logger.info("create an alias for the application : " + applicationName1);
+        logger.info("*********************************************************");
+        logger.info("Cannot create an alias it is exists already for app : " + applicationName1);
+        logger.info("*********************************************************");
 
         jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
         resultats = this.mockMvc
@@ -239,9 +249,9 @@ public class AliasControllerTestIT {
         creationWithWrongSyntax("ftp://");
     }
 
-    @Test(timeout = 600000)
+    @Test(timeout = 60000)
     public void test20_CreationWithWrongSyntax() throws Exception {
-        logger.info("Fail to create with a wrong syntax an alias for the application : " + applicationName1);
+
         String wrongAlias = "hello://" + alias;
         String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + wrongAlias + "\"}";
         ResultActions resultats = this.mockMvc
@@ -270,10 +280,74 @@ public class AliasControllerTestIT {
         resultats.andExpect(status().is4xxClientError());
     }
 
+    @Test(timeout = 60000)
+    public void test30_CreationThenDelete() throws Exception {
+
+        logger.info("*********************************************************");
+        logger.info("Create an alias then delete it");
+        logger.info("*********************************************************");
+
+        String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
+        // create the alias
+        ResultActions resultats = this.mockMvc
+            .perform(
+                post("/application/alias").session(session)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonString)).andDo(print());
+        resultats.andExpect(status().isOk());
+
+        // delete the alias
+        resultats = this.mockMvc
+            .perform(
+                delete("/application/" + applicationName1 + "/alias/" + alias).session(session)
+                    .contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats.andExpect(status().isOk());
+
+        // List the alias for the application to verify it is really deleted into database
+        resultats = this.mockMvc
+            .perform(
+                get("/application/" + applicationName1.toLowerCase() + "/alias").session(session)
+                    .contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+        resultats.andDo(print())
+            .andExpect(jsonPath("$[0]").doesNotExist());
+    }
+
+    @Test(timeout = 60000)
+    public void test40_thenDeleteFails() throws Exception {
+        logger.info("*********************************************************");
+        logger.info("Delete an alias onto an unexisting application");
+        logger.info("*********************************************************");
+        // delete the alias
+        ResultActions resultats = this.mockMvc
+            .perform(
+                delete("/application/" + "XXX" + "/alias/" + alias).session(session)
+                    .contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats.andExpect(status().is5xxServerError());
+    }
+
+    @Test(timeout = 60000)
+    public void test41_thenDeleteFails() throws Exception {
+        logger.info("*********************************************************");
+        logger.info("Delete an unexisting alias onto an real application");
+        logger.info("*********************************************************");
+        // delete the alias
+        ResultActions resultats = this.mockMvc
+            .perform(
+                delete("/application/" + applicationName1 + "/alias/xxx").session(session)
+                    .contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats.andExpect(status().is4xxClientError());
+    }
+
+
     // PRIVATE METHODS
 
     private void creationWithWrongSyntax(String prefix) throws Exception {
-        logger.info("create an alias for the application : " + applicationName1);
+
+        logger.info("*********************************************************");
+        logger.info("Create an alias with a wrong syntax : " + prefix);
+        logger.info("*********************************************************");
+
         String wrongAlias = prefix + alias;
         final String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + wrongAlias + "\"}";
         ResultActions resultats = this.mockMvc
@@ -290,7 +364,7 @@ public class AliasControllerTestIT {
                     .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
         resultats.andDo(print())
-            .andExpect(jsonPath("$[0]").value(alias));
+            .andExpect(jsonPath("$[0]").value(alias.toLowerCase()));
 
     }
 

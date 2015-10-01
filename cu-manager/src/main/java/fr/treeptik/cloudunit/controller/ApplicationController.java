@@ -381,6 +381,9 @@ public class ApplicationController
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
 
+        CheckUtils.validateInput(input.getApplicationName(), messageSource.getMessage("check.app.name", null, Locale.ENGLISH));
+        CheckUtils.validateInput(input.getAlias(), messageSource.getMessage("check.alias.name", null, Locale.ENGLISH));
+
         // We must be sure there is no running action before starting new one
         this.authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
@@ -392,7 +395,7 @@ public class ApplicationController
     /**
      * Delete an alias for an application
      *
-     * @param name
+     * @param applicationName
      * @param alias
      * @return
      * @throws ServiceException
@@ -400,18 +403,28 @@ public class ApplicationController
      */
     @CloudUnitSecurable
     @ResponseBody
-    @RequestMapping(value = "/{name}/alias/{alias}", method = RequestMethod.DELETE)
-    public JsonResponse removeAlias(@PathVariable String name,
+    @RequestMapping(value = "/{applicationName}/alias/{alias}", method = RequestMethod.DELETE)
+    public JsonResponse removeAlias(@PathVariable String applicationName,
                                     @PathVariable String alias)
         throws ServiceException, CheckException {
 
         if (logger.isDebugEnabled()) {
-            logger.debug("application.name=" + name);
+            logger.debug("application.name=" + applicationName);
             logger.debug("alias.name=" + alias);
         }
 
+        CheckUtils.validateInput(applicationName, messageSource.getMessage("check.app.name", null, Locale.ENGLISH));
+        CheckUtils.validateInput(alias, messageSource.getMessage("check.alias.name", null, Locale.ENGLISH));
+
+        if (applicationName != null) {
+            applicationName = applicationName.toLowerCase();
+        }
+        if (alias != null) {
+            alias = alias.toLowerCase();
+        }
+
         User user = this.authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, name);
+        Application application = applicationService.findByNameAndUser(user, applicationName);
 
         // We must be sure there is no running action before starting new one
         authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);

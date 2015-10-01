@@ -82,7 +82,7 @@ public interface ApplicationService {
         throws ServiceException;
 
     void removeAlias(Application application, String alias)
-        throws ServiceException;
+        throws ServiceException, CheckException;
 
     Application updateEnv(Application application, User user)
         throws ServiceException;
@@ -91,7 +91,7 @@ public interface ApplicationService {
         throws ServiceException;
 
     Application remove(Application application, User user)
-        throws ServiceException;
+        throws ServiceException, CheckException;
 
     Application sshCopyIDToServer(Application application, User user)
         throws ServiceException;

@@ -33,7 +33,7 @@ public interface UserService {
         throws ServiceException;
 
     void remove(User user)
-        throws ServiceException;
+        throws ServiceException, CheckException;
 
     User update(User user)
         throws ServiceException;

@@ -43,7 +43,7 @@ public class CheckUtils {
         if (field == null
             || field.trim().length() == 0
             || "undefined".equals(field)
-            || field.length() > 25) {
+            || field.length() > 15) {
             throw new CheckException(message + " : " + field);
         }
     }
@@ -60,7 +60,7 @@ public class CheckUtils {
         if (field == null
             || field.trim().length() == 0
             || "undefined".equals(field)
-            || field.length() > 25
+            || field.length() > 15
             || !StringUtils.isAlphanumeric(field)) {
             throw new CheckException(message + " : " + field);
         }

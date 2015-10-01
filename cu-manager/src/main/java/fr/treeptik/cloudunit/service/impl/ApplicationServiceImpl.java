@@ -511,7 +511,7 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public Application remove(Application application, User user)
-        throws ServiceException {
+        throws ServiceException, CheckException {
 
         try {
             logger.info("Starting removing application "
@@ -1011,10 +1011,13 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public void removeAlias(Application application, String alias)
-        throws ServiceException {
+        throws ServiceException, CheckException {
         try {
             hipacheRedisUtils.removeAlias(alias);
-            application.getAliases().remove(alias);
+            boolean removed = application.getAliases().remove(alias);
+            if (!removed) {
+                throw new CheckException("Alias [" + alias + "] doesn't exist");
+            }
             application = applicationDAO.save(application);
         } catch (DataAccessException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);

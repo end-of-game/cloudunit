@@ -184,7 +184,7 @@ public class UserServiceImpl
     @Override
     @Transactional
     public void remove(User user)
-        throws ServiceException {
+        throws ServiceException, CheckException {
         try {
             logger.debug("remove : Methods parameters : " + user.toString());
             logger.info("Starting removing User " + user.getLastName());

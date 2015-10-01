@@ -37,7 +37,6 @@ import javax.inject.Inject;
  * Annotation needed to verify that an user has a real access to a application for its lifecyle.
  * So we could stop an intrusion if user1 wants to stop an application of user2 for example.
  *
- * Created by nicolas on 31/08/15.
  */
 @Component
 @Aspect
@@ -63,9 +62,14 @@ public class SecurityAnnotationAspect {
             if (joinPoint.getArgs() == null) {
                 logger.error("Error on annotation aspect : " + joinPoint.getStaticPart().getSignature());
             } else {
-                jsonInput = (JsonInput) joinPoint.getArgs()[0];
-                String applicationName = jsonInput.getApplicationName();
-
+                String applicationName = null;
+                if (joinPoint.getArgs()[0] instanceof JsonInput) {
+                    jsonInput = (JsonInput) joinPoint.getArgs()[0];
+                    applicationName = jsonInput.getApplicationName();
+                } else {
+                    // The first parameter must be always be the applicationName
+                    applicationName = (String) joinPoint.getArgs()[0];
+                }
                 Application application = applicationService.findByNameAndUser(user, applicationName);
                 if (application == null) {
                     throw new IllegalArgumentException();
