@@ -79,7 +79,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
-@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:beforeAliasTest.sql")
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:sql/beforeAliasTest.sql")
 public class AliasControllerTestIT {
 
     protected String release = "tomcat-8";
@@ -314,20 +314,7 @@ public class AliasControllerTestIT {
     }
 
     @Test(timeout = 60000)
-    public void test40_thenDeleteFails() throws Exception {
-        logger.info("*********************************************************");
-        logger.info("Delete an alias onto an unexisting application");
-        logger.info("*********************************************************");
-        // delete the alias
-        ResultActions resultats = this.mockMvc
-            .perform(
-                delete("/application/" + "XXX" + "/alias/" + alias).session(session)
-                    .contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats.andExpect(status().is5xxServerError());
-    }
-
-    @Test(timeout = 60000)
-    public void test41_thenDeleteFails() throws Exception {
+    public void test40_deleteFails() throws Exception {
         logger.info("*********************************************************");
         logger.info("Delete an unexisting alias onto an real application");
         logger.info("*********************************************************");
@@ -337,6 +324,26 @@ public class AliasControllerTestIT {
                 delete("/application/" + applicationName1 + "/alias/xxx").session(session)
                     .contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
+    }
+
+    @Test(timeout = 60000)
+    public void test90_cleanEnv() throws Exception {
+        logger.info("*********************************************************");
+        logger.info("Delete an unexisting alias onto an real application");
+        logger.info("*********************************************************");
+
+        ResultActions resultats =
+            this.mockMvc.perform(
+                delete("/application/" + applicationName1).
+                    session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+        resultats =
+            this.mockMvc.perform(
+                delete("/application/" + applicationName2).
+                    session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
     }
 
 
