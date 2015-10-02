@@ -10,12 +10,16 @@ services:
 
 before_install:
 - docker ps -a
+- curl -L https://github.com/docker/compose/releases/download/1.4.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+- chmod +x docker-compose
+- sudo mv docker-compose /usr/local/bin
 
 script:
 # - cd cu-platform && sh reset-all.sh -y
 # - cd .. && mvn test -P integration -f cu-manager/pom.xml
 - pwd
 - env
+- uname -a
 - mvn test -f cu-manager/pom.xml --quiet
 
 
