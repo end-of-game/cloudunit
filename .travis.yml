@@ -12,4 +12,5 @@ before_install:
 - docker ps -a
 
 script:
-- mvn test -f cu-manager/pom.xml
+- mvn test -P integration -f cu-manager/pom.xml
+
