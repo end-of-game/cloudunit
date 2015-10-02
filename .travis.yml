@@ -18,8 +18,8 @@ script:
 # - cd cu-platform && sh reset-all.sh -y
 # - cd .. && mvn test -P integration -f cu-manager/pom.xml
 - pwd
-- env
 - uname -a
+- docker-compose -v
 - mvn test -f cu-manager/pom.xml --quiet
 
 
