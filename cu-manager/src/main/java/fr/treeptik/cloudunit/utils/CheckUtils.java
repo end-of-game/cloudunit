@@ -17,9 +17,11 @@ package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.exception.CheckException;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.MessageSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by nicolas on 18/08/2014.
@@ -30,6 +32,8 @@ public class CheckUtils {
     private static final List<String> listJvmMemoriesAllowed = Arrays.asList("512", "1024", "2048", "3072");
 
     private static final List<String> listJvmReleaseAllowed = Arrays.asList("jdk1.7.0_55", "jdk1.8.0_25");
+
+    private static MessageSource messageSource = (MessageSource) StaticSpringApplicationContext.getBean("messageSource");
 
     /**
      * Valid classic input
@@ -44,7 +48,8 @@ public class CheckUtils {
             || field.trim().length() == 0
             || "undefined".equals(field)
             || field.length() > 15) {
-            throw new CheckException(message + " : " + field);
+            String messageTranslated = messageSource.getMessage(field, null, Locale.ENGLISH);
+            throw new CheckException(messageTranslated);
         }
     }
 
@@ -62,7 +67,8 @@ public class CheckUtils {
             || "undefined".equals(field)
             || field.length() > 15
             || !StringUtils.isAlphanumeric(field)) {
-            throw new CheckException(message + " : " + field);
+            String messageTranslated = messageSource.getMessage(field, null, Locale.ENGLISH);
+            throw new CheckException(messageTranslated);
         }
     }
 
@@ -89,7 +95,6 @@ public class CheckUtils {
         if (!listJvmReleaseAllowed.contains(jvmRelease)) {
             throw new CheckException("You are not allowed to set this jvm release : [" + jvmRelease + "]");
         }
-
     }
 
 }

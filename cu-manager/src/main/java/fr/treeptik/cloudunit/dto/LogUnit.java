@@ -34,6 +34,17 @@ public class LogUnit {
     private String message;
 
     public LogUnit(final String source, final String date, final String message) {
+
+        if (source == null) {
+            throw new IllegalArgumentException("Source cannot be null");
+        }
+        if (date == null) {
+            throw new IllegalArgumentException("Date cannot be null");
+        }
+        if (message == null) {
+            throw new IllegalArgumentException("Message cannot be null");
+        }
+
         this.message = message;
         if (source != null && source.contains("/")) {
             this.source = source.substring(source.lastIndexOf("/") + 1);
@@ -46,6 +57,7 @@ public class LogUnit {
                 this.date = simpleDateFormatTo.format(tempDate);
             }
         } catch (Exception ignore) {
+            throw new IllegalArgumentException("Date Format is incorrect : [" + date + "]");
         }
     }
 

@@ -28,24 +28,44 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class LogUnitTest {
 
+    @Test(expected = IllegalArgumentException.class)
+    public void parameterNotNullorEmpty() {
+        LogUnit line1 = new LogUnit(null, "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
+    }
+
     @Test
     public void differentsLinesForMessage() {
-        LogUnit line1 = new LogUnit("catalina.out", "", "Hello, I am a log stackstrace!");
-        LogUnit line2 = new LogUnit("catalina.out", "", "Hello, I am an another message!");
+        LogUnit line1 = new LogUnit("catalina.out", "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
+        LogUnit line2 = new LogUnit("catalina.out", "02-10-2015 11:02:25", "Hello, I am an another message!");
         assertFalse(line1.equals(line2));
     }
 
     @Test
     public void differentsLinesForSources() {
-        LogUnit line1 = new LogUnit("catalina.out", "", "Hello, I am a log stackstrace!");
-        LogUnit line2 = new LogUnit("localhost.txt", "", "Hello, I am a log stackstrace!");
+        LogUnit line1 = new LogUnit("catalina.out", "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
+        LogUnit line2 = new LogUnit("localhost.txt", "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
+        assertFalse(line1.equals(line2));
+
+        line1 = new LogUnit("catalina.out", "", "Hello, I am a log stackstrace!");
+        line2 = new LogUnit("", "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
+        assertFalse(line1.equals(line2));
+
+        line1 = new LogUnit("catalina.out", "", "Hello, I am a log stackstrace!");
+        line2 = new LogUnit(null, "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
+        assertFalse(line1.equals(line2));
+    }
+
+    @Test
+    public void differentsLinesForDates() {
+        LogUnit line1 = new LogUnit("catalina.out", "19-09-2014 12:03:24", "Hello, I am a log stackstrace!");
+        LogUnit line2 = new LogUnit("localhost.txt", "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
         assertFalse(line1.equals(line2));
     }
 
     @Test
     public void equalsLines() {
-        LogUnit line1 = new LogUnit("catalina.out", "", "Hello, I am a log stackstrace!");
-        LogUnit line2 = new LogUnit("catalina.out", "", "Hello, I am a log stackstrace!");
+        LogUnit line1 = new LogUnit("catalina.out", "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
+        LogUnit line2 = new LogUnit("catalina.out", "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
         assertTrue(line1.equals(line2));
     }
 

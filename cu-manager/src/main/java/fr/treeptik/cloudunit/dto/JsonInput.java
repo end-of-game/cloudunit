@@ -17,10 +17,8 @@ package fr.treeptik.cloudunit.dto;
 
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.utils.CheckUtils;
-import org.springframework.context.MessageSource;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 /**
  * Created by nicolas on 31/07/2014.
@@ -184,9 +182,17 @@ public class JsonInput
         this.portToOpen = portToOpen;
     }
 
-    public void validateCreateApp(MessageSource messageSource) throws CheckException {
-        CheckUtils.validateInput(applicationName, messageSource.getMessage("check.app.name", null, Locale.ENGLISH));
-        CheckUtils.validateInput(serverName, messageSource.getMessage("check.server.name", null, Locale.ENGLISH));
+    public void validateCreateApp() throws CheckException {
+        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateInput(serverName, "check.server.name");
+    }
+
+    public void validateStartApp() throws CheckException {
+        CheckUtils.validateInput(applicationName, "check.app.name");
+    }
+
+    public void validateStopApp() throws CheckException {
+        CheckUtils.validateInput(applicationName, "check.app.name");
     }
 
 }

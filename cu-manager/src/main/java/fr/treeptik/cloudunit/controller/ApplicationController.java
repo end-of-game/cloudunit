@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -110,15 +109,11 @@ public class ApplicationController
      */
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST)
-    public JsonResponse createApplication(@RequestBody JsonInput input, BindingResult result)
+    public JsonResponse createApplication(@RequestBody JsonInput input)
         throws ServiceException, CheckException, InterruptedException {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(input.toString());
-        }
-
-        // valide the input
-        input.validateCreateApp(messageSource);
+        // validate the input
+        input.validateCreateApp();
 
         // We must be sure there is no running action before starting new one
         User user = authentificationUtils.getAuthentificatedUser();
@@ -138,14 +133,14 @@ public class ApplicationController
      * @throws CheckException
      * @throws InterruptedException
      */
+    @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/start", method = RequestMethod.POST)
     public JsonResponse startApplication(@RequestBody JsonInput input)
         throws ServiceException, CheckException, InterruptedException {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(input.toString());
-        }
+        // validate the input
+        input.validateStartApp();
 
         String applicationName = input.getApplicationName();
         User user = authentificationUtils.getAuthentificatedUser();
