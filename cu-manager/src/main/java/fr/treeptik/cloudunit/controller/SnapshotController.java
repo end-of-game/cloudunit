@@ -96,8 +96,6 @@ public class SnapshotController {
                 previousStatus);
             applicationService.setStatus(application, previousStatus);
 
-        } catch (ServiceException | CheckException e) {
-            throw new ServiceException(e.getLocalizedMessage());
         } finally {
             authentificationUtils.allowUser(user);
         }

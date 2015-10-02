@@ -172,20 +172,31 @@ public abstract class AbstractSnapshotControllerTestIT
         resultats = resultats.andExpect( status().isOk() );
 
     }
-    
+
     @Test( timeout = 120000 )
     public void test020_listAllTags()
         throws Exception
     {
         logger.info( "Create an application then snapshot it" );
 
-        ResultActions resultats =
-            this.mockMvc.perform( get( "/snapshot/list" ).session( session )).andDo( print() );
-        resultats = resultats.andExpect( status().isOk() ).andExpect( jsonPath( "$[0].tag").value( tagName.toLowerCase() ) );
+        ResultActions resultats = this.mockMvc.perform( get( "/snapshot/list" ).session( session ) ).andDo( print() );
+        resultats =
+            resultats.andExpect( status().isOk() ).andExpect( jsonPath( "$[0].tag" ).value( tagName.toLowerCase() ) );
 
     }
 
-   // @Test( timeout = 120000 )
+    @Test( timeout = 120000 )
+    public void test030_deleteASnapshot()
+        throws Exception
+    {
+        logger.info( "Create an application then snapshot it" );
+
+        ResultActions resultats = this.mockMvc.perform( delete( "/snapshot" ).session( session ) ).andDo( print() );
+        resultats = resultats.andExpect( status().isOk() );
+
+    }
+
+    // @Test( timeout = 120000 )
     public void test030_CloneFromASimpleApplicationSnapshot()
         throws Exception
     {
