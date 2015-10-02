@@ -61,6 +61,7 @@ public class SnapshotController {
     @RequestMapping(method = RequestMethod.POST)
     public JsonResponse create(@RequestBody JsonInput input)
         throws ServiceException, CheckException {
+        System.out.println("ok");
 
         CheckUtils.validateSyntaxInput(input.getTag(), this.messageSource
             .getMessage("check.snapshot.name", null, Locale.ENGLISH));

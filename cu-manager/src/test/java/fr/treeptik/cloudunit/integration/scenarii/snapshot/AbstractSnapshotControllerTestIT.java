@@ -1,29 +1,33 @@
-package fr.treeptik.cloudunit.integration.scenarii.deployments;
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
 
+package fr.treeptik.cloudunit.integration.scenarii.snapshot;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.Random;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -35,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,7 +52,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -58,17 +60,18 @@ import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 
+/**
+ * Created by nicolas on 08/09/15.
+ */
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
 @ContextConfiguration( classes = { CloudUnitApplicationContext.class, MockServletContext.class } )
 @FixMethodOrder( MethodSorters.NAME_ASCENDING )
 @ActiveProfiles( "integration" )
-public abstract class AbstractDeploymentControllerTestIT
-
+public abstract class AbstractSnapshotControllerTestIT
 {
-    protected String release;
 
-    private final Logger logger = LoggerFactory.getLogger( AbstractDeploymentControllerTestIT.class );
+    private final Logger logger = LoggerFactory.getLogger( AbstractSnapshotControllerTestIT.class );
 
     @Autowired
     private WebApplicationContext context;
@@ -86,9 +89,13 @@ public abstract class AbstractDeploymentControllerTestIT
 
     private MockHttpSession session;
 
-    private static boolean isAppCreated = false;
-
     private static String applicationName;
+
+    private final static String tagName = "myTag";
+
+    protected String release;
+
+    private static boolean isAppCreated = false;
 
     @BeforeClass
     public static void initEnv()
@@ -139,58 +146,71 @@ public abstract class AbstractDeploymentControllerTestIT
         }
     }
 
-    @Test( timeout = 60000 )
-    public void test10_DeploySimpleApplicationTest()
+    @After
+    public void teardown()
+    {
+        logger.info( "teardown" );
+
+        SecurityContextHolder.clearContext();
+        session.invalidate();
+    }
+
+    @Test( timeout = 240000 )
+    public void test010_CreateSimpleApplicationSnapshot()
         throws Exception
     {
-        logger.info( "Deploy an helloworld application" );
+        logger.info( "Create an application then snapshot it" );
+
+        final String jsonString =
+            "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + tagName
+                + "\", \"description\":\"This is a test snapshot\"}";
+
+        logger.info( jsonString );
+
         ResultActions resultats =
-            mockMvc.perform( MockMvcRequestBuilders.fileUpload( "/application/" + applicationName + "/deploy" ).file( downloadAndPrepareFileToDeploy( "https://github.com/Treeptik/CloudUnit/releases/download/0.9/helloworld.war" ) ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
-        resultats.andExpect( status().is2xxSuccessful() );
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
-        Assert.assertTrue( getUrlContentPage( urlToCall ).contains( "CloudUnit PaaS" ) );
-    }
+            this.mockMvc.perform( post( "/snapshot" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) ).andDo( print() );
+        resultats = resultats.andExpect( status().isOk() );
 
-    private String getUrlContentPage( String url )
-        throws ParseException, IOException
+    }
+    
+    @Test( timeout = 120000 )
+    public void test020_listAllTags()
+        throws Exception
     {
-        HttpGet request = new HttpGet( url );
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpResponse response = httpClient.execute( request );
-        HttpEntity entity = response.getEntity();
+        logger.info( "Create an application then snapshot it" );
 
-        return EntityUtils.toString( entity );
+        ResultActions resultats =
+            this.mockMvc.perform( get( "/snapshot/list" ).session( session )).andDo( print() );
+        resultats = resultats.andExpect( status().isOk() ).andExpect( jsonPath( "$[0].tag").value( tagName.toLowerCase() ) );
+
     }
 
-    private MockMultipartFile downloadAndPrepareFileToDeploy( String path )
-        throws IOException
+   // @Test( timeout = 120000 )
+    public void test030_CloneFromASimpleApplicationSnapshot()
+        throws Exception
     {
-        URL url;
-        OutputStream outputStream = null;
-        File file = new File( "helloworld.war" );
-        try
-        {
-            url = new URL( path );
-            InputStream input = url.openStream();
+        logger.info( "Create an application then snapshot it" );
 
-            outputStream = new FileOutputStream( file );
-            int read = 0;
-            byte[] bytes = new byte[1024];
+        final String jsonString =
+            "{\"applicationName\":\"" + applicationName
+                + "\", \"tag\":\"myTag\", \"description\":\"This is a test snapshot\"}";
 
-            while ( ( read = input.read( bytes ) ) != -1 )
-            {
-                outputStream.write( bytes, 0, read );
-            }
-        }
-        catch ( IOException e )
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            outputStream.close();
-        }
-        return new MockMultipartFile( "file", file.getName(), "multipart/form-data", new FileInputStream( file ) );
+        logger.info( jsonString );
+
+        ResultActions resultats =
+            this.mockMvc.perform( post( "/snapshot" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) ).andDo( print() );
+        resultats = resultats.andExpect( status().isOk() );
 
     }
+
+    @Test( timeout = 30000 )
+    public void test09_DeleteApplication()
+        throws Exception
+    {
+        logger.info( "Delete application : " + applicationName );
+        ResultActions resultats =
+            this.mockMvc.perform( delete( "/application/" + applicationName ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) );
+        resultats.andExpect( status().isOk() );
+    }
+
 }
