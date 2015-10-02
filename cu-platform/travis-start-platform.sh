@@ -20,7 +20,7 @@ export FROM_RESET=$1
 SKYDNS_CMD="dig unit @172.17.42.1 +short | wc -l"
 
 export CU_SUB_DOMAIN=.$(hostname)
-docker-compose up -d skydns -f travis-docker-compose.xml
+docker-compose -f travis-docker-compose.xml up -d skydns
 
 # Attente du démarrage de skydns
 echo "Skydns test"
@@ -31,11 +31,11 @@ do
 	sleep 1
 done
 
-docker-compose up -d skydock -f travis-docker-compose.xml
-docker-compose up -d testmysqldata -f travis-docker-compose.xml
-docker-compose up -d testmysql -f travis-docker-compose.xml
-docker-compose up -d hipache -f travis-docker-compose.xml
-docker-compose up -d registry -f travis-docker-compose.xml
+docker-compose -f travis-docker-compose.xml up -d skydock
+docker-compose -f travis-docker-compose.xml up -d testmysqldata
+docker-compose -f travis-docker-compose.xml up -d testmysql
+docker-compose -f travis-docker-compose.xml up -d hipache
+docker-compose -f travis-docker-compose.xml up -d registry
 
 # Attente du démarrage de mysql
 echo "Mysql test"
@@ -51,4 +51,4 @@ do
 	sleep 1
 done
 
-docker-compose up -d cadvisor -f travis-docker-compose.xml
+docker-compose -f travis-docker-compose.xml up -d cadvisor
