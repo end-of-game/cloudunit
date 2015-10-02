@@ -39,7 +39,7 @@ testmysqldata:
 
 skydock:
     image: ubergarm/skyservices:no-expire
-    command: /bin/sh -c "sleep 3 ; /go/bin/skydock -environment cloud -s /docker.sock -domain unit -name cuplatform_skydns_1"
+    command: /bin/sh -c "sleep 3 ; /go/bin/skydock -environment cloud -s /docker.sock -domain unit -name travis_skydns_1"
     volumes:
         - /var/run/docker.sock:/docker.sock
         - /etc/localtime:/etc/localtime:ro
