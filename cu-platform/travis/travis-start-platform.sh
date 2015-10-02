@@ -20,7 +20,7 @@ export FROM_RESET=$1
 SKYDNS_CMD="dig unit @172.17.42.1 +short | wc -l"
 
 export CU_SUB_DOMAIN=.$(hostname)
-docker-compose -f travis-docker-compose.xml up -d skydns
+docker-compose up -d skydns
 
 # Attente du démarrage de skydns
 echo "Skydns test"
@@ -31,24 +31,24 @@ do
 	sleep 1
 done
 
-docker-compose -f travis-docker-compose.xml up -d skydock
-docker-compose -f travis-docker-compose.xml up -d testmysqldata
-docker-compose -f travis-docker-compose.xml up -d testmysql
-docker-compose -f travis-docker-compose.xml up -d hipache
-docker-compose -f travis-docker-compose.xml up -d registry
+docker-compose up -d skydock
+docker-compose up -d testmysqldata
+docker-compose up -d testmysql
+docker-compose up -d hipache
+docker-compose up -d registry
 
 # Attente du démarrage de mysql
 echo "Mysql test"
-mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_testmysql_1) -P3307 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'
+mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} travis_testmysql_1) -P3307 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'
 RETURN=1
 
 until [ "$RETURN" -eq "0" ];
 do
   docker ps -a
 	echo -n -e "\nWaiting for mysql\n";
-	mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_testmysql_1) -P3307 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'
+	mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} travis_testmysql_1) -P3307 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'
 	RETURN=$?
 	sleep 1
 done
 
-docker-compose -f travis-docker-compose.xml up -d cadvisor
+docker-compose up -d cadvisor
