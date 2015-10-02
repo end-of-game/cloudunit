@@ -39,14 +39,14 @@ docker-compose up -d registry
 
 # Attente du démarrage de mysql
 echo "Mysql test"
-mysql  -P3307 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'
+mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} travis_testmysql_1) -P3307 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'
 RETURN=1
 
 until [ "$RETURN" -eq "0" ];
 do
   docker ps -a
 	echo -n -e "\nWaiting for mysql\n";
-	mysql  -P3307 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'
+	mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} travis_testmysql_1) -P3307 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'
 	RETURN=$?
 	sleep 1
 done
