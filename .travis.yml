@@ -12,7 +12,8 @@ before_install:
 - docker ps -a
 
 script:
-- sh cu-platform/reset-all.sh -y
-- mvn test -f cu-manager/pom.xml
+- cd cu-platform && sh reset-all.sh -y
+- pwd
+- cd .. && mvn test -f cu-manager/pom.xml
 
 
