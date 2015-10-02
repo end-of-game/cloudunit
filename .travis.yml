@@ -13,7 +13,6 @@ before_install:
 
 script:
 - cd cu-platform && sh reset-all.sh -y
-- pwd
-- cd .. && mvn test -f cu-manager/pom.xml
+- cd .. && mvn test -P integration -f cu-manager/pom.xml
 
 
