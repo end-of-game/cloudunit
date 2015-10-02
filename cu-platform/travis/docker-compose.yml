@@ -1,3 +1,13 @@
+hipache:
+    image: tutum/hipache:0.3.1
+    ports:
+        - "80:80"
+    links:
+        - redis:redis
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
 redis:
     image: redis:3.0.1
     command: redis-server --appendonly yes
@@ -26,6 +36,24 @@ testmysqldata:
         - /var/lib/mysql
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
+
+skydock:
+    image: ubergarm/skyservices:no-expire
+    command: /bin/sh -c "sleep 3 ; /go/bin/skydock -environment cloud -s /docker.sock -domain unit -name cuplatform_skydns_1"
+    volumes:
+        - /var/run/docker.sock:/docker.sock
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+skydns:
+    image: ubergarm/skyservices:no-expire
+    ports:
+        - "172.17.42.1:53:53/udp"
+    command: /go/bin/skydns -http 0.0.0.0:8080 -dns 0.0.0.0:53 -nameserver 8.8.8.8:53 -domain unit
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
 
 registry:
     image: registry:0.9.1

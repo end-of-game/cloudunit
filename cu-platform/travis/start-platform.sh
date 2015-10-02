@@ -13,6 +13,8 @@
 
 #!/bin/bash
 
+sudo service docker restart ; sleep 10
+
 export FROM_RESET=$1
 
 SKYDNS_CMD="dig unit @172.17.42.1 +short | wc -l"
