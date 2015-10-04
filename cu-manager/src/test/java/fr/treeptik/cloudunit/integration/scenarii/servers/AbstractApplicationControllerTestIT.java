@@ -276,7 +276,7 @@ public abstract class AbstractApplicationControllerTestIT
     {
         logger.info( "Delete application : " + applicationName );
         ResultActions resultats =
-            this.mockMvc.perform( delete( "/application/" + applicationName ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) );
+            this.mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect( status().isOk() );
     }
 

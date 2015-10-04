@@ -44,7 +44,7 @@ public class MessageServiceImpl
     public Message create(Message message)
         throws ServiceException {
         try {
-            return messageDAO.saveAndFlush(message);
+            return messageDAO.save(message);
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
@@ -62,7 +62,6 @@ public class MessageServiceImpl
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Message> listByUser(User user, int nbRows)
         throws ServiceException {
         try {
@@ -75,7 +74,6 @@ public class MessageServiceImpl
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Message> listByApp(User user, String applicationName,
                                    int nbMessages)
         throws ServiceException {

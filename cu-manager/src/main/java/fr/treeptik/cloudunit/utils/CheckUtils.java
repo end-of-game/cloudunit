@@ -48,7 +48,7 @@ public class CheckUtils {
             || field.trim().length() == 0
             || "undefined".equals(field)
             || field.length() > 15) {
-            String messageTranslated = messageSource.getMessage(field, null, Locale.ENGLISH);
+            String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated);
         }
     }
@@ -67,7 +67,7 @@ public class CheckUtils {
             || "undefined".equals(field)
             || field.length() > 15
             || !StringUtils.isAlphanumeric(field)) {
-            String messageTranslated = messageSource.getMessage(field, null, Locale.ENGLISH);
+            String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated);
         }
     }
