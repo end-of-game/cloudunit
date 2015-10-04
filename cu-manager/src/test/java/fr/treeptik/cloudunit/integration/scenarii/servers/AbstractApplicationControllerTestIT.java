@@ -48,7 +48,6 @@ import javax.servlet.Filter;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -131,7 +130,7 @@ public abstract class AbstractApplicationControllerTestIT
 
         resultats =
             mockMvc.perform( get( "/application/" + applicationName ).session( session ).contentType( MediaType.APPLICATION_JSON ) );
-        resultats.andDo( print() ).andExpect( jsonPath( "name" ).value( applicationName.toLowerCase() ) );
+        resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
     }
 
     @After
@@ -158,7 +157,7 @@ public abstract class AbstractApplicationControllerTestIT
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString));
-        resultats.andExpect( status().is4xxClientError() ).andDo( print() );
+        resultats.andExpect(status().is4xxClientError());
     }
 
     /**
@@ -174,7 +173,7 @@ public abstract class AbstractApplicationControllerTestIT
         final String jsonString = "{\"applicationName\":\"" + "WRONG-NAME" + "\", \"serverName\":\"" + release + "\"}";
         ResultActions resultats =
             this.mockMvc.perform( post( "/application" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) );
-        resultats.andExpect( status().is4xxClientError() ).andDo( print() );
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test( timeout = 30000 )
@@ -208,7 +207,7 @@ public abstract class AbstractApplicationControllerTestIT
             "{\"applicationName\":\"" + applicationName
                 + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\",\"location\":\"webui\"}";
         ResultActions resultats =
-            this.mockMvc.perform( put( "/server/configuration/jvm" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) ).andDo( print() );
+            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect( status().isOk() );
     }
 
@@ -221,7 +220,7 @@ public abstract class AbstractApplicationControllerTestIT
             "{\"applicationName\":\"" + applicationName
                 + "\",\"jvmMemory\":\"666\",\"jvmOptions\":\"\",\"jvmRelease\":\"\"}";
         ResultActions resultats =
-            this.mockMvc.perform( put( "/server/configuration/jvm" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) ).andDo( print() );
+            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect( status().is4xxClientError() );
     }
 
@@ -234,7 +233,7 @@ public abstract class AbstractApplicationControllerTestIT
             "{\"applicationName\":\"" + applicationName
                 + "\",\"jvmMemory\":\"\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\"}";
         ResultActions resultats =
-            this.mockMvc.perform( put( "/server/configuration/jvm" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) ).andDo( print() );
+            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect( status().is4xxClientError() );
     }
 
@@ -247,12 +246,12 @@ public abstract class AbstractApplicationControllerTestIT
             "{\"applicationName\":\"" + applicationName
                 + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\"jdk1.8.0_25\"}";
         ResultActions resultats =
-            this.mockMvc.perform( put( "/server/configuration/jvm" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) ).andDo( print() );
+            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect( status().isOk() );
 
         resultats =
             mockMvc.perform( get( "/application/" + applicationName ).session( session ).contentType( MediaType.APPLICATION_JSON ) );
-        resultats.andDo( print() ).andExpect( jsonPath( "$.servers[0].jvmMemory" ).value( 512 ) ).andExpect( jsonPath(
+        resultats.andExpect(jsonPath("$.servers[0].jvmMemory").value(512)).andExpect(jsonPath(
                                                                                                                        "$.servers[0].jvmRelease" ).value( "jdk1.8.0_25" ) ).andExpect( jsonPath(
                                                                                                                                                                                                  "$.servers[0].jvmOptions" ).value( "-Dkey1=value1" ) );
     }
@@ -266,7 +265,7 @@ public abstract class AbstractApplicationControllerTestIT
             "{\"applicationName\":\"" + applicationName
                 + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Xms=512m\",\"jvmRelease\":\"jdk1.8.0_25\"}";
         ResultActions resultats =
-            this.mockMvc.perform( put( "/server/configuration/jvm" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) ).andDo( print() );
+            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect( status().is4xxClientError() );
     }
 
