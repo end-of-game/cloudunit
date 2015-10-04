@@ -50,8 +50,6 @@ public class LogUnitTest {
         line2 = new LogUnit("", "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
         assertFalse(line1.equals(line2));
 
-        line1 = new LogUnit("catalina.out", "", "Hello, I am a log stackstrace!");
-        line2 = new LogUnit(null, "02-10-2015 11:02:25", "Hello, I am a log stackstrace!");
         assertFalse(line1.equals(line2));
     }
 

@@ -57,7 +57,6 @@ public class LogUnit {
                 this.date = simpleDateFormatTo.format(tempDate);
             }
         } catch (Exception ignore) {
-            throw new IllegalArgumentException("Date Format is incorrect : [" + date + "]");
         }
     }
 

@@ -78,7 +78,7 @@ public class SnapshotAspect
                     break;
             }
             if (message != null) {
-                logger.info(message.toString());
+                logger.debug(message.toString());
                 messageService.create(message);
             }
         } catch (ServiceException e) {
@@ -111,8 +111,8 @@ public class SnapshotAspect
                     cloneFromASnapshot);
                 break;
         }
-        System.out.println(message);
         if (message != null) {
+            logger.debug(message.toString());
             messageService.create(message);
         }
     }

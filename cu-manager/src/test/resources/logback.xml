@@ -39,12 +39,11 @@
         </layout>
     </appender>
 
-    <logger name="fr.treeptik" level="info"/>
-    <logger name="fr.treeptik.cloudunit.controller" level="debug"/>
-    <logger name="fr.treeptik.cloudunit.service.impl.ApplicationServiceImpl" level="debug"/>
-    <logger name="org.springframework" level="info"/>
-    <logger name="org.springframework.security" level="info"/>
-    <logger name="net.sf.ehcache" level="debug"/>
+    <logger name="fr.treeptik" level="error"/>
+    <logger name="fr.treeptik.cloudunit.controller" level="error"/>
+    <logger name="fr.treeptik.cloudunit.controller.SnapshotController" level="debug"/>
+    <logger name="org.springframework" level="warn"/>
+    <logger name="net.sf.ehcache" level="error"/>
 
     <root level="info">
         <appender-ref ref="console"/>

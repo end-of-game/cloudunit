@@ -63,12 +63,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UserControllerTestIT extends TestCase {
+public class UserControllerTestXX extends TestCase {
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-        .getLogger(UserControllerTestIT.class);
+        .getLogger(UserControllerTestXX.class);
 
     @Autowired
     private WebApplicationContext context;
