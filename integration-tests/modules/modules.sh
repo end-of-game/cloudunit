@@ -11,8 +11,17 @@
 # nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
 # For any questions, contact us : contact@treeptik.fr
 
-#!/usr/bin/env bash
+#!/bin/bash
 
-# remote execution for cleaning env
-ssh 'vagrant@192.168.50.4' "cd cloudunit/cu-platform && ./reset-all.sh -y"
+set -x
+
+# clean the env
+sh ../reset.sh
+
+# run the integration test
+sh ../maven.sh Tomcat8Mysql5ModuleControllerTestIT
+
+
+
+
 
