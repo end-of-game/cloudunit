@@ -19,9 +19,7 @@ set -x
 sh ../reset.sh
 
 # run the integration test
-sh ../maven.sh Tomcat8ApplicationControllerTestIT
-sh ../maven.sh Tomcat7ApplicationControllerTestIT
-sh ../maven.sh Tomcat6ApplicationControllerTestIT
+sh ../maven.sh Tomcat*ApplicationControllerTestIT
 
 
 

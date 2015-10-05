@@ -209,6 +209,8 @@ public class ApplicationManagerImpl
     public void deploy(MultipartFile fileUpload, Application application)
         throws ServiceException, CheckException {
         try {
+            logger.debug(application.toString());
+
             // Deployment processus with verification for format file
             if (FilesUtils.isAuthorizedFileForDeployment(fileUpload.getOriginalFilename())) {
 

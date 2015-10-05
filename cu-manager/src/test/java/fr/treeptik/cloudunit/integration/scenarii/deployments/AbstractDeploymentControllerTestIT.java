@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class AbstractDeploymentControllerTestIT
 
 {
-    private static boolean isAppCreated = false;
+    private boolean isAppCreated = false;
     private static String applicationName;
     private final Logger logger = LoggerFactory.getLogger(AbstractDeploymentControllerTestIT.class);
     protected String release;
@@ -101,7 +101,7 @@ public abstract class AbstractDeploymentControllerTestIT
         }
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 240000)
     public void test10_DeploySimpleApplicationTest()
         throws Exception {
         logger.info("Deploy an helloworld application");
