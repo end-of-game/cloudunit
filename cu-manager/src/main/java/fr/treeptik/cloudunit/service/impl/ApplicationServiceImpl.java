@@ -122,7 +122,7 @@ public class ApplicationServiceImpl
         }
 
         try {
-            if (this.checkAppExist(application.getUser(), application.getName())) {
+            if (checkAppExist(application.getUser(), application.getName())) {
                 throw new CheckException(messageSource.getMessage("app.exists",
                     null, locale));
             }

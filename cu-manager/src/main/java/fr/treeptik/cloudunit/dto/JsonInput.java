@@ -182,6 +182,8 @@ public class JsonInput
         this.portToOpen = portToOpen;
     }
 
+    // VALIDATIONS
+
     public void validateCreateApp() throws CheckException {
         CheckUtils.validateInput(applicationName, "check.app.name");
         CheckUtils.validateInput(serverName, "check.server.name");
@@ -195,4 +197,21 @@ public class JsonInput
         CheckUtils.validateInput(applicationName, "check.app.name");
     }
 
+    public void validateRemoveApp() throws CheckException {
+        CheckUtils.validateInput(applicationName, "check.app.name");
+    }
+
+    public void validateAddModule() throws CheckException {
+        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateInput(imageName, "check.image.name");
+    }
+
+    public void validateRemoveModule() throws CheckException {
+        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateInputNotEmpty(moduleName, "check.module.name");
+    }
+
+    public void validateDetail() throws CheckException {
+        CheckUtils.validateInput(applicationName, "check.app.name");
+    }
 }

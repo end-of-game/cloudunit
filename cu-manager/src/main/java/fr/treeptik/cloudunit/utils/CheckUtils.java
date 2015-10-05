@@ -36,6 +36,18 @@ public class CheckUtils {
     private static MessageSource messageSource = (MessageSource) StaticSpringApplicationContext.getBean("messageSource");
 
     /**
+     * Valid not empty input
+     *
+     * @param field
+     * @param message
+     * @throws CheckException
+     */
+    public static void validateInputNotEmpty(String field, String message)
+        throws CheckException {
+        validateInputSizeMax(field, message, Integer.MAX_VALUE);
+    }
+
+    /**
      * Valid classic input
      *
      * @param field
@@ -44,12 +56,25 @@ public class CheckUtils {
      */
     public static void validateInput(String field, String message)
         throws CheckException {
+        validateInputSizeMax(field, message, 15);
+    }
+
+    /**
+     * Valid a field input with a max size
+     *
+     * @param field
+     * @param message
+     * @param size
+     * @throws CheckException
+     */
+    public static void validateInputSizeMax(String field, String message, int size)
+        throws CheckException {
         if (field == null
             || field.trim().length() == 0
             || "undefined".equals(field)
-            || field.length() > 15) {
+            || field.length() > size) {
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
-            throw new CheckException(messageTranslated);
+            throw new CheckException(messageTranslated + " : " + field);
         }
     }
 

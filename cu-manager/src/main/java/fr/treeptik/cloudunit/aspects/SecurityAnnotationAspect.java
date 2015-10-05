@@ -36,7 +36,6 @@ import javax.inject.Inject;
 /**
  * Annotation needed to verify that an user has a real access to a application for its lifecyle.
  * So we could stop an intrusion if user1 wants to stop an application of user2 for example.
- *
  */
 @Component
 @Aspect

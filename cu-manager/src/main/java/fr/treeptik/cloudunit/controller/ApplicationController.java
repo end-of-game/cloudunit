@@ -203,14 +203,15 @@ public class ApplicationController
     @RequestMapping(value = "/{applicationName}", method = RequestMethod.DELETE)
     public JsonResponse deleteApplication(JsonInput jsonInput)
         throws ServiceException, CheckException {
-        String applicationName = jsonInput.getApplicationName();
-        logger.debug("Want to delete the application : " + applicationName);
 
+        jsonInput.validateRemoveApp();
+
+        String applicationName = jsonInput.getApplicationName();
         User user = this.authentificationUtils.getAuthentificatedUser();
-        Application application = this.applicationService.findByNameAndUser(user, applicationName);
+        Application application = applicationService.findByNameAndUser(user, applicationName);
 
         // We must be sure there is no running action before starting new one
-        this.authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+        authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
         try {
             // Application busy
@@ -227,7 +228,7 @@ public class ApplicationController
             applicationService.setStatus(application, Status.FAIL);
         }
 
-        logger.debug("Application " + applicationName + " is deleted.");
+        logger.info("Application " + applicationName + " is deleted.");
 
         return new HttpOk();
     }
@@ -238,15 +239,16 @@ public class ApplicationController
      * @return
      * @throws ServiceException
      */
+    @CloudUnitSecurable
     @ResponseBody
-    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
-    public Application detail(@PathVariable String name)
+    @RequestMapping(value = "/{applicationName}", method = RequestMethod.GET)
+    public Application detail(JsonInput jsonInput)
         throws ServiceException, CheckException {
 
-        logger.debug("name : " + name);
+        jsonInput.validateDetail();
 
         User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, name);
+        Application application = applicationService.findByNameAndUser(user, jsonInput.getApplicationName());
         return application;
     }
 

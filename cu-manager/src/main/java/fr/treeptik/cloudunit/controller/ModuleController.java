@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonInput;
 import fr.treeptik.cloudunit.dto.JsonResponse;
@@ -27,7 +28,6 @@ import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,7 +47,7 @@ public class ModuleController
 
     private static final long serialVersionUID = 1L;
 
-    Locale locale = LocaleContextHolder.getLocale();
+    Locale locale = Locale.ENGLISH;
 
     private Logger logger = LoggerFactory.getLogger(ModuleController.class);
 
@@ -71,42 +71,44 @@ public class ModuleController
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @RequestMapping(method = RequestMethod.POST)
-    public
     @ResponseBody
-    JsonResponse addModule(@RequestBody JsonInput input)
+    public JsonResponse addModule(@RequestBody JsonInput input)
         throws ServiceException, CheckException {
 
+        // validate the input
+        input.validateAddModule();
+
         String applicationName = input.getApplicationName();
-        logger.info("input.getApplicationName():" + applicationName);
-        logger.info("input.getImageName():" + input.getImageName());
+        String imageName = input.getImageName();
 
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user,
             input.getApplicationName());
 
         // We must be sure there is no running action before starting new one
-        this.authentificationUtils.canStartNewAction(user, application, locale);
+        authentificationUtils.canStartNewAction(user, application, locale);
 
         // check if there is no action currently on the entity
         Status previousStatus = application.getStatus();
 
         try {
-            // Application occupée
+            // Application busy
             applicationService.setStatus(application, Status.PENDING);
 
-            Module module = ModuleFactory.getModule(input.getImageName());
+            Module module = ModuleFactory.getModule(imageName);
 
-            moduleService.checkImageExist(input.getImageName());
+            moduleService.checkImageExist(imageName);
 
-            module.getImage().setName(input.getImageName());
-            module.setName(input.getImageName());
+            module.getImage().setName(imageName);
+            module.setName(imageName);
             module.setApplication(application);
 
             moduleService.initModule(application, module, null);
 
-            logger.info("--initModule " + input.getImageName() + " to "
-                + input.getApplicationName() + " successful--");
+            logger.info("--initModule " + imageName + " to "
+                + applicationName + " successful--");
 
         } catch (Exception e) {
             logger.error(input.toString(), e);
@@ -120,24 +122,23 @@ public class ModuleController
     /**
      * Remove a module to an existing application
      *
-     * @param applicationName
-     * @param moduleName
+     * @param jsonInput
      * @return
      * @throws ServiceException
      * @throws CheckException
      */
+    @CloudUnitSecurable
     @RequestMapping(value = "/{applicationName}/{moduleName}", method = RequestMethod.DELETE)
-    public
     @ResponseBody
-    JsonResponse removeModule(@PathVariable String applicationName,
-                              @PathVariable String moduleName)
+    public JsonResponse removeModule(JsonInput jsonInput)
         throws ServiceException,
         CheckException {
 
-        if (logger.isInfoEnabled()) {
-            logger.info("applicationName:" + applicationName);
-            logger.info("moduleName:" + moduleName);
-        }
+        // validate the input
+        jsonInput.validateRemoveModule();
+
+        String applicationName = jsonInput.getApplicationName();
+        String moduleName = jsonInput.getModuleName();
 
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user,
@@ -168,10 +169,10 @@ public class ModuleController
         return new HttpOk();
     }
 
-    @ResponseBody
     @RequestMapping(value = "/{applicationName}/{moduleName}/initData",
         method = RequestMethod.POST,
         consumes = {"multipart/form-data"})
+    @ResponseBody
     public JsonResponse deploy(@RequestPart("file") MultipartFile fileUpload,
                                @PathVariable final String applicationName,
                                @PathVariable final String moduleName, HttpServletRequest request,
