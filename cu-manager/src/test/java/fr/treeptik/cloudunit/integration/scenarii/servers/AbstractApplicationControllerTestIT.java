@@ -167,7 +167,7 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     @Test(timeout = 30000)
-    public void test02_StopApplicationTest()
+    public void test020_StopApplicationTest()
         throws Exception {
         logger.info("Stop the application : " + applicationName);
         final String jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
@@ -177,7 +177,7 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     @Test(timeout = 30000)
-    public void test03_StartApplicationTest()
+    public void test030_StartApplicationTest()
         throws Exception {
         logger.info("Start the application : " + applicationName);
         final String jsonString = "{\"applicationName\":\"" + applicationName + "\"}";

@@ -185,33 +185,33 @@ public class JsonInput
     // VALIDATIONS
 
     public void validateCreateApp() throws CheckException {
-        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
         CheckUtils.validateInput(serverName, "check.server.name");
     }
 
     public void validateStartApp() throws CheckException {
-        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
     }
 
     public void validateStopApp() throws CheckException {
-        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
     }
 
     public void validateRemoveApp() throws CheckException {
-        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
     }
 
     public void validateAddModule() throws CheckException {
-        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
         CheckUtils.validateInput(imageName, "check.image.name");
     }
 
     public void validateRemoveModule() throws CheckException {
-        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
         CheckUtils.validateInputNotEmpty(moduleName, "check.module.name");
     }
 
     public void validateDetail() throws CheckException {
-        CheckUtils.validateInput(applicationName, "check.app.name");
+        CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
     }
 }
