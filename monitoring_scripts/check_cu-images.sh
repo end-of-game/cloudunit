@@ -8,10 +8,10 @@ do
     docker images | awk '{print $1}' | grep -q "^$image$"
     return=$?
     if [ "$return" -ne "0" ]; then
-        echo "WARNING: the docker image $image has not been built!"
+        echo "WARNING: the docker image $image has not been pulled!"
         echo "$image" > /tmp/image_not_built
         exit 1
     fi
 done < $FILE
 
-echo "OK: All CU images have been correctly built."
+echo "OK: All CU images have been correctly pulled."
