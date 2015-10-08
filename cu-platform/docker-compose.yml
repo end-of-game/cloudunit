@@ -85,6 +85,7 @@ tomcat:
     environment:
         - CU_SUB_DOMAIN
         - CU_KVM
+        - CATALINA_OPTS="-Dspring.profiles.active=production"
 
 cadvisor:
     image: google/cadvisor:0.14.0

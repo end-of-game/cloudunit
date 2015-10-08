@@ -18,7 +18,7 @@ cujavabuild:
     - BUILDER_GID
   volumes:
     - .:/home/builder/app
-  command: mvn clean package -DskipTests -Dspring.profiles.active=production
+  command: mvn clean package -DskipTests
   
 cunodebuild:
   build: images/cu-nodebuild
