@@ -3,20 +3,17 @@ INSERT IGNORE INTO `Role` (`id`, `description`) VALUES
   (2, 'ROLE_USER');
 
 INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `imageType`, `managerName`) VALUES
-  (1, 'mysql-5-5', 'cloudunit/mysql-5-5', '0.1', '', 1, 'module', 'phpmyadmin'),
-  (2, 'tomcat-6', 'cloudunit/tomcat-appconf6', '0.1', '', 1, 'server', ''),
-  (3, 'tomcat-7', 'cloudunit/tomcat-appconf7', '0.1', '', 1, 'server', ''),
-  (4, 'tomcat-8', 'cloudunit/tomcat-appconf8', '0.1', '', 1, 'server', ''),
-  (5, 'jboss-7', 'cloudunit/jboss-appconf7', '0.1', '', 1, 'server', ''),
-  (6, 'jboss-8', 'cloudunit/jboss-appconf8', '0.1', '', 1, 'server', ''),
-  (7, 'jboss-5-1-0', 'cloudunit/jboss-appconf5-1-0', '0.1', '', 1, 'server', ''),
-  (8, 'git', 'cloudunit/git', '0.1', '', 1, 'tool', ''),
-  (9, 'mysql-5-5-data-db', 'cloudunit/mysql-5-5-data-db', '0.1', '', 1, 'tool', ''),
-  (10, 'postgresql-9-3-data-db', 'cloudunit/postgresql-9-3-data-db', '0.1', '', 1, 'tool', ''),
-  (11, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '0.1', '', 1, 'module', 'phppgadmin'),
-  (12, 'redis-lastest', 'cloudunit/redis-lastest', '0.1', '', 0, 'module', 'phpredmin'),
-  (13, 'mongo-2-6', 'cloudunit/mongo-2-6', '0.1', '', 1, 'module', 'mms'),
-  (14, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '0.1', '', 1, 'tool', '');
+  (1, 'tomcat-6', 'cloudunit/tomcat-appconf6', '0.1', '', 1, 'server', ''),
+  (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', '0.1', '', 1, 'server', ''),
+  (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '0.1', '', 1, 'server', ''),
+  (4, 'jboss-8', 'cloudunit/jboss-appconf8', '0.1', '', 1, 'server', ''),
+  (5, 'git', 'cloudunit/git', '0.1', '', 1, 'tool', ''),
+  (6, 'mysql-5-5', 'cloudunit/mysql-5-5', '0.1', '', 1, 'module', 'phpmyadmin'),
+  (7, 'mysql-5-5-data-db', 'cloudunit/mysql-5-5-data-db', '0.1', '', 1, 'tool', ''),
+  (8, 'postgresql-9-3-data-db', 'cloudunit/postgresql-9-3-data-db', '0.1', '', 1, 'tool', ''),
+  (9, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '0.1', '', 1, 'module', 'phppgadmin'),
+  (10, 'mongo-2-6', 'cloudunit/mongo-2-6', '0.1', '', 1, 'module', 'mms'),
+  (11, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '0.1', '', 1, 'tool', '');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES

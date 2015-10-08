@@ -50,9 +50,11 @@ public class Application
     @ManyToOne
     private User user;
 
+    @OrderBy("id asc")
     @OneToMany(mappedBy = "application", fetch = FetchType.LAZY)
     private Set<Module> modules;
 
+    @OrderBy("id asc")
     @OneToMany(mappedBy = "application", fetch = FetchType.LAZY)
     private Set<Server> servers;
 
