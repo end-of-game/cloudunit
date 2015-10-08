@@ -12,7 +12,7 @@
 #   CRITICAL - container is stopped
 #   UNKNOWN - does not exist
 
-for CONTAINER in java tomcat-6 tomcat-7 tomcat-8 jboss-7 jboss-8 jboss-5-1-0; do
+for CONTAINER in java tomcat-6 tomcat-7 tomcat-8 jboss-8; do
     exit_code=$(docker inspect --format="{{ .State.ExitCode }}" $CONTAINER 2>/dev/null)
 
     if [ "$exit_code" != "0" ]; then
