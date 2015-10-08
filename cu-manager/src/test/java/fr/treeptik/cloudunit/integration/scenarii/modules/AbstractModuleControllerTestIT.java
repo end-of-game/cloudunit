@@ -92,10 +92,13 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     protected String server;
     protected String module;
+    protected String managerPrefix;
+    protected String managerSuffix;
+    protected String managerPageContent;
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "App" + new Random().nextInt(1000);
+        applicationName = "App" + new Random().nextInt(100000);
     }
 
     @Before
@@ -176,8 +179,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     @Test
-    public void test10_CreateServerThenAddMysqlModule() throws Exception {
-        logger.info("Create an application, add a mysql module and delete it");
+    public void test10_CreateServerThenAddModule() throws Exception {
+        logger.info("Create an application, add a " + module + " module and delete it");
 
         // create an application server
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
@@ -197,9 +200,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String mysqyModule = "johndoe-" + applicationName.toLowerCase() + "-mysql-5-5-1";
+        String genericModule = "johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
         String gitModule = "johndoe-" + applicationName.toLowerCase() + "-git-1";
-        String managerExpected = "http://phpmyadmin1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/phpmyadmin";
+        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -212,14 +215,15 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
             .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(mysqyModule))
+            .andExpect(jsonPath("$.modules[1].name").value(genericModule))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
 
-        Thread.sleep(1000);
-        Assert.assertTrue(getUrlContentPage(managerExpected).contains("phpMyAdmin"));
+        Thread.sleep(5000);
+        String contentPage = getUrlContentPage(managerExpected);
+        Assert.assertTrue(contentPage.contains(managerPageContent));
 
         // remove a module
-        resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + mysqyModule)
+        resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + genericModule)
             .session(session)
             .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
@@ -240,8 +244,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     @Test
-    public void test20_CreateServerThenAddTwoMysqlModule() throws Exception {
-        logger.info("Create an application, add two mysql modules, stop them then delete all");
+    public void test20_CreateServerThenAddTwoModule() throws Exception {
+        logger.info("Create an application, add two " + module + " modules, stop them then delete all");
 
         // create an application server
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
@@ -261,9 +265,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String mysqyModule1 = "johndoe-" + applicationName.toLowerCase() + "-mysql-5-5-1";
+        String module1 = "johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
         String gitModule = "johndoe-" + applicationName.toLowerCase() + "-git-1";
-        String managerExpected1 = "http://phpmyadmin1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/phpmyadmin";
+        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -276,11 +280,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
             .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(mysqyModule1))
+            .andExpect(jsonPath("$.modules[1].name").value(module1))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
 
-        Thread.sleep(1000);
-        Assert.assertTrue(getUrlContentPage(managerExpected1).contains("phpMyAdmin"));
+        Thread.sleep(5000);
+        String contentPage = getUrlContentPage(managerExpected1);
+        Assert.assertTrue(contentPage.contains(managerPageContent));
 
         // add a second module
         jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
@@ -291,8 +296,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String mysqyModule2 = "johndoe-" + applicationName.toLowerCase() + "-mysql-5-5-2";
-        String managerExpected2 = "http://phpmyadmin2-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/phpmyadmin";
+        String module2 = "johndoe-" + applicationName.toLowerCase() + "-" + module + "-2";
+        String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -305,16 +310,16 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
             .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(mysqyModule1))
+            .andExpect(jsonPath("$.modules[1].name").value(module1))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1))
 
             .andExpect(jsonPath("$.modules[2].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[2].status").value("START"))
-            .andExpect(jsonPath("$.modules[2].name").value(mysqyModule2))
+            .andExpect(jsonPath("$.modules[2].name").value(module2))
             .andExpect(jsonPath("$.modules[2].managerLocation").value(managerExpected2));
 
-        // remove the first module mysql
-        resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + mysqyModule1)
+        // remove the first module 
+        resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + module1)
             .session(session)
             .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
@@ -329,7 +334,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .andExpect(jsonPath("$.modules[0].status").value("START"))
             .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(mysqyModule2))
+            .andExpect(jsonPath("$.modules[1].name").value(module2))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected2))
             .andExpect(jsonPath("$.modules[2]").doesNotExist());
 

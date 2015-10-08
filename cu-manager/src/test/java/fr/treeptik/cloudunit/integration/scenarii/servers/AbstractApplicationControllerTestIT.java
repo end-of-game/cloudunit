@@ -206,7 +206,7 @@ public abstract class AbstractApplicationControllerTestIT {
             "{\"applicationName\":\"" + applicationName
                 + "\",\"jvmMemory\":\"666\",\"jvmOptions\":\"\",\"jvmRelease\":\"\"}";
         ResultActions resultats =
-            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+            mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
     }
 
@@ -218,7 +218,7 @@ public abstract class AbstractApplicationControllerTestIT {
             "{\"applicationName\":\"" + applicationName
                 + "\",\"jvmMemory\":\"\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\"}";
         ResultActions resultats =
-            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+            mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
     }
 
@@ -230,7 +230,7 @@ public abstract class AbstractApplicationControllerTestIT {
             "{\"applicationName\":\"" + applicationName
                 + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\"jdk1.8.0_25\"}";
         ResultActions resultats =
-            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+            mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
         resultats =
