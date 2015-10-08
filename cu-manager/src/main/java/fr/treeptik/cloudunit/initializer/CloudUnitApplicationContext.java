@@ -66,7 +66,7 @@ public class CloudUnitApplicationContext
     // Max file size
     private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
 
-    private final Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
+    private final static Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
 
     /*
     @Override
@@ -95,10 +95,23 @@ public class CloudUnitApplicationContext
         throws Exception {
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new Resource[]
-            {new ClassPathResource("application-production.properties"),
-                new FileSystemResource(new File(System.getProperty("user.home")
-                    + "/.cloudunit/configuration.properties"))};
+        File customFile = new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties");
+        Resource[] resources = null;
+        if (customFile.exists()) {
+            resources =
+                new Resource[]
+                    {
+                        new ClassPathResource("application-production.properties"),
+                        new FileSystemResource(new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties"))
+                    };
+        } else {
+            logger.error(customFile.getAbsolutePath() + " is missing. It could generate configuration error");
+            resources =
+                new Resource[]
+                    {
+                        new ClassPathResource("application-production.properties"),
+                    };
+        }
         pspc.setLocations(resources);
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
