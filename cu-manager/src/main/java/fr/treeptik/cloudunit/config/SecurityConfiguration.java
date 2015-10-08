@@ -121,7 +121,7 @@ public class SecurityConfiguration
         http.logout()
             .logoutUrl("/user/logout")
             .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-            .deleteCookies("JSESSIONID").invalidateHttpSession(true).permitAll();
+            .deleteCookies("JSESSIONID", "XSRF-TOKEN").invalidateHttpSession(true).permitAll();
 
         // CSRF protection
         activateProtectionCRSF(http);
@@ -156,7 +156,7 @@ public class SecurityConfiguration
      * @throws Exception
      */
 
-    @Profile("{production, vagrant}")
+    @Profile({"production", "vagrant"})
     private void activateProtectionCRSF(HttpSecurity http)
         throws Exception {
         // CSRF protection
