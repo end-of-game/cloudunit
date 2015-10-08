@@ -46,7 +46,7 @@ import java.util.Properties;
 @Configuration
 @EnableJpaRepositories("fr.treeptik.cloudunit.dao")
 @EnableTransactionManagement
-@Profile({"vagrant", "integration", "production"})
+@Profile("{vagrant, integration, production}")
 public class DatabaseConfiguration {
 
     private Logger logger = LoggerFactory

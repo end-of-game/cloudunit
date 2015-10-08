@@ -19,7 +19,7 @@ set -x
 sh ../reset.sh
 
 # run the integration test
-sh ../maven.sh Tomcat8Mysql5ModuleControllerTestIT
+sh ../maven.sh *ModuleControllerTestIT
 
 
 
