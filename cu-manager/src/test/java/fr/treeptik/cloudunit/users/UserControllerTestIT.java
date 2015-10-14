@@ -35,6 +35,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -52,23 +53,17 @@ import java.util.Random;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Created by nicolas on 08/09/15.
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {
-        CloudUnitApplicationContext.class,
-        MockServletContext.class
-})
-
+@ContextConfiguration(classes = {CloudUnitApplicationContext.class, MockServletContext.class})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UserControllerTest extends TestCase {
+@ActiveProfiles("integration")
+public class UserControllerTestIT {
 
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-        .getLogger(UserControllerTest.class);
+        .getLogger(UserControllerTestIT.class);
 
     @Autowired
     private WebApplicationContext context;
