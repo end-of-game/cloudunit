@@ -1,4 +1,4 @@
-# LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+# LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
 # but CloudUnit is licensed too under a standard commercial license.
 # Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
 # If you are not sure whether the GPL is right for you,
