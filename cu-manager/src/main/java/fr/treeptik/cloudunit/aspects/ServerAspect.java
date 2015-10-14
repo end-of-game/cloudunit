@@ -13,7 +13,6 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-
 package fr.treeptik.cloudunit.aspects;
 
 import fr.treeptik.cloudunit.exception.MonitorException;
