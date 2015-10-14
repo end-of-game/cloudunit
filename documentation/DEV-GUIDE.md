@@ -60,6 +60,7 @@ For more information in this environment, please read this [article](http://pass
 sudo apt-get install npm
 sudo npm install -g n
 ```
+Mac Users are invited to follow the instructions given by the [npm website](https://nodejs.org)
 
 ### Installation SaSS / Compass
 ```
