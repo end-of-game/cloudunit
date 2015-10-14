@@ -54,11 +54,27 @@ $ sudo launchctl start homebrew.mxcl.dnsmasq
 ```
 For more information in this environment, please read this [article](http://passingcuriosity.com/2013/dnsmasq-dev-osx/)
 
-### Grunt + Bower
+### Installation NPM
 
 ```
 sudo apt-get install npm
 sudo npm install -g n
 ```
+
+### Installation SaSS / Compass
+```
+sudo apt-get install ruby-full
+sudo gem install sass compass
+```
+
+### Installation Grunt
+```
+sudo npm install -g grunt grunt-cli
+```
+
+### Installation local node modules
+```
+```
+
 
 
