@@ -82,9 +82,15 @@ bower install
 
 ## Grunt commands
 
-* To build the projet : `grunt build`
+To run the UI for development (http://0.0.0.0:9000)
 * To run the projet : `grunt serve`
+
+Else
+* To build the projet : `grunt build`
 * To run the E2E tests : `grunt test --suite <suite_name>`
+
+## Maven commands
+
 
 
 
