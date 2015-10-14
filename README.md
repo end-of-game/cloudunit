@@ -61,7 +61,8 @@ or similar confusing terms appear in their names without prior written permissio
 # Contact
 
 For any questions, contact us : contact@treeptik.fr
-Or ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
+
+Else ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
 
 Copyright 2015 Treeptik
 
