@@ -32,8 +32,8 @@ There are many installation guides
 ## Usage examples
 
 There are many user guides
-* [Spring petclinic](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/SPRINGPETCLINIC.md)
-* [RollerBlog](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/ROLLERBLOG.md)
+* [Spring petclinic](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/SPRINGPETCLINIC.md)
+* [RollerBlog](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/ROLLERBLOG.md)
 
 # Licensing
 
