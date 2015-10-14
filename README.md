@@ -45,6 +45,12 @@ If you are not sure whether the AGPL is right for you,
 you can always test our software under the AGPL and inspect the source code before you contact us
 about purchasing a commercial license.
 
+**Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.**
+  
 # Legal terms
 
 `CloudUnit` is a registered trademark of Treeptik and can't be used to endorse
