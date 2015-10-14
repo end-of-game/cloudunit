@@ -80,7 +80,9 @@ npm install
 bower install
 ```
 
-## Grunt commands
+## Commands
+
+### Grunt 
 
 To run the UI for development (http://0.0.0.0:9000)
 * To run the projet : `grunt serve`
@@ -89,7 +91,13 @@ Else
 * To build the projet : `grunt build`
 * To run the E2E tests : `grunt test --suite <suite_name>`
 
-## Maven commands
+## Maven 
+
+To run the project, the easiest way is to use maven
+```
+mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+```
+
 
 
 
