@@ -8,14 +8,14 @@ CloudUnit takes care of the plumbing.
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
-It is available under the terms of either the GNU Public Licence 3.0
+It is available under the terms of either the Affero GNU Public Licence 3.0
 
 You can find more informations there :
 * [English website](http://www.cloudunit.fr/en)
 * [French website](http://www.cloudunit.fr)
 
 You can test the common platform online here (reseted all night)
-* https://cu-tests.cloudunit.io [Signin](http://cloudunit.fr/en/index.html)
+* https://cu-tests.cloudunit.io :: [Please Signin here](http://cloudunit.fr/en/index.html)
 
 ## Getting started
 
