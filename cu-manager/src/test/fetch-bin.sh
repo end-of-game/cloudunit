@@ -13,7 +13,7 @@
 
 #!/bin/bash
 
-BIN_REPO=https://github.com/Treeptik/cloudunit/releases/download/0.9
+BIN_REPO=https://github.com/Treeptik/cloudunit/releases/download/1.0
 BIN_LIST=bin-list
 
 while read FILE; do

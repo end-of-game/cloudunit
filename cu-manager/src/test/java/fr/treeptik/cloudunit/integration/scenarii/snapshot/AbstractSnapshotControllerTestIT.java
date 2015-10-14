@@ -189,7 +189,7 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats =
             mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
-                "https://github.com/Treeptik/CloudUnit/releases/download/0.9/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
+                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);
@@ -338,7 +338,7 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats =
             mockMvc.perform(fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
-                "https://github.com/Treeptik/CloudUnit/releases/download/0.9/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
+                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);
@@ -571,7 +571,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats =
             mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy(appName
                     + ".war",
-                "https://github.com/Treeptik/CloudUnit/releases/download/0.9/"
+                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/"
                     + appName + ".war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         // test the application content page
         resultats.andExpect(status().is2xxSuccessful());
@@ -692,7 +692,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats =
             mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy(appName
                     + ".war",
-                "https://github.com/Treeptik/CloudUnit/releases/download/0.9/"
+                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/"
                     + appName
                     + ".war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         // test the application content page

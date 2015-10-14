@@ -124,7 +124,7 @@ public abstract class AbstractDeploymentControllerTestIT
         logger.info( "Deploy an helloworld application" );
         ResultActions resultats =
             mockMvc.perform( MockMvcRequestBuilders.fileUpload( "/application/" + applicationName + "/deploy" ).file( downloadAndPrepareFileToDeploy( "helloworld.war",
-                                                                                                                                                      "https://github.com/Treeptik/CloudUnit/releases/download/0.9/helloworld.war" ) ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
+                                                                                                                                                      "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war" ) ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
         resultats.andExpect( status().is2xxSuccessful() );
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         Assert.assertTrue( getUrlContentPage( urlToCall ).contains( "CloudUnit PaaS" ) );
@@ -164,7 +164,7 @@ public abstract class AbstractDeploymentControllerTestIT
         logger.info( "Deploy an " + module + " based application" );
         resultats =
             mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy")
-                .file(downloadAndPrepareFileToDeploy(appName + ".war", "https://github.com/Treeptik/CloudUnit/releases/download/0.9/" + appName + ".war"))
+                .file(downloadAndPrepareFileToDeploy(appName + ".war", "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + appName + ".war"))
                 .session(session).contentType(MediaType.MULTIPART_FORM_DATA))
                 .andDo(print());
         // test the application content page
