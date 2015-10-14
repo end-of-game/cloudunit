@@ -10,7 +10,7 @@ else
 
 	echo -n -e "\nExécution de cloudunitmonitor.\n"
 	if [ ! -f /home/admincu/cloudunit/monitoring_scripts/cloudunitmonitor.jar ]; then
-		wget https://github.com/Treeptik/cloudunit/releases/download/0.9/cloudunitmonitor.jar -O /home/admincu/cloudunit/monitoring_scripts/cloudunitmonitor.jar
+		wget https://github.com/Treeptik/cloudunit/releases/download/1.0/cloudunitmonitor.jar -O /home/admincu/cloudunit/monitoring_scripts/cloudunitmonitor.jar
 	fi
 	java -Xms128m -Xmx128m -jar /home/admincu/cloudunit/monitoring_scripts/cloudunitmonitor.jar $(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) $(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_redis_1) > /home/admincu/cloudunit/monitoring_scripts/cloudunitmonitor.log
 
