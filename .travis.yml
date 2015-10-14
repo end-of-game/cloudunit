@@ -20,7 +20,6 @@ script:
 - pwd
 - uname -a
 - docker-compose -v
-- cd cu-platform/travis && sh start-platform.sh
-# - mvn test -f cu-manager/pom.xml --quiet
+- mvn test -f cu-manager/pom.xml --quiet
 
 
