@@ -1,9 +1,9 @@
 # SPRING PETCLINIC
 
 ## Clone the opensource project from SpringSource
-
+```
 git clone https://github.com/SpringSource/spring-petclinic.git
-
+```
 ## Database access
 
 Edit the following files:
@@ -17,7 +17,7 @@ Edit the following files:
 </dependency>
 ```
 * Comment the lines about HSQL
-* Uncomment the lines into *src/main/resources/spring/data-access.properties* 
+* Uncomment the lines into **src/main/resources/spring/data-access.properties* *
 ```
 jpa.showSql=true
  
