@@ -23,7 +23,7 @@ $ sudo apt-get install dnsmasq
 ```
 Then edit the file `/etc/dnsmasq.conf` and add the line:
 ```
-address=/.cloudunit.dev/192.168.50.4
+address=/.demo.cloudunit.io/192.168.50.4
 ```
 Finally, restart dnsmasq:
 ```
@@ -32,7 +32,7 @@ $ sudo service dnsmasq restart
 
 ### Local DNS (MacOSX)
 
-You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with .cloudunit.dev shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
+You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with .demo.cloudunit.io shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
 ```
 # Update your homebrew installation
 brew up
@@ -41,7 +41,7 @@ brew install dnsmasq
 ```
 Then edit the file `/usr/local/etc/dnsmasq.conf` and add the line:
 ```
-address=/.cloudunit.dev/192.168.50.4
+address=/.demo.cloudunit.io/192.168.50.4
 ```
 Finally, start dnsmasq:
 ```
