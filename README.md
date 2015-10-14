@@ -24,6 +24,11 @@ There are many installation guides
 * [Development guide](https://github.com/Treeptik/cloudunit/blob/master/documentation/DEV-GUIDE.md)
 * [Server installation guide](https://github.com/Treeptik/cloudunit/blob/master/documentation/SERVER-GUIDE.md)
 
+## Go further
+
+* [CloudUnit CLI guide](https://github.com/Treeptik/CloudUnit-CLI/blob/master/README.md)
+* [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit-maven-plugin/blob/master/README.md)
+
 ## Usage examples
 
 There are many user guides
