@@ -15,7 +15,7 @@ You can find more informations there :
 * [French website](http://www.cloudunit.fr)
 
 You can test the common platform online here (reseted all night)
-* https://cu-tests.cloudunit.io (johndoe / abc2015)
+* https://cu-tests.cloudunit.io [Signin](http://cloudunit.fr/en/index.html)
 
 ## Getting started
 
