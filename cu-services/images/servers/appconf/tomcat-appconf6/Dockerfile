@@ -2,7 +2,7 @@
 FROM cloudunit/base-12.04
 
 # AJOUT DE LA VERSION DE TOMCAT
-RUN wget https://github.com/Treeptik/cloudunit/releases/download/0.9/tomcat-appconf6.tar.gz -O /tmp/tomcat-appconf6.tar.gz \
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/tomcat-appconf6.tar.gz -O /tmp/tomcat-appconf6.tar.gz \
 	&& tar -xvf /tmp/tomcat-appconf6.tar.gz -C /cloudunit && rm /tmp/tomcat-appconf6.tar.gz
 
 # ajout du dossier lib-ext

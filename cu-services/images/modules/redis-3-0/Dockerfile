@@ -8,7 +8,7 @@ RUN \
   apt-get install -yq apache2 build-essential nodejs
 
 # Installation de redis
-RUN wget https://github.com/Treeptik/cloudunit/releases/download/0.9/redis-3.0.tar.gz -O /tmp/redis-3.0.tar.gz
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/redis-3.0.tar.gz -O /tmp/redis-3.0.tar.gz
 RUN tar xvzf /tmp/redis-3.0.tar.gz -C /tmp && \
   cd /tmp/redis-stable && \
   make && \

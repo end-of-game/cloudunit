@@ -24,7 +24,7 @@ RUN gpg --keyserver pool.sks-keyservers.net --recv-keys $MONGO_RELEASE_FINGERPRI
 ENV MONGO_VERSION 2.6.9
 
 RUN mkdir -p /cloudunit/database 
-RUN wget https://github.com/Treeptik/cloudunit/releases/download/0.9/mongo.tgz -O /tmp/mongo.tgz
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/mongo.tgz -O /tmp/mongo.tgz
 RUN tar -xvf /tmp/mongo.tgz -C /usr/local --strip-components=1
 
 # CONFIG DE MONGO
@@ -32,7 +32,7 @@ RUN mkdir /mongo && chown -R mongodb:mongodb /mongo
 COPY user.js /mongo/user.js
 
 # INSTALLATION DE MONGO ADMIN UI
-RUN wget https://github.com/Treeptik/cloudunit/releases/download/0.9/mms-v1.7.0-community-linux.tar.gz -O /tmp/mms-v1.7.0-community-linux.tar.gz
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/mms-v1.7.0-community-linux.tar.gz -O /tmp/mms-v1.7.0-community-linux.tar.gz
 RUN tar -xvf /tmp/mms-v1.7.0-community-linux.tar.gz -C /tmp
 RUN tar -xvf /tmp/mms-v1.7.0-community-linux-x86_64.tar.gz
 RUN cd mms-v1.7.0-community-linux-x86_64 && ./install.sh

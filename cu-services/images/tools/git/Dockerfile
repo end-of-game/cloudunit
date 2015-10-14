@@ -6,7 +6,7 @@ RUN apt-get install -y git expect apache2 apache2-utils rsyslog
 RUN sed -i 's|/var/log/auth.log|/var/log/cloudunit/auth.log|' /etc/rsyslog.d/50-default.conf
 
 # INSTALLATION MAVEN 3.0.5
-RUN wget https://github.com/Treeptik/cloudunit/releases/download/0.9/apache-maven-3.0.5-bin.tar.gz -O /tmp/apache-maven-3.0.5-bin.tar.gz \
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/apache-maven-3.0.5-bin.tar.gz -O /tmp/apache-maven-3.0.5-bin.tar.gz \
 	&& tar -xvf /tmp/apache-maven-3.0.5-bin.tar.gz -C /cloudunit/software && rm /tmp/apache-maven-3.0.5-bin.tar.gz
 ENV MAVEN_HOME /cloudunit/software/apache-maven-3.0.5
 ENV PATH /cloudunit/software/apache-maven-3.0.5/bin:$PATH
