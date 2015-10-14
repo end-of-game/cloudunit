@@ -39,7 +39,19 @@ hibernate.dialect=org.hibernate.dialect.MySQLDialect
 # Property that determines which database to use with an AbstractJpaVendorAdapter
 jpa.database=MYSQL
 ```
+It is good to understand how to use environment variables from CloudUnit
+* ${CU_DATABASE_DNS_1}
+* ${CU_DATABASE_NAME}
+* ${CU_DATABASE_USER_1}
+* ${CU_DATABASE_PASSWORD_1}
+These are injected into Server context so you can use them. 
+With Spring, you need to activate a place-holder to gather them.
+
 ## Maven Packaging
 ```
 mvn clean package -DskipTests
 ```
+## Web UI
+
+## Shell
+
