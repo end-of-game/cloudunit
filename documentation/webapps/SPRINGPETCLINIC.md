@@ -44,7 +44,8 @@ It is good to understand how to use environment variables from CloudUnit
 * ${CU_DATABASE_NAME}
 * ${CU_DATABASE_USER_1}
 * ${CU_DATABASE_PASSWORD_1}
-These are injected into Server context so you can use them. 
+
+They are injected into Server context so you can use them. 
 With Spring, you need to activate a place-holder to gather them.
 
 ## Maven Packaging
