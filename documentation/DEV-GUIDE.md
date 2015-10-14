@@ -98,7 +98,27 @@ To run the project, the easiest way is to use maven
 mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
+# Tests
 
+# Integration Tests
+
+You have an complete directory with shell scripts to select scenarii : **integration-tests**
+* aliases
+* deployments
+* jboss
+* modules
+* security
+* snapshot
+* tomcat
+
+or 
+```
+mvn clean test "-Dtest=*IT"
+```
+
+# E2E Tests
+
+Documentation : work in progress
 
 
 
