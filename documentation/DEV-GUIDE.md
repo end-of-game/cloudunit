@@ -116,6 +116,8 @@ or
 mvn clean test "-Dtest=*IT"
 ```
 
+More information [there](https://github.com/Treeptik/CloudUnit/tree/master/integration-tests) about their executions
+
 # E2E Tests
 
 Documentation : work in progress
