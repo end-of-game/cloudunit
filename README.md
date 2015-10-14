@@ -32,7 +32,6 @@ There are many installation guides
 ## Usage examples
 
 There are many user guides
-* [HelloWorld](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/HELLOWORLD.md)
 * [Spring petclinic](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/SPRINGPETCLINIC.md)
 * [RollerBlog](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/ROLLERBLOG.md)
 
