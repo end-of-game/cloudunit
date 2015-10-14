@@ -1,0 +1,34 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<ul class="pagination" ng-if="1 < pages.length">
+  <li ng-if="boundaryLinks" ng-class="{ disabled : pagination.current == 1 }">
+    <a href="" ng-click="setCurrent(1)">&laquo;</a>
+  </li>
+  <li ng-if="directionLinks" ng-class="{ disabled : pagination.current == 1 }">
+    <a href="" ng-click="setCurrent(pagination.current - 1)">&lsaquo;</a>
+  </li>
+  <li ng-repeat="pageNumber in pages track by $index"
+      ng-class="{ active : pagination.current == pageNumber, disabled : pageNumber == '...' }">
+    <a href="" ng-click="setCurrent(pageNumber)">{{ pageNumber }}</a>
+  </li>
+
+  <li ng-if="directionLinks" ng-class="{ disabled : pagination.current == pagination.last }">
+    <a href="" ng-click="setCurrent(pagination.current + 1)">&rsaquo;</a>
+  </li>
+  <li ng-if="boundaryLinks" ng-class="{ disabled : pagination.current == pagination.last }">
+    <a href="" ng-click="setCurrent(pagination.last)">&raquo;</a>
+  </li>
+</ul>

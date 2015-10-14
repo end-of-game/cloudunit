@@ -1,0 +1,83 @@
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.feed {
+  @include make-lg-column(3, 0);
+
+  .feed-list {
+    list-style: none;
+    padding: 0;
+    border-left: 2px dotted #ccc;
+    .feed-item {
+      position: relative;
+      margin-left: 8px;
+      margin-bottom: 8px;
+      padding: 32px 24px 18px 8px;
+      font-size: 14px;
+      line-height: 14px;
+      max-height: 80px;
+      background-color: transparent;
+    }
+    .feed-event {
+      display: block;
+      color: #607d8b;
+    }
+    .feed-date {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 4px 8px;
+      color: #fff;
+      font-weight: bold;
+    }
+  }
+  .feed-item:before {
+    font-family: "fontawesome";
+    content: "\f10c";
+    display: block;
+    position: absolute;
+    left: -22px;
+    top: -3px;
+    border: 7px solid #F8F8F8;
+    border-radius: 100%;
+    z-index: 99;
+  }
+  .feed-item:first-child {
+    font-weight: bold;
+    background-color: #fff;
+    .feed-event {
+      color: #263238;
+    }
+  }
+  .feed-item.info:before {
+    color: #337ab7;
+  }
+
+  .feed-item.info {
+    .feed-date {
+      background: #337ab7;
+    }
+  }
+  .feed-item.error:before {
+    color: $color-error;
+  }
+
+  .feed-item.error {
+    .feed-date {
+      background: $color-error;
+    }
+  }
+}

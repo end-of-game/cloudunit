@@ -1,0 +1,128 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="tab-pane active vertical-spacing" data-ng-controller="OverviewCtrl as overview">
+  <div id="{{editApp.application.name}}-server" class="clearfix">
+    <div class="card large application {{editApp.application.status | lowercase}}">
+      <div class="content">
+        <div class="status">
+          <p class="headline">
+            <button class="server-btn icon-button secondary power"
+                    data-ng-click="overview.toggleServer(editApp.application)"
+                    ripple=""
+                    tooltip=""
+                    data-title="{{editApp.application.status === 'STOP' ? 'Start' : 'Stop'}}"
+                    data-placement="bottom"
+                    click-once="">
+              <i class="icon-whhg power"></i>
+            </button>
+            <span>{{editApp.application.status | formatAppStatus}}</span>
+          </p>
+          <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+          </div>
+        </div>
+        <div class="features">
+          <div class="readonly">
+            <label for="creation-date">Creation date: </label>
+            <input
+              id="creation-date"
+              type="text"
+              value="{{ editApp.application.date }}"
+              readonly="">
+          </div>
+          <div class="readonly">
+            <label for="server">Server: </label>
+            <input
+              id="server"
+              type="text"
+              value="{{ editApp.application.servers[0].image.name}}"
+              readonly="">
+          </div>
+          <div class="readonly">
+            <label for="git-address">Git address: </label>
+            <input class="large"
+                   id="git-address"
+                   type="text"
+                   value="{{ editApp.application.gitAddress }}"
+                   readonly=""
+                   oneclickselect="">
+          </div>
+
+          <div class="readonly">
+            <label for="jvm-memory">JVM memory: </label>
+            <input
+              id="jvm-memory"
+              type="text"
+              value="{{editApp.application.servers[0].jvmMemory}} Mo"
+              readonly="">
+          </div>
+
+          <div class="readonly">
+            <label for="jvm-options">JVM options: </label>
+            <input class="large code"
+                   id="jvm-options"
+                   type="text"
+                   value="{{editApp.application.servers[0].jvmOptions}}"
+                   readonly="">
+          </div>
+
+          <div class="readonly">
+            <label for="jvm-release">JVM Release: </label>
+            <input class="large code"
+                   id="jvm-release"
+                   type="text"
+                   value="{{editApp.application.servers[0].jvmRelease}}"
+                   readonly="">
+          </div>
+
+          <div class="readonly">
+            <label>Server admin console: </label>
+            <a href="{{editApp.application.servers[0].managerLocation}}" target="_blank" id="server-admin-link">
+              {{editApp.application.servers[0].managerLocation}}
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="subheader">
+    <h3 class="subhead">Installed modules</h3>
+  </div>
+  <div id="{{editApp.application.name}}-modules" class="modules-list clearfix"
+       data-ng-controller="ModulesCtrl as modules">
+    <div class="card small blank" data-ng-hide="editApp.application.modules.length > 1">
+      <div class="content clearfix">
+        <div class="no-data" ng-if="!snapshot.snapshots.length">
+          <h3 class="title">No modules added</h3>
+
+          <p>Add a module from the <a ng-href="#editApplication/{{editApp.application.name}}/addModule">add module</a>
+            panel</p>
+        </div>
+      </div>
+    </div>
+    <div id="{{module.name}}" class="service card medium {{module.status | lowercase}}"
+         data-ng-repeat="module in editApp.application.modules | filter: {image: {imageType: 'module'}} track by $index">
+
+      <ng-include src="overview.getTplUrl(module.image.name)"></ng-include>
+
+    </div>
+  </div>
+</div>

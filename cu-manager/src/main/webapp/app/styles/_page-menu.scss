@@ -1,0 +1,60 @@
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.page-menu {
+  height: 48px;
+}
+
+.tabs {
+  list-style: none;
+  font-size: 16px;
+  padding: 0 36px;
+  li {
+    display: inline-block;
+    a {
+      position: relative;
+      overflow: hidden;
+      color: #607d8b;
+      text-decoration: none;
+      line-height: 14px;
+      padding: 17px 24px;
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: border-bottom 0.3s;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+    }
+  }
+  li.active > a {
+    color: #03a9f4;
+    border-bottom: 2px solid #03a9f4;
+  }
+  li.disabled > a {
+    color: #ccc;
+    border-bottom: 2px solid transparent;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.tab-content {
+  @include clearfix();
+}
+
+.tab-pane.vertical-spacing {
+  margin-top: 8px;
+}

@@ -1,0 +1,41 @@
+/*
+ * LICENCE : CloudUnit is available under the Gnu Public License GPL V3 : https://www.gnu.org/licenses/gpl.txt
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+$color-bg: rgba(0, 0, 0, .03);
+$appbar-bg: rgba(255, 255, 255, 1);
+$page-header-bg: rgba(255, 255, 255, 1);
+$tab-menu-bg: rgba(255, 255, 255, 1);
+$color-bg-muted: rgba(0, 0, 0, .05);
+$color-bg-inverted: #364347;
+
+$color-default: rgba(0, 0, 0, .84);
+$color-muted: rgba(0, 0, 0, .54);
+$color-disabled: rgba(0, 0, 0, .4);
+
+$color-primary: #33CCFF;
+$color-secondary: #37474f;
+$color-link: #33CCFF;
+$color-link-hover: darken($color-link, 0.3);
+
+$color-error: #DD2C00;
+
+$app-bar-height: 64px;
+$navbar-padding-vertical: 16px;
+$navbar-padding-horizontal: 24px;
+$page-header-height: 80px;
+$subheader-padding: 12px;
+$subheader-height: 48px;
+
+$border-radius-base: 2px;

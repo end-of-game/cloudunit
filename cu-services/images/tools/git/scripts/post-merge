@@ -1,0 +1,81 @@
+#!/bin/sh
+
+# Lancer quand le client initialise le projet via un dépot distant
+
+# Ajout des variables d'environnement
+export GIT_WORK_TREE=$CU_GIT_HOME
+export GIT_DIR=$CU_GIT_HOME/.git
+export HOSTNAME=$(hostname)
+export COUNTGITPUSH=$(cat $CU_USER_CONFIG/countGitPush)
+export INCREMENT=1
+
+cd $GIT_WORK_TREEE
+
+git --git-dir=$GIT_DIR --work-tree=$GIT_WORK_TREE checkout -f master
+
+#
+# BUILD MAVEN
+#
+echo Build Maven ....
+mvn clean package -DskipTests=true
+
+if [ $? != 0 ]; then
+
+	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
+	git reset HEAD^ --hard;
+	exit
+fi
+
+#
+# TAG DU PUSH
+#
+export DATE=$(date +%Y.%m.%d_%H.%M)
+export VERSION=date-$DATE-version-$COUNTGITPUSH
+echo tagging push on $VERSION
+echo War is being deployed on Tomcat Server
+git tag -a $VERSION -m"$VERSION"
+
+if [ $? != 0 ]; then
+	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
+	git reset HEAD^ --hard;
+	exit
+fi
+
+echo `expr $COUNTGITPUSH + $INCREMENT` > $CU_USER_CONFIG/countGitPush
+
+#
+# ENVOIE DE REST AU MANAGER 
+#
+#curl -k --connect-timeout 60 --ciphers RC4-SHA -u $CU_USER:$CU_PASSWORD https://$CU_REST_IP:8443/CloudUnitPublic/application/containerId/$HOSTNAME/gitPush
+curl -sL --connect-timeout 60 --data "applicationName=$CU_APP_NAME&login=$CU_USER" http://$CU_REST_IP:8080/nopublic/git/push -o /dev/null
+
+if [ $? != 0 ]; then
+	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
+	git reset HEAD^ --hard;
+	exit
+fi
+
+filePath=$(find $GIT_WORK_TREE -name '*.ear')
+if [ -z "$filePath" ]; then
+    echo "EAR not found search for WAR"
+    filePath=$(find $GIT_WORK_TREE -name '*.war')
+    if [ -z "$filePath" ]; then
+    	echo "War cannot be found - GIT HEAD reset on previous valid PUSH"
+		git reset HEAD^ --hard;
+		exit
+	else
+		isWar=true
+	fi
+fi
+
+fileName=$(basename $filePath)
+
+echo Copy $fileName to Tomcat
+scp -2 $filePath $CU_USER@$CU_SERVERS_IP:$WAR_PATH/$fileName
+ssh -2 -T $CU_USER@$CU_SERVERS_IP 'sh /cloudunit/scripts/deploy.sh '"$fileName"' '"$CU_USER"''
+
+if [ $? != 0 ]; then
+	echo Maven have encountered a problem - GIT HEAD reset on previous valid PUSH
+	git reset HEAD^ --hard;
+	exit
+fi
