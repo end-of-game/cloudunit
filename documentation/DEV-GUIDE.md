@@ -72,9 +72,18 @@ sudo gem install sass compass
 sudo npm install -g grunt grunt-cli
 ```
 
-### Installation local node modules
+### Installation local extensions
 ```
+Go to directory :  cu-manager/scr/main/webapp
+npm install
+bower install
 ```
+
+## Grunt commands
+
+* To build the projet : `grunt build`
+* To run the projet : `grunt serve`
+* To run the E2E tests : `grunt test --suite <suite_name>`
 
 
 
