@@ -103,13 +103,6 @@ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 # Integration Tests
 
 You have an complete directory with shell scripts to select scenarii : **integration-tests**
-* aliases
-* deployments
-* jboss
-* modules
-* security
-* snapshot
-* tomcat
 
 or 
 ```
