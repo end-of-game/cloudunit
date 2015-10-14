@@ -10,7 +10,11 @@ fi
 if [ -z "$(git describe --exact-match --tags 2>/dev/null)" ]; then
 	GIT_TAG=latest
 else
-	GIT_TAG=`git describe --exact-match --tags 2>/dev/null`
+	if [ -z `basename $(git symbolic-ref HEAD) 2>/dev/null` ]; then
+		GIT_TAG=`git describe --exact-match --tags 2>/dev/null`
+	else
+		GIT_TAG=latest
+	fi
 fi
 
 while read line
