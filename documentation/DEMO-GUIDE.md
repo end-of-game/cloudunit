@@ -15,19 +15,40 @@ $ vagrant up
 
 The default box IP address is 192.168.50.4. If you want it to be reachable on the network, that is to say in bridge mode, change the line `config.vm.network "private_network", ip: "192.168.50.4"` for `config.vm.network "public_network"` in the `Vagrantfile`.
 
-## Local DNS
-You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with demo.cloudunit.io shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
+### Local DNS (Linux Debian)
+
+You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with admin.cloudunit.io shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
 ```
 $ sudo apt-get install dnsmasq
 ```
 Then edit the file `/etc/dnsmasq.conf` and add the line:
 ```
-address=/.demo.cloudunit.io/192.168.50.4
+address=/.cloudunit.dev/192.168.50.4
 ```
 Finally, restart dnsmasq:
 ```
 $ sudo service dnsmasq restart
 ```
+
+### Local DNS (MacOSX)
+
+You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with .cloudunit.dev shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
+```
+# Update your homebrew installation
+brew up
+# Install dnsmasq
+brew install dnsmasq
+```
+Then edit the file `/usr/local/etc/dnsmasq.conf` and add the line:
+```
+address=/.cloudunit.dev/192.168.50.4
+```
+Finally, start dnsmasq:
+```
+$ sudo launchctl start homebrew.mxcl.dnsmasq
+```
+For more information in this environment, please read this [article](http://passingcuriosity.com/2013/dnsmasq-dev-osx/)
+
 
 ## Enjoy CloudUnit
 CloudUnit WebUI is available at the box IP. You can login with the credentials johndoe / abc2015.
