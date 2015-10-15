@@ -30,7 +30,7 @@ There are many installation guides
 ## Usage examples
 
 There are many user guides
-* [Spring petclinic](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/SPRINGPETCLINIC.md)
+* [Spring petclinic](https://github.com/Treeptik/CloudUnit/blob/master/documentation/webapps/SPRINGPETCLINIC.md)
 * [RollerBlog (Soon) ](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/ROLLERBLOG.md)
 
 # Licensing
