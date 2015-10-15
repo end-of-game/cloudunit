@@ -13,7 +13,7 @@ It is available under the terms of either the Affero GNU Public Licence 3.0
 You can find more informations there : [CloudUnit Website](http://www.cloudunit.fr/)
 
 You can test the common platform online here (reseted all night)
-* https://cu-tests.cloudunit.io :: [johndoe / abc2015]
+* https://cu-tests.cloudunit.io :: [ johndoe / abc2015 ]
 
 ## Getting started
 
@@ -31,7 +31,7 @@ There are many installation guides
 
 There are many user guides
 * [Spring petclinic](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/SPRINGPETCLINIC.md)
-* [RollerBlog](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/ROLLERBLOG.md)
+* [RollerBlog (Soon) ](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/ROLLERBLOG.md)
 
 # Licensing
 
