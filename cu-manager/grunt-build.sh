@@ -15,4 +15,5 @@
 
 cd $HOME/cloudunit/cu-manager/src/main/webapp
 grunt build
-
+cd $HOME/cloudunit/cu-manager
+mvn clean package
