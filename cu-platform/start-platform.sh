@@ -12,14 +12,16 @@
 # For any questions, contact us : contact@treeptik.fr
 
 #!/bin/bash
+
 #Start containers in the right sequence
 
-export FROM_RESET=$1
+FROM_RESET=$1
 
 LOCK=/tmp/start-platform.lock
 SKYDNS_CMD="dig unit @172.17.42.1 +short | wc -l"
 
 export CU_SUB_DOMAIN=.$(hostname)
+
 
 source /home/admincu/.profile
 if [ -e "$LOCK" ]; then
@@ -73,7 +75,7 @@ else
 		sleep 1
 	done
 
-    if [ "$FROM_RESET" == "true" ]; then
+    if [ "$FROM_RESET" == "reset" ]; then
     echo "cu-monitor is not launched -- reset mode"
     else
 	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
