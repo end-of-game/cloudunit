@@ -18,3 +18,7 @@ hs_err_pid*
 **/.DS_Store
 .vagrant
 /monitoring_scripts/cloudunitmonitor.log
+
+cu-platform/cu-platform.iml
+cu-services/cu-services.iml
+
