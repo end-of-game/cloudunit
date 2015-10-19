@@ -17,7 +17,7 @@
 export FROM_RESET=$1
 
 LOCK=/tmp/start-platform.lock
-SKYDNS_CMD="dig unit @172.17.42.1 +short | wc -l"
+SKYDNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 
 export CU_SUB_DOMAIN=.$(hostname)
 
@@ -37,7 +37,7 @@ else
 		echo -n -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
 	fi
 
-	docker-compose up -d skydns
+	docker-compose up -d dnsdock
 
 	# Attente du démarrage de skydns
 	echo "Skydns test"
@@ -48,7 +48,6 @@ else
 		sleep 1
 	done
 
-	docker-compose up -d skydock
 	docker-compose up -d mysqldata
 	docker-compose up -d mysql
 
