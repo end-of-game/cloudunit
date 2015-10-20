@@ -64,7 +64,6 @@ else
 
 	# Attente du démarrage de mysql
 	echo "Mysql test"
-	mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	
 	RETURN=1
 
 	until [ "$RETURN" -eq "0" ];
