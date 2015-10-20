@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.tools.javac.comp.Check;
 import fr.treeptik.cloudunit.dao.ModuleConfigurationDAO;
 import fr.treeptik.cloudunit.dao.SnapshotDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
@@ -230,7 +231,7 @@ public class SnapshotServiceImpl
     @Override
     @Transactional
     public Snapshot cloneFromASnapshot(String applicationName, String tag)
-        throws ServiceException, InterruptedException {
+            throws ServiceException, InterruptedException, CheckException {
 
         Snapshot snapshot = null;
         // Tests préliminaires de la création d'une application
@@ -251,6 +252,10 @@ public class SnapshotServiceImpl
             if (applicationService.checkAppExist(user, applicationName)) {
                 authentificationUtils.allowUser(user);
                 throw new CheckException("This application already exists");
+            }
+
+            if (!tagExists(tag, user.getLogin())) {
+                throw new CheckException("This tag does not exist yet");
             }
 
             // récupération des images associées
@@ -285,7 +290,7 @@ public class SnapshotServiceImpl
             application.setDeploymentStatus(snapshot.getDeploymentStatus());
             applicationService.saveInDB(application);
 
-        } catch (ServiceException | CheckException | DockerJSONException e) {
+        } catch (ServiceException | DockerJSONException e) {
             StringBuilder msgError = new StringBuilder(1024);
             msgError.append("applicationName=[").append(applicationName).append("]");
             msgError.append(", snapshot=[").append(snapshot).append("]");
