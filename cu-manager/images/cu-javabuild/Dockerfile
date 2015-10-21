@@ -13,11 +13,11 @@
 
 FROM buildpack-deps:jessie-curl
 
-RUN mkdir /cloudunit/java && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jdk-8u25-linux-x64.tar.gz -O /tmp/jdk-8u25-linux-x64.tar.gz \
-        && tar -xvf /tmp/jdk-8u25-linux-x64.tar.gz -C /cloudunit/java && rm /tmp/jdk-* \
+RUN mkdir -p /cloudunit/java && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jdk-8u25-linux-x64.tar.gz -O /tmp/jdk-8u25-linux-x64.tar.gz \
+    && tar -xvf /tmp/jdk-8u25-linux-x64.tar.gz -C /cloudunit/java && rm /tmp/jdk-* \
 	&& wget https://github.com/Treeptik/CloudUnit/releases/download/1.0/apache-maven-3.3.3-bin.tar.gz -O /tmp/apache-maven-3.3.3-bin.tar.gz \
 	&& tar -xvf /tmp/apache-maven-3.3.3-bin.tar.gz -C /usr/share && rm /tmp/apache-* \
-	&& mv /usr/share/apache-maven-3.3.3 /usr/share/maven ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+	&& mv /usr/share/apache-maven-3.3.3 /usr/share/maven && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
 ENV MAVEN_HOME /usr/share/maven
 ENV JAVA_HOME /cloudunit/java/jdk1.8.0_25
