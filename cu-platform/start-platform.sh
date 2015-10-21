@@ -18,7 +18,6 @@ export FROM_RESET=$1
 
 LOCK=/tmp/start-platform.lock
 DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
-DNS_CMD_INSIDE_CONTAINER="docker exec cuplatform_hipache_1 ping -c 1 cuplatform_dnsdock_1.dnsdock.cloud.unit | grep -q '1 received'"
 
 export CU_SUB_DOMAIN=.$(hostname)
 
@@ -64,11 +63,18 @@ else
 	echo -e "\n+++ Dns test inside a container +++\n"
 
     RETURN=1
-	until [ "$RETURN" -eq "1" ];
+    COUNTER=1
+	until [ "$RETURN" -eq "0" ];
 	do	
-        $DNS_CMD_INSIDE_CONTAINER
+        echo Testing $COUNTER time.
+        docker exec cuplatform_hipache_1 ping -c 1 cuplatform_dnsdock_1.dnsdock.cloud.unit | grep -q '1 received'
         RETURN=$?
-		echo -e "\nBad start for dnsdock\n";
+        if [ "$COUNTER" -eq "5" ]; then
+            echo Dnsdock has not started correctly. You should restart Docker.
+            echo I exit in error !!!
+            exit 1
+        fi
+        let COUNTER=COUNTER+1
 		sleep 1
 	done
 
