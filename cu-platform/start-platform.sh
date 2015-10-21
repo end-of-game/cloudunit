@@ -31,12 +31,12 @@ else
 	touch $LOCK
 
 	if [ "$PROFILE" == "dev" ]; then
-		echo -n -e "\nVous utilisez un profile de $PROFILE.\n"
+		echo -e "\nVous utilisez un profile de $PROFILE.\n"
 		sed -i 's/#TO_UNCOMMENT_IF_PROFILE_DEV//' docker-compose.yml
 	elif [ "$PROFILE" == "prod" ]; then
-		echo -n -e "\nVous utilisez un profile de $PROFILE.\n"
+		echo -e "\nVous utilisez un profile de $PROFILE.\n"
 	else
-		echo -n -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
+		echo -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
 	fi
 
 	docker-compose up -d skydns
@@ -46,7 +46,7 @@ else
 
 	until [ $(eval "$SKYDNS_CMD") -eq "1" ];
 	do	
-		echo -n -e "\nWaiting for skydns\n";
+		echo -e "\nWaiting for skydns\n";
 		sleep 1
 	done
 
@@ -68,8 +68,8 @@ else
 
 	until [ "$RETURN" -eq "0" ];
 	do	
-		echo -n -e "\nWaiting for mysql\n";
-		mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	
+		echo -e "\nWaiting for mysql\n";
+		mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	--silent &>/dev/null
 		RETURN=$?
 		sleep 1
 	done
