@@ -55,6 +55,20 @@ CloudUnit WebUI is available at the box IP. You can login with the credentials j
 
 URL entrypoint is [https://demo.cloudunit.io](https://demo.cloudunit.io)
 
+You should get an "Insecure connection" warning. This is expected as we don't provide you with our certificates for the cloudunit.io domain!
+
 ![login](https://github.com/Treeptik/CloudUnit-images/blob/master/CU-login.png)
 
+
+## Reset CloudUnit
+If you want to restart from the beginning, you can reset the platform.
+
+![](https://github.com/Treeptik/CloudUnit-images/blob/master/warning2.png)
+
+**All your data will be lost!**
+
+In the repository where you have downloaded the `Vagrantfile`, run: `vagrant ssh` to ssh into the box. Finally reset everything:
+```
+$ cd cloudunit/cu-platform && ./reset-all.sh -y
+```
 
