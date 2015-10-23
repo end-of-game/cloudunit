@@ -1,0 +1,129 @@
+#!/bin/bash
+
+entry=cloudunit
+usage() {
+	echo "Options:    $entry [-h] [-v]"
+	echo "  -h        Help. Display this message."
+	echo "  -v        Version. Print version."
+	echo "Commands:   $entry [reset] [restart]"
+	echo "  reset     Reset"
+	echo "  restart   Restart"
+	exit
+}
+
+version() {
+	# If we haved executed git checkout o a tag, the tag is returned.
+	# Otherxise, latest is returned.
+	cd /home/admincu/cloudunit
+	if [ -z "$(git describe --exact-match --tags 2>/dev/null)" ]; then
+		GIT_TAG=latest
+		echo "CloudUnit is not currently on a specific version!"
+		echo "Closest version: `git describe --tags | cut -d"-" -f 1`"
+		echo "Distance: `git describe --tags | cut -d"-" -f 2` commits"
+	else
+		if [ -z `git symbolic-ref HEAD 2>/dev/null` ]; then
+			GIT_TAG=`git describe --exact-match --tags`
+			echo "CloudUnit version: `git describe --tags`"
+		else
+			GIT_TAG=latest
+			echo "You are currently on a git branch, not on a git tag!"
+			echo "CloudUnit version: `git describe --tags | cut -d"-" -f 1`"
+			echo "Current branch: `basename $(git symbolic-ref HEAD)`"
+		fi
+	fi
+}
+
+reset_usage() {
+	echo "Options:    $entry reset [-h]"
+	echo "  -h        Help. Display this message."
+	echo "Arguments:  $entry reset [platform] [user] [mysql] [all]"
+	echo "  platform  Reset CloudUnit platform: delete and recreate it."
+	echo "  user      Delete user containers"
+	echo "  mysql     Delete and recreate the platform database containers."
+	echo "  all       Delete every containers and recreate the platform."
+	exit
+}
+
+restart_usage() {
+	echo "Options:    $entry restart [-h]"
+	echo "  -h        Help. Display this message."
+	echo "Arguments:  $entry restart [platform]"
+	echo "  platform  Restart CloudUnit platform: stop and start it."
+	exit
+}
+
+if [ $# == 0 ]; then
+	usage
+	exit 1
+fi
+
+while getopts "hvf:" optchar
+do
+	case "${optchar}" in
+		h)
+			usage
+			;;
+		v)
+			version
+			;;
+		*)
+			usage
+			;;
+	esac
+done
+
+while (( $# > 0 ))
+do
+	arg1="$1"
+	arg2="$2"
+	shift
+
+	case $arg1 in
+		reset)
+			case $arg2 in
+				all)
+					cd /home/admincu/cloudunit/cu-platform && ./reset-all.sh
+					;;
+				platform)
+					cd /home/admincu/cloudunit/cu-platform && ./reset-platform.sh
+					;;
+				user)
+					cd /home/admincu/cloudunit/cu-platform && ./delete-user-cont.sh
+					;;
+				mysql)
+					cd /home/admincu/cloudunit/cu-platform && ./reset-mysql.sh
+					;;
+				-h)
+					reset_usage
+					;;
+				*)
+					echo "Invalid command argument: '$entry reset $arg2'" >&2
+					reset_usage
+					;;
+			esac
+			;;
+		restart)
+			case $arg2 in
+				platform)
+					cd /home/admincu/cloudunit/cu-platform && ./restart-platform.sh
+					;;
+				-h)
+					restart_usage
+					;;
+				*)
+					echo "Invalid command argument: '$entry restart $arg2'" >&2
+					restart_usage
+					;;
+			esac
+			;;
+		-v)
+			;;
+		-h)
+			;;
+		*)
+			echo "Invalid option: '$arg1'" >&2
+			exit 1
+			;;
+	esac
+
+done
