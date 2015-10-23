@@ -12,14 +12,16 @@
 # For any questions, contact us : contact@treeptik.fr
 
 #!/bin/bash
+
 #Start containers in the right sequence
 
-export FROM_RESET=$1
+FROM_RESET=$1
 
 LOCK=/tmp/start-platform.lock
 SKYDNS_CMD="dig unit @172.17.42.1 +short | wc -l"
 
 export CU_SUB_DOMAIN=.$(hostname)
+
 
 source /home/admincu/.profile
 if [ -e "$LOCK" ]; then
@@ -29,12 +31,12 @@ else
 	touch $LOCK
 
 	if [ "$PROFILE" == "dev" ]; then
-		echo -n -e "\nVous utilisez un profile de $PROFILE.\n"
+		echo -e "\nVous utilisez un profile de $PROFILE.\n"
 		sed -i 's/#TO_UNCOMMENT_IF_PROFILE_DEV//' docker-compose.yml
 	elif [ "$PROFILE" == "prod" ]; then
-		echo -n -e "\nVous utilisez un profile de $PROFILE.\n"
+		echo -e "\nVous utilisez un profile de $PROFILE.\n"
 	else
-		echo -n -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
+		echo -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
 	fi
 
 	docker-compose up -d skydns
@@ -44,7 +46,7 @@ else
 
 	until [ $(eval "$SKYDNS_CMD") -eq "1" ];
 	do	
-		echo -n -e "\nWaiting for skydns\n";
+		echo -e "\nWaiting for skydns\n";
 		sleep 1
 	done
 
@@ -62,18 +64,17 @@ else
 
 	# Attente du démarrage de mysql
 	echo "Mysql test"
-	mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	
 	RETURN=1
 
 	until [ "$RETURN" -eq "0" ];
 	do	
-		echo -n -e "\nWaiting for mysql\n";
-		mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	
+		echo -e "\nWaiting for mysql\n";
+		mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	--silent &>/dev/null
 		RETURN=$?
 		sleep 1
 	done
 
-    if [ "$FROM_RESET" == "true" ]; then
+    if [ "$FROM_RESET" == "reset" ]; then
     echo "cu-monitor is not launched -- reset mode"
     else
 	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
