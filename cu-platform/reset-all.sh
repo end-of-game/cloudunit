@@ -14,16 +14,27 @@
 #!/bin/bash
 
 if [ "$1" != "-y" ]; then
-	echo "Voulez-vous vraiment supprimer tous les conteneurs et recréer la plate-fome CU ? [y/n]"
-	read PROD_ASW
-	if [ "$PROD_ASW" != "y" ] && [ "$PROD_ASW" != "n" ]; then
-		echo "Entrer y ou n!"
-		exit 1
-	elif [ "$PROD_ASW" = "n" ]; then
-		exit 1
-	fi
+    echo "Voulez-vous vraiment supprimer tous les conteneurs et recréer la plate-fome CU ? [y/n]"
+    read PROD_ASW
+    if [ "$PROD_ASW" != "y" ] && [ "$PROD_ASW" != "n" ]; then
+        echo "Entrer y ou n!"
+        exit 1
+    elif [ "$PROD_ASW" = "n" ]; then
+        exit 1
+    fi
 fi
-	docker kill $(docker ps -aq)
-	docker rm -vf $(docker ps -aq)
-	cd /home/admincu/cloudunit/cu-platform && sudo rm -rf /registry/* /var/log/cloudunit && ./start-platform.sh true
-	cd /home/admincu/cloudunit/cu-services && ./run-services.sh
+echo -e "\nKilling containers\n"
+docker kill $(docker ps -aq)
+echo -e "\nRemoving containers\n"
+docker rm -vf $(docker ps -aq)
+echo -e "\nChanging directory\n"
+cd /home/admincu/cloudunit/cu-platform
+echo -e "\nCurrent directory: `pwd`\n"
+sudo rm -rf /registry/* /var/log/cloudunit
+echo -e "\nStarting the platform\n"
+/home/admincu/cloudunit/cu-platform/start-platform.sh reset
+echo -e "\nChanging directory\n"
+cd /home/admincu/cloudunit/cu-services
+echo -e "\nCurrent directory: `pwd`\n"
+echo -e "\nRunning services\n"
+/home/admincu/cloudunit/cu-services/run-services.sh
