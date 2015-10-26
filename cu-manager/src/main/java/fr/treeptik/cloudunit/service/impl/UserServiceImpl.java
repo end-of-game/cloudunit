@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import fr.treeptik.cloudunit.config.CustomPasswordEncoder;
 import fr.treeptik.cloudunit.dao.MessageDAO;
 import fr.treeptik.cloudunit.dao.RoleDAO;
 import fr.treeptik.cloudunit.dao.UserDAO;
@@ -47,7 +48,7 @@ import java.util.regex.Pattern;
 @Service
 @Lazy(true)
 public class UserServiceImpl
-    implements UserService {
+        implements UserService {
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -76,37 +77,45 @@ public class UserServiceImpl
     @Override
     @Transactional
     public User create(User user)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         Map<String, Object> mapConfigMail = new HashMap<>();
 
-        logger.info("UserService : Starting creating user "
-            + user.getLastName());
         try {
             // VALIDATION
 
+            if (user.getClearedPassword().length() < 6
+                    & user.getClearedPassword().length() > 16) {
+                throw new CheckException(
+                        "The password must be have between 6 and 16 characters");
+            }
+            //ENCODING THE PASSWORD
+
+            user.setPassword(new CustomPasswordEncoder()
+                    .encode(user.getClearedPassword()));
+
             if (user.getEmail() == null || user.getLogin() == null
-                || user.getPassword() == null) {
+                    || user.getPassword() == null) {
                 throw new CheckException("One of the required is not set");
             }
 
             if (user.getLogin().length() > 20) {
                 throw new CheckException(
-                    "The password must be have between 6 and 16 characters");
+                        "The password must be have between 6 and 16 characters");
             }
 
             if (user.getPassword().length() < 6
-                & user.getPassword().length() > 16) {
+                    & user.getPassword().length() > 16) {
                 throw new CheckException(
-                    "The password must be have between 6 and 16 characters");
+                        "The password must be have between 6 and 16 characters");
             }
 
             if (!Pattern
-                .compile(
-                    "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
-                .matcher(user.getEmail()).matches()) {
+                    .compile(
+                            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
+                    .matcher(user.getEmail()).matches()) {
                 throw new CheckException(
-                    "This email is incorrect. Please verify.");
+                        "This email is incorrect. Please verify.");
             }
 
             if (this.findByLogin(user.getLogin()) != null) {
@@ -114,7 +123,7 @@ public class UserServiceImpl
             }
             if (!this.findByEmail(user.getEmail()).isEmpty()) {
                 throw new CheckException(
-                    "There is already a account registered with this email");
+                        "There is already a account registered with this email");
             }
             Role role = new Role();
             role.setDescription("ROLE_USER");
@@ -134,7 +143,7 @@ public class UserServiceImpl
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
         logger.info("UserService : User " + user.getLastName()
-            + " successfully created.");
+                + " successfully created.");
 
         return user;
     }
@@ -142,7 +151,7 @@ public class UserServiceImpl
     @Override
     @Transactional
     public void activationAccount(User user)
-        throws ServiceException {
+            throws ServiceException {
         try {
             logger.debug("UserService : User " + user.toString());
 
@@ -156,18 +165,18 @@ public class UserServiceImpl
         }
 
         logger.info("UserService : User " + user.getLastName()
-            + " account activated - status = " + user.getStatus());
+                + " account activated - status = " + user.getStatus());
 
     }
 
     @Override
     @Transactional
     public User update(User user)
-        throws ServiceException {
+            throws ServiceException {
 
         logger.debug("update : Methods parameters : " + user.toString());
         logger.info("UserService : Starting updating user "
-            + user.getLastName());
+                + user.getLastName());
         try {
             userDAO.saveAndFlush(user);
         } catch (PersistenceException e) {
@@ -176,7 +185,7 @@ public class UserServiceImpl
         }
 
         logger.info("UserService : User " + user.getLogin()
-            + " successfully updated.");
+                + " successfully updated.");
 
         return user;
     }
@@ -184,13 +193,13 @@ public class UserServiceImpl
     @Override
     @Transactional
     public void remove(User user)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         try {
             logger.debug("remove : Methods parameters : " + user.toString());
             logger.info("Starting removing User " + user.getLastName());
 
             List<Application> applications = applicationService
-                .findAllByUser(user);
+                    .findAllByUser(user);
 
             for (Application application : applications) {
                 applicationService.remove(application, user);
@@ -205,7 +214,7 @@ public class UserServiceImpl
         } catch (PersistenceException e) {
 
             logger.error("UserService Error : failed to remove "
-                + user.getLastName() + " : " + e);
+                    + user.getLastName() + " : " + e);
 
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
@@ -213,7 +222,7 @@ public class UserServiceImpl
 
     @Override
     public User findById(Integer id)
-        throws ServiceException {
+            throws ServiceException {
         try {
             logger.debug("findById : Methods parameters : " + id);
             User user = userDAO.findOne(id);
@@ -228,7 +237,7 @@ public class UserServiceImpl
 
     @Override
     public List<User> findAll()
-        throws ServiceException {
+            throws ServiceException {
         try {
             logger.debug("start findAll");
             List<User> users = userDAO.findAll();
@@ -243,7 +252,7 @@ public class UserServiceImpl
 
     @Override
     public List<User> findByEmail(String email)
-        throws ServiceException {
+            throws ServiceException {
         try {
             logger.debug("Methods parameters : " + email);
             return userDAO.findByEmail(email);
@@ -254,7 +263,7 @@ public class UserServiceImpl
 
     @Override
     public User findByLogin(String login)
-        throws ServiceException {
+            throws ServiceException {
         try {
             logger.debug("Methods parameters : " + login);
             return userDAO.findByLogin(login);
@@ -266,7 +275,7 @@ public class UserServiceImpl
     @Transactional
     @Override
     public void changePassword(User user, String newPassword)
-        throws ServiceException {
+            throws ServiceException {
 
         Map<String, String> configShell = new HashMap<>();
         String userLogin = user.getLogin();
@@ -276,7 +285,7 @@ public class UserServiceImpl
 
         try {
             logger.debug("Methods parameters : " + user + " new password : "
-                + newPassword);
+                    + newPassword);
 
             userDAO.saveAndFlush(user);
         } catch (PersistenceException e) {
@@ -284,7 +293,7 @@ public class UserServiceImpl
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
         logger.info("UserService : User " + user.getLastName()
-            + " password successfully updated.");
+                + " password successfully updated.");
 
         try {
 
@@ -292,11 +301,11 @@ public class UserServiceImpl
                 for (Server server : application.getServers()) {
                     configShell.put("port", server.getSshPort());
                     configShell.put("dockerManagerAddress", server
-                        .getApplication().getManagerIp());
+                            .getApplication().getManagerIp());
                     String command = "sh /cloudunit/scripts/change-password.sh "
-                        + userLogin + " " + newPassword;
+                            + userLogin + " " + newPassword;
                     configShell.put("password", application.getUser()
-                        .getPassword());
+                            .getPassword());
                     shellUtils.executeShell(command, configShell);
 
                     String commandSource = "source /etc/environment";
@@ -315,7 +324,7 @@ public class UserServiceImpl
     @Transactional
     @Override
     public void authentificationGit(User user, String rsa_pub_key)
-        throws ServiceException {
+            throws ServiceException {
         Map<String, String> configShell = new HashMap<>();
         user = this.findById(user.getId());
         List<Application> listApplications = user.getApplications();
@@ -325,16 +334,16 @@ public class UserServiceImpl
                 for (Server server : application.getServers()) {
                     configShell.put("port", server.getSshPort());
                     configShell.put("dockerManagerAddress", server
-                        .getApplication().getManagerIp());
+                            .getApplication().getManagerIp());
                     configShell.put("password", server.getApplication()
-                        .getUser().getPassword());
+                            .getUser().getPassword());
 
                     /**
                      * Execute a script in server container to copy id-rsa.pub
                      * of user, so he can use git without write password
                      */
                     String command = "sh /cloudunit/scripts/authentificationGit.sh "
-                        + "\"" + rsa_pub_key + "\"";
+                            + "\"" + rsa_pub_key + "\"";
                     logger.debug(command);
 
                     shellUtils.executeShell(command, configShell);
@@ -343,14 +352,14 @@ public class UserServiceImpl
 
         } catch (Exception e) {
             logger.error("Git authentification - Error execute ssh Request - "
-                + e);
+                    + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
     @Override
     public void changeEmail(User user, String newEmail)
-        throws ServiceException {
+            throws ServiceException {
         Map<String, Object> mapConfigMail = new HashMap<>();
 
         user.setEmail(newEmail);
@@ -369,12 +378,12 @@ public class UserServiceImpl
 
     @Override
     public String sendPassword(User user)
-        throws ServiceException {
+            throws ServiceException {
         Map<String, Object> mapConfigMail = new HashMap<>();
 
         logger.debug("create : Methods parameters : " + user.toString());
         logger.info("UserService : Starting creating user "
-            + user.getLastName());
+                + user.getLastName());
 
         mapConfigMail.put("user", user);
         mapConfigMail.put("emailType", "sendPassword");
@@ -387,7 +396,7 @@ public class UserServiceImpl
         }
 
         logger.info("UserService : User " + user.getLastName()
-            + " successfully created.");
+                + " successfully created.");
 
         return null;
     }
@@ -395,7 +404,7 @@ public class UserServiceImpl
     @Override
     @Transactional
     public void deleteAllUsersMessages(User user)
-        throws ServiceException {
+            throws ServiceException {
         try {
             messageDAO.deleteAllUsersMessages(user.getId());
         } catch (DataAccessException e) {
@@ -407,7 +416,7 @@ public class UserServiceImpl
     @Override
     @Transactional
     public void changeUserRights(String login, String roleValue)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         roleValue = roleValue.toUpperCase();
 
@@ -418,7 +427,7 @@ public class UserServiceImpl
             User user = findByLogin(login);
 
             if (user.getRole().getDescription().substring(5)
-                .equalsIgnoreCase(roleValue)) {
+                    .equalsIgnoreCase(roleValue)) {
                 throw new CheckException("This user is already an " + roleValue);
 
             }
