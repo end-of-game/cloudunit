@@ -606,6 +606,9 @@ public class ServerServiceImpl
         configShell.put("dockerManagerAddress", server.getApplication().getManagerIp());
         // We don't need to set userLogin because shell script caller must be root.
         configShell.put("password", server.getApplication().getUser().getPassword());
+        // Protection without double slashes into jvm options
+
+        jvmOptions = jvmOptions.replaceAll("//", "\\/\\/");
 
         String previousJvmOptions = server.getJvmOptions();
         String previousJvmMemory = server.getJvmMemory().toString();
