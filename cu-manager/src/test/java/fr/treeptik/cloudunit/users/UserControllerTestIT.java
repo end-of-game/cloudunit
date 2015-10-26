@@ -19,7 +19,6 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
-import junit.framework.TestCase;
 import org.apache.http.HttpStatus;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -27,6 +26,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,7 +51,9 @@ import javax.servlet.http.HttpSession;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -63,7 +65,7 @@ public class UserControllerTestIT {
     private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
 
     private final Logger logger = LoggerFactory
-        .getLogger(UserControllerTestIT.class);
+            .getLogger(UserControllerTestIT.class);
 
     @Autowired
     private WebApplicationContext context;
@@ -86,7 +88,7 @@ public class UserControllerTestIT {
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "App"+new Random().nextInt(1000);
+        applicationName = "App" + new Random().nextInt(1000);
     }
 
     @Before
@@ -148,6 +150,43 @@ public class UserControllerTestIT {
         mockMvc.perform(post("/user/authentication")
                 .param("j_username", username).param("j_password", "XXXXXX"))
                 .andExpect(status().is(HttpStatus.SC_UNAUTHORIZED));
+    }
+
+    @Test
+    public void test10_userCreation() throws Exception {
+        User user = null;
+        try {
+            user = userService.findByLogin("johndoe");
+        } catch (ServiceException e) {
+            logger.error(e.getLocalizedMessage());
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication result = authenticationManager.authenticate(authentication);
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        securityContext.setAuthentication(result);
+        session = new MockHttpSession();
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+
+        final String login = "user10";
+        final String password = "123456";
+        final String email = "user10@gmail.com";
+        final String firstName = "user";
+        final String lastName = "user";
+        final String organization = "treeptik";
+
+        String jsonString = "{\"login\":\""
+                + login + "\", \"password\":\""
+                + password + "\", \"email\":\""
+                + email + "\", \"firstName\":\""
+                + firstName + "\", \"lastName\":\""
+                + lastName + "\", \"organization\":\""
+                + organization + "\" }";
+        mockMvc.perform(post("/user/signin")
+                .session(session).contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful());
     }
 
 }

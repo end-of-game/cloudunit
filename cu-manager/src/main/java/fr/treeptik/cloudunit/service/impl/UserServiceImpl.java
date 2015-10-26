@@ -81,13 +81,17 @@ public class UserServiceImpl
         Map<String, Object> mapConfigMail = new HashMap<>();
 
         try {
+            // VALIDATION
 
+            if (user.getClearedPassword().length() < 6
+                    & user.getClearedPassword().length() > 16) {
+                throw new CheckException(
+                        "The password must be have between 6 and 16 characters");
+            }
             //ENCODING THE PASSWORD
 
             user.setPassword(new CustomPasswordEncoder()
                     .encode(user.getClearedPassword()));
-
-            // VALIDATION
 
             if (user.getEmail() == null || user.getLogin() == null
                     || user.getPassword() == null) {
