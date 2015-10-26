@@ -150,7 +150,7 @@ public class ServerServiceImpl
                 + "-"
                 + AlphaNumericsCharactersCheckUtils
                 .convertToAlphaNumerics(server.getApplication()
-                    .getName()) + "-" + server.getName();
+                        .getName()) + "-" + server.getName();
         } catch (UnsupportedEncodingException e2) {
             throw new ServiceException("Error rename Serveur", e2);
         }
@@ -171,10 +171,10 @@ public class ServerServiceImpl
             .withPorts(ports)
             .withVolumesFrom(volumesFrom)
             .withCmd(
-                Arrays.asList(user.getLogin(), user.getPassword(), server
-                        .getApplication().getRestHost(), server
-                        .getApplication().getName(),
-                    "jdk1.7.0_55", databasePassword, envExec)).build();
+                    Arrays.asList(user.getLogin(), user.getPassword(), server
+                                    .getApplication().getRestHost(), server
+                                    .getApplication().getName(),
+                            "jdk1.7.0_55", databasePassword, envExec)).build();
 
         try {
             // create a container and get informations
@@ -508,11 +508,11 @@ public class ServerServiceImpl
                 .stream()
                 .filter(t -> t.getAlias() != null)
                 .forEach(
-                    t -> hipacheRedisUtils.writeNewAlias(
-                        t.getPort(),
-                        effectiveApplication,
-                        effectiveServer.getListPorts().get(
-                            t + "/tcp")));
+                        t -> hipacheRedisUtils.writeNewAlias(
+                                t.getPort(),
+                                effectiveApplication,
+                                effectiveServer.getListPorts().get(
+                                        t + "/tcp")));
 
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
@@ -608,7 +608,7 @@ public class ServerServiceImpl
         configShell.put("password", server.getApplication().getUser().getPassword());
         // Protection without double slashes into jvm options
 
-        jvmOptions = jvmOptions.replaceAll("//", "\\/\\/");
+        jvmOptions = jvmOptions.replaceAll("//", "\\\\/\\\\/");
 
         String previousJvmOptions = server.getJvmOptions();
         String previousJvmMemory = server.getJvmMemory().toString();
