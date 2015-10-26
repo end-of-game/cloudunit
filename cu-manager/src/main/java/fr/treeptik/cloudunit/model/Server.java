@@ -18,10 +18,7 @@ package fr.treeptik.cloudunit.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.treeptik.cloudunit.model.action.ServerAction;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.PostLoad;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +33,7 @@ public class Server
 
     private Long jvmMemory;
 
+    @Column(columnDefinition = "TEXT")
     private String jvmOptions;
 
     private String jvmRelease;
