@@ -27,7 +27,7 @@ import java.util.List;
 
 @Entity
 public class User
-    implements Serializable {
+        implements Serializable {
 
     public static final Integer STATUS_MAIL_NOT_CONFIRMED = 0;
 
@@ -159,6 +159,10 @@ public class User
         return new CustomPasswordEncoder().decode(password);
     }
 
+    public String getClearedPassword() {
+        return this.password;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -206,8 +210,8 @@ public class User
     @Override
     public String toString() {
         return "User [id=" + id + ", firstName=" + firstName + ", lastName="
-            + lastName + ", signin=" + signin + ", email=" + email
-            + ", password=***" + ", status=" + status + "]";
+                + lastName + ", signin=" + signin + ", email=" + email
+                + ", password=***" + ", status=" + status + "]";
     }
 
     @Override
