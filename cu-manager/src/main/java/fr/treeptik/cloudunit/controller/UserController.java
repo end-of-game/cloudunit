@@ -40,7 +40,7 @@ import java.io.UnsupportedEncodingException;
 @Controller
 @RequestMapping("/user")
 public class UserController
-    implements Serializable {
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,11 +63,16 @@ public class UserController
      */
     @ResponseBody
     @RequestMapping(value = "/signin", method = RequestMethod.POST)
-    public JsonResponse signin(@RequestBody User user) {
-
-        logger.debug("UserController - User : " + user);
-
+    public JsonResponse signin(@RequestBody JsonInputForAdmin input) {
         try {
+            User user = new User();
+            user.setLogin(input.getLogin());
+            user.setEmail(input.getEmail());
+            user.setLastName(input.getLastName());
+            user.setFirstName(input.getFirstName());
+            user.setPassword(input.getPassword());
+            user.setOrganization(input.getOrganization());
+            logger.debug("UserController - User : " + user);
             userService.create(user);
         } catch (ServiceException | CheckException e) {
             return new HttpErrorServer(e.getMessage());
@@ -82,7 +87,7 @@ public class UserController
     public
     @ResponseBody
     JsonResponse updateUser(
-        @RequestBody JsonInputForAdmin input) {
+            @RequestBody JsonInputForAdmin input) {
 
         User user;
         try {
@@ -103,7 +108,7 @@ public class UserController
     public
     @ResponseBody
     JsonResponse sendPassword(
-        @RequestBody JsonInputForAdmin input) {
+            @RequestBody JsonInputForAdmin input) {
         logger.info("--CALL SEND PASSWORD--");
         User user = null;
         try {
@@ -119,8 +124,8 @@ public class UserController
     public
     @ResponseBody
     JsonResponse changePassword(
-        @RequestBody JsonInputForAdmin input)
-        throws CheckException {
+            @RequestBody JsonInputForAdmin input)
+            throws CheckException {
         User user = null;
         try {
             logger.info(input.getPassword());
@@ -130,12 +135,12 @@ public class UserController
 
             if (user.getLogin().isEmpty()) {
                 throw new CheckException(
-                    "This functionnality is not available yet");
+                        "This functionnality is not available yet");
             }
 
             if (!user.getPassword().equalsIgnoreCase(input.getPassword())) {
                 throw new CheckException(
-                    "Your current password is not correct. Please retry!");
+                        "Your current password is not correct. Please retry!");
             }
 
             user.setPassword(input.getNewPassword());
@@ -152,14 +157,13 @@ public class UserController
     public
     @ResponseBody
     User getStatus()
-        throws ServiceException {
+            throws ServiceException {
         return authentificationUtils.getAuthentificatedUser();
     }
 
     /**
      * Activate an User account
      *
-     * @param userEmail
      * @return
      * @throws ServiceException
      * @throws CheckException
@@ -168,8 +172,8 @@ public class UserController
     public
     @ResponseBody
     ModelAndView activationAccount(
-        @PathVariable String login)
-        throws ServiceException, CheckException {
+            @PathVariable String login)
+            throws ServiceException, CheckException {
         logger.info("--ACTIVATION OF ACCOUNT--");
         logger.debug("UserController : User " + login);
 
@@ -194,12 +198,12 @@ public class UserController
     public
     @ResponseBody
     String authentificationGit(
-        @PathVariable String userEmail, @RequestBody String rsa_pub_key)
-        throws ServiceException, CheckException {
+            @PathVariable String userEmail, @RequestBody String rsa_pub_key)
+            throws ServiceException, CheckException {
 
         logger.info("--GIT AUTHENTIFICATION --");
         logger.debug("UserController - User " + userEmail + " rsa_pub_key : "
-            + rsa_pub_key);
+                + rsa_pub_key);
 
         JSONParser parser = new JSONParser();
         Object obj = null;
