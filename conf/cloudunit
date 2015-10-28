@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source /home/admincu/cloudunit/conf/cloudunit-completion
+
 entry=cloudunit
 usage() {
 	echo "Options:    $entry [-h] [-v]"
