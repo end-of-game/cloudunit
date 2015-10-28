@@ -1,0 +1,80 @@
+#!/bin/bash
+
+entry=cloudunit
+usage() {
+	echo "Options:    $entry [-h] [-v]"
+	echo "  -h        Help. Display this message."
+	echo "  -v        Version. Print version."
+	echo "Commands:   $entry [reset] [restart]"
+	echo "  reset     Reset CloudUnit. All data will be lost!"
+	echo "  restart   Restart CloudUnit."
+	exit
+}
+
+version() {
+	# If we haved executed git checkout o a tag, the tag is returned.
+	# Otherxise, latest is returned.
+	cd /home/admincu/cloudunit
+	if [ -z "$(git describe --exact-match --tags 2>/dev/null)" ]; then
+		GIT_TAG=latest
+		echo "CloudUnit is not currently on a specific version!"
+		echo "Closest version: `git describe --tags | cut -d"-" -f 1`"
+		echo "Distance: `git describe --tags | cut -d"-" -f 2` commits"
+	else
+		if [ -z `git symbolic-ref HEAD 2>/dev/null` ]; then
+			GIT_TAG=`git describe --exact-match --tags`
+			echo "CloudUnit version: `git describe --tags`"
+		else
+			GIT_TAG=latest
+			echo "You are currently on a git branch, not on a git tag!"
+			echo "CloudUnit version: `git describe --tags | cut -d"-" -f 1`"
+			echo "Current branch: `basename $(git symbolic-ref HEAD)`"
+		fi
+	fi
+}
+
+
+if [ $# == 0 ]; then
+	usage
+	exit 1
+fi
+
+while getopts "hv" optchar
+do
+	case "${optchar}" in
+		h)
+			usage
+			;;
+		v)
+			version
+			;;
+		*)
+			usage
+			;;
+	esac
+done
+
+if [ $# == 1 ]; then
+	arg1="$1"
+
+	case $arg1 in
+		reset)
+			cd /home/admincu/cloudunit/cu-platform && ./reset-all.sh
+			;;
+		restart)
+			cd /home/admincu/cloudunit/cu-platform && ./restart-platform.sh
+			;;
+		-v)
+			;;
+		-h)
+			;;
+		*)
+			echo "Invalid command: '$arg1'" >&2
+			usage
+			;;
+	esac
+else
+	arg="$@"
+	echo "Invalid command: '$arg'" >&2
+	usage
+fi
