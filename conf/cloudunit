@@ -54,10 +54,8 @@ do
 	esac
 done
 
-while (( $# > 0 ))
-do
+if [ $# == 1 ]; then
 	arg1="$1"
-	shift
 
 	case $arg1 in
 		reset)
@@ -71,9 +69,12 @@ do
 		-h)
 			;;
 		*)
-			echo "Invalid option: '$arg1'" >&2
-			exit 1
+			echo "Invalid command: '$arg1'" >&2
+			usage
 			;;
 	esac
-
-done
+else
+	arg="$@"
+	echo "Invalid command: '$arg'" >&2
+	usage
+fi
