@@ -39,6 +39,6 @@ public interface SnapshotService {
         throws ServiceException, CheckException;
 
     Snapshot cloneFromASnapshot(String applicationName, String tag)
-        throws ServiceException, InterruptedException;
+            throws ServiceException, InterruptedException, CheckException;
 
 }
