@@ -11,8 +11,8 @@ hipache:
 redis:
     image: redis:3.0.1
     command: redis-server --appendonly yes
-    ports:
-        - 6379:6379
+#TO_UNCOMMENT_IF_PROFILE_DEV    ports:
+#TO_UNCOMMENT_IF_PROFILE_DEV        - 6379:6379
     volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
@@ -22,8 +22,8 @@ mysql:
     environment:
         - MYSQL_ROOT_PASSWORD=AezohghooNgaegh8ei2jabib2nuj9yoe
         - MYSQL_DATABASE=cloudunit
-    ports:
-        - 3306:3306
+#TO_UNCOMMENT_IF_PROFILE_DEV    ports:
+#TO_UNCOMMENT_IF_PROFILE_DEV        - 3306:3306
     volumes_from:
         - mysqldata
     volumes:
@@ -42,8 +42,8 @@ testmysql:
     environment:
         - MYSQL_ROOT_PASSWORD=AezohghooNgaegh8ei2jabib2nuj9yoe
         - MYSQL_DATABASE=cloudunit
-    ports:
-        - 3307:3306
+#TO_UNCOMMENT_IF_PROFILE_DEV    ports:
+#TO_UNCOMMENT_IF_PROFILE_DEV        - 3307:3306
     volumes_from:
         - testmysqldata
     volumes:
@@ -93,8 +93,8 @@ cadvisor:
         - DB_USER=root
         - DB_PASS=root
         - DB_NAME=cadvisor
-    ports:
-        - 8081:8080
+#TO_UNCOMMENT_IF_PROFILE_DEV    ports:
+#TO_UNCOMMENT_IF_PROFILE_DEV        - 8081:8080
     volumes:
         - /:/rootfs:ro
         - /var/run:/var/run:rw
