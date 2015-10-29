@@ -20,7 +20,7 @@ redis:
 mysql:
     image: mysql:5.7.4
     environment:
-        - MYSQL_ROOT_PASSWORD=AezohghooNgaegh8ei2jabib2nuj9yoe
+        - MYSQL_ROOT_PASSWORD
         - MYSQL_DATABASE=cloudunit
 #TO_UNCOMMENT_IF_PROFILE_DEV    ports:
 #TO_UNCOMMENT_IF_PROFILE_DEV        - 3306:3306
@@ -87,7 +87,7 @@ tomcat:
         - CU_SUB_DOMAIN
         - CU_KVM
         - CATALINA_OPTS="-Dspring.profiles.active=production"
-        - CU_MYSQL_PASSWORD
+        - MYSQL_ROOT_PASSWORD
 
 cadvisor:
     image: google/cadvisor:0.14.0
