@@ -88,7 +88,7 @@ public class DockerContainerJSON {
         URI uri = null;
         DockerContainer dockerContainer = new DockerContainer();
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/containers/" + name + "/json").build();
             JsonResponse jsonResponse = null;
 
@@ -217,7 +217,7 @@ public class DockerContainerJSON {
         URI uri = null;
         DockerContainer dockerContainer = new DockerContainer();
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/containers/" + name + "/json").build();
             JsonResponse jsonResponse = null;
 
@@ -348,7 +348,7 @@ public class DockerContainerJSON {
         URI uri = null;
         JsonResponse jsonResponse;
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostAddress)
+            uri = new URIBuilder().setScheme("https").setHost(hostAddress)
                 .setPath("/info").build();
 
             jsonResponse = client.sendGet(uri);
@@ -379,7 +379,7 @@ public class DockerContainerJSON {
         List<DockerContainer> listContainers = new ArrayList<>();
         try {
 
-            uri = new URIBuilder().setScheme("http").setHost(hostAddress)
+            uri = new URIBuilder().setScheme("https").setHost(hostAddress)
                 .setPath("/containers/json").build();
 
             if (logger.isDebugEnabled()) {
@@ -453,7 +453,7 @@ public class DockerContainerJSON {
         throws DockerJSONException {
         URI uri = null;
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/containers/create")
                 .setParameter("name", dockerContainer.getName()).build();
 
@@ -518,7 +518,7 @@ public class DockerContainerJSON {
         }
         try {
             //this.kill(name, hostIp);
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/containers/" + name).setParameter("v", "1").setParameter("force",
                     "true")
                 .build();
@@ -558,7 +558,7 @@ public class DockerContainerJSON {
         URI uri = null;
         try {
             uri = new URIBuilder()
-                .setScheme("http")
+                .setScheme("https")
                 .setHost(hostIp)
                 .setPath(
                     "/containers/" + dockerContainer.getName()
@@ -707,7 +707,7 @@ public class DockerContainerJSON {
         URI uri = null;
         try {
             uri = new URIBuilder()
-                .setScheme("http")
+                .setScheme("https")
                 .setHost(hostIp)
                 .setPath(
                     "/containers/" + dockerContainer.getName()
@@ -736,7 +736,7 @@ public class DockerContainerJSON {
         throws DockerJSONException {
         URI uri = null;
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/containers/" + name + "/kill").build();
             int statusCode = client.sendPost(uri, "", "application/json");
             switch (statusCode) {
@@ -763,7 +763,7 @@ public class DockerContainerJSON {
         URI uri = null;
         Map<String, Object> response = null;
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/commit").setParameter("container", name)
                 .setParameter("tag", tag)
                 .setParameter("repo", "localhost:5000/" + repo + tag)
@@ -797,7 +797,7 @@ public class DockerContainerJSON {
         URI uri = null;
         Map<String, Object> response = null;
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/images/" + name.toLowerCase() + "/push")
                 .setParameter("tag", tag.toLowerCase()).build();
             response = client.sendPostWithRegistryHost(uri, "",
@@ -833,7 +833,7 @@ public class DockerContainerJSON {
         URI uri = null;
         Map<String, Object> response = null;
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/images/create")
                 .setParameter("fromImage", name.toLowerCase())
                 .setParameter("tag", tag.toLowerCase()).build();
@@ -869,7 +869,7 @@ public class DockerContainerJSON {
         throws DockerJSONException {
         URI uri = null;
         try {
-            uri = new URIBuilder().setScheme("http").setHost(hostIp)
+            uri = new URIBuilder().setScheme("https").setHost(hostIp)
                 .setPath("/images/" + id).build();
             int statusCode = client.sendDelete(uri);
             switch (statusCode) {
@@ -905,7 +905,7 @@ public class DockerContainerJSON {
         try {
 
             uri = new URIBuilder()
-                .setScheme("http")
+                .setScheme("https")
                 .setHost(registryIP)
                 .setPath(
                     "/v1/repositories/" + repository + "/tags/"

@@ -17,6 +17,7 @@
 package fr.treeptik.cloudunit.docker;
 
 import fr.treeptik.cloudunit.dto.JsonResponse;
+import fr.treeptik.cloudunit.utils.KeyStoreUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.http.HttpResponse;
@@ -27,16 +28,26 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,35 +57,35 @@ public class JSONClient {
     private Logger logger = LoggerFactory.getLogger(JSONClient.class);
 
     public JsonResponse sendGet(URI uri)
-        throws IOException {
+            throws IOException {
         StringBuilder builder = new StringBuilder();
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpClient httpclient = build();
         HttpGet httpGet = new HttpGet(uri);
         HttpResponse response = httpclient.execute(httpGet);
         LineIterator iterator = IOUtils.lineIterator(response.getEntity()
-            .getContent(), "UTF-8");
+                .getContent(), "UTF-8");
         while (iterator.hasNext()) {
             builder.append(iterator.nextLine());
         }
         JsonResponse jsonResponse = new JsonResponse(response.getStatusLine()
-            .getStatusCode(), builder.toString(), null);
+                .getStatusCode(), builder.toString(), null);
         return jsonResponse;
     }
 
     public int sendPost(URI uri, String body, String contentType)
-        throws ClientProtocolException, IOException {
+            throws ClientProtocolException, IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri  " + uri + " - body  :  " + body
-                + " - contentype : " + contentType);
+                    + " - contentype : " + contentType);
         }
 
         /**
          * TODO
          */
         logger.info("POST : uri " + uri + " - body  :  " + body
-            + " - contentype : " + contentType);
+                + " - contentype : " + contentType);
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpClient httpclient = build();
         HttpPost httpPost = new HttpPost(uri);
         httpPost.addHeader("content-type", contentType);
 
@@ -83,29 +94,29 @@ public class JSONClient {
         StatusLine statusLine = httpclient.execute(httpPost).getStatusLine();
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri " + uri + " returns "
-                + statusLine.getStatusCode());
+                    + statusLine.getStatusCode());
         }
 
         logger.info("POST : uri " + uri + " returns "
-            + statusLine.getStatusCode());
+                + statusLine.getStatusCode());
 
         return statusLine.getStatusCode();
     }
 
     public int sendPostForStart(URI uri, String body, String contentType)
-        throws ClientProtocolException, IOException {
+            throws ClientProtocolException, IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri  " + uri + " - body  :  " + body
-                + " - contentype : " + contentType);
+                    + " - contentype : " + contentType);
         }
 
         /**
          * TODO
          */
         logger.info("POST : uri " + uri + " - body  :  " + body
-            + " - contentype : " + contentType);
+                + " - contentype : " + contentType);
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpClient httpclient = build();;
         HttpPost httpPost = new HttpPost(uri);
         httpPost.addHeader("content-type", contentType);
 
@@ -114,7 +125,7 @@ public class JSONClient {
         CloseableHttpResponse execute = httpclient.execute(httpPost);
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri " + uri + " returns "
-                + execute.getStatusLine().getStatusCode());
+                    + execute.getStatusLine().getStatusCode());
         }
 
         StringWriter writer = new StringWriter();
@@ -129,29 +140,29 @@ public class JSONClient {
         }
 
         logger.info("POST : uri " + uri + " returns "
-            + execute.getStatusLine().getStatusCode());
+                + execute.getStatusLine().getStatusCode());
 
         return execute.getStatusLine().getStatusCode();
     }
 
     public Map<String, Object> sendPostAndGetImageID(URI uri, String body,
                                                      String contentType)
-        throws ClientProtocolException, IOException {
+            throws ClientProtocolException, IOException {
 
         Map<String, Object> response = new HashMap<>();
 
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri  " + uri + " - body  :  " + body
-                + " - contentype : " + contentType);
+                    + " - contentype : " + contentType);
         }
 
         /**
          * TODO
          */
         logger.info("POST : uri " + uri + " - body  :  " + body
-            + " - contentype : " + contentType);
+                + " - contentype : " + contentType);
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpClient httpclient = build();;
         HttpPost httpPost = new HttpPost(uri);
         httpPost.addHeader("content-type", contentType);
 
@@ -166,11 +177,11 @@ public class JSONClient {
 
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri " + uri + " returns "
-                + statusLine.getStatusCode());
+                    + statusLine.getStatusCode());
         }
 
         logger.info("POST : uri " + uri + " returns "
-            + statusLine.getStatusCode());
+                + statusLine.getStatusCode());
         response.put("code", statusLine.getStatusCode());
         response.put("body", writer.toString());
         return response;
@@ -178,25 +189,25 @@ public class JSONClient {
 
     public Map<String, Object> sendPostWithRegistryHost(URI uri, String body,
                                                         String contentType)
-        throws ClientProtocolException, IOException {
+            throws ClientProtocolException, IOException {
 
         Map<String, Object> response = new HashMap<String, Object>();
 
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri  " + uri + " - body  :  " + body
-                + " - contentype : " + contentType);
+                    + " - contentype : " + contentType);
         }
 
         /**
          * TODO
          */
         logger.info("POST : uri " + uri + " - body  :  " + body
-            + " - contentype : " + contentType);
+                + " - contentype : " + contentType);
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpClient httpclient = build();;
         RequestConfig config = RequestConfig.custom()
-            .setSocketTimeout(1000 * 60 * 5)
-            .setConnectTimeout(1000 * 60 * 5).build();
+                .setSocketTimeout(1000 * 60 * 5)
+                .setConnectTimeout(1000 * 60 * 5).build();
         HttpPost httpPost = new HttpPost(uri);
         httpPost.setConfig(config);
         httpPost.addHeader("content-type", contentType);
@@ -214,31 +225,73 @@ public class JSONClient {
 
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri " + uri + " returns "
-                + statusLine.getStatusCode());
+                    + statusLine.getStatusCode());
         }
 
         logger.info("POST : uri " + uri + " returns "
-            + statusLine.getStatusCode());
+                + statusLine.getStatusCode());
         response.put("code", statusLine.getStatusCode());
         response.put("body", writer.toString());
         return response;
     }
 
     public int sendDelete(URI uri)
-        throws ClientProtocolException, IOException {
+            throws ClientProtocolException, IOException {
         if (logger.isDebugEnabled()) {
             logger.debug("DELETE : uri " + uri);
         }
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = build();;
         HttpDelete httpDelete = new HttpDelete(uri);
         StatusLine statusLine = httpClient.execute(httpDelete).getStatusLine();
         if (logger.isDebugEnabled()) {
             logger.debug("DELETE : uri " + uri + " returns "
-                + statusLine.getStatusCode());
+                    + statusLine.getStatusCode());
         }
         logger.info("DELETE : uri " + uri + " returns "
-            + statusLine.getStatusCode());
+                + statusLine.getStatusCode());
 
         return statusLine.getStatusCode();
+    }
+
+    public CloseableHttpClient build() throws IOException {
+        org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
+        HttpClientConnectionManager manager = getConnectionFactory("/home/guillaume", 10);
+        builder.setConnectionManager(manager);
+
+        // TODO: Tune client if needed (e.g. add pooling factoring .....
+        // But I think, that's not really required.
+
+        return builder.build();
+    }
+
+    private static HttpClientConnectionManager getConnectionFactory(String certPath, int maxConnections) throws IOException {
+        PoolingHttpClientConnectionManager ret = certPath != null ?
+                new PoolingHttpClientConnectionManager(getSslFactoryRegistry(certPath)) :
+                new PoolingHttpClientConnectionManager();
+        ret.setDefaultMaxPerRoute(maxConnections);
+        return ret;
+    }
+
+    private static Registry<ConnectionSocketFactory> getSslFactoryRegistry(String certPath) throws IOException {
+        try {
+            KeyStore keyStore = KeyStoreUtils.createDockerKeyStore(certPath);
+
+            SSLContext sslContext =
+                    SSLContexts.custom()
+                            .useTLS()
+                            .loadKeyMaterial(keyStore, "docker".toCharArray())
+                            .loadTrustMaterial(keyStore)
+                            .build();
+            String tlsVerify = System.getenv("DOCKER_TLS_VERIFY");
+            SSLConnectionSocketFactory sslsf =
+                    tlsVerify != null && !tlsVerify.equals("0") && !tlsVerify.equals("false") ?
+                            new SSLConnectionSocketFactory(sslContext) :
+                            new SSLConnectionSocketFactory(sslContext,
+                                    SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslsf).build();
+        } catch (GeneralSecurityException e) {
+            // this isn't ideal but the net effect is the same
+            throw new IOException(e);
+        }
     }
 }
