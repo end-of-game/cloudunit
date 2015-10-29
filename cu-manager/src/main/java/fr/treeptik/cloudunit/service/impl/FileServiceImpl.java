@@ -85,7 +85,7 @@ public class FileServiceImpl
                                          String containerId, String path)
             throws ServiceException {
         try {
-            final DockerCertificates certs = new DockerCertificates(Paths.get("/home/guillaume"));
+            final DockerCertificates certs = new DockerCertificates(Paths.get("/usr/local/tomcat/certificats"));
             final DockerClient docker = DefaultDockerClient
                     .builder()
                     .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
@@ -121,7 +121,7 @@ public class FileServiceImpl
 
         List<SourceUnit> files = new ArrayList<>();
         try {
-            final DockerCertificates certs = new DockerCertificates(Paths.get("/home/guillaume"));
+            final DockerCertificates certs = new DockerCertificates(Paths.get("/usr/local/tomcat/certificats"));
             final DockerClient docker = DefaultDockerClient
                     .builder()
                     .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
@@ -185,7 +185,7 @@ public class FileServiceImpl
 
         List<FileUnit> files = new ArrayList<>();
         try {
-            final DockerCertificates certs = new DockerCertificates(Paths.get("/home/guillaume"));
+            final DockerCertificates certs = new DockerCertificates(Paths.get("/usr/local/tomcat/certificats"));
             final DockerClient docker = DefaultDockerClient
                     .builder()
                     .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
