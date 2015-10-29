@@ -76,6 +76,13 @@ public class DatabaseConfiguration {
         config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         config.addDataSourceProperty("url", databaseUrl);
         config.addDataSourceProperty("user", databaseUser);
+
+        String forcePassword = System.getenv("CU_MYSQL_PASSWORD");
+        // coming from environnment host
+        if (forcePassword != null) {
+            logger.info("Force the mysql password from host env");
+            databasePassword = forcePassword;
+        }
         config.addDataSourceProperty("password", databasePassword);
         // config.setAutoCommit(false);
         return new HikariDataSource(config);

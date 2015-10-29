@@ -255,7 +255,7 @@ public class JSONClient {
 
     public CloseableHttpClient build() throws IOException {
         org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
-        HttpClientConnectionManager manager = getConnectionFactory("/home/guillaume", 10);
+        HttpClientConnectionManager manager = getConnectionFactory("/usr/local/tomcat/certificats", 10);
         builder.setConnectionManager(manager);
 
         // TODO: Tune client if needed (e.g. add pooling factoring .....
