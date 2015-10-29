@@ -77,7 +77,7 @@ public class DatabaseConfiguration {
         config.addDataSourceProperty("url", databaseUrl);
         config.addDataSourceProperty("user", databaseUser);
 
-        String forcePassword = System.getenv("CU_MYSQL_PASSWORD");
+        String forcePassword = System.getenv("MYSQL_ROOT_PASSWORD");
         // coming from environnment host
         if (forcePassword != null) {
             logger.info("Force the mysql password from host env");
