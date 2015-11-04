@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.docker;
 
 import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.utils.KeyStoreUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.http.HttpResponse;
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
@@ -54,7 +56,22 @@ import java.util.Map;
 @Component
 public class JSONClient {
 
-    private Logger logger = LoggerFactory.getLogger(JSONClient.class);
+    private static Logger logger = LoggerFactory.getLogger(JSONClient.class);
+
+    // We don't use profil spring or anything else because api must have no dependency
+    private static final String PathDirCerts = "/usr/local/tomcat/certificats";
+    private static boolean WithTLS = false;
+
+    static {
+        File dirCerts = new File(PathDirCerts);
+        if (dirCerts.isDirectory() &&
+            FileUtils.listFiles(dirCerts, new String[]{"pem"}, true).size() == 3) {
+            WithTLS = true;
+        } else {
+            logger.warn("No certificates into " + PathDirCerts + " : docker socket tcp not secured with TLS");
+        }
+    }
+
 
     public JsonResponse sendGet(URI uri)
             throws IOException {
@@ -254,14 +271,15 @@ public class JSONClient {
     }
 
     public CloseableHttpClient build() throws IOException {
-        org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
-        HttpClientConnectionManager manager = getConnectionFactory("/usr/local/tomcat/certificats", 10);
-        builder.setConnectionManager(manager);
-
-        // TODO: Tune client if needed (e.g. add pooling factoring .....
-        // But I think, that's not really required.
-
-        return builder.build();
+        // If directory contains certificats, it is right else display an warning
+        if (WithTLS) {
+            org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
+            HttpClientConnectionManager manager = getConnectionFactory(PathDirCerts, 10);
+            builder.setConnectionManager(manager);
+            return builder.build();
+        } else {
+            return HttpClients.createDefault();
+        }
     }
 
     private static HttpClientConnectionManager getConnectionFactory(String certPath, int maxConnections) throws IOException {
