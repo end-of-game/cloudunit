@@ -89,7 +89,7 @@ else
 	until [ "$RETURN" -eq "0" ];
 	do	
 		echo -e "\nWaiting for mysql\n";
-		mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	--silent &>/dev/null
+		mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -p${MYSQL_ROOT_PASSWORD} -e 'select 1 from dual;;'	--silent &>/dev/null
 		RETURN=$?
 		sleep 1
 	done
