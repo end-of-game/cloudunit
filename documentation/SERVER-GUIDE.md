@@ -59,6 +59,8 @@ If nothing is returned, `python`is not installed. Install it:
 
 ### CloudUnit
 
+**On your local host**
+
 * Change directory into `CU-infrastrucuture` and edit the `hosts` file.
 In the line `CUserver ansible_ssh_host=server_ip_address`, replace `server_ip_address` by the server IP address.
 
@@ -69,13 +71,15 @@ In the line `CUserver ansible_ssh_host=server_ip_address`, replace `server_ip_ad
 ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/installCUserver.yml
 SSH password:
 SUDO password[defaults to SSH password]:
- 
+
 PLAY [CUserveur] ***********************************************************
 ```
 Ansible prompts you for the ssh and the sudo passwords of the `admincu` user. In cas of error, due to a network problem for example, do not hesitate to relaunch the playbook. Ansible is able not to execute again a task when the desired state is already achieved.
 
 
 ### Shinken
+
+**On your local host**
 
 Our PaaS is monitored using [Shinken](http://www.shinken-monitoring.org/). Because it contributes to the stability of our platform, we strongly recommend you to install it as well.
 
@@ -86,10 +90,13 @@ Our PaaS is monitored using [Shinken](http://www.shinken-monitoring.org/). Becau
 ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/shinken-standalone.yml
 SSH password:
 SUDO password[defaults to SSH password]:
- 
+
 PLAY [CUserveur] ***********************************************************
 ```
 You are prompted for the ssh and sudo passwords of the `shinken` user.
 
 ### Local DNS entry
+
+**On your local host**
+
 Finally, add a local DNS entry on your host: any address ending with server.cloudunit.io shoud point to the ip address of your server. Refere to the  [Local DNS section](https://github.com/Treeptik/CloudUnit/blob/master/documentation/DEMO-GUIDE.md#local-dns) to see how to achieve this on Ubuntu.
