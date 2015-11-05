@@ -69,6 +69,6 @@ If you want to restart from the beginning, you can reset the platform.
 
 In the repository where you have downloaded the `Vagrantfile`, run: `vagrant ssh` to ssh into the box. Finally reset everything:
 ```
-$ cd cloudunit/cu-platform && ./reset-all.sh -y
+$ vagrant ssh -c "cloudunit reset"
 ```
 

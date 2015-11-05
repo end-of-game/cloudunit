@@ -176,6 +176,16 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats.andExpect(status().isOk());
     }
 
+    @Test(timeout = 30000)
+    public void test021_StopApplicationTestFailsBecauseAlreadyStopped()
+            throws Exception {
+        logger.info("Stop the application : " + applicationName);
+        final String jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        ResultActions resultats =
+                this.mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+    }
+
     @Test()
     public void test030_StartApplicationTest()
         throws Exception {

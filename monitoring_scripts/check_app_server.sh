@@ -14,14 +14,14 @@ do
 	RETURN=$(echo $?)
 	
 	if [ "$RETURN" != 0 ]; then
-		echo "Container $CONTAINER is not responding.\n"
+		echo "CRITICAL - Container $CONTAINER is not responding. | running_app_server=`wc -l $FILE`;5;10"
 		EXIT_CODE=2
 	else
 		OUTPUT=$(curl --max-time 10 -sS http://$CONTAINER_IP:8080)
 		RETURN=$(echo $?)
 
 		if [ "$RETURN" != 0 ]; then
-			echo "Application server from container $CONTAINER is not responding.\n $OUTPUT\n\n"
+			echo "CRITICAL - Application server from container $CONTAINER is not responding. | running_app_server=`wc -l $FILE`;5;10"
 			echo "$RETURN"
 			EXIT_CODE=2
 		else

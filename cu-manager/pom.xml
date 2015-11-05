@@ -17,6 +17,8 @@
 		<!-- redirect all emails emitted by platform : associated with vagrant 
 			spring profile -->
 		<email.force.redirect>n.muller@treeptik.fr</email.force.redirect>
+        <!-- For Mac Developper, no way to access to HTTPS Socket -->
+        <docker.endpoint.mode>https</docker.endpoint.mode>
 
 		<!-- Compiler plugin -->
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -59,6 +61,33 @@
 		</repository>
 	</repositories>
 
+    <licenses>
+        <license>
+            <name>The Affero GPL, Version 3.0</name>
+            <url>https://gnu.org/licenses/agpl.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/Treeptik/CloudUnit</connection>
+        <developerConnection>scm:git:git@github.com:Treeptik/CloudUnit</developerConnection>
+        <url>https://github.com/Treeptik/CloudUnit</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>Nicolas</id>
+            <name>Nicolas MULLER</name>
+            <email>n.muller@treeptik.fr</email>
+        </developer>
+        <developer>
+            <id>Guillaume</id>
+            <name>Guillaume Martial</name>
+            <email>g.martial@treeptik.fr</email>
+        </developer>
+    </developers>
 
 	<dependencies>
 
@@ -486,7 +515,16 @@
 			</properties>
 		</profile>
 
-		<profile>
+        <profile>
+            <id>macdev</id>
+            <properties>
+                <!-- For Mac Developper, no way to access to HTTPS Socket -->
+                <!-- Think to verify if TLS is disabled into /etc/default/docker -->
+                <docker.endpoint.mode>http</docker.endpoint.mode>
+            </properties>
+        </profile>
+
+        <profile>
 			<id>default</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -621,7 +659,39 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>2.5</version>
+            </plugin>
+            <!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.13</version>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<configuration>
+							<configLocation>checkstyle.xml</configLocation>
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>true</failsOnError>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<linkXRef>false</linkXRef>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>6.1.1</version>
+					</dependency>
+				</dependencies>
 			</plugin>
+            -->
 		</plugins>
 	</build>
 

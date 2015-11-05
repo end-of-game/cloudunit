@@ -71,7 +71,7 @@ In the line `CUserver ansible_ssh_host=server_ip_address`, replace `server_ip_ad
 ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/installCUserver.yml
 SSH password:
 SUDO password[defaults to SSH password]:
- 
+
 PLAY [CUserveur] ***********************************************************
 ```
 Ansible prompts you for the ssh and the sudo passwords of the `admincu` user. In cas of error, due to a network problem for example, do not hesitate to relaunch the playbook. Ansible is able not to execute again a task when the desired state is already achieved.
@@ -90,7 +90,7 @@ Our PaaS is monitored using [Shinken](http://www.shinken-monitoring.org/). Becau
 ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/shinken-standalone.yml
 SSH password:
 SUDO password[defaults to SSH password]:
- 
+
 PLAY [CUserveur] ***********************************************************
 ```
 You are prompted for the ssh and sudo passwords of the `shinken` user.

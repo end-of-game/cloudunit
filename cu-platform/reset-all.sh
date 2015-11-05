@@ -13,7 +13,6 @@
 
 #!/bin/bash
 
-echo $1
 if [ "$1" != "-y" ]; then
     echo "Voulez-vous vraiment supprimer tous les conteneurs et recréer la plate-fome CU ? [y/n]"
     read PROD_ASW

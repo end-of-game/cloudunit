@@ -21,5 +21,5 @@ if [ "$PROD_ASW" != "y" ] && [ "$PROD_ASW" != "n" ]; then
 elif [ "$PROD_ASW" = "n" ]; then
 	exit 1
 else
-	docker-compose kill mysqldata mysql && docker-compose rm mysqldata mysql && docker-compose up -d --allow-insecure-ssl mysqldata mysql
+	docker-compose kill mysqldata mysql && docker-compose rm --force mysqldata mysql && docker-compose up -d --allow-insecure-ssl mysqldata mysql
 fi

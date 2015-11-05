@@ -18,7 +18,7 @@
 FROM_RESET=$1
 
 LOCK=/tmp/start-platform.lock
-SKYDNS_CMD="dig unit @172.17.42.1 +short | wc -l"
+DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 
 export CU_SUB_DOMAIN=.$(hostname)
 
@@ -39,18 +39,17 @@ else
 		echo -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
 	fi
 
-	docker-compose up -d skydns
+	docker-compose up -d dnsdock
 
-	# Attente du démarrage de skydns
-	echo "Skydns test"
+	# Attente du démarrage de dnsdock
+	echo -e "\n+++ Dns test +++\n"
 
-	until [ $(eval "$SKYDNS_CMD") -eq "1" ];
+	until [ $(eval "$DNS_CMD") -eq "1" ];
 	do	
-		echo -e "\nWaiting for skydns\n";
+		echo -e "\nWaiting for dnsdock\n";
 		sleep 1
 	done
 
-	docker-compose up -d skydock
 	docker-compose up -d mysqldata
 	docker-compose up -d mysql
 
@@ -62,14 +61,35 @@ else
 	docker-compose up -d hipache
 	docker-compose up -d registry
 
+	# Vérification du bon démarrage de dnsdock
+	echo -e "\n+++ Dns test inside a container +++\n"
+
+    RETURN=1
+    COUNTER=1
+	until [ "$RETURN" -eq "0" ];
+	do	
+        echo Testing $COUNTER time.
+        docker exec cuplatform_hipache_1 ping -c 1 cuplatform_dnsdock_1.dnsdock.cloud.unit | grep -q '1 received'
+        RETURN=$?
+        if [ "$COUNTER" -eq "5" ]; then
+            echo Dnsdock has not started correctly. You should restart Docker.
+            echo I exit in error !!!
+            exit 1
+        fi
+        let COUNTER=COUNTER+1
+		sleep 1
+	done
+
+
 	# Attente du démarrage de mysql
-	echo "Mysql test"
+	echo -e "\n+++ Mysql test +++\n"
+	mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	
 	RETURN=1
 
 	until [ "$RETURN" -eq "0" ];
 	do	
 		echo -e "\nWaiting for mysql\n";
-		mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	--silent &>/dev/null
+		mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -p${MYSQL_ROOT_PASSWORD} -e 'select 1 from dual;;'	--silent &>/dev/null
 		RETURN=$?
 		sleep 1
 	done

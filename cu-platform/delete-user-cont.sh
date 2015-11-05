@@ -19,15 +19,26 @@ NB="wc -l cont_id | cut -d' ' -f 1"
 
 # S'il n'y a pas d'app clientes, on sort.
 if [ `eval $NB` == 0 ]; then
+	echo "No user container."
 	rm cont_id
 	exit 0
 fi
 
-# Sinon, on les tue puis on les suppprime.
-while read line
-do
-	docker kill $line
-	docker rm $line
-done < cont_id
+echo "Do you really want to delete user containers? [y/n]"
+read PROD_ASW
+if [ "$PROD_ASW" != "y" ] && [ "$PROD_ASW" != "n" ]; then
+	echo "Type y or n!"
+	exit 1
+elif [ "$PROD_ASW" = "n" ]; then
+	exit 1
+else
 
-rm cont_id
+	# Sinon, on les tue puis on les suppprime.
+	while read line
+	do
+		docker kill $line
+		docker rm $line
+	done < cont_id
+
+	rm cont_id
+fi

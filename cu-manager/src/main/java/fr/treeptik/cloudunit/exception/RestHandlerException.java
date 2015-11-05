@@ -130,7 +130,7 @@ public class RestHandlerException
         return handleExceptionInternal(
             ex,
             new HttpErrorServer(
-                "An unkown error has occured! Server response : IllegalArgumentException"),
+                    ex.getMessage()),
             headers, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
