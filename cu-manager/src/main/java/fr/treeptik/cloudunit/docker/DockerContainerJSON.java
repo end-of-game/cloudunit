@@ -23,6 +23,7 @@ import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.WarningDockerJSONException;
 import fr.treeptik.cloudunit.utils.PortUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -30,10 +31,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -49,7 +50,7 @@ public class DockerContainerJSON {
     private final static String[] fixedPort = {"3306/tcp", "5432/tcp", "11211/tcp",
         "1521/tcp", "27017/tcp"};
 
-    private Logger logger = LoggerFactory.getLogger(DockerContainerJSON.class);
+    private static Logger logger = LoggerFactory.getLogger(DockerContainerJSON.class);
 
     @Inject
     private JSONClient client;
@@ -57,8 +58,21 @@ public class DockerContainerJSON {
     @Inject
     private PortUtils portUtils;
 
-    @Value("${docker.endpoint.mode}")
-    private String dockerEndpointMode;
+    private static String dockerEndpointMode;
+    // We don't use profil spring or anything else because api must have no dependency
+    private static final String PathDirCerts = "/usr/local/tomcat/certificats";
+
+    static {
+        File dirCerts = new File(PathDirCerts);
+        if (dirCerts.isDirectory() &&
+            FileUtils.listFiles(dirCerts, new String[]{"pem"}, true).size() == 3) {
+            dockerEndpointMode = "https";
+        } else {
+            logger.warn("No certificates into " + PathDirCerts + " : docker socket tcp not secured with TLS");
+            dockerEndpointMode = "http";
+        }
+    }
+
 
     private static JSONObject parser(String message)
         throws ParseException {
@@ -221,7 +235,7 @@ public class DockerContainerJSON {
         URI uri = null;
         DockerContainer dockerContainer = new DockerContainer();
         try {
-            uri = new URIBuilder().setScheme("dockerEndpointMode").setHost(hostIp)
+            uri = new URIBuilder().setScheme(dockerEndpointMode).setHost(hostIp)
                 .setPath("/containers/" + name + "/json").build();
             JsonResponse jsonResponse = null;
 
