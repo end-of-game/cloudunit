@@ -35,6 +35,7 @@ else
 		sed 's/#TO_UNCOMMENT_IF_PROFILE_DEV//' docker-compose.template > docker-compose.yml
 	elif [ "$PROFILE" == "prod" ]; then
 		echo -e "\nVous utilisez un profile de $PROFILE.\n"
+		cp docker-compose.template docker-compose.yml
 	else
 		echo -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
 	fi
