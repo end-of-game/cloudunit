@@ -18,7 +18,7 @@
 			spring profile -->
 		<email.force.redirect>n.muller@treeptik.fr</email.force.redirect>
         <!-- For Mac Developper, no way to access to HTTPS Socket -->
-        <docker.endpoint.mode>https</docker.endpoint.mode>
+		<docker.endpoint.mode>http</docker.endpoint.mode>
 
 		<!-- Compiler plugin -->
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -526,6 +526,11 @@
 
         <profile>
 			<id>default</id>
+			<properties>
+				<!-- For Mac Developper, no way to access to HTTPS Socket -->
+				<!-- Think to verify if TLS is disabled into /etc/default/docker -->
+				<docker.endpoint.mode>https</docker.endpoint.mode>
+			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
