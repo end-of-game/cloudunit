@@ -61,8 +61,10 @@ public class JSONClient {
     private static Logger logger = LoggerFactory.getLogger(JSONClient.class);
 
     // We don't use profil spring or anything else because api must have no dependency
-    private static final String PathDirCerts = "/usr/local/tomcat/certificats";
     private boolean withTLS = false;
+
+    @Value("${certs.dir.path}")
+    private String certsDirPath;
 
     @Value("${http.mode}")
     private String isHttpMode;
@@ -278,7 +280,7 @@ public class JSONClient {
         // If directory contains certificats, it is right else display an warning
         if (withTLS) {
             org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
-            HttpClientConnectionManager manager = getConnectionFactory(PathDirCerts, 10);
+            HttpClientConnectionManager manager = getConnectionFactory(certsDirPath, 10);
             builder.setConnectionManager(manager);
             return builder.build();
         } else {

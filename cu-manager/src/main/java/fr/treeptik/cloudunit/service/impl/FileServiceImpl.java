@@ -72,6 +72,13 @@ public class FileServiceImpl
     @Value("${docker.manager.ip:192.168.50.4:2376}")
     private String dockerManagerIp;
 
+    @Value("${certs.dir.path}")
+    private String certsDirPath;
+
+    @Value("${http.mode}")
+    private String isHttpMode;
+
+
     /**
      * Delete all resources (files and folders) for an application + container +
      * path.
@@ -85,10 +92,17 @@ public class FileServiceImpl
                                          String containerId, String path)
             throws ServiceException {
         try {
-            final DockerCertificates certs = new DockerCertificates(Paths.get("/usr/local/tomcat/certificats"));
-            final DockerClient docker = DefaultDockerClient
-                    .builder()
-                    .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
             List<Container> containers = docker.listContainers();
             for (Container container : containers) {
                 if (container.id().substring(0, 12).equals(containerId) == false) {
@@ -121,10 +135,17 @@ public class FileServiceImpl
 
         List<SourceUnit> files = new ArrayList<>();
         try {
-            final DockerCertificates certs = new DockerCertificates(Paths.get("/usr/local/tomcat/certificats"));
-            final DockerClient docker = DefaultDockerClient
-                    .builder()
-                    .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
             List<Container> containers = docker.listContainers();
             for (Container container : containers) {
                 if (container.id().substring(0, 12).equals(containerId) == false) {
@@ -185,10 +206,18 @@ public class FileServiceImpl
 
         List<FileUnit> files = new ArrayList<>();
         try {
-            final DockerCertificates certs = new DockerCertificates(Paths.get("/usr/local/tomcat/certificats"));
-            final DockerClient docker = DefaultDockerClient
-                    .builder()
-                    .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
             List<Container> containers = docker.listContainers();
             for (Container container : containers) {
                 // b10da42def6c1737c40b981b1692acb24e28414944b4017814713afb811ae51b

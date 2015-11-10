@@ -74,7 +74,7 @@ public class SnapshotServiceImpl
     @Value("${ip.for.registry}")
     private String ipForRegistry;
 
-    @Value("${docker.manager.ip:192.168.50.4:4243}")
+    @Value("${docker.manager.ip:192.168.50.4:2376}")
     private String dockerManagerIp;
 
     @Override

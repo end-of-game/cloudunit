@@ -61,17 +61,14 @@ public class DockerContainerJSON {
     @Value("${http.mode}")
     private String isHttpMode;
 
-    private static String dockerEndpointMode;
-
-    // We don't use profil spring or anything else because api must have no dependency
-    private static final String PathDirCerts = "/usr/local/tomcat/certificats";
+    private String dockerEndpointMode;
 
     @PostConstruct
     public void initDockerEndPointMode() {
         if (Boolean.valueOf(isHttpMode)) {
             dockerEndpointMode = "https";
         } else {
-            logger.warn("No certificates into " + PathDirCerts + " : docker socket tcp not secured with TLS");
+            logger.warn("Docker TLS mode is disabled");
             dockerEndpointMode = "http";
         }
     }

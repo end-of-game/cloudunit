@@ -86,7 +86,7 @@ public class ApplicationServiceImpl
     @Value("${cloudunit.max.apps:100}")
     private String numberMaxApplications;
 
-    @Value("${docker.manager.ip:192.168.50.4:4243}")
+    @Value("${docker.manager.ip:192.168.50.4:2376}")
     private String dockerManagerIp;
 
     @Value("${suffix.cloudunit.io}")
