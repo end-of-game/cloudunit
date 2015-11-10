@@ -41,8 +41,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.IOException;
@@ -60,15 +62,17 @@ public class JSONClient {
 
     // We don't use profil spring or anything else because api must have no dependency
     private static final String PathDirCerts = "/usr/local/tomcat/certificats";
-    private static boolean WithTLS = false;
+    private boolean withTLS = false;
 
-    static {
-        File dirCerts = new File(PathDirCerts);
-        if (dirCerts.isDirectory() &&
-            FileUtils.listFiles(dirCerts, new String[]{"pem"}, true).size() == 3) {
-            WithTLS = true;
+    @Value("${http.mode}")
+    private String isHttpMode;
+
+    @PostConstruct
+    public void initDockerEndPointMode() {
+        if (Boolean.valueOf(isHttpMode)) {
+            withTLS = true;
         } else {
-            logger.warn("No certificates into " + PathDirCerts + " : docker socket tcp not secured with TLS");
+            logger.warn("Docker TLS is inactive");
         }
     }
 
@@ -272,7 +276,7 @@ public class JSONClient {
 
     public CloseableHttpClient build() throws IOException {
         // If directory contains certificats, it is right else display an warning
-        if (WithTLS) {
+        if (withTLS) {
             org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
             HttpClientConnectionManager manager = getConnectionFactory(PathDirCerts, 10);
             builder.setConnectionManager(manager);
