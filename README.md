@@ -35,6 +35,10 @@ There are many user guides
 * [Spring petclinic](https://github.com/Treeptik/CloudUnit/blob/master/documentation/webapps/SPRINGPETCLINIC.md)
 * [RollerBlog (Soon) ](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/ROLLERBLOG.md)
 
+# Security Disclosure
+
+Security is very important to us. If you have any issue regarding security, please disclose the information responsibly by sending an email to contact@treeptik.fr and not by creating a github issue.
+
 # Licensing
 
 All the source code is licensed under GNU AFFERO GENERAL PUBLIC LICENSE. License is available [here](/LICENSE)
