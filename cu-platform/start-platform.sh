@@ -96,8 +96,8 @@ else
 
     if [ "$FROM_RESET" == "reset" ]; then
     echo "cu-monitor is not launched -- reset mode"
-    else
-	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
+#    else
+#	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
     fi
 
 	if [ $PROFILE == "prod" ]; then

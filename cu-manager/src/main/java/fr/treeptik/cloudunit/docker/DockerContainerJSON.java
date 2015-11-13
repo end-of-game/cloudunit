@@ -65,7 +65,7 @@ public class DockerContainerJSON {
 
     @PostConstruct
     public void initDockerEndPointMode() {
-        if (Boolean.valueOf(isHttpMode)) {
+        if (!Boolean.valueOf(isHttpMode)) {
             dockerEndpointMode = "https";
         } else {
             logger.warn("Docker TLS mode is disabled");

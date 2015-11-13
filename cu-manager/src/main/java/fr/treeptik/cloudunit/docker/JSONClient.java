@@ -71,7 +71,7 @@ public class JSONClient {
 
     @PostConstruct
     public void initDockerEndPointMode() {
-        if (Boolean.valueOf(isHttpMode)) {
+        if (!Boolean.valueOf(isHttpMode)) {
             withTLS = true;
         } else {
             logger.warn("Docker TLS is inactive");
@@ -277,7 +277,7 @@ public class JSONClient {
     }
 
     public CloseableHttpClient build() throws IOException {
-        // If directory contains certificats, it is right else display an warning
+
         if (withTLS) {
             org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
             HttpClientConnectionManager manager = getConnectionFactory(certsDirPath, 10);
@@ -289,9 +289,7 @@ public class JSONClient {
     }
 
     private static HttpClientConnectionManager getConnectionFactory(String certPath, int maxConnections) throws IOException {
-        PoolingHttpClientConnectionManager ret = certPath != null ?
-                new PoolingHttpClientConnectionManager(getSslFactoryRegistry(certPath)) :
-                new PoolingHttpClientConnectionManager();
+        PoolingHttpClientConnectionManager ret = new PoolingHttpClientConnectionManager(getSslFactoryRegistry(certPath));
         ret.setDefaultMaxPerRoute(maxConnections);
         return ret;
     }
@@ -306,12 +304,10 @@ public class JSONClient {
                             .loadKeyMaterial(keyStore, "docker".toCharArray())
                             .loadTrustMaterial(keyStore)
                             .build();
-            String tlsVerify = System.getenv("DOCKER_TLS_VERIFY");
+
             SSLConnectionSocketFactory sslsf =
-                    tlsVerify != null && !tlsVerify.equals("0") && !tlsVerify.equals("false") ?
-                            new SSLConnectionSocketFactory(sslContext) :
-                            new SSLConnectionSocketFactory(sslContext,
-                                    SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+                    new SSLConnectionSocketFactory(sslContext);
             return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslsf).build();
         } catch (GeneralSecurityException e) {
             // this isn't ideal but the net effect is the same
@@ -319,3 +315,4 @@ public class JSONClient {
         }
     }
 }
+

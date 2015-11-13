@@ -32,6 +32,9 @@ import java.util.Collection;
 public class KeyStoreUtils {
 
     public static KeyStore createDockerKeyStore(String certPath) throws IOException, GeneralSecurityException{
+
+        File file = new File(certPath + "/key.pem");
+
         PrivateKey privKey = loadPrivateKey(certPath + "/key.pem");
         Certificate[] certs = loadCertificates(certPath + "/cert.pem");
 
