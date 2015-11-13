@@ -44,7 +44,7 @@
         </encoder>
     </appender>
 
-    <logger name="fr.treeptik" level="warn"/>
+    <logger name="fr.treeptik" level="info"/>
     <logger name="fr.treeptik.cloudunit.controller" level="info"/>
     <logger name="fr.treeptik.cloudunit.controller.MessageController" level="error"/>
     <logger name="fr.treeptik.cloudunit.service.impl.ApplicationServiceImpl" level="info"/>
