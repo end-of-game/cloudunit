@@ -1,3 +1,5 @@
+![](https://github.com/Treeptik/CloudUnit-images/blob/master/logo-cloudunit.jpg)
+
 # CloudUnit - Turnkey Java PaaS - [![Build Status](https://travis-ci.org/Treeptik/CloudUnit.svg?branch=master)](https://travis-ci.org/Treeptik/CloudUnit)
 
 ## The leading Platform as a Service for Java
