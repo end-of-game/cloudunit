@@ -41,8 +41,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.IOException;
@@ -59,16 +61,20 @@ public class JSONClient {
     private static Logger logger = LoggerFactory.getLogger(JSONClient.class);
 
     // We don't use profil spring or anything else because api must have no dependency
-    private static final String PathDirCerts = "/usr/local/tomcat/certificats";
-    private static boolean WithTLS = false;
+    private boolean withTLS = false;
 
-    static {
-        File dirCerts = new File(PathDirCerts);
-        if (dirCerts.isDirectory() &&
-            FileUtils.listFiles(dirCerts, new String[]{"pem"}, true).size() == 3) {
-            WithTLS = true;
+    @Value("${certs.dir.path}")
+    private String certsDirPath;
+
+    @Value("${http.mode}")
+    private String isHttpMode;
+
+    @PostConstruct
+    public void initDockerEndPointMode() {
+        if (!Boolean.valueOf(isHttpMode)) {
+            withTLS = true;
         } else {
-            logger.warn("No certificates into " + PathDirCerts + " : docker socket tcp not secured with TLS");
+            logger.warn("Docker TLS is inactive");
         }
     }
 
@@ -271,10 +277,10 @@ public class JSONClient {
     }
 
     public CloseableHttpClient build() throws IOException {
-        // If directory contains certificats, it is right else display an warning
-        if (WithTLS) {
+
+        if (withTLS) {
             org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
-            HttpClientConnectionManager manager = getConnectionFactory(PathDirCerts, 10);
+            HttpClientConnectionManager manager = getConnectionFactory(certsDirPath, 10);
             builder.setConnectionManager(manager);
             return builder.build();
         } else {
@@ -283,9 +289,7 @@ public class JSONClient {
     }
 
     private static HttpClientConnectionManager getConnectionFactory(String certPath, int maxConnections) throws IOException {
-        PoolingHttpClientConnectionManager ret = certPath != null ?
-                new PoolingHttpClientConnectionManager(getSslFactoryRegistry(certPath)) :
-                new PoolingHttpClientConnectionManager();
+        PoolingHttpClientConnectionManager ret = new PoolingHttpClientConnectionManager(getSslFactoryRegistry(certPath));
         ret.setDefaultMaxPerRoute(maxConnections);
         return ret;
     }
@@ -300,12 +304,10 @@ public class JSONClient {
                             .loadKeyMaterial(keyStore, "docker".toCharArray())
                             .loadTrustMaterial(keyStore)
                             .build();
-            String tlsVerify = System.getenv("DOCKER_TLS_VERIFY");
+
             SSLConnectionSocketFactory sslsf =
-                    tlsVerify != null && !tlsVerify.equals("0") && !tlsVerify.equals("false") ?
-                            new SSLConnectionSocketFactory(sslContext) :
-                            new SSLConnectionSocketFactory(sslContext,
-                                    SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+                    new SSLConnectionSocketFactory(sslContext);
             return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslsf).build();
         } catch (GeneralSecurityException e) {
             // this isn't ideal but the net effect is the same
@@ -313,3 +315,4 @@ public class JSONClient {
         }
     }
 }
+

@@ -75,7 +75,7 @@ tomcat:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro 
         - /var/log/cloudunit/tomcat/culogin.log:/var/log/culogin.log
-        - /dev/urandom:/dev/random
+#TO_UNCOMMENT_IF_CU_KVM_TRUE        - /dev/urandom:/dev/random
     environment:
         - CU_SUB_DOMAIN
         - CU_KVM

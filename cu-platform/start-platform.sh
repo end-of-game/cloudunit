@@ -32,9 +32,10 @@ else
 
 	if [ "$PROFILE" == "dev" ]; then
 		echo -e "\nVous utilisez un profile de $PROFILE.\n"
-		sed -i 's/#TO_UNCOMMENT_IF_PROFILE_DEV//' docker-compose.yml
+		sed 's/#TO_UNCOMMENT_IF_PROFILE_DEV//' docker-compose.template > docker-compose.yml
 	elif [ "$PROFILE" == "prod" ]; then
 		echo -e "\nVous utilisez un profile de $PROFILE.\n"
+		cp docker-compose.template docker-compose.yml
 	else
 		echo -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
 	fi
@@ -83,7 +84,6 @@ else
 
 	# Attente du démarrage de mysql
 	echo -e "\n+++ Mysql test +++\n"
-	mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -pAezohghooNgaegh8ei2jabib2nuj9yoe -e 'select 1 from dual;;'	
 	RETURN=1
 
 	until [ "$RETURN" -eq "0" ];
@@ -96,13 +96,13 @@ else
 
     if [ "$FROM_RESET" == "reset" ]; then
     echo "cu-monitor is not launched -- reset mode"
-    else
-	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
+#    else
+#	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
     fi
 
 	if [ $PROFILE == "prod" ]; then
 		if [ "$CU_KVM" == "true" ]; then
-			sed -i 's/#TO_UNCOMMENT_IF_CU_KVM_TRUE//' docker-compose.yml
+			sed 's/#TO_UNCOMMENT_IF_CU_KVM_TRUE//' docker-compose.template > docker-compose.yml
 		fi
 		docker-compose up -d tomcat
 		docker-compose up -d nginx

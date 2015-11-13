@@ -115,5 +115,43 @@ More information [there](https://github.com/Treeptik/CloudUnit/tree/master/integ
 
 Documentation : work in progress
 
+# Switch to http mode for Docker
+
+By default, Docker is secured by TLS. We provide default certificates to run cloudunit manager in dev and demo modes.
+You must set the certificates path into src/resources/application-vagrant.properties :
+
+```
+certs.dir.path=[your home directory]/CloudUnit/conf/cert/dev
+```
+
+- If you want to start Docker daemon in http mode (if you have a MAC OSX, TLS is not supported so you have to do it for
+dev mode), enter the vagrant box, and edit in sudo mode the /etc/default/docker file commenting this line :
+
+```
+#DOCKER_OPTS="--bip 172.17.42.1/16 --dns 172.17.42.1 --dns 8.8.8.8 -H unix:///var/run/docker.sock -g /usr/local/docker
+-s aufs --tlsverify --tlscacert=/root/.docker/ca.pem --tlscert=/root/.docker/server-cert.pem
+--tlskey=/root/.docker/server-key.pem  -H=0.0.0.0:2376"
+```
+
+... and uncommenting this other line :
+
+```
+#DOCKER_OPTS="--bip 172.17.42.1/16 --dns 172.17.42.1 --dns 8.8.8.8 -H tcp://0.0.0.0:4243
+-H unix:///var/run/docker.sock -g /usr/local/docker -s aufs"
+```
+
+- restart Docker daemon
+
+```bash
+sudo service docker stop
+
+sudo service docker start
+```
+
+- change set the http.mode properties on true in src/resources/application-vagrant.properties :
+
+```
+http.mode=true
+```
 
 
