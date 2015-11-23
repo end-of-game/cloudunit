@@ -274,6 +274,18 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats.andExpect(status().isOk());
     }
 
+    @Test()
+    public void test051_CloseAPort()
+            throws Exception {
+        logger.info("Open custom ports !");
+        final String jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"6115\",\"alias\":\"access6115\"}";
+        ResultActions resultats =
+                this.mockMvc.perform(post("/server/ports/close").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+    }
+
     //@Test(timeout = 30000)
     public void test09_DeleteApplication()
         throws Exception {

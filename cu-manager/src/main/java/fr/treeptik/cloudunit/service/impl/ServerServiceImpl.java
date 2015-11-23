@@ -783,10 +783,10 @@ public class ServerServiceImpl
                          boolean isRunning)
             throws ServiceException {
         try {
-            Server server = this.findByApp(
-                    applicationService.findByNameAndUser(
-                            authentificationUtils.getAuthentificatedUser(),
-                            applicationName)).get(0);
+            Application application = applicationService.findByNameAndUser(
+                    authentificationUtils.getAuthentificatedUser(),
+                    applicationName);
+            Server server = this.findByApp(application).get(0);
 
             List<PortToOpen> portsToOpen = new ArrayList<>();
 
@@ -799,6 +799,8 @@ public class ServerServiceImpl
             } else {
                 server.getPortsToOpen().addAll(portsToOpen);
             }
+
+            applicationService.addNewAlias(application, alias);
 
             server = update(server);
 
@@ -820,19 +822,26 @@ public class ServerServiceImpl
                           boolean isRunning)
             throws ServiceException {
         try {
-            Server server = this.findByApp(
-                    applicationService.findByNameAndUser(
-                            authentificationUtils.getAuthentificatedUser(),
-                            applicationName)).get(0);
+
+            Application application = applicationService.findByNameAndUser(
+                    authentificationUtils.getAuthentificatedUser(),
+                    applicationName);
+            Server server = this.findByApp(application).get(0);
 
             if (server.getPortsToOpen() == null) {
                 server.setPortsToOpen(new ArrayList<PortToOpen>());
             }
-            server.getPortsToOpen().remove(
-                    server.getPortsToOpen().stream()
-                            .filter(t -> t.getPort().equals(port)).findAny());
+            PortToOpen portToOpen = server.getPortsToOpen().stream()
+                    .filter(t -> t.getPort().equals(port)).findAny().get();
+            applicationService.removeAlias(application, alias);
+
+            List<PortToOpen> portsToOpen = server.getPortsToOpen();
+            portsToOpen.remove(portToOpen);
+            server.setPortsToOpen(portsToOpen);
 
             server = update(server);
+
+            portToOpenDAO.delete(portToOpen);
 
             if (isRunning) {
                 stopServer(server);
@@ -842,7 +851,7 @@ public class ServerServiceImpl
             }
 
         } catch (ServiceException | CheckException e) {
-            throw new ServiceException("error open port", e);
+            throw new ServiceException("error close port", e);
         }
     }
 }

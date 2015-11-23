@@ -45,7 +45,7 @@ import java.util.Locale;
 @Controller
 @RequestMapping("/server")
 public class ServerController
-    implements Serializable {
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -74,7 +74,7 @@ public class ServerController
     @RequestMapping(value = "/configuration/jvm", method = RequestMethod.PUT)
     @ResponseBody
     public JsonResponse setOptionsJVM(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         if (logger.isDebugEnabled()) {
             logger.debug("" + input);
@@ -82,7 +82,7 @@ public class ServerController
 
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user,
-            input.getApplicationName());
+                input.getApplicationName());
 
         authentificationUtils.canStartNewAction(user, application, locale);
 
@@ -95,8 +95,8 @@ public class ServerController
         try {
             for (Server server : application.getServers()) {
                 serverService.update(server, input.getJvmMemory(),
-                    input.getJvmOptions(), input.getJvmRelease(),
-                    false);
+                        input.getJvmOptions(), input.getJvmRelease(),
+                        false);
             }
         } catch (Exception e) {
             applicationService.setStatus(application, Status.FAIL);
@@ -119,21 +119,20 @@ public class ServerController
     @RequestMapping(value = "/ports/open", method = RequestMethod.POST)
     @ResponseBody
     public JsonResponse openPort(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user,
-            input.getApplicationName());
+                input.getApplicationName());
 
         authentificationUtils.canStartNewAction(user, application, locale);
 
         boolean isApplicatioRunning = application.getStatus().equals(Status.START);
 
         applicationService.setStatus(application, Status.PENDING);
-        System.out.println(input.getPortToOpen() + input.getApplicationName() + input.getAlias());
 
         serverService.openPort(input.getApplicationName(),
-            input.getPortToOpen(), input.getAlias(), isApplicatioRunning);
+                input.getPortToOpen(), input.getAlias(), isApplicatioRunning);
 
         applicationService.setStatus(application, Status.START);
 
@@ -152,13 +151,18 @@ public class ServerController
     @RequestMapping(value = "/ports/close", method = RequestMethod.POST)
     @ResponseBody
     public JsonResponse closePort(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user,
-            input.getApplicationName());
+                input.getApplicationName());
 
-        // todo
+        boolean isApplicatioRunning = application.getStatus().equals(Status.START);
+
+        serverService.closePort(input.getApplicationName(),
+                input.getPortToOpen(),
+                input.getAlias(),
+                isApplicatioRunning);
 
         authentificationUtils.canStartNewAction(user, application, locale);
 
