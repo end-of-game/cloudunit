@@ -67,4 +67,13 @@ public class PortToOpen
         this.alias = alias;
     }
 
+
+    @Override
+    public String toString() {
+        return "PortToOpen{" +
+                "id=" + id +
+                ", port='" + port + '\'' +
+                ", alias='" + alias + '\'' +
+                '}';
+    }
 }

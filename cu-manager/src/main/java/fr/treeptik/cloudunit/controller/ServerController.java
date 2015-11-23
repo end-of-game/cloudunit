@@ -130,6 +130,7 @@ public class ServerController
         boolean isApplicatioRunning = application.getStatus().equals(Status.START);
 
         applicationService.setStatus(application, Status.PENDING);
+        System.out.println(input.getPortToOpen() + input.getApplicationName() + input.getAlias());
 
         serverService.openPort(input.getApplicationName(),
             input.getPortToOpen(), input.getAlias(), isApplicatioRunning);

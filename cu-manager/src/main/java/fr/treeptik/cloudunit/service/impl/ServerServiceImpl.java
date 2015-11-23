@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
+import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
@@ -72,6 +73,9 @@ public class ServerServiceImpl
 
     @Inject
     private ContainerMapper containerMapper;
+
+    @Inject
+    private PortToOpenDAO portToOpenDAO;
 
     @Value("${cloudunit.max.servers:1}")
     private String maxServers;
@@ -480,6 +484,10 @@ public class ServerServiceImpl
             DockerContainer dockerContainer = new DockerContainer();
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
+
+            server.getPortsToOpen().stream().forEach(System.out::println);
+
+
             if (server.getPortsToOpen() != null) {
                 dockerContainer.setPortsToOpen(server.getPortsToOpen().stream()
                         .map(t -> Integer.parseInt(t.getPort()))
@@ -780,10 +788,18 @@ public class ServerServiceImpl
                             authentificationUtils.getAuthentificatedUser(),
                             applicationName)).get(0);
 
-            if (server.getPortsToOpen() == null) {
-                server.setPortsToOpen(new ArrayList<PortToOpen>());
+            List<PortToOpen> portsToOpen = new ArrayList<>();
+
+            PortToOpen portToOpen = portToOpenDAO.save(new PortToOpen(port, alias));
+
+            portsToOpen.add(portToOpen);
+
+            if (server.getPortsToOpen() == null || server.getPortsToOpen().isEmpty()) {
+                server.setPortsToOpen(portsToOpen);
+            } else {
+                server.getPortsToOpen().addAll(portsToOpen);
             }
-            server.getPortsToOpen().add(new PortToOpen(port, alias));
+
             server = update(server);
 
             if (isRunning) {
