@@ -1,6 +1,6 @@
 # CloudUnit server installation
 
-You are reading the wright guide if you want to setup a CloudUnit server, in order to frequently use it. If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box](https://github.com/Treeptik/CloudUnit/blob/master/DEMO-GUIDE.md). If you want to setup an environment to contribute to CloudUnit development, read our [Dev guide](https://github.com/Treeptik/cloudunit/blob/master/DEV-GUIDE.md).
+You are reading the wright guide if you want to setup a CloudUnit server, in order to frequently use it. If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box](https://github.com/Treeptik/CloudUnit/blob/master/documentation/DEMO-GUIDE.md). If you want to setup an environment to contribute to CloudUnit development, read our [Dev guide](https://github.com/Treeptik/cloudunit/blob/master/documentation/DEV-GUIDE.md).
 
 
 ## Requirements
