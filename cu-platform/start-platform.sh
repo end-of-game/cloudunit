@@ -34,6 +34,7 @@ else
 		echo -e "\nVous utilisez un profile de $PROFILE.\n"
 		sed 's/#TO_UNCOMMENT_IF_PROFILE_DEV//' docker-compose.template > docker-compose.yml
 	elif [ "$PROFILE" == "prod" ]; then
+		echo "192.168.50.4	cloudunit.demo" >> /etc/hosts
 		echo -e "\nVous utilisez un profile de $PROFILE.\n"
 		cp docker-compose.template docker-compose.yml
 	else
