@@ -18,7 +18,6 @@ package fr.treeptik.cloudunit.docker;
 
 import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.utils.KeyStoreUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.http.HttpResponse;
@@ -46,7 +45,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
@@ -66,18 +64,18 @@ public class JSONClient {
     @Value("${certs.dir.path}")
     private String certsDirPath;
 
-    @Value("${http.mode}")
-    private String isHttpMode;
+    @Value("${docker.endpoint.mode}")
+    private String dockerEndpointMode;
 
     @PostConstruct
     public void initDockerEndPointMode() {
-        if (!Boolean.valueOf(isHttpMode)) {
-            withTLS = true;
+        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
+            logger.warn("Docker TLS mode is disabled");
+            withTLS = false;
         } else {
-            logger.warn("Docker TLS is inactive");
+            withTLS = true;
         }
     }
-
 
     public JsonResponse sendGet(URI uri)
             throws IOException {

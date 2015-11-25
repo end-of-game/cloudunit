@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Paths;
@@ -75,9 +76,20 @@ public class FileServiceImpl
     @Value("${certs.dir.path}")
     private String certsDirPath;
 
-    @Value("${http.mode}")
-    private String isHttpMode;
+    @Value("${docker.endpoint.mode}")
+    private String dockerEndpointMode;
 
+    private boolean isHttpMode;
+
+    @PostConstruct
+    public void initDockerEndPointMode() {
+        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
+            logger.warn("Docker TLS mode is disabled");
+            isHttpMode = true;
+        } else {
+            isHttpMode = false;
+        }
+    }
 
     /**
      * Delete all resources (files and folders) for an application + container +
@@ -93,7 +105,7 @@ public class FileServiceImpl
             throws ServiceException {
         try {
             DockerClient docker = null;
-            if (Boolean.valueOf(isHttpMode)) {
+            if (isHttpMode) {
                 docker = DefaultDockerClient
                         .builder()
                         .uri("http://" + dockerManagerIp).build();

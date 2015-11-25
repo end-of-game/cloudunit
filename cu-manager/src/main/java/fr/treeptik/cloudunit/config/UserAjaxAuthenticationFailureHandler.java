@@ -45,7 +45,6 @@ public class UserAjaxAuthenticationFailureHandler
         throws IOException, ServletException {
 
         logger.warn("Authentication failed");
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-            "Authentication failed");
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad credentials");
     }
 }

@@ -149,7 +149,7 @@ public class UserControllerTestIT {
         final String username = "johndoe";
         mockMvc.perform(post("/user/authentication")
                 .param("j_username", username).param("j_password", "XXXXXX"))
-                .andExpect(status().is(HttpStatus.SC_UNAUTHORIZED));
+            .andExpect(status().is(HttpStatus.SC_BAD_REQUEST));
     }
 
     @Test

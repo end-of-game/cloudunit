@@ -29,9 +29,18 @@
     };
 
     function handle(error) {
-      if (error.status === 401) {
+
+      if (error.status === 400) {
+        console.log(error);
         $rootScope.$broadcast(':unauthorized', {
-          message: 'The username or password you entered was incorrect'
+          message: 'The username or password you entered was incorrect.'
+        });
+      }
+
+      if (error.status === 401) {
+        console.log(error);
+        $rootScope.$broadcast(':unauthorized', {
+          message: ''
         });
       }
 

@@ -514,21 +514,7 @@
 		</profile>
 
         <profile>
-            <id>macdev</id>
-            <properties>
-                <!-- For Mac Developper, no way to access to HTTPS Socket -->
-                <!-- Think to verify if TLS is disabled into /etc/default/docker -->
-                <docker.endpoint.mode>http</docker.endpoint.mode>
-            </properties>
-        </profile>
-
-        <profile>
 			<id>default</id>
-			<properties>
-				<!-- For Mac Developper, no way to access to HTTPS Socket -->
-				<!-- Think to verify if TLS is disabled into /etc/default/docker -->
-				<docker.endpoint.mode>https</docker.endpoint.mode>
-			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>

@@ -49,6 +49,7 @@
     }
 
     function check(username, password) {
+
       return UserService.check(username, password)
         .then(success)
         .catch(error);

@@ -79,10 +79,15 @@ public class CloudUnitApplicationContext
     @Profile("vagrant")
     public static PropertySourcesPlaceholderConfigurer properties()
         throws Exception {
+        String OS = System.getProperty("os.name").toLowerCase();
+        String file = "application-vagrant-linux.properties";
+        if (OS.indexOf("mac") >= 0) {
+            file = "application-vagrant-macos.properties";
+        }
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
         Resource[] resources = new Resource[]
-            {new ClassPathResource("application-vagrant.properties")};
+            {new ClassPathResource(file)};
         pspc.setLocations(resources);
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
@@ -122,10 +127,15 @@ public class CloudUnitApplicationContext
     @Profile("integration")
     public static PropertySourcesPlaceholderConfigurer propertiesForIntegration()
         throws Exception {
+        String OS = System.getProperty("os.name").toLowerCase();
+        String file = "application-integration-linux.properties";
+        if (OS.indexOf("mac") >= 0) {
+            file = "application-integration-macos.properties";
+        }
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
         Resource[] resources = new Resource[]
-            {new ClassPathResource("application-integration.properties")};
+            {new ClassPathResource(file)};
         pspc.setLocations(resources);
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);

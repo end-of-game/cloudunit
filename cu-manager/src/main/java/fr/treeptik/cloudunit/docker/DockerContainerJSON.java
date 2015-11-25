@@ -58,21 +58,20 @@ public class DockerContainerJSON {
     @Inject
     private PortUtils portUtils;
 
-    @Value("${http.mode}")
-    private String isHttpMode;
-
+    @Value("${docker.endpoint.mode}")
     private String dockerEndpointMode;
+
+    private boolean isHttpMode;
 
     @PostConstruct
     public void initDockerEndPointMode() {
-        if (!Boolean.valueOf(isHttpMode)) {
-            dockerEndpointMode = "https";
-        } else {
+        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
             logger.warn("Docker TLS mode is disabled");
-            dockerEndpointMode = "http";
+            isHttpMode = true;
+        } else {
+            isHttpMode = false;
         }
     }
-
 
     private static JSONObject parser(String message)
             throws ParseException {
