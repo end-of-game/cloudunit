@@ -399,4 +399,54 @@ public class ApplicationController
         return new HttpOk();
     }
 
+
+    /**
+     * Add a port for an application
+     *
+     * @param input
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @CloudUnitSecurable
+    @ResponseBody
+    @RequestMapping(value = "/ports", method = RequestMethod.POST)
+    public JsonResponse addPort(@RequestBody JsonInput input)
+        throws ServiceException, CheckException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(input.toString());
+        }
+
+        User user = this.authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
+
+        return new HttpOk();
+    }
+
+    /**
+     * Delete a port for an application
+     *
+     * @param jsonInput
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @CloudUnitSecurable
+    @ResponseBody
+    @RequestMapping(value = "/{applicationName}/ports/{number}", method = RequestMethod.DELETE)
+    public JsonResponse removePort(JsonInput jsonInput)
+        throws ServiceException, CheckException {
+
+        String applicationName = jsonInput.getApplicationName();
+        String alias = jsonInput.getAlias();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("application.name=" + applicationName);
+            logger.debug("alias.name=" + alias);
+        }
+
+        return new HttpOk();
+    }
+
 }
