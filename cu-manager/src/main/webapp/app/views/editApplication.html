@@ -65,6 +65,11 @@
               <span>Aliases</span>
             </a>
           </li>
+          <li data-ng-class="{'active': editApp.currentTab === 'ports'}">
+            <a id="ports-tab" data-ng-href="#editApplication/{{editApp.application.name}}/ports" ripple="">
+              <span>Ports</span>
+            </a>
+          </li>
           <li
             data-ng-class="{'active': editApp.currentTab === 'configureJVM', 'disabled':editApp.application.status==='STOP'}">
             <a id="configure-jvm-tab" data-ng-href="#editApplication/{{editApp.application.name}}/configureJVM"
@@ -134,6 +139,10 @@
 
       <div id="monitoring" ng-switch-when="monitoring">
         <ng-include src="'views/editApplication.monitoring.html'"></ng-include>
+      </div>
+
+      <div id="ports" ng-switch-when="ports">
+        <ng-include src="'views/editApplication.ports.html'"></ng-include>
       </div>
 
       <div id="snapshot" ng-switch-when="snapshot">

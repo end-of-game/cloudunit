@@ -123,6 +123,23 @@
     function removeAlias(applicationName, alias) {
       return $http.delete('application/' + applicationName + '/alias/' + alias);
     }
+
+
+    // Gestion des ports
+
+    function createPort(applicationName, number, nature) {
+      var data = {
+        applicationName: applicationName,
+        number: number,
+        nature: nature
+      };
+      return $http.post('application/ports', data);
+    }
+
+    function removePort(applicationName, number) {
+      return $http.delete('application/' + applicationName + '/ports/' + number);
+    }
+
   }
 })();
 
