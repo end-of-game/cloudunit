@@ -485,12 +485,12 @@ public class ServerServiceImpl
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
 
-            server.getPortsToOpen().stream().forEach(System.out::println);
+            server.getApplication().getPortsToOpen().stream().forEach(System.out::println);
 
 
-            if (server.getPortsToOpen() != null) {
-                dockerContainer.setPortsToOpen(server.getPortsToOpen().stream()
-                        .map(t -> Integer.parseInt(t.getPort()))
+            if (server.getApplication().getPortsToOpen() != null) {
+                dockerContainer.setPortsToOpen(server.getApplication().getPortsToOpen().stream()
+                        .map(t -> t.getPort())
                         .collect(Collectors.toList()));
             }
             DockerContainer.start(dockerContainer, application.getManagerIp());
@@ -512,12 +512,12 @@ public class ServerServiceImpl
             // ajout des alias des ports forwardés
             final Application effectiveApplication = application;
             final Server effectiveServer = server;
-            server.getPortsToOpen()
+            server.getApplication().getPortsToOpen()
                     .stream()
                     .filter(t -> t.getAlias() != null)
                     .forEach(
                             t -> hipacheRedisUtils.writeNewAlias(
-                                    t.getPort(),
+                                    t.getPort().toString(),
                                     effectiveApplication,
                                     effectiveServer.getListPorts().get(
                                             t + "/tcp")));
@@ -777,81 +777,5 @@ public class ServerServiceImpl
         return server;
     }
 
-    @Transactional
-    @Override
-    public void openPort(String applicationName, String port, String alias,
-                         boolean isRunning)
-            throws ServiceException {
-        try {
-            Application application = applicationService.findByNameAndUser(
-                    authentificationUtils.getAuthentificatedUser(),
-                    applicationName);
-            Server server = this.findByApp(application).get(0);
 
-            List<PortToOpen> portsToOpen = new ArrayList<>();
-
-            PortToOpen portToOpen = portToOpenDAO.save(new PortToOpen(port, alias));
-
-            portsToOpen.add(portToOpen);
-
-            if (server.getPortsToOpen() == null || server.getPortsToOpen().isEmpty()) {
-                server.setPortsToOpen(portsToOpen);
-            } else {
-                server.getPortsToOpen().addAll(portsToOpen);
-            }
-
-            applicationService.addNewAlias(application, alias);
-
-            server = update(server);
-
-            if (isRunning) {
-                stopServer(server);
-                startServer(server);
-            } else {
-                startServer(server);
-            }
-
-        } catch (ServiceException | CheckException e) {
-            throw new ServiceException("error open port", e);
-        }
-    }
-
-    @Transactional
-    @Override
-    public void closePort(String applicationName, String port, String alias,
-                          boolean isRunning)
-            throws ServiceException {
-        try {
-
-            Application application = applicationService.findByNameAndUser(
-                    authentificationUtils.getAuthentificatedUser(),
-                    applicationName);
-            Server server = this.findByApp(application).get(0);
-
-            if (server.getPortsToOpen() == null) {
-                server.setPortsToOpen(new ArrayList<PortToOpen>());
-            }
-            PortToOpen portToOpen = server.getPortsToOpen().stream()
-                    .filter(t -> t.getPort().equals(port)).findAny().get();
-            applicationService.removeAlias(application, alias);
-
-            List<PortToOpen> portsToOpen = server.getPortsToOpen();
-            portsToOpen.remove(portToOpen);
-            server.setPortsToOpen(portsToOpen);
-
-            server = update(server);
-
-            portToOpenDAO.delete(portToOpen);
-
-            if (isRunning) {
-                stopServer(server);
-                startServer(server);
-            } else {
-                startServer(server);
-            }
-
-        } catch (ServiceException | CheckException e) {
-            throw new ServiceException("error close port", e);
-        }
-    }
 }

@@ -603,7 +603,6 @@ public class DockerContainerJSON {
                 config.put("VolumesFrom", listVolumesFrom);
             }
 
-            System.out.println("DOCKER PORT BINDING : " + dockerContainer.getPortsToOpen());
 
             if (dockerContainer.getPortsToOpen() != null) {
                 JSONObject portsBinding = new JSONObject();
@@ -659,7 +658,6 @@ public class DockerContainerJSON {
              * Gestion du binding de port
              */
 
-            System.out.println("second appel : " + dockerContainer.getPortBindings());
 
             JSONObject portBindsConfigJSONFinal = new JSONObject();
             if (dockerContainer.getPortBindings() != null) {

@@ -56,6 +56,8 @@ public class JsonInput
 
     private String portToOpen;
 
+    private String portNature;
+
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
@@ -180,6 +182,14 @@ public class JsonInput
 
     public void setPortToOpen(String portToOpen) {
         this.portToOpen = portToOpen;
+    }
+
+    public String getPortNature() {
+        return this.portNature;
+    }
+
+    public void setPortNature(String portNature) {
+        this.portNature = portNature;
     }
 
     // VALIDATIONS

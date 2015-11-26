@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
+import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -49,6 +50,9 @@ public class ApplicationServiceImpl
 
     @Inject
     private ApplicationDAO applicationDAO;
+
+    @Inject
+    private PortToOpenDAO portToOpenDAO;
 
     @Inject
     private ServerService serverService;
@@ -1021,6 +1025,45 @@ public class ApplicationServiceImpl
         } catch (DataAccessException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
+    }
+
+    @Transactional
+    @Override
+    public void addPort(Application application, String nature, Integer port, String alias) throws ServiceException {
+        PortToOpen portToOpen = new PortToOpen();
+        portToOpen.setNature(nature);
+        portToOpen.setAlias(alias);
+        portToOpen.setPort(port);
+        portToOpen.setApplication(application);
+
+        try {
+            portToOpenDAO.save(portToOpen);
+        } catch (DataAccessException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+
+
+    }
+
+    @Transactional
+    @Override
+    public void removePort(Application application, Integer port) throws ServiceException {
+        application.getPortsToOpen()
+                .stream().forEach(System.out::println);
+        PortToOpen portToOpen = application.getPortsToOpen()
+                .stream()
+                .filter(p -> p.getPort().equals(port))
+                .findFirst()
+                .get();
+        try {
+
+            portToOpenDAO.delete(portToOpen);
+
+        } catch (DataAccessException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
+
+
     }
 
     private boolean checkAliasIfExists(String alias) {

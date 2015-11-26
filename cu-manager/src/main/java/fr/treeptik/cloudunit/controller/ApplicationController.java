@@ -414,12 +414,19 @@ public class ApplicationController
     public JsonResponse addPort(@RequestBody JsonInput input)
         throws ServiceException, CheckException {
 
+        String applicationName = input.getApplicationName();
+        String alias = input.getAlias();
+        Integer port = Integer.parseInt(input.getPortToOpen());
+        String nature = input.getPortNature();
+
         if (logger.isDebugEnabled()) {
             logger.debug(input.toString());
         }
 
         User user = this.authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        applicationService.addPort(application, nature, port, alias);
 
         return new HttpOk();
     }
@@ -427,24 +434,28 @@ public class ApplicationController
     /**
      * Delete a port for an application
      *
-     * @param jsonInput
+     * @param input
      * @return
      * @throws ServiceException
      * @throws CheckException
      */
-    @CloudUnitSecurable
+    //  @CloudUnitSecurable
     @ResponseBody
-    @RequestMapping(value = "/{applicationName}/ports/{number}", method = RequestMethod.DELETE)
-    public JsonResponse removePort(JsonInput jsonInput)
+    @RequestMapping(value = "/{applicationName}/ports/{portToOpen}", method = RequestMethod.DELETE)
+    public JsonResponse removePort(JsonInput input)
         throws ServiceException, CheckException {
 
-        String applicationName = jsonInput.getApplicationName();
-        String alias = jsonInput.getAlias();
+
+        String applicationName = input.getApplicationName();
+        Integer port = Integer.parseInt(input.getPortToOpen());
 
         if (logger.isDebugEnabled()) {
             logger.debug("application.name=" + applicationName);
-            logger.debug("alias.name=" + alias);
         }
+        User user = this.authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+        applicationService.removePort(application, port);
+
 
         return new HttpOk();
     }

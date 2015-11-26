@@ -14,7 +14,6 @@
  */
 
 
-
 package fr.treeptik.cloudunit.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,7 +27,7 @@ import java.util.*;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name"}))
 public class Application
-    implements Serializable {
+        implements Serializable {
 
     public static final String ALREADY_DEPLOYED = "ALREADY_DEPLOYED";
 
@@ -61,8 +60,11 @@ public class Application
     private Set<Server> servers;
 
     @OneToMany(mappedBy = "application", fetch = FetchType.LAZY,
-        cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Deployment> deployments;
+
+    @ElementCollection
+    private Set<String> urls;
 
     private String gitAddress;
 
@@ -97,6 +99,9 @@ public class Application
     private String deploymentStatus;
 
     private boolean isAClone;
+
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
+    private Set<PortToOpen> portsToOpen;
 
     public Application() {
         super();
@@ -247,7 +252,7 @@ public class Application
 
     public String getLocation() {
         return "http://" + name + "-" + user.getLogin() + "-"
-            + user.getOrganization() + suffixCloudUnitIO;
+                + user.getOrganization() + suffixCloudUnitIO;
     }
 
     public Set<String> getAliases() {
@@ -269,23 +274,23 @@ public class Application
     @Override
     public String toString() {
         return "Application{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            ", status=" + status +
-            ", date=" + date +
-            ", user=" + user +
-            ", domainName='" + domainName + '\'' +
-            ", managerIP='" + managerIp + '\'' +
-            ", managerPort='" + managerPort + '\'' +
-            ", jvmRelease='" + jvmRelease + '\'' +
-            ", restHost='" + restHost + '\'' +
-            ", gitContainerIP='" + gitContainerIP + '\'' +
-            ", deploymentStatus='" + deploymentStatus + '\'' +
-            ", gitSshProxyPort='" + gitSshProxyPort + '\'' +
-            ", gitAddress='" + gitAddress + '\'' +
-            ", suffixCloudUnitIO='" + suffixCloudUnitIO + '\'' +
-            ", isAClone=" + isAClone +
-            '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", date=" + date +
+                ", user=" + user +
+                ", domainName='" + domainName + '\'' +
+                ", managerIP='" + managerIp + '\'' +
+                ", managerPort='" + managerPort + '\'' +
+                ", jvmRelease='" + jvmRelease + '\'' +
+                ", restHost='" + restHost + '\'' +
+                ", gitContainerIP='" + gitContainerIP + '\'' +
+                ", deploymentStatus='" + deploymentStatus + '\'' +
+                ", gitSshProxyPort='" + gitSshProxyPort + '\'' +
+                ", gitAddress='" + gitAddress + '\'' +
+                ", suffixCloudUnitIO='" + suffixCloudUnitIO + '\'' +
+                ", isAClone=" + isAClone +
+                '}';
     }
 
     @Override
@@ -367,5 +372,26 @@ public class Application
             }
         }
         return sshPort;
+    }
+
+    public Set<PortToOpen> getPortsToOpen() {
+
+        if (portsToOpen == null) {
+            return new HashSet<>();
+        }
+
+        return this.portsToOpen;
+    }
+
+    public void setPortsToOpen(Set<PortToOpen> portsToOpen) {
+        this.portsToOpen = portsToOpen;
+    }
+
+    public Set<String> getUrls() {
+        return this.urls;
+    }
+
+    public void setUrls(Set<String> urls) {
+        this.urls = urls;
     }
 }

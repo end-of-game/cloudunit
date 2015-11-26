@@ -86,11 +86,5 @@ public interface ServerService {
         throws ServiceException,
         CheckException;
 
-    void openPort(String applicationName, String port, String alias,
-                  boolean isRunning)
-        throws ServiceException;
 
-    void closePort(String applicationName, String port, String alias,
-                   boolean isRunning)
-        throws ServiceException;
 }

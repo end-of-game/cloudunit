@@ -99,4 +99,7 @@ public interface ApplicationService {
     Application create(String applicationName, String login, String serverName, String tagName)
         throws ServiceException, CheckException;
 
+    void addPort(Application application, String nature, Integer port, String alias) throws ServiceException;
+
+    void removePort(Application application, Integer port) throws ServiceException;
 }

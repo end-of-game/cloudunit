@@ -132,7 +132,7 @@ public class ServerController
         applicationService.setStatus(application, Status.PENDING);
 
         serverService.openPort(input.getApplicationName(),
-                input.getPortToOpen(), input.getAlias(), isApplicatioRunning);
+                Integer.parseInt(input.getPortToOpen()), input.getAlias(), isApplicatioRunning);
 
         applicationService.setStatus(application, Status.START);
 

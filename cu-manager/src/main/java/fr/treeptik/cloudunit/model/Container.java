@@ -88,10 +88,6 @@ public class Container
 
     private String sshPort;
 
-    @OneToMany(cascade = CascadeType.REMOVE)
-    @JsonIgnore
-    private Set<PortToOpen> portsToOpen;
-
     public Container() {
     }
 
@@ -223,16 +219,5 @@ public class Container
         this.volumesFrom = volumesFrom;
     }
 
-    public List<PortToOpen> getPortsToOpen() {
-        if (portsToOpen != null) {
-            return new ArrayList<>(portsToOpen);
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    public void setPortsToOpen(List<PortToOpen> portsToOpen) {
-        this.portsToOpen = new HashSet<>(portsToOpen);
-    }
 
 }

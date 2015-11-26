@@ -28,7 +28,6 @@ public interface ServerDAO
 
     @Query("Select distinct s " +
         "from Server s " +
-        "left join fetch s.portsToOpen p " +
         "left join fetch s.image " +
         "where s.name=:name")
     Server findByName(@Param("name") String name)
@@ -36,15 +35,14 @@ public interface ServerDAO
 
     @Query("Select distinct s " +
         "from Server s " +
-        "left join fetch s.portsToOpen p" +
-        "left join fetch s.image " +
+
+            "left join fetch s.image " +
         "where s.application.id=:appId")
     List<Server> findByApp(@Param("appId") Integer applicationId)
         throws DataAccessException;
 
     @Query("Select distinct s " +
         "from Server s " +
-        "left join fetch s.portsToOpen p " +
         "left join fetch s.image " +
         "where s.containerID=:id")
     Server findByContainerID(@Param("id") String id)

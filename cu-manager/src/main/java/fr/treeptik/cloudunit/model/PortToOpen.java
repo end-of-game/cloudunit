@@ -15,10 +15,9 @@
 
 package fr.treeptik.cloudunit.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -31,49 +30,83 @@ public class PortToOpen
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private String port;
+    private Integer port;
 
     private String alias;
+
+    private Integer forwardedPort;
+
+    private String nature;
+
+    @ManyToOne
+    @JsonIgnore
+    private Application application;
 
     public PortToOpen() {
     }
 
-    public PortToOpen(String port, String alias) {
-        this.port = port;
+    public PortToOpen(Integer port, String alias) {
         this.alias = alias;
+        this.port = port;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getPort() {
+        return this.port;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
+    public void setPort(Integer port) {
         this.port = port;
     }
 
     public String getAlias() {
-        return alias;
+        return this.alias;
     }
 
     public void setAlias(String alias) {
         this.alias = alias;
     }
 
+    public Integer getForwardedPort() {
+        return this.forwardedPort;
+    }
+
+    public void setForwardedPort(Integer forwardedPort) {
+        this.forwardedPort = forwardedPort;
+    }
+
+    public Integer getId() {
+        return this.id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNature() {
+        return this.nature;
+    }
+
+    public void setNature(String nature) {
+        this.nature = nature;
+    }
+
+    public Application getApplication() {
+        return this.application;
+    }
+
+    public void setApplication(Application application) {
+        this.application = application;
+    }
 
     @Override
     public String toString() {
         return "PortToOpen{" +
                 "id=" + id +
-                ", port='" + port + '\'' +
+                ", port=" + port +
                 ", alias='" + alias + '\'' +
+                ", forwardedPort=" + forwardedPort +
+                ", nature='" + nature + '\'' +
+                ", application=" + application +
                 '}';
     }
 }

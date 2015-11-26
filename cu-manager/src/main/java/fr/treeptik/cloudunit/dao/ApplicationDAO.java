@@ -34,7 +34,7 @@ public interface ApplicationDAO
         "left join fetch m.moduleInfos " +
         "left join fetch m.listPorts " +
         "left join fetch s.listPorts " +
-        "left join fetch s.portsToOpen " +
+            "left join fetch a.portsToOpen " +
         "where a.user.id=:userId and a.name=:name")
     Application findByNameAndUser(@Param("userId") Integer userId,
                                   @Param("name") String name)
@@ -45,6 +45,7 @@ public interface ApplicationDAO
         "join fetch a.modules " +
         "left join fetch a.deployments " +
         "left join fetch a.aliases " +
+            "left join fetch a.portsToOpen " +
         "where a.user.id=:userId")
     public List<Application> findAllByUser(@Param("userId") Integer userId)
         throws DataAccessException;
