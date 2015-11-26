@@ -286,7 +286,7 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats.andExpect(status().isOk());
     }
 
-    //@Test(timeout = 30000)
+    @Test(timeout = 30000)
     public void test09_DeleteApplication()
         throws Exception {
         logger.info("Delete application : " + applicationName);

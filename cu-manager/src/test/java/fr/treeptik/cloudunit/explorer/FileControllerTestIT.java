@@ -48,6 +48,7 @@ import javax.servlet.Filter;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -131,22 +132,37 @@ public class FileControllerTestIT {
     }
 
     @After
-    public void teardown() {
+    public void teardown() throws Exception {
         logger.info("**********************************");
         logger.info("           teardown               ");
         logger.info("**********************************");
+
+        logger.info("Delete application : " + applicationName);
+        ResultActions resultats =
+            mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        ResultActions resultActions = resultats.andExpect(status().isOk());
 
         SecurityContextHolder.clearContext();
         session.invalidate();
     }
 
-    @Test(timeout = 30000)
-    public void test09_DeleteApplication()
-        throws Exception {
-        logger.info("Delete application : " + applicationName);
+    @Test
+    public void test() throws Exception {
         ResultActions resultats =
-            mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
+            mockMvc.perform(get("/application/" + applicationName.toLowerCase() + "/containers").session(session).contentType(MediaType.APPLICATION_JSON));
+        ResultActions resultActions = resultats.andExpect(status().isOk()).andDo(print());
+        String content = resultActions.andReturn().getResponse().getContentAsString();
+        String subContent = content.substring(content.indexOf("\"id\":\"")+6);
+        String containerId = subContent.substring(0, subContent.indexOf("\",\"type\""));
+
+        resultats =
+            mockMvc.perform(get("/file/container/"+containerId+"/path/__cloudunit__")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON));
+        resultActions = resultats.andExpect(status().isOk());
+        content = resultActions.andReturn().getResponse().getContentAsString();
+
+        Assert.assertTrue(content.contains("/cloudunit/appconf"));
     }
 
 
