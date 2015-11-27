@@ -49,7 +49,6 @@ public class LogController {
     @Inject
     private LogService logService;
 
-    //@Qualifier("elasticsearch")
     @Autowired
     private FileService fileService;
 

@@ -56,7 +56,7 @@ import java.util.Locale;
     "fr.treeptik.cloudunit.service", "fr.treeptik.cloudunit.service.impl",
     "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
     "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl",
-    "fr.treeptik.cloudunit.validator"
+    "fr.treeptik.cloudunit.monitor", "fr.treeptik.cloudunit.monitor.tasks"
 })
 @PropertySource({"classpath:/application.properties"})
 @PropertySource({"classpath:/maven.properties"})
