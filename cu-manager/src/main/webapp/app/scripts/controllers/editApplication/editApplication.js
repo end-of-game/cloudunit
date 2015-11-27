@@ -65,12 +65,14 @@
     /////////////////////////////////////////////////////
 
     function update() {
+
       ApplicationService.findByName(CurrentApplicationName)
         .then(success)
         .catch(error);
 
       function success(application) {
         vm.application = application;
+        console.log(vm.application);
         return vm.application;
       }
 

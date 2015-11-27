@@ -51,7 +51,8 @@
       createAlias: createAlias,
       removeAlias: removeAlias,
       createPort: createPort,
-      removePort: removePort
+      removePort: removePort,
+      restart: restart
     };
 
 
@@ -77,6 +78,15 @@
       var output = {};
       output.applicationName = applicationName;
       var Application = $resource('application/start');
+      return Application.save(JSON.stringify(output));
+    }
+
+    // Démarrer une application
+    function restart(applicationName) {
+      var output = {};
+      console.log(applicationName);
+      output.applicationName = applicationName;
+      var Application = $resource('application/restart');
       return Application.save(JSON.stringify(output));
     }
 

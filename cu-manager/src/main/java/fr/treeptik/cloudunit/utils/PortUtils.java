@@ -89,31 +89,28 @@ public class PortUtils {
 
     }
 
-    public Integer getARandomHostPorts(String hostIp) {
+    public Integer getARandomHostPorts() {
         int port = randPort(2599, 2900);
         // on supprime tous les ports ouverts de forbiddenPorts car ils ne sont
         // plus succeptibles de déclencher une erreur
 
         List<ProxyCustomPort> listPort = proxyCustomPortDAO.findAll();
 
-
         if (!forbbidenPorts.isEmpty()) {
             forbbidenPorts.stream().filter(p -> listPort.contains(p))
                     .forEach(t -> forbbidenPorts.remove(t));
         }
 
-        if (isPortAlreadyUsed(port) | forbbidenPorts.contains(port)) {
-            port = getARandomHostPorts(hostIp);
+        if (isPortAlreadyUsed(port + "") | forbbidenPorts.contains(port)) {
+            port = getARandomHostPorts();
             forbbidenPorts.add(port);
         }
 
         return port;
     }
 
-    private boolean isPortAlreadyUsed(Integer port) {
-
+    private boolean isPortAlreadyUsed(String port) {
         return proxyCustomPortDAO.countPortNumber(port).equals(1);
-
     }
 
     private int randPort(int min, int max) {

@@ -159,6 +159,7 @@ public class User
         return new CustomPasswordEncoder().decode(password);
     }
 
+    @JsonIgnore
     public String getClearedPassword() {
         return this.password;
     }

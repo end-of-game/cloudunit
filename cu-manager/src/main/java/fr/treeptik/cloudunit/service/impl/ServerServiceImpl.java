@@ -39,11 +39,10 @@ import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ServerServiceImpl
-        implements ServerService {
+    implements ServerService {
 
     private Logger logger = LoggerFactory.getLogger(ServerServiceImpl.class);
 
@@ -100,7 +99,7 @@ public class ServerServiceImpl
     @Override
     @Transactional
     public Server saveInDB(Server server)
-            throws ServiceException {
+        throws ServiceException {
         server = serverDAO.save(server);
         return server;
     }
@@ -119,7 +118,7 @@ public class ServerServiceImpl
     @Override
     @Transactional
     public Server create(Server server, String tagName)
-            throws ServiceException, CheckException {
+        throws ServiceException, CheckException {
 
         String registryPrefix = "";
 
@@ -131,7 +130,7 @@ public class ServerServiceImpl
 
         logger.debug("create : Methods parameters : " + server);
         logger.info("ServerService : Starting creating Server "
-                + server.getName());
+            + server.getName());
 
         // Initialize container informations :
         DockerContainer dockerContainer = new DockerContainer();
@@ -150,17 +149,17 @@ public class ServerServiceImpl
         String containerName = "";
         try {
             containerName = AlphaNumericsCharactersCheckUtils
-                    .convertToAlphaNumerics(user.getLogin())
-                    + "-"
-                    + AlphaNumericsCharactersCheckUtils
-                    .convertToAlphaNumerics(server.getApplication()
-                            .getName()) + "-" + server.getName();
+                .convertToAlphaNumerics(user.getLogin())
+                + "-"
+                + AlphaNumericsCharactersCheckUtils
+                .convertToAlphaNumerics(server.getApplication()
+                    .getName()) + "-" + server.getName();
         } catch (UnsupportedEncodingException e2) {
             throw new ServiceException("Error rename Serveur", e2);
         }
 
         String imagePath = registryPrefix + server.getImage().getPath()
-                + tagName.replace(":", "") + tagName;
+            + tagName.replace(":", "") + tagName;
 
         logger.debug("imagePath:" + imagePath);
 
@@ -168,27 +167,27 @@ public class ServerServiceImpl
         volumesFrom.add(server.getImage().getName());
         volumesFrom.add("java");
         dockerContainer = new DockerContainerBuilder()
-                .withName(containerName)
-                .withImage(imagePath)
-                .withMemory(0L)
-                .withMemorySwap(0L)
-                .withPorts(ports)
-                .withVolumesFrom(volumesFrom)
-                .withCmd(
-                        Arrays.asList(user.getLogin(), user.getPassword(), server
-                                        .getApplication().getRestHost(), server
-                                        .getApplication().getName(),
-                                "jdk1.7.0_55", databasePassword, envExec)).build();
+            .withName(containerName)
+            .withImage(imagePath)
+            .withMemory(0L)
+            .withMemorySwap(0L)
+            .withPorts(ports)
+            .withVolumesFrom(volumesFrom)
+            .withCmd(
+                Arrays.asList(user.getLogin(), user.getPassword(), server
+                        .getApplication().getRestHost(), server
+                        .getApplication().getName(),
+                    "jdk1.7.0_55", databasePassword, envExec)).build();
 
         try {
             // create a container and get informations
             DockerContainer.create(dockerContainer,
-                    application.getManagerIp());
+                application.getManagerIp());
 
             logger.debug("container : " + dockerContainer);
 
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
+                application.getManagerIp());
 
             String subdomain = System.getenv("CU_SUB_DOMAIN");
             if (subdomain == null) {
@@ -210,15 +209,15 @@ public class ServerServiceImpl
             logger.info(application.getLocation());
 
             hipacheRedisUtils.createRedisAppKey(server.getApplication(),
-                    server.getContainerIP(), server.getServerAction()
-                            .getServerPort(),
-                    server.getServerAction()
-                            .getServerManagerPort());
+                server.getContainerIP(), server.getServerAction()
+                    .getServerPort(),
+                server.getServerAction()
+                    .getServerManagerPort());
 
             // Update server with all its informations
             server.setManagerLocation("http://manager-"
-                    + application.getLocation().substring(7)
-                    + server.getServerAction().getServerManagerPath());
+                + application.getLocation().substring(7)
+                + server.getServerAction().getServerManagerPath());
             server.setStatus(Status.START);
             server.setJvmMemory(512L);
             server.setJvmRelease("jdk1.7.0_55");
@@ -233,7 +232,7 @@ public class ServerServiceImpl
                 // Removing a creating container if an error has occurred with
                 // the database
                 DockerContainer.remove(dockerContainer,
-                        application.getManagerIp());
+                    application.getManagerIp());
             } catch (DockerJSONException e1) {
                 logger.error("ServerService Error : Create Server " + e1);
                 throw new ServiceException(e.getLocalizedMessage(), e1);
@@ -252,7 +251,7 @@ public class ServerServiceImpl
             logger.error("" + msgError, e);
         }
         logger.info("ServerService : Server " + server.getName()
-                + " successfully created.");
+            + " successfully created.");
         return server;
     }
 
@@ -264,14 +263,14 @@ public class ServerServiceImpl
      * @throws CheckException
      */
     public void checkMaxNumberReach(Application application)
-            throws ServiceException, CheckException {
+        throws ServiceException, CheckException {
         logger.info("check number of server of " + application.getName());
         if (application.getServers() != null) {
             try {
                 if (application.getServers().size() >= Integer
-                        .parseInt(maxServers)) {
+                    .parseInt(maxServers)) {
                     throw new CheckException("You have already created your "
-                            + maxServers + " server for your application");
+                        + maxServers + " server for your application");
                 }
             } catch (PersistenceException e) {
                 logger.error("ServerService Error : check number of server" + e);
@@ -288,10 +287,10 @@ public class ServerServiceImpl
      */
     @Override
     public void checkStatus(Server server, String status)
-            throws CheckException {
+        throws CheckException {
         if (server.getStatus().name().equalsIgnoreCase(status)) {
             throw new CheckException("Error : Server " + server.getName()
-                    + " is already " + status + "ED");
+                + " is already " + status + "ED");
         }
     }
 
@@ -302,7 +301,7 @@ public class ServerServiceImpl
      */
     @Override
     public boolean checkStatusPENDING(Server server)
-            throws ServiceException {
+        throws ServiceException {
         logger.info("--CHECK SERVER STATUS PENDING--");
 
         if (server.getStatus().name().equalsIgnoreCase("PENDING")) {
@@ -315,11 +314,11 @@ public class ServerServiceImpl
     @Override
     @Transactional
     public Server update(Server server)
-            throws ServiceException {
+        throws ServiceException {
 
         logger.debug("update : Methods parameters : " + server.toString());
         logger.info("ServerService : Starting updating Server "
-                + server.getName());
+            + server.getName());
         try {
             server = serverDAO.save(server);
 
@@ -327,18 +326,18 @@ public class ServerServiceImpl
             String dockerManagerIP = application.getManagerIp();
 
             hipacheRedisUtils.updateServerAddress(application, server
-                            .getContainerIP(),
-                    server.getServerAction().getServerPort(), server
-                            .getServerAction().getServerManagerPort());
+                    .getContainerIP(),
+                server.getServerAction().getServerPort(), server
+                    .getServerAction().getServerManagerPort());
 
         } catch (PersistenceException e) {
             logger.error("ServerService Error : update Server" + e);
             throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         }
 
         logger.info("ServerService : Server " + server.getName()
-                + " successfully updated.");
+            + " successfully updated.");
 
         return server;
     }
@@ -346,7 +345,7 @@ public class ServerServiceImpl
     @Override
     @Transactional
     public Server remove(String serverName)
-            throws ServiceException {
+        throws ServiceException {
         Server server = null;
         try {
             server = this.findByName(serverName);
@@ -364,7 +363,7 @@ public class ServerServiceImpl
 
             if (server.getStatus().equals(Status.START)) {
                 DockerContainer.stop(dockerContainer,
-                        application.getManagerIp());
+                    application.getManagerIp());
                 Thread.sleep(1000);
             }
 
@@ -372,15 +371,15 @@ public class ServerServiceImpl
             server = this.saveInDB(server);
 
             String imageName = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp()).getImage();
+                application.getManagerIp()).getImage();
 
             DockerContainer.remove(dockerContainer,
-                    application.getManagerIp());
+                application.getManagerIp());
 
             try {
                 if (application.isAClone()) {
                     DockerContainer.deleteImage(imageName,
-                            application.getManagerIp());
+                        application.getManagerIp());
                 }
             } catch (DockerJSONException e) {
                 logger.info("Others apps use this docker images");
@@ -396,11 +395,11 @@ public class ServerServiceImpl
         } catch (PersistenceException e) {
             logger.error("Error database :  " + server.getName() + " : " + e);
             throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         } catch (DockerJSONException e) {
             logger.error("ServerService Error : fail to remove Server" + e);
             throw new ServiceException("Error docker :  "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -409,7 +408,7 @@ public class ServerServiceImpl
 
     @Override
     public Server findById(Integer id)
-            throws ServiceException {
+        throws ServiceException {
         try {
             logger.debug("findById : Methods parameters : " + id);
             Server server = serverDAO.findOne(id);
@@ -421,14 +420,14 @@ public class ServerServiceImpl
         } catch (PersistenceException e) {
             logger.error("Error ServerService : error findById Method : " + e);
             throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
 
         }
     }
 
     @Override
     public List<Server> findAll()
-            throws ServiceException {
+        throws ServiceException {
         try {
             logger.debug("start findAll");
             List<Server> servers = serverDAO.findAll();
@@ -437,14 +436,14 @@ public class ServerServiceImpl
         } catch (PersistenceException e) {
             logger.error("Error ServerService : error findAll Method : " + e);
             throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
 
         }
     }
 
     @Override
     public List<Server> findAllStatusStartServers()
-            throws ServiceException {
+        throws ServiceException {
         List<Server> listServers = this.findAll();
         List<Server> listStatusStopServers = new ArrayList<>();
 
@@ -458,7 +457,7 @@ public class ServerServiceImpl
 
     @Override
     public List<Server> findAllStatusStopServers()
-            throws ServiceException {
+        throws ServiceException {
         List<Server> listServers = this.findAll();
         List<Server> listStatusStopServers = new ArrayList<>();
 
@@ -473,7 +472,7 @@ public class ServerServiceImpl
     @Override
     @Transactional
     public Server startServer(Server server)
-            throws ServiceException {
+        throws ServiceException {
 
         logger.debug("start : Methods parameters : " + server);
         logger.info("ServerService : Starting Server " + server.getName());
@@ -485,13 +484,9 @@ public class ServerServiceImpl
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
 
-            server.getApplication().getPortsToOpen().stream().forEach(System.out::println);
-
-
             if (server.getApplication().getPortsToOpen() != null) {
-                dockerContainer.setPortsToOpen(server.getApplication().getPortsToOpen().stream()
-                        .map(t -> t.getPort())
-                        .collect(Collectors.toList()));
+                dockerContainer.setPortsToOpen(new ArrayList<>());
+                dockerContainer.getPortsToOpen().addAll((server.getApplication().getPortsToOpen()));
             }
             DockerContainer.start(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
@@ -504,32 +499,37 @@ public class ServerServiceImpl
             server = update(server);
 
             hipacheRedisUtils.updateServerAddress(server.getApplication(),
-                    server.getContainerIP(), server.getServerAction()
-                            .getServerPort(),
-                    server.getServerAction()
-                            .getServerManagerPort());
+                server.getContainerIP(), server.getServerAction()
+                    .getServerPort(),
+                server.getServerAction()
+                    .getServerManagerPort());
 
             // ajout des alias des ports forwardés en http seulement
-            final Application effectiveApplication = application;
-            final Server effectiveServer = server;
-            server.getApplication().getPortsToOpen()
-                    .stream()
-                    .filter(p -> p.getAlias() != null && ("http").equalsIgnoreCase(p.getNature()))
-                    .forEach(
-                            t -> hipacheRedisUtils.writeNewAlias(
-                                    t.getPort().toString(),
-                                    effectiveApplication,
-                                    effectiveServer.getListPorts().get(
-                                            t + "/tcp")));
+            for (PortToOpen portToOpen : application.getPortsToOpen()) {
+                if (portToOpen.getAlias() == null) {
+                    if ("web".equalsIgnoreCase(portToOpen.getNature())) {
+                        hipacheRedisUtils.writeNewAlias("aaaa" + application.getDomainName(),
+                            application,
+                            portToOpen.getForwardedPort().toString());
+                        portToOpen.setAlias("http://" + application.getName()
+                            + "-" + application.getUser().getLogin() + "-"
+                            + "forward-" + portToOpen.getPort() + application.getDomainName());
+                    } else {
+                        portToOpen.setAlias(application.getDomainName().substring(1) + ":" + portToOpen.getForwardedPort());
+                    }
+                    portToOpenDAO.save(portToOpen);
+                }
+            }
+
 
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
             throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         } catch (DockerJSONException e) {
             logger.error("ServerService Error : fail to start Server" + e);
             throw new ServiceException("Error docker :  "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         }
         return server;
     }
@@ -537,7 +537,7 @@ public class ServerServiceImpl
     @Override
     @Transactional
     public Server stopServer(Server server)
-            throws ServiceException {
+        throws ServiceException {
         try {
             Application application = server.getApplication();
 
@@ -546,18 +546,18 @@ public class ServerServiceImpl
             dockerContainer.setImage(server.getImage().getName());
             DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
+                application.getManagerIp());
             server.setDockerState(dockerContainer.getState());
 
             server.setStatus(Status.STOP);
             server = update(server);
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         } catch (DockerJSONException e) {
             logger.error("Fail to stop Server : " + e);
             throw new ServiceException("Error docker : "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         }
         return server;
     }
@@ -565,7 +565,7 @@ public class ServerServiceImpl
     @Override
     @Transactional
     public Server restartServer(Server server)
-            throws ServiceException {
+        throws ServiceException {
         server = this.stopServer(server);
         server = this.startServer(server);
         return server;
@@ -573,34 +573,34 @@ public class ServerServiceImpl
 
     @Override
     public Server findByName(String serverName)
-            throws ServiceException {
+        throws ServiceException {
         try {
             return serverDAO.findByName(serverName);
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         }
     }
 
     @Override
     public List<Server> findByApp(Application application)
-            throws ServiceException {
+        throws ServiceException {
         try {
             return serverDAO.findByApp(application.getId());
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         }
     }
 
     @Override
     public Server findByContainerID(String id)
-            throws ServiceException {
+        throws ServiceException {
         try {
             return serverDAO.findByContainerID(id);
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
+                + e.getLocalizedMessage(), e);
         }
     }
 
@@ -608,7 +608,7 @@ public class ServerServiceImpl
     @Transactional
     public Server update(Server server, String jvmMemory, String jvmOptions,
                          String jvmRelease, boolean restorePreviousEnv)
-            throws ServiceException {
+        throws ServiceException {
 
         Map<String, String> configShell = new HashMap<>();
         configShell.put("port", server.getSshPort());
@@ -627,10 +627,10 @@ public class ServerServiceImpl
 
             // If jvm memory or options changes...
             if (!jvmMemory.equalsIgnoreCase(server.getJvmMemory().toString())
-                    || !jvmOptions.equalsIgnoreCase(server.getJvmOptions())) {
+                || !jvmOptions.equalsIgnoreCase(server.getJvmOptions())) {
                 // Changement configuration MEMOIRE + OPTIONS
                 String command = "bash /cloudunit/appconf/scripts/change-server-config.sh "
-                        + jvmMemory + " " + "\"" + jvmOptions + "\"";
+                    + jvmMemory + " " + "\"" + jvmOptions + "\"";
                 logger.info("command shell to execute [" + command + "]");
                 int status = shellUtils.executeShell(command, configShell);
             }
@@ -675,10 +675,10 @@ public class ServerServiceImpl
      */
     @Override
     public void changeJavaVersion(Application application, String javaVersion)
-            throws CheckException, ServiceException {
+        throws CheckException, ServiceException {
 
         logger.info("Starting changing to java version " + javaVersion
-                + ", the application " + application.getName());
+            + ", the application " + application.getName());
 
         Map<String, String> configShell = new HashMap<>();
         String command = null;
@@ -700,7 +700,7 @@ public class ServerServiceImpl
                 server.setStatus(Status.FAIL);
                 saveInDB(server);
                 logger.error("java version = " + javaVersion + " - " + application.toString() + " - "
-                        + server.toString(), e);
+                    + server.toString(), e);
                 throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
             }
         }
@@ -709,17 +709,17 @@ public class ServerServiceImpl
         // PARTIE GIT
         //
         Module moduleGit = moduleService.findGitModule(application.getUser()
-                .getLogin(), application);
+            .getLogin(), application);
         try {
             configShell.put("password", moduleGit.getApplication().getUser()
-                    .getPassword());
+                .getPassword());
             configShell.put("port", moduleGit.getSshPort());
             configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
+                application.getManagerIp());
 
             // Besoin des permissions ROOT
             command = "bash /cloudunit/scripts/change-java-version.sh "
-                    + javaVersion;
+                + javaVersion;
             logger.info("command shell to execute [" + command + "]");
 
             shellUtils.executeShell(command, configShell);
@@ -730,9 +730,9 @@ public class ServerServiceImpl
             moduleGit.setStatus(Status.FAIL);
             moduleService.saveInDB(moduleGit);
             logger.error(
-                    "java version = " + javaVersion + " - "
-                            + application.toString() + " - "
-                            + moduleGit.toString(), e);
+                "java version = " + javaVersion + " - "
+                    + application.toString() + " - "
+                    + moduleGit.toString(), e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
 
@@ -744,10 +744,10 @@ public class ServerServiceImpl
      */
     @Override
     public Server confirmSSHDStart(String applicationName, String userLogin)
-            throws ServiceException {
+        throws ServiceException {
 
         logger.debug("Start confirmSSHDStart - applicationName : "
-                + applicationName + " - userLogin :" + userLogin);
+            + applicationName + " - userLogin :" + userLogin);
 
         Application application = null;
         Server server = null;
@@ -756,7 +756,7 @@ public class ServerServiceImpl
             while (application == null) {
                 try {
                     application = applicationService.findByNameAndUser(user,
-                            applicationName);
+                        applicationName);
                 } catch (Exception e) {
                     continue;
                 }
@@ -771,7 +771,7 @@ public class ServerServiceImpl
         } catch (PersistenceException e) {
             e.printStackTrace();
             logger.error("Error ServerService : error set server on sshdStatus "
-                    + Status.START + " : " + e);
+                + Status.START + " : " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
         return server;

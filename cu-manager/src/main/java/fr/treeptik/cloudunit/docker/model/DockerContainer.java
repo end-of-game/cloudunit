@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.docker.model;
 
 import fr.treeptik.cloudunit.docker.DockerContainerJSON;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
+import fr.treeptik.cloudunit.model.PortToOpen;
 import fr.treeptik.cloudunit.utils.StaticSpringApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class DockerContainer {
 
     private List<String> volumesFrom;
 
-    private List<Integer> portsToOpen;
+    private List<PortToOpen> portsToOpen;
 
     private List<String> links;
 
@@ -328,11 +329,11 @@ public class DockerContainer {
         this.imageID = imageID;
     }
 
-    public List<Integer> getPortsToOpen() {
-        return portsToOpen;
+    public List<PortToOpen> getPortsToOpen() {
+        return this.portsToOpen;
     }
 
-    public void setPortsToOpen(List<Integer> portsToOpen) {
+    public void setPortsToOpen(List<PortToOpen> portsToOpen) {
         this.portsToOpen = portsToOpen;
     }
 }

@@ -101,6 +101,7 @@ public class Application
     private boolean isAClone;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
+    @OrderBy(value = "port")
     private Set<PortToOpen> portsToOpen;
 
     public Application() {

@@ -27,5 +27,5 @@ import org.springframework.data.repository.query.Param;
 public interface ProxyCustomPortDAO extends JpaRepository<ProxyCustomPort, Integer> {
 
     @Query("select count(p) from ProxyCustomPort p where p.portNumber=:port")
-    Long countPortNumber(@Param("port") Integer port) throws DataAccessException;
+    Long countPortNumber(@Param("port") String port) throws DataAccessException;
 }

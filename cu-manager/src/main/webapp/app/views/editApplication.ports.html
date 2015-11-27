@@ -36,7 +36,7 @@
       <form id="add-ports"
             name="addPortsForm"
             class="clearfix" novalidate=""
-            data-ng-submit="ports.createPort(editApp.application.name, ports.number, ports.nature)">
+            data-ng-submit="ports.createPort(editApp.application.name, ports.number, ports.myNature.value)">
 
         <div class="input-group">
           <input id="new-port"
@@ -78,27 +78,48 @@
       </form>
     </div>
     <div class="ports-list col-lg-6 col-md-6 col-xs-12">
-      <h3 class="title large">Registered ports</h3>
-
-      <p class="no-ports text-muted" data-ng-if="!editApp.application.urls.length">No registered ports</p>
-      <ul data-ng-if="editApp.application.urls.length">
-        <li data-ng-repeat="url in editApp.application.urls track by $index">
-          <a class="body-2"
-             data-ng-href="http://{{editApp.application.urls[$index]}}"
-             target="_blank">
-            <!-- TODO : en fonction de http ou external, activer _blank -->
-            {{editApp.application.urls[$index]}}
-          </a>
-          <button class="remove-ports-btn icon-button secondary"
+      <div class="actions">
+        <div class="secondary-actions pull-right">
+          <button class="ports-btn button primary raised"
+                  data-ng-click="ports.restartApplication(editApp.application.name)"
                   ripple=""
                   tooltip=""
-                  data-title="Remove"
+                  data-title="{{editApp.application.status === 'STOP' ? 'Start' : 'Stop'}}"
                   data-placement="bottom"
-                  data-ng-click="ports.removePort(editApp.application.name, editApp.application.portsToOpen[$index].port)">
-            <span class="icon-whhg circledelete"></span>
+                  click-once="">
+            <span>Restart the application</span>
           </button>
+        </div>
+      </div>
+      <h3 class="title large">Registered ports</h3>
+
+      <p class="no-ports text-muted" data-ng-if="!editApp.application.portsToOpen.length">No registered ports</p>
+      <ul data-ng-if="editApp.application.portsToOpen.length">
+        <li data-ng-repeat="url in editApp.application.portsToOpen track by $index">
+
+          <p>
+            {{editApp.application.portsToOpen[$index].port}} -->
+            <a class="body-2"
+               data-ng-href="{{editApp.application.portsToOpen[$index].alias}}"
+               data-ng-if="editApp.application.portsToOpen[$index].alias"
+               target="_blank">
+              <!-- TODO : en fonction de http ou external, activer _blank -->
+              {{editApp.application.portsToOpen[$index].alias}}
+            </a>
+            <!-- if alias is not defined and nature is http -->
+            <button class="remove-ports-btn icon-button secondary"
+                    ripple=""
+                    tooltip=""
+                    data-title="Remove"
+                    data-placement="bottom"
+                    data-ng-click="ports.removePort(editApp.application.name, editApp.application.portsToOpen[$index].port)">
+              <span class="icon-whhg circledelete"></span>
+            </button>
+
+          </p>
+
         </li>
       </ul>
+
     </div>
-  </div>
 </div>

@@ -34,26 +34,32 @@
     .module('webuiApp.editApplication')
     .controller('PortsCtrl', PortsCtrl);
 
-  PortsCtrl.$inject = ['ApplicationService'];
+  PortsCtrl.$inject = ['$scope', 'ApplicationService'];
 
-  function PortsCtrl(ApplicationService) {
+  function PortsCtrl($scope, ApplicationService) {
 
     var vm = this;
     vm.number = '';
-    vm.nature = '';
     vm.errorMsg = '';
     vm.createPort = createPort;
     vm.removePort = removePort;
+    vm.restartApplication = restartApplication;
     vm.urls = [];
 
     vm.natures = [
-      {value: 'http'},
-      {value: 'external'}
+      {value: 'web'},
+      {value: 'other'}
     ];
     vm.myNature = vm.natures[0];
 
-    function createPort(applicationName, number, nature) {
+    // Démarrage de l'application
+    function restartApplication(applicationName) {
+      ApplicationService.restart(applicationName);
+      $scope.$emit('workInProgress', {delay: 3000});
+    }
 
+
+    function createPort(applicationName, number, nature) {
       ApplicationService.createPort(applicationName, number, nature)
         .then(success)
         .catch(error);
@@ -73,5 +79,6 @@
     function removePort(applicationName, number) {
       ApplicationService.removePort(applicationName, number);
     }
+
   }
 })();

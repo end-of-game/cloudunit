@@ -130,6 +130,47 @@ public class ApplicationController
      */
     @CloudUnitSecurable
     @ResponseBody
+    @RequestMapping(value = "/restart", method = RequestMethod.POST)
+    public JsonResponse restartApplication(@RequestBody JsonInput input)
+        throws ServiceException, CheckException, InterruptedException {
+
+        // validate the input
+        input.validateStartApp();
+
+        String applicationName = input.getApplicationName();
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        if (application != null && application.getStatus().equals(Status.PENDING)) {
+            // If appliction is pending do nothing
+            return new HttpErrorServer("application is pending. No action allowed.");
+        }
+
+        // We must be sure there is no running action before starting new one
+        authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+
+        if (application.getStatus().equals(Status.START)) {
+            applicationManager.stop(application, user);
+            applicationManager.start(application, user);
+        } else if (application.getStatus().equals(Status.STOP)) {
+            applicationManager.start(application, user);
+        }
+
+        return new HttpOk();
+    }
+
+
+    /**
+     * START AN APPLICATION
+     *
+     * @param input {applicatioName:myApp-johndoe-admin}
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws InterruptedException
+     */
+    @CloudUnitSecurable
+    @ResponseBody
     @RequestMapping(value = "/start", method = RequestMethod.POST)
     public JsonResponse startApplication(@RequestBody JsonInput input)
         throws ServiceException, CheckException, InterruptedException {

@@ -609,22 +609,15 @@ public class DockerContainerJSON {
                 dockerContainer
                         .getPortsToOpen()
                         .stream()
-                        .map(t -> t.toString() + "/tcp")
                         .forEach(
-                                t -> portsBinding.put(t, Arrays
+                            t -> portsBinding.put(t.getPort(), Arrays
                                         .asList((new JSONObject(
                                                 new HashMap<String, String>() {
-
                                                     private static final long
                                                             serialVersionUID =
                                                             1L;
-
                                                     {
-                                                        put("HostPort",
-                                                                portUtils
-                                                                        .getARandomHostPorts(
-                                                                                hostIp)
-                                                                        .toString());
+                                                        put("HostPort", t.getForwardedPort().toString());
                                                         put("HostIp", "0.0.0.0");
                                                     }
                                                 })))));

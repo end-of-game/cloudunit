@@ -1035,13 +1035,11 @@ public class ApplicationServiceImpl
         portToOpen.setAlias(alias);
         portToOpen.setPort(port);
         portToOpen.setApplication(application);
+        portToOpen.setForwardedPort(portUtils.getARandomHostPorts());
 
         try {
             portToOpenDAO.save(portToOpen);
 
-            application.getUrls().put(portToOpen.getPort(), alias);
-
-            saveInDB(application);
 
 
         } catch (DataAccessException e) {
