@@ -23,6 +23,7 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,13 +34,34 @@ public class ElasticsearchTask implements Task {
 
     private final static Logger logger = LoggerFactory.getLogger(ElasticsearchTask.class);
 
-    private static final Integer DEFAULT_ES_PORT = 9310;
+    private static final Integer DEFAULT_ES_PORT = 9300;
 
     @Value("${elasticsearch.ip}")
     private String ipES;
 
     @Override
     public void run() {
+        isRunning(true);
+    }
+
+    @Scheduled(fixedDelay = 5000)
+    private void monitor() {
+        isRunning(false);
+    }
+
+    /**
+     * To evaluate if service is runnning or not
+     * If needed, we stop the jvm or send an email
+     *
+     * @param exit
+     */
+    private void isRunning(boolean exit) {
+        System.out.println("*********************************************");
+        System.out.println("*********************************************");
+        System.out.println("*********************************************");
+        System.out.println("*********************************************");
+        System.out.println("*********************************************");
+
         TransportClient client = new TransportClient();
         try {
             client.addTransportAddress(new InetSocketTransportAddress(ipES, DEFAULT_ES_PORT));
@@ -51,12 +73,17 @@ public class ElasticsearchTask implements Task {
             msgError.append("\n****************************************************************");
             msgError.append("\n****************************************************************");
             msgError.append("\n**                                                            **");
-            msgError.append("\n   FATAL : ELASTICSEARCH NOT RUNNING : " + ipES + ":" + DEFAULT_ES_PORT);
+            msgError.append("\n   ELASTICSEARCH NOT RUNNING : " + ipES + ":" + DEFAULT_ES_PORT);
+            if (exit) {
+                System.exit(-1);
+                msgError.append("\n**   FATAL ERROR : JVM IS KILLED                          **");
+            } else {
+                msgError.append("\n**   WARNING ERROR : MANUAL ACTION REQUIRED               **");
+            }
             msgError.append("\n**                                                            **");
             msgError.append("\n****************************************************************");
             msgError.append("\n****************************************************************");
             logger.error(msgError.toString());
-            System.exit(-1);
         } finally {
             if (client != null) {
                 client.close();
