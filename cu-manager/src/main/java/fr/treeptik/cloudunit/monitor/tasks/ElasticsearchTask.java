@@ -46,7 +46,8 @@ public class ElasticsearchTask implements Task {
         isRunning(true);
     }
 
-    @Scheduled(fixedDelay = 5000)
+    // Two minutes
+    @Scheduled(fixedDelay = 120000)
     private void monitor() {
         isRunning(false);
     }
