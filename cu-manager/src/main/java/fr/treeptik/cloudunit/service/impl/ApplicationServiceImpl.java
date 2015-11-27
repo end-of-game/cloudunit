@@ -1038,6 +1038,12 @@ public class ApplicationServiceImpl
 
         try {
             portToOpenDAO.save(portToOpen);
+
+            application.getUrls().put(portToOpen.getPort(), alias);
+
+            saveInDB(application);
+
+
         } catch (DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -1058,6 +1064,11 @@ public class ApplicationServiceImpl
         try {
 
             portToOpenDAO.delete(portToOpen);
+
+            application.getUrls().remove(port);
+
+            saveInDB(application);
+
 
         } catch (DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);

@@ -501,7 +501,7 @@ public class ServerServiceImpl
             server.setStartDate(new Date());
             application = applicationDAO.saveAndFlush(application);
 
-            server = this.update(server);
+            server = update(server);
 
             hipacheRedisUtils.updateServerAddress(server.getApplication(),
                     server.getContainerIP(), server.getServerAction()
@@ -509,12 +509,12 @@ public class ServerServiceImpl
                     server.getServerAction()
                             .getServerManagerPort());
 
-            // ajout des alias des ports forwardés
+            // ajout des alias des ports forwardés en http seulement
             final Application effectiveApplication = application;
             final Server effectiveServer = server;
             server.getApplication().getPortsToOpen()
                     .stream()
-                    .filter(t -> t.getAlias() != null)
+                    .filter(p -> p.getAlias() != null && ("http").equalsIgnoreCase(p.getNature()))
                     .forEach(
                             t -> hipacheRedisUtils.writeNewAlias(
                                     t.getPort().toString(),
@@ -550,7 +550,7 @@ public class ServerServiceImpl
             server.setDockerState(dockerContainer.getState());
 
             server.setStatus(Status.STOP);
-            server = this.update(server);
+            server = update(server);
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
                     + e.getLocalizedMessage(), e);
@@ -643,7 +643,7 @@ public class ServerServiceImpl
             server.setJvmMemory(Long.valueOf(jvmMemory));
             server.setJvmOptions(jvmOptions);
             server.setJvmRelease(jvmRelease);
-            server = this.saveInDB(server);
+            server = saveInDB(server);
 
         } catch (Exception e) {
             // Exception would be one RuntimeException coming from shell error

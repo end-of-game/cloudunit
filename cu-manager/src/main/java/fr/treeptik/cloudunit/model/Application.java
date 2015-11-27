@@ -64,7 +64,7 @@ public class Application
     private Set<Deployment> deployments;
 
     @ElementCollection
-    private Set<String> urls;
+    private Map<Integer, String> urls;
 
     private String gitAddress;
 
@@ -387,11 +387,11 @@ public class Application
         this.portsToOpen = portsToOpen;
     }
 
-    public Set<String> getUrls() {
+    public Map<Integer, String> getUrls() {
         return this.urls;
     }
 
-    public void setUrls(Set<String> urls) {
+    public void setUrls(Map<Integer, String> urls) {
         this.urls = urls;
     }
 }

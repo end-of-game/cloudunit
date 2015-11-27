@@ -16,10 +16,16 @@
 package fr.treeptik.cloudunit.dao;
 
 import fr.treeptik.cloudunit.model.ProxyCustomPort;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Created by guillaume on 26/11/15.
  */
 public interface ProxyCustomPortDAO extends JpaRepository<ProxyCustomPort, Integer> {
+
+    @Query("select count(p) from ProxyCustomPort p where p.portNumber=:port")
+    Long countPortNumber(@Param("port") Integer port) throws DataAccessException;
 }

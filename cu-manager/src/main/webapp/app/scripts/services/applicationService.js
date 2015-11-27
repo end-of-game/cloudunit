@@ -49,7 +49,9 @@
       findByName: findByName,
       listContainers: listContainers,
       createAlias: createAlias,
-      removeAlias: removeAlias
+      removeAlias: removeAlias,
+      createPort: createPort,
+      removePort: removePort
     };
 
 
@@ -130,8 +132,8 @@
     function createPort(applicationName, number, nature) {
       var data = {
         applicationName: applicationName,
-        number: number,
-        nature: nature
+        portToOpen: number,
+        portNature: nature
       };
       return $http.post('application/ports', data);
     }

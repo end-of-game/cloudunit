@@ -15,9 +15,11 @@
 
 package fr.treeptik.cloudunit.utils;
 
+import fr.treeptik.cloudunit.dao.ProxyCustomPortDAO;
 import fr.treeptik.cloudunit.dao.ProxySshPortDAO;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.ProxyCustomPort;
 import fr.treeptik.cloudunit.model.ProxySshPort;
 import fr.treeptik.cloudunit.service.impl.ApplicationServiceImpl;
 import org.slf4j.Logger;
@@ -27,9 +29,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -40,10 +41,13 @@ public class PortUtils {
     public ConcurrentLinkedQueue<Integer> forbbidenPorts = new ConcurrentLinkedQueue<Integer>();
 
     private Logger logger = LoggerFactory
-        .getLogger(ApplicationServiceImpl.class);
+            .getLogger(ApplicationServiceImpl.class);
 
     @Inject
     private ProxySshPortDAO proxySshPortDAO;
+
+    @Inject
+    private ProxyCustomPortDAO proxyCustomPortDAO;
 
     /**
      * Find the next free Ssh and Http Proxy Port values and assign to
@@ -52,7 +56,7 @@ public class PortUtils {
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Map<String, String> assignProxyPorts(Application application)
-        throws ServiceException {
+            throws ServiceException {
 
         logger.debug("-- assignProxyPorts --");
 
@@ -61,7 +65,7 @@ public class PortUtils {
         String freeProxySshPortNumber = proxySshPortDAO.findMinFreePortNumber();
         // Gestion du ProxyPort (retrait du pool de ports libres)
         ProxySshPort proxySshPort = proxySshPortDAO
-            .findByPortNumber(freeProxySshPortNumber);
+                .findByPortNumber(freeProxySshPortNumber);
         proxySshPort.setUsed(true);
 
         logger.info("proxySshPort : " + freeProxySshPortNumber);
@@ -78,7 +82,7 @@ public class PortUtils {
     public void releaseProxyPorts(Application application) {
 
         ProxySshPort proxySshPort = proxySshPortDAO
-            .findByPortNumber(application.getGitSshProxyPort());
+                .findByPortNumber(application.getGitSshProxyPort());
         proxySshPort.setUsed(false);
 
         proxySshPort = proxySshPortDAO.save(proxySshPort);
@@ -87,33 +91,29 @@ public class PortUtils {
 
     public Integer getARandomHostPorts(String hostIp) {
         int port = randPort(2599, 2900);
-
         // on supprime tous les ports ouverts de forbiddenPorts car ils ne sont
         // plus succeptibles de déclencher une erreur
+
+        List<ProxyCustomPort> listPort = proxyCustomPortDAO.findAll();
+
+
         if (!forbbidenPorts.isEmpty()) {
-            forbbidenPorts.stream().filter(t -> isPortOpened(hostIp, t))
-                .forEach(t -> forbbidenPorts.remove(t));
+            forbbidenPorts.stream().filter(p -> listPort.contains(p))
+                    .forEach(t -> forbbidenPorts.remove(t));
         }
 
-        if (isPortOpened(hostIp, port) | forbbidenPorts.contains(port)) {
+        if (isPortAlreadyUsed(port) | forbbidenPorts.contains(port)) {
             port = getARandomHostPorts(hostIp);
+            forbbidenPorts.add(port);
         }
-        // on ajoute le port à la liste des ports à ne pas ouvrir tant que
-        // l'opération n'est pas terminée
-        forbbidenPorts.add(port);
 
         return port;
     }
 
-    private boolean isPortOpened(String ip, Integer port) {
-        try {
-            Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(ip, port), 500);
-            socket.close();
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
+    private boolean isPortAlreadyUsed(Integer port) {
+
+        return proxyCustomPortDAO.countPortNumber(port).equals(1);
+
     }
 
     private int randPort(int min, int max) {
