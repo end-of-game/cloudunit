@@ -27,6 +27,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
+ * Task to evaluate if ES is running or not
+ *
  * Created by nicolas on 27/11/2015.
  */
 @Component
