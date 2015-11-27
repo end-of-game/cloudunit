@@ -107,66 +107,6 @@ public class ServerController
         return new HttpOk();
     }
 
-    /**
-     * Open a new port
-     *
-     * @param input
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @CloudUnitSecurable
-    @RequestMapping(value = "/ports/open", method = RequestMethod.POST)
-    @ResponseBody
-    public JsonResponse openPort(@RequestBody JsonInput input)
-            throws ServiceException, CheckException {
 
-        User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user,
-                input.getApplicationName());
-
-        authentificationUtils.canStartNewAction(user, application, locale);
-
-        boolean isApplicatioRunning = application.getStatus().equals(Status.START);
-
-        applicationService.setStatus(application, Status.PENDING);
-
-        serverService.openPort(input.getApplicationName(),
-                Integer.parseInt(input.getPortToOpen()), input.getAlias(), isApplicatioRunning);
-
-        applicationService.setStatus(application, Status.START);
-
-        return new HttpOk();
-    }
-
-    /**
-     * Close a network port
-     *
-     * @param input
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @CloudUnitSecurable
-    @RequestMapping(value = "/ports/close", method = RequestMethod.POST)
-    @ResponseBody
-    public JsonResponse closePort(@RequestBody JsonInput input)
-            throws ServiceException, CheckException {
-
-        User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user,
-                input.getApplicationName());
-
-        boolean isApplicatioRunning = application.getStatus().equals(Status.START);
-
-        serverService.closePort(input.getApplicationName(),
-                input.getPortToOpen(),
-                input.getAlias(),
-                isApplicatioRunning);
-
-        authentificationUtils.canStartNewAction(user, application, locale);
-
-        return new HttpOk();
-    }
 
 }
