@@ -21,7 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	#DEPUIS L'IMAGE DEBIAN
 	config.vm.define "dev", autostart: true do |dev|
 
- 		dev.vm.synced_folder "./", "/home/vagrant/cloudunit"
+ 		dev.vm.synced_folder "./", "/home/admincu/cloudunit"
 
 		dev.vm.provision "ansible" do |ansible|
 			ansible.verbose = "vvvv"
