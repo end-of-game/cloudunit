@@ -585,6 +585,7 @@ public class DockerContainerJSON {
             config.put("Privileged", Boolean.FALSE);
             config.put("PublishAllPorts", Boolean.TRUE);
 
+
             JSONArray link = new JSONArray();
             if (dockerContainer.getLinks() != null) {
                 link.addAll(dockerContainer.getLinks());
@@ -601,28 +602,6 @@ public class DockerContainerJSON {
                     }
                 }
                 config.put("VolumesFrom", listVolumesFrom);
-            }
-
-
-            if (dockerContainer.getPortsToOpen() != null) {
-                JSONObject portsBinding = new JSONObject();
-                dockerContainer
-                        .getPortsToOpen()
-                        .stream()
-                        .forEach(
-                            t -> portsBinding.put(t.getPort(), Arrays
-                                        .asList((new JSONObject(
-                                                new HashMap<String, String>() {
-                                                    private static final long
-                                                            serialVersionUID =
-                                                            1L;
-                                                    {
-                                                        put("HostPort", t.getForwardedPort().toString());
-                                                        put("HostIp", "0.0.0.0");
-                                                    }
-                                                })))));
-
-                config.put("PortBindings", portsBinding);
             }
 
             // ajout des volumes provenant de l'hote
