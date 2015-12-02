@@ -1040,8 +1040,6 @@ public class ApplicationServiceImpl
         try {
             portToOpenDAO.save(portToOpen);
 
-
-
         } catch (DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }

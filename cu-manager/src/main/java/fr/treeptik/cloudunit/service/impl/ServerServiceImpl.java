@@ -508,9 +508,11 @@ public class ServerServiceImpl
             for (PortToOpen portToOpen : application.getPortsToOpen()) {
                 if (portToOpen.getAlias() == null) {
                     if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-                        hipacheRedisUtils.writeNewAlias("aaaa" + application.getDomainName(),
+                        hipacheRedisUtils.writeNewAlias((application.getName()
+                                        + "-" + application.getUser().getLogin() + "-"
+                                        + "forward-" + portToOpen.getPort()),
                             application,
-                            portToOpen.getForwardedPort().toString());
+                                portToOpen.getPort().toString());
                         portToOpen.setAlias("http://" + application.getName()
                             + "-" + application.getUser().getLogin() + "-"
                             + "forward-" + portToOpen.getPort() + application.getDomainName());
