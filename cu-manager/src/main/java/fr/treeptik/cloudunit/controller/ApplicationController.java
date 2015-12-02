@@ -457,7 +457,6 @@ public class ApplicationController
 
         String applicationName = input.getApplicationName();
         String alias = input.getAlias();
-        Integer port = Integer.parseInt(input.getPortToOpen());
         String nature = input.getPortNature();
 
         if (logger.isDebugEnabled()) {
@@ -467,6 +466,8 @@ public class ApplicationController
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
 
+        CheckUtils.validateInputForOpenPort(input.getPortToOpen(), application);
+        Integer port = Integer.parseInt(input.getPortToOpen());
         applicationService.addPort(application, nature, port, alias);
 
         return new HttpOk();

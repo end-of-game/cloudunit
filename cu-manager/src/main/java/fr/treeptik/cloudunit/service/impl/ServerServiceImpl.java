@@ -68,6 +68,9 @@ public class ServerServiceImpl
     private ShellUtils shellUtils;
 
     @Inject
+    private PortUtils portUtils;
+
+    @Inject
     private HipacheRedisUtils hipacheRedisUtils;
 
     @Inject
@@ -87,6 +90,7 @@ public class ServerServiceImpl
 
     @Value("${env.exec}")
     private String envExec;
+
 
     public ServerDAO getServerDAO() {
         return this.serverDAO;

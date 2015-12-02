@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.model.Application;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 
@@ -43,7 +44,7 @@ public class CheckUtils {
      * @throws CheckException
      */
     public static void validateInputNotEmpty(String field, String message)
-        throws CheckException {
+            throws CheckException {
         validateInputSizeMax(field, message, Integer.MAX_VALUE);
     }
 
@@ -55,7 +56,7 @@ public class CheckUtils {
      * @throws CheckException
      */
     public static void validateInput(String field, String message)
-        throws CheckException {
+            throws CheckException {
         validateInputSizeMax(field, message, 15);
     }
 
@@ -68,13 +69,31 @@ public class CheckUtils {
      * @throws CheckException
      */
     public static void validateInputSizeMax(String field, String message, int size)
-        throws CheckException {
+            throws CheckException {
         if (field == null
-            || field.trim().length() == 0
-            || "undefined".equals(field)
-            || field.length() > size) {
+                || field.trim().length() == 0
+                || "undefined".equals(field)
+                || field.length() > size) {
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated + " : " + field);
+        }
+    }
+
+
+    public static void validateInputForOpenPort(String port, Application application)
+            throws CheckException {
+
+        try {
+            Integer.parseInt(port);
+        } catch (NumberFormatException e) {
+            String messageTranslated = messageSource.getMessage("port.format", null, Locale.ENGLISH);
+            throw new CheckException(messageTranslated + " : " + port);
+        }
+        Long numberOfThisPort = application.getPortsToOpen().stream().filter(t -> t.getPort().equals(Integer.parseInt(port))).count();
+
+        if (numberOfThisPort != 0) {
+            String messageTranslated = messageSource.getMessage("port.already.used", null, Locale.ENGLISH);
+            throw new CheckException(messageTranslated + " : " + port);
         }
     }
 
@@ -86,12 +105,12 @@ public class CheckUtils {
      * @throws CheckException
      */
     public static void validateSyntaxInput(String field, String message)
-        throws CheckException {
+            throws CheckException {
         if (field == null
-            || field.trim().length() == 0
-            || "undefined".equals(field)
-            || field.length() > 15
-            || !StringUtils.isAlphanumeric(field)) {
+                || field.trim().length() == 0
+                || "undefined".equals(field)
+                || field.length() > 15
+                || !StringUtils.isAlphanumeric(field)) {
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated);
         }
@@ -106,10 +125,10 @@ public class CheckUtils {
      * @throws CheckException
      */
     public static void checkJavaOpts(String jvmOpts, String jvmMemory, String jvmRelease)
-        throws CheckException {
+            throws CheckException {
 
         if (jvmOpts.toLowerCase().contains("xms")
-            || jvmOpts.toLowerCase().contains("xmx")) {
+                || jvmOpts.toLowerCase().contains("xmx")) {
             throw new CheckException("You are not allowed to change memory with java opts");
         }
 
