@@ -36,7 +36,7 @@ import fr.treeptik.cloudunit.model.Snapshot;
 import java.io.Serializable;
 
 public abstract class ServerAction
-    implements Serializable {
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,5 +57,7 @@ public abstract class ServerAction
     public abstract String cleanCommand();
 
     public abstract String getLogLocation();
+
+    public abstract boolean hasDefaultPort();
 
 }

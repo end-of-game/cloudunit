@@ -3,17 +3,18 @@ INSERT IGNORE INTO `Role` (`id`, `description`) VALUES
   (2, 'ROLE_USER');
 
 INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `imageType`, `managerName`) VALUES
-  (1, 'tomcat-6', 'cloudunit/tomcat-appconf6', '0.1', '', 1, 'server', ''),
-  (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', '0.1', '', 1, 'server', ''),
-  (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '0.1', '', 1, 'server', ''),
-  (4, 'jboss-8', 'cloudunit/jboss-appconf8', '0.1', '', 1, 'server', ''),
-  (5, 'git', 'cloudunit/git', '0.1', '', 1, 'tool', ''),
-  (6, 'mysql-5-5', 'cloudunit/mysql-5-5', '0.1', '', 1, 'module', 'phpmyadmin'),
-  (7, 'mysql-5-5-data-db', 'cloudunit/mysql-5-5-data-db', '0.1', '', 1, 'tool', ''),
-  (8, 'postgresql-9-3-data-db', 'cloudunit/postgresql-9-3-data-db', '0.1', '', 1, 'tool', ''),
-  (9, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '0.1', '', 1, 'module', 'phppgadmin'),
-  (10, 'mongo-2-6', 'cloudunit/mongo-2-6', '0.1', '', 1, 'module', 'mms'),
-  (11, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '0.1', '', 1, 'tool', '');
+  (1, 'tomcat-6', 'cloudunit/tomcat-appconf6', '1.0', '', 1, 'server', ''),
+  (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', '1.0', '', 1, 'server', ''),
+  (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '1.0', '', 1, 'server', ''),
+  (4, 'jboss-8', 'cloudunit/jboss-appconf8', '1.0', '', 1, 'server', ''),
+  (5, 'fatjar', 'cloudunit/fat-jar', '1.0', '', 1, 'server', ''),
+  (6, 'git', 'cloudunit/git', '1.0', '', 1, 'tool', ''),
+  (7, 'mysql-5-5', 'cloudunit/mysql-5-5', '1.0', '', 1, 'module', 'phpmyadmin'),
+  (8, 'mysql-5-5-data-db', 'cloudunit/mysql-5-5-data-db', '1.0', '', 1, 'tool', ''),
+  (9, 'postgresql-9-3-data-db', 'cloudunit/postgresql-9-3-data-db', '1.0', '', 1, 'tool', ''),
+  (10, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin'),
+  (11, 'mongo-2-6', 'cloudunit/mongo-2-6', '1.0', '', 1, 'module', 'mms'),
+  (12, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '1.0', '', 1, 'tool', '');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES

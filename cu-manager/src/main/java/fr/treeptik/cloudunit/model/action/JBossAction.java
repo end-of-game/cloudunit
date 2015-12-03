@@ -75,4 +75,9 @@ public class JBossAction
     public String getLogLocation() {
         return "cloudunit/appconf/standalone/log";
     }
+
+    @Override
+    public boolean hasDefaultPort() {
+        return true;
+    }
 }

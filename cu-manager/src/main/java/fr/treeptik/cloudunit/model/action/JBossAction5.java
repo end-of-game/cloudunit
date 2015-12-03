@@ -76,4 +76,9 @@ public class JBossAction5
         return "cloudunit/appconf/server/default/log";
     }
 
+    @Override
+    public boolean hasDefaultPort() {
+        return true;
+    }
+
 }
