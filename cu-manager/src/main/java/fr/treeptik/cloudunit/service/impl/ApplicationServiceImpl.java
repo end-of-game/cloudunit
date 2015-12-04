@@ -41,12 +41,12 @@ import java.util.*;
 
 @Service
 public class ApplicationServiceImpl
-    implements ApplicationService {
+        implements ApplicationService {
 
     Locale locale = Locale.ENGLISH;
 
     private Logger logger = LoggerFactory
-        .getLogger(ApplicationServiceImpl.class);
+            .getLogger(ApplicationServiceImpl.class);
 
     @Inject
     private ApplicationDAO applicationDAO;
@@ -116,23 +116,23 @@ public class ApplicationServiceImpl
      */
     @Override
     public void checkCreate(Application application, String serverName)
-        throws CheckException, ServiceException {
+            throws CheckException, ServiceException {
 
         logger.debug("--CHECK APP COUNT--");
 
         if (this.countApp(application.getUser()) >= Integer.parseInt(numberMaxApplications)) {
             throw new ServiceException("You have already created your " + numberMaxApplications
-                + " apps into the Cloud");
+                    + " apps into the Cloud");
         }
 
         try {
             if (checkAppExist(application.getUser(), application.getName())) {
                 throw new CheckException(messageSource.getMessage("app.exists",
-                    null, locale));
+                        null, locale));
             }
             if (imageService.findByName(serverName) == null)
                 throw new CheckException(messageSource.getMessage(
-                    "image.not.found", null, locale));
+                        "image.not.found", null, locale));
             imageService.findByName(serverName);
 
         } catch (PersistenceException e) {
@@ -153,7 +153,7 @@ public class ApplicationServiceImpl
      */
     @Override
     public boolean checkAppExist(User user, String applicationName)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         logger.info("--CHECK APP EXIST--");
         if (applicationDAO.findByNameAndUser(user.getId(), applicationName) == null) {
             return false;
@@ -169,7 +169,7 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public Application saveInDB(Application application)
-        throws ServiceException {
+            throws ServiceException {
         logger.debug("-- SAVE -- : " + application);
         // Do not affect application with save return.
         // You could lose the relationships.
@@ -186,7 +186,7 @@ public class ApplicationServiceImpl
      * @throws CheckException
      */
     private Module addGitContainer(Application application, String tagName)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         Module moduleGit = ModuleFactory.getModule("git");
         // todo : externaliser la variable
@@ -195,9 +195,9 @@ public class ApplicationServiceImpl
         try {
             // Assign fixed host ports for forwarding git ports (22)
             Map<String, String> mapProxyPorts = portUtils
-                .assignProxyPorts(application);
+                    .assignProxyPorts(application);
             String freeProxySshPortNumber = mapProxyPorts
-                .get("freeProxySshPortNumber");
+                    .get("freeProxySshPortNumber");
 
             // Creation of git container fo application
             moduleGit.setName("git");
@@ -214,12 +214,12 @@ public class ApplicationServiceImpl
 
             // Update GIT respository informations in the current application
             application.setGitAddress("ssh://"
-                + AlphaNumericsCharactersCheckUtils
-                .convertToAlphaNumerics(application.getUser()
-                    .getLogin()) + "@" + application.getName()
-                + "." + application.getSuffixCloudUnitIO().substring(1)
-                + ":" + application.getGitSshProxyPort()
-                + containerGitAddress);
+                    + AlphaNumericsCharactersCheckUtils
+                    .convertToAlphaNumerics(application.getUser()
+                            .getLogin()) + "@" + application.getName()
+                    + "." + application.getSuffixCloudUnitIO().substring(1)
+                    + ":" + application.getGitSshProxyPort()
+                    + containerGitAddress);
 
             moduleGit.setStatus(Status.START);
             moduleGit = moduleService.update(moduleGit);
@@ -237,7 +237,7 @@ public class ApplicationServiceImpl
      * démarré dans les containers serveur et git
      */
     public Application updateEnv(Application application, User user)
-        throws ServiceException {
+            throws ServiceException {
 
         logger.info("--update Env of Server--");
         String command = null;
@@ -256,7 +256,7 @@ public class ApplicationServiceImpl
         try {
             int counter = 0;
             while (!server.getStatus().equals(Status.START)
-                || !moduleGit.getStatus().equals(Status.START)) {
+                    || !moduleGit.getStatus().equals(Status.START)) {
                 if (counter == 100) {
                     break;
                 }
@@ -282,8 +282,8 @@ public class ApplicationServiceImpl
             String cleanCommand = server.getServerAction().cleanCommand();
             if (cleanCommand != null) {
                 shellUtils.executeShell(
-                    server.getServerAction().cleanCommand(),
-                    configShellServer);
+                        server.getServerAction().cleanCommand(),
+                        configShellServer);
             }
         } catch (Exception e) {
             moduleGit.setStatus(Status.FAIL);
@@ -303,12 +303,12 @@ public class ApplicationServiceImpl
      */
     @Override
     public Application sshCopyIDToServer(Application application, User user)
-        throws ServiceException {
+            throws ServiceException {
         String command = null;
         Map<String, String> configShell = new HashMap<>();
 
         Module moduleGit = moduleService.findGitModule(user.getLogin(),
-            application);
+                application);
 
         if (logger.isDebugEnabled()) {
             logger.debug("--ssh Copy ID To Server--");
@@ -325,14 +325,14 @@ public class ApplicationServiceImpl
             try {
                 int counter = 0;
                 while (!server.getStatus().equals(Status.START)
-                    || !moduleGit.getStatus().equals(Status.START)) {
+                        || !moduleGit.getStatus().equals(Status.START)) {
                     if (counter == 100) {
                         break;
                     }
                     Thread.sleep(1000);
                     logger.info(" wait git and server ssh processus start");
                     logger.info("STATUS = server : " + server.getStatus()
-                        + " - module : " + moduleGit.getStatus());
+                            + " - module : " + moduleGit.getStatus());
 
                     moduleGit = moduleService.findById(moduleGit.getId());
                     server = serverService.findById(server.getId());
@@ -341,7 +341,7 @@ public class ApplicationServiceImpl
 
                 // To permit ssh access on server from git container
                 command = "expect /cloudunit/scripts/ssh-copy-id-expect.sh "
-                    + moduleGit.getApplication().getUser().getPassword();
+                        + moduleGit.getApplication().getUser().getPassword();
                 logger.info("command shell to execute [" + command + "]");
 
                 shellUtils.executeShell(command, configShell);
@@ -370,7 +370,7 @@ public class ApplicationServiceImpl
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
         logger.info("ApplicationService : Application " + application.getName()
-            + " successfully created.");
+                + " successfully created.");
         return application;
     }
 
@@ -383,11 +383,11 @@ public class ApplicationServiceImpl
      * @throws CheckException
      */
     public void isValid(String applicationName, String serverName)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         logger.info("--CALL APP IS VALID--");
         Application application = new Application();
         logger.info("applicationName = " + applicationName + ", serverName = "
-            + serverName);
+                + serverName);
 
         User user = authentificationUtils.getAuthentificatedUser();
         if (user == null) {
@@ -405,8 +405,8 @@ public class ApplicationServiceImpl
     @Transactional(rollbackFor = ServiceException.class)
     public Application create(String applicationName, String login,
                               String serverName, String tagName)
-        throws ServiceException,
-        CheckException {
+            throws ServiceException,
+            CheckException {
 
         // if tagname is null, we prefix with a ":"
         if (tagName != null) {
@@ -420,7 +420,7 @@ public class ApplicationServiceImpl
         Application application = new Application();
 
         logger.info("applicationName = " + applicationName + ", serverName = "
-            + serverName);
+                + serverName);
 
         User user = authentificationUtils.getAuthentificatedUser();
 
@@ -443,7 +443,7 @@ public class ApplicationServiceImpl
         serverService.checkMaxNumberReach(application);
 
         String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System
-            .getenv("CU_SUB_DOMAIN");
+                .getenv("CU_SUB_DOMAIN");
 
         List<Image> imagesEnabled = imageService.findEnabledImages();
         List<String> imageNames = new ArrayList<>();
@@ -453,7 +453,7 @@ public class ApplicationServiceImpl
 
         if (!imageNames.contains(serverName)) {
             throw new CheckException(messageSource.getMessage(
-                "server.not.found", null, locale));
+                    "server.not.found", null, locale));
         }
 
         try {
@@ -499,7 +499,7 @@ public class ApplicationServiceImpl
 
         logger.info("" + application);
         logger.info("ApplicationService : Application " + application.getName()
-            + " successfully created.");
+                + " successfully created.");
 
         return application;
     }
@@ -515,25 +515,25 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public Application remove(Application application, User user)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         try {
             logger.info("Starting removing application "
-                + application.getName());
+                    + application.getName());
 
             // Delete all modules
             List<Module> listModules = application.getModules();
             for (Module module : listModules) {
                 try {
                     moduleService.remove(application, user,
-                        module, false,
-                        application.getStatus());
+                            module, false,
+                            application.getStatus());
                 } catch (ServiceException | CheckException e) {
                     application.setStatus(Status.FAIL);
                     logger.error("ApplicationService Error : failed to remove module "
-                        + module.getName()
-                        + " for application "
-                        + application.getName() + " : " + e);
+                            + module.getName()
+                            + " for application "
+                            + application.getName() + " : " + e);
                     e.printStackTrace();
                 }
             }
@@ -561,13 +561,13 @@ public class ApplicationServiceImpl
         } catch (PersistenceException e) {
             setStatus(application, Status.FAIL);
             logger.error("ApplicationService Error : failed to remove "
-                + application.getName() + " : " + e);
+                    + application.getName() + " : " + e);
 
             throw new ServiceException(e.getLocalizedMessage(), e);
         } catch (ServiceException e) {
             setStatus(application, Status.FAIL);
             logger.error("ApplicationService Error : failed to remove application "
-                + application.getName() + " : " + e);
+                    + application.getName() + " : " + e);
         }
         return application;
     }
@@ -579,7 +579,7 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public void setStatus(Application application, Status status)
-        throws ServiceException {
+            throws ServiceException {
         try {
             Application _application = applicationDAO.findOne(application.getId());
             _application.setStatus(status);
@@ -593,7 +593,7 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public Application start(Application application)
-        throws ServiceException {
+            throws ServiceException {
         try {
             User user = authentificationUtils.getAuthentificatedUser();
             logger.debug("start : Methods parameters : " + application);
@@ -604,7 +604,7 @@ public class ApplicationServiceImpl
                     module = moduleService.startModule(module);
                 } catch (ServiceException e) {
                     logger.error("failed to start "
-                        + application.toString(), e);
+                            + application.toString(), e);
                 }
             }
             List<Server> servers = application.getServers();
@@ -625,7 +625,7 @@ public class ApplicationServiceImpl
 
     @Override
     public Application postStart(Application application, User user)
-        throws ServiceException {
+            throws ServiceException {
         application = this.updateEnv(application, user);
         application = this.sshCopyIDToServer(application, user);
         return application;
@@ -634,7 +634,7 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public Application stop(Application application)
-        throws ServiceException {
+            throws ServiceException {
 
         try {
             List<Server> servers = application.getServers();
@@ -647,7 +647,7 @@ public class ApplicationServiceImpl
                     module = moduleService.stopModule(module);
                 } catch (ServiceException e) {
                     logger.error("ApplicationService Error : failed to stop "
-                        + application.getName() + " : " + e);
+                            + application.getName() + " : " + e);
                 }
             }
             logger.info("ApplicationService : Application successfully stopped ");
@@ -666,44 +666,44 @@ public class ApplicationServiceImpl
      */
     @Override
     public List<Application> findAll()
-        throws ServiceException {
+            throws ServiceException {
         try {
             logger.debug("start findAll");
             List<Application> listApplications = applicationDAO.findAll();
             for (Application application : listApplications) {
                 application.setServers(serverService.findByApp(application));
                 application.setModules(moduleService.findByAppAndUser(
-                    application.getUser(), application.getName()));
+                        application.getUser(), application.getName()));
             }
             logger.debug("ApplicationService : All Applications found ");
             return listApplications;
         } catch (PersistenceException e) {
             logger.error("Error ApplicationService : error findAll Method : "
-                + e);
+                    + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }
 
     @Override
     public List<Application> findAllByUser(User user)
-        throws ServiceException {
+            throws ServiceException {
         try {
             List<Application> applications = applicationDAO.findAllByUser(user.getId());
             logger.debug("ApplicationService : All Applications found ");
             return applications;
         } catch (PersistenceException e) {
             logger.error("Error ApplicationService : error findById Method : "
-                + user);
+                    + user);
             throw new ServiceException(user.toString(), e);
         }
     }
 
     @Override
     public Application findByNameAndUser(User user, String name)
-        throws ServiceException {
+            throws ServiceException {
         try {
             Application application = applicationDAO.findByNameAndUser(
-                user.getId(), name);
+                    user.getId(), name);
 
             return application;
 
@@ -716,12 +716,12 @@ public class ApplicationServiceImpl
     @Transactional
     public void deployToContainerId(String applicationName, String containerId,
                                     File file, String destFile)
-        throws ServiceException {
+            throws ServiceException {
 
         try {
             Application application = this.findByNameAndUser(
-                authentificationUtils.getAuthentificatedUser(),
-                applicationName);
+                    authentificationUtils.getAuthentificatedUser(),
+                    applicationName);
 
             Map<String, String> configShell = new HashMap<>();
 
@@ -729,12 +729,12 @@ public class ApplicationServiceImpl
             String rootPassword = application.getUser().getPassword();
             configShell.put("port", sshPort);
             configShell.put("dockerManagerAddress",
-                application.getManagerIp());
+                    application.getManagerIp());
             configShell.put("password", rootPassword);
 
             // send the file on container
             shellUtils.sendFile(file, rootPassword, sshPort,
-                application.getManagerIp(), destFile);
+                    application.getManagerIp(), destFile);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -744,7 +744,7 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public Application deploy(File file, Application application)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         int code = -1;
         Map<String, String> configShell = new HashMap<>();
@@ -757,24 +757,24 @@ public class ApplicationServiceImpl
                 // loading server ssh informations
 
                 String rootPassword = server.getApplication().getUser()
-                    .getPassword();
+                        .getPassword();
                 configShell.put("port", server.getSshPort());
                 configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
+                        application.getManagerIp());
                 configShell.put("password", rootPassword);
                 String destFile = "/cloudunit/tmp/";
 
                 // send the file on container
 
                 shellUtils.sendFile(file, rootPassword, server.getSshPort(),
-                    application.getManagerIp(), destFile);
+                        application.getManagerIp(), destFile);
 
                 // call deployment script
 
                 code = shellUtils.executeShell(
-                    "bash /cloudunit/scripts/deploy.sh " + file.getName()
-                        + " " + application.getUser().getLogin(),
-                    configShell);
+                        "bash /cloudunit/scripts/deploy.sh " + file.getName()
+                                + " " + application.getUser().getLogin(),
+                        configShell);
 
             }
 
@@ -796,7 +796,7 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public Application saveGitPush(Application application, String login)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         logger.info("parameters - application : " + application.toString());
         deploymentService.create(application, Type.GITPUSH);
         return application;
@@ -804,7 +804,7 @@ public class ApplicationServiceImpl
 
     @Override
     public Long countApp(User user)
-        throws ServiceException {
+            throws ServiceException {
         try {
             return applicationDAO.countApp(user.getId());
         } catch (PersistenceException e) {
@@ -820,18 +820,18 @@ public class ApplicationServiceImpl
      * @throws ServiceException
      */
     public List<ContainerUnit> listContainers(String applicationName)
-        throws ServiceException {
+            throws ServiceException {
         return listContainers(applicationName, true);
     }
 
     public List<ContainerUnit> listContainers(String applicationName,
                                               boolean withModules)
-        throws ServiceException {
+            throws ServiceException {
         List<ContainerUnit> containers = new ArrayList<>();
         try {
             Application application = findByNameAndUser(
-                authentificationUtils.getAuthentificatedUser(),
-                applicationName);
+                    authentificationUtils.getAuthentificatedUser(),
+                    applicationName);
             if (application != null) {
                 try {
                     // Serveurs
@@ -841,12 +841,12 @@ public class ApplicationServiceImpl
                         DockerContainer dockerContainer = new DockerContainer();
                         dockerContainer.setName(server.getName());
                         dockerContainer = DockerContainer.findOne(
-                            dockerContainer, application.getManagerIp());
+                                dockerContainer, application.getManagerIp());
                         server = containerMapper.mapDockerContainerToServer(
-                            dockerContainer, server);
+                                dockerContainer, server);
                         ContainerUnit containerUnit = new ContainerUnit(
-                            server.getName(), server.getContainerID(),
-                            "server");
+                                server.getName(), server.getContainerID(),
+                                "server");
                         containers.add(containerUnit);
                     }
                     if (withModules) {
@@ -861,14 +861,14 @@ public class ApplicationServiceImpl
                             DockerContainer dockerContainer = new DockerContainer();
                             dockerContainer.setName(module.getName());
                             dockerContainer = DockerContainer.findOne(
-                                dockerContainer,
-                                application.getManagerIp());
+                                    dockerContainer,
+                                    application.getManagerIp());
                             module = containerMapper
-                                .mapDockerContainerToModule(
-                                    dockerContainer, module);
+                                    .mapDockerContainerToModule(
+                                            dockerContainer, module);
                             ContainerUnit containerUnit = new ContainerUnit(
-                                module.getName(), module.getContainerID(),
-                                "module");
+                                    module.getName(), module.getContainerID(),
+                                    "module");
                             containers.add(containerUnit);
                         }
                     }
@@ -893,18 +893,18 @@ public class ApplicationServiceImpl
      * @throws ServiceException
      */
     public List<String> listContainersId(String applicationName)
-        throws ServiceException {
+            throws ServiceException {
         return listContainersId(applicationName, false);
     }
 
     public List<String> listContainersId(String applicationName,
                                          boolean withModules)
-        throws ServiceException {
+            throws ServiceException {
         List<String> containers = new ArrayList<>();
         try {
             Application application = findByNameAndUser(
-                authentificationUtils.getAuthentificatedUser(),
-                applicationName);
+                    authentificationUtils.getAuthentificatedUser(),
+                    applicationName);
             if (application != null) {
                 try {
                     // Serveurs
@@ -914,9 +914,9 @@ public class ApplicationServiceImpl
                         DockerContainer dockerContainer = new DockerContainer();
                         dockerContainer.setName(server.getName());
                         dockerContainer = DockerContainer.findOne(
-                            dockerContainer, application.getManagerIp());
+                                dockerContainer, application.getManagerIp());
                         server = containerMapper.mapDockerContainerToServer(
-                            dockerContainer, server);
+                                dockerContainer, server);
                         containers.add(server.getContainerID());
                     }
                     // Ajout des containers de type module
@@ -926,11 +926,11 @@ public class ApplicationServiceImpl
                             DockerContainer dockerContainer = new DockerContainer();
                             dockerContainer.setName(module.getName());
                             dockerContainer = DockerContainer.findOne(
-                                dockerContainer,
-                                application.getManagerIp());
+                                    dockerContainer,
+                                    application.getManagerIp());
                             module = containerMapper
-                                .mapDockerContainerToModule(
-                                    dockerContainer, module);
+                                    .mapDockerContainerToModule(
+                                            dockerContainer, module);
                             containers.add(module.getContainerID());
                         }
                     }
@@ -949,7 +949,7 @@ public class ApplicationServiceImpl
 
     @Override
     public List<String> getListAliases(Application application)
-        throws ServiceException {
+            throws ServiceException {
         try {
             return applicationDAO.findAllAliases(application.getName());
         } catch (DataAccessException e) {
@@ -960,32 +960,32 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public void addNewAlias(Application application, String alias)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         logger.info("ALIAS VALUE IN addNewAlias : " + alias);
 
         if (checkAliasIfExists(alias)) {
             throw new CheckException(
-                "This alias is already used by another application on this CloudUnit instance");
+                    "This alias is already used by another application on this CloudUnit instance");
         }
 
         alias = alias.toLowerCase();
         if (alias.startsWith("https://") || alias.startsWith("http://")
-            || alias.startsWith("ftp://")) {
+                || alias.startsWith("ftp://")) {
             alias = alias
-                .substring(alias.lastIndexOf("//") + 2, alias.length());
+                    .substring(alias.lastIndexOf("//") + 2, alias.length());
         }
 
         if (!StringUtils.isAlphanumeric(alias)) {
             throw new CheckException(
-                "This alias must be alphanumeric. Please remove all other characters");
+                    "This alias must be alphanumeric. Please remove all other characters");
         }
 
         try {
             Server server = application.getServers().get(0);
             application.getAliases().add(alias);
             hipacheRedisUtils.writeNewAlias(alias, application, server
-                .getServerAction().getServerPort());
+                    .getServerAction().getServerPort());
             applicationDAO.save(application);
 
         } catch (DataAccessException e) {
@@ -996,14 +996,14 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public void updateAliases(Application application)
-        throws ServiceException {
+            throws ServiceException {
         try {
             Server server = application.getServers().get(0);
             List<String> aliases = applicationDAO.findAllAliases(application
-                .getName());
+                    .getName());
             for (String alias : aliases) {
                 hipacheRedisUtils.updateAlias(alias, application,
-                    server.getServerAction().getServerPort());
+                        server.getServerAction().getServerPort());
             }
 
         } catch (DataAccessException e) {
@@ -1014,7 +1014,7 @@ public class ApplicationServiceImpl
     @Override
     @Transactional
     public void removeAlias(Application application, String alias)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         try {
             hipacheRedisUtils.removeAlias(alias);
             boolean removed = application.getAliases().remove(alias);
@@ -1029,17 +1029,29 @@ public class ApplicationServiceImpl
 
     @Transactional
     @Override
-    public void addPort(Application application, String nature, Integer port, String alias) throws ServiceException {
+    public void addPort(Application application, String nature, Integer port) throws ServiceException {
         PortToOpen portToOpen = new PortToOpen();
         portToOpen.setNature(nature);
-        portToOpen.setAlias(alias);
         portToOpen.setPort(port);
         portToOpen.setApplication(application);
-        portToOpen.setForwardedPort(portUtils.getARandomHostPorts());
-
         try {
+            // ajout de l'alias du port en http seulement
+            if ("web".equalsIgnoreCase(portToOpen.getNature())) {
+                hipacheRedisUtils.writeNewAlias((application.getName()
+                                + "-" + application.getUser().getLogin() + "-"
+                                + "forward-" + portToOpen.getPort()),
+                        application,
+                        portToOpen.getPort().toString());
+                portToOpen.setAlias("http://" + application.getName()
+                        + "-" + application.getUser().getLogin() + "-"
+                        + "forward-" + portToOpen.getPort() + application.getDomainName());
+            } else {
+                portToOpen.setAlias(application.getServers().iterator().next().getName()
+                        + "."
+                        + application.getServers().iterator().next().getImage().getPath().substring(10)
+                        + ".cloud.unit");
+            }
             portToOpenDAO.save(portToOpen);
-
         } catch (DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
@@ -1050,22 +1062,17 @@ public class ApplicationServiceImpl
     @Transactional
     @Override
     public void removePort(Application application, Integer port) throws ServiceException {
-        application.getPortsToOpen()
-                .stream().forEach(System.out::println);
         PortToOpen portToOpen = application.getPortsToOpen()
                 .stream()
                 .filter(p -> p.getPort().equals(port))
                 .findFirst()
                 .get();
         try {
-
+            if ("web".equalsIgnoreCase(portToOpen.getNature())) {
+                hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias());
+            }
             portToOpenDAO.delete(portToOpen);
-
-            application.getUrls().remove(port);
-
             saveInDB(application);
-
-
         } catch (DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }

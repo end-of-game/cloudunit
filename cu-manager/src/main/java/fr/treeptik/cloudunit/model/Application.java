@@ -63,8 +63,6 @@ public class Application
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<Deployment> deployments;
 
-    @ElementCollection
-    private Map<Integer, String> urls;
 
     private String gitAddress;
 
@@ -388,11 +386,5 @@ public class Application
         this.portsToOpen = portsToOpen;
     }
 
-    public Map<Integer, String> getUrls() {
-        return this.urls;
-    }
 
-    public void setUrls(Map<Integer, String> urls) {
-        this.urls = urls;
-    }
 }

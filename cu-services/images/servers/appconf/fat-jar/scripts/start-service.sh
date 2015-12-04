@@ -56,8 +56,8 @@ if [ ! -f /init-service-ok ]; then
 	echo  "JAVA_HOME=$JAVA_HOME" >> $ENV_FILE
 	echo  "CU_HOME=$CU_HOME" >> $ENV_FILE
 
-	export CATALINA_OPTS="-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
-	echo  "CATALINA_OPTS=$CATALINA_OPTS" >> $ENV_FILE
+	export JAVA_OPTS="-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
+	echo  "JAVA_OPTS=$JAVA_OPTS" >> $ENV_FILE
 
 	# Ajout de l'utilisateur et modif du home directory
 	useradd $1 && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
@@ -76,12 +76,6 @@ if [ ! -f /init-service-ok ]; then
 	# Ajout du Shell à l'utilisateur
 	usermod -s /bin/bash $CU_USER
 
-	# mv /tomcat $TOMCAT_HOME
-	rm -rf $TOMCAT_HOME/webapps/ROOT $TOMCAT_HOME/webapps/examples $TOMCAT_HOME/webapps/docs
-
-	# ajout des credentials pour tomcat
-	sed -i -e'/<tomcat-users>/a\<user username=\"'$CU_USER'\" password=\"'$CU_PASSWORD'\" roles=\"manager-gui,manager-status,manager-script,manager-jmx\"/>' $TOMCAT_HOME/conf/tomcat-users.xml
-
 	# Le montage /cloudunit n'appartient qu'à l'utilisateur créé
 	chown -R $CU_USER:$CU_USER /cloudunit
 
@@ -95,7 +89,7 @@ else
         # purge des logs
         rm -rf /cloudunit/appconf/logs/*
 
-        # Redémarrage de openssh et tomcat
+        # Redémarrage de openssh et java
         echo "restarting"
         chown -R $1:$1 /cloudunit
 fi

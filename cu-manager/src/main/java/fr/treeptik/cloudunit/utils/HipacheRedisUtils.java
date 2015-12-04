@@ -61,9 +61,9 @@ public class HipacheRedisUtils {
         Jedis jedis = null;
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp,
-                Integer.parseInt(redisPort),
-                3000);
+                    redisIp,
+                    Integer.parseInt(redisPort),
+                    3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
@@ -72,17 +72,17 @@ public class HipacheRedisUtils {
             String frontend = "frontend:" + key.toLowerCase();
             jedis.rpush(frontend, key.toLowerCase());
             jedis.rpush(frontend, "http://" + dockerManagerIP + ":"
-                + serverPort);
+                    + serverPort);
 
 			/*
              * CREATE AN ENTRY FOR SERVER MANAGER
 			 */
 
             String frontendServerManager = "frontend:manager-"
-                + key.toLowerCase();
+                    + key.toLowerCase();
             jedis.rpush(frontendServerManager, key.toLowerCase());
             jedis.rpush(frontendServerManager, "http://" + dockerManagerIP
-                + ":" + serverManagerPort);
+                    + ":" + serverManagerPort);
 
         } catch (JedisConnectionException | UnsupportedEncodingException e) {
             logger.error("HipacheRedisUtils Exception", e);
@@ -107,20 +107,20 @@ public class HipacheRedisUtils {
     public void writeNewAlias(String alias, Application application, String serverPort) {
 
         String dockerManagerIP = application.getServers().get(0)
-            .getContainerIP();
+                .getContainerIP();
 
         JedisPool pool = null;
         Jedis jedis = null;
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp, Integer.parseInt(redisPort), 3000);
+                    redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
             logger.info("ALIAS VALUE IN ADD NEW ALIAS : " + alias);
             alias += application.getSuffixCloudUnitIO();
             String frontend = "frontend:" + alias.toLowerCase();
             jedis.rpush(frontend, alias.toLowerCase());
             jedis.rpush(frontend, "http://" + dockerManagerIP + ":"
-                + serverPort);
+                    + serverPort);
         } catch (JedisConnectionException e) {
             logger.error("HipacheRedisUtils Exception", e);
             if (jedis != null) {
@@ -151,12 +151,12 @@ public class HipacheRedisUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp, Integer.parseInt(redisPort), 3000);
+                    redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
             alias += application.getSuffixCloudUnitIO();
             String frontend = "frontend:" + alias.toLowerCase();
             jedis.lset(frontend, 1, "http://" + dockerManagerIP + ":"
-                + serverPort);
+                    + serverPort);
         } catch (JedisConnectionException e) {
             logger.error("HipacheRedisUtils Exception", e);
             if (jedis != null) {
@@ -188,23 +188,23 @@ public class HipacheRedisUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp, Integer.parseInt(redisPort), 3000);
+                    redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
             String key = subNameSpace + suffixCloudUnit;
             String frontend = "frontend:" + key.toLowerCase();
             jedis.lset(frontend, 1, "http://" + dockerManagerIP + ":"
-                + serverPort);
+                    + serverPort);
 
 			/*
              * UPDATE THE ENTRY FOR SERVER MANAGER
 			 */
 
             String frontendServerManager = "frontend:manager-"
-                + key.toLowerCase();
+                    + key.toLowerCase();
             jedis.lset(frontendServerManager, 1, "http://" + dockerManagerIP
-                + ":" + serverManagerPort);
+                    + ":" + serverManagerPort);
         } catch (JedisConnectionException | UnsupportedEncodingException e) {
             logger.error("HipacheRedisUtils Exception", e);
             if (jedis != null) {
@@ -243,10 +243,37 @@ public class HipacheRedisUtils {
 			 */
 
             String frontendServerManager = "frontend:manager-"
-                + key.toLowerCase();
+                    + key.toLowerCase();
             jedis.del(frontendServerManager);
 
         } catch (JedisConnectionException | UnsupportedEncodingException e) {
+            logger.error("HipacheRedisUtils Exception", e);
+            if (jedis != null) {
+                pool.returnBrokenResource(jedis);
+            }
+        } finally {
+            if (jedis != null) {
+                pool.returnResource(jedis);
+                pool.destroy();
+            }
+        }
+    }
+
+    /**
+     * Remove the server address
+     * portAlias
+     */
+    public void removeServerPortAlias(String portAlias) {
+        JedisPool pool = null;
+        Jedis jedis = null;
+
+        try {
+            String frontend = "frontend:" + portAlias;
+
+            jedis.del(frontend.toLowerCase());
+
+
+        } catch (JedisConnectionException e) {
             logger.error("HipacheRedisUtils Exception", e);
             if (jedis != null) {
                 pool.returnBrokenResource(jedis);
@@ -272,7 +299,7 @@ public class HipacheRedisUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp, Integer.parseInt(redisPort), 3000);
+                    redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
@@ -298,29 +325,29 @@ public class HipacheRedisUtils {
 
         if (logger.isInfoEnabled()) {
             logger.info("parameters : [ " + application.getName()
-                + " - dockerContainerIP : " + dockerContainerIP
-                + " - redisIp : " + redisIp
-                + " - cloudunitModuleManagerSuffix : "
-                + cloudunitModuleManagerSuffix + " - instanceNumber : "
-                + instanceNumber);
+                    + " - dockerContainerIP : " + dockerContainerIP
+                    + " - redisIp : " + redisIp
+                    + " - cloudunitModuleManagerSuffix : "
+                    + cloudunitModuleManagerSuffix + " - instanceNumber : "
+                    + instanceNumber);
         }
 
         JedisPool pool = null;
         Jedis jedis = null;
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp, Integer.parseInt(redisPort), 3000);
+                    redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
 
             String alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
-                + subNameSpace + application.getSuffixCloudUnitIO();
+                    + subNameSpace + application.getSuffixCloudUnitIO();
             String frontend = "frontend:" + alias;
             String valeur = "http://" + dockerContainerIP + ":" + modulePort;
             if (logger.isInfoEnabled()) {
                 logger.info("Ajout dans Redis de [" + frontend + "] --> " + "["
-                    + valeur + "]");
+                        + valeur + "]");
             }
             jedis.rpush(frontend.toLowerCase(), alias.toLowerCase());
             jedis.rpush(frontend.toLowerCase(), valeur.toLowerCase());
@@ -343,11 +370,11 @@ public class HipacheRedisUtils {
 
         if (logger.isInfoEnabled()) {
             logger.info("parameters : [ " + application.getName()
-                + " - dockerManagerIP : " + dockerManagerIP
-                + " - redisIp : " + redisIp
-                + " - cloudunitModuleManagerSuffix : "
-                + cloudunitModuleManagerSuffix + " - instanceNumber : "
-                + instanceNumber);
+                    + " - dockerManagerIP : " + dockerManagerIP
+                    + " - redisIp : " + redisIp
+                    + " - cloudunitModuleManagerSuffix : "
+                    + cloudunitModuleManagerSuffix + " - instanceNumber : "
+                    + instanceNumber);
         }
 
         JedisPool pool = null;
@@ -355,17 +382,17 @@ public class HipacheRedisUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp, Integer.parseInt(redisPort), 3000);
+                    redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
             String alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
-                + subNameSpace + application.getSuffixCloudUnitIO();
+                    + subNameSpace + application.getSuffixCloudUnitIO();
             String frontend = "frontend:" + alias;
             String valeur = "http://" + dockerManagerIP + ":" + modulePort;
             if (logger.isInfoEnabled()) {
                 logger.info("Mise à jour dans Redis de [" + frontend + "] --> "
-                    + "[" + valeur + "]");
+                        + "[" + valeur + "]");
             }
             jedis.lset(frontend.toLowerCase(), 1, valeur);
         } catch (JedisConnectionException | UnsupportedEncodingException e) {
@@ -389,12 +416,12 @@ public class HipacheRedisUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp, Integer.parseInt(redisPort), 3000);
+                    redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
             String alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
-                + subNameSpace + application.getSuffixCloudUnitIO();
+                    + subNameSpace + application.getSuffixCloudUnitIO();
             String frontend = "frontend:" + alias.toLowerCase();
             jedis.del(frontend);
             if (logger.isInfoEnabled()) {
@@ -424,7 +451,7 @@ public class HipacheRedisUtils {
         Jedis jedis = null;
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                redisIp, Integer.parseInt(redisPort), 3000);
+                    redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
             String frontend = "frontend:" + alias.toLowerCase() + suffixCloudUnitIO;
             jedis.del(frontend);
@@ -452,17 +479,17 @@ public class HipacheRedisUtils {
      * @throws UnsupportedEncodingException
      */
     private String concatSubNameSpace(Application application)
-        throws UnsupportedEncodingException {
+            throws UnsupportedEncodingException {
         String subNameSpace = AlphaNumericsCharactersCheckUtils
-            .convertToAlphaNumerics(application.getName())
-            + "-"
-            + AlphaNumericsCharactersCheckUtils
-            .convertToAlphaNumerics(application.getUser()
-                .getLogin())
-            + "-"
-            + AlphaNumericsCharactersCheckUtils
-            .convertToAlphaNumerics(application.getUser()
-                .getOrganization());
+                .convertToAlphaNumerics(application.getName())
+                + "-"
+                + AlphaNumericsCharactersCheckUtils
+                .convertToAlphaNumerics(application.getUser()
+                        .getLogin())
+                + "-"
+                + AlphaNumericsCharactersCheckUtils
+                .convertToAlphaNumerics(application.getUser()
+                        .getOrganization());
 
         return subNameSpace;
 

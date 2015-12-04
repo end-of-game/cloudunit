@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 @Entity
 public class PortToOpen
-    implements Serializable {
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,8 +33,6 @@ public class PortToOpen
     private Integer port;
 
     private String alias;
-
-    private Integer forwardedPort;
 
     private String nature;
 
@@ -66,13 +64,6 @@ public class PortToOpen
         this.alias = alias;
     }
 
-    public Integer getForwardedPort() {
-        return this.forwardedPort;
-    }
-
-    public void setForwardedPort(Integer forwardedPort) {
-        this.forwardedPort = forwardedPort;
-    }
 
     public Integer getId() {
         return this.id;
@@ -104,7 +95,6 @@ public class PortToOpen
                 "id=" + id +
                 ", port=" + port +
                 ", alias='" + alias + '\'' +
-                ", forwardedPort=" + forwardedPort +
                 ", nature='" + nature + '\'' +
                 ", application=" + application +
                 '}';

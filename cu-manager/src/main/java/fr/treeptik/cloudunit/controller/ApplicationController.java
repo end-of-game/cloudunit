@@ -48,7 +48,7 @@ import java.util.Locale;
 @Controller
 @RequestMapping("/application")
 public class ApplicationController
-    implements Serializable {
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -78,7 +78,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/verify/{applicationName}/{serverName}", method = RequestMethod.GET)
     public JsonResponse isValid(@PathVariable String applicationName, @PathVariable String serverName)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         if (logger.isInfoEnabled()) {
             logger.info("applicationName:" + applicationName);
@@ -105,7 +105,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST)
     public JsonResponse createApplication(@RequestBody JsonInput input)
-        throws ServiceException, CheckException, InterruptedException {
+            throws ServiceException, CheckException, InterruptedException {
 
         // validate the input
         input.validateCreateApp();
@@ -132,7 +132,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/restart", method = RequestMethod.POST)
     public JsonResponse restartApplication(@RequestBody JsonInput input)
-        throws ServiceException, CheckException, InterruptedException {
+            throws ServiceException, CheckException, InterruptedException {
 
         // validate the input
         input.validateStartApp();
@@ -173,7 +173,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/start", method = RequestMethod.POST)
     public JsonResponse startApplication(@RequestBody JsonInput input)
-        throws ServiceException, CheckException, InterruptedException {
+            throws ServiceException, CheckException, InterruptedException {
 
         // validate the input
         input.validateStartApp();
@@ -207,7 +207,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/stop", method = RequestMethod.POST)
     public JsonResponse stopApplication(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         if (logger.isDebugEnabled()) {
             logger.debug(input.toString());
@@ -238,7 +238,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/{applicationName}", method = RequestMethod.DELETE)
     public JsonResponse deleteApplication(JsonInput jsonInput)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         jsonInput.validateRemoveApp();
 
@@ -279,7 +279,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/{applicationName}", method = RequestMethod.GET)
     public Application detail(JsonInput jsonInput)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         jsonInput.validateDetail();
 
@@ -297,7 +297,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     public List<Application> findAllByUser()
-        throws ServiceException {
+            throws ServiceException {
         logger.debug("--CALL LIST USER APPLICATIONS--");
 
         User user = this.authentificationUtils.getAuthentificatedUser();
@@ -319,7 +319,7 @@ public class ApplicationController
     @RequestMapping(value = "/{applicationName}/deploy", method = RequestMethod.POST, consumes = {"multipart/form-data"})
     public JsonResponse deploy(@RequestPart("file") MultipartFile fileUpload, @PathVariable String applicationName,
                                HttpServletRequest request, HttpServletResponse response)
-        throws IOException, ServiceException, CheckException {
+            throws IOException, ServiceException, CheckException {
 
         logger.info("applicationName = " + applicationName + "file = " + fileUpload.getOriginalFilename());
 
@@ -346,7 +346,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/containers", method = RequestMethod.GET)
     public List<ContainerUnit> listContainer(@PathVariable String applicationName)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         logger.debug("applicationName:" + applicationName);
         return applicationService.listContainers(applicationName);
     }
@@ -361,7 +361,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/alias", method = RequestMethod.GET)
     public List<String> aliases(JsonInput jsonInput)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         logger.debug("application.name = " + jsonInput.getApplicationName());
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, jsonInput.getApplicationName());
@@ -380,7 +380,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/alias", method = RequestMethod.POST)
     public JsonResponse addAlias(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         if (logger.isDebugEnabled()) {
             logger.debug(input.toString());
@@ -412,7 +412,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/alias/{alias}", method = RequestMethod.DELETE)
     public JsonResponse removeAlias(JsonInput jsonInput)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         String applicationName = jsonInput.getApplicationName();
         String alias = jsonInput.getAlias();
@@ -453,10 +453,9 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/ports", method = RequestMethod.POST)
     public JsonResponse addPort(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         String applicationName = input.getApplicationName();
-        String alias = input.getAlias();
         String nature = input.getPortNature();
 
         if (logger.isDebugEnabled()) {
@@ -468,7 +467,7 @@ public class ApplicationController
 
         CheckUtils.validateInputForOpenPort(input.getPortToOpen(), application);
         Integer port = Integer.parseInt(input.getPortToOpen());
-        applicationService.addPort(application, nature, port, alias);
+        applicationService.addPort(application, nature, port);
 
         return new HttpOk();
     }
@@ -485,7 +484,7 @@ public class ApplicationController
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/ports/{portToOpen}", method = RequestMethod.DELETE)
     public JsonResponse removePort(JsonInput input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
 
         String applicationName = input.getApplicationName();

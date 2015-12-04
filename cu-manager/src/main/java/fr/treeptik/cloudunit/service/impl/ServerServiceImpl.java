@@ -68,9 +68,6 @@ public class ServerServiceImpl
     private ShellUtils shellUtils;
 
     @Inject
-    private PortUtils portUtils;
-
-    @Inject
     private HipacheRedisUtils hipacheRedisUtils;
 
     @Inject
@@ -488,15 +485,7 @@ public class ServerServiceImpl
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
 
-            if (server.getApplication().getPortsToOpen() != null) {
 
-                for (PortToOpen portToOpen : server.getApplication().getPortsToOpen()) {
-                    dockerContainer.setPortBindings(portToOpen.getPort().toString() + "/tcp", "0.0.0.0",
-                            portToOpen.getForwardedPort().toString());
-                }
-
-
-            }
             DockerContainer.start(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
             server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
@@ -512,27 +501,6 @@ public class ServerServiceImpl
                             .getServerPort(),
                     server.getServerAction()
                             .getServerManagerPort());
-
-            // ajout des alias des ports forwardés en http seulement
-            for (PortToOpen portToOpen : application.getPortsToOpen()) {
-                if (portToOpen.getAlias() == null) {
-                    if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-                        hipacheRedisUtils.writeNewAlias((application.getName()
-                                        + "-" + application.getUser().getLogin() + "-"
-                                        + "forward-" + portToOpen.getPort()),
-                                application,
-                                portToOpen.getPort().toString());
-                        portToOpen.setAlias("http://" + application.getName()
-                                + "-" + application.getUser().getLogin() + "-"
-                                + "forward-" + portToOpen.getPort() + application.getDomainName());
-                    } else {
-                        portToOpen.setAlias(application.getDomainName().substring(1) + ":" + portToOpen.getForwardedPort());
-                    }
-                    portToOpenDAO.save(portToOpen);
-                }
-            }
-
-
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
             throw new ServiceException("Error database :  "

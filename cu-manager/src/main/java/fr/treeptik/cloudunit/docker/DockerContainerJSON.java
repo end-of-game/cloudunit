@@ -63,7 +63,6 @@ public class DockerContainerJSON {
 
     private boolean isHttpMode;
 
-    int i = 2900;
 
     @PostConstruct
     public void initDockerEndPointMode() {
@@ -585,10 +584,8 @@ public class DockerContainerJSON {
             JSONObject config = new JSONObject();
 
             config.put("Privileged", Boolean.FALSE);
-            config.put("PublishAllPorts", Boolean.FALSE);
-            dockerContainer.setPortBindings("22/tcp", "0.0.0.0",
-                    Integer.toString(i + 1));
-            i++;
+            config.put("PublishAllPorts", Boolean.TRUE);
+
 
             JSONArray link = new JSONArray();
             if (dockerContainer.getLinks() != null) {
