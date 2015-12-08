@@ -17,17 +17,20 @@
 package fr.treeptik.cloudunit.aspects;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by nicolas on 02/10/15.
  *
- * DISABLED AT THE MOMENT.
+ *
+ *
  */
-//@Component
-//@Aspect
+@Component
+@Aspect
 public class JsonInputLoggerAspect {
 
     // Before methods

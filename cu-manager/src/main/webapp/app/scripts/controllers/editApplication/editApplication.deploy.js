@@ -48,7 +48,7 @@
     uploader.filters.push({
       name: 'extensionFilter',
       fn: function (item /*{File|FileLikeObject}*/) {
-        var authorizedTypes = ['ear', 'war'];
+        var authorizedTypes = ['ear', 'war', 'jar'];
         var type = item.name.split('.');
         return authorizedTypes.indexOf(type[type.length - 1]) !== -1;
       }
