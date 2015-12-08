@@ -82,11 +82,12 @@ public class DatabaseConfiguration {
         if (forcePassword != null) {
             logger.info("Force the mysql password from host env");
             databasePassword = forcePassword;
+        } else {
+            databasePassword = "changeit";
         }
 
         logger.info("URL : " + databaseUrl + " password : " + databasePassword);
         config.addDataSourceProperty("password", databasePassword);
-        // config.setAutoCommit(false);
         return new HikariDataSource(config);
     }
 

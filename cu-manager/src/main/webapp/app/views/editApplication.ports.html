@@ -1,17 +1,3 @@
-<!--
-  ~ LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
-  ~ but CloudUnit is licensed too under a standard commercial license.
-  ~ Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
-  ~ If you are not sure whether the AGPL is right for you,
-  ~ you can always test our software under the AGPL and inspect the source code before you contact us
-  ~ about purchasing a commercial license.
-  ~
-  ~ LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
-  ~ or promote products derived from this project without prior written permission from Treeptik.
-  ~ Products or services derived from this software may not be called "CloudUnit"
-  ~ nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
-  ~ For any questions, contact us : contact@treeptik.fr
-  -->
 
 <!--
   ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
@@ -78,19 +64,6 @@
       </form>
     </div>
     <div class="ports-list col-lg-6 col-md-6 col-xs-12">
-      <div class="actions">
-        <div class="secondary-actions pull-right">
-          <button class="ports-btn button primary raised"
-                  data-ng-click="ports.restartApplication(editApp.application.name)"
-                  ripple=""
-                  tooltip=""
-                  data-title="{{editApp.application.status === 'STOP' ? 'Start' : 'Stop'}}"
-                  data-placement="bottom"
-                  click-once="">
-            <span>Restart the application</span>
-          </button>
-        </div>
-      </div>
       <h3 class="title large">Registered ports</h3>
 
       <p class="no-ports text-muted" data-ng-if="!editApp.application.portsToOpen.length">No registered ports</p>

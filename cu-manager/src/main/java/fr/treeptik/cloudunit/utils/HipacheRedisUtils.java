@@ -264,15 +264,11 @@ public class HipacheRedisUtils {
      * portAlias
      */
     public void removeServerPortAlias(String portAlias) {
-        JedisPool pool = null;
-        Jedis jedis = null;
-
+        JedisPool pool = new JedisPool(new JedisPoolConfig(), redisIp, Integer.parseInt(redisPort), 3000);
+        Jedis jedis = pool.getResource();
         try {
             String frontend = "frontend:" + portAlias;
-
             jedis.del(frontend.toLowerCase());
-
-
         } catch (JedisConnectionException e) {
             logger.error("HipacheRedisUtils Exception", e);
             if (jedis != null) {

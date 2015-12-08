@@ -492,6 +492,7 @@ public class ApplicationController
 
         if (logger.isDebugEnabled()) {
             logger.debug("application.name=" + applicationName);
+            logger.debug("application.port=" + port);
         }
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
