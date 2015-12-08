@@ -165,7 +165,11 @@ public class ServerServiceImpl
         logger.debug("imagePath:" + imagePath);
 
         List<String> volumesFrom = new ArrayList<>();
-        volumesFrom.add(server.getImage().getName());
+
+
+        if (!server.getImage().getName().contains("fatjar")) {
+            volumesFrom.add(server.getImage().getName());
+        }
         volumesFrom.add("java");
         dockerContainer = new DockerContainerBuilder()
                 .withName(containerName)

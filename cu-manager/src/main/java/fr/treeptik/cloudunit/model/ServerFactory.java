@@ -15,17 +15,14 @@
 
 package fr.treeptik.cloudunit.model;
 
-import fr.treeptik.cloudunit.model.action.JBossAction;
-import fr.treeptik.cloudunit.model.action.JBossAction5;
-import fr.treeptik.cloudunit.model.action.ServerAction;
-import fr.treeptik.cloudunit.model.action.TomcatAction;
+import fr.treeptik.cloudunit.model.action.*;
 
 public class ServerFactory {
 
     /**
      * Return new module with ModuleAction initialized
      *
-     * @param moduleName
+     * @param
      * @return
      */
     public static Server getServer(String imageName) {
@@ -40,12 +37,12 @@ public class ServerFactory {
     /**
      * Update module with ModuleAction initialized
      *
-     * @param moduleName
+     * @param
      * @return
      */
     public static Server updateServer(Server server) {
         server.setServerAction(getServerAction(server.getImage().getName(),
-            server));
+                server));
         return server;
     }
 
@@ -61,8 +58,9 @@ public class ServerFactory {
             result = new JBossAction5(server);
         } else if (imageName.toLowerCase().contains("jboss")) {
             result = new JBossAction(server);
+        } else if (imageName.toLowerCase().contains("fatjar")) {
+            result = new FatJarAction(server);
         }
-
         return result;
 
     }

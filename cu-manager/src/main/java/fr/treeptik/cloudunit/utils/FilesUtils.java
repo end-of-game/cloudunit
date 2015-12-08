@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 public class FilesUtils {
 
-    public static String[] suffixesDeployment = {".war", ".ear"};
+    public static String[] suffixesDeployment = {".war", ".ear", ".jar"};
 
     public static String[] notAllowed = {".docker", "init-service-ok"};
 

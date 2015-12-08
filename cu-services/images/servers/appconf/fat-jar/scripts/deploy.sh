@@ -8,6 +8,8 @@ export WAR_NAME=$1
 export RUNNER=$2
 export WAR_PATH=/cloudunit/tmp
 
+sed -i 's/^DEPLOYED_JAR=.*$/DEPLOYED_JAR='$WAR_NAME'/g' /etc/environment
+
 # stop the server
 /cloudunit/scripts/cu-stop.sh
 
@@ -22,7 +24,7 @@ rm -rf /cloudunit/appconf/logs/*
 rm -f $CU_HOME/*
 
 #move the war in webapps
-mv $WAR_PATH/$WAR_NAME $CU_HOME/ROOT.war
+mv $WAR_PATH/$WAR_NAME $CU_HOME/$WAR_NAME
 
 #restart the server
 if [ $USER = "root" ];then

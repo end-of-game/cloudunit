@@ -55,9 +55,10 @@ if [ ! -f /init-service-ok ]; then
 	echo  "CU_DATABASE_NAME=$CU_DATABASE_NAME" >> $ENV_FILE
 	echo  "JAVA_HOME=$JAVA_HOME" >> $ENV_FILE
 	echo  "CU_HOME=$CU_HOME" >> $ENV_FILE
+	echo  "DEPLOYED_JAR=" >> $ENV_FILE
 
 	export JAVA_OPTS="-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
-	echo  "JAVA_OPTS=$JAVA_OPTS" >> $ENV_FILE
+	echo "JAVA_OPTS='-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m'" >> $ENV_FILE
 
 	# Ajout de l'utilisateur et modif du home directory
 	useradd $1 && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
@@ -76,6 +77,9 @@ if [ ! -f /init-service-ok ]; then
 	# Ajout du Shell à l'utilisateur
 	usermod -s /bin/bash $CU_USER
 
+	#creation d'un fichier de log
+	touch /cloudunit/appconf/log/app.log
+
 	# Le montage /cloudunit n'appartient qu'à l'utilisateur créé
 	chown -R $CU_USER:$CU_USER /cloudunit
 
@@ -87,7 +91,7 @@ else
         # SECOND APPEL  #
         #################
         # purge des logs
-        rm -rf /cloudunit/appconf/logs/*
+        rm -rf /cloudunit/appconf/log/*
 
         # Redémarrage de openssh et java
         echo "restarting"

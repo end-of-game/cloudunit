@@ -7,7 +7,7 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `i
   (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', '1.0', '', 1, 'server', ''),
   (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '1.0', '', 1, 'server', ''),
   (4, 'jboss-8', 'cloudunit/jboss-appconf8', '1.0', '', 1, 'server', ''),
-  (5, 'fatjar', 'cloudunit/fat-jar', '1.0', '', 1, 'server', ''),
+  (5, 'fatjar', 'cloudunit/fatjar', '1.0', '', 1, 'server', ''),
   (6, 'git', 'cloudunit/git', '1.0', '', 1, 'tool', ''),
   (7, 'mysql-5-5', 'cloudunit/mysql-5-5', '1.0', '', 1, 'module', 'phpmyadmin'),
   (8, 'mysql-5-5-data-db', 'cloudunit/mysql-5-5-data-db', '1.0', '', 1, 'tool', ''),
