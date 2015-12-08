@@ -101,5 +101,5 @@ public interface ApplicationService {
 
     void addPort(Application application, String nature, Integer port) throws ServiceException;
 
-    void removePort(Application application, Integer port) throws ServiceException;
+    void removePort(Application application, Integer port) throws CheckException, ServiceException;
 }

@@ -148,11 +148,11 @@ public class PortsControllerTestIT {
     }
 
     @Test
-    public void test01_addValidePort() throws Exception {
+    public void test10_addValidePort() throws Exception {
         logger.info("Open custom ports !");
         final String jsonString =
                 "{\"applicationName\":\"" + applicationName
-                        + "\",\"portToOpen\":\"6115\",\"alias\":\"access6115\",\"portNature\":\"http\"}";
+                        + "\",\"portToOpen\":\"6115\",\"alias\":\"access6115\",\"portNature\":\"web\"}";
         ResultActions resultats =
                 this.mockMvc.perform(post("/application/ports")
                         .session(session)
@@ -165,11 +165,11 @@ public class PortsControllerTestIT {
     }
 
     @Test
-    public void test02_closePort() throws Exception {
+    public void test11_closePort() throws Exception {
         logger.info("close custom ports !");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
-                        + "\",\"portToOpen\":\"6115\",\"alias\":\"access6115\",\"portNature\":\"http\"}";
+                        + "\",\"portToOpen\":\"6115\"}";
         ResultActions resultats =
                 this.mockMvc.perform(post("/application/ports")
                         .session(session)
@@ -183,6 +183,97 @@ public class PortsControllerTestIT {
                         .content(jsonString));
         resultats.andExpect(status().isOk()).andDo(print());
         resultats.andExpect(jsonPath("$.portsToOpen[0]").doesNotExist());
+    }
+
+    @Test
+    public void test20_addBadPort() throws Exception {
+        logger.info("Add bad port values. FailCase");
+
+        // Value is negative
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"-1\",\"portNature\":\"web\"}";
+        ResultActions resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().is4xxClientError());
+
+        // Value is 0
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"0\",\"portNature\":\"web\"}";
+        resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().is4xxClientError());
+
+        // Value is a String
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"xxx\",\"portNature\":\"web\"}";
+        resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().is4xxClientError());
+
+
+        // Value is missing into JSON
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portNature\":\"web\"}";
+        resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void test21_addBadNature() throws Exception {
+        logger.info("Add bad nature values. FailCase");
+
+        // Incorrect value
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"3437\",\"portNature\":\"xxx\"}";
+        ResultActions resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().is4xxClientError());
+
+        // Missing value
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"3437\"}";
+        resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void test21_closeFailPort() throws Exception {
+        logger.info("close bad ports !");
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"666\",\"portNature\":\"web\"}";
+        ResultActions resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().isOk()).andDo(print());
     }
 
     @After

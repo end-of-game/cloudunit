@@ -80,7 +80,7 @@ public class CheckUtils {
     }
 
 
-    public static void validateInputForOpenPort(String port, Application application)
+    public static void validateInputForOpenPort(String port, String nature, Application application)
             throws CheckException {
 
         try {
@@ -89,8 +89,23 @@ public class CheckUtils {
             String messageTranslated = messageSource.getMessage("port.format", null, Locale.ENGLISH);
             throw new CheckException(messageTranslated + " : " + port);
         }
-        Long numberOfThisPort = application.getPortsToOpen().stream().filter(t -> t.getPort().equals(Integer.parseInt(port))).count();
 
+        if (Integer.parseInt(port) <=0 ) {
+            String messageTranslated = messageSource.getMessage("port.format", null, Locale.ENGLISH);
+            throw new CheckException(messageTranslated + " : " + port);
+        }
+
+        if (nature == null || nature.trim().length()==0) {
+            String messageTranslated = messageSource.getMessage("port.nature", null, Locale.ENGLISH);
+            throw new CheckException(messageTranslated + " : " + port);
+        }
+
+        if(!nature.equalsIgnoreCase("web") && !nature.equalsIgnoreCase("other")) {
+            String messageTranslated = messageSource.getMessage("port.nature", null, Locale.ENGLISH);
+            throw new CheckException(messageTranslated + " : " + port);
+        }
+
+        Long numberOfThisPort = application.getPortsToOpen().stream().filter(t -> t.getPort().equals(Integer.parseInt(port))).count();
         if (numberOfThisPort != 0) {
             String messageTranslated = messageSource.getMessage("port.already.used", null, Locale.ENGLISH);
             throw new CheckException(messageTranslated + " : " + port);

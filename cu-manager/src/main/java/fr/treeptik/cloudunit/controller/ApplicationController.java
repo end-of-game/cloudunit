@@ -455,17 +455,17 @@ public class ApplicationController
     public JsonResponse addPort(@RequestBody JsonInput input)
             throws ServiceException, CheckException {
 
-        String applicationName = input.getApplicationName();
-        String nature = input.getPortNature();
-
         if (logger.isDebugEnabled()) {
             logger.debug(input.toString());
         }
 
+        String applicationName = input.getApplicationName();
+        String nature = input.getPortNature();
+
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
 
-        CheckUtils.validateInputForOpenPort(input.getPortToOpen(), application);
+        CheckUtils.validateInputForOpenPort(input.getPortToOpen(), nature, application);
         Integer port = Integer.parseInt(input.getPortToOpen());
         applicationService.addPort(application, nature, port);
 

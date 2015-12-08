@@ -1035,22 +1035,24 @@ public class ApplicationServiceImpl
         portToOpen.setPort(port);
         portToOpen.setApplication(application);
         try {
-            // ajout de l'alias du port en http seulement
+            String alias = null;
+            // add the port alias for http mode only
             if ("web".equalsIgnoreCase(portToOpen.getNature())) {
                 hipacheRedisUtils.writeNewAlias((application.getName()
                                 + "-" + application.getUser().getLogin() + "-"
                                 + "forward-" + portToOpen.getPort()),
                         application,
                         portToOpen.getPort().toString());
-                portToOpen.setAlias("http://" + application.getName()
+                alias = "http://" + application.getName()
                         + "-" + application.getUser().getLogin() + "-"
-                        + "forward-" + portToOpen.getPort() + application.getDomainName());
-            } else {
-                portToOpen.setAlias(application.getServers().iterator().next().getName()
+                        + "forward-" + portToOpen.getPort() + application.getDomainName();
+            } else if ("other".equalsIgnoreCase(portToOpen.getNature())) {
+                alias = application.getServers().iterator().next().getName()
                         + "."
                         + application.getServers().iterator().next().getImage().getPath().substring(10)
-                        + ".cloud.unit");
+                        + ".cloud.unit";
             }
+            portToOpen.setAlias(alias);
             portToOpenDAO.save(portToOpen);
         } catch (DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
@@ -1061,12 +1063,17 @@ public class ApplicationServiceImpl
 
     @Transactional
     @Override
-    public void removePort(Application application, Integer port) throws ServiceException {
+    public void removePort(Application application, Integer port) throws CheckException, ServiceException {
         PortToOpen portToOpen = application.getPortsToOpen()
                 .stream()
                 .filter(p -> p.getPort().equals(port))
                 .findFirst()
                 .get();
+
+        if (portToOpen == null) {
+            throw new CheckException(port + " is not bound to this application");
+        }
+
         try {
             if ("web".equalsIgnoreCase(portToOpen.getNature())) {
                 hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias());
@@ -1077,7 +1084,6 @@ public class ApplicationServiceImpl
             throw new ServiceException(e.getMessage(), e);
         }
 
-
     }
 
     private boolean checkAliasIfExists(String alias) {
@@ -1086,5 +1092,4 @@ public class ApplicationServiceImpl
         }
         return false;
     }
-
 }
