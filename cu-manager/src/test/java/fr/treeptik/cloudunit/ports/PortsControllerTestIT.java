@@ -148,9 +148,11 @@ public class PortsControllerTestIT {
     }
 
     @Test
-    public void test10_addValidePort() throws Exception {
+    public void test10_OpenAndClosePort() throws Exception {
         logger.info("Open custom ports !");
-        final String jsonString =
+
+        // OPEN THE PORT
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName
                         + "\",\"portToOpen\":\"6115\",\"alias\":\"access6115\",\"portNature\":\"web\"}";
         ResultActions resultats =
@@ -162,25 +164,12 @@ public class PortsControllerTestIT {
         resultats =
                 mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(6115));
-    }
 
-    @Test
-    public void test11_closePort() throws Exception {
-        logger.info("close custom ports !");
-        String jsonString =
-                "{\"applicationName\":\"" + applicationName
-                        + "\",\"portToOpen\":\"6115\"}";
-        ResultActions resultats =
-                this.mockMvc.perform(post("/application/ports")
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString));
-        resultats.andExpect(status().isOk()).andDo(print());
+        // CLOSE THE PORT
         resultats =
                 this.mockMvc.perform(delete("/application/" + applicationName + "/ports/6115")
                         .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString));
+                        .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk()).andDo(print());
         resultats.andExpect(jsonPath("$.portsToOpen[0]").doesNotExist());
     }
@@ -265,14 +254,10 @@ public class PortsControllerTestIT {
     @Test
     public void test21_closeFailPort() throws Exception {
         logger.info("close bad ports !");
-        String jsonString =
-                "{\"applicationName\":\"" + applicationName
-                        + "\",\"portToOpen\":\"666\",\"portNature\":\"web\"}";
         ResultActions resultats =
-                this.mockMvc.perform(post("/application/ports")
+                this.mockMvc.perform(delete("/application/" + applicationName + "/ports/6115")
                         .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString));
+                        .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk()).andDo(print());
     }
 
