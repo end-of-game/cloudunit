@@ -1064,15 +1064,12 @@ public class ApplicationServiceImpl
     @Transactional
     @Override
     public void removePort(Application application, Integer port) throws CheckException, ServiceException {
+
         PortToOpen portToOpen = application.getPortsToOpen()
                 .stream()
                 .filter(p -> p.getPort().equals(port))
                 .findFirst()
-                .get();
-
-        if (portToOpen == null) {
-            throw new CheckException(port + " is not bound to this application");
-        }
+                .orElseThrow(() -> new CheckException("Port["+port+"] is not bound to this application"));
 
         try {
             if ("web".equalsIgnoreCase(portToOpen.getNature())) {

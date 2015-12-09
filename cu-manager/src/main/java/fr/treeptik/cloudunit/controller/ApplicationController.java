@@ -351,6 +351,11 @@ public class ApplicationController
         return applicationService.listContainers(applicationName);
     }
 
+    /* ********************************************************** /
+    /*                      ALIAS                               */
+    /* ********************************************************** /
+
+     */
     /**
      * Return the list of aliases for an application
      *
@@ -440,6 +445,9 @@ public class ApplicationController
         return new HttpOk();
     }
 
+    /* ********************************************************** /
+    /*                      PORTS                               */
+    /* ********************************************************** /
 
     /**
      * Add a port for an application
@@ -481,11 +489,11 @@ public class ApplicationController
      * @throws CheckException
      */
     //  @CloudUnitSecurable
+    @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/ports/{portToOpen}", method = RequestMethod.DELETE)
     public JsonResponse removePort(JsonInput input)
             throws ServiceException, CheckException {
-
 
         String applicationName = input.getApplicationName();
         Integer port = Integer.parseInt(input.getPortToOpen());

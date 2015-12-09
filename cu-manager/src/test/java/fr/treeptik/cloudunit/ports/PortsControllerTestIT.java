@@ -258,7 +258,7 @@ public class PortsControllerTestIT {
                 this.mockMvc.perform(delete("/application/" + applicationName + "/ports/6115")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk()).andDo(print());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @After
