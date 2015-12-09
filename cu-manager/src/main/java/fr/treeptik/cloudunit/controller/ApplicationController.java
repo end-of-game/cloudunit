@@ -473,7 +473,10 @@ public class ApplicationController
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
 
-        CheckUtils.validateInputForOpenPort(input.getPortToOpen(), nature, application);
+        CheckUtils.validateOpenPort(input.getPortToOpen(), application);
+        CheckUtils.isPortFree(input.getPortToOpen(), application);
+        CheckUtils.validateNatureForOpenPortFeature(input.getPortNature(), application);
+
         Integer port = Integer.parseInt(input.getPortToOpen());
         applicationService.addPort(application, nature, port);
 
@@ -488,7 +491,6 @@ public class ApplicationController
      * @throws ServiceException
      * @throws CheckException
      */
-    //  @CloudUnitSecurable
     @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/ports/{portToOpen}", method = RequestMethod.DELETE)
@@ -496,14 +498,17 @@ public class ApplicationController
             throws ServiceException, CheckException {
 
         String applicationName = input.getApplicationName();
-        Integer port = Integer.parseInt(input.getPortToOpen());
 
         if (logger.isDebugEnabled()) {
             logger.debug("application.name=" + applicationName);
-            logger.debug("application.port=" + port);
+            logger.debug("application.port=" + input.getPortToOpen());
         }
+
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        CheckUtils.validateOpenPort(input.getPortToOpen(), application);
+        Integer port = Integer.parseInt(input.getPortToOpen());
         applicationService.removePort(application, port);
 
 

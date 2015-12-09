@@ -79,8 +79,30 @@ public class CheckUtils {
         }
     }
 
+    /**
+     * To validate if port is free or occupied
+     *
+     * @param port
+     * @param application
+     * @throws CheckException
+     */
+    public static void isPortFree(String port, Application application)
+            throws CheckException {
+        Long numberOfThisPort = application.getPortsToOpen().stream().filter(t -> t.getPort().equals(Integer.parseInt(port))).count();
+        if (numberOfThisPort != 0) {
+            String messageTranslated = messageSource.getMessage("port.already.used", null, Locale.ENGLISH);
+            throw new CheckException(messageTranslated + " : " + port);
+        }
+    }
 
-    public static void validateInputForOpenPort(String port, String nature, Application application)
+    /**
+     * Validate the syntax port
+     *
+     * @param port
+     * @param application
+     * @throws CheckException
+     */
+    public static void validateOpenPort(String port, Application application)
             throws CheckException {
 
         try {
@@ -94,23 +116,29 @@ public class CheckUtils {
             String messageTranslated = messageSource.getMessage("port.format", null, Locale.ENGLISH);
             throw new CheckException(messageTranslated + " : " + port);
         }
+    }
+
+    /**
+     * To validate the nature associated to the port feature
+     *
+     * @param nature
+     * @param application
+     * @throws CheckException
+     */
+    public static void validateNatureForOpenPortFeature(String nature, Application application)
+            throws CheckException {
 
         if (nature == null || nature.trim().length()==0) {
             String messageTranslated = messageSource.getMessage("port.nature", null, Locale.ENGLISH);
-            throw new CheckException(messageTranslated + " : " + port);
+            throw new CheckException(messageTranslated + " : " + nature);
         }
 
         if(!nature.equalsIgnoreCase("web") && !nature.equalsIgnoreCase("other")) {
             String messageTranslated = messageSource.getMessage("port.nature", null, Locale.ENGLISH);
-            throw new CheckException(messageTranslated + " : " + port);
-        }
-
-        Long numberOfThisPort = application.getPortsToOpen().stream().filter(t -> t.getPort().equals(Integer.parseInt(port))).count();
-        if (numberOfThisPort != 0) {
-            String messageTranslated = messageSource.getMessage("port.already.used", null, Locale.ENGLISH);
-            throw new CheckException(messageTranslated + " : " + port);
+            throw new CheckException(messageTranslated + " : " + nature);
         }
     }
+
 
     /**
      * Valid Classic + Syntax input
