@@ -71,14 +71,21 @@
         <li data-ng-repeat="url in editApp.application.portsToOpen track by $index">
 
           <p>
-            {{editApp.application.portsToOpen[$index].port}} -->
+            {{editApp.application.portsToOpen[$index].port}} ::
             <a class="body-2"
                data-ng-href="{{editApp.application.portsToOpen[$index].alias}}"
-               data-ng-if="editApp.application.portsToOpen[$index].alias"
+               data-ng-if="editApp.application.portsToOpen[$index].nature == 'web'"
                target="_blank">
               <!-- TODO : en fonction de http ou external, activer _blank -->
               {{editApp.application.portsToOpen[$index].alias}}
             </a>
+            <span class="body-2"
+               data-ng-href="{{editApp.application.portsToOpen[$index].alias}}"
+               data-ng-if="editApp.application.portsToOpen[$index].nature == 'other'"
+               target="_blank">
+              <!-- TODO : en fonction de http ou external, activer _blank -->
+              {{editApp.application.portsToOpen[$index].alias}}
+            </span>
             <!-- if alias is not defined and nature is http -->
             <button class="remove-ports-btn icon-button secondary"
                     ripple=""
