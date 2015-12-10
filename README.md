@@ -18,20 +18,20 @@ You can test the common platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Demonstration guide](https://github.com/Treeptik/CloudUnit/blob/master/documentation/DEMO-GUIDE.md)
-* [Development guide](https://github.com/Treeptik/cloudunit/blob/master/documentation/DEV-GUIDE.md)
-* [Server installation guide](https://github.com/Treeptik/cloudunit/blob/master/documentation/SERVER-GUIDE.md)
+* [Demonstration guide](documentation/DEMO-GUIDE.md)
+* [Development guide](documentation/DEV-GUIDE.md)
+* [Server installation guide](documentation/SERVER-GUIDE.md)
 
 ## Go further
 
-* [CloudUnit CLI guide](https://github.com/Treeptik/CloudUnit-CLI/blob/master/README.md)
-* [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit-maven-plugin/blob/master/README.md)
+* [CloudUnit CLI guide](documentation/README.md)
+* [CloudUnit Maven Plugin](documentation/master/README.md)
 
 ## Usage examples
 
 There are many user guides
-* [Spring petclinic](https://github.com/Treeptik/CloudUnit/blob/master/documentation/webapps/SPRINGPETCLINIC.md)
-* [RollerBlog (Soon) ](https://github.com/Treeptik/cloudunit/blob/master/products/documentation/webapps/ROLLERBLOG.md)
+* [Spring petclinic](documentation/webapps/SPRINGPETCLINIC.md)
+* [RollerBlog (Soon) ](documentation/webapps/ROLLERBLOG.md)
 
 # Licensing
 
