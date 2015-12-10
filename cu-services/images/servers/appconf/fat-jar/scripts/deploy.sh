@@ -3,12 +3,12 @@
 set -x
 
 export CU_HOME=/cloudunit/appconf
-export WAR_NAME=$1
+export JAR_NAME=$1
 # We need it for git
 export RUNNER=$2
-export WAR_PATH=/cloudunit/tmp
+export JAR_PATH=/cloudunit/tmp
 
-sed -i 's/^DEPLOYED_JAR=.*$/DEPLOYED_JAR='$WAR_NAME'/g' /etc/environment
+sed -i 's/^DEPLOYED_JAR=.*$/DEPLOYED_JAR='$JAR_NAME'/g' /etc/environment
 
 # stop the server
 /cloudunit/scripts/cu-stop.sh
@@ -24,15 +24,11 @@ rm -rf /cloudunit/appconf/logs/*
 rm -f $CU_HOME/*
 
 #move the war in webapps
-mv $WAR_PATH/$WAR_NAME $CU_HOME/$WAR_NAME
+mv $JAR_PATH/$JAR_NAME $CU_HOME/$JAR_NAME
 
 #restart the server
-if [ $USER = "root" ];then
-	/bin/bash -c "su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'"
-fi
-if [ $USER = $RUNNER ];then
-	/cloudunit/scripts/cu-start.sh
-fi
+echo "su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'"
+su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'
 
 sleep 2
 chown -R $RUNNER:$RUNNER $CU_HOME

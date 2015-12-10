@@ -40,7 +40,7 @@ import java.util.Locale;
  */
 @Component
 public class ApplicationManagerImpl
-    implements ApplicationManager {
+        implements ApplicationManager {
 
     private Logger logger = LoggerFactory.getLogger(ApplicationManagerImpl.class);
 
@@ -66,10 +66,10 @@ public class ApplicationManagerImpl
      * @throws CheckException
      */
     public void create(final String applicationName, final String userLogin, final String serverName)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         Application application = applicationService.create(
-            applicationName, userLogin, serverName, null);
+                applicationName, userLogin, serverName, null);
 
         // Wait for the server has a status START (set by shell agent)
         for (Server server : application.getServers()) {
@@ -119,7 +119,7 @@ public class ApplicationManagerImpl
      * @throws CheckException
      */
     public void start(Application application, User user)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         try {
             // Application occupée
@@ -179,7 +179,7 @@ public class ApplicationManagerImpl
      * @throws CheckException
      */
     public void stop(Application application, User user)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         try {
             // Application occupée
             applicationService.setStatus(application, Status.PENDING);
@@ -203,7 +203,7 @@ public class ApplicationManagerImpl
      * @param application
      */
     public void deploy(MultipartFile fileUpload, Application application)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         try {
             logger.debug(application.toString());
 
@@ -211,7 +211,8 @@ public class ApplicationManagerImpl
             if (FilesUtils.isAuthorizedFileForDeployment(fileUpload.getOriginalFilename())) {
 
                 File file = File.createTempFile("deployment-",
-                    FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
+                        FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
+                file.renameTo(new File(fileUpload.getOriginalFilename()));
                 fileUpload.transferTo(file);
 
                 if (application.getStatus().equals(Status.STOP)) {

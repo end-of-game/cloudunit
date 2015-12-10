@@ -898,12 +898,12 @@ public class DockerContainerJSON {
         try {
 
             uri = new URIBuilder()
-                    .setScheme(dockerEndpointMode)
+                    .setScheme("http")
                     .setHost(registryIP)
                     .setPath(
                             "/v1/repositories/" + repository + "/tags/"
                                     + tag.toLowerCase()).build();
-            int statusCode = client.sendDelete(uri);
+            int statusCode = client.sendDeleteForRegistry(uri);
             switch (statusCode) {
                 case 401:
                     throw new WarningDockerJSONException("Requires authorization");

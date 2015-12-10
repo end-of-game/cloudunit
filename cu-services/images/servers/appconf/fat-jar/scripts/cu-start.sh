@@ -4,7 +4,13 @@ set -x
 
 source /etc/environment
 
-echo "java -jar $DEPLOYED_JAR" >> /cloudunit/appconf/log/app.log
+env
+
+echo $USER
+
+$JAVA_HOME/bin/java -jar $CU_HOME/$DEPLOYED_JAR > /cloudunit/appconf/log/app.log 2>&1
 
 echo "JVM is started"
+
+
 

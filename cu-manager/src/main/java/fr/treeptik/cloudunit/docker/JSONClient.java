@@ -274,6 +274,24 @@ public class JSONClient {
         return statusLine.getStatusCode();
     }
 
+    public int sendDeleteForRegistry(URI uri)
+            throws ClientProtocolException, IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("DELETE : uri " + uri);
+        }
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpDelete httpDelete = new HttpDelete(uri);
+        StatusLine statusLine = httpClient.execute(httpDelete).getStatusLine();
+        if (logger.isDebugEnabled()) {
+            logger.debug("DELETE : uri " + uri + " returns "
+                    + statusLine.getStatusCode());
+        }
+        logger.info("DELETE : uri " + uri + " returns "
+                + statusLine.getStatusCode());
+
+        return statusLine.getStatusCode();
+    }
+
     public CloseableHttpClient build() throws IOException {
 
         if (withTLS) {

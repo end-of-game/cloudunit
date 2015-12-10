@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Entity
 public class Snapshot
-    implements Serializable {
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,6 +63,9 @@ public class Snapshot
     @ElementCollection
     @JsonIgnore
     private List<String> images;
+
+    @ElementCollection
+    private List<String> savedPorts;
 
     public Integer getId() {
         return id;
@@ -176,22 +179,30 @@ public class Snapshot
         this.deploymentStatus = deploymentStatus;
     }
 
+    public List<String> getSavedPorts() {
+        return this.savedPorts;
+    }
+
+    public void setSavedPorts(List<String> savedPorts) {
+        this.savedPorts = savedPorts;
+    }
+
     @Override
     public String toString() {
         return "Snapshot{" +
-            "id=" + id +
-            ", tag='" + tag + '\'' +
-            ", applicationName='" + applicationName + '\'' +
-            ", type='" + type + '\'' +
-            ", jvmRelease='" + jvmRelease + '\'' +
-            ", jvmOptions='" + jvmOptions + '\'' +
-            ", jvmMemory=" + jvmMemory +
-            ", deploymentStatus='" + deploymentStatus + '\'' +
-            ", user=" + user +
-            ", date=" + date +
-            ", appConfig=" + appConfig +
-            ", images=" + images +
-            '}';
+                "id=" + id +
+                ", tag='" + tag + '\'' +
+                ", applicationName='" + applicationName + '\'' +
+                ", type='" + type + '\'' +
+                ", jvmRelease='" + jvmRelease + '\'' +
+                ", jvmOptions='" + jvmOptions + '\'' +
+                ", jvmMemory=" + jvmMemory +
+                ", deploymentStatus='" + deploymentStatus + '\'' +
+                ", user=" + user +
+                ", date=" + date +
+                ", appConfig=" + appConfig +
+                ", images=" + images +
+                '}';
     }
 
 }

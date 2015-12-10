@@ -45,7 +45,7 @@ public class UserAjaxLogoutSuccessHandler
                                 HttpServletResponse response, Authentication authentication)
         throws IOException, ServletException {
 
-        logger.info("SC_OK");
+        logger.debug("SC_OK");
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }
