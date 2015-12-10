@@ -12,7 +12,7 @@ cloudunit/tomcat-8 images/servers/binaries/tomcat-8
 cloudunit/jboss-base images/servers/binaries/jboss-base
 cloudunit/jboss-8 images/servers/binaries/jboss-8
 cloudunit/jboss-appconf8 images/servers/appconf/jboss-appconf8
-cloudunit/fatjar images/servers/appconf/fatjar
+cloudunit/fatjar images/servers/appconf/fat-jar
 cloudunit/postgresql-9-3 images/modules/postgresql-9-3
 cloudunit/postgresql-9-3-data images/modules/postgresql-9-3-data
 cloudunit/mysql-5-5 images/modules/mysql-5-5
