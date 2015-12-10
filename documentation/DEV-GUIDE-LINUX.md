@@ -29,6 +29,12 @@ sudo service dnsmasq restart
 ```
 
 ### How to install Vagrant plugins
+
+```
+sudo apt-get install python-pip python-dev
+```
+
+### How to install Vagrant plugins
 ```
 vagrant plugin install vagrant-reload
 vagrant plugin install vagrant-vbguest
