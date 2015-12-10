@@ -9,8 +9,6 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 * Linux Ubuntu/Debian 
 * Vagrant 1.7.8+
 * VirtualBox 5.0.4+
-* Npm 4.x+ for Grunt and Bower stack
-* Ansible 1.9+
 * Maven 3+
 
 ## Installation 
@@ -38,6 +36,7 @@ vagrant plugin install vagrant-vbguest
 ### Source code installation
 
 Follow these instructions : 
+* `sudo apt-get install ansible` (if needed)
 * `mkdir $HOME/infrastructure`
 * `cd $HOME/infrastructure`
 * `git clone https://github.com/Treeptik/CU-infrastructure`
