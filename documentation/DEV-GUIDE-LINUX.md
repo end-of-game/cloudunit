@@ -7,9 +7,10 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 ## Requirements
 
 * Linux Ubuntu/Debian 
-* Vagrant 1.7.8+
-* VirtualBox 5.0.4+
+* Vagrant 1.7.8+ (www.vagrantup.com)
+* VirtualBox 5.0.4+ (www.virtualbox.org)
 * Maven 3+
+* Ansible (see further for installation)
 
 ## Installation 
 
@@ -28,10 +29,12 @@ vi /etc/dnsmasq.conf
 sudo service dnsmasq restart
 ```
 
-### How to install Vagrant plugins
+### How to install Ansible 1.9+ if needed
 
 ```
 sudo apt-get install python-pip python-dev
+sudo pip install markupsafe
+sudo pip install ansible
 ```
 
 ### How to install Vagrant plugins
@@ -42,7 +45,6 @@ vagrant plugin install vagrant-vbguest
 ### Source code installation
 
 Follow these instructions : 
-* `sudo apt-get install ansible` (if needed)
 * `mkdir $HOME/infrastructure`
 * `cd $HOME/infrastructure`
 * `git clone https://github.com/Treeptik/CU-infrastructure`
