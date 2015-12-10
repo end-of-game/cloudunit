@@ -10,7 +10,7 @@ It is available in one edition for all major platforms which offers numerous ext
 
 It is available under the terms of either the Affero GNU Public Licence 3.0
 
-You can find more informations there : [CloudUnit Website](http://www.cloudunit.fr/)
+You can find more informations there : [CloudUnit Website](http://www.cloudunit.io/)
 
 You can test the common platform online here (reseted all night)
 * https://cu-tests.cloudunit.io :: [ johndoe / abc2015 ]
@@ -19,8 +19,9 @@ You can test the common platform online here (reseted all night)
 
 There are many installation guides
 * [Demonstration guide](documentation/DEMO-GUIDE.md)
-* [Development guide](documentation/DEV-GUIDE.md)
 * [Server installation guide](documentation/SERVER-GUIDE.md)
+* [Development guide MAC](documentation/DEV-GUIDE-MAC.md)
+* [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
 
 ## Go further
 
