@@ -18,11 +18,13 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 * `cloudunit/cu-plaform`  : Shell scripts for administration 
 * `cloudunit/cu-services` : Docker images
 
-## Dev Rules
+## Dev Rules and Principles
 
 * You have to configure a local dns (see further) to send any requests from your host to VM (IP fixed at 192.168.50.4) 
 * A reverse proxy is included into vagrantbox to route the request (*.cloudunit.dev) to the right app.
 * You use your favorite idea (intellij, Eclipse) to develop the maven project into 'cloudunit/cu-manager'.
+* The backend is a spring application exposing a REST API
+* The frontend is an AngularJS 1.x consumming the backend API
 * You run the project with an embedded tomcat via maven tasks (tomcat:run). No need to install Tomcat locally.
 * Mysql is included into vagrantbox so no need to install it locally.
 * Ansible is needed locally to provision Vagrantbox (it will disapear in a near future...)
