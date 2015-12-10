@@ -1,5 +1,5 @@
 
-# CloudUnit developpement environment
+# CloudUnit developement environment
 
 You are reading the wright guide, if you want to setup an environment to contribute to CloudUnit development.
 If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box](DEMO-GUIDE.md).
