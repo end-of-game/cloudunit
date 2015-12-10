@@ -77,7 +77,7 @@ cd $HOME/CloudUnit/cu-manager/src/main/webapp && bower install
 cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo gem install compass
 ```
 
-## How to start Environment Developpment
+## How to start Environment Development
 
 To run the UI for development (http://0.0.0.0:9000)
 ```
@@ -87,7 +87,7 @@ cd $HOME/CloudUnit/cu-manager
 mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
-## How to reset Environment Developpment
+## How to reset Environment Development
 
 ```
 vagrant ssh dev
