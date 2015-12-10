@@ -55,7 +55,7 @@ if [ ! -f /init-service-ok ]; then
 	echo  "CU_DATABASE_NAME=$CU_DATABASE_NAME" >> $ENV_FILE
 	echo  "JAVA_HOME=$JAVA_HOME" >> $ENV_FILE
 	echo  "CU_HOME=$CU_HOME" >> $ENV_FILE
-	echo  "DEPLOYED_JAR=" >> $ENV_FILE
+	echo  "DEPLOYED_JAR=boot.jar" >> $ENV_FILE
 
 	export JAVA_OPTS="-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
 	echo "JAVA_OPTS='-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m'" >> $ENV_FILE

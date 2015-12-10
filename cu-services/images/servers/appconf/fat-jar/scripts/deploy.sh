@@ -24,11 +24,11 @@ rm -rf /cloudunit/appconf/logs/*
 rm -f $CU_HOME/*
 
 #move the war in webapps
-mv $JAR_PATH/$JAR_NAME $CU_HOME/$JAR_NAME
+mv $JAR_PATH/$JAR_NAME /cloudunit/binaries/$JAR_NAME
 
 #restart the server
 echo "su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'"
+
 su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'
 
-sleep 2
-chown -R $RUNNER:$RUNNER $CU_HOME
+echo "ok toto"

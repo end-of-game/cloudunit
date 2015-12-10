@@ -33,6 +33,7 @@ public class ExplorerFactory {
         ExplorerFactory.filters.put("postgres", new PostgresFilter());
         ExplorerFactory.filters.put("mongo", new MongoFilter());
         ExplorerFactory.filters.put("jboss", new JBossFilter());
+        ExplorerFactory.filters.put("fatjar", new FatJarFilter());
     }
 
     private ExplorerFactory() {
@@ -63,6 +64,9 @@ public class ExplorerFactory {
         }
         if (name.contains("jboss")) {
             name = "jboss";
+        }
+        if (name.contains("fatjar")) {
+            name = "fatjar";
         }
         return filters.get(name);
     }

@@ -8,7 +8,7 @@ env
 
 echo $USER
 
-$JAVA_HOME/bin/java -jar $CU_HOME/$DEPLOYED_JAR > /cloudunit/appconf/log/app.log 2>&1
+$JAVA_HOME/bin/java -jar /cloudunit/binaries/$DEPLOYED_JAR > /cloudunit/appconf/logs/system.out &
 
 echo "JVM is started"
 

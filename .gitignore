@@ -7,7 +7,8 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+cu-manager/**/*.jar
+monitoring_scripts/**/*.jar
 *.war
 *.ear
 
