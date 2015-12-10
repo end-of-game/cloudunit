@@ -32,9 +32,10 @@ sudo service dnsmasq restart
 ### How to install Ansible 1.9+ if needed
 
 ```
-sudo apt-get install python-pip python-dev
-sudo pip install markupsafe
-sudo pip install ansible
+sudo apt-get install software-properties-common
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt-get update
+sudo apt-get install ansible
 ```
 
 ### How to install Vagrant plugins
