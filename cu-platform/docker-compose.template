@@ -74,7 +74,7 @@ tomcat:
         - ../conf/cert/demo:/usr/local/tomcat/certificats
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro 
-	- /etc/hosts:/etc/hosts
+        - /etc/hosts:/etc/hosts
         - /var/log/cloudunit/tomcat/culogin.log:/var/log/culogin.log
 #TO_UNCOMMENT_IF_CU_KVM_TRUE        - /dev/urandom:/dev/random
     environment:
