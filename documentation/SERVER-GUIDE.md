@@ -2,7 +2,6 @@
 
 You are reading the wright guide if you want to setup a CloudUnit server, in order to frequently use it. If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box](DEMO-GUIDE.md).
 
-
 ## Requirements
 
 * A server or a virtual machine with debian 7.8, and at least 16 Go of RAM.
@@ -48,13 +47,8 @@ If nothing is returned, `python`is not installed. Install it:
 ```
 * Create a user called `admincu` and add it to the sudo group:
 ```
-# adduser admincu
-# adduser admincu sudo
-```
-* Create a user called `shinken` and add it to the sudo group:
-```
-# adduser shinken
-# adduser shinken sudo
+# sudo adduser admincu
+# sudo adduser admincu sudo
 ```
 
 ### CloudUnit
@@ -62,9 +56,7 @@ If nothing is returned, `python`is not installed. Install it:
 **On your local host**
 
 * Change directory into `CU-infrastrucuture` and edit the `hosts` file.
-In the line `CUserver ansible_ssh_host=server_ip_address`, replace `server_ip_address` by the server IP address.
-
-* *If your server is a KVM virtual machine*, edit the file `playbooks/CU-server/installCUserver.yml`. Replace `kvm: false` by `kvm: true`.
+In the line `cu-engine ansible_ssh_host=server_ip_address`, replace `server_ip_address` by the server IP address.
 
 * Launch the CloudUnit installation playbook:
 ```
@@ -72,31 +64,13 @@ ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/in
 SSH password:
 SUDO password[defaults to SSH password]:
 
-PLAY [CUserveur] ***********************************************************
+PLAY [cu-engine] ***********************************************************
 ```
 Ansible prompts you for the ssh and the sudo passwords of the `admincu` user. In cas of error, due to a network problem for example, do not hesitate to relaunch the playbook. Ansible is able not to execute again a task when the desired state is already achieved.
-
-
-### Shinken
-
-**On your local host**
-
-Our PaaS is monitored using [Shinken](http://www.shinken-monitoring.org/). Because it contributes to the stability of our platform, we strongly recommend you to install it as well.
-
-
-
-* Launch the Shinken installation playbook:
 ```
-ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/shinken-standalone.yml
-SSH password:
-SUDO password[defaults to SSH password]:
-
-PLAY [CUserveur] ***********************************************************
-```
-You are prompted for the ssh and sudo passwords of the `shinken` user.
 
 ### Local DNS entry
 
 **On your local host**
 
-Finally, add a local DNS entry on your host: any address ending with server.cloudunit.io shoud point to the ip address of your server. Refere to the  [Local DNS section](https://github.com/Treeptik/CloudUnit/blob/master/documentation/DEMO-GUIDE.md#local-dns) to see how to achieve this on Ubuntu.
+Finally, add a local DNS entry on your host: any address ending with server.cloudunit.io shoud point to the ip address of your server. Refere to the  [Local DNS section](documentation/DEMO-GUIDE.md#local-dns) to see how to achieve this on Ubuntu.
