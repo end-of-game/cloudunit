@@ -95,10 +95,24 @@ cd $HOME/CloudUnit/cu-manager
 mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
+# FAQ
+
+All questions and answers about dev tasks
+
 ## How to reset Environment Development
 
 ```
 vagrant ssh dev
 cloudunit/cu-platform/reset-all.sh -y
 ```
+
+## How to rebuild images
+
+Update your sources with `git pull --rebase` then 
+
+```
+vagrant ssh dev
+cloudunit/cu-services/build-services.sh
+```
+
 
