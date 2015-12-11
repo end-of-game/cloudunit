@@ -6,9 +6,11 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 
 ## Requirements
 
-* Linux Ubuntu/Debian 
+* Linux Ubuntu/Debian
+* Git
+* Java 1.8
+* VirtualBox 5.0.4+ - install before Vagrant (www.virtualbox.org)
 * Vagrant 1.7.8+ (www.vagrantup.com)
-* VirtualBox 5.0.4+ (www.virtualbox.org)
 * Maven 3+ (maven.apache.org)
 * Ansible (see further for installation)
 
@@ -41,7 +43,7 @@ and DHCP server […] is targeted at home networks[.]
 You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with admin.cloudunit.io shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
 ```
 sudo apt-get install dnsmasq
-vi /etc/dnsmasq.conf
+sudo vi /etc/dnsmasq.conf
 # Add the line: address=/.cloudunit.dev/192.168.50.4                      
 sudo service dnsmasq restart
 ```
@@ -64,6 +66,8 @@ vagrant plugin install vagrant-vbguest
 
 Follow these instructions : 
 ```
+sudo apt-get install nodejs npm ruby ruby-dev
+sudo ln -s "$(which nodejs)" /usr/bin/node
 mkdir $HOME/infrastructure
 cd $HOME/infrastructure
 git clone https://github.com/Treeptik/CU-infrastructure
@@ -75,6 +79,10 @@ cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install -g n
 cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo stable n
 cd $HOME/CloudUnit/cu-manager/src/main/webapp && bower install
 cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo gem install compass
+cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install grunt
+cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install grunt-cli
+cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install
+
 ```
 
 ## How to start Environment Development
