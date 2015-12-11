@@ -612,8 +612,15 @@ public class ServerServiceImpl
             if (!jvmMemory.equalsIgnoreCase(server.getJvmMemory().toString())
                     || !jvmOptions.equalsIgnoreCase(server.getJvmOptions())) {
                 // Changement configuration MEMOIRE + OPTIONS
+
                 String command = "bash /cloudunit/appconf/scripts/change-server-config.sh "
                         + jvmMemory + " " + "\"" + jvmOptions + "\"";
+
+
+                if (server.getImage().getName().contains("jar")) {
+                    command = "bash /cloudunit/scripts/change-server-config.sh "
+                            + jvmMemory + " " + "\"" + jvmOptions + "\"";
+                }
                 logger.info("command shell to execute [" + command + "]");
                 int status = shellUtils.executeShell(command, configShell);
             }
