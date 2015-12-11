@@ -115,4 +115,7 @@ vagrant ssh dev
 cloudunit/cu-services/build-services.sh
 ```
 
+By default, docker cache is disabled. So all images will be built again. 
+To speed up, you can activate the cache but it could be dangerous if you modify a parent image with docker inheritance.
+
 
