@@ -1042,7 +1042,7 @@ public class ApplicationServiceImpl
             if ("web".equalsIgnoreCase(portToOpen.getNature())) {
                 hipacheRedisUtils.writeNewAlias((application.getName()
                                 + "-" + application.getUser().getLogin() + "-"
-                                + "forward-" + portToOpen.getPort()),
+                                + "forward-" + portToOpen.getPort() + application.getSuffixCloudUnitIO()),
                         application,
                         portToOpen.getPort().toString());
                 alias = "http://" + application.getName()
@@ -1059,8 +1059,6 @@ public class ApplicationServiceImpl
         } catch (DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
         }
-
-
     }
 
     @Transactional
