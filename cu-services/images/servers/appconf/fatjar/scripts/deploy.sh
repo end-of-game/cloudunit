@@ -31,4 +31,3 @@ echo "su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'"
 
 su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'
 
-echo "ok toto"
