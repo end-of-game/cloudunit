@@ -26,24 +26,6 @@ git clone https://github.com/Treeptik/CU-infrastructure.git
 ```
 
 #### On the server
-* Check that `sudo` is installed. `which sudo` should return:
-```
-# which sudo
-/usr/bin/sudo
-```
-If nothing is returned by the `which` command, `sudo`is not installed. Install it:
-```
-# apt-get install sudo
-```
-* Check that `python` is installed. `which python` should return:
-```
-# which python
-/usr/bin/python
-```
-If nothing is returned, `python`is not installed. Install it:
-```
-# apt-get install python
-```
 * Create a user called `admincu` and add it to the sudo group:
 ```
 # sudo adduser admincu
