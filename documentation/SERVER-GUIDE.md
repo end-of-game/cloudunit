@@ -65,6 +65,7 @@ You must go on the server where cloudunit has been installed and add in /etc/hos
 
 Then, go to ~/cloudunit/cu-manager, compile the application and send in into the tomcat server : 
 ```
+cd ~/cloudunit/cu-manager
 ./compile-root-war.sh
 cp ~/cloudunit/cu-manager/target/ROOT.war ~/cloudunit/cu-platform/tomcat/ROOT.war
 ```
