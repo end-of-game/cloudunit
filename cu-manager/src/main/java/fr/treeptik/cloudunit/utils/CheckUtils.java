@@ -23,6 +23,8 @@ import org.springframework.context.MessageSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by nicolas on 18/08/2014.
@@ -57,7 +59,13 @@ public class CheckUtils {
      */
     public static void validateInput(String field, String message)
             throws CheckException {
-        validateInputSizeMax(field, message, 15);
+        validateInputSizeMax(field, message, 64);
+    }
+
+    public static boolean isValidURL(String url) {
+        Pattern p = Pattern.compile("[a-zA-Z_0-9\\-]+(\\.\\w[a-zA-Z_0-9\\-]+)+(/[#&\\n\\-=?\\+\\%/\\.\\w]+)?");
+        Matcher m = p.matcher(url);
+        return m.matches();
     }
 
     /**

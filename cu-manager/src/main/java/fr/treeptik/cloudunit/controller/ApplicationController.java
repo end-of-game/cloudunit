@@ -370,7 +370,9 @@ public class ApplicationController
         logger.debug("application.name = " + jsonInput.getApplicationName());
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, jsonInput.getApplicationName());
-        return applicationService.getListAliases(application);
+        List<String> aliases = applicationService.getListAliases(application);
+        if (logger.isDebugEnabled() && aliases != null) logger.debug(aliases.toString());
+        return aliases;
     }
 
     /**

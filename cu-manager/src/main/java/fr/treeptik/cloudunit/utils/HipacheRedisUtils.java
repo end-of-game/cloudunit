@@ -116,7 +116,6 @@ public class HipacheRedisUtils {
                     redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
             logger.info("ALIAS VALUE IN ADD NEW ALIAS : " + alias);
-            alias += application.getSuffixCloudUnitIO();
             String frontend = "frontend:" + alias.toLowerCase();
             jedis.rpush(frontend, alias.toLowerCase());
             jedis.rpush(frontend, "http://" + dockerManagerIP + ":"

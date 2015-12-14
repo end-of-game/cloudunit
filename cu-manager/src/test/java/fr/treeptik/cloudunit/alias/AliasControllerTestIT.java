@@ -109,7 +109,7 @@ public class AliasControllerTestIT {
     private static String applicationName2;
     private static boolean isAppCreated = false;
 
-    private final String alias = "myAlias";
+    private final String alias = "myAlias.cloudunit.dev";
 
     @BeforeClass
     public static void initEnv() {
@@ -191,7 +191,7 @@ public class AliasControllerTestIT {
         logger.info("*********************************************************");
         logger.info("create an alias for the application : " + applicationName1);
         logger.info("*********************************************************");
-        String alias = "myapp";
+        String alias = "myapp.cloudunit.dev";
         String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
         ResultActions resultats = this.mockMvc
             .perform(
@@ -278,6 +278,16 @@ public class AliasControllerTestIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
+
+        wrongAlias = ":" + alias;
+        jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":error$cloudunit.dev\"" + wrongAlias + "\"}";
+        resultats = this.mockMvc
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
+        resultats.andExpect(status().is4xxClientError());
+
     }
 
     @Test(timeout = 60000)

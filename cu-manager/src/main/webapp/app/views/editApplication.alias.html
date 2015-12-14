@@ -39,7 +39,7 @@
                  data-ng-model="alias.domain"
                  ng-required=""
                  placeholder="monalias">
-          <span class="suffix-text">{{editApp.application.domainName}}</span>
+          <span class="suffix-text"></span>
 
           <p class="hint">Enter your custom domain name</p>
 
@@ -64,7 +64,7 @@
         <li data-ng-repeat="aliase in editApp.application.aliases track by $index">
           <a class="body-2"
              data-ng-href="http://{{editApp.application.aliases[$index]}}{{editApp.application.domainName}}"
-             target="_blank">{{editApp.application.aliases[$index]}}{{editApp.application.domainName}}</a>
+             target="_blank">{{editApp.application.aliases[$index]}}</a>
           <button class="remove-alias-btn icon-button secondary"
                   ripple=""
                   tooltip=""

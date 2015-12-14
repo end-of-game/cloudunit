@@ -38,6 +38,8 @@ import javax.persistence.PersistenceException;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class ApplicationServiceImpl
@@ -976,9 +978,9 @@ public class ApplicationServiceImpl
                     .substring(alias.lastIndexOf("//") + 2, alias.length());
         }
 
-        if (!StringUtils.isAlphanumeric(alias)) {
+        if (!CheckUtils.isValidURL(alias)) {
             throw new CheckException(
-                    "This alias must be alphanumeric. Please remove all other characters");
+                    "This alias must be a valid url. Please remove all other characters : " + alias);
         }
 
         try {
