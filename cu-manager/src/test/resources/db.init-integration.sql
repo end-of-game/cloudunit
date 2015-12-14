@@ -13,7 +13,8 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `i
   (8, 'postgresql-9-3-data-db', 'cloudunit/postgresql-9-3-data-db', '0.1', '', 1, 'tool', ''),
   (9, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '0.1', '', 1, 'module', 'phppgadmin'),
   (10, 'mongo-2-6', 'cloudunit/mongo-2-6', '0.1', '', 1, 'module', 'mms'),
-  (11, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '0.1', '', 1, 'tool', '');
+  (11, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '0.1', '', 1, 'tool', ''),
+  (12, 'fatjar', 'cloudunit/fatjar', '1.0', '', 1, 'server', '');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
