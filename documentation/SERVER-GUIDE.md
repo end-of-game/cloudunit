@@ -79,3 +79,9 @@ cd ~/cloudunit/cu-platform
 ### Access
 
 You can access your cloudunit web platform on https://server_ip_address (certificates will be invalide but you can access it).
+
+###Local DNS entry
+
+On your local host
+
+Finally, add a local DNS entry on your host: any address ending with cu-engine.cloudunit.io shoud point to the ip address of your server. Refere to the Local DNS section to see how to achieve this on Ubuntu.
