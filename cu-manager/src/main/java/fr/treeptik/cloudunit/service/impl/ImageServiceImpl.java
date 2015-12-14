@@ -144,7 +144,6 @@ public class ImageServiceImpl
         } catch (PersistenceException e) {
             logger.error("Error ImageService : error findById Method : " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
-
         }
     }
 

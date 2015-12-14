@@ -119,16 +119,14 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(jsonString));
             resultats.andExpect(status().isOk()).andDo(print());
-
         }
         catch ( Exception e )
         {
             logger.error( e.getMessage() );
         }
-
     }
 
-    @Test
+    @Test(timeout = 20000)
     public void test010_DeploySimpleApplicationTest()
         throws Exception
     {
@@ -146,7 +144,7 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
 
 
     @After
-    public void test09_DeleteApplication()
+    public void deleteApplication()
         throws Exception
     {
         logger.info( "Delete application : " + applicationName );
