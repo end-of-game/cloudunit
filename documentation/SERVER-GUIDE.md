@@ -86,16 +86,14 @@ You must go the your server and add in /etc/hosts the following line :
 Then, go to ~/cloudunit/cu-manager, compile the application and send in into the tomcat server : 
 ```
 ./compile-root-war.sh
-
 cp ~/cloudunit/cu-manager/target/ROOT.war ~/cloudunit/cu-platform/tomcat/ROOT.war
 ```
 Reset the platform :
 
 ```
-cd cloudunit/cu-platform
+cd ~/cloudunit/cu-platform
 ./reset-all.sh -y
 ```
-
 
 ### Access
 
