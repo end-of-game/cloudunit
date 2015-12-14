@@ -75,6 +75,28 @@ PLAY [cu-engine] ***********************************************************
 ```
 Ansible prompts you for the ssh and the sudo passwords of the `admincu` user. In cas of error, due to a network problem for example, do not hesitate to relaunch the playbook. Ansible is able not to execute again a task when the desired state is already achieved.
 
-### Local DNS entry
+### Run Cloudunit
+
+You must go the your server and add in /etc/hosts the following line : 
+
+```
+127.0.0.1 cloudunit.serv
+```
+
+Then, go to ~/cloudunit/cu-manager, compile the application and send in into the tomcat server : 
+```
+./compile-root-war.sh
+
+cp ~/cloudunit/cu-manager/target/ROOT.war ~/cloudunit/cu-platform/tomcat/ROOT.war
+```
+Reset the platform :
+
+```
+cd cloudunit/cu-platform
+./reset-all.sh -y
+```
+
+
+### Access
 
 You can access your cloudunit web platform on https://server_ip_address (certificates will be invalide but you can access it).
