@@ -3,8 +3,6 @@
 
 # The Turnkey Java PaaS - [![Build Status](https://travis-ci.org/Treeptik/CloudUnit.svg?branch=master)](https://travis-ci.org/Treeptik/CloudUnit)
 
-## The leading Platform as a Service for Java
-
 Thanks to CloudUnit PaaS's powerful provisioning and execution capabilities, classical servers as Tomcat and JBoss, developers can build secure and scalable Java Web applications. So deploy your Java applications in the cloud almost instantly without changing your code.
 
 CloudUnit takes care of the plumbing.
@@ -17,6 +15,9 @@ You can find more informations there : [CloudUnit Website](http://www.cloudunit.
 
 You can test the common platform online here (reseted all night)
 * https://cu-tests.cloudunit.io :: [ johndoe / abc2015 ]
+
+
+![CloudUnit Gif](documentation/img/cloudunitGif.gif "CloudUnit Gif")
 
 ## Getting started
 
