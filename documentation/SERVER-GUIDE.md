@@ -26,7 +26,6 @@ git clone https://github.com/Treeptik/CU-infrastructure.git
 ```
 
 #### On the server
-![](https://github.com/Treeptik/CloudUnit-images/blob/master/warning2.png)
 * Check that `sudo` is installed. `which sudo` should return:
 ```
 # which sudo
