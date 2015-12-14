@@ -58,10 +58,9 @@ Ansible prompts you for the ssh and the sudo passwords of the `admincu` user. In
 
 ### Run Cloudunit
 
-You must go the your server and add in /etc/hosts the following line : 
-
+You must go on the server where cloudunit has been installed and add in /etc/hosts the following line if it is not present: 
 ```
-127.0.0.1 cloudunit.serv
+127.0.0.1 cloudunit.serv cu-engine
 ```
 
 Then, go to ~/cloudunit/cu-manager, compile the application and send in into the tomcat server : 
