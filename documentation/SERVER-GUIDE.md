@@ -58,19 +58,23 @@ If nothing is returned, `python`is not installed. Install it:
 * Change directory into `CU-infrastrucuture` and edit the `hosts` file.
 In the line `cu-engine ansible_ssh_host=server_ip_address`, replace `server_ip_address` by the server IP address.
 
-* Launch the CloudUnit installation playbook:
+* Launch the 3 manual playbooks to install cloudunit in CU-infrastructure : 
 ```
-ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/CU-server/installCUserver.yml
+ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/manual/installCU1.yml
 SSH password:
 SUDO password[defaults to SSH password]:
-
+PLAY [cu-engine] ***********************************************************
+ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/manual/installCU2.yml
+SSH password:
+SUDO password[defaults to SSH password]:
+PLAY [cu-engine] ***********************************************************
+ansible-playbook -vvv -i hosts --ask-pass --ask-sudo-pass playbooks/manual/installCU3.yml
+SSH password:
+SUDO password[defaults to SSH password]:
 PLAY [cu-engine] ***********************************************************
 ```
 Ansible prompts you for the ssh and the sudo passwords of the `admincu` user. In cas of error, due to a network problem for example, do not hesitate to relaunch the playbook. Ansible is able not to execute again a task when the desired state is already achieved.
-```
 
 ### Local DNS entry
 
-**On your local host**
-
-Finally, add a local DNS entry on your host: any address ending with server.cloudunit.io shoud point to the ip address of your server. Refere to the  [Local DNS section](documentation/DEMO-GUIDE.md#local-dns) to see how to achieve this on Ubuntu.
+You can access your cloudunit web platform on https://server_ip_address (certificates will be invalide but you can access it).
