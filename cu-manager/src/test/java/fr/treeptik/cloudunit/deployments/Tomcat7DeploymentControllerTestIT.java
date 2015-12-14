@@ -1,7 +1,7 @@
 package fr.treeptik.cloudunit.deployments;
 
 public class Tomcat7DeploymentControllerTestIT
-    extends AbstractDeploymentControllerTestIT
+    extends AbstractTomcatDeploymentControllerTestIT
 {
     public Tomcat7DeploymentControllerTestIT()
     {

@@ -45,13 +45,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration( classes = { CloudUnitApplicationContext.class, MockServletContext.class } )
 @FixMethodOrder( MethodSorters.NAME_ASCENDING )
 @ActiveProfiles( "integration" )
-public abstract class AbstractDeploymentControllerTestIT
+public abstract class AbstractTomcatDeploymentControllerTestIT
 
 {
 
     private static String applicationName;
 
-    private final Logger logger = LoggerFactory.getLogger( AbstractDeploymentControllerTestIT.class );
+    private final Logger logger = LoggerFactory.getLogger( AbstractTomcatDeploymentControllerTestIT.class );
 
     protected String release;
 

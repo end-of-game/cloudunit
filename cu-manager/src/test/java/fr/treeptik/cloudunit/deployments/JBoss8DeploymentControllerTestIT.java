@@ -16,7 +16,7 @@
 package fr.treeptik.cloudunit.deployments;
 
 public class JBoss8DeploymentControllerTestIT
-    extends AbstractDeploymentControllerTestIT {
+    extends AbstractJBossDeploymentControllerTestIT {
     public JBoss8DeploymentControllerTestIT() {
         super.release = "jboss-8";
     }
