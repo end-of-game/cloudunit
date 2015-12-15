@@ -40,17 +40,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith( SpringJUnit4ClassRunner.class )
+@RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration( classes = { CloudUnitApplicationContext.class, MockServletContext.class } )
-@FixMethodOrder( MethodSorters.NAME_ASCENDING )
-@ActiveProfiles( "integration" )
+@ContextConfiguration(classes = {CloudUnitApplicationContext.class, MockServletContext.class})
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@ActiveProfiles("integration")
 public abstract class AbstractFatJarDeploymentControllerTestIT
 
 {
     private static String applicationName;
 
-    private final Logger logger = LoggerFactory.getLogger( AbstractFatJarDeploymentControllerTestIT.class );
+    private final Logger logger = LoggerFactory.getLogger(AbstractFatJarDeploymentControllerTestIT.class);
 
     protected String release;
     protected String binary;
@@ -72,42 +72,36 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
     private MockHttpSession session;
 
     @BeforeClass
-    public static void initEnv()
-    {
+    public static void initEnv() {
         applicationName = "App" + new Random().nextInt(100000);
     }
 
     @Before
-    public void setup()
-    {
-        logger.info( "setup" );
+    public void setup() {
+        logger.info("setup");
 
-        this.mockMvc = MockMvcBuilders.webAppContextSetup( context ).addFilters( springSecurityFilterChain ).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(springSecurityFilterChain).build();
 
         User user = null;
-        try
-        {
-            user = userService.findByLogin( "johndoe" );
-        }
-        catch ( ServiceException e )
-        {
-            logger.error( e.getLocalizedMessage() );
+        try {
+            user = userService.findByLogin("johndoe");
+        } catch (ServiceException e) {
+            logger.error(e.getLocalizedMessage());
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken( user.getLogin(), user.getPassword() );
-        Authentication result = authenticationManager.authenticate( authentication );
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication result = authenticationManager.authenticate(authentication);
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        securityContext.setAuthentication( result );
+        securityContext.setAuthentication(result);
         session = new MockHttpSession();
-        session.setAttribute( HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext );
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
-        try
-        {
-            logger.info( "Create " + binary +" application." );
+        try {
+            logger.info("Create " + binary + " application.");
             String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
             ResultActions resultats =
-                mockMvc.perform( post( "/application" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) );
-            resultats.andExpect( status().isOk() );
+                    mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+            resultats.andExpect(status().isOk());
 
             // OPEN THE PORT
             jsonString =
@@ -119,38 +113,44 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(jsonString));
             resultats.andExpect(status().isOk()).andDo(print());
-        }
-        catch ( Exception e )
-        {
-            logger.error( e.getMessage() );
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
     }
 
-    @Test(timeout = 20000)
+    @Test
     public void test010_DeploySimpleApplicationTest()
-        throws Exception
-    {
-        logger.info( "Deploy an SpringBoot application" );
+            throws Exception {
+        logger.info("Deploy an SpringBoot application");
         ResultActions resultats =
-            mockMvc.perform( MockMvcRequestBuilders.fileUpload( "/application/" + applicationName + "/deploy" )
-                    .file( downloadAndPrepareFileToDeploy( binary+".jar",
-                                                                                                                                                      "https://github.com/Treeptik/CloudUnit/releases/download/1.0/"+binary+".jar" ) ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
-        resultats.andExpect( status().is2xxSuccessful() );
+                mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy")
+                        .file(downloadAndPrepareFileToDeploy(binary + ".jar",
+                                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary + ".jar"))
+                        .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
+        resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
-        String content = getUrlContentPage( urlToCall );
+        logger.debug(urlToCall);
+        int i = 0;
+        String content = null;
+        while(i++ < 10) {
+            content = getUrlContentPage(urlToCall);
+            logger.debug(content);
+            Thread.sleep(1000);
+            if (content != null && content.contains("502")){ continue; }
+            else { break; }
+        }
         logger.debug(content);
-        Assert.assertTrue( content.contains( "Greetings from Spring Boot!" ) );
+        Assert.assertTrue(content.contains("Greetings from Spring Boot!"));
     }
 
 
     @After
     public void deleteApplication()
-        throws Exception
-    {
-        logger.info( "Delete application : " + applicationName );
+            throws Exception {
+        logger.info("Delete application : " + applicationName);
         ResultActions resultats =
-            mockMvc.perform( delete( "/application/" + applicationName ).session( session ).contentType( MediaType.APPLICATION_JSON ) );
-        resultats.andExpect( status().isOk() );
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
     }
 
 }
