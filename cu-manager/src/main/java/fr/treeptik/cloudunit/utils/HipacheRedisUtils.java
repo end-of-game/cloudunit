@@ -267,6 +267,7 @@ public class HipacheRedisUtils {
         Jedis jedis = pool.getResource();
         try {
             String frontend = "frontend:" + portAlias;
+            logger.info(frontend);
             jedis.del(frontend.toLowerCase());
         } catch (JedisConnectionException e) {
             logger.error("HipacheRedisUtils Exception", e);

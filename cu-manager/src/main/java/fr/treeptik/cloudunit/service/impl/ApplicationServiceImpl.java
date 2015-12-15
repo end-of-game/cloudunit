@@ -24,7 +24,6 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,8 +37,6 @@ import javax.persistence.PersistenceException;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class ApplicationServiceImpl
@@ -547,6 +544,10 @@ public class ApplicationServiceImpl
                 removeAlias(application, alias);
             }
 
+            for (PortToOpen portToOpen : application.getPortsToOpen()) {
+                removePort(application, portToOpen.getPort());
+            }
+
             // Delete all servers
             List<Server> listServers = application.getServers();
             for (Server server : listServers) {
@@ -570,6 +571,9 @@ public class ApplicationServiceImpl
             setStatus(application, Status.FAIL);
             logger.error("ApplicationService Error : failed to remove application "
                     + application.getName() + " : " + e);
+            e.printStackTrace();
+        } catch (CheckException e) {
+            e.printStackTrace();
         }
         return application;
     }
@@ -1069,11 +1073,11 @@ public class ApplicationServiceImpl
                 .stream()
                 .filter(p -> p.getPort().equals(port))
                 .findFirst()
-                .orElseThrow(() -> new CheckException("Port["+port+"] is not bound to this application"));
+                .orElseThrow(() -> new CheckException("Port[" + port + "] is not bound to this application"));
 
         try {
             if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-                hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias());
+                hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias().substring(7));
             }
             portToOpenDAO.delete(portToOpen);
             saveInDB(application);
