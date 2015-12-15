@@ -6,6 +6,5 @@ public class SpringBootDeploymentControllerTestIT
     public SpringBootDeploymentControllerTestIT()
     {
         super.release = "fatjar";
-        super.binary = "spring-boot";
     }
 }
