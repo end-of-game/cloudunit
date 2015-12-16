@@ -63,6 +63,8 @@ public class DockerContainerJSON {
 
     private boolean isHttpMode;
 
+    private static String CU_KVM = System.getenv().get("CU_KVM");
+    private static String CU_DEV_RANDOM_POLICY = System.getenv().get("CU_DEV_RANDOM_POLICY");
 
     @PostConstruct
     public void initDockerEndPointMode() {
@@ -613,10 +615,14 @@ public class DockerContainerJSON {
                 }
             };
 
-            BooleanSupplier isRunningIntoKVM = () -> "true"
-                    .equalsIgnoreCase(System.getenv().get("CU_KVM"));
+            BooleanSupplier isRunningIntoKVM = () -> "true".equalsIgnoreCase(CU_KVM);
+            String cuKvmDevRandomPolicy = "/dev/urandom:/dev/random";
+            if (CU_DEV_RANDOM_POLICY != null) {
+                cuKvmDevRandomPolicy = CU_DEV_RANDOM_POLICY;
+                logger.debug("Force cuKvmDevRandomPolicy to : " + cuKvmDevRandomPolicy);
+            }
             if (isRunningIntoKVM.getAsBoolean()) {
-                volumes.add("/dev/urandom:/dev/urandom");
+                volumes.add(cuKvmDevRandomPolicy);
             }
 
             Predicate<String> isContainerGit = s -> s.contains("-git-");
@@ -624,13 +630,11 @@ public class DockerContainerJSON {
                 volumes.add("/var/log/cloudunit/git/auth-"
                         + dockerContainer.getId() + ":/var/log/cloudunit");
             }
-
             config.put("Binds", volumes);
 
             /**
              * Gestion du binding de port
              */
-
 
             JSONObject portBindsConfigJSONFinal = new JSONObject();
             if (dockerContainer.getPortBindings() != null) {
