@@ -152,7 +152,6 @@ public class HipacheRedisUtils {
             pool = new JedisPool(new JedisPoolConfig(),
                     redisIp, Integer.parseInt(redisPort), 3000);
             jedis = pool.getResource();
-            alias += application.getSuffixCloudUnitIO();
             String frontend = "frontend:" + alias.toLowerCase();
             jedis.lset(frontend, 1, "http://" + dockerManagerIP + ":"
                     + serverPort);
