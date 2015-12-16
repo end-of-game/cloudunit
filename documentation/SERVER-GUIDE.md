@@ -85,3 +85,14 @@ You can access your cloudunit web platform on https://server_ip_address (certifi
 On your local host
 
 Finally, add a local DNS entry on your host: any address ending with cu-engine.cloudunit.io shoud point to the ip address of your server. Refere to the Local DNS section to see how to achieve this on Ubuntu.
+
+## KVM Exception
+
+You **may** have a strange problem with KVM virtual machine.
+For more information, you can read : https://blog.pivotal.io/pivotal-cloud-foundry/features/challenges-with-randomness-in-multi-tenant-linux-container-platforms
+
+If all java applications are slow to start, you need to add `CU_KVM=true` to the `/etc/environment` file.
+You need to `cloudunit/cu-platform/reset-all.sh -y`. 
+
+It is not a mandatory action. To do only if you meet this problem. Do not hesitate to contact us.
+
