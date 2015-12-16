@@ -307,6 +307,128 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(get("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(6115));
 
+
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
+        resultats.andExpect(status().isOk());
+
+        logger.info("**************************************");
+        logger.info("Delete application : " + applicationName);
+        logger.info("**************************************");
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+
+        logger.info("**************************************");
+        logger.info("Delete the cloned application");
+        logger.info("**************************************");
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+    }
+
+    @Test()
+    public void test016_CreateAndCloneApplicationWithPortsAndGetAccess()
+            throws Exception {
+        logger.info("**************************************");
+        logger.info("Create Tomcat server");
+        logger.info("**************************************");
+
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+        ResultActions resultats =
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        logger.info("**************************************");
+        logger.info("Open a port");
+        logger.info("**************************************");
+
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"8080\",\"alias\":\"" + applicationName + "\",\"portNature\":\"web\"}";
+        resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().isOk()).andDo(print());
+        resultats =
+                mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(8080));
+
+        logger.info("**************************************");
+        logger.info("Deploy a helloworld Application");
+        logger.info("**************************************");
+
+        resultats =
+                mockMvc.perform(fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
+                        "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
+        resultats.andExpect(status().is2xxSuccessful());
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
+        String contentPage = getUrlContentPage(urlToCall);
+        if (release.contains("jboss")) {
+            int counter = 0;
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+                contentPage = getUrlContentPage(urlToCall);
+                Thread.sleep(1000);
+            }
+        }
+        Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
+
+
+        logger.info("**************************************");
+        logger.info("Create a snapshot");
+        logger.info("**************************************");
+
+        jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + tagName
+                        + "\", \"description\":\"This is a test snapshot\"}";
+        logger.info(jsonString);
+        resultats =
+                mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
+        resultats.andExpect(status().isOk());
+
+        logger.info("**************************************");
+        logger.info("Clone an application : " + applicationName + "cloned");
+        logger.info("**************************************");
+
+        jsonString =
+                "{\"applicationName\":\"" + applicationName + "cloned" + "\", \"tag\":\"" + tagName
+                        + "\", \"description\":\"This is a test snapshot\"}";
+        resultats =
+                mockMvc.perform(post("/snapshot/clone").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
+        resultats.andExpect(status().isOk());
+        logger.info("**************************************");
+        logger.info("Start the application : " + applicationName + "cloned");
+        logger.info("**************************************");
+
+        jsonString = "{\"applicationName\":\"" + applicationName + "cloned" + "\"}";
+        resultats =
+                this.mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+        logger.info("**************************************");
+        logger.info("check the app keyword : " + applicationName + "cloned");
+        logger.info("**************************************");
+        resultats =
+                mockMvc.perform(get("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(8080));
+
+        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-forward-8080.cloudunit.dev";
+        contentPage = getUrlContentPage(urlToCall);
+        if (release.contains("jboss")) {
+            int counter = 0;
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+                contentPage = getUrlContentPage(urlToCall);
+                Thread.sleep(1000);
+            }
+        }
+        Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
+
         logger.info("**************************************");
         logger.info("Delete the snapshot");
         logger.info("**************************************");
