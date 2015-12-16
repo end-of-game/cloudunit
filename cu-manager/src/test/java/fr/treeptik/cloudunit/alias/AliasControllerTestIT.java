@@ -74,8 +74,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    CloudUnitApplicationContext.class,
-    MockServletContext.class
+        CloudUnitApplicationContext.class,
+        MockServletContext.class
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
@@ -125,8 +125,8 @@ public class AliasControllerTestIT {
         logger.info("setup");
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-            .addFilters(springSecurityFilterChain)
-            .build();
+                .addFilters(springSecurityFilterChain)
+                .build();
 
         User user = null;
         try {
@@ -141,8 +141,8 @@ public class AliasControllerTestIT {
         securityContext.setAuthentication(result);
         session = new MockHttpSession();
         session.setAttribute(
-            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-            securityContext);
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                securityContext);
 
         if (!isAppCreated) {
             try {
@@ -150,22 +150,22 @@ public class AliasControllerTestIT {
                 logger.info("       Create Tomcat server       ");
                 logger.info("**********************************");
                 String jsonString = "{\"applicationName\":\"" + applicationName1
-                    + "\", \"serverName\":\"" + release + "\"}";
+                        + "\", \"serverName\":\"" + release + "\"}";
                 ResultActions resultats = mockMvc
-                    .perform(
-                        post("/application").session(session)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonString));
+                        .perform(
+                                post("/application").session(session)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(jsonString));
                 resultats.andExpect(status().isOk());
 
                 logger.info("Create Tomcat server");
                 jsonString = "{\"applicationName\":\"" + applicationName2
-                    + "\", \"serverName\":\"" + release + "\"}";
+                        + "\", \"serverName\":\"" + release + "\"}";
                 resultats = mockMvc
-                    .perform(
-                        post("/application").session(session)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonString));
+                        .perform(
+                                post("/application").session(session)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(jsonString));
                 resultats.andExpect(status().isOk());
 
                 isAppCreated = true;
@@ -194,20 +194,20 @@ public class AliasControllerTestIT {
         String alias = "myapp.cloudunit.dev";
         String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
         ResultActions resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
         // List the alias for the application to verify it is really created into database
         resultats = this.mockMvc
-            .perform(
-                get("/application/" + applicationName1.toLowerCase() + "/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON));
+                .perform(
+                        get("/application/" + applicationName1.toLowerCase() + "/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
         resultats.andDo(print())
-            .andExpect(jsonPath("$[0]").value(alias));
+                .andExpect(jsonPath("$[0]").value(alias));
 
         logger.info("*********************************************************");
         logger.info("Cannot create an alias it is exists already for app : " + applicationName2);
@@ -215,10 +215,10 @@ public class AliasControllerTestIT {
 
         jsonString = "{\"applicationName\":\"" + applicationName2 + "\",\"alias\":\"" + alias + "\"}";
         resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
 
         logger.info("*********************************************************");
@@ -227,10 +227,10 @@ public class AliasControllerTestIT {
 
         jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
         resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
     }
 
@@ -255,28 +255,28 @@ public class AliasControllerTestIT {
         String wrongAlias = "hello://" + alias;
         String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + wrongAlias + "\"}";
         ResultActions resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
 
         wrongAlias = "error:\\" + alias;
         jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + wrongAlias + "\"}";
         resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
 
         wrongAlias = ":" + alias;
         jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + wrongAlias + "\"}";
         resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
 
         wrongAlias = ":" + alias;
@@ -300,27 +300,27 @@ public class AliasControllerTestIT {
         String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
         // create the alias
         ResultActions resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
         // delete the alias
         resultats = this.mockMvc
-            .perform(
-                delete("/application/" + applicationName1 + "/alias/" + alias).session(session)
-                    .contentType(MediaType.APPLICATION_JSON)).andDo(print());
+                .perform(
+                        delete("/application/" + applicationName1 + "/alias/" + alias).session(session)
+                                .contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(status().isOk());
 
         // List the alias for the application to verify it is really deleted into database
         resultats = this.mockMvc
-            .perform(
-                get("/application/" + applicationName1.toLowerCase() + "/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON));
+                .perform(
+                        get("/application/" + applicationName1.toLowerCase() + "/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
         resultats.andDo(print())
-            .andExpect(jsonPath("$[0]").doesNotExist());
+                .andExpect(jsonPath("$[0]").doesNotExist());
     }
 
     @Test(timeout = 60000)
@@ -330,11 +330,43 @@ public class AliasControllerTestIT {
         logger.info("*********************************************************");
         // delete the alias
         ResultActions resultats = this.mockMvc
-            .perform(
-                delete("/application/" + applicationName1 + "/alias/xxx").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)).andDo(print());
+                .perform(
+                        delete("/application/" + applicationName1 + "/alias/xxx").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
     }
+
+    @Test(timeout = 60000)
+    public void test50_CreationThenRestartApp() throws Exception {
+
+        logger.info("*********************************************************");
+        logger.info("Create an alias then delete it");
+        logger.info("*********************************************************");
+
+        String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
+        // create the alias
+        ResultActions resultats = this.mockMvc
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
+        resultats.andExpect(status().isOk());
+
+        jsonString = "{\"applicationName\":\"" + applicationName1 + "\"}";
+        resultats =
+                this.mockMvc.perform(post("/application/stop")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+        resultats =
+                this.mockMvc.perform(post("/application/start")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+        resultats.andDo(print())
+                .andExpect(jsonPath("$[0]").doesNotExist());
+    }
+
 
     @Test(timeout = 60000)
     public void test90_cleanEnv() throws Exception {
@@ -343,15 +375,15 @@ public class AliasControllerTestIT {
         logger.info("*********************************************************");
 
         ResultActions resultats =
-            this.mockMvc.perform(
-                delete("/application/" + applicationName1).
-                    session(session).contentType(MediaType.APPLICATION_JSON));
+                this.mockMvc.perform(
+                        delete("/application/" + applicationName1).
+                                session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
 
         resultats =
-            this.mockMvc.perform(
-                delete("/application/" + applicationName2).
-                    session(session).contentType(MediaType.APPLICATION_JSON));
+                this.mockMvc.perform(
+                        delete("/application/" + applicationName2).
+                                session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
 
     }
@@ -368,20 +400,20 @@ public class AliasControllerTestIT {
         String wrongAlias = prefix + alias;
         final String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + wrongAlias + "\"}";
         ResultActions resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
+                .perform(
+                        post("/application/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
 
         resultats.andExpect(status().isOk());
 
         resultats = this.mockMvc
-            .perform(
-                get("/application/" + applicationName1.toLowerCase() + "/alias").session(session)
-                    .contentType(MediaType.APPLICATION_JSON));
+                .perform(
+                        get("/application/" + applicationName1.toLowerCase() + "/alias").session(session)
+                                .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
         resultats.andDo(print())
-            .andExpect(jsonPath("$[0]").value(alias.toLowerCase()));
+                .andExpect(jsonPath("$[0]").value(alias.toLowerCase()));
 
     }
 
