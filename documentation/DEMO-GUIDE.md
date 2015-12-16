@@ -4,7 +4,8 @@ This guide is relevant if you want to try CloudUnit without going through any co
 
 ## Requirements
 * Virtualbox version 5.0.4+
-* Vagrant plugin ?
+* Vagrant plugin
+* At least 4 Go RAM and 20 Go of storage for the VM
 
 ## Start the box
 You can launch it in 2 commands:
