@@ -1071,12 +1071,10 @@ public class ApplicationServiceImpl
 
     public void updatePortAlias(PortToOpen portToOpen, Application application) {
         if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-            hipacheRedisUtils.updateAlias((application.getName()
-                            + "-" + application.getUser().getLogin() + "-"
-                            + "forward-" + portToOpen.getPort()
-                            + application.getSuffixCloudUnitIO()),
-                    application, portToOpen.getPort().toString());
-
+            hipacheRedisUtils.updatePortAlias(
+                    application.getServers().get(0).getContainerIP(),
+                    portToOpen.getPort(),
+                    portToOpen.getAlias().substring(portToOpen.getAlias().lastIndexOf("//") + 2));
         }
     }
 

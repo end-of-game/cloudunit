@@ -257,6 +257,35 @@ public class HipacheRedisUtils {
         }
     }
 
+    public void updatePortAlias(
+            String serverIP, Integer port, String portAlias) {
+
+
+        JedisPool pool = null;
+        Jedis jedis = null;
+
+        try {
+            pool = new JedisPool(new JedisPoolConfig(),
+                    redisIp, Integer.parseInt(redisPort), 3000);
+            jedis = pool.getResource();
+
+            String frontend = "frontend:" + portAlias;
+            jedis.lset(frontend, 1, "http://" + serverIP + ":"
+                    + port);
+
+        } catch (JedisConnectionException e) {
+            logger.error("HipacheRedisUtils Exception", e);
+            if (jedis != null) {
+                pool.returnBrokenResource(jedis);
+            }
+        } finally {
+            if (jedis != null) {
+                pool.returnResource(jedis);
+                pool.destroy();
+            }
+        }
+    }
+
 
     /**
      * Remove the server address
