@@ -622,6 +622,9 @@ public class ApplicationServiceImpl
             if (application.getAliases() != null && !application.getAliases().isEmpty()) {
                 updateAliases(application);
             }
+
+            application.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, application));
+
             logger.info("ApplicationService : Application successfully started ");
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -1062,6 +1065,18 @@ public class ApplicationServiceImpl
             portToOpenDAO.save(portToOpen);
         } catch (DataAccessException e) {
             throw new ServiceException(e.getMessage(), e);
+        }
+    }
+
+
+    public void updatePortAlias(PortToOpen portToOpen, Application application) {
+        if ("web".equalsIgnoreCase(portToOpen.getNature())) {
+            hipacheRedisUtils.updateAlias((application.getName()
+                            + "-" + application.getUser().getLogin() + "-"
+                            + "forward-" + portToOpen.getPort()
+                            + application.getSuffixCloudUnitIO()),
+                    application, portToOpen.getPort().toString());
+
         }
     }
 
