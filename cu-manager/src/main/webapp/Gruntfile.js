@@ -50,6 +50,10 @@ module.exports = function (grunt) {
         files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
         tasks: ['compass:server', 'autoprefixer']
       },
+      sass: {
+        files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
+        tasks: ['sass', 'autoprefixer']
+      },
       gruntfile: {
         files: ['Gruntfile.js']
       },
@@ -80,6 +84,25 @@ module.exports = function (grunt) {
     karma: {
       unit: {
         configFile: 'test/karma.conf.js'
+      }
+    },
+
+    sass: {
+      options: {
+        sourceMap: true,
+        relativeAssets: false,
+        outputStyle: 'expanded',
+        sassDir: '<%= yeoman.app %>/styles',
+        cssDir: '.tmp/styles'
+      },
+      build: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>/styles',
+          src: ['main.scss'],
+          dest: '.tmp/styles',
+          ext: '.css'
+        }]
       }
     },
 
@@ -492,13 +515,13 @@ module.exports = function (grunt) {
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'compass:server'
+        'sass'
       ],
       test: [
         'compass'
       ],
       dist: [
-        'compass:dist',
+        'sass',
         'imagemin',
         'svgmin'
       ]
@@ -561,7 +584,7 @@ module.exports = function (grunt) {
     'autoprefixer',
     'concat',
     //'ngmin',
-    'ngAnnotate',
+    //'ngAnnotate',
     'copy:dist',
     'cdnify',
     'cssmin',
