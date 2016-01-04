@@ -90,9 +90,9 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 To run the UI for development (http://0.0.0.0:9000)
 ```
 cd $HOME/cloudunit/cu-manager/src/main/webapp && vagrant up dev
-cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
 cd $HOME/cloudunit/cu-manager
 mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
 ```
 
 # FAQ
