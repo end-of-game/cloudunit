@@ -76,7 +76,7 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install grunt -g
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install grunt-cli -g
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install bower -g
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install -g n
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo stable n
+cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo n stable
 cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo gem install compass
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install grunt
