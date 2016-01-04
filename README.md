@@ -1,7 +1,7 @@
 ![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
 
 
-# The Turnkey Java PaaS - [![Build Status](https://travis-ci.org/Treeptik/CloudUnit.svg?branch=master)](https://travis-ci.org/Treeptik/CloudUnit)
+# The Turnkey Java PaaS - [![Build Status](https://travis-ci.org/Treeptik/CloudUnit.svg?branch=master)](https://travis-ci.org/Treeptik/cloudunit)
 
 Thanks to CloudUnit PaaS's powerful provisioning and execution capabilities, classical servers as Tomcat and JBoss, developers can build secure and scalable Java Web applications. So deploy your Java applications in the cloud almost instantly without changing your code.
 
