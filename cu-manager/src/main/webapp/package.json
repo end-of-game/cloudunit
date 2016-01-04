@@ -37,6 +37,7 @@
     "grunt-ngmin": "^0.0.3",
     "grunt-protractor-runner": "~1.1.4",
     "grunt-protractor-webdriver": "~0.1.8",
+    "grunt-sass": "^1.1.0",
     "grunt-svgmin": "^0.4.0",
     "grunt-usemin": "^2.1.1",
     "grunt-wiredep": "1.8.0",
@@ -58,7 +59,8 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "install": "node node_modules/protractor/bin/webdriver-manager update",
+    "install": "node node_modules/protractor/bin/webdriver-manager update && bower install",
+    "start": "grunt serve",
     "test": "grunt test",
     "build": "grunt build"
   }
