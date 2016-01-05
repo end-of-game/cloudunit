@@ -29,7 +29,7 @@
 
     vm.newSnapshot = {
       name: '',
-      description: 'Enter a comment, your teammate will appreciate'
+      description: 'Enter a comment'
     };
 
     // Creation for a new snapshot

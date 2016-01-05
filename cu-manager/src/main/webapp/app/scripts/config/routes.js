@@ -43,7 +43,8 @@ angular.module('webuiApp')
           controllerAs: 'dashboard',
           data: {
             isFree: false
-          }
+          },
+
         }).state('snapshot', {
           url: '/snapshot',
           templateUrl: 'views/snapshot.html',
