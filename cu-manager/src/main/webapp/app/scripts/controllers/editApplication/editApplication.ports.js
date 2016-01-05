@@ -18,9 +18,20 @@
   'use strict';
   angular
     .module('webuiApp.editApplication')
-    .controller('PortsCtrl', PortsCtrl);
+    .directive('portsComponent', PortsComponent);
 
-  PortsCtrl.$inject = ['$scope', 'ApplicationService'];
+  function PortsComponent(){
+    return {
+      restrict: 'E',
+      templateUrl: 'views/editApplication.ports.html',
+      scope: {
+        application: '=app'
+      },
+      controller: ['$scope', 'ApplicationService', PortsCtrl],
+      controllerAs: 'ports',
+      bindToController: true
+    }
+  }
 
   function PortsCtrl($scope, ApplicationService) {
 

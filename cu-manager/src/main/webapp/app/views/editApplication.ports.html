@@ -14,7 +14,7 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="tab-pane card large vertical-spacing" data-ng-controller="PortsCtrl as ports">
+<div class="card large">
   <div class="content clearfix">
     <div class="ports-form col-lg-6 col-md-6 col-xs-12">
       <h3 class="title large">Add new port</h3>
@@ -22,7 +22,7 @@
       <form id="add-ports"
             name="addPortsForm"
             class="clearfix" novalidate=""
-            data-ng-submit="ports.createPort(editApp.application.name, ports.number, ports.myNature.value)">
+            data-ng-submit="ports.createPort(ports.application.name, ports.number, ports.myNature.value)">
 
         <div class="input-group">
           <input id="new-port"
@@ -66,25 +66,25 @@
     <div class="ports-list col-lg-6 col-md-6 col-xs-12">
       <h3 class="title large">Registered ports</h3>
 
-      <p class="no-ports text-muted" data-ng-if="!editApp.application.portsToOpen.length">No registered ports</p>
-      <ul data-ng-if="editApp.application.portsToOpen.length">
-        <li data-ng-repeat="url in editApp.application.portsToOpen track by $index">
+      <p class="no-ports text-muted" data-ng-if="!ports.application.portsToOpen.length">No registered ports</p>
+      <ul data-ng-if="ports.application.portsToOpen.length">
+        <li data-ng-repeat="url in ports.application.portsToOpen track by $index">
 
           <p>
-            {{editApp.application.portsToOpen[$index].port}} ::
+            {{ports.application.portsToOpen[$index].port}} ::
             <a class="body-2"
-               data-ng-href="{{editApp.application.portsToOpen[$index].alias}}"
-               data-ng-if="editApp.application.portsToOpen[$index].nature == 'web'"
+               data-ng-href="{{ports.application.portsToOpen[$index].alias}}"
+               data-ng-if="ports.application.portsToOpen[$index].nature == 'web'"
                target="_blank">
               <!-- TODO : en fonction de http ou external, activer _blank -->
-              {{editApp.application.portsToOpen[$index].alias}}
+              {{ports.application.portsToOpen[$index].alias}}
             </a>
             <span class="body-2"
-               data-ng-href="{{editApp.application.portsToOpen[$index].alias}}"
-               data-ng-if="editApp.application.portsToOpen[$index].nature == 'other'"
+               data-ng-href="{{ports.application.portsToOpen[$index].alias}}"
+               data-ng-if="ports.application.portsToOpen[$index].nature == 'other'"
                target="_blank">
               <!-- TODO : en fonction de http ou external, activer _blank -->
-              {{editApp.application.portsToOpen[$index].alias}}
+              {{ports.application.portsToOpen[$index].alias}}
             </span>
             <!-- if alias is not defined and nature is http -->
             <button class="remove-ports-btn icon-button secondary"
@@ -92,7 +92,7 @@
                     tooltip=""
                     data-title="Remove"
                     data-placement="bottom"
-                    data-ng-click="ports.removePort(editApp.application.name, editApp.application.portsToOpen[$index].port)">
+                    data-ng-click="ports.removePort(ports.application.name, ports.application.portsToOpen[$index].port)">
               <span class="icon-whhg circledelete"></span>
             </button>
 
