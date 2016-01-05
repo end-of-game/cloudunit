@@ -46,10 +46,10 @@ module.exports = function (grunt) {
         files: ['test/unit/{,*/}*.js'],
         tasks: ['newer:jshint:test', 'karma']
       },
-      compass: {
-        files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
+      /*compass: {
+        files: ['<%= yeoman.app %>/styles/{,*!/}*.{scss,sass}'],
         tasks: ['compass:server', 'autoprefixer']
-      },
+      },*/
       sass: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
         tasks: ['sass', 'autoprefixer']

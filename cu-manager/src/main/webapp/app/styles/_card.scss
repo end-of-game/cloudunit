@@ -110,6 +110,12 @@
   }
 }
 
+.template.card {
+  .features {
+    margin-bottom: 0;
+  }
+}
+
 .card.small {
   @include make-lg-column(4, 1rem);
 }
