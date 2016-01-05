@@ -13,7 +13,7 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="tab-pane card large vertical-spacing" data-ng-controller="AliasCtrl as alias">
+<div class="card large">
   <div class="content clearfix">
     <div class="alias-form col-lg-6 col-md-6 col-xs-12">
       <h3 class="title large">Add new alias</h3>
@@ -21,13 +21,13 @@
       <form id="add-alias"
             name="addAliasForm"
             class="clearfix" novalidate=""
-            data-ng-submit="alias.createAlias(editApp.application.name, alias.domain)">
+            data-ng-submit="alias.createAlias(alias.application.name, alias.domain)">
         <div class="input-group stack">
           <label for="domain">Application URL</label>
           <input id="domain"
                  name="domain"
                  type="text"
-                 data-ng-model="editApp.application.location"
+                 data-ng-model="alias.application.location"
                  placeholder="mydomain.com"
                  readonly>
         </div>
@@ -59,18 +59,18 @@
     <div class="alias-list col-lg-6 col-md-6 col-xs-12">
       <h3 class="title large">Registered aliases</h3>
 
-      <p class="no-alias text-muted" data-ng-if="!editApp.application.aliases.length">No registered aliases</p>
-      <ul data-ng-if="editApp.application.aliases.length">
-        <li data-ng-repeat="aliase in editApp.application.aliases track by $index">
+      <p class="no-alias text-muted" data-ng-if="!alias.application.aliases.length">No registered aliases</p>
+      <ul data-ng-if="alias.application.aliases.length">
+        <li data-ng-repeat="aliase in alias.application.aliases track by $index">
           <a class="body-2"
-             data-ng-href="http://{{editApp.application.aliases[$index]}}"
-             target="_blank">{{editApp.application.aliases[$index]}}</a>
+             data-ng-href="http://{{alias.application.aliases[$index]}}"
+             target="_blank">{{alias.application.aliases[$index]}}</a>
           <button class="remove-alias-btn icon-button secondary"
                   ripple=""
                   tooltip=""
                   data-title="Supprimer"
                   data-placement="bottom"
-                  data-ng-click="alias.removeAlias(editApp.application.name, editApp.application.aliases[$index])">
+                  data-ng-click="alias.removeAlias(alias.application.name, alias.application.aliases[$index])">
             <span class="icon-whhg circledelete"></span>
           </button>
         </li>

@@ -17,9 +17,20 @@
   'use strict';
   angular
     .module('webuiApp.editApplication')
-    .controller('AliasCtrl', AliasCtrl);
+    .directive('aliasComponent', AliasComponent);
 
-  AliasCtrl.$inject = ['ApplicationService'];
+  function AliasComponent(){
+    return {
+      restrict: 'E',
+      templateUrl: 'views/editApplication.alias.html',
+      scope: {
+        application: '=app'
+      },
+      controller: ['ApplicationService', AliasCtrl],
+      controllerAs: 'alias',
+      bindToController: true
+    }
+  }
 
   function AliasCtrl(ApplicationService) {
 

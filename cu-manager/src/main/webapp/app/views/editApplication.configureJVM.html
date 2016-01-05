@@ -13,8 +13,7 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="tab-pane card large vertical-spacing" freeze="" data-delay="4000"
-     data-ng-controller="ConfigJVMCtrl as configjvm">
+<div class="card large" freeze="" data-delay="4000">
 
   <div class="content clearfix">
     <div class="spinner">
@@ -55,7 +54,7 @@
         <label>Set JVM options</label>
         <textarea id="jvm-param-options"
                   data-ng-model="configjvm.jvmOptions"
-                  data-ng-disabled="editApp.application.status === 'PENDING'"
+                  data-ng-disabled="configjvm.application.status === 'PENDING'"
                   placeholder="-Dkey=value">
         </textarea>
       </div>
@@ -80,7 +79,7 @@
         <div class="clearfix">
           <button class="config-jvm-btn button raised primary pull-right"
                   ripple=""
-                  data-ng-click="configjvm.saveConfigurationJVM(editApp.application.name, configjvm.selectedJvmMemory, configjvm.jvmOptions, configjvm.selectedJvmRelease)">
+                  data-ng-click="configjvm.saveConfigurationJVM(configjvm.application.name, configjvm.selectedJvmMemory, configjvm.jvmOptions, configjvm.selectedJvmRelease)">
             <span>Save</span>
           </button>
         </div>

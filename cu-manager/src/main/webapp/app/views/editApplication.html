@@ -60,23 +60,6 @@
               <span>Deploy</span>
             </a>
           </li>
-          <li data-ng-class="{'active': editApp.currentTab === 'alias'}">
-            <a id="alias-tab" data-ng-href="#editApplication/{{editApp.application.name}}/alias" ripple="">
-              <span>Aliases</span>
-            </a>
-          </li>
-          <li data-ng-class="{'active': editApp.currentTab === 'ports'}">
-            <a id="ports-tab" data-ng-href="#editApplication/{{editApp.application.name}}/ports" ripple="">
-              <span>Ports</span>
-            </a>
-          </li>
-          <li
-            data-ng-class="{'active': editApp.currentTab === 'configureJVM', 'disabled':editApp.application.status==='STOP'}">
-            <a id="configure-jvm-tab" data-ng-href="#editApplication/{{editApp.application.name}}/configureJVM"
-               ripple="">
-              <span>JVM configuration</span>
-            </a>
-          </li>
           <li
             data-ng-class="{'active': editApp.currentTab === 'explorer', 'disabled':editApp.application.status==='STOP'}">
             <a id="explorer-tab" data-ng-href="#editApplication/{{editApp.application.name}}/explorer" ripple="">
@@ -102,6 +85,11 @@
               <span>Create template</span>
             </a>
           </li>
+          <li data-ng-class="{'active': editApp.currentTab === 'settings'}">
+            <a id="settings-tab" data-ng-href="#editApplication/{{editApp.application.name}}/settings" ripple="">
+              <span>Settings</span>
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -117,16 +105,12 @@
         <ng-include src="'views/editApplication.overview.html'"></ng-include>
       </div>
 
-      <div id="alias" ng-switch-when="alias">
-        <ng-include src="'views/editApplication.alias.html'"></ng-include>
+      <div id="settings" ng-switch-when="settings">
+        <ng-include src="'views/editApplication.settings.html'"></ng-include>
       </div>
 
       <div id="add-service" ng-switch-when="addModule">
         <ng-include src="'views/editApplication.modules.html'"></ng-include>
-      </div>
-
-      <div id="configure-jvm" ng-switch-when="configureJVM">
-        <ng-include src="'views/editApplication.configureJVM.html'"></ng-include>
       </div>
 
       <div id="explorer" ng-switch-when="explorer">
@@ -139,10 +123,6 @@
 
       <div id="monitoring" ng-switch-when="monitoring">
         <ng-include src="'views/editApplication.monitoring.html'"></ng-include>
-      </div>
-
-      <div id="ports" ng-switch-when="ports">
-        <ng-include src="'views/editApplication.ports.html'"></ng-include>
       </div>
 
       <div id="snapshot" ng-switch-when="snapshot">

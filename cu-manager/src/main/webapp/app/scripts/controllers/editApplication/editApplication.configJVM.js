@@ -17,24 +17,34 @@
   'use strict';
   angular
     .module('webuiApp.editApplication')
-    .controller('ConfigJVMCtrl', ConfigJVMCtrl);
+    .directive('jvmComponent', ConfigJVMComponent);
 
-  ConfigJVMCtrl.$inject = ['$scope', 'ServerService'];
+  function ConfigJVMComponent(){
+    return {
+      restrict: 'E',
+      templateUrl: 'views/editApplication.configureJVM.html',
+      scope: {
+        application: '=app'
+      },
+      controller: ['$scope', 'ServerService', ConfigJVMCtrl],
+      controllerAs: 'configjvm',
+      bindToController: true
+    }
+  }
 
   function ConfigJVMCtrl($scope, ServerService) {
-    var currentApplication, configjvmvm = this;
-    currentApplication = $scope.editApp.application;
+    var vm = this;
 
     // Config JVM
-    configjvmvm.jvmOptions = currentApplication.servers[0].jvmOptions;
-    configjvmvm.jvmMemory = currentApplication.servers[0].jvmMemory;
-    configjvmvm.jvmRelease = currentApplication.servers[0].jvmRelease;
-    configjvmvm.selectedJvmMemory = configjvmvm.jvmMemory;
-    configjvmvm.selectedJvmRelease = configjvmvm.jvmRelease;
+    vm.jvmOptions = vm.application.servers[0].jvmOptions;
+    vm.jvmMemory = vm.application.servers[0].jvmMemory;
+    vm.jvmRelease = vm.application.servers[0].jvmRelease;
+    vm.selectedJvmMemory = vm.jvmMemory;
+    vm.selectedJvmRelease = vm.jvmRelease;
 
-    configjvmvm.jvmMemorySizes = [512, 1024, 2048, 3072];
-    configjvmvm.jvmReleases = ['jdk1.7.0_55','jdk1.8.0_25'];
-    configjvmvm.saveConfigurationJVM = saveConfigurationJVM;
+    vm.jvmMemorySizes = [512, 1024, 2048, 3072];
+    vm.jvmReleases = ['jdk1.7.0_55','jdk1.8.0_25'];
+    vm.saveConfigurationJVM = saveConfigurationJVM;
 
     // Function to save the JVM parameters
     function saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease) {
