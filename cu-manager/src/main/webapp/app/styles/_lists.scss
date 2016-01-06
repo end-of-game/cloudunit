@@ -106,6 +106,16 @@
   }
 }
 
+.tag-list .tag {
+  display: inline-block;
+  background-color: grey;
+  padding: 2px 8px;
+  border-radius: 3px;
+  color: #fff;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
 .breadcrumb {
   padding: 8px 15px;
   margin-bottom: 20px;
