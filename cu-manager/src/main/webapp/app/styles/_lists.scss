@@ -108,12 +108,13 @@
 
 .tag-list .tag {
   display: inline-block;
-  background-color: grey;
+  background-color: #999;
   padding: 2px 8px;
   border-radius: 3px;
   color: #fff;
   margin-right: 4px;
   margin-bottom: 4px;
+  box-shadow: 0 1px 0 #777777;
 }
 
 .breadcrumb {

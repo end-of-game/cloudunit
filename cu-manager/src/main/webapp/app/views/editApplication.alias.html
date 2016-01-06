@@ -13,9 +13,9 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="card large">
+<div class="card medium">
   <div class="content clearfix">
-    <div class="alias-form col-lg-6 col-md-6 col-xs-12">
+    <div class="alias-form">
       <h3 class="title large">Add new alias</h3>
 
       <form id="add-alias"
@@ -31,7 +31,7 @@
                  placeholder="mydomain.com"
                  readonly>
         </div>
-        <div class="input-group stack suffix">
+        <div class="input-group stack">
           <label for="new-alias">Domain name</label>
           <input id="new-alias"
                  name="alias"
@@ -56,9 +56,8 @@
         </div>
       </form>
     </div>
-    <div class="alias-list col-lg-6 col-md-6 col-xs-12">
+    <div class="alias-list">
       <h3 class="title large">Registered aliases</h3>
-
       <p class="no-alias text-muted" data-ng-if="!alias.application.aliases.length">No registered aliases</p>
       <ul data-ng-if="alias.application.aliases.length">
         <li data-ng-repeat="aliase in alias.application.aliases track by $index">
