@@ -66,23 +66,14 @@ vagrant plugin install vagrant-vbguest
 
 Follow these instructions : 
 ```
-sudo apt-get install nodejs npm ruby ruby-dev
+sudo apt-get install nodejs npm
+sudo npm install -g grunt grunt-cli bower 
 sudo ln -s "$(which nodejs)" /usr/bin/node
 mkdir $HOME/infrastructure
 cd $HOME/infrastructure
 git clone https://github.com/Treeptik/CU-infrastructure
 cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install grunt -g
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install grunt-cli -g
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install bower -g
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install -g n
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo n stable
-cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo gem install compass
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install grunt
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install grunt-cli
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
-
 ```
 
 ## How to start Environment Development
@@ -92,7 +83,7 @@ To run the UI for development (http://0.0.0.0:9000)
 cd $HOME/cloudunit/cu-manager/src/main/webapp && vagrant up dev
 cd $HOME/cloudunit/cu-manager
 mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
-cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+cd $HOME/cloudunit/cu-manager/src/main/webapp && npm start
 ```
 
 # FAQ
