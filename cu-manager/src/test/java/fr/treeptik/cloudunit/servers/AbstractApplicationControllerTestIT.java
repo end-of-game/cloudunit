@@ -187,13 +187,6 @@ public abstract class AbstractApplicationControllerTestIT {
 
 
         logger.info("**************************************");
-        logger.info("List the applications");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(get("/application").session(session)).andDo(print());
-        resultats.andExpect(status().isOk()).andExpect(jsonPath("$[0].name").value(deAccentName.toLowerCase()));
-
-        logger.info("**************************************");
         logger.info("Delete application : " + deAccentName);
         logger.info("**************************************");
         resultats =
