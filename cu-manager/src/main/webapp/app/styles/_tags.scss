@@ -1,0 +1,113 @@
+/*
+ * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.cu__tags {
+  display: block;
+  padding: 0 0 8px 3px;
+  vertical-align: middle;
+  box-shadow: 0 1px rgba(0,0,0,.54);
+
+  &.cu__tags--focused {
+    box-shadow: 0 2px rgb(16, 108, 200);
+  }
+
+  & .cu__tag {
+    cursor: default;
+    border-radius: 16px;
+    display: block;
+    height: 32px;
+    line-height: 32px;
+    margin: 8px 8px 0 0;
+    padding: 0 22px 0 12px;
+    float: left;
+    box-sizing: border-box;
+    max-width: 100%;
+    position: relative;
+    background: rgb(224,224,224);
+    color: rgb(66,66,66);
+
+    & .cu__tag-content {
+      display: block;
+      float: left;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 4px;
+    }
+
+    & .cu__tag-remove-container {
+      position: absolute;
+      right: 0;
+      line-height: 22px;
+    }
+
+    & .cu__tag-remove {
+      text-align: center;
+      width: 32px;
+      height: 32px;
+      min-width: 0;
+      padding: 0;
+      background: 0 0;
+      border: none;
+      box-shadow: none;
+      margin: 0;
+      position: relative;
+
+      &:focus{
+        outline: 0;
+      }
+
+      & i {
+        font-size: 12px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate3d(-50%,-50%,0);
+        transform: translate3d(-50%,-50%,0);
+      }
+    }
+  }
+
+  & .label {
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: bold;
+    display: block;
+    text-align: left;
+    color: #757575;
+  }
+
+  & .cu__tags-input-container {
+    display: block;
+    line-height: 32px;
+    margin: 8px 8px 0 0;
+    padding: 0;
+    float: left;
+
+    & input {
+      border: 0;
+      height: 32px;
+      line-height: 32px;
+      padding: 0;
+    }
+
+    & input:focus {
+      outline: 0
+    }
+  }
+}
+
+

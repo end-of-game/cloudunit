@@ -16,41 +16,58 @@
 (function () {
   'use strict';
   angular
-    .module('webuiApp.editApplication')
-    .controller('EditSnapShotCtrl', EditSnapShotCtrl);
+    .module ( 'webuiApp.editApplication' )
+    .controller ( 'EditSnapShotCtrl', EditSnapShotCtrl );
 
   EditSnapShotCtrl.$inject = ['SnapshotService'];
 
-  function EditSnapShotCtrl(SnapshotService) {
+  function EditSnapShotCtrl ( SnapshotService ) {
 
     var vm = this;
     vm.message = "";
-    vm.createNewSnapShot = createNewSnapShot;
-
     vm.newSnapshot = {
       name: '',
-      description: 'Enter a comment'
+      description: 'Enter a comment',
+      tags: []
     };
 
-    // Creation for a new snapshot
-    function createNewSnapShot(applicationName, snapshot) {
-      SnapshotService.create(applicationName, snapshot)
-        .then(success)
-        .catch(error);
+    vm.createNewSnapShot = createNewSnapShot;
+    vm.removeTag = removeTag;
+    vm.addTag = addTag;
 
-      function success() {
+    // Creation for a new snapshot
+    function createNewSnapShot ( applicationName, snapshot ) {
+      SnapshotService.create ( applicationName, snapshot )
+        .then ( success )
+        .catch ( error );
+
+      function success () {
         // reset form
         vm.newSnapshot.name = '';
-        vm.newSnapshot.description = 'Enter a comment, your teammate will appreciate';
+        vm.newSnapshot.description = 'Enter a comment';
+        vm.newSnapshot.tags = [];
+        vm.selectedTag = -1;
       }
 
-      function error(response) {
-        if (response.data.message === 'You can\'t create a snapshot if your app is pending') {
+      function error ( response ) {
+        if ( response.data.message === 'You can\'t create a snapshot if your app is pending' ) {
           return;
         }
         vm.message = response.data.message;
       }
     }
+
+    function removeTag ( event, index ) {
+      if ( typeof index === 'number' ) {
+        vm.newSnapshot.tags.splice ( index, 1 );
+      }
+    }
+
+    function addTag ( event, tag ) {
+      if ( tag && vm.newSnapshot.tags.indexOf ( tag ) === -1 ) {
+        vm.newSnapshot.tags.push ( tag );
+      }
+    }
   }
-})();
+}) ();
 

@@ -72,7 +72,6 @@
 
       function success(application) {
         vm.application = application;
-        console.log(vm.application);
         return vm.application;
       }
 
