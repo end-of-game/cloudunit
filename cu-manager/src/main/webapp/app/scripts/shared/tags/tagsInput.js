@@ -26,7 +26,7 @@
       restrict: 'E',
       template: [
         '<div class="cu__tags-input-container">',
-        '<input type="text" placeholder="Add tag..." ng-model="input.tag" ng-keydown="input.handleKeyDown($event, input.tag)" ng-blur="input.handleBlur($event, input.tag)" >',
+          '<input type="text" placeholder="Add tag..." ng-model="input.tag" ng-keydown="input.handleKeyDown($event, input.tag)" ng-blur="input.handleBlur($event, input.tag)" >',
         '</div>'
       ].join ( '' ),
       scope: {
@@ -39,6 +39,7 @@
           // handle enter key
           if ( event.keyCode === 13 ) {
             this.handleAdd ( event, tag );
+            event.preventDefault();
             // handle backspace key
           } else if ( !tag.length && event.keyCode === 8 ) {
             this.handleRemove ( event, -1 );

@@ -14,17 +14,6 @@
  */
 
 @font-face {
-  font-family: 'icon-tech';
-  src: url('fonts/icon-tech.eot?-az14u0');
-  src: url('fonts/icon-tech.eot?#iefix-az14u0') format('embedded-opentype'),
-  url('fonts/icon-tech.woff?-az14u0') format('woff'),
-  url('fonts/icon-tech.ttf?-az14u0') format('truetype'),
-  url('fonts/icon-tech.svg?-az14u0#icon-tech') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
   font-family: 'WebHostingHub-Glyphs';
   src: url('fonts/webhostinghub-glyphs.eot');
   src: url('fonts/webhostinghub-glyphs.eot?#iefix') format('embedded-opentype'),
@@ -42,505 +31,70 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'icontech';
+  src:    url('fonts/icontech.eot?mp345l');
+  src:    url('fonts/icontech.eot?mp345l#iefix') format('embedded-opentype'),
+  url('fonts/icontech.ttf?mp345l') format('truetype'),
+  url('fonts/icontech.woff?mp345l') format('woff'),
+  url('fonts/icontech.svg?mp345l#icontech') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
 
-.icon-tech.antenna:before,
-.icon-tech.apache:before,
-.icon-tech.aws:before,
-.icon-tech.blackberry:before,
-.icon-tech.bomb:before,
-.icon-tech.c:before,
-.icon-tech.cassandra:before,
-.icon-tech.centos:before,
-.icon-tech.clojure:before,
-.icon-tech.coffee-bean:before,
-.icon-tech.cplusplus:before,
-.icon-tech.csharp:before,
-.icon-tech.css:before,
-.icon-tech.database:before,
-.icon-tech.database-alt:before,
-.icon-tech.database-alt2:before,
-.icon-tech.debian:before,
-.icon-tech.dreamhost:before,
-.icon-tech.elixir:before,
-.icon-tech.erlang:before,
-.icon-tech.fedora:before,
-.icon-tech.fire-alt:before,
-.icon-tech.freebsd:before,
-.icon-tech.ghost:before,
-.icon-tech.gnome:before,
-.icon-tech.google:before,
-.icon-tech.google-alt:before,
-.icon-tech.google-code:before,
-.icon-tech.google-developers:before,
-.icon-tech.grails:before,
-.icon-tech.grails-alt:before,
-.icon-tech.hadoop:before,
-.icon-tech.haskell:before,
-.icon-tech.heroku:before,
-.icon-tech.html:before,
-.icon-tech.iphone:before,
-.icon-tech.java:before,
-.icon-tech.java-bold:before,
-.icon-tech.java-duke:before,
-.icon-tech.javascript:before,
-.icon-tech.javascript-alt:before,
-.icon-tech.jetty:before,
-.icon-tech.kde:before,
-.icon-tech.laravel:before,
-.icon-tech.line-graph:before,
-.icon-tech.linux-mint:before,
-.icon-tech.looking:before,
-.icon-tech.mariadb:before,
-.icon-tech.microscope:before,
-.icon-tech.mobile-device:before,
-.icon-tech.mobile-phone-alt:before,
-.icon-tech.mobile-phone-broadcast:before,
-.icon-tech.mongo:before,
-.icon-tech.mssql:before,
-.icon-tech.mysql:before,
-.icon-tech.mysql-alt:before,
-.icon-tech.netbsd:before,
-.icon-tech.nginx:before,
-.icon-tech.nginx-alt:before,
-.icon-tech.nginx-alt2:before,
-.icon-tech.nodejs:before,
-.icon-tech.objc:before,
-.icon-tech.oracle:before,
-.icon-tech.oracle-alt:before,
-.icon-tech.osx:before,
-.icon-tech.perl:before,
-.icon-tech.phone-alt:before,
-.icon-tech.phone-gap:before,
-.icon-tech.phone-retro:before,
-.icon-tech.php:before,
-.icon-tech.php-alt:before,
-.icon-tech.playframework:before,
-.icon-tech.playframework-alt:before,
-.icon-tech.postgresql:before,
-.icon-tech.postgresql-alt:before,
-.icon-tech.python:before,
-.icon-tech.raspberrypi:before,
-.icon-tech.redhat:before,
-.icon-tech.redis:before,
-.icon-tech.ruby:before,
-.icon-tech.ruby-on-rails:before,
-.icon-tech.ruby-on-rails-alt:before,
-.icon-tech.satellite:before,
-.icon-tech.scala:before,
-.icon-tech.scala-alt:before,
-.icon-tech.script:before,
-.icon-tech.script-alt:before,
-.icon-tech.shell:before,
-.icon-tech.solaris:before,
-.icon-tech.splatter:before,
-.icon-tech.suse:before,
-.icon-tech.svg:before,
-.icon-tech.symfony:before,
-.icon-tech.tomcat:before,
-.icon-tech.ubuntu:before,
-.icon-tech.wireless:before,
-.icon-tech.wordpress:before {
-  display: inline-block;
-  font-family: "icon-tech";
+[class^="icon-tech"], [class*=" icon-tech"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icontech' !important;
+  speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
-  line-height: 1;
-  text-decoration: inherit;
-  text-rendering: optimizeLegibility;
   text-transform: none;
-  -moz-osx-font-smoothing: grayscale;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-tech.antenna:before {
-  content: "\f101";
+.icon-tech.hornetq:before {
+  content: "\e901";
 }
-
-.icon-tech.apache:before {
-  content: "\f102";
+.icon-tech.rabbitmq:before {
+  content: "\e912";
 }
-
-.icon-tech.aws:before {
-  content: "\f103";
+.icon-tech.memcached:before {
+  content: "\e902";
 }
-
-.icon-tech.blackberry:before {
-  content: "\f104";
+.icon-tech.elasticsearch:before {
+  content: "\e900";
 }
-
-.icon-tech.bomb:before {
-  content: "\f105";
+.icon-tech.influxdb:before {
+  content: "\e907";
 }
-
-.icon-tech.c:before {
-  content: "\f106";
+.icon-tech.solr:before {
+  content: "\e911";
 }
-
-.icon-tech.cassandra:before {
-  content: "\f107";
+.icon-tech.postgresql:before {
+  content: "\f14a";
 }
-
-.icon-tech.centos:before {
-  content: "\f108";
+.icon-tech.redis:before {
+  content: "\f14f";
 }
-
-.icon-tech.clojure:before {
-  content: "\f109";
-}
-
-.icon-tech.coffee-bean:before {
-  content: "\f10a";
-}
-
-.icon-tech.cplusplus:before {
-  content: "\f10b";
-}
-
-.icon-tech.csharp:before {
-  content: "\f10c";
-}
-
-.icon-tech.css:before {
-  content: "\f10d";
-}
-
-.icon-tech.database:before {
-  content: "\f10e";
-}
-
-.icon-tech.database-alt:before {
-  content: "\f10f";
-}
-
-.icon-tech.database-alt2:before {
-  content: "\f110";
-}
-
-.icon-tech.debian:before {
-  content: "\f111";
-}
-
-.icon-tech.dreamhost:before {
-  content: "\f112";
-}
-
-.icon-tech.elixir:before {
-  content: "\f113";
-}
-
-.icon-tech.erlang:before {
-  content: "\f114";
-}
-
-.icon-tech.fedora:before {
-  content: "\f115";
-}
-
-.icon-tech.fire-alt:before {
-  content: "\f116";
-}
-
-.icon-tech.freebsd:before {
-  content: "\f117";
-}
-
-.icon-tech.ghost:before {
-  content: "\f118";
-}
-
-.icon-tech.gnome:before {
-  content: "\f119";
-}
-
-.icon-tech.google:before {
-  content: "\f11a";
-}
-
-.icon-tech.google-alt:before {
-  content: "\f11b";
-}
-
-.icon-tech.google-code:before {
-  content: "\f11c";
-}
-
-.icon-tech.google-developers:before {
-  content: "\f11d";
-}
-
-.icon-tech.grails:before {
-  content: "\f11e";
-}
-
-.icon-tech.grails-alt:before {
-  content: "\f11f";
-}
-
-.icon-tech.hadoop:before {
-  content: "\f120";
-}
-
-.icon-tech.haskell:before {
-  content: "\f121";
-}
-
-.icon-tech.heroku:before {
-  content: "\f122";
-}
-
-.icon-tech.html:before {
-  content: "\f123";
-}
-
-.icon-tech.iphone:before {
-  content: "\f124";
-}
-
-.icon-tech.java:before {
-  content: "\f125";
-}
-
-.icon-tech.java-bold:before {
-  content: "\f126";
-}
-
-.icon-tech.java-duke:before {
-  content: "\f127";
-}
-
-.icon-tech.javascript:before {
-  content: "\f128";
-}
-
-.icon-tech.javascript-alt:before {
-  content: "\f129";
-}
-
-.icon-tech.jetty:before {
-  content: "\f12a";
-}
-
-.icon-tech.kde:before {
-  content: "\f12b";
-}
-
-.icon-tech.laravel:before {
-  content: "\f12c";
-}
-
-.icon-tech.line-graph:before {
-  content: "\f12d";
-}
-
-.icon-tech.linux-mint:before {
-  content: "\f12e";
-}
-
-.icon-tech.looking:before {
-  content: "\f12f";
-}
-
 .icon-tech.mariadb:before {
   content: "\f130";
 }
-
-.icon-tech.microscope:before {
-  content: "\f131";
+.icon-tech.mysql:before {
+  content: "\f138";
 }
-
-.icon-tech.mobile-device:before {
-  content: "\f132";
+.icon-tech.cassandra:before {
+  content: "\f107";
 }
-
-.icon-tech.mobile-phone-alt:before {
-  content: "\f133";
-}
-
-.icon-tech.mobile-phone-broadcast:before {
-  content: "\f134";
-}
-
 .icon-tech.mongo:before {
   content: "\f135";
 }
 
-.icon-tech.mssql:before {
-  content: "\f136";
-}
 
-.icon-tech.mysql:before {
-  content: "\f137";
-}
-
-.icon-tech.mysql-alt:before {
-  content: "\f138";
-}
-
-.icon-tech.netbsd:before {
-  content: "\f139";
-}
-
-.icon-tech.nginx:before {
-  content: "\f13a";
-}
-
-.icon-tech.nginx-alt:before {
-  content: "\f13b";
-}
-
-.icon-tech.nginx-alt2:before {
-  content: "\f13c";
-}
-
-.icon-tech.nodejs:before {
-  content: "\f13d";
-}
-
-.icon-tech.objc:before {
-  content: "\f13e";
-}
-
-.icon-tech.oracle:before {
-  content: "\f13f";
-}
-
-.icon-tech.oracle-alt:before {
-  content: "\f140";
-}
-
-.icon-tech.osx:before {
-  content: "\f141";
-}
-
-.icon-tech.perl:before {
-  content: "\f142";
-}
-
-.icon-tech.phone-alt:before {
-  content: "\f143";
-}
-
-.icon-tech.phone-gap:before {
-  content: "\f144";
-}
-
-.icon-tech.phone-retro:before {
-  content: "\f145";
-}
-
-.icon-tech.php:before {
-  content: "\f146";
-}
-
-.icon-tech.php-alt:before {
-  content: "\f147";
-}
-
-.icon-tech.playframework:before {
-  content: "\f148";
-}
-
-.icon-tech.playframework-alt:before {
-  content: "\f149";
-}
-
-.icon-tech.postgresql:before {
-  content: "\f14a";
-}
-
-.icon-tech.postgresql-alt:before {
-  content: "\f14b";
-}
-
-.icon-tech.python:before {
-  content: "\f14c";
-}
-
-.icon-tech.raspberrypi:before {
-  content: "\f14d";
-}
-
-.icon-tech.redhat:before {
-  content: "\f14e";
-}
-
-.icon-tech.redis:before {
-  content: "\f14f";
-}
-
-.icon-tech.ruby:before {
-  content: "\f150";
-}
-
-.icon-tech.ruby-on-rails:before {
-  content: "\f151";
-}
-
-.icon-tech.ruby-on-rails-alt:before {
-  content: "\f152";
-}
-
-.icon-tech.satellite:before {
-  content: "\f153";
-}
-
-.icon-tech.scala:before {
-  content: "\f154";
-}
-
-.icon-tech.scala-alt:before {
-  content: "\f155";
-}
-
-.icon-tech.script:before {
-  content: "\f156";
-}
-
-.icon-tech.script-alt:before {
-  content: "\f157";
-}
-
-.icon-tech.shell:before {
-  content: "\f158";
-}
-
-.icon-tech.solaris:before {
-  content: "\f159";
-}
-
-.icon-tech.splatter:before {
-  content: "\f15a";
-}
-
-.icon-tech.suse:before {
-  content: "\f15b";
-}
-
-.icon-tech.svg:before {
-  content: "\f15c";
-}
-
-.icon-tech.symfony:before {
-  content: "\f15d";
-}
-
-.icon-tech.tomcat:before {
-  content: "\f15e";
-}
-
-.icon-tech.ubuntu:before {
-  content: "\f15f";
-}
-
-.icon-tech.wireless:before {
-  content: "\f160";
-}
-
-.icon-tech.wordpress:before {
-  content: "\f161";
-}
 
 .icon-whhg {
   font-family: 'webhostinghub-glyphs';
