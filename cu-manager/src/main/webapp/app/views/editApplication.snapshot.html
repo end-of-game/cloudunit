@@ -38,11 +38,19 @@
           </button>
           <p>{{editSnapshot.message}}</p>
         </div>
-        <div class="input-group stack">
-          <label>Snapshot Name</label>
-          <input type="text" id="snapshop-name"
-                 data-ng-model="editSnapshot.newSnapshot.name"
-                 placeholder="Name">
+        <div class="form-group">
+          <div class="input-group stack">
+            <label>Snapshot Name</label>
+            <input type="text" id="snapshop-name"
+                   data-ng-model="editSnapshot.newSnapshot.name"
+                   placeholder="Name">
+          </div>
+
+          <cu-tags read-only="editSnapshot.tagReadOnly"
+                   list="editSnapshot.newSnapshot.tags"
+                   on-remove="editSnapshot.removeTag(event, index)"
+                   on-add="editSnapshot.addTag(event, tag)">
+          </cu-tags>
         </div>
 
         <div class="input-group stack clearfix">

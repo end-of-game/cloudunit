@@ -1,3 +1,6 @@
+/**
+ * Created by htomaka on 05/01/16.
+ */
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -15,53 +18,6 @@
 
 (function () {
   'use strict';
-
-  /**
-   * @ngdoc overview
-   * @name webuiApp
-   * @description # webuiApp
-   *
-   * Main module of the application.
-   */
   angular
-    .module('webuiApp',
-    [
-      // core modules
-      'ngResource',
-      'ngCookies',
-      'ngSanitize',
-      'ngAnimate',
-      'ngRoute',
-      'ui.router',
-      'angularFileUpload',
-      'ngTable',
-      'ui.gravatar',
-      'angularUtils.directives.dirPagination',
-      'textAngular',
-      'angular-timeline',
-      'angular.filter',
-      'ui.bootstrap',
-
-      //shared modules
-      'webuiApp.filters',
-      'webuiApp.directives',
-      'webuiApp.shared',
-
-      // app areas
-      'webuiApp.editApplication',
-      'webuiApp.account'
-    ])
-    .constant('moment', moment)
-    // moment locale config
-    .config(function () {
-      moment.locale('en', {
-        calendar: {
-          lastDay: '[Yesterday]',
-          sameDay: '[Today]'
-        }
-      });
-    });
+    .module('webuiApp.shared', []);
 })();
-
-
-
