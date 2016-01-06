@@ -25,6 +25,7 @@ import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.LogService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -107,6 +108,9 @@ public class ApplicationController
     public JsonResponse createApplication(@RequestBody JsonInput input)
             throws ServiceException, CheckException, InterruptedException {
 
+        // replace accent characters
+        String applicationName = AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
+        input.setApplicationName(applicationName);
         // validate the input
         input.validateCreateApp();
 
@@ -142,7 +146,7 @@ public class ApplicationController
         Application application = applicationService.findByNameAndUser(user, applicationName);
 
         if (application != null && application.getStatus().equals(Status.PENDING)) {
-            // If appliction is pending do nothing
+            // If application is pending do nothing
             return new HttpErrorServer("application is pending. No action allowed.");
         }
 

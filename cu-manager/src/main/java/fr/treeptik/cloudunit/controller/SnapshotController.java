@@ -26,6 +26,7 @@ import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.SnapshotService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
 
@@ -55,26 +57,26 @@ public class SnapshotController {
     @Inject
     private AuthentificationUtils authentificationUtils;
 
-    @Inject
-    private MessageSource messageSource;
 
     @RequestMapping(method = RequestMethod.POST)
     public JsonResponse create(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
-        CheckUtils.validateSyntaxInput(input.getTag(), this.messageSource
-            .getMessage("check.snapshot.name", null, Locale.ENGLISH));
+        String tagName = AlphaNumericsCharactersCheckUtils
+                    .deAccent(input.getTag());
+        CheckUtils.validateSyntaxInput(tagName, "check.snapshot.name");
 
         Application application;
         User user = null;
         try {
+
 
             user = authentificationUtils.getAuthentificatedUser();
             application = applicationService.findByNameAndUser(user, input.getApplicationName());
 
             // To be protected from WebUI uncontrolled requests (angularjs timeout)
             if (application.getUser().getStatus()
-                .equals(User.STATUS_NOT_ALLOWED)) {
+                    .equals(User.STATUS_NOT_ALLOWED)) {
                 logger.info("Dispatch request");
                 return new HttpOk();
             }
@@ -88,11 +90,10 @@ public class SnapshotController {
 
             applicationService.setStatus(application, Status.PENDING);
             snapshotService.create(
-                input.getApplicationName(),
-                user,
-                input.getTag(),
-                input.getDescription(),
-                previousStatus);
+                    input.getApplicationName(),
+                    user, tagName,
+                    input.getDescription(),
+                    previousStatus);
             applicationService.setStatus(application, previousStatus);
 
         } finally {
@@ -110,7 +111,7 @@ public class SnapshotController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/list")
     public List<Snapshot> listAll()
-        throws ServiceException {
+            throws ServiceException {
         User user = authentificationUtils.getAuthentificatedUser();
         return snapshotService.listAll(user.getLogin());
     }
@@ -125,7 +126,7 @@ public class SnapshotController {
      */
     @RequestMapping(method = RequestMethod.DELETE, value = "/{tag}")
     public JsonResponse remove(@PathVariable String tag)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
         snapshotService.remove(tag, user.getLogin());
         return new HttpOk();
@@ -142,7 +143,7 @@ public class SnapshotController {
      */
     @RequestMapping(method = RequestMethod.POST, value = "/clone")
     public JsonResponse clone(@RequestBody JsonInput input)
-        throws ServiceException, InterruptedException, CheckException {
+            throws ServiceException, InterruptedException, CheckException {
 
         if (logger.isInfoEnabled()) {
             logger.info(input.toString());

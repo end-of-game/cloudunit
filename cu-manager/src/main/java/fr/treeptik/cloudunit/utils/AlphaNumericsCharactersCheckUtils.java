@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.util.regex.Pattern;
 
 /**
  * TODO : Replace with Apache StringUTils
@@ -49,4 +50,17 @@ public class AlphaNumericsCharactersCheckUtils {
         return value;
 
     }
+
+
+    public static String deAccent(String value) {
+        logger.debug("Before : " + value);
+
+        String nfdNormalizedString = Normalizer.normalize(value, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        value = pattern.matcher(nfdNormalizedString).replaceAll("");
+
+        logger.debug("After : " + value);
+        return value;
+    }
+
 }

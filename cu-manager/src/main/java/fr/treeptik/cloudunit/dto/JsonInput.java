@@ -195,6 +195,7 @@ public class JsonInput
     // VALIDATIONS
 
     public void validateCreateApp() throws CheckException {
+
         CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
         CheckUtils.validateInput(serverName, "check.server.name");
     }

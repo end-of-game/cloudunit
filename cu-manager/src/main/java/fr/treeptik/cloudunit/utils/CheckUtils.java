@@ -157,11 +157,13 @@ public class CheckUtils {
      */
     public static void validateSyntaxInput(String field, String message)
             throws CheckException {
+
         if (field == null
                 || field.trim().length() == 0
                 || "undefined".equals(field)
                 || field.length() > 15
                 || !StringUtils.isAlphanumeric(field)) {
+
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated);
         }

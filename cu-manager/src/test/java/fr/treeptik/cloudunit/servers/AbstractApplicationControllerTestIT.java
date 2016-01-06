@@ -48,6 +48,7 @@ import javax.servlet.Filter;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -166,6 +167,41 @@ public abstract class AbstractApplicationControllerTestIT {
             this.mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
     }
+
+
+    @Test(timeout = 30000)
+    public void test013_CreateAccentNameApplication()
+            throws Exception {
+
+        String accentName = "àéèîôù";
+        String deAccentName = "aeeiou";
+
+        logger.info("**************************************");
+        logger.info("Create application with accent name " + accentName);
+        logger.info("**************************************");
+
+        final String jsonString = "{\"applicationName\":\"" + accentName + "\", \"serverName\":\"" + release + "\"}";
+        ResultActions resultats =
+                this.mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+
+        logger.info("**************************************");
+        logger.info("List the applications");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(get("/application").session(session)).andDo(print());
+        resultats.andExpect(status().isOk()).andExpect(jsonPath("$[0].name").value(deAccentName.toLowerCase()));
+
+        logger.info("**************************************");
+        logger.info("Delete application : " + deAccentName);
+        logger.info("**************************************");
+        resultats =
+                mockMvc.perform(delete("/application/" + deAccentName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+    }
+
 
     @Test(timeout = 30000)
     public void test020_StopApplicationTest()
