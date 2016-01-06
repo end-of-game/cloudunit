@@ -14,9 +14,9 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="card large">
+<div class="card medium">
   <div class="content clearfix">
-    <div class="ports-form col-lg-6 col-md-6 col-xs-12">
+    <div class="ports-form">
       <h3 class="title large">Add new port</h3>
 
       <form id="add-ports"
@@ -24,7 +24,7 @@
             class="clearfix" novalidate=""
             data-ng-submit="ports.createPort(ports.application.name, ports.number, ports.myNature.value)">
 
-        <div class="input-group">
+        <div class="input-group stack">
           <input id="new-port"
                  name="port"
                  type="text"
@@ -63,7 +63,7 @@
         </div>
       </form>
     </div>
-    <div class="ports-list col-lg-6 col-md-6 col-xs-12">
+    <div class="ports-list">
       <h3 class="title large">Registered ports</h3>
 
       <p class="no-ports text-muted" data-ng-if="!ports.application.portsToOpen.length">No registered ports</p>

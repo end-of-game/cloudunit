@@ -67,8 +67,8 @@ vagrant plugin install vagrant-vbguest
 Follow these instructions : 
 ```
 sudo apt-get install nodejs npm
-sudo npm install -g grunt grunt-cli bower 
 sudo ln -s "$(which nodejs)" /usr/bin/node
+sudo npm install -g grunt grunt-cli bower 
 mkdir $HOME/infrastructure
 cd $HOME/infrastructure
 git clone https://github.com/Treeptik/CU-infrastructure

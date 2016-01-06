@@ -45,9 +45,9 @@
 
       <div class="col-lg-12 col-md-12 col-xs-12 snapshot-list">
         <div class="no-data" ng-if="!snapshot.snapshots.length">
-          <h3 class="title">No snapshots created</h3>
+          <h3 class="title">No template created</h3>
 
-          <p>Create a snapshot from your application edit panel</p>
+          <p>Create a template from any application</p>
         </div>
 
         <div data-ng-repeat="(key, value) in snapshot.snapshots | groupBy: 'calendarDate'">
@@ -58,9 +58,7 @@
                 <div class="features">
                   <p>Build from: {{item.applicationName}}</p>
                   <ul class="tag-list">
-                    <li class="tag">hibernate</li>
-                    <li class="tag">java</li>
-                    <li class="tag">elestic search</li>
+                    <li class="tag" ng-repeat="tag in item.tags">{{item.tags[$index]}}</li>
                   </ul>
                 </div>
                 <div class="action clearfix">
