@@ -52,12 +52,12 @@
   <header id="header" class="app-bar" data-ng-show="main.isLogged()">
     <div class="app-bar-header">
       <h1 class="app-bar-brand">
-        <a class="brand" href="#dashboard">
+        <a class="brand" ui-sref="dashboard">
           <img class="logo" src="styles/images/logo-cloudunit.png"></a>
       </h1>
       <ul class="primary-links">
-        <li><a href="#dashboard">Dashboard</a></li>
-        <li><a href="#snapshot">App Templates</a></li>
+        <li><a ui-sref="dashboard">Dashboard</a></li>
+        <li><a ui-sref="snapshots">App Templates</a></li>
         <li>
           <div class="dropdown" dropdown ng-controller="QuickEditCtrl as quickEdit">
             <a class="dropdown-toggle"
@@ -127,6 +127,7 @@
 <!-- bower:js -->
 <script src="bower_components/modernizr/modernizr.js"></script>
 <script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/lodash/lodash.js"></script>
 <script src="bower_components/es5-shim/es5-shim.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/json3/lib/json3.js"></script>
@@ -168,6 +169,7 @@
 <script src="bower_components/angular-timeline/src/angular-timeline.js"></script>
 <script src="bower_components/angular-filter/dist/angular-filter.min.js"></script>
 <script src="bower_components/FileSaver/FileSaver.js"></script>
+<script src="bower_components/lodash/lodash.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 
@@ -175,83 +177,93 @@
 
 <!--Application configuration-->
 <script src="scripts/app.js"></script>
-<script src="scripts/config/routes.js"></script>
 <script src="scripts/config/cache.js"></script>
 <script src="scripts/config/gravatar-config.js"></script>
 
-<!--Modules-->
-<script src="scripts/modules/editApplication.module.js"></script>
-<script src="scripts/modules/account.module.js"></script>
-<script src="scripts/modules/filters.module.js"></script>
-<script src="scripts/shared/shared.module.js"></script>
-
-<!--Controllers-->
-<script src="scripts/controllers/main.js"></script>
-<script src="scripts/controllers/dashboard.js"></script>
-<script src="scripts/controllers/login.js"></script>
-<script src="scripts/controllers/message.js"></script>
-<script src="scripts/controllers/snapshot.js"></script>
-<script src="scripts/controllers/quickEdit.js"></script>
-<script src="scripts/controllers/createApplication.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.alias.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.ports.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.overview.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.modules.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.configJVM.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.deploy.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.logs.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.snapshot.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.monitoring.js"></script>
-<script src="scripts/controllers/editApplication/editApplication.explorer.js"></script>
-<script src="scripts/controllers/account/account.user.js"></script>
-<script src="scripts/controllers/account/account.admin.js"></script>
-<script src="scripts/controllers/account/account.list.js"></script>
-<script src="scripts/controllers/account/account.logs.js"></script>
-<script src="scripts/controllers/error.js"></script>
+<!--shared-->
 
 <!--Services-->
-<script src="scripts/services/userService.js"></script>
-<script src="scripts/services/adminService.js"></script>
-<script src="scripts/services/applicationService.js"></script>
-<script src="scripts/services/moduleService.js"></script>
-<script src="scripts/services/imageService.js"></script>
-<script src="scripts/services/logService.js"></script>
-<script src="scripts/services/serverService.js"></script>
-<script src="scripts/services/messageService.js"></script>
-<script src="scripts/services/snapshotService.js"></script>
-<script src="scripts/services/monitoringService.js"></script>
-<script src="scripts/services/errorService.js"></script>
-<script src="scripts/services/explorerService.js"></script>
+<script src="scripts/shared/services/userService.js"></script>
+<script src="scripts/shared/services/applicationService.js"></script>
+<script src="scripts/shared/services/snapshotService.js"></script>
+<script src="scripts/shared/services/moduleService.js"></script>
 
-<!--Directives-->
-<script src="scripts/directives/directives.module.js"></script>
-<script src="scripts/directives/showtabDirective.js"></script>
-<script src="scripts/directives/modalDismissDirective.js"></script>
-<script src="scripts/directives/tooltipDirective.js"></script>
-<script src="scripts/directives/freezeDirective.js"></script>
-<script src="scripts/directives/oneClickSelectDirective.js"></script>
-<script src="scripts/directives/selectBoxDirective.js"></script>
-<script src="scripts/directives/rippleDirective.js"></script>
-<script src="scripts/directives/clickOnceDirective.js"></script>
-<script src="scripts/directives/autocompleteFixDirective.js"></script>
-<script src="scripts/directives/closeModalDirective.js"></script>
-<script src="scripts/directives/revealPasswordDirective.js"></script>
-<script src="scripts/directives/reloadChartDirective.js"></script>
+<!--Utils-->
+<script src="scripts/shared/directives/directives.module.js"></script>
+<script src="scripts/shared/directives/showtabDirective.js"></script>
+<script src="scripts/shared/directives/modalDismissDirective.js"></script>
+<script src="scripts/shared/directives/tooltipDirective.js"></script>
+<script src="scripts/shared/directives/freezeDirective.js"></script>
+<script src="scripts/shared/directives/oneClickSelectDirective.js"></script>
+<script src="scripts/shared/directives/selectBoxDirective.js"></script>
+<script src="scripts/shared/directives/rippleDirective.js"></script>
+<script src="scripts/shared/directives/clickOnceDirective.js"></script>
+<script src="scripts/shared/directives/autocompleteFixDirective.js"></script>
+<script src="scripts/shared/directives/closeModalDirective.js"></script>
+<script src="scripts/shared/directives/revealPasswordDirective.js"></script>
+<script src="scripts/shared/directives/reloadChartDirective.js"></script>
 
-<!--Filters-->
-<script src="scripts/filters/formatAppStatusFilter.js"></script>
-<script src="scripts/filters/truncateStringFilter.js"></script>
-<script src="scripts/filters/stringToBooleanFilter.js"></script>
-<script src="scripts/filters/formatDateCalendarFilter.js"></script>
-<script src="scripts/filters/uniqueFilter.js"></script>
-<script src="scripts/filters/formatUserRolesFilter.js"></script>
-<script src="scripts/filters/cleanPathFilter.js"></script>
+<script src="scripts/shared/filters/filters.module.js"></script>
+<script src="scripts/shared/filters/formatAppStatusFilter.js"></script>
+<script src="scripts/shared/filters/truncateStringFilter.js"></script>
+<script src="scripts/shared/filters/stringToBooleanFilter.js"></script>
+<script src="scripts/shared/filters/formatDateCalendarFilter.js"></script>
+<script src="scripts/shared/filters/uniqueFilter.js"></script>
+<script src="scripts/shared/filters/formatUserRolesFilter.js"></script>
+<script src="scripts/shared/filters/cleanPathFilter.js"></script>
 
-<!--Shared-->
+<!--UI-->
+<script src="scripts/shared/feed/feed.js"></script>
+<script src="scripts/shared/feed/feedService.js"></script>
 <script src="scripts/shared/tags/tags.js"></script>
 <script src="scripts/shared/tags/tag.js"></script>
 <script src="scripts/shared/tags/tagsInput.js"></script>
+<script src="scripts/shared/quickEdit/quickEdit.js"></script>
+
+<!--Components-->
+
+<!--main-->
+<script src="scripts/components/main.js"></script>
+<!--login-->
+<script src="scripts/components/login/login.config.js"></script>
+<script src="scripts/components/login/login.js"></script>
+<!--dashboard-->
+<script src="scripts/components/dashboard/dashboard.config.js"></script>
+<script src="scripts/components/dashboard/dashboard.js"></script>
+<script src="scripts/components/dashboard/dashboard.createApplication.js"></script>
+<!--edit application-->
+<script src="scripts/components/editApplication/editApplication.config.js"></script>
+<script src="scripts/components/editApplication/editApplication.js"></script>
+<script src="scripts/components/editApplication/deploy/editApplication.deploy.js"></script>
+<script src="scripts/components/editApplication/explorer/editApplication.explorer.js"></script>
+<script src="scripts/components/editApplication/explorer/explorerService.js"></script>
+<script src="scripts/components/editApplication/logs/editApplication.logs.js"></script>
+<script src="scripts/components/editApplication/logs/logService.js"></script>
+<script src="scripts/components/editApplication/images/editApplication.images.js"></script>
+<script src="scripts/components/editApplication/images/imageService.js"></script>
+<script src="scripts/components/editApplication/monitoring/editApplication.monitoring.js"></script>
+<script src="scripts/components/editApplication/monitoring/monitoringService.js"></script>
+<script src="scripts/components/editApplication/overview/editApplication.overview.js"></script>
+<script src="scripts/components/editApplication/snapshots/editApplication.snapshot.js"></script>
+<script src="scripts/components/editApplication/settings/editApplication.settings.js"></script>
+<script src="scripts/components/editApplication/settings/alias/editApplication.settings.alias.js"></script>
+<script src="scripts/components/editApplication/settings/jvm/editApplication.settings.configJVM.js"></script>
+<script src="scripts/components/editApplication/settings/jvm/JVMService.js"></script>
+<script src="scripts/components/editApplication/settings/ports/editApplication.settings.ports.js"></script>
+
+<!--snapshots-->
+<script src="scripts/components/snapshots/snapshots.config.js"></script>
+<script src="scripts/components/snapshots/snapshots.js"></script>
+<!--account-->
+<script src="scripts/components/account/account.config.js"></script>
+<script src="scripts/components/account/account.admin.js"></script>
+<script src="scripts/components/account/list/account.admin.list.js"></script>
+<script src="scripts/components/account/logs/account.admin.logs.js"></script>
+<script src="scripts/components/account/user/account.user.js"></script>
+<script src="scripts/components/account/adminService.js"></script>
+<!--error-->
+<script src="scripts/components/error/error.js"></script>
+<script src="scripts/components/error/errorService.js"></script>
 
 <!-- endbuild -->
 </body>

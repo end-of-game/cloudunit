@@ -1,6 +1,3 @@
-/**
- * Created by htomaka on 05/01/16.
- */
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -16,37 +13,32 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-(function () {
-  'use strict';
-  angular.module ( 'webuiApp.tag', [] )
-    .directive ( 'cuTag', CuTag );
+'use strict';
 
-  function CuTag () {
-    return {
-      restrict: 'E',
-      template: [
-      '<div class="cu__tag">',
-        '<div class="cu__tag-content">',
-          '<span>{{tag.name}}</span>',
-        '</div>',
-        '<div class="cu__tag-remove-container">',
-          '<button type="button" class="cu__tag-remove" ng-click="tag.handleRemove($event, tag.index)"><i class="icon-whhg remove"></i></button>',
-        '</div>',
-      '</div>'
-      ].join ( '' ),
-      scope: {
-        name:'=tag',
-        index: '=tagIndex',
-        onRemove: '&'
-      },
-      controller: [function(){
-        this.handleRemove = function(event, index){
-          event.stopPropagation();
-          this.onRemove({event: event, index: index});
-        };
-      }],
-      controllerAs: 'tag',
-      bindToController: true
-    }
-  }
-} ());
+/**
+ * @ngdoc service
+ * @name webuiApp.JVMService
+ * @description
+ * Factory in the webuiApp.
+ */
+angular.module('webuiApp')
+    .factory('JVMService', [
+        '$resource',
+        function ($resource) {
+
+            var JVMService = {};
+
+            // Liste de toutes les images qui sont activés quelque soit leur type
+            JVMService.saveConfigurationJVM = function (applicationName, jvmMemory, jvmOptions, jvmRelease) {
+                var options = $resource('server/configuration/jvm',
+                    {},
+                    { 'update': { method: 'PUT' }
+                    });
+                return options.update({applicationName: applicationName, jvmMemory: jvmMemory, jvmOptions: jvmOptions, jvmRelease: jvmRelease, location:'webui'});
+            };
+
+            return JVMService;
+        }
+    ]
+);
+

@@ -1,6 +1,3 @@
-/**
- * Created by htomaka on 05/01/16.
- */
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -18,37 +15,54 @@
 
 (function () {
   'use strict';
-  angular.module ( 'webuiApp.tags', ['webuiApp.tag', 'webuiApp.tagsInput'] )
-    .directive ( 'cuTags', CuTags );
+  angular
+    .module('webuiApp.account')
+    .directive('accountLogs', AccountLogs);
 
-  function CuTags () {
+  function AccountLogs(){
     return {
       restrict: 'E',
-      template: [
-        '<div class="cu__tags clearfix">',
-          '<p class="label">Tags</p>',
-          '<cu-tag ng-repeat="tag in tags.list" tag="tags.list[$index]" tag-index="$index" on-remove="tags.handleRemove(event, index)"></cu-tag>',
-          '<cu-tags-input on-add="tags.handleAdd(event, tag)" on-remove="tags.handleRemove(event, index)"></cu-tags-input>',
-        '</div>'
-      ].join ( '' ),
-      scope: {
-        list:'=',
-        readOnly: '=',
-        onRemove: '&',
-        onAdd: '&'
-      },
-      controller: [function(){
-        this.handleRemove = function(event, index){
-          return this.onRemove({event: event, index: index});
-        };
-
-        this.handleAdd = function(event, tag){
-          this.onAdd({event: event, tag: tag});
-        }
-
-      }],
-      controllerAs: 'tags',
+      templateUrl: 'scripts/components/account/logs/account.admin.logs.html',
+      scope: {},
+      controller: [
+        'AdminService',
+        '$stateParams',
+        'ErrorService',
+        AccountLogsCtrl
+      ],
+      controllerAs: 'accountAdminLogs',
       bindToController: true
+    };
+  }
+
+  function AccountLogsCtrl(AdminService, $stateParams, ErrorService) {
+    var vm = this;
+    vm.user = {
+      login: $stateParams.login
+    };
+
+    vm.events = [];
+    vm.rows = 100000;
+
+    vm.currentPage = 1;
+    vm.pageSize = 15;
+
+    init();
+
+    function init() {
+      AdminService.getUserLogs(vm.rows, $stateParams.login)
+        .then(success)
+        .catch(error);
+
+      function success(events) {
+        vm.events = events.data;
+        return vm.events;
+      }
+
+      function error(response) {
+        ErrorService.handle(response);
+      }
     }
   }
-} ());
+})();
+

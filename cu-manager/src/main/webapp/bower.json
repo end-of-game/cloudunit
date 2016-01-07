@@ -25,7 +25,8 @@
     "angular-timeline": "~1.0.0",
     "angular-filter": "~0.5.2",
     "angular-bootstrap": "0.12.1",
-    "FileSaver": "*"
+    "FileSaver": "*",
+    "lodash": "~3.10.1"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",

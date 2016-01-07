@@ -18,7 +18,7 @@
 
 (function () {
   'use strict';
-  angular.module ( 'webuiApp.shared' )
+  angular.module ( 'webuiApp.tagsInput', [] )
     .directive ( 'cuTagsInput', CuTagsInput );
 
   function CuTagsInput () {
