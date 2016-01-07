@@ -161,7 +161,7 @@ public class ServerServiceImpl
                     .convertToAlphaNumerics(server.getApplication()
                             .getName()) + "-" + server.getName();
         } catch (UnsupportedEncodingException e2) {
-            throw new ServiceException("Error rename Serveur", e2);
+            throw new ServiceException("Error rename Server", e2);
         }
 
         String imagePath = registryPrefix + server.getImage().getPath()
