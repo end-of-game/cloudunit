@@ -53,7 +53,7 @@ public interface ImageService {
         throws ServiceException;
 
     Long countNumberOfInstances(String moduleName, String applicationName,
-                                String userLogin)
+                                String userLogin, String cuInstanceName)
         throws ServiceException;
 
 }

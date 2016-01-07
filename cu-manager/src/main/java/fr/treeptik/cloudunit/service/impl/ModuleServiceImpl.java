@@ -92,6 +92,10 @@ public class ModuleServiceImpl
     @Value("${env.exec}")
     private String envExec;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
+
     public ModuleDAO getModuleDAO() {
         return this.moduleDAO;
     }
@@ -914,7 +918,7 @@ public class ModuleServiceImpl
     public List<Module> findByApp(Application application)
             throws ServiceException {
         try {
-            return moduleDAO.findByApp(application.getName());
+            return moduleDAO.findByApp(application.getName(), cuInstanceName);
         } catch (PersistenceException e) {
             logger.error("Error ModuleService : error findByApp Method : " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -925,7 +929,7 @@ public class ModuleServiceImpl
     public List<Module> findByAppAndUser(User user, String applicationName)
             throws ServiceException {
         try {
-            List<Module> modules = moduleDAO.findByAppAndUser(user.getId(), applicationName);
+            List<Module> modules = moduleDAO.findByAppAndUser(user.getId(), applicationName, cuInstanceName);
             return modules;
         } catch (PersistenceException e) {
             logger.error("Error ModuleService : error findByAppAndUser Method : "
@@ -1039,7 +1043,7 @@ public class ModuleServiceImpl
         Map<String, String> configShell = new HashMap<>();
 
         Application application = applicationDAO.findByNameAndUser(
-                user.getId(), applicationName);
+                user.getId(), applicationName, cuInstanceName);
 
         if (application == null) {
             throw new ServiceException("initData : Application not found", null);
@@ -1113,12 +1117,13 @@ public class ModuleServiceImpl
 
             Long nbInstance = imageService.countNumberOfInstances(
                     module.getName(), applicationName, module.getApplication()
-                            .getUser().getLogin());
+                            .getUser().getLogin(), cuInstanceName);
 
             Long counterGlobal = (nbInstance.longValue() == 0 ? 1L
                     : (nbInstance + counter));
             try {
                 String containerName = AlphaNumericsCharactersCheckUtils
+                        .convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-" + AlphaNumericsCharactersCheckUtils
                         .convertToAlphaNumerics(module.getApplication()
                                 .getUser().getLogin())
                         + "-"
@@ -1148,7 +1153,7 @@ public class ModuleServiceImpl
     public Module findGitModule(String login, Application application)
             throws ServiceException {
         try {
-            return moduleDAO.findGitModule(login, application.getName());
+            return moduleDAO.findGitModule(login, application.getName(), cuInstanceName);
         } catch (PersistenceException e) {
             logger.error("Error ModuleService : error find git container Method : "
                     + e);

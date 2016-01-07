@@ -38,7 +38,7 @@ public interface ModuleDAO
         "left join fetch m.moduleInfos " +
         "left join fetch m.listPorts " +
         "left join fetch m.image " +
-        "where m.name=:name")
+        "where m.name=:name ")
     Module findByName(@Param("name") String name)
         throws DataAccessException;
 
@@ -49,17 +49,21 @@ public interface ModuleDAO
         "left join fetch m.image " +
         "where m.application.name=:applicationName " +
         "and m.application.user.id=:userId " +
+        "and m.application.cuInstanceName=:cuInstanceName " +
         "order by m.name ASC")
     List<Module> findByAppAndUser(@Param("userId") Integer userId,
-                                  @Param("applicationName") String applicationName)
+                                  @Param("applicationName") String applicationName,
+                                  @Param("cuInstanceName") String cuInstanceName)
         throws DataAccessException;
 
     @Query("Select m from Module m " +
         "left join fetch m.moduleInfos " +
         "left join fetch m.listPorts " +
         "left join fetch m.image " +
-        "where m.application.name=:applicationName")
-    List<Module> findByApp(@Param("applicationName") String applicationName)
+        "where m.application.name=:applicationName " +
+        "and m.application.cuInstanceName=:cuInstanceName")
+    List<Module> findByApp(@Param("applicationName") String applicationName,
+                           @Param("cuInstanceName") String cuInstanceName)
         throws DataAccessException;
 
     @Query("select m from Module m " +
@@ -68,9 +72,11 @@ public interface ModuleDAO
         "left join fetch m.image " +
         "where m.application.name=:applicationName " +
         "and m.image.name='git' " +
-        "and m.application.user.login=:login")
+        "and m.application.user.login=:login " +
+        "and m.application.cuInstanceName=:cuInstanceName")
     Module findGitModule(@Param("login") String userLogin,
-                         @Param("applicationName") String applicationName)
+                         @Param("applicationName") String applicationName,
+                         @Param("cuInstanceName") String cuInstanceName)
         throws DataAccessException;
 
 }

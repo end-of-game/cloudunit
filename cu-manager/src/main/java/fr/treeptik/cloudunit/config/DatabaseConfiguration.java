@@ -52,8 +52,17 @@ public class DatabaseConfiguration {
     private Logger logger = LoggerFactory
         .getLogger(DatabaseConfiguration.class);
 
-    @Value("${database.url}")
-    private String databaseUrl;
+    @Value("${database.hostname}")
+    private String databaseHostname;
+
+    @Value("${database.port}")
+    private String databasePort;
+
+    @Value("${database.schema}")
+    private String databaseSchema;
+
+    @Value("${database.options}")
+    private String databaseOptions;
 
     @Value("${database.user}")
     private String databaseUser;
@@ -69,7 +78,10 @@ public class DatabaseConfiguration {
 
     @Bean
     public DataSource dataSource() {
+
         logger.debug("Configuring Datasource");
+        String databaseUrl = String.format("jdbc:mysql://%s:%s/%s?%s",
+                databaseHostname, databasePort, databaseSchema, databaseOptions);
         logger.debug("database.url:" + databaseUrl);
         logger.debug("database.user:" + databaseUser);
         HikariConfig config = new HikariConfig();
@@ -82,8 +94,6 @@ public class DatabaseConfiguration {
         if (forcePassword != null) {
             logger.info("Force the mysql password from host env");
             databasePassword = forcePassword;
-        } else {
-            databasePassword = "changeit";
         }
 
         logger.info("URL : " + databaseUrl + " password : " + databasePassword);

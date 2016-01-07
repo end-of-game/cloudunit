@@ -88,6 +88,10 @@ public class ServerServiceImpl
     @Value("${env.exec}")
     private String envExec;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
+
 
     public ServerDAO getServerDAO() {
         return this.serverDAO;
@@ -150,6 +154,7 @@ public class ServerServiceImpl
         String containerName = "";
         try {
             containerName = AlphaNumericsCharactersCheckUtils
+                    .convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-" + AlphaNumericsCharactersCheckUtils
                     .convertToAlphaNumerics(user.getLogin())
                     + "-"
                     + AlphaNumericsCharactersCheckUtils

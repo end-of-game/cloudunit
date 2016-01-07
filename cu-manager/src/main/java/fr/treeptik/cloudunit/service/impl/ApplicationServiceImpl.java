@@ -101,6 +101,9 @@ public class ApplicationServiceImpl
     @Value("${cloudunit.manager.ip}")
     private String restHost;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
     public ApplicationDAO getApplicationDAO() {
         return this.applicationDAO;
     }
@@ -154,7 +157,7 @@ public class ApplicationServiceImpl
     public boolean checkAppExist(User user, String applicationName)
             throws ServiceException, CheckException {
         logger.info("--CHECK APP EXIST--");
-        if (applicationDAO.findByNameAndUser(user.getId(), applicationName) == null) {
+        if (applicationDAO.findByNameAndUser(user.getId(), applicationName, cuInstanceName) == null) {
             return false;
         } else {
             return true;
@@ -430,6 +433,7 @@ public class ApplicationServiceImpl
 
         application.setName(applicationName);
         application.setUser(user);
+        application.setCuInstanceName(cuInstanceName);
         application.setModules(new ArrayList<>());
 
         // verify if application exists already
@@ -697,7 +701,7 @@ public class ApplicationServiceImpl
     public List<Application> findAllByUser(User user)
             throws ServiceException {
         try {
-            List<Application> applications = applicationDAO.findAllByUser(user.getId());
+            List<Application> applications = applicationDAO.findAllByUser(user.getId(), cuInstanceName);
             logger.debug("ApplicationService : All Applications found ");
             return applications;
         } catch (PersistenceException e) {
@@ -712,7 +716,7 @@ public class ApplicationServiceImpl
             throws ServiceException {
         try {
             Application application = applicationDAO.findByNameAndUser(
-                    user.getId(), name);
+                    user.getId(), name, cuInstanceName);
 
             return application;
 
@@ -815,7 +819,7 @@ public class ApplicationServiceImpl
     public Long countApp(User user)
             throws ServiceException {
         try {
-            return applicationDAO.countApp(user.getId());
+            return applicationDAO.countApp(user.getId(), cuInstanceName);
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
@@ -960,7 +964,7 @@ public class ApplicationServiceImpl
     public List<String> getListAliases(Application application)
             throws ServiceException {
         try {
-            return applicationDAO.findAllAliases(application.getName());
+            return applicationDAO.findAllAliases(application.getName(), cuInstanceName);
         } catch (DataAccessException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
@@ -1009,7 +1013,7 @@ public class ApplicationServiceImpl
         try {
             Server server = application.getServers().get(0);
             List<String> aliases = applicationDAO.findAllAliases(application
-                    .getName());
+                    .getName(), cuInstanceName);
             for (String alias : aliases) {
                 hipacheRedisUtils.updateAlias(alias, application,
                         server.getServerAction().getServerPort());

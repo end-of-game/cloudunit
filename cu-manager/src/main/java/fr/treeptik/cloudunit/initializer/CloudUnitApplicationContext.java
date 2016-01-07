@@ -19,10 +19,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -41,6 +44,8 @@ import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +79,16 @@ public class CloudUnitApplicationContext
         formatterRegistry.addConverter(new StringToJsonInputConverter());
     }
     */
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
+
+    @PostConstruct
+    public void getCuINstanceName() {
+        logger.info("CloudUnit instance name: {}", cuInstanceName);
+    }
+
+
 
     @Bean
     @Profile("vagrant")
@@ -86,8 +101,27 @@ public class CloudUnitApplicationContext
         }
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new Resource[]
-            {new ClassPathResource(file)};
+
+        File customFile = new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties");
+        Resource[] resources = null;
+        if (customFile.exists()) {
+
+            logger.info("custom file configuration found ! : {}", customFile.getAbsolutePath());
+
+            resources =
+                    new Resource[]
+                            {
+                                    new ClassPathResource(file),
+                                    new FileSystemResource(customFile)
+                            };
+        } else {
+            logger.error(customFile.getAbsolutePath() + " is missing. It could generate configuration error");
+            resources =
+                    new Resource[]
+                            {
+                                    new ClassPathResource(file),
+                            };
+        }
         pspc.setLocations(resources);
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
@@ -103,11 +137,14 @@ public class CloudUnitApplicationContext
         File customFile = new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties");
         Resource[] resources = null;
         if (customFile.exists()) {
+
+            logger.info("custom file configuration found ! : {}", customFile.getAbsolutePath());
+
             resources =
                 new Resource[]
                     {
                         new ClassPathResource("application-production.properties"),
-                        new FileSystemResource(new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties"))
+                        new FileSystemResource(customFile)
                     };
         } else {
             logger.error(customFile.getAbsolutePath() + " is missing. It could generate configuration error");

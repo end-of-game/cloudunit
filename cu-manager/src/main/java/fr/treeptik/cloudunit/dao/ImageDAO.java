@@ -38,9 +38,12 @@ public interface ImageDAO
     List<Image> findAllEnabledImagesByType(@Param("imageType") String imageType)
         throws DataAccessException;
 
-    @Query("select count(m) from Module m left join m.application a left join m.image i where i.name LIKE %:name and a.name=:appName and a.user.login=:userLogin ")
+    @Query("select count(m) from Module m left join m.application a left join m.image i where i.name LIKE %:name " +
+            "and a.name=:appName and a.user.login=:userLogin " +
+            "and a.cuInstanceName=:cuInstanceName")
     Long countNumberOfInstances(@Param("name") String moduleName,
-                                @Param("appName") String appName, @Param("userLogin") String userLogin)
+                                @Param("appName") String appName, @Param("userLogin") String userLogin,
+                                @Param("cuInstanceName") String cuInstanceName)
         throws DataAccessException;
 
 }
