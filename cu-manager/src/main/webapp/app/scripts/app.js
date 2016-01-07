@@ -45,12 +45,21 @@
       //shared modules
       'webuiApp.filters',
       'webuiApp.directives',
-      'webuiApp.shared',
 
       // app areas
+      'webuiApp.login',
+      'webuiApp.dashboard',
       'webuiApp.editApplication',
-      'webuiApp.account'
+      'webuiApp.snapshots',
+      'webuiApp.account',
+      'webuiApp.feed',
+      'webuiApp.tags'
     ])
+    .config([
+      '$urlRouterProvider',
+      function ($urlRouterProvider) {
+        $urlRouterProvider.otherwise('/dashboard');
+      }])
     .constant('moment', moment)
     // moment locale config
     .config(function () {

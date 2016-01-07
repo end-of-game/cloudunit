@@ -1,6 +1,3 @@
-/**
- * Created by htomaka on 05/01/16.
- */
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -18,37 +15,49 @@
 
 (function () {
   'use strict';
-  angular.module ( 'webuiApp.tags', ['webuiApp.tag', 'webuiApp.tagsInput'] )
-    .directive ( 'cuTags', CuTags );
+  angular
+    .module('webuiApp.editApplication')
+    .directive('aliasComponent', AliasComponent);
 
-  function CuTags () {
+  function AliasComponent(){
     return {
       restrict: 'E',
-      template: [
-        '<div class="cu__tags clearfix">',
-          '<p class="label">Tags</p>',
-          '<cu-tag ng-repeat="tag in tags.list" tag="tags.list[$index]" tag-index="$index" on-remove="tags.handleRemove(event, index)"></cu-tag>',
-          '<cu-tags-input on-add="tags.handleAdd(event, tag)" on-remove="tags.handleRemove(event, index)"></cu-tags-input>',
-        '</div>'
-      ].join ( '' ),
+      templateUrl: 'scripts/components/editApplication/settings/alias/editApplication.settings.alias.html',
       scope: {
-        list:'=',
-        readOnly: '=',
-        onRemove: '&',
-        onAdd: '&'
+        application: '=app'
       },
-      controller: [function(){
-        this.handleRemove = function(event, index){
-          return this.onRemove({event: event, index: index});
-        };
-
-        this.handleAdd = function(event, tag){
-          this.onAdd({event: event, tag: tag});
-        }
-
-      }],
-      controllerAs: 'tags',
+      controller: ['ApplicationService', AliasCtrl],
+      controllerAs: 'alias',
       bindToController: true
     }
   }
-} ());
+
+  function AliasCtrl(ApplicationService) {
+
+    var vm = this;
+    vm.domain = '';
+    vm.errorMsg = '';
+    vm.createAlias = createAlias;
+    vm.removeAlias = removeAlias;
+
+    function createAlias(applicationName, domain) {
+      ApplicationService.createAlias(applicationName, domain)
+        .then(success)
+        .catch(error);
+
+      function success() {
+        vm.errorMsg = '';
+        vm.domain = '';
+      }
+
+
+      function error(response) {
+        vm.errorMsg = response.data.message;
+        return vm.errorMsg;
+      }
+    }
+    function removeAlias(applicationName, domain) {
+      ApplicationService.removeAlias(applicationName, domain);
+    }
+  }
+})();

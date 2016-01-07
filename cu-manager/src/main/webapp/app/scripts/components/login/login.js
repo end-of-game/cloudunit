@@ -1,6 +1,3 @@
-/**
- * Created by htomaka on 05/01/16.
- */
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -18,37 +15,69 @@
 
 (function () {
   'use strict';
-  angular.module ( 'webuiApp.tags', ['webuiApp.tag', 'webuiApp.tagsInput'] )
-    .directive ( 'cuTags', CuTags );
 
-  function CuTags () {
+  /**
+   * @ngdoc function
+   * @name webuiApp.controller:AuthCtrl
+   * @description # AuthCtrl Controller of the webuiApp
+   */
+  angular
+    .module('webuiApp.login')
+    .directive('login', Login);
+
+  function Login(){
     return {
       restrict: 'E',
-      template: [
-        '<div class="cu__tags clearfix">',
-          '<p class="label">Tags</p>',
-          '<cu-tag ng-repeat="tag in tags.list" tag="tags.list[$index]" tag-index="$index" on-remove="tags.handleRemove(event, index)"></cu-tag>',
-          '<cu-tags-input on-add="tags.handleAdd(event, tag)" on-remove="tags.handleRemove(event, index)"></cu-tags-input>',
-        '</div>'
-      ].join ( '' ),
-      scope: {
-        list:'=',
-        readOnly: '=',
-        onRemove: '&',
-        onAdd: '&'
-      },
-      controller: [function(){
-        this.handleRemove = function(event, index){
-          return this.onRemove({event: event, index: index});
-        };
-
-        this.handleAdd = function(event, tag){
-          this.onAdd({event: event, tag: tag});
-        }
-
-      }],
-      controllerAs: 'tags',
+      templateUrl: 'scripts/components/login/login.html',
+      scope: {},
+      controller: [
+        '$scope',
+        'UserService',
+        'ErrorService',
+        LoginCtrl
+      ],
+      controllerAs: 'login',
       bindToController: true
+    };
+  }
+
+  function LoginCtrl($scope, UserService, ErrorService) {
+
+    var vm = this;
+    vm.user = {
+      username: '',
+      password: ''
+    };
+
+    vm.check = check;
+
+    function reset() {
+      vm.user = {
+        username: '',
+        password: ''
+      };
+    }
+
+    function check(username, password) {
+
+      return UserService.check(username, password)
+        .then(success)
+        .catch(error);
+
+      function success() {
+        UserService.createLocalSession();
+        reset();
+        $scope.$emit(':loginSuccess');
+      }
+
+      function error(response) {
+        ErrorService.handle(response);
+      }
     }
   }
-} ());
+}());
+
+
+
+
+

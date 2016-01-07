@@ -1,0 +1,200 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<section data-ng-cloak="" id="account">
+  <header class="header clearfix">
+    <div class="page-header">
+      <div class="page-title">
+        <a class="icon-button primary"
+           data-ng-href="#dashboard"
+           ripple=""
+           tooltip=""
+           data-title="Retour"
+           data-placement="bottom">
+          <i class="icon-whhg pageback"></i>
+        </a>
+
+        <h2 class="title">
+          Manage Users Accounts
+        </h2>
+      </div>
+    </div>
+
+  </header>
+
+  <div class="page full">
+    <div id="user-info" class="card large vertical-spacing">
+      <div class="content clearfix">
+        <h3 class="title">Registered Users</h3>
+        <div class="user-list">
+          <div class="alert alert-danger" data-ng-show="accountAdmin.errorMsg">
+            <button type="button"
+                    class="close"
+                    ng-click="accountAdmin.errorMsg = false">
+              <span>&times;</span>
+            </button>
+            <p>{{accountAdmin.errorMsg}}</p>
+          </div>
+          <account-list users="accountAdmin.users"
+                        on-delete="accountAdmin.deleteUser(user)"
+                        on_change-role="accountAdmin.changeRole(user, role)"
+                        seletected-role="accountAdmin.selectedRole"
+                        roles="accountAdmin.roles"
+                        error="accountAdmin.errorMsg">
+          </account-list>
+        </div>
+      </div>
+    </div>
+
+    <!--todo create component-->
+    <button class="float-button"
+            ripple=""
+            tooltip=""
+            data-toggle="modal"
+            data-target="#create-user">
+      <i class="icon-whhg adduseralt"></i>
+    </button>
+    <div class="modal"
+         id="create-user"
+         modaldismiss="">
+      <div class="modal-inner">
+        <div class="content clearfix">
+          <h3 class="title">Add new user</h3>
+
+          <form id="create-user-form clearfix"
+                name="createUserForm"
+                novalidate="">
+            <div class="alert alert-danger" data-ng-show="accountAdmin.errorMsg">
+              <button type="button"
+                      class="close"
+                      ng-click="accountAdmin.errorMsg = ''">
+                <span>&times;</span>
+              </button>
+              <p>{{accountAdmin.errorMsg}}</p>
+            </div>
+
+            <div class="input-group stack">
+              <label>Login</label>
+              <input type="text"
+                     name="login"
+                     ng-model="accountAdmin.user.login"
+                     ng-maxlength="20"
+                     ng-pattern="/^[a-zA-Z0-9]*$/"
+                     required>
+
+              <p class="hint">Alphanumeric characters only, max length 20 characters</p>
+
+              <p ng-show="!createUserForm.login.$pristine && createUserForm.login.$error.required" class="hint error">
+                Required field</p>
+
+              <p ng-show="!createUserForm.login.$pristine && createUserForm.login.$error.maxlength" class="hint error">
+                Login too long</p>
+
+              <p ng-show="!createUserForm.login.$pristine && createUserForm.login.$error.pattern" class="hint error">Use
+                alphanumeric characters only</p>
+            </div>
+            <div class="input-group stack">
+              <label>Firstname</label>
+              <input type="text"
+                     name="firstname"
+                     ng-model="accountAdmin.user.firstName"
+                     required>
+
+              <p ng-show="!createUserForm.firstname.$pristine && createUserForm.firstname.$error.required"
+                 class="hint error">
+                Required field</p>
+            </div>
+            <div class="input-group stack">
+              <label>Lastname</label>
+              <input type="text"
+                     name="lastname"
+                     ng-model="accountAdmin.user.lastName"
+                     required>
+
+              <p ng-show="!createUserForm.lastname.$pristine && createUserForm.lastname.$error.required"
+                 class="hint error">
+                Required field</p>
+            </div>
+            <div class="input-group stack">
+              <label>Organization</label>
+              <input type="text"
+                     name="organization"
+                     ng-model="accountAdmin.user.organization"
+                     ng-maxlength="20"
+                     ng-pattern="/^[a-zA-Z0-9]*$/"
+                     required>
+
+              <p ng-show="!createUserForm.organization.$pristine && createUserForm.organization.$error.required"
+                 class="hint error">
+                Required field</p>
+
+              <p ng-show="!createUserForm.organization.$pristine && createUserForm.organization.$error.maxlength"
+                 class="hint error">
+                Login too long</p>
+
+              <p ng-show="!createUserForm.organization.$pristine && createUserForm.organization.$error.pattern"
+                 class="hint error">Use
+                alphanumeric characters only</p>
+            </div>
+            <div class="input-group stack">
+              <label>Email</label>
+              <input type="email"
+                     name="email"
+                     ng-model="accountAdmin.user.email"
+                     placeholder="example@domain.com"
+                     required>
+
+              <p ng-show="!createUserForm.email.$pristine && createUserForm.email.$error.email" class="hint error">
+                Email invalid</p>
+
+              <p ng-show="!createUserForm.email.$pristine && createUserForm.email.$error.required" class="hint error">
+                Required field</p>
+            </div>
+            <div class="input-group stack">
+              <label>Password</label>
+              <input type="password"
+                     name="password"
+                     ng-minlength="6"
+                     ng-maxlength="12"
+                     ng-model="accountAdmin.user.password"
+                     required>
+
+              <p ng-show="!createUserForm.password.$pristine && createUserForm.password.$error.required"
+                 class="hint error">
+                Required field</p>
+
+              <p ng-show="!createUserForm.name.$pristine && createUserForm.password.$error.minlength"
+                 class="hint error">Password too short</p>
+
+              <p ng-show="!createUserForm.name.$pristine && createUserForm.password.$error.maxlength"
+                 class="hint error">Password too long</p>
+            </div>
+            <div class="action pull-right">
+              <button type="button" class="button secondary" data-dismiss="modal">Cancel
+              </button>
+              <button type="submit"
+                      class="delete-btn button primary"
+                      close-modal=""
+                      data-ng-click="accountAdmin.createUser(accountAdmin.user)"
+                      ng-disabled="createUserForm.$invalid">
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
