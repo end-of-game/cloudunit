@@ -28,13 +28,22 @@ import org.springframework.data.repository.query.Param;
 public interface MessageDAO
     extends JpaRepository<Message, Integer> {
 
-    @Query("Select m from Message m where m.author=:user order by m.id DESC")
-    Page<Message> listByUser(@Param("user") User user, Pageable pageable)
+    @Query("Select m from Message m where m.author=:user " +
+            "and m.cuInstanceName=:cuInstanceName " +
+            "order by m.id DESC")
+    Page<Message> listByUserAndCuInstance(@Param("user") User user,
+                                          @Param("cuInstanceName") String cuInstanceName,
+                                          Pageable pageable)
         throws DataAccessException;
 
-    @Query("Select m from Message m where m.applicationName=:applicationName and m.author=:user order by m.id DESC")
+    @Query("Select m from Message m where m.applicationName=:applicationName " +
+            "and m.author=:user " +
+            "and m.cuInstanceName=:cuInstanceName " +
+            "order by m.id DESC")
     Page<Message> listByApp(@Param("user") User user,
-                            @Param("applicationName") String applicationName, Pageable pageable)
+                            @Param("applicationName") String applicationName,
+                            @Param("cuInstanceName") String cuInstanceName,
+                            Pageable pageable)
         throws DataAccessException;
 
     @Query("Select m from Message m  order by m.id DESC")
