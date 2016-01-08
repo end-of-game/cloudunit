@@ -24,7 +24,6 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -51,8 +50,6 @@ public class NoPublicController
     @Inject
     private UserService userService;
 
-    @Inject
-    private AuthentificationUtils authentificationUtils;
 
     @RequestMapping(value = "/git/push", method = RequestMethod.POST)
     public
