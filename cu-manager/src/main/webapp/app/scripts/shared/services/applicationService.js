@@ -61,7 +61,9 @@
 
     // Liste des applications
     function list() {
-      return Application.query().$promise;
+      return $http.get('application' ).then(function(response){
+        return angular.copy(response.data);
+      })
     }
 
     // Creation d'une application
@@ -113,7 +115,9 @@
 
     // Récupération d'une application selon son nom
     function findByName(applicationName) {
-      return Application.get({id: applicationName}).$promise;
+      return $http.get('application/' + applicationName ).then(function(response){
+        return angular.copy(response.data);
+      })
     }
 
     // Liste de toutes les containers d'une application en fonction du type server/module

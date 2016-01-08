@@ -32,7 +32,9 @@
       restrict: 'E',
       templateUrl: 'scripts/components/editApplication/editApplication.html',
       scope: {},
-      controller: ['$scope',
+      controller: [
+        '$rootScope',
+        '$scope',
         '$interval',
         'ApplicationService',
         '$stateParams',
@@ -44,7 +46,7 @@
     };
   }
 
-  function EditApplicationCtrl ( $scope, $interval, ApplicationService, $stateParams, ErrorService ) {
+  function EditApplicationCtrl ( $rootScope, $scope, $interval, ApplicationService, $stateParams, ErrorService ) {
 
     // ------------------------------------------------------------------------
     // SCOPE
@@ -52,19 +54,10 @@
 
     var timer, vm = this;
 
-    init ();
+    init ($stateParams.name);
 
     vm.application = {};
     vm.currentTab = $stateParams.tab;
-
-    // Main method for reloading the application detail
-    update ();
-
-    // polling on refresh
-    timer = $interval ( function () {
-      update ();
-    }, 2000 );
-
 
     // We must destroy the polling when the scope is destroyed
     $scope.$on ( '$destroy', function () {
@@ -73,26 +66,29 @@
 
     /////////////////////////////////////////////////////
 
-    function init () {
-      ApplicationService.findByName ( $stateParams.name ).then ( function success ( app ) {
-        vm.application = angular.copy(app);
+    function init (applicationName) {
+      ApplicationService.findByName ( applicationName ).then ( function success ( application ) {
+        vm.application = application;
+        timer = update(application.name);
+        $rootScope.$broadcast('application:ready', application);
       } );
     }
 
-    function update () {
+    function update (applicationName) {
 
-      ApplicationService.findByName ( vm.application.name )
-        .then ( success )
-        .catch ( error );
+      return $interval ( function () {
+        ApplicationService.findByName ( applicationName )
+          .then ( success )
+          .catch ( error );
 
-      function success ( application ) {
-        vm.application = application;
-        return vm.application;
-      }
+        function success ( application ) {
+          vm.application = application;
+        }
 
-      function error ( response ) {
-        ErrorService.handle ( response );
-      }
+        function error ( response ) {
+          ErrorService.handle ( response );
+        }
+      }, 2000 );
     }
 
   }
