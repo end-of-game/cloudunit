@@ -22,8 +22,19 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.*;
-import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.ModuleConfiguration;
+import fr.treeptik.cloudunit.model.ModuleFactory;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.Snapshot;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.ImageService;
+import fr.treeptik.cloudunit.service.ModuleService;
+import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.SnapshotService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
@@ -33,10 +44,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 @Service
 public class SnapshotServiceImpl
@@ -77,6 +93,9 @@ public class SnapshotServiceImpl
     @Value("${docker.manager.ip:192.168.50.4:2376}")
     private String dockerManagerIp;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
     @Override
     public Snapshot findOne(String tag, String login) {
         return snapshotDAO.findByTagAndUser(login, tag);
@@ -107,6 +126,7 @@ public class SnapshotServiceImpl
             snapshot.setApplicationName(application.getName());
             snapshot.setDate(new Date());
             snapshot.setTag(tag);
+            snapshot.setCuInstanceName(cuInstanceName);
             snapshot.setDescription(description);
             snapshot.setUser(application.getUser());
             snapshot.setDeploymentStatus(application.getDeploymentStatus());

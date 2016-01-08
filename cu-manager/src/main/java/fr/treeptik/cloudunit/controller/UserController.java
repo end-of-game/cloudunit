@@ -29,13 +29,21 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.inject.Inject;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 @Controller
 @RequestMapping("/user")
@@ -51,6 +59,9 @@ public class UserController
 
     @Inject
     private AuthentificationUtils authentificationUtils;
+
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
 
     /**
      * Create an User account and send Email to activate it
@@ -220,6 +231,20 @@ public class UserController
         userService.authentificationGit(user, rsa_pub_key);
 
         return "You are authentified on cloudunit git repository";
+    }
+
+    /**
+     * Get CloudUnit instance name.
+     *
+     * @return a Map with the cloudunit instance name
+     */
+    @RequestMapping(value = "/get-cloudunit-instance", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, String> getCloudUnitInstance() {
+        Map<String, String> map =  new HashMap<String, String>();
+        map.put("cuInstanceName", cuInstanceName);
+        return map;
     }
 
     private String replaceByArobase(String sample) {
