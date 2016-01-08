@@ -26,29 +26,25 @@
       scope: {
         application: '=app'
       },
-      controller: ['$scope', 'JVMService', '$timeout', ConfigJVMCtrl],
+      controller: ['$scope', 'JVMService', ConfigJVMCtrl],
       controllerAs: 'configjvm',
       bindToController: true
     }
   }
 
-  function ConfigJVMCtrl ( $scope, JVMService, $timeout ) {
+  function ConfigJVMCtrl ( $scope, JVMService) {
     var vm = this;
 
     // Config JVM
 
-    init ();
+    $scope.$on ( 'application:ready', function ( e, app ) {
+      vm.jvmOptions = app.servers[0].jvmOptions;
+      vm.jvmMemory = app.servers[0].jvmMemory;
+      vm.jvmRelease = app.servers[0].jvmRelease;
+      vm.selectedJvmMemory = vm.jvmMemory;
+      vm.selectedJvmRelease = vm.jvmRelease;
+    });
 
-    function init () {
-      // todo remove timeout
-      $timeout ( function () {
-        vm.jvmOptions = vm.application.servers[0].jvmOptions;
-        vm.jvmMemory = vm.application.servers[0].jvmMemory;
-        vm.jvmRelease = vm.application.servers[0].jvmRelease;
-        vm.selectedJvmMemory = vm.jvmMemory;
-        vm.selectedJvmRelease = vm.jvmRelease;
-      }, 500 );
-    }
 
     vm.jvmMemorySizes = [512, 1024, 2048, 3072];
     vm.jvmReleases = ['jdk1.7.0_55', 'jdk1.8.0_25'];
