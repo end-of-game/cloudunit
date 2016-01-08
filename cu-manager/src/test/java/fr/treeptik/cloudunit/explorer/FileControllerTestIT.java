@@ -67,8 +67,6 @@ public class FileControllerTestIT {
 
     protected String release = "tomcat-8";
 
-    private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
-
     private final Logger logger = LoggerFactory.getLogger(FileControllerTestIT.class);
 
     @Autowired
@@ -85,7 +83,6 @@ public class FileControllerTestIT {
     @Inject
     private UserService userService;
 
-    private Authentication authentication;
     private MockHttpSession session;
 
     private static String applicationName;
@@ -108,7 +105,10 @@ public class FileControllerTestIT {
             logger.error(e.getLocalizedMessage());
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication authentication = null;
+        if (user != null) {
+            authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        }
         Authentication result = authenticationManager.authenticate(authentication);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(result);
@@ -140,7 +140,7 @@ public class FileControllerTestIT {
         logger.info("Delete application : " + applicationName);
         ResultActions resultats =
             mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        ResultActions resultActions = resultats.andExpect(status().isOk());
+        resultats.andExpect(status().isOk());
 
         SecurityContextHolder.clearContext();
         session.invalidate();

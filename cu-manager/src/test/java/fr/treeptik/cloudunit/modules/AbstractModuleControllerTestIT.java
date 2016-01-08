@@ -26,6 +26,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
@@ -67,8 +68,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration")
 public abstract class AbstractModuleControllerTestIT extends TestCase {
 
-    private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
-
     private final Logger logger = LoggerFactory
         .getLogger(AbstractModuleControllerTestIT.class);
 
@@ -85,6 +84,10 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     @Inject
     private UserService userService;
+
+
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
 
     private MockHttpSession session;
 
@@ -116,13 +119,14 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             logger.error(e.getLocalizedMessage());
         }
 
+        assert user != null;
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
         Authentication result = authenticationManager.authenticate(authentication);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(result);
         session = new MockHttpSession();
-        session.setAttribute(
-            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+        String secContextAttr = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
+        session.setAttribute(secContextAttr,
             securityContext);
     }
 
@@ -200,8 +204,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String genericModule = "johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String gitModule = "johndoe-" + applicationName.toLowerCase() + "-git-1";
+        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
+        String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
         String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
@@ -218,8 +222,15 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .andExpect(jsonPath("$.modules[1].name").value(genericModule))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
 
-        Thread.sleep(5000);
+
         String contentPage = getUrlContentPage(managerExpected);
+        int counter = 0;
+        while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
+            contentPage = getUrlContentPage(managerExpected);
+            Thread.sleep(1000);
+        }
+
+
         Assert.assertTrue(contentPage.contains(managerPageContent));
 
         // remove a module
@@ -249,7 +260,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // create an application server
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().isOk());
 
         // verify if app exists
@@ -265,8 +277,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module1 = "johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String gitModule = "johndoe-" + applicationName.toLowerCase() + "-git-1";
+        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
+        String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
         String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
@@ -283,8 +295,15 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .andExpect(jsonPath("$.modules[1].name").value(module1))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
 
-        Thread.sleep(5000);
         String contentPage = getUrlContentPage(managerExpected1);
+
+        int counter = 0;
+        while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
+            contentPage = getUrlContentPage(managerExpected1);
+            Thread.sleep(1000);
+        }
+
+
         Assert.assertTrue(contentPage.contains(managerPageContent));
 
         // add a second module
@@ -296,7 +315,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module2 = "johndoe-" + applicationName.toLowerCase() + "-" + module + "-2";
+        String module2 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-2";
         String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
@@ -365,8 +384,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module1 = "johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String gitModule = "johndoe-" + applicationName.toLowerCase() + "-git-1";
+        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
+        String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
         String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // Stop the application
@@ -378,6 +397,25 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
         resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
+
+        // get the detail of the applications to verify modules addition
+        resultats = mockMvc.perform(get("/application/" + applicationName)
+                .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modules[0].name").value(gitModule))
+                .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
+                .andExpect(jsonPath("$.modules[0].status").value("START"))
+
+                .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
+                .andExpect(jsonPath("$.modules[1].status").value("START"))
+                .andExpect(jsonPath("$.modules[1].name").value(module1))
+                .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
+
+        logger.info("Delete application : " + applicationName);
+        resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
     }
 
 

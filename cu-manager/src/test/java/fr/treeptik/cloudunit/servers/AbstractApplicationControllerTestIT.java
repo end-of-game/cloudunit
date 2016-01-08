@@ -48,8 +48,6 @@ import javax.servlet.Filter;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,7 +79,6 @@ public abstract class AbstractApplicationControllerTestIT {
     @Inject
     private UserService userService;
 
-    private Authentication authentication;
 
     private MockHttpSession session;
 
@@ -105,7 +102,10 @@ public abstract class AbstractApplicationControllerTestIT {
             logger.error(e.getLocalizedMessage());
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication authentication = null;
+        if (user != null) {
+            authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        }
         Authentication result = authenticationManager.authenticate(authentication);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(result);

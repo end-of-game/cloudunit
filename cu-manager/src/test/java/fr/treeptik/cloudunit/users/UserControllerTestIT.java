@@ -40,15 +40,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpSession;
-import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -81,15 +78,9 @@ public class UserControllerTestIT {
     @Inject
     private UserService userService;
 
-    private Authentication authentication;
     private MockHttpSession session;
 
-    private static String applicationName;
 
-    @BeforeClass
-    public static void initEnv() {
-        applicationName = "App" + new Random().nextInt(1000);
-    }
 
     @Before
     public void setup() {
@@ -106,7 +97,10 @@ public class UserControllerTestIT {
             logger.error(e.getLocalizedMessage());
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication authentication = null;
+        if (user != null) {
+            authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        }
         Authentication result = authenticationManager.authenticate(authentication);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(result);
@@ -132,12 +126,10 @@ public class UserControllerTestIT {
         final String username = "johndoe";
         mockMvc.perform(post("/user/authentication")
                 .param("j_username", username).param("j_password", "abc2015"))
-                .andExpect(new ResultMatcher() {
-                    public void match(MvcResult mvcResult) throws Exception {
-                        HttpSession session = mvcResult.getRequest().getSession();
-                        SecurityContext securityContext = (SecurityContext) session.getAttribute(SEC_CONTEXT_ATTR);
-                        Assert.assertEquals(securityContext.getAuthentication().getName(), username);
-                    }
+                .andExpect(mvcResult -> {
+                    HttpSession session1 = mvcResult.getRequest().getSession();
+                    SecurityContext securityContext = (SecurityContext) session1.getAttribute(SEC_CONTEXT_ATTR);
+                    Assert.assertEquals(securityContext.getAuthentication().getName(), username);
                 });
     }
 
@@ -161,7 +153,10 @@ public class UserControllerTestIT {
             logger.error(e.getLocalizedMessage());
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication authentication = null;
+        if (user != null) {
+            authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        }
         Authentication result = authenticationManager.authenticate(authentication);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(result);

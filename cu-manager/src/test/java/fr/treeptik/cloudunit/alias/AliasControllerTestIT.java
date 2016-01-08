@@ -84,8 +84,6 @@ public class AliasControllerTestIT {
 
     protected String release = "tomcat-8";
 
-    private static String SEC_CONTEXT_ATTR = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
-
     private final Logger logger = LoggerFactory.getLogger(AliasControllerTestIT.class);
 
     @Autowired
@@ -102,7 +100,6 @@ public class AliasControllerTestIT {
     @Inject
     private UserService userService;
 
-    private Authentication authentication;
     private MockHttpSession session;
 
     private static String applicationName1;
@@ -135,7 +132,10 @@ public class AliasControllerTestIT {
             logger.error(e.getLocalizedMessage());
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication authentication = null;
+        if (user != null) {
+            authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        }
         Authentication result = authenticationManager.authenticate(authentication);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(result);
