@@ -21,9 +21,29 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.*;
-import fr.treeptik.cloudunit.service.*;
-import fr.treeptik.cloudunit.utils.*;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.ModuleFactory;
+import fr.treeptik.cloudunit.model.PortToOpen;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.ServerFactory;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.Type;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.DeploymentService;
+import fr.treeptik.cloudunit.service.ImageService;
+import fr.treeptik.cloudunit.service.ModuleService;
+import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
+import fr.treeptik.cloudunit.utils.AuthentificationUtils;
+import fr.treeptik.cloudunit.utils.ContainerMapper;
+import fr.treeptik.cloudunit.utils.DomainUtils;
+import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
+import fr.treeptik.cloudunit.utils.PortUtils;
+import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,11 +52,16 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
-import javax.persistence.PersistenceException;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
 
 @Service
 public class ApplicationServiceImpl
@@ -977,11 +1002,6 @@ public class ApplicationServiceImpl
 
         logger.info("ALIAS VALUE IN addNewAlias : " + alias);
 
-        if (checkAliasIfExists(alias)) {
-            throw new CheckException(
-                    "This alias is already used by another application on this CloudUnit instance");
-        }
-
         alias = alias.toLowerCase();
         if (alias.startsWith("https://") || alias.startsWith("http://")
                 || alias.startsWith("ftp://")) {
@@ -989,9 +1009,12 @@ public class ApplicationServiceImpl
                     .substring(alias.lastIndexOf("//") + 2, alias.length());
         }
 
-        if (!CheckUtils.isValidURL(alias)) {
-            throw new CheckException(
-                    "This alias must be a valid url. Please remove all other characters : " + alias);
+        if (!DomainUtils.isValidDomainName(alias)) {
+            throw new CheckException(messageSource.getMessage("alias.invalid", null, locale));
+        }
+
+        if (checkAliasIfExists(alias)) {
+            throw new CheckException(messageSource.getMessage("alias.exists", null, locale));
         }
 
         try {

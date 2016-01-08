@@ -28,16 +28,18 @@ import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.SnapshotService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Locale;
+
+import javax.inject.Inject;
 
 @RestController
 @RequestMapping("/snapshot")
@@ -62,14 +64,16 @@ public class SnapshotController {
     public JsonResponse create(@RequestBody JsonInput input)
             throws ServiceException, CheckException {
 
+        // Replace accent characters by classic characters
         String tagName = AlphaNumericsCharactersCheckUtils
                     .deAccent(input.getTag());
-        CheckUtils.validateSyntaxInput(tagName, "check.snapshot.name");
+        input.setTag(tagName);
+        // Validate input informations for snapshot
+        input.validateCreateSnapshot();
 
         Application application;
         User user = null;
         try {
-
 
             user = authentificationUtils.getAuthentificatedUser();
             application = applicationService.findByNameAndUser(user, input.getApplicationName());
@@ -91,7 +95,8 @@ public class SnapshotController {
             applicationService.setStatus(application, Status.PENDING);
             snapshotService.create(
                     input.getApplicationName(),
-                    user, tagName,
+                    user,
+                    input.getTag(),
                     input.getDescription(),
                     previousStatus);
             applicationService.setStatus(application, previousStatus);
