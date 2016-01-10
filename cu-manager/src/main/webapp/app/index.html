@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="bower_components/ng-table/ng-table.css" />
   <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/textAngular/src/textAngular.css" />
+  <link rel="stylesheet" href="bower_components/chartist/dist/chartist.min.css" />
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css(.tmp) styles/main.css -->
@@ -127,7 +128,6 @@
 <!-- bower:js -->
 <script src="bower_components/modernizr/modernizr.js"></script>
 <script src="bower_components/jquery/dist/jquery.js"></script>
-<script src="bower_components/lodash/lodash.js"></script>
 <script src="bower_components/es5-shim/es5-shim.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/json3/lib/json3.js"></script>
@@ -170,6 +170,8 @@
 <script src="bower_components/angular-filter/dist/angular-filter.min.js"></script>
 <script src="bower_components/FileSaver/FileSaver.js"></script>
 <script src="bower_components/lodash/lodash.js"></script>
+<script src="bower_components/chartist/dist/chartist.min.js"></script>
+<script src="bower_components/angular-chartist.js/dist/angular-chartist.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 
@@ -213,8 +215,6 @@
 <script src="scripts/shared/filters/cleanPathFilter.js"></script>
 
 <!--UI-->
-<script src="scripts/shared/feed/feed.js"></script>
-<script src="scripts/shared/feed/feedService.js"></script>
 <script src="scripts/shared/tags/tags.js"></script>
 <script src="scripts/shared/tags/tag.js"></script>
 <script src="scripts/shared/tags/tagsInput.js"></script>
@@ -224,6 +224,9 @@
 
 <!--main-->
 <script src="scripts/components/main.js"></script>
+<!--common-->
+<script src="scripts/components/common/feed/feed.js"></script>
+<script src="scripts/components/common/feed/feedService.js"></script>
 <!--login-->
 <script src="scripts/components/login/login.config.js"></script>
 <script src="scripts/components/login/login.js"></script>

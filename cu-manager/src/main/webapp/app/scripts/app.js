@@ -41,6 +41,7 @@
       'angular-timeline',
       'angular.filter',
       'ui.bootstrap',
+      'angular-chartist',
 
       //shared modules
       'webuiApp.filters',
