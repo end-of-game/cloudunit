@@ -26,7 +26,9 @@
     "angular-filter": "~0.5.2",
     "angular-bootstrap": "0.12.1",
     "FileSaver": "*",
-    "lodash": "~3.10.1"
+    "lodash": "~3.10.1",
+    "chartist": "~0.9.5",
+    "angular-chartist.js": "~3.3.12"
   },
   "devDependencies": {
     "angular-mocks": "1.2.16",
