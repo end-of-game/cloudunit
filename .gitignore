@@ -1,3 +1,4 @@
+/.bundle
 /cu-platform/docker-compose.yml
 /.vagrant
 .idea
