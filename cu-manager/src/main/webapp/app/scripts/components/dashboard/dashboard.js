@@ -54,6 +54,7 @@
     vm.search = '';
     vm.deleteApplication = deleteApplication;
     vm.toggleServer = toggleServer;
+    vm.buffer = '';
 
     update();
 
@@ -67,6 +68,10 @@
       $interval.cancel(timer);
     });
 
+    $scope.$on('app:creating', function(e, data){
+      vm.buffer = data;
+    });
+
     /////////////////////////////////////////////
 
     // Refresh the application list
@@ -76,6 +81,23 @@
         .catch(error);
 
       function success(applications) {
+
+        var newApp = _.find(applications, function(app){
+          return app.name === vm.buffer;
+        });
+
+        // display shadow app while new app is being created
+        if(vm.buffer){
+          if(!newApp){
+            applications.push({
+              name: vm.buffer,
+              status: 'PENDING'
+            })
+          } else {
+            vm.buffer = '';
+          }
+        }
+
         vm.applications = applications;
         return vm.applications;
       }

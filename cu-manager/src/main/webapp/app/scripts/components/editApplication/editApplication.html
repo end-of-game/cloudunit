@@ -31,7 +31,7 @@
           {{editApp.application.name}}
           <a id="preview-link"
              class="icon-button"
-             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"
+             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"
              data-ng-href="{{ editApp.application.location }}"
              target="_blank"
              tooltip=""
@@ -49,19 +49,19 @@
             </a>
           </li>
           <li
-            data-ng-class="{'active': editApp.currentTab === 'addModule', 'disabled':editApp.application.status==='STOP'}">
+            data-ng-class="{'active': editApp.currentTab === 'addModule', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="add-service-tab" data-ng-href="#editApplication/{{editApp.application.name}}/addModule" ripple="">
               <span>Add module</span>
             </a>
           </li>
           <li
-            data-ng-class="{'active': editApp.currentTab === 'deploy', 'disabled':editApp.application.status==='STOP'}">
+            data-ng-class="{'active': editApp.currentTab === 'deploy', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="deploy-tab" data-ng-href="#editApplication/{{editApp.application.name}}/deploy" ripple="">
               <span>Deploy</span>
             </a>
           </li>
           <li
-            data-ng-class="{'active': editApp.currentTab === 'explorer', 'disabled':editApp.application.status==='STOP'}">
+            data-ng-class="{'active': editApp.currentTab === 'explorer', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="explorer-tab" data-ng-href="#editApplication/{{editApp.application.name}}/explorer" ripple="">
               <span>Explorer</span>
             </a>
@@ -73,14 +73,14 @@
           </li>
 
           <li
-            data-ng-class="{'active': editApp.currentTab === 'monitoring', 'disabled':editApp.application.status==='STOP'}">
+            data-ng-class="{'active': editApp.currentTab === 'monitoring', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="monitoring-tab" data-ng-href="#editApplication/{{editApp.application.name}}/monitoring" ripple="">
               <span>Monitoring</span>
             </a>
           </li>
 
           <li
-            data-ng-class="{'active': editApp.currentTab === 'snapshot', 'disabled':editApp.application.status==='STOP'}">
+            data-ng-class="{'active': editApp.currentTab === 'snapshot', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="snapshot-tab" data-ng-href="#editApplication/{{editApp.application.name}}/snapshot" ripple="">
               <span>Create template</span>
             </a>

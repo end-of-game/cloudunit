@@ -33,6 +33,7 @@
       templateUrl: 'scripts/components/dashboard/dashboard.createApplication.html',
       scope: {},
       controller: [
+        '$rootScope',
         'ApplicationService',
         'ImageService',
         'ErrorService',
@@ -43,7 +44,7 @@
     };
   }
 
-  function CreateAppCtrl(ApplicationService, ImageService, ErrorService) {
+  function CreateAppCtrl($rootScope, ApplicationService, ImageService, ErrorService) {
 
     var vm = this;
     vm.applicationName = '';
@@ -51,6 +52,7 @@
     vm.serverImageChoice = {};
     vm.notValidated = true;
     vm.message = '';
+    vm.isPending = false;
 
     vm.createApplication = createApplication;
     vm.isValid = isValid;
@@ -73,6 +75,10 @@
     }
 
     function createApplication(applicationName, serverName) {
+      // emit app:creating event to display a shadow app during creation process
+      vm.isPending = true;
+      $rootScope.$broadcast('app:creating', applicationName);
+
       ApplicationService.create(applicationName, serverName)
         .then(success)
         .catch(error);
@@ -81,6 +87,7 @@
         // reset du  formulaire
         vm.createAppForm.$setPristine();
         vm.applicationName = '';
+        vm.isPending = false;
       }
 
       function error(response) {

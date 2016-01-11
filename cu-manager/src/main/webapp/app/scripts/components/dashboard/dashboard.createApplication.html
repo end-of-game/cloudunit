@@ -14,7 +14,7 @@
   -->
 
 <div id="create-application" class="form"
-     ng-class="{ngdirty: createApp.createAppForm.$dirty}">
+     ng-class="{ngdirty: createApp.createAppForm.$dirty, 'pending': createApp.isPending}">
   <div class="content clearfix">
     <div class="spinner">
       <div class="rect1"></div>
@@ -34,6 +34,7 @@
                data-ng-model="createApp.applicationName"
                data-ng-pattern="/^[a-zA-Z0-9]*$/"
                data-ng-change="createApp.isValid(createApp.applicationName, createApp.serverImageChoice.name)"
+               data-ng-disabled="createApp.isPending"
                required>
 
         <p
@@ -50,7 +51,8 @@
           <label for="name">App Server</label>
           <a class="dropdown-toggle"
              dropdown-toggle=""
-             data-ng_bind="createApp.serverImageChoice.name">
+             data-ng_bind="createApp.serverImageChoice.name"
+             data-ng-disabled="createApp.isPending">
           </a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
             <li data-ng-repeat="serverImage in createApp.serverImages">
@@ -68,7 +70,7 @@
               class="button primary pull-right"
               ripple=""
               click-once=""
-              data-ng-disabled="createApp.notValidated"
+              data-ng-disabled="createApp.notValidated || createApp.isPending"
               data-ng-click="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
         <span>Create New App</span>
       </button>
