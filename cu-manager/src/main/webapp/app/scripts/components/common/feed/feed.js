@@ -21,7 +21,7 @@
   function Feed(){
     return {
       restrict: 'E',
-      templateUrl: 'scripts/shared/feed/feed.html',
+      templateUrl: 'scripts/components/common/feed/feed.html',
       scope: {
         context: '='
       },
