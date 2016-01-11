@@ -83,6 +83,7 @@
 
         function success ( application ) {
           vm.application = application;
+          $rootScope.$broadcast('application:ready', application);
         }
 
         function error ( response ) {

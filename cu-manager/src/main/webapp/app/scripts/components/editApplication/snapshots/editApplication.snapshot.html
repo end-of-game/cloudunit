@@ -25,7 +25,8 @@
       </div>
       <header class="title large">
         <h3>Create a template</h3>
-        <small class="help-block">Build a template or back-up your app. <a href="#snapshots">Manage your templates</a></small>
+        <small class="help-block">Build a template or back-up your app. <a href="#snapshots">Manage your templates</a>
+        </small>
       </header>
 
 
@@ -46,11 +47,11 @@
                    placeholder="Name">
           </div>
 
-          <cu-tags read-only="snapshot.tagReadOnly"
+          <!--<cu-tags read-only="snapshot.tagReadOnly"
                    list="snapshot.newSnapshot.tags"
                    on-remove="snapshot.removeTag(event, index)"
                    on-add="snapshot.addTag(event, tag)">
-          </cu-tags>
+          </cu-tags>-->
         </div>
 
         <div class="input-group stack clearfix">
@@ -70,7 +71,6 @@
             <span>Create</span>
           </button>
         </div>
-
       </form>
     </div>
   </div>

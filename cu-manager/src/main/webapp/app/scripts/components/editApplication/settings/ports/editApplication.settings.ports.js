@@ -40,7 +40,6 @@
     vm.errorMsg = '';
     vm.createPort = createPort;
     vm.removePort = removePort;
-    vm.restartApplication = restartApplication;
     vm.urls = [];
 
     vm.natures = [
@@ -49,15 +48,12 @@
     ];
     vm.myNature = vm.natures[0];
 
-    // Démarrage de l'application
-    function restartApplication(applicationName) {
-      ApplicationService.restart(applicationName);
-      $scope.$emit('workInProgress', {delay: 3000});
-    }
+    $scope.$on ( 'application:ready', function ( e, app ) {
+      vm.application = app;
+    });
 
-
-    function createPort(applicationName, number, nature) {
-      ApplicationService.createPort(applicationName, number, nature)
+    function createPort(number, nature) {
+      ApplicationService.createPort(vm.application.name, number, nature)
         .then(success)
         .catch(error);
 

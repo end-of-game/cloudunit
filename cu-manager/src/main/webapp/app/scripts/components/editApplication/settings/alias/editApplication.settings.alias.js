@@ -26,19 +26,23 @@
       scope: {
         application: '=app'
       },
-      controller: ['ApplicationService', AliasCtrl],
+      controller: ['$scope', 'ApplicationService', AliasCtrl],
       controllerAs: 'alias',
       bindToController: true
     }
   }
 
-  function AliasCtrl(ApplicationService) {
+  function AliasCtrl($scope, ApplicationService) {
 
     var vm = this;
     vm.domain = '';
     vm.errorMsg = '';
     vm.createAlias = createAlias;
     vm.removeAlias = removeAlias;
+
+    $scope.$on ( 'application:ready', function ( e, app ) {
+      vm.application = app;
+    });
 
     function createAlias(applicationName, domain) {
       ApplicationService.createAlias(applicationName, domain)
