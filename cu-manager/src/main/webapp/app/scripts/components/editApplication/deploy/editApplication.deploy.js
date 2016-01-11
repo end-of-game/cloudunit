@@ -31,6 +31,7 @@
       },
       controller: [
         '$scope',
+        '$stateParams',
         'FileUploader',
         DeployCtrl
       ],
@@ -39,11 +40,17 @@
     };
   }
 
-  function DeployCtrl($scope, FileUploader) {
+  function DeployCtrl($scope, $stateParams, FileUploader) {
 
     var uploader, vm;
 
     vm = this;
+
+    $scope.$watch('vm.app', function(newVal){
+      if(newVal){
+        vm.app = newVal;
+      }
+    });
 
     vm.errors = {
       fileTypeError: false,
@@ -52,7 +59,7 @@
     };
 
     uploader = $scope.uploader = new FileUploader({
-      url: 'application/' + vm.app.name + '/deploy',
+      url: 'application/' + $stateParams.name + '/deploy',
       removeAfterUpload: true,
       queueLimit: 1
     });
