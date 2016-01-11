@@ -17,27 +17,37 @@
   'use strict';
 
   angular
-    .module('webuiApp')
-    .factory('MonitoringService', MonitoringService);
+    .module ( 'webuiApp' )
+    .factory ( 'MonitoringService', MonitoringService );
 
   MonitoringService.$inject = [
-    '$resource'
+    '$http'
   ];
 
-  function MonitoringService($resource) {
+  function MonitoringService ( $http ) {
 
     return {
-      gatherNbRows: gatherNbRows
+      getMachineInfo: getMachineInfo,
+      getStats: getStats
     };
 
 
     ////////////////////////////////////////////////////
 
-    function gatherNbRows(containerId) {
-      var logs = $resource('monitoring/:containerId');
-      return logs.query({containerId: containerId}).$promise;
+    function getMachineInfo () {
+      // todo change endpoint
+      return $http.get ( 'scripts/components/editApplication/monitoring/machineInfo.json' ).then ( function ( response ) {
+        return angular.copy ( response.data );
+      } );
+    }
+
+
+    function getStats ( containerName ) {
+      return $http.get ( "monitoring/api/containers/docker/" + containerName ).then ( function ( response ) {
+        return angular.copy ( response.data );
+      } );
     }
   }
-})();
+}) ();
 
 

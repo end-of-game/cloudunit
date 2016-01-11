@@ -40,13 +40,89 @@
       </div>
     </div>
   </div>
-  <div id="monitoring-iframe">
-    <iframe data-media="{{monitoring.myContainer.name}}" src="scripts/components/editApplication/monitoring/cadvisor.html"
-            id="{{monitoring.myContainer.id}}" frameBorder="0" reload-chart=""/>
+  <div id="monitoring">
+    <!--<iframe data-media="{{monitoring.myContainer.name}}" src="scripts/components/editApplication/monitoring/cadvisor.html"
+            id="{{monitoring.myContainer.id}}" frameBorder="0" reload-chart=""/>-->
+
+
+
+    <div class="monitor-group">
+      <div class="card large">
+        <div class="content clearfix">
+          <h3 class="card-title">CPU</h3>
+
+          <div class="chart">
+            <h4>Total Usage (Cores)</h4>
+
+            <chartist class="ct-chart ct-major-tenth" chartist-data="monitoring.cpuTotalUsage" chartist-chart-type="Line"></chartist>
+
+            <!--<h4>Usage per Core</h4>
+            <div id="cpu-per-core-usage-chart"></div>-->
+
+            <h4>Usage Breakdown (Cores)</h4>
+            <chartist class="ct-chart ct-major-tenth" chartist-data="monitoring.cpuUsageBreakdown" chartist-chart-type="Line"></chartist>
+            <h4>CPU load (%)</h4>
+            <chartist class="ct-chart ct-major-tenth" chartist-data="monitoring.cpuLoad" chartist-chart-type="Line"></chartist>
+
+          </div>
+        </div>
+      </div>
+      <div class="card large">
+        <div class="content clearfix">
+          <h3 class="card-title">Isolation</h3>
+
+          <div class="chart">
+            <h4>CPU</h4>
+            <ul>
+              <li><span class="stat-label">Shares: </span> 1024 <span class="unit-label">shares</span>
+              </li>
+              <li><span class="stat-label">Allowed Cores: </span> <span class="active-cpu">0</span></li>
+            </ul>
+            <h4>Memory</h4>
+            <ul>
+              <li><span class="stat-label">Limit: </span> unlimited <span class="unit-label"></span>
+              </li>
+              <li><span class="stat-label">Swap Limit: </span> unlimited <span
+                class="unit-label"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="monitor-group">
+      <div class="card">
+        <div class="content clearfix">
+          <h3 class="card-title">Memory</h3>
+
+          <div class="chart clearfix">
+            <h4>Total Usage (Megabytes)</h4>
+
+            <chartist class="ct-chart ct-major-tenth" chartist-data="monitoring.memoryUsage" chartist-chart-type="Line" chartist-chart-options="monitoring.chartOptions"></chartist>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="content clearfix">
+          <h3 class="card-title">Network</h3>
+
+          <div class="chart">
+            <h4>Throughput (Bytes/sec)</h4>
+            <chartist class="ct-chart ct-major-tenth" chartist-data="monitoring.networkUsage" chartist-chart-type="Line"></chartist>
+
+            <h4>Errors (Errors/sec)</h4>
+
+            <chartist class="ct-chart ct-major-tenth" chartist-data="monitoring.networkErrors" chartist-chart-type="Line"></chartist>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
-</div>
-</div>
+
 
 
 

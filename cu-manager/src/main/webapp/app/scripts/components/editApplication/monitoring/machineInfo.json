@@ -1,0 +1,106 @@
+{
+  "num_cores": 2,
+  "cpu_frequency_khz": 2593842,
+  "memory_capacity": 4156125184,
+  "machine_id": "",
+  "system_uuid": "3D136A22-D821-4ED1-8773-50857ABD3CF9",
+  "boot_id": "2d1ee53d-4602-41ac-bfe0-f6bfaf65164b",
+  "filesystems": [
+    {
+      "device": "/dev/disk/by-uuid/f3e3afbc-1515-4bed-a72c-27ef9fbcd3d4",
+      "capacity": 15232581632
+    },
+    {
+      "device": "/dev/sda5",
+      "capacity": 26771480576
+    }
+  ],
+  "disk_map": {
+    "8:0": {
+      "name": "sda",
+      "major": 8,
+      "minor": 0,
+      "size": 42949672960,
+      "scheduler": "cfq"
+    }
+  },
+  "network_devices": [
+    {
+      "name": "eth0",
+      "mac_address": "08:00:27:55:f6:fd",
+      "speed": 1000,
+      "mtu": 1500
+    },
+    {
+      "name": "eth1",
+      "mac_address": "08:00:27:26:84:dd",
+      "speed": 1000,
+      "mtu": 1500
+    }
+  ],
+  "topology": [
+    {
+      "node_id": 0,
+      "memory": 4156125184,
+      "cores": [
+        {
+          "core_id": 0,
+          "thread_ids": [
+            0
+          ],
+          "caches": [
+            {
+              "size": 32768,
+              "type": "Data",
+              "level": 1
+            },
+            {
+              "size": 32768,
+              "type": "Instruction",
+              "level": 1
+            },
+            {
+              "size": 262144,
+              "type": "Unified",
+              "level": 2
+            },
+            {
+              "size": 3145728,
+              "type": "Unified",
+              "level": 3
+            }
+          ]
+        },
+        {
+          "core_id": 1,
+          "thread_ids": [
+            1
+          ],
+          "caches": [
+            {
+              "size": 32768,
+              "type": "Data",
+              "level": 1
+            },
+            {
+              "size": 32768,
+              "type": "Instruction",
+              "level": 1
+            },
+            {
+              "size": 262144,
+              "type": "Unified",
+              "level": 2
+            },
+            {
+              "size": 3145728,
+              "type": "Unified",
+              "level": 3
+            }
+          ]
+        }
+      ],
+      "caches": null
+    }
+  ]
+}
