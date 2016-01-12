@@ -92,6 +92,7 @@
 
       function error(response) {
         vm.message = response.data.message;
+        $rootScope.$broadcast('app:create:fail', applicationName);
       }
     }
 
@@ -108,6 +109,7 @@
       function error(response) {
         vm.message = response.data.message;
         vm.notValidated = true;
+        vm.isPending = false;
       }
     }
   }

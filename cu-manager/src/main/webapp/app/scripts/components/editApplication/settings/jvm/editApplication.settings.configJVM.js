@@ -38,6 +38,7 @@
     // Config JVM
 
     $scope.$on ( 'application:ready', function ( e, app ) {
+      vm.application = app;
       vm.jvmOptions = app.servers[0].jvmOptions;
       vm.jvmMemory = app.servers[0].jvmMemory;
       vm.jvmRelease = app.servers[0].jvmRelease;

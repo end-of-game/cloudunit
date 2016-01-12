@@ -52,12 +52,16 @@
       vm.application = app;
     });
 
+    $scope.$on ( 'application:refreshed', function ( e, app ) {
+      vm.application = app;
+    });
+
     function createPort(number, nature) {
       ApplicationService.createPort(vm.application.name, number, nature)
         .then(success)
         .catch(error);
 
-      function success() {
+      function success(response) {
         vm.errorMsg = '';
         vm.number = '';
         vm.nature = '';

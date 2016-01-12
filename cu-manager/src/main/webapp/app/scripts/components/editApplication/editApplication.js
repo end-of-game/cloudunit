@@ -31,7 +31,9 @@
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/editApplication/editApplication.html',
-      scope: {},
+      scope: {
+        application: '=app'
+      },
       controller: [
         '$rootScope',
         '$scope',
@@ -56,7 +58,6 @@
 
     init ($stateParams.name);
 
-    vm.application = {};
     vm.currentTab = $stateParams.tab;
 
     // We must destroy the polling when the scope is destroyed
@@ -83,7 +84,7 @@
 
         function success ( application ) {
           vm.application = application;
-          $rootScope.$broadcast('application:ready', application);
+          $rootScope.$broadcast('application:refreshed', application);
         }
 
         function error ( response ) {

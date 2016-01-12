@@ -23,9 +23,18 @@ angular.module('webuiApp.editApplication', [])
         .state('editApplication',
           {
             url: '/editApplication/:name/:tab',
-            template: '<edit-application></edit-application>',
+            template: '<edit-application app="App"></edit-application>',
             data: {
               isFree: false
+            },
+            controller: ['$scope', 'App', function($scope, App){
+              console.log(App);
+              $scope.app = App;
+            }],
+            resolve: {
+              App: ['ApplicationService', '$stateParams', function(ApplicationService, $stateParams){
+                return ApplicationService.findByName($stateParams.name);
+              }]
             }
           })
     }]);

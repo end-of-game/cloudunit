@@ -40,7 +40,6 @@
     var vm = this;
     vm.moduleImages = [];
     vm.addModule = addModule;
-    vm.removeModule = removeModule;
 
     getModulesImages ();
 
@@ -64,11 +63,6 @@
     // Ajout d'un module
     function addModule ( applicationName, imageName ) {
       return ModuleService.addModule ( applicationName, imageName );
-    }
-
-    // Suppression d'un module
-    function removeModule ( applicationName, moduleName ) {
-      return ModuleService.removeModule ( applicationName, moduleName );
     }
   }
 }) ();

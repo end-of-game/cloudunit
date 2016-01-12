@@ -28,6 +28,7 @@
       controller: [
         '$scope',
         'ApplicationService',
+        'ModuleService',
         '$filter',
         OverviewCtrl
       ],
@@ -36,12 +37,18 @@
     };
   }
 
-  function OverviewCtrl($scope, ApplicationService, $filter){
+  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter){
 
     var vm = this;
 
+
     vm.toggleServer = toggleServer;
     vm.getTplUrl = getTplUrl;
+    vm.removeModule = removeModule;
+
+    $scope.$on ( 'application:ready', function ( e, app ) {
+      vm.app = app;
+    });
 
     ///////////////////////////////////////////
 
@@ -67,7 +74,12 @@
 
     function getTplUrl(tpl){
       var moduleName = $filter('truncatestringfilter')(tpl);
-      return 'scripts/components/editApplication/images/templates/_' + moduleName + '-module.html';
+      return 'scripts/components/editApplication/overview/templates/_' + moduleName + '-module.html';
+    }
+
+    // Suppression d'un module
+    function removeModule ( applicationName, moduleName ) {
+      return ModuleService.removeModule ( applicationName, moduleName );
     }
   }
 })();
