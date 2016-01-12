@@ -22,8 +22,9 @@ angular.module('webuiApp.editApplication', [])
       $stateProvider
         .state('editApplication',
           {
-            url: '/editApplication/:name/:tab',
+            url: '/editApplication/:name',
             template: '<edit-application app="App"></edit-application>',
+            abstract: true,
             data: {
               isFree: false
             },
@@ -36,4 +37,45 @@ angular.module('webuiApp.editApplication', [])
               }]
             }
           })
+        .state('editApplication.overview',
+        {
+          url: '/overview',
+          template: '<edit-app-overview app="editApp.application"></edit-app-overview>'
+        })
+        .state('editApplication.addModule',
+          {
+            url: '/addModule',
+            template: '<edit-app-modules app="editApp.application"></edit-app-modules>'
+          })
+        .state('editApplication.deploy',
+          {
+            url: '/deploy',
+            template: '<edit-app-deploy app="editApp.application"></edit-app-deploy>'
+          })
+        .state('editApplication.explorer',
+          {
+            url: '/explorer',
+            template: '<edit-app-explorer app="editApp.application"></edit-app-explorer>'
+          })
+        .state('editApplication.logs',
+          {
+            url: '/logs',
+            template: '<edit-app-logs app="editApp.application"></edit-app-logs>'
+          })
+        .state('editApplication.monitoring',
+          {
+            url: '/monitoring',
+            template: '<edit-app-monitoring app="editApp.application"></edit-app-monitoring>'
+          })
+        .state('editApplication.snapshot',
+          {
+            url: '/snapshot',
+            template: '<edit-app-snapshot app="editApp.application"></edit-app-snapshot>'
+          })
+        .state('editApplication.settings',
+          {
+            url: '/settings',
+            template: '<edit-app-settings app="editApp.application"></edit-app-settings>'
+          })
+
     }]);

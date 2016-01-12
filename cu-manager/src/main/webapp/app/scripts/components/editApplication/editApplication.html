@@ -1,18 +1,3 @@
-<!--
-  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
-  ~     but CloudUnit is licensed too under a standard commercial license.
-  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
-  ~     If you are not sure whether the GPL is right for you,
-  ~     you can always test our software under the GPL and inspect the source code before you contact us
-  ~     about purchasing a commercial license.
-  ~
-  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
-  ~     or promote products derived from this project without prior written permission from Treeptik.
-  ~     Products or services derived from this software may not be called "CloudUnit"
-  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
-  ~     For any questions, contact us : contact@treeptik.fr
-  -->
-
 <section data-ng-cloak="" id="configure-{{editApp.application.name}}" freeze="">
   <header>
     <div class="page-header">
@@ -43,50 +28,51 @@
       </div>
       <div class="page-menu">
         <ul class="tabs">
-          <li data-ng-class="{'active': editApp.currentTab === 'overview'}">
-            <a id="overview-tab" data-ng-href="#editApplication/{{editApp.application.name}}/overview" ripple="">
+          <li ui-sref-active="active">
+            <a id="overview-tab" ui-sref="editApplication.overview"
+               ripple="">
               <span>Overview</span>
             </a>
           </li>
-          <li
-            data-ng-class="{'active': editApp.currentTab === 'addModule', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="add-service-tab" data-ng-href="#editApplication/{{editApp.application.name}}/addModule" ripple="">
+          <li ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="add-service-tab" ui-sref="editApplication.addModule" ripple="">
               <span>Add module</span>
             </a>
           </li>
-          <li
-            data-ng-class="{'active': editApp.currentTab === 'deploy', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="deploy-tab" data-ng-href="#editApplication/{{editApp.application.name}}/deploy" ripple="">
+          <li ui-sref-active="active"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="deploy-tab" ui-sref="editApplication.deploy" ripple="">
               <span>Deploy</span>
             </a>
           </li>
-          <li
-            data-ng-class="{'active': editApp.currentTab === 'explorer', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="explorer-tab" data-ng-href="#editApplication/{{editApp.application.name}}/explorer" ripple="">
+          <li ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="explorer-tab" ui-sref="editApplication.explorer" ripple="">
               <span>Explorer</span>
             </a>
           </li>
-          <li data-ng-class="{'active': editApp.currentTab === 'logs'}">
-            <a id="logs-tab" data-ng-href="#editApplication/{{editApp.application.name}}/logs" ripple="">
+          <li ui-sref-active="active">
+            <a id="logs-tab" ui-sref="editApplication.logs" ripple="">
               <span>Logs</span>
             </a>
           </li>
 
-          <li
-            data-ng-class="{'active': editApp.currentTab === 'monitoring', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="monitoring-tab" data-ng-href="#editApplication/{{editApp.application.name}}/monitoring" ripple="">
+          <li ui-sref-active="active"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="monitoring-tab" ui-sref="editApplication.monitoring" ripple="">
               <span>Monitoring</span>
             </a>
           </li>
 
-          <li
-            data-ng-class="{'active': editApp.currentTab === 'snapshot', 'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="snapshot-tab" data-ng-href="#editApplication/{{editApp.application.name}}/snapshot" ripple="">
+          <li ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.disableLinks}">
+            <a id="snapshot-tab" ui-sref="editApplication.snapshot" ripple="">
               <span>Create template</span>
             </a>
           </li>
-          <li data-ng-class="{'active': editApp.currentTab === 'settings'}">
-            <a id="settings-tab" data-ng-href="#editApplication/{{editApp.application.name}}/settings" ripple="">
+          <li ui-sref-active="active">
+            <a id="settings-tab" ui-sref="editApplication.settings" ripple="">
               <span>Settings</span>
             </a>
           </li>
@@ -100,42 +86,11 @@
        id="application-{{ editApp.application.name }}">
 
     <div class="tab-content" ng-switch on="editApp.currentTab">
-
-      <div id="overview" ng-switch-default>
-        <edit-app-overview app="editApp.application"></edit-app-overview>
-      </div>
-
-      <div id="settings" ng-switch-when="settings">
-        <edit-app-settings app="editApp.application"></edit-app-settings>
-      </div>
-
-      <div id="add-service" ng-switch-when="addModule">
-        <edit-app-modules app="editApp.application"></edit-app-modules>
-      </div>
-
-      <div id="explorer" ng-switch-when="explorer">
-        <edit-app-explorer app="editApp.application"></edit-app-explorer>
-      </div>
-
-      <div id="logs" ng-switch-when="logs">
-        <edit-app-logs app="editApp.application" current-tab="editApp.currentTab"></edit-app-logs>
-      </div>
-
-      <div id="monitoring" ng-switch-when="monitoring">
-        <edit-app-monitoring app="editApp.application"></edit-app-monitoring>
-      </div>
-
-      <div id="snapshot" ng-switch-when="snapshot">
-        <edit-app-snapshot app="editApp.application"></edit-app-snapshot>
-      </div>
-
-      <div id="deploy" ng-switch-when="deploy">
-        <edit-app-deploy app="editApp.application"></edit-app-deploy>
-      </div>
+      <div ui-view=""></div>
     </div>
   </div>
 
-  <div data-ng-hide="editApp.currentTab === 'logs' || editApp.currentTab === 'monitoring'">
+  <div data-ng-hide="editApp.hideFeed">
     <feed context="'editApp'"></feed>
   </div>
 </section>

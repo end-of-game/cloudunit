@@ -23,7 +23,7 @@
   function Settings($compile, $timeout){
     return {
       restrict: 'E',
-      templateUrl: 'scripts/components/editApplication/settings/editApplication.settings.html',
+      template: '<div class="tab-pane vertical-spacing"></div>',
       scope: {
         application: '=app'
       },

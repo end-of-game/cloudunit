@@ -56,9 +56,8 @@
 
     var timer, vm = this;
 
-    init ($stateParams.name);
 
-    vm.currentTab = $stateParams.tab;
+    init ($stateParams.name);
 
     // We must destroy the polling when the scope is destroyed
     $scope.$on ( '$destroy', function () {
