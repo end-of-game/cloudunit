@@ -63,14 +63,12 @@ public class TestUtils {
     public static MockMultipartFile downloadAndPrepareFileToDeploy(String remoteFile, String path)
         throws IOException {
         URL url;
-        OutputStream outputStream = null;
         File file = new File(remoteFile);
-        try {
+        try (OutputStream outputStream = new FileOutputStream(file)) {
             url = new URL(path);
             InputStream input = url.openStream();
 
-            outputStream = new FileOutputStream(file);
-            int read = 0;
+            int read;
             byte[] bytes = new byte[1024];
 
             while ((read = input.read(bytes)) != -1) {
@@ -82,8 +80,6 @@ public class TestUtils {
             msgError.append(",");
             msgError.append(path);
             logger.debug(msgError.toString(), e);
-        } finally {
-            outputStream.close();
         }
         return new MockMultipartFile("file", file.getName(), "multipart/form-data", new FileInputStream(file));
 

@@ -195,7 +195,6 @@ public class JsonInput
     // VALIDATIONS
 
     public void validateCreateApp() throws CheckException {
-
         CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
         CheckUtils.validateInput(serverName, "check.server.name");
     }
@@ -224,5 +223,9 @@ public class JsonInput
 
     public void validateDetail() throws CheckException {
         CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
+    }
+
+    public void validateCreateSnapshot() throws CheckException {
+        CheckUtils.validateSyntaxInput(tag, "check.snapshot.name");
     }
 }

@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -41,6 +42,7 @@ import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +76,14 @@ public class CloudUnitApplicationContext
         formatterRegistry.addConverter(new StringToJsonInputConverter());
     }
     */
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
+
+    @PostConstruct
+    public void getCuINstanceName() {
+        logger.info("CloudUnit instance name: {}", cuInstanceName);
+    }
 
     @Bean
     @Profile("vagrant")
@@ -86,9 +96,7 @@ public class CloudUnitApplicationContext
         }
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new Resource[]
-            {new ClassPathResource(file)};
-        pspc.setLocations(resources);
+        pspc.setLocations(getResources(file));
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
         return pspc;
@@ -98,26 +106,10 @@ public class CloudUnitApplicationContext
     @Profile("production")
     public static PropertySourcesPlaceholderConfigurer propertiesForProduction()
         throws Exception {
+        String file = "application-production.properties";
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
-        File customFile = new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties");
-        Resource[] resources = null;
-        if (customFile.exists()) {
-            resources =
-                new Resource[]
-                    {
-                        new ClassPathResource("application-production.properties"),
-                        new FileSystemResource(new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties"))
-                    };
-        } else {
-            logger.error(customFile.getAbsolutePath() + " is missing. It could generate configuration error");
-            resources =
-                new Resource[]
-                    {
-                        new ClassPathResource("application-production.properties"),
-                    };
-        }
-        pspc.setLocations(resources);
+        pspc.setLocations(getResources(file));
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
         return pspc;
@@ -134,9 +126,7 @@ public class CloudUnitApplicationContext
         }
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new Resource[]
-            {new ClassPathResource(file)};
-        pspc.setLocations(resources);
+        pspc.setLocations(getResources(file));
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
         return pspc;
@@ -216,6 +206,38 @@ public class CloudUnitApplicationContext
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
         multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
         return multipartResolver;
+    }
+
+    /**
+     * Get Resources to load for CloudUnit Context.
+     * @param profileProperties The filename of the profile properties.
+     * @return An array of Resource.
+     *         The array will have at least the profileProperties given by parameter, and eventually a custom
+     *         configuration file if found in the {@code $HOME/.cloudunit/} repertory.
+     */
+    private static Resource[] getResources(String profileProperties) {
+        final File customFile = new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties");
+        Resource[] resources = null;
+
+        if (customFile.exists()) {
+            logger.info("Custom file configuration found ! : {}", customFile.getAbsolutePath());
+
+            resources =
+                    new Resource[]
+                            {
+                                    new ClassPathResource(profileProperties),
+                                    new FileSystemResource(customFile)
+                            };
+        } else {
+            logger.error(customFile.getAbsolutePath() + " is missing. It could generate configuration error");
+
+            resources =
+                    new Resource[]
+                            {
+                                    new ClassPathResource(profileProperties),
+                            };
+        }
+        return resources;
     }
 
 }

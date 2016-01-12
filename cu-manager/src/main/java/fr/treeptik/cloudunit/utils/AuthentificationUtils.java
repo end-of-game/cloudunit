@@ -45,9 +45,9 @@ public class AuthentificationUtils {
     private MessageSource messageSource;
 
     public User getAuthentificatedUser()
-        throws ServiceException {
+            throws ServiceException {
         Authentication auth = SecurityContextHolder.getContext()
-            .getAuthentication();
+                .getAuthentication();
         return userService.findByLogin(auth.getName());
     }
 

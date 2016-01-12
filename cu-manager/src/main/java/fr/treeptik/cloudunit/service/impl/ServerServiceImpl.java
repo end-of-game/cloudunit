@@ -88,6 +88,10 @@ public class ServerServiceImpl
     @Value("${env.exec}")
     private String envExec;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
+
 
     public ServerDAO getServerDAO() {
         return this.serverDAO;
@@ -150,13 +154,14 @@ public class ServerServiceImpl
         String containerName = "";
         try {
             containerName = AlphaNumericsCharactersCheckUtils
+                    .convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-" + AlphaNumericsCharactersCheckUtils
                     .convertToAlphaNumerics(user.getLogin())
                     + "-"
                     + AlphaNumericsCharactersCheckUtils
                     .convertToAlphaNumerics(server.getApplication()
                             .getName()) + "-" + server.getName();
         } catch (UnsupportedEncodingException e2) {
-            throw new ServiceException("Error rename Serveur", e2);
+            throw new ServiceException("Error rename Server", e2);
         }
 
         String imagePath = registryPrefix + server.getImage().getPath()

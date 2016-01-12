@@ -48,6 +48,8 @@ public class Message
 
     private String type;
 
+    private String cuInstanceName;
+
     private String applicationName;
 
     @Column(columnDefinition = "text")
@@ -116,6 +118,10 @@ public class Message
     public void setAuthor(User author) {
         this.author = author;
     }
+
+    public String getCuInstanceName() { return cuInstanceName; }
+
+    public void setCuInstanceName(String cuInstanceName) { this.cuInstanceName = cuInstanceName; }
 
     public String getApplicationName() {
         return applicationName;

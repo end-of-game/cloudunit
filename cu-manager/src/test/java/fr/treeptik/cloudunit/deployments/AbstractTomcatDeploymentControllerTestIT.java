@@ -94,7 +94,10 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
             logger.error( e.getLocalizedMessage() );
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken( user.getLogin(), user.getPassword() );
+        Authentication authentication = null;
+        if (user != null) {
+            authentication = new UsernamePasswordAuthenticationToken( user.getLogin(), user.getPassword() );
+        }
         Authentication result = authenticationManager.authenticate( authentication );
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication( result );

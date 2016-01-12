@@ -20,6 +20,7 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.MessageService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,11 +40,15 @@ public class MessageServiceImpl
     @Inject
     private MessageDAO messageDAO;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Message create(Message message)
         throws ServiceException {
         try {
+            message.setCuInstanceName(cuInstanceName);
             return messageDAO.save(message);
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -66,7 +71,7 @@ public class MessageServiceImpl
         throws ServiceException {
         try {
             Pageable pageable = new PageRequest(0, nbRows, sortByLastNameAsc());
-            Page<Message> requestedPage = messageDAO.listByUser(user, pageable);
+            Page<Message> requestedPage = messageDAO.listByUserAndCuInstance(user, cuInstanceName, pageable);
             return requestedPage.getContent();
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -81,7 +86,7 @@ public class MessageServiceImpl
             Pageable pageable = new PageRequest(0, nbMessages,
                 sortByLastNameAsc());
             Page<Message> requestedPage = messageDAO.listByApp(user,
-                applicationName, pageable);
+                applicationName, cuInstanceName, pageable);
             return requestedPage.getContent();
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);

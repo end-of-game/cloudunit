@@ -21,9 +21,29 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.*;
-import fr.treeptik.cloudunit.service.*;
-import fr.treeptik.cloudunit.utils.*;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.ModuleFactory;
+import fr.treeptik.cloudunit.model.PortToOpen;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.ServerFactory;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.Type;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.DeploymentService;
+import fr.treeptik.cloudunit.service.ImageService;
+import fr.treeptik.cloudunit.service.ModuleService;
+import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
+import fr.treeptik.cloudunit.utils.AuthentificationUtils;
+import fr.treeptik.cloudunit.utils.ContainerMapper;
+import fr.treeptik.cloudunit.utils.DomainUtils;
+import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
+import fr.treeptik.cloudunit.utils.PortUtils;
+import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,11 +52,16 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
-import javax.persistence.PersistenceException;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
 
 @Service
 public class ApplicationServiceImpl
@@ -101,6 +126,9 @@ public class ApplicationServiceImpl
     @Value("${cloudunit.manager.ip}")
     private String restHost;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
     public ApplicationDAO getApplicationDAO() {
         return this.applicationDAO;
     }
@@ -154,7 +182,7 @@ public class ApplicationServiceImpl
     public boolean checkAppExist(User user, String applicationName)
             throws ServiceException, CheckException {
         logger.info("--CHECK APP EXIST--");
-        if (applicationDAO.findByNameAndUser(user.getId(), applicationName) == null) {
+        if (applicationDAO.findByNameAndUser(user.getId(), applicationName, cuInstanceName) == null) {
             return false;
         } else {
             return true;
@@ -430,6 +458,7 @@ public class ApplicationServiceImpl
 
         application.setName(applicationName);
         application.setUser(user);
+        application.setCuInstanceName(cuInstanceName);
         application.setModules(new ArrayList<>());
 
         // verify if application exists already
@@ -697,7 +726,7 @@ public class ApplicationServiceImpl
     public List<Application> findAllByUser(User user)
             throws ServiceException {
         try {
-            List<Application> applications = applicationDAO.findAllByUser(user.getId());
+            List<Application> applications = applicationDAO.findAllByUser(user.getId(), cuInstanceName);
             logger.debug("ApplicationService : All Applications found ");
             return applications;
         } catch (PersistenceException e) {
@@ -712,7 +741,7 @@ public class ApplicationServiceImpl
             throws ServiceException {
         try {
             Application application = applicationDAO.findByNameAndUser(
-                    user.getId(), name);
+                    user.getId(), name, cuInstanceName);
 
             return application;
 
@@ -815,7 +844,7 @@ public class ApplicationServiceImpl
     public Long countApp(User user)
             throws ServiceException {
         try {
-            return applicationDAO.countApp(user.getId());
+            return applicationDAO.countApp(user.getId(), cuInstanceName);
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
@@ -960,7 +989,7 @@ public class ApplicationServiceImpl
     public List<String> getListAliases(Application application)
             throws ServiceException {
         try {
-            return applicationDAO.findAllAliases(application.getName());
+            return applicationDAO.findAllAliases(application.getName(), cuInstanceName);
         } catch (DataAccessException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
@@ -973,11 +1002,6 @@ public class ApplicationServiceImpl
 
         logger.info("ALIAS VALUE IN addNewAlias : " + alias);
 
-        if (checkAliasIfExists(alias)) {
-            throw new CheckException(
-                    "This alias is already used by another application on this CloudUnit instance");
-        }
-
         alias = alias.toLowerCase();
         if (alias.startsWith("https://") || alias.startsWith("http://")
                 || alias.startsWith("ftp://")) {
@@ -985,9 +1009,12 @@ public class ApplicationServiceImpl
                     .substring(alias.lastIndexOf("//") + 2, alias.length());
         }
 
-        if (!CheckUtils.isValidURL(alias)) {
-            throw new CheckException(
-                    "This alias must be a valid url. Please remove all other characters : " + alias);
+        if (!DomainUtils.isValidDomainName(alias)) {
+            throw new CheckException(messageSource.getMessage("alias.invalid", null, locale));
+        }
+
+        if (checkAliasIfExists(alias)) {
+            throw new CheckException(messageSource.getMessage("alias.exists", null, locale));
         }
 
         try {
@@ -1009,7 +1036,7 @@ public class ApplicationServiceImpl
         try {
             Server server = application.getServers().get(0);
             List<String> aliases = applicationDAO.findAllAliases(application
-                    .getName());
+                    .getName(), cuInstanceName);
             for (String alias : aliases) {
                 hipacheRedisUtils.updateAlias(alias, application,
                         server.getServerAction().getServerPort());

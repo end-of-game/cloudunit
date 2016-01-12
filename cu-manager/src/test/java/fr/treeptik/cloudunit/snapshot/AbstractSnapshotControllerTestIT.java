@@ -106,7 +106,10 @@ public abstract class AbstractSnapshotControllerTestIT {
             logger.error(e.getLocalizedMessage());
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        Authentication authentication = null;
+        if (user != null) {
+            authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+        }
         Authentication result = authenticationManager.authenticate(authentication);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         securityContext.setAuthentication(result);
@@ -193,7 +196,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -373,7 +376,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -422,7 +425,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -543,7 +546,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -605,7 +608,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -870,7 +873,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -932,7 +935,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         if (release.contains("jboss")) {
             int counter = 0;
             contentPage = getUrlContentPage(urlToCall);
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -992,7 +995,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 10) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }

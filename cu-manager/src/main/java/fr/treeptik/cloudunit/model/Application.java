@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name", "cuInstanceName"}))
 public class Application
         implements Serializable {
 
@@ -40,6 +40,8 @@ public class Application
     private Integer id;
 
     private String name;
+
+    private String cuInstanceName;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -109,10 +111,11 @@ public class Application
         deploymentStatus = Application.NONE;
     }
 
-    public Application(Integer id, String name, User user, List<Module> modules) {
+    public Application(Integer id, String name, String cuInstanceName, User user, List<Module> modules) {
         super();
         this.id = id;
         this.name = name;
+        this.cuInstanceName = cuInstanceName;
         this.user = user;
         this.modules = new HashSet<>(modules);
     }
@@ -132,6 +135,10 @@ public class Application
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getCuInstanceName() { return cuInstanceName; }
+
+    public void setCuInstanceName(String cuInstanceName) { this.cuInstanceName = cuInstanceName; }
 
     public Status getStatus() {
         return status;
@@ -289,6 +296,7 @@ public class Application
                 ", gitAddress='" + gitAddress + '\'' +
                 ", suffixCloudUnitIO='" + suffixCloudUnitIO + '\'' +
                 ", isAClone=" + isAClone +
+                ", cuInstanceName=" + cuInstanceName +
                 '}';
     }
 

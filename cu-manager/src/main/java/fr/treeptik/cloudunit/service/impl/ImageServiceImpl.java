@@ -214,11 +214,11 @@ public class ImageServiceImpl
 
     @Override
     public Long countNumberOfInstances(String moduleName,
-                                       String applicationName, String userLogin)
+                                       String applicationName, String userLogin, String cuInstanceName)
         throws ServiceException {
         try {
             return imageDAO.countNumberOfInstances(moduleName, applicationName,
-                userLogin);
+                userLogin, cuInstanceName);
         } catch (PersistenceException e) {
             logger.error("Error ImageService : error find number of images Method : "
                 + e);

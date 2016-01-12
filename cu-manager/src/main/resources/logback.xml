@@ -18,10 +18,10 @@
 <configuration>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
+        <encoder>
             <charset>UTF-8</charset>
-            <Pattern>%d{HH:mm:ss.SSS} [%thread] [%L] %-5level %logger{36} - %msg%n</Pattern>
-        </layout>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] [%L] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">

@@ -44,6 +44,7 @@ public class CustomHttpSessionListener
     private Logger logger = LoggerFactory
         .getLogger(CustomHttpSessionListener.class);
 
+
     public void sessionCreated(HttpSessionEvent sessionEvent) {
         logger.info("Session Created:: ID=" + sessionEvent.getSession().getId());
     }
