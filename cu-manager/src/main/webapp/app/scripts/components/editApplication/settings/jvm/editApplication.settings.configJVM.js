@@ -34,17 +34,14 @@
 
   function ConfigJVMCtrl ( $scope, JVMService) {
     var vm = this;
-
+    console.log(this.application);
     // Config JVM
 
-    $scope.$on ( 'application:ready', function ( e, app ) {
-      vm.application = app;
-      vm.jvmOptions = app.servers[0].jvmOptions;
-      vm.jvmMemory = app.servers[0].jvmMemory;
-      vm.jvmRelease = app.servers[0].jvmRelease;
-      vm.selectedJvmMemory = vm.jvmMemory;
-      vm.selectedJvmRelease = vm.jvmRelease;
-    });
+    vm.jvmOptions = vm.application.servers[0].jvmOptions;
+    vm.jvmMemory = vm.application.servers[0].jvmMemory;
+    vm.jvmRelease = vm.application.servers[0].jvmRelease;
+    vm.selectedJvmMemory = vm.jvmMemory;
+    vm.selectedJvmRelease = vm.jvmRelease;
 
 
     vm.jvmMemorySizes = [512, 1024, 2048, 3072];

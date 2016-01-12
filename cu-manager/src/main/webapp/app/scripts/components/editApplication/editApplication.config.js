@@ -28,7 +28,6 @@ angular.module('webuiApp.editApplication', [])
               isFree: false
             },
             controller: ['$scope', 'App', function($scope, App){
-              console.log(App);
               $scope.app = App;
             }],
             resolve: {

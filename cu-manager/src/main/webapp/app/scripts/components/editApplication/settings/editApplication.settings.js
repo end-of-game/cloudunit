@@ -18,20 +18,36 @@
   'use strict';
   angular
     .module('webuiApp.editApplication')
-    .directive('editAppSettings', Settings);
+    .directive('editAppSettings', ['$compile', '$timeout', Settings]);
 
-  function Settings(){
+  function Settings($compile, $timeout){
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/editApplication/settings/editApplication.settings.html',
       scope: {
         application: '=app'
       },
-      controller: [SettingsCtrl],
+      controller: ['$scope', SettingsCtrl],
       controllerAs: 'settings',
-      bindToController: true
+      bindToController: true,
+      replace: true,
+      link: function(scope, element, attrs, ctrl){
+        var tpl = [
+          '<jvm-component app="settings.application"></jvm-component>',
+          '<alias-component app="settings.application"></alias-component>',
+          '<ports-component app="settings.application"></ports-component>'
+        ].join('');
+
+        angular.element(element).append(tpl);
+
+        $timeout(function(){
+          $compile(element.contents())(scope);
+        }, 0);
+      }
     }
   }
 
-  function SettingsCtrl() {}
+  function SettingsCtrl($scope) {
+    console.log(this.application);
+  }
 })();

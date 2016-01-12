@@ -36,6 +36,9 @@
   function PortsCtrl($scope, ApplicationService) {
 
     var vm = this;
+
+    console.log(vm.application);
+
     vm.number = '';
     vm.errorMsg = '';
     vm.createPort = createPort;
@@ -46,18 +49,11 @@
       {value: 'web'},
       {value: 'other'}
     ];
+
     vm.myNature = vm.natures[0];
 
-    $scope.$on ( 'application:ready', function ( e, app ) {
-      vm.application = app;
-    });
-
-    $scope.$on ( 'application:refreshed', function ( e, app ) {
-      vm.application = app;
-    });
-
-    function createPort(number, nature) {
-      ApplicationService.createPort(vm.application.name, number, nature)
+    function createPort(applicationName, number, nature) {
+      ApplicationService.createPort(applicationName, number, nature)
         .then(success)
         .catch(error);
 
