@@ -20,9 +20,29 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import fr.treeptik.cloudunit.utils.JsonDateSerializer;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name", "cuInstanceName"}))
@@ -41,7 +61,15 @@ public class Application
 
     private String name;
 
+    /**
+     * CloudUnit instance name (e.g. DEV, QA, PROD).
+     */
     private String cuInstanceName;
+
+    /**
+     * Origin property issue from snapshot when created by clone process.
+     */
+    private String origin;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -139,6 +167,10 @@ public class Application
     public String getCuInstanceName() { return cuInstanceName; }
 
     public void setCuInstanceName(String cuInstanceName) { this.cuInstanceName = cuInstanceName; }
+
+    public String getOrigin() { return origin; }
+
+    public void setOrigin(String origin) { this.origin = origin; }
 
     public Status getStatus() {
         return status;
@@ -297,6 +329,7 @@ public class Application
                 ", suffixCloudUnitIO='" + suffixCloudUnitIO + '\'' +
                 ", isAClone=" + isAClone +
                 ", cuInstanceName=" + cuInstanceName +
+                ", origin=" + origin + '\'' +
                 '}';
     }
 

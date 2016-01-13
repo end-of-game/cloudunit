@@ -430,8 +430,7 @@ public class ApplicationServiceImpl
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public Application create(String applicationName, String login,
-                              String serverName, String tagName)
+    public Application create(String applicationName, String login, String serverName, String tagName, String origin)
             throws ServiceException,
             CheckException {
 
@@ -454,6 +453,7 @@ public class ApplicationServiceImpl
         // For cloning management
         if (tagName != null) {
             application.setAClone(true);
+            application.setOrigin(origin);
         }
 
         application.setName(applicationName);

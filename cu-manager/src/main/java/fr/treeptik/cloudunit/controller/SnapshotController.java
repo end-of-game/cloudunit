@@ -165,6 +165,9 @@ public class SnapshotController {
         authentificationUtils.forbidUser(user);
 
         try {
+            // Validate input information for clone
+            input.validateClone();
+
             snapshotService.cloneFromASnapshot(input.getApplicationName(), input.getTag());
 
             Application application = applicationService.findByNameAndUser(user, input.getApplicationName());

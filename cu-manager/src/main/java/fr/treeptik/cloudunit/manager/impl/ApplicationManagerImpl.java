@@ -18,7 +18,11 @@ package fr.treeptik.cloudunit.manager.impl;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.manager.ApplicationManager;
-import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.service.ServerService;
@@ -29,10 +33,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+
+import javax.inject.Inject;
 
 /**
  * LifeCycle for an application
@@ -69,7 +74,7 @@ public class ApplicationManagerImpl
             throws ServiceException, CheckException {
 
         Application application = applicationService.create(
-                applicationName, userLogin, serverName, null);
+                applicationName, userLogin, serverName, null, null);
 
         // Wait for the server has a status START (set by shell agent)
         for (Server server : application.getServers()) {

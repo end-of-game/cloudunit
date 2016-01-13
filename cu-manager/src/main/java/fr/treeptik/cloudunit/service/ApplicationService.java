@@ -96,7 +96,7 @@ public interface ApplicationService {
     Application sshCopyIDToServer(Application application, User user)
             throws ServiceException;
 
-    Application create(String applicationName, String login, String serverName, String tagName)
+    Application create(String applicationName, String login, String serverName, String tagName, String origin)
             throws ServiceException, CheckException;
 
     void addPort(Application application, String nature, Integer port) throws ServiceException;
