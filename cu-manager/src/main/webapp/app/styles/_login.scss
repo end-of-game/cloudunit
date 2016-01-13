@@ -38,11 +38,20 @@
         color: #e1eef3;
         font-weight: 600;
         font-size: 24px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
       }
       .logo {
         height: 36px;
-        margin-right: -8px;
-        margin-bottom: 7px;
+        margin-right: 0;
+        margin-bottom: 0;
+      }
+
+      .badge {
+        margin-left: 4px;
+        margin-bottom: 2px;
+        font-size: 2.5rem;
       }
     }
     .input-group {

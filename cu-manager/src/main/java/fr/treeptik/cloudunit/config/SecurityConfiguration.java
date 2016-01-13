@@ -136,13 +136,13 @@ public class SecurityConfiguration
             .antMatchers("/module/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/file/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/image/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/user/get-cloudunit-instance").permitAll()
             .antMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/logs/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/snapshot/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/monitoring/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/messages/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-            .antMatchers("/admin/**").hasAnyAuthority("ROLE_ADMIN")
-            .antMatchers("/user/check", "/nopublic/**").permitAll().and()
+            .antMatchers( "/nopublic/**").permitAll().and()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
 
         if ("true".equals(System.getProperty("httpsOnly"))) {

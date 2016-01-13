@@ -49,6 +49,7 @@
     user.isLogged = isLogged;
     user.getRole = getRole;
     user.checkUserStatus = checkUserStatus;
+    user.getCUEnv = getCUEnv;
 
     return user;
 
@@ -115,6 +116,12 @@
         .catch(function (error) {
           ErrorService.handle(error);
         });
+    }
+
+    function getCUEnv(){
+      return $http.get('/user/get-cloudunit-instance' ).then(function(response){
+        return response.data;
+      })
     }
   }
 })();

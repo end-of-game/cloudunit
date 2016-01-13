@@ -22,7 +22,7 @@ angular.module('webuiApp.login', [])
       $stateProvider
         .state('login', {
           url: '/login',
-          template: '<login></login>',
+          template: '<login cu-env="main.CUEnv"></login>',
           data: {
             isFree: true
           }

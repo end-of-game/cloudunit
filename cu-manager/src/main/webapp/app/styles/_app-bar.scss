@@ -37,15 +37,16 @@
   font-weight: bold;
   font-size: 24px;
   margin: 0;
-  height: $app-bar-height;
   padding: $navbar-padding-vertical $navbar-padding-horizontal;
+  display: flex;
+  align-items: flex-end;
 }
 
 .logo {
   height: 26px;
   width: auto;
   display: inline-block;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .brand {

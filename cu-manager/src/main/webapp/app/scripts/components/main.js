@@ -25,7 +25,7 @@
     '$rootScope',
     'UserService',
     '$interval',
-    '$stateParams'
+    '$state'
   ];
 
   function MainCtrl($rootScope, UserService, $interval, $state) {
@@ -37,9 +37,11 @@
     vm.isLogged = isLogged;
     vm.logout = logout;
     vm.browserOutdated = false;
+    vm.CUEnv = '';
 
 
     getUserRole();
+    getCUEnv();
 
     $rootScope.$on(':loginSuccess', function () {
       //reset error message
@@ -105,6 +107,14 @@
           vm.isAdmin = user.data.role.description === 'ROLE_ADMIN';
         });
       }
+    }
+
+    function getCUEnv(){
+      return UserService.getCUEnv().then(function success(response){
+        vm.CUEnv = response.cuInstanceName;
+      } ).catch(function error(error){
+        console.log(error);
+      })
     }
 
     function logout() {

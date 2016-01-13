@@ -29,7 +29,9 @@
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/login/login.html',
-      scope: {},
+      scope: {
+        cuEnv: '='
+      },
       controller: [
         '$scope',
         'UserService',
