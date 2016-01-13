@@ -57,7 +57,7 @@
 
     vm.chartOptions = {
       scaleMinSpace: 300
-    };
+    }
     vm.chartPieOptions = {
       donut: true,
       donutWidth: 20,
@@ -81,7 +81,7 @@
           MonitoringService.getMachineInfo ().then ( function (machineInfo) {
             updateStats ( vm.myContainer.name, machineInfo );
             if ( !timer ) {
-              timer = pollStats ( vm.myContainer.name, machineInfo );
+              //timer = pollStats ( vm.myContainer.name, machineInfo );
             }
           } ).catch ( function () {
             if ( timer ) {
@@ -98,6 +98,7 @@
       MonitoringService.getStats ( containerName ).then ( function ( stats ) {
         vm.cpuTotalUsage = cpuTotalUsage ( stats );
         vm.cpuUsageBreakdown = cpuUsageBreakdown(stats);
+        vm.cpuPerCoreUsage = cpuPerCoreUsage(machineInfo, stats);
         vm.memoryUsage = memoryUsage(stats);
         vm.networkUsage = networkUsage(stats);
         vm.networkErrors = networkErrors(stats);
@@ -126,6 +127,7 @@
         return;
       }
       var data = {
+        legends: ['Total'],
         labels: [],
         series: [[]]
       };
@@ -141,12 +143,40 @@
       return data;
     }
 
+    function cpuPerCoreUsage ( machineInfo, stats ) {
+      if ( stats.spec.has_cpu && !hasResource ( stats, "cpu" ) ) {
+        return;
+      }
+
+      var data = {
+        legends: [],
+        labels: [],
+        series: []
+      };
+
+      for ( var i = 0; i < machineInfo.num_cores; i++ ) {
+        data.legends.push ( "Core " + i );
+        data.series[i] = [];
+      }
+      for ( var i = 1; i < stats.stats.length; i++ ) {
+        var cur = stats.stats[i];
+        var prev = stats.stats[i - 1];
+        var intervalInNs = getInterval ( cur.timestamp, prev.timestamp );
+        data.labels.push ( moment ( cur.timestamp ).format ( 'HH:MM:ss' ) );
+        for ( var j = 0; j < machineInfo.num_cores; j++ ) {
+          data.series[j].push ( (cur.cpu.usage.per_cpu_usage[j] - prev.cpu.usage.per_cpu_usage[j]) / intervalInNs );
+        }
+      }
+      return data;
+    }
+
     function cpuUsageBreakdown ( stats ) {
       if ( stats.spec.has_cpu && !hasResource ( stats, "cpu" ) ) {
         return;
       }
 
       var data = {
+        legends: ['User', 'Kernel'],
         labels: [],
         series: [[], []]
       };
@@ -166,6 +196,7 @@
 
     function cpuLoad ( stats, machineInfo ) {
       var data = {
+        legends: ['Memory'],
         labels: [],
         series: [[]]
       };
@@ -194,6 +225,7 @@
       }
 
       var data = {
+        legends: ['Total', 'Hot'],
         labels: [],
         series: [[], []]
       };
@@ -213,6 +245,7 @@
       }
 
       var data = {
+        legends: ['Tx', 'Rx'],
         labels: [],
         series: [[], []]
       };
@@ -234,6 +267,7 @@
       }
 
       var data = {
+        legends: ['Tx', 'Rx'],
         labels: [],
         series: [[], []]
       };
