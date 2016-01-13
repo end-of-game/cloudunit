@@ -24,7 +24,7 @@
    * Controller of the webuiApp
    */
   angular
-    .module ( 'webuiApp.editApplication')
+    .module ( 'webuiApp.editApplication' )
     .directive ( 'editApplication', EditApplication );
 
   function EditApplication () {
@@ -32,7 +32,8 @@
       restrict: 'E',
       templateUrl: 'scripts/components/editApplication/editApplication.html',
       scope: {
-        application: '=app'
+        application: '=app',
+        state: '='
       },
       controller: [
         '$rootScope',
@@ -56,25 +57,37 @@
 
     var timer, vm = this;
 
+    vm.hideFeed = false;
 
-    init ($stateParams.name);
+    init ( $stateParams.name );
+
 
     // We must destroy the polling when the scope is destroyed
     $scope.$on ( '$destroy', function () {
       $interval.cancel ( timer );
     } );
 
+    $scope.$watch ( function () {
+      return vm.state;
+    }, function ( oldVal, newVal ) {
+      if(oldVal){
+        console.log(oldVal.name);
+        vm.hideFeed = oldVal.name === 'editApplication.logs' || oldVal.name === 'editApplication.monitoring';
+        console.log(vm.hideFeed);
+      }
+    } );
+
     /////////////////////////////////////////////////////
 
-    function init (applicationName) {
+    function init ( applicationName ) {
       ApplicationService.findByName ( applicationName ).then ( function success ( application ) {
         vm.application = application;
-        timer = update(application.name);
-        $rootScope.$broadcast('application:ready', application);
+        timer = update ( application.name );
+        $rootScope.$broadcast ( 'application:ready', application );
       } );
     }
 
-    function update (applicationName) {
+    function update ( applicationName ) {
 
       return $interval ( function () {
         ApplicationService.findByName ( applicationName )
@@ -83,7 +96,7 @@
 
         function success ( application ) {
           vm.application = application;
-          $rootScope.$broadcast('application:refreshed', application);
+          $rootScope.$broadcast ( 'application:refreshed', application );
         }
 
         function error ( response ) {

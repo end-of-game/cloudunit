@@ -23,7 +23,7 @@ angular.module('webuiApp.editApplication', [])
         .state('editApplication',
           {
             url: '/editApplication/:name',
-            template: '<edit-application app="App"></edit-application>',
+            template: '<edit-application app="App" state="main.$state"></edit-application>',
             abstract: true,
             data: {
               isFree: false

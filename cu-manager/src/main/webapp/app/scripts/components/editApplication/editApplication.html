@@ -82,10 +82,10 @@
   </header>
 
   <div class="page {{ editApp.application.status | lowercase }}"
-       data-ng-class="{full: editApp.currentTab === 'logs' || editApp.currentTab === 'monitoring'  }"
+       data-ng-class="{full: editApp.hideFeed}"
        id="application-{{ editApp.application.name }}">
 
-    <div class="tab-content" ng-switch on="editApp.currentTab">
+    <div class="tab-content">
       <div ui-view=""></div>
     </div>
   </div>

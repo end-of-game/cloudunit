@@ -25,7 +25,7 @@
     '$rootScope',
     'UserService',
     '$interval',
-    '$state'
+    '$stateParams'
   ];
 
   function MainCtrl($rootScope, UserService, $interval, $state) {
@@ -37,6 +37,7 @@
     vm.isLogged = isLogged;
     vm.logout = logout;
     vm.browserOutdated = false;
+
 
     getUserRole();
 
@@ -70,6 +71,9 @@
     });
 
     $rootScope.$on('$stateChangeStart', function (event, toState) {
+
+      vm.$state = toState;
+
       var restrictedArea = !toState.data.isFree;
 
       if (restrictedArea && !isLogged()) {
