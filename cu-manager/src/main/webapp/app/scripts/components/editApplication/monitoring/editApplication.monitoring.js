@@ -81,7 +81,7 @@
           MonitoringService.getMachineInfo ().then ( function (machineInfo) {
             updateStats ( vm.myContainer.name, machineInfo );
             if ( !timer ) {
-              //timer = pollStats ( vm.myContainer.name, machineInfo );
+              timer = pollStats ( vm.myContainer.name, machineInfo );
             }
           } ).catch ( function () {
             if ( timer ) {
