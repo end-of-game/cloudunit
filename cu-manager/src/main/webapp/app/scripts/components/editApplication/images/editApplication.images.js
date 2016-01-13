@@ -44,13 +44,11 @@
     getModulesImages ();
 
     function getModulesImages () {
-      console.log ( 'get images' );
       return ImageService.findEnabledModule ()
         .then ( success )
         .catch ( error );
 
       function success ( images ) {
-        console.log ( images );
         vm.moduleImages = images;
         return vm.moduleImages;
       }
