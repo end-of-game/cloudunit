@@ -72,7 +72,6 @@ public class ElasticsearchTask implements Task {
             msgError.append("\n**                                                            **");
             msgError.append("\n   ELASTICSEARCH NOT RUNNING : " + ipES + ":" + DEFAULT_ES_PORT);
             if (exit) {
-                System.exit(-1);
                 msgError.append("\n**   FATAL ERROR : JVM IS KILLED                          **");
             } else {
                 msgError.append("\n**   WARNING ERROR : MANUAL ACTION REQUIRED               **");
@@ -80,6 +79,7 @@ public class ElasticsearchTask implements Task {
             msgError.append("\n**                                                            **");
             msgError.append("\n****************************************************************");
             msgError.append("\n****************************************************************");
+            if (exit) { System.exit(-1); }
             logger.error(msgError.toString());
         } finally {
             if (client != null) {
