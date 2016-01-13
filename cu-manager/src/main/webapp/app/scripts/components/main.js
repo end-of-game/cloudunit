@@ -112,9 +112,7 @@
     function getCUEnv(){
       return UserService.getCUEnv().then(function success(response){
         vm.CUEnv = response.cuInstanceName;
-      } ).catch(function error(error){
-        console.log(error);
-      })
+      } )
     }
 
     function logout() {

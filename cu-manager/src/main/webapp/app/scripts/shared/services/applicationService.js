@@ -86,7 +86,6 @@
     // Démarrer une application
     function restart(applicationName) {
       var output = {};
-      console.log(applicationName);
       output.applicationName = applicationName;
       var Application = $resource('application/restart');
       return Application.save(JSON.stringify(output));

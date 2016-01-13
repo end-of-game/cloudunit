@@ -47,7 +47,5 @@
     }
   }
 
-  function SettingsCtrl($scope) {
-    console.log(this.application);
-  }
+  function SettingsCtrl($scope) {}
 })();

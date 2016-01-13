@@ -35,7 +35,6 @@
   function AliasCtrl($scope, ApplicationService) {
 
     var vm = this;
-    console.log(this.application);
 
     vm.domain = '';
     vm.errorMsg = '';

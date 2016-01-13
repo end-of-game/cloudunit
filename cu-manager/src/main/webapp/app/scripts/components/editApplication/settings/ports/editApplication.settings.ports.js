@@ -37,8 +37,6 @@
 
     var vm = this;
 
-    console.log(vm.application);
-
     vm.number = '';
     vm.errorMsg = '';
     vm.createPort = createPort;

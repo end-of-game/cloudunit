@@ -17180,14 +17180,12 @@
       // Get machine info, then get the stats every 1s.
       getMachineInfo()
         .done(function onGetMachineInfoComplete(machineInfo) {
-          console.log(machineInfo)
           setInterval(function () {
             // prevent duplicate xhr calls
             var count = 0;
             if (!count) {
               getStats(containerName)
                 .done(function (stats) {
-                  console.log(stats)
                   count++;
                   drawCharts(machineInfo, stats);
                 })

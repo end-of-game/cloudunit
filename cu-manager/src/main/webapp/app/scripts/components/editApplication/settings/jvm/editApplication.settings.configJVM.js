@@ -34,7 +34,6 @@
 
   function ConfigJVMCtrl ( $scope, JVMService) {
     var vm = this;
-    console.log(this.application);
     // Config JVM
 
     vm.jvmOptions = vm.application.servers[0].jvmOptions;

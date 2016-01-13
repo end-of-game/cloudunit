@@ -71,9 +71,7 @@
       return vm.state;
     }, function ( oldVal, newVal ) {
       if(oldVal){
-        console.log(oldVal.name);
         vm.hideFeed = oldVal.name === 'editApplication.logs' || oldVal.name === 'editApplication.monitoring';
-        console.log(vm.hideFeed);
       }
     } );
 
