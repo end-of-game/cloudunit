@@ -87,7 +87,7 @@
       function success(applications) {
 
         var newApp = _.find(applications, function(app){
-          return app.name === vm.buffer;
+          return app.name === vm.buffer.toLowerCase();
         });
 
         // display shadow app while new app is being created
