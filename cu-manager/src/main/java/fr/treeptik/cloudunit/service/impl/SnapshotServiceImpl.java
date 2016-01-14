@@ -170,7 +170,7 @@ public class SnapshotServiceImpl
                                         server.getImage().getPath()),
                                 HashMap.class)).get("Id");
                 DockerContainer.push(server.getImage().getPath(), snapshot.getUniqueTagName(),
-                        application.getManagerIp());
+                        application.getManagerIp(), ipForRegistry);
                 DockerContainer.deleteImage(id, application.getManagerIp());
             }
 
@@ -201,7 +201,7 @@ public class SnapshotServiceImpl
                                         snapshot.getUniqueTagName(),
                                         application.getManagerIp(), imageName),
                                 HashMap.class)).get("Id");
-                DockerContainer.push(imageName, snapshot.getUniqueTagName(), application.getManagerIp());
+                DockerContainer.push(imageName, snapshot.getUniqueTagName(), application.getManagerIp(), ipForRegistry);
                 DockerContainer.deleteImage(id, application.getManagerIp());
             }
             snapshot.setImages(images);
@@ -286,8 +286,8 @@ public class SnapshotServiceImpl
 
             // récupération des images associées
             DockerContainer.pull(imageService.findByName(snapshot.getType()).getPath(), snapshot.getUniqueTagName(),
-                    dockerManagerIp);
-            DockerContainer.pull("cloudunit/git", snapshot.getUniqueTagName(), dockerManagerIp);
+                    dockerManagerIp, ipForRegistry);
+            DockerContainer.pull("cloudunit/git", snapshot.getUniqueTagName(), dockerManagerIp, ipForRegistry);
 
             // creation de la nouvelle app à partir de l'image tagée
             Application application =
@@ -354,7 +354,6 @@ public class SnapshotServiceImpl
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void restoreModule(Snapshot snapshot, Application application, String tag)
@@ -362,7 +361,7 @@ public class SnapshotServiceImpl
 
         for (String key : snapshot.getAppConfig().keySet()) {
             try {
-                DockerContainer.pull(key, snapshot.getUniqueTagName(), dockerManagerIp);
+                DockerContainer.pull(key, snapshot.getUniqueTagName(), dockerManagerIp, ipForRegistry);
                 Module module = ModuleFactory.getModule(snapshot.getAppConfig().get(key).getName());
                 module.setApplication(application);
                 moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());

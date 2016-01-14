@@ -61,6 +61,9 @@ public class DockerContainerJSON {
     @Value("${docker.endpoint.mode}")
     private String dockerEndpointMode;
 
+    @Value("${ip.for.registry}")
+    private String registryIP;
+
     private boolean isHttpMode;
 
     private static String CU_KVM = System.getenv().get("CU_KVM");
@@ -763,7 +766,7 @@ public class DockerContainerJSON {
             uri = new URIBuilder().setScheme(dockerEndpointMode).setHost(hostIp)
                     .setPath("/commit").setParameter("container", name)
                     .setParameter("tag", tag)
-                    .setParameter("repo", "localhost:5000/" + repo + tag)
+                    .setParameter("repo", registryIP+":5000/" + repo + tag)
                     .build();
             response = client
                     .sendPostAndGetImageID(uri, "", "application/json");

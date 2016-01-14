@@ -22,6 +22,7 @@ import fr.treeptik.cloudunit.model.PortToOpen;
 import fr.treeptik.cloudunit.utils.StaticSpringApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +66,7 @@ public class DockerContainer {
 
     private Map<String, Map<String, String>[]> portBindings;
 
+
     public DockerContainer() {
 
     }
@@ -101,14 +103,14 @@ public class DockerContainer {
             hostIp, repo);
     }
 
-    public static void push(String image, String tag, String hostIp)
+    public static void push(String image, String tag, String hostIp, String registryIp)
         throws DockerJSONException {
-        dockerContainerJSON.push("localhost:5000/" + image + tag, tag, hostIp);
+        dockerContainerJSON.push(registryIp+":5000/" + image + tag, tag, hostIp);
     }
 
-    public static void pull(String image, String tag, String hostIp)
+    public static void pull(String image, String tag, String hostIp, String registryIp)
         throws DockerJSONException {
-        dockerContainerJSON.pull("localhost:5000/" + image + tag, tag, hostIp);
+        dockerContainerJSON.pull(registryIp+":5000/" + image + tag, tag, hostIp);
     }
 
     public static void deleteImage(String id, String hostIp)
