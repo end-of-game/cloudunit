@@ -83,6 +83,7 @@
           console.log(vm.myContainer);
           vm.monitoringService.initStats ( vm.myContainer.name ).then ( function () {
             vm.stats = vm.monitoringService.stats;
+            vm.isLoading = false;
           } )
         } )
         .catch ( function onGetContainersError ( reason ) {
