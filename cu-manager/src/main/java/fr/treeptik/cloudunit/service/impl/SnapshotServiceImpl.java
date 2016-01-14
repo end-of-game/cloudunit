@@ -97,8 +97,8 @@ public class SnapshotServiceImpl
     private String cuInstanceName;
 
     @Override
-    public Snapshot findOne(String tag, String login) {
-        return snapshotDAO.findByTagAndUser(login, tag);
+    public Snapshot findOne(String tag) {
+        return snapshotDAO.findByTag(tag);
     }
 
     @Override
@@ -214,14 +214,14 @@ public class SnapshotServiceImpl
     }
 
     public Snapshot findByTagAndUser(String login, String tag) {
-        return snapshotDAO.findByTagAndUser(login, tag);
+        return snapshotDAO.findByTag(tag);
     }
 
     @Override
-    public List<Snapshot> listAll(String login)
+    public List<Snapshot> listAll()
             throws ServiceException {
         try {
-            return snapshotDAO.listAll(login);
+            return snapshotDAO.listAll();
         } catch (DataAccessException e) {
             throw new ServiceException("Error : " + e.getLocalizedMessage(), e);
         }
@@ -229,23 +229,23 @@ public class SnapshotServiceImpl
 
     @Override
     @Transactional
-    public Snapshot remove(String tag, String login)
+    public Snapshot remove(String tag)
             throws ServiceException, CheckException {
         Snapshot snapshot = null;
         try {
-            snapshot = snapshotDAO.findByTagAndUser(login, tag);
+            snapshot = snapshotDAO.findByTag(tag);
 
             if (snapshot == null) {
                 throw new CheckException("Error : this snapshot doesn't exist");
             }
 
-            List<String> images = snapshotDAO.findAllImagesFromASnapshot(login, tag).getImages();
+            List<String> images = snapshotDAO.findAllImagesFromASnapshot(tag).getImages();
 
             for (String image : images) {
                 DockerContainer.deleteImageIntoTheRegistry(image + snapshot.getUniqueTagName(),
                         snapshot.getUniqueTagName(), ipForRegistry + ":5000");
             }
-            snapshotDAO.delete(snapshotDAO.findByTagAndUser(login, tag));
+            snapshotDAO.delete(snapshotDAO.findByTag(tag));
         } catch (DataAccessException | DockerJSONException e) {
             throw new ServiceException("Error : " + e.getLocalizedMessage(), e);
 
@@ -387,7 +387,7 @@ public class SnapshotServiceImpl
 
 
     private boolean tagExists(String tag, String login) {
-        if (snapshotDAO.findByTagAndUser(login, tag) != null) {
+        if (snapshotDAO.findByTag(tag) != null) {
             return true;
         }
         return false;

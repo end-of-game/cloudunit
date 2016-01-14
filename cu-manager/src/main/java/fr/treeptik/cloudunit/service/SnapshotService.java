@@ -25,14 +25,14 @@ import java.util.List;
 
 public interface SnapshotService {
 
-    List<Snapshot> listAll(String login)
+    List<Snapshot> listAll()
         throws ServiceException;
 
-    Snapshot remove(String tag, String login)
+    Snapshot remove(String tag)
         throws ServiceException,
         CheckException;
 
-    Snapshot findOne(String tag, String login);
+    Snapshot findOne(String tag);
 
     Snapshot create(String applicationName, User user, String tag,
                     String description, Status previousStatus)

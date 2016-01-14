@@ -118,7 +118,7 @@ public class SnapshotController {
     public List<Snapshot> listAll()
             throws ServiceException {
         User user = authentificationUtils.getAuthentificatedUser();
-        return snapshotService.listAll(user.getLogin());
+        return snapshotService.listAll();
     }
 
     /**
@@ -133,7 +133,7 @@ public class SnapshotController {
     public JsonResponse remove(@PathVariable String tag)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
-        snapshotService.remove(tag, user.getLogin());
+        snapshotService.remove(tag);
         return new HttpOk();
     }
 
