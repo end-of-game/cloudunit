@@ -20,13 +20,14 @@
     flex: 50%;
 
     &:nth-child(even){
-      padding-left: .5rem;
+      padding-left: 1rem;
     }
     &:nth-child(odd){
-      padding-right: .5rem;
+      padding-right: 1rem;
     }
-
-    &.card
+    & .card {
+      padding: 1rem 0;
+    }
   }
 }
 
