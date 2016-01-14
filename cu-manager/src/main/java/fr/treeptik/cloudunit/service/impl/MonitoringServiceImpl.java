@@ -44,14 +44,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class MonitoringServiceImpl
-    implements MonitoringService {
+        implements MonitoringService {
 
     // Dictionnaire pour mettre en relation une application avec un ou plusieurs
     // volumes
     private static ConcurrentHashMap<String, String> containerIdByName = new ConcurrentHashMap<>();
 
     private Logger logger = LoggerFactory
-        .getLogger(MonitoringServiceImpl.class);
+            .getLogger(MonitoringServiceImpl.class);
 
     @Value("${cadvisor.url}")
     private String cAdvisorURL;
@@ -66,13 +66,16 @@ public class MonitoringServiceImpl
         return containerIdByName.get(containerName);
     }
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
     @Override
     public String getJsonFromCAdvisor(String containerId) {
         String result = "";
         try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpGet httpget = new HttpGet(cAdvisorURL
-                + "/api/v1.0/containers/docker/" + containerId);
+                    + "/api/v1.0/containers/docker/" + containerId);
             CloseableHttpResponse response = httpclient.execute(httpget);
             try {
                 result = EntityUtils.toString(response.getEntity());
@@ -121,7 +124,10 @@ public class MonitoringServiceImpl
             }
             List<Application> applications = applicationService.findAll();
             if (applications != null) {
-                for (Application application : applications)
+                for (Application application : applications) {
+                    if (!application.getCuInstanceName().equalsIgnoreCase(cuInstanceName)) {
+                        continue;
+                    }
                     try {
                         // Serveurs
                         List<Server> servers = application.getServers();
@@ -129,15 +135,15 @@ public class MonitoringServiceImpl
                             DockerContainer dockerContainer = new DockerContainer();
                             dockerContainer.setName(server.getName());
                             dockerContainer.setImage(server.getImage()
-                                .getName());
+                                    .getName());
                             dockerContainer = DockerContainer.findOne(
-                                dockerContainer,
-                                application.getManagerIp());
+                                    dockerContainer,
+                                    application.getManagerIp());
                             server = containerMapper
-                                .mapDockerContainerToServer(
-                                    dockerContainer, server);
+                                    .mapDockerContainerToServer(
+                                            dockerContainer, server);
                             containerIdByName.put(server.getName(),
-                                server.getContainerFullID());
+                                    server.getContainerFullID());
                         }
                         // Modules
                         List<Module> modules = application.getModules();
@@ -145,16 +151,17 @@ public class MonitoringServiceImpl
                             DockerContainer dockerContainer = new DockerContainer();
                             dockerContainer.setName(module.getName());
                             dockerContainer.setImage(module.getImage()
-                                .getName());
+                                    .getName());
                             dockerContainer = DockerContainer.findOne(
-                                dockerContainer,
-                                application.getManagerIp());
+                                    dockerContainer,
+                                    application.getManagerIp());
                             module = containerMapper
-                                .mapDockerContainerToModule(
-                                    dockerContainer, module);
+                                    .mapDockerContainerToModule(
+                                            dockerContainer, module);
                             containerIdByName.put(module.getName(),
-                                module.getContainerFullID());
+                                    module.getContainerFullID());
                         }
+
                     } catch (ErrorDockerJSONException ex) {
                         if (!"docker : no such container".equalsIgnoreCase(ex.getMessage())) {
                             logger.error(application.toString(), ex);
@@ -164,6 +171,7 @@ public class MonitoringServiceImpl
                         // arrêter la suite des traitements
                         logger.error(application.toString(), ex);
                     }
+                }
             }
         } catch (Exception e) {
             // On catch l'exception car traitement en background.

@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Service
 public class LogServiceImpl
-    implements LogService {
+        implements LogService {
 
     private static final Integer DEFAULT_ES_PORT = 9300;
 
@@ -74,15 +74,18 @@ public class LogServiceImpl
     @Value("${elasticsearch.ip}")
     private String esIp;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+
     @Override
     public List<LogUnit> listByApp(String applicationName, String containerId,
                                    String source, Integer nbRows)
-        throws ServiceException {
+            throws ServiceException {
         List<LogUnit> lines = new ArrayList<>();
         try {
             Application application = applicationService.findByNameAndUser(
-                authentificationUtils.getAuthentificatedUser(),
-                applicationName);
+                    authentificationUtils.getAuthentificatedUser(),
+                    applicationName);
 
             Set<String> directories = volumesByContainer.get(containerId);
             if (logger.isDebugEnabled()) {
@@ -93,7 +96,7 @@ public class LogServiceImpl
         } catch (Exception e) {
             StringBuilder msgError = new StringBuilder(512);
             msgError.append("applicationName=").append(applicationName)
-                .append(", ");
+                    .append(", ");
             msgError.append("containerId=").append(containerId).append(", ");
             msgError.append("source=").append(source).append(", ");
             msgError.append("nbRows=").append(nbRows).append(", ");
@@ -104,15 +107,15 @@ public class LogServiceImpl
 
     @Override
     public int deleteLogsForApplication(String applicationName)
-        throws ServiceException {
+            throws ServiceException {
         List<LogUnit> lines = new ArrayList<>();
         try {
             Application application = applicationService.findByNameAndUser(
-                authentificationUtils.getAuthentificatedUser(),
-                applicationName);
+                    authentificationUtils.getAuthentificatedUser(),
+                    applicationName);
 
             List<String> listContainersId = applicationService
-                .listContainersId(applicationName);
+                    .listContainersId(applicationName);
             for (String containerId : listContainersId) {
                 Set<String> directories = volumesByContainer.get(containerId);
                 if (directories != null) {
@@ -127,7 +130,7 @@ public class LogServiceImpl
         } catch (Exception e) {
             StringBuilder msgError = new StringBuilder(512);
             msgError.append("applicationName=").append(applicationName)
-                .append(", ");
+                    .append(", ");
             throw new ServiceException(msgError.toString(), e);
         }
         return 0;
@@ -138,16 +141,16 @@ public class LogServiceImpl
 
         try {
             client.addTransportAddress(new InetSocketTransportAddress(ipES,
-                DEFAULT_ES_PORT));
+                    DEFAULT_ES_PORT));
 
             SearchRequestBuilder searchRequestBuilder = client.prepareSearch();
             searchRequestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
             searchRequestBuilder.addSort("@timestamp", SortOrder.DESC);
 
             DeleteByQueryResponse response = client
-                .prepareDeleteByQuery("cloudunit")
-                .setQuery(QueryBuilders.matchQuery("path", directory))
-                .execute().actionGet();
+                    .prepareDeleteByQuery("cloudunit")
+                    .setQuery(QueryBuilders.matchQuery("path", directory))
+                    .execute().actionGet();
 
             if (logger.isDebugEnabled()) {
                 logger.debug("" + response);
@@ -187,7 +190,7 @@ public class LogServiceImpl
         TransportClient client = new TransportClient();
         try {
             client.addTransportAddress(new InetSocketTransportAddress(ipES,
-                DEFAULT_ES_PORT));
+                    DEFAULT_ES_PORT));
 
             SearchRequestBuilder searchRequestBuilder = client.prepareSearch();
             searchRequestBuilder.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
@@ -202,13 +205,13 @@ public class LogServiceImpl
                 // warning : this is a double constraint. Not an erreur about
                 // path
                 searchRequestBuilder.setQuery(QueryBuilders.termQuery("path",
-                    directory));
+                        directory));
                 searchRequestBuilder.setQuery(QueryBuilders.termQuery("path",
-                    source));
+                        source));
             }
 
             SearchResponse response = searchRequestBuilder.execute()
-                .actionGet();
+                    .actionGet();
             SearchHit[] hits = response.getHits().getHits();
             if (hits != null) {
                 for (int i = 0, iMax = hits.length; i < iMax; i++) {
@@ -250,6 +253,10 @@ public class LogServiceImpl
             List<Application> applications = applicationService.findAll();
             if (applications != null) {
                 for (Application application : applications) {
+
+                    if (!application.getCuInstanceName().equalsIgnoreCase(cuInstanceName)) {
+                        continue;
+                    }
                     // On ne scrute que les applications qui sont démarrées
                     if (Status.START.equals(application.getStatus()) == false)
                         continue;
@@ -260,17 +267,17 @@ public class LogServiceImpl
                             DockerContainer dockerContainer = new DockerContainer();
                             dockerContainer.setName(server.getName());
                             dockerContainer.setImage(server.getImage()
-                                .getName());
+                                    .getName());
                             dockerContainer = DockerContainer.findOne(
-                                dockerContainer,
-                                application.getManagerIp());
+                                    dockerContainer,
+                                    application.getManagerIp());
                             server = containerMapper
-                                .mapDockerContainerToServer(
-                                    dockerContainer, server);
+                                    .mapDockerContainerToServer(
+                                            dockerContainer, server);
                             Map<String, String> volumes = server.getVolumes();
                             String clefApplication = server.getContainerID();
                             addMountDirectoryForAnApplication(clefApplication,
-                                volumes);
+                                    volumes);
                         }
                         // Modules
                         List<Module> modules = application.getModules();
@@ -278,17 +285,17 @@ public class LogServiceImpl
                             DockerContainer dockerContainer = new DockerContainer();
                             dockerContainer.setName(module.getName());
                             dockerContainer.setImage(module.getImage()
-                                .getName());
+                                    .getName());
                             dockerContainer = DockerContainer.findOne(
-                                dockerContainer,
-                                application.getManagerIp());
+                                    dockerContainer,
+                                    application.getManagerIp());
                             module = containerMapper
-                                .mapDockerContainerToModule(
-                                    dockerContainer, module);
+                                    .mapDockerContainerToModule(
+                                            dockerContainer, module);
                             Map<String, String> volumes = module.getVolumes();
                             String clefApplication = module.getContainerID();
                             addMountDirectoryForAnApplication(clefApplication,
-                                volumes);
+                                    volumes);
                         }
                     } catch (ErrorDockerJSONException ex) {
                         // TODO : refactoriser le code pour extraire le message
@@ -332,7 +339,7 @@ public class LogServiceImpl
                 // Si le path contient log comme
                 // /cloudunit/software/tomcats/logs par exemple
                 if (directoryInTheContainer != null
-                    && directoryInTheContainer.contains("log")) {
+                        && directoryInTheContainer.contains("log")) {
                     Set<String> directoriesMounted = null;
                     directoriesMounted = volumesByContainer.get(key);
                     if (directoriesMounted == null) {
@@ -341,11 +348,11 @@ public class LogServiceImpl
                     // On récupère le chemin exposé en
                     // /var/lib/docker/vfs/dir/e23dke...
                     String directoryMountedInTheHost = volumes
-                        .get(directoryInTheContainer);
+                            .get(directoryInTheContainer);
                     if (logger.isDebugEnabled()) {
                         logger.debug("For containerID [" + key
-                            + "] we add to the list : "
-                            + directoryMountedInTheHost);
+                                + "] we add to the list : "
+                                + directoryMountedInTheHost);
                     }
                     directoriesMounted.add(directoryMountedInTheHost);
                     volumesByContainer.put(key, directoriesMounted);
