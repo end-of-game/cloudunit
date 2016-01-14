@@ -53,33 +53,31 @@
           <div class="chart">
             <h4>Total Usage (Cores)</h4>
 
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.cpuTotalUsage"
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.cpuTotalUsage"
                       chartist-chart-type="Line"></chartist>
             <ul class="ct-legend">
-              <li ng-repeat="serie in monitoring.cpuTotalUsage.legends" class="ct-series-{{$index}}">{{monitoring.cpuTotalUsage.legends[$index]}}</li>
+              <li ng-repeat="serie in monitoring.stats.cpuTotalUsage.legends" class="ct-series-{{$index}}">{{monitoring.stats.cpuTotalUsage.legends[$index]}}</li>
             </ul>
 
             <h4>Usage per Core</h4>
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.cpuPerCoreUsage"
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.cpuPerCoreUsage"
                       chartist-chart-type="Line"></chartist>
             <ul class="ct-legend">
-              <li ng-repeat="serie in monitoring.cpuPerCoreUsage.legends" class="ct-series-{{$index}}">{{monitoring.cpuPerCoreUsage.legends[$index]}}</li>
+              <li ng-repeat="serie in monitoring.stats.cpuPerCoreUsage.legends" class="ct-series-{{$index}}">{{monitoring.stats.cpuPerCoreUsage.legends[$index]}}</li>
             </ul>
 
             <h4>Usage Breakdown (Cores)</h4>
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.cpuUsageBreakdown"
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.cpuUsageBreakdown"
                       chartist-chart-type="Line"></chartist>
             <ul class="ct-legend">
-              <li ng-repeat="serie in monitoring.cpuUsageBreakdown.legends" class="ct-series-{{$index}}">{{monitoring.cpuUsageBreakdown.legends[$index]}}</li>
+              <li ng-repeat="serie in monitoring.stats.cpuUsageBreakdown.legends" class="ct-series-{{$index}}">{{monitoring.stats.cpuUsageBreakdown.legends[$index]}}</li>
             </ul>
             <h4>CPU load (%)</h4>
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.cpuLoad"
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.cpuLoad"
                       chartist-chart-type="Line"></chartist>
             <ul class="ct-legend">
-              <li ng-repeat="serie in monitoring.cpuLoad.legends" class="ct-series-{{$index}}">{{monitoring.cpuLoad.legends[$index]}}</li>
+              <li ng-repeat="serie in monitoring.stats.cpuLoad.legends" class="ct-series-{{$index}}">{{monitoring.stats.cpuLoad.legends[$index]}}</li>
             </ul>
-
-
           </div>
         </div>
       </div>
@@ -93,10 +91,10 @@
           <div class="chart clearfix">
             <h4>Total Usage (Megabytes)</h4>
 
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.memoryUsage"
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.memoryUsage"
                       chartist-chart-type="Line"></chartist>
             <ul class="ct-legend">
-              <li ng-repeat="serie in monitoring.memoryUsage.legends" class="ct-series-{{$index}}">{{monitoring.memoryUsage.legends[$index]}}</li>
+              <li ng-repeat="serie in monitoring.stats.memoryUsage.legends" class="ct-series-{{$index}}">{{monitoring.stats.memoryUsage.legends[$index]}}</li>
             </ul>
           </div>
         </div>
@@ -108,18 +106,18 @@
 
           <div class="chart">
             <h4>Throughput (Bytes/sec)</h4>
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.networkUsage"
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.networkUsage"
                       chartist-chart-type="Line"></chartist>
             <ul class="ct-legend">
-              <li ng-repeat="serie in monitoring.networkUsage.legends" class="ct-series-{{$index}}">{{monitoring.networkUsage.legends[$index]}}</li>
+              <li ng-repeat="serie in monitoring.stats.networkUsage.legends" class="ct-series-{{$index}}">{{monitoring.stats.networkUsage.legends[$index]}}</li>
             </ul>
 
             <h4>Errors (Errors/sec)</h4>
 
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.networkErrors"
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.networkErrors"
                       chartist-chart-type="Line"></chartist>
             <ul class="ct-legend">
-              <li ng-repeat="serie in monitoring.networkErrors.legends" class="ct-series-{{$index}}">{{monitoring.networkErrors.legends[$index]}}</li>
+              <li ng-repeat="serie in monitoring.stats.networkErrors.legends" class="ct-series-{{$index}}">{{monitoring.stats.networkErrors.legends[$index]}}</li>
             </ul>
           </div>
         </div>
