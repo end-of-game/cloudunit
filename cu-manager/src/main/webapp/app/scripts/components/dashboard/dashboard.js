@@ -72,6 +72,10 @@
       vm.buffer = data;
     });
 
+    $scope.$on('app:create:fail', function(e, data){
+      vm.buffer = '';
+    });
+
     /////////////////////////////////////////////
 
     // Refresh the application list

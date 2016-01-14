@@ -17,9 +17,9 @@
   'use strict';
   angular
     .module ( 'webuiApp.account' )
-    .config ( function ( paginationTemplateProvider ) {
+    .config ( ['paginationTemplateProvider', function ( paginationTemplateProvider ) {
       paginationTemplateProvider.setPath ( 'scripts/shared/pagination/pagination.html' );
-    } )
+    } ])
     .value ( 'statuses', [
         { name: 'All', value: '' },
         { name: 'Normal', value: 'normal' },

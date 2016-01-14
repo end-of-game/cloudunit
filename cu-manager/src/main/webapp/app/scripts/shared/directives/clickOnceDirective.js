@@ -16,7 +16,7 @@
 'use strict';
 
 angular.module('webuiApp.directives')
-.directive('clickOnce', function($timeout) {
+.directive('clickOnce', ['$timeout', function($timeout) {
     return {
         restrict: 'A',
         link: function(scope, element /*, attrs */) {
@@ -28,4 +28,4 @@ angular.module('webuiApp.directives')
             });
         }
     };
-});
+}]);
