@@ -53,10 +53,17 @@ public class MonitoringController {
      * @throws fr.treeptik.cloudunit.exception.CheckException
      */
     @RequestMapping(value = "/api/machine", method = RequestMethod.GET)
-    public String infoMachine()
+    public void infoMachine(HttpServletRequest request, HttpServletResponse response)
         throws ServiceException,
         CheckException {
-        return monitoringService.getJsonMachineFromCAdvisor();
+        String responseFromCAdvisor =  monitoringService.getJsonMachineFromCAdvisor();
+        try {
+            response.getWriter().write(responseFromCAdvisor);
+            response.flushBuffer();
+        } catch (Exception e) {
+            logger.error("error during write and flush response", responseFromCAdvisor);
+        }
+
     }
 
     /**

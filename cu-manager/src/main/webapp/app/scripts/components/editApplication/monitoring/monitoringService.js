@@ -40,7 +40,7 @@
 
     function getMachineInfo () {
       // todo change endpoint
-      return $http.get ( 'scripts/components/editApplication/monitoring/machineInfo.json' ).then ( function ( response ) {
+      return $http.get ( 'monitoring/api/machine' ).then ( function ( response ) {
         return angular.copy ( response.data );
       } );
     }
