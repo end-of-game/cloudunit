@@ -30,6 +30,7 @@ import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +60,8 @@ public class SnapshotController {
     @Inject
     private AuthentificationUtils authentificationUtils;
 
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
 
     @RequestMapping(method = RequestMethod.POST)
     public JsonResponse create(@RequestBody JsonInput input)
@@ -85,7 +88,11 @@ public class SnapshotController {
                 return new HttpOk();
             }
 
-            authentificationUtils.forbidUser(user);
+            // if current application is running into local application server,
+            // we need to block the user.
+            if (cuInstanceName.equalsIgnoreCase(application.getCuInstanceName())) {
+                authentificationUtils.forbidUser(user);
+            }
 
             // We must be sure there is no running action before starting new one
             this.authentificationUtils.canStartNewAction(null, application, locale);

@@ -91,7 +91,7 @@ public abstract class AbstractSnapshotControllerTestIT {
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "App" + new Random().nextInt(10000);
+        applicationName = "app" + new Random().nextInt(10000);
     }
 
     @Before
@@ -191,6 +191,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats =
                 mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
                         "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
+        Thread.sleep(5000);
         resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);

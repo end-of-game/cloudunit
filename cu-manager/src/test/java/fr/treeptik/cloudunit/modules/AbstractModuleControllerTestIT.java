@@ -101,7 +101,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "App" + new Random().nextInt(100000);
+        applicationName = "app" + new Random().nextInt(100000);
     }
 
     @Before
@@ -395,7 +395,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Start the application
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
-        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
         // get the detail of the applications to verify modules addition

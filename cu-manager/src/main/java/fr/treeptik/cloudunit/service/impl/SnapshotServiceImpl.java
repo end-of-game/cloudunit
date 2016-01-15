@@ -202,7 +202,7 @@ public class SnapshotServiceImpl
                                         application.getManagerIp(), imageName),
                                 HashMap.class)).get("Id");
                 DockerContainer.push(imageName, snapshot.getUniqueTagName(), application.getManagerIp(), ipForRegistry);
-                DockerContainer.deleteImage(id, application.getManagerIp());
+                //DockerContainer.deleteImage(id, application.getManagerIp());
             }
             snapshot.setImages(images);
             snapshot = snapshotDAO.save(snapshot);

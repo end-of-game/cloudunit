@@ -95,6 +95,8 @@ public class ModuleServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
+    @Value("${ip.for.registry}")
+    private String registryIp;
 
     public ModuleDAO getModuleDAO() {
         return this.moduleDAO;
@@ -337,7 +339,7 @@ public class ModuleServiceImpl
         // si le tag n'est pas nul on récupère la bonne image pour git
 
         if (tagName != null & module.getImage().getName().contains("git")) {
-            imagePath = "localhost:5000/cloudunit/git"
+            imagePath = registryIp+":5000/cloudunit/git"
                     + tagName.replace(":", "") + tagName;
         }
 
@@ -460,7 +462,7 @@ public class ModuleServiceImpl
         String imagePath = module.getImage().getPath() + "-data";
 
         if (tagName != null) {
-            imagePath = "localhost:5000/"
+            imagePath = registryIp+":5000/"
                     + imagePath.replaceAll("-data",
                     "-" + module.getInstanceNumber() + "-data")
                     + tagName + ":" + tagName;

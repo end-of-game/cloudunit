@@ -86,7 +86,7 @@ public abstract class AbstractApplicationControllerTestIT {
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "App" + new Random().nextInt(1000);
+        applicationName = "app" + new Random().nextInt(100000);
     }
 
     @Before
@@ -185,14 +185,12 @@ public abstract class AbstractApplicationControllerTestIT {
                 this.mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
-
         logger.info("**************************************");
         logger.info("Delete application : " + deAccentName);
         logger.info("**************************************");
         resultats =
                 mockMvc.perform(delete("/application/" + deAccentName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
-
     }
 
 

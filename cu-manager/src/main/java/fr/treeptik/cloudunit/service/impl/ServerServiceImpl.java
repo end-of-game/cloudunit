@@ -91,7 +91,8 @@ public class ServerServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
-
+    @Value("${ip.for.registry}")
+    private String registryIp;
 
     public ServerDAO getServerDAO() {
         return this.serverDAO;
@@ -128,7 +129,7 @@ public class ServerServiceImpl
         String registryPrefix = "";
 
         if (tagName != null) {
-            registryPrefix = "localhost:5000/";
+            registryPrefix = registryIp+":5000/";
         } else {
             tagName = "";
         }

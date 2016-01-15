@@ -107,7 +107,8 @@ public class Snapshot
 
     @JsonIgnore
     public String getUniqueTagName() {
-        return user.getLogin() + "-" + tag;
+        //return user.getLogin() + "-" + tag;
+        return tag;
     }
 
     public String getApplicationName() {
