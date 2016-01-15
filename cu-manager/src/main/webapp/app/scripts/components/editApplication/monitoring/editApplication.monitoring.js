@@ -17,10 +17,10 @@
   'use strict';
 
   angular
-    .module('webuiApp.editApplication')
-    .directive('editAppMonitoring', Monitoring);
+    .module ( 'webuiApp.editApplication' )
+    .directive ( 'editAppMonitoring', Monitoring );
 
-  function Monitoring(){
+  function Monitoring () {
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/editApplication/monitoring/editApplication.monitoring.html',
@@ -28,8 +28,11 @@
         app: '='
       },
       controller: [
+        '$scope',
         'ApplicationService',
         '$stateParams',
+        'MonitoringService',
+        '$interval',
         MonitoringCtrl
       ],
       controllerAs: 'monitoring',
@@ -37,34 +40,58 @@
     };
   }
 
-  function MonitoringCtrl(ApplicationService, $stateParams) {
+  function MonitoringCtrl ( $scope, ApplicationService, $stateParams, MonitoringService, $interval ) {
 
     // ------------------------------------------------------------------------
     // MONITORING
     // ------------------------------------------------------------------------
 
-    var vm = this;
+    var vm = this, timer;
 
     vm.containers = [];
     vm.myContainer = {};
     vm.isLoading = true;
     vm.getContainers = getContainers;
+    vm.stats = {};
+    vm.cpuUsage = [];
+    vm.monitoringService = MonitoringService;
 
-    getContainers();
+    vm.chartOptions = {
+      scaleMinSpace: 300
+    };
 
-    function getContainers(selectedContainer) {
-      return ApplicationService.listContainers($stateParams.name)
-        .then(function onGetContainersComplete(containers) {
+    vm.chartPieOptions = {
+      donut: true,
+      donutWidth: 20,
+      startAngle: 270,
+      total: 100
+    };
+
+    $scope.$on ( '$destroy', function () {
+      vm.monitoringService.stopPollStats();
+    } );
+
+    getContainers ();
+
+    function getContainers ( selectedContainer ) {
+      vm.isLoading = true;
+      return ApplicationService.listContainers ( $stateParams.name )
+        .then ( function onGetContainersComplete ( containers ) {
           vm.containers = containers;
           vm.myContainer = selectedContainer || containers[0];
-          vm.isLoading = false;
-          return vm.containers;
-        })
-        .catch(function onGetContainersError(reason) {
-          console.error(reason); //debug
-        });
+
+          console.log(vm.myContainer);
+          vm.monitoringService.initStats ( vm.myContainer.name ).then ( function () {
+            vm.stats = vm.monitoringService.stats;
+            vm.isLoading = false;
+          } )
+        } )
+        .catch ( function onGetContainersError ( reason ) {
+          console.error ( reason ); //debug
+        } );
     }
+
   }
-})();
+}) ();
 
 
