@@ -57,7 +57,7 @@ angular.module('webuiApp.editApplication', [])
         .state('editApplication.logs',
           {
             url: '/logs',
-            template: '<edit-app-logs app="editApp.application"></edit-app-logs>'
+            template: '<edit-app-logs app="editApp.application" state="editApp.state"></edit-app-logs>'
           })
         .state('editApplication.monitoring',
           {

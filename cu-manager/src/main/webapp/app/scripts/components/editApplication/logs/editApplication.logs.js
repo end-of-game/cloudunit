@@ -27,7 +27,7 @@
       templateUrl: 'scripts/components/editApplication/logs/editApplication.logs.html',
       scope: {
         app: '=',
-        currentTab: '='
+        state: '='
       },
       controller: [
         '$scope',
@@ -69,6 +69,7 @@
     init ();
 
     timer = $interval ( function () {
+      console.log('refresh');
       updateLogs ();
     }, 2000 );
 
@@ -77,12 +78,7 @@
       $interval.cancel ( timer );
     } );
 
-    // If we change tag, we must stop polling
-    $scope.$watch ( vm.currentTab, function () {
-      if ( vm.currentTab !== 'logs' )
-        $interval.cancel ( timer );
-    } );
-
+    
     function init () {
       getContainers ()
         .then ( function onGetContainersComplete () {
@@ -94,6 +90,7 @@
     }
 
     function updateLogs () {
+      console.log('update logs');
       LogService.gatherNbRows ( $stateParams.name, vm.myContainer.id, vm.selectedSource, vm.myRows.value )
         .then ( function onComplete ( data ) {
             vm.userdata = data;
