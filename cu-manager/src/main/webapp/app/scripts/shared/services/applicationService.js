@@ -24,19 +24,20 @@
    * Factory in the webuiApp.
    */
   angular
-    .module('webuiApp')
-    .factory('ApplicationService', ApplicationService);
+    .module ( 'webuiApp' )
+    .factory ( 'ApplicationService', ApplicationService );
 
   ApplicationService.$inject = [
     '$resource',
-    '$http'
+    '$http',
+    '$interval'
   ];
 
 
-  function ApplicationService($resource, $http) {
+  function ApplicationService ( $resource, $http, $interval ) {
     var Application;
 
-    Application = $resource('application/:id', {id: '@name'});
+    Application = $resource ( 'application/:id', { id: '@name' } );
 
 
     return {
@@ -52,7 +53,10 @@
       removeAlias: removeAlias,
       createPort: createPort,
       removePort: removePort,
-      restart: restart
+      restart: restart,
+      init: init,
+      state: {},
+      stopPolling: stopPolling
     };
 
 
@@ -60,101 +64,130 @@
 
 
     // Liste des applications
-    function list() {
-      return $http.get('application' ).then(function(response){
-        return angular.copy(response.data);
-      })
+    function list () {
+      return $http.get ( 'application' ).then ( function ( response ) {
+        return angular.copy ( response.data );
+      } )
     }
 
     // Creation d'une application
-    function create(applicationName, serverName) {
+    function create ( applicationName, serverName ) {
       var output = {};
       output.applicationName = applicationName;
       output.serverName = serverName;
 
-      return Application.save(JSON.stringify(output)).$promise;
+      return Application.save ( JSON.stringify ( output ) ).$promise;
     }
 
     // Démarrer une application
-    function start(applicationName) {
+    function start ( applicationName ) {
       var output = {};
       output.applicationName = applicationName;
-      var Application = $resource('application/start');
-      return Application.save(JSON.stringify(output));
+      var Application = $resource ( 'application/start' );
+      return Application.save ( JSON.stringify ( output ) );
     }
 
     // Démarrer une application
-    function restart(applicationName) {
+    function restart ( applicationName ) {
       var output = {};
       output.applicationName = applicationName;
-      var Application = $resource('application/restart');
-      return Application.save(JSON.stringify(output));
+      var Application = $resource ( 'application/restart' );
+      return Application.save ( JSON.stringify ( output ) );
     }
 
     // Arrêter une application
-    function stop(applicationName) {
+    function stop ( applicationName ) {
       var output = {};
       output.applicationName = applicationName;
-      var Application = $resource('application/stop');
-      return Application.save(JSON.stringify(output));
+      var Application = $resource ( 'application/stop' );
+      return Application.save ( JSON.stringify ( output ) );
     }
 
     // Teste la validite d'une application avant qu'on puisse la creer
-    function isValid(applicationName, serverName) {
-      var validity = $resource('application/verify/' + applicationName + '/' + serverName);
-      return validity.get().$promise;
+    function isValid ( applicationName, serverName ) {
+      var validity = $resource ( 'application/verify/' + applicationName + '/' + serverName );
+      return validity.get ().$promise;
     }
 
     // Suppression d'une application
-    function remove(applicationName) {
-      Application.get({id: applicationName}, function (ref) {
-        ref.$delete();
-      });
+    function remove ( applicationName ) {
+      Application.get ( { id: applicationName }, function ( ref ) {
+        ref.$delete ();
+      } );
     }
 
     // Récupération d'une application selon son nom
-    function findByName(applicationName) {
-      return $http.get('application/' + applicationName ).then(function(response){
-        return angular.copy(response.data);
-      })
+    function findByName ( applicationName ) {
+      var self = this;
+      return $http.get ( 'application/' + applicationName ).then ( function ( response ) {
+        return Object.assign(self.state, response.data);
+      } ).catch ( function () {
+        stopPolling.call ( self );
+      } )
+    }
+
+    function init ( applicationName ) {
+      var self = this;
+      if ( !self.timer ) {
+        self.timer = pollApp.call ( self, applicationName );
+      }
+      return findByName.call ( self, applicationName ).then ( function ( response ) {
+        self.state = response;
+      } );
+    }
+
+    function pollApp ( applicationName ) {
+      var self = this;
+      return $interval ( function () {
+        findByName.call ( self, applicationName ).then ( function ( response ) {
+          return self.state = response;
+        } );
+      }, 2000 )
+    }
+
+    function stopPolling () {
+      if ( this.timer ) {
+        $interval.cancel ( this.timer );
+        this.timer = null;
+      }
     }
 
     // Liste de toutes les containers d'une application en fonction du type server/module
-    function listContainers(applicationName) {
-      var containers = $resource('application/:applicationName/containers');
-      return containers.query({applicationName: applicationName}).$promise;
+    function listContainers ( applicationName ) {
+      var containers = $resource ( 'application/:applicationName/containers' );
+      return containers.query ( { applicationName: applicationName } ).$promise;
     }
 
     // Gestion des alias
 
-    function createAlias(applicationName, alias) {
+    function createAlias ( applicationName, alias ) {
       var data = {
         applicationName: applicationName,
         alias: alias
       };
-      return $http.post('application/alias', data);
+      return $http.post ( 'application/alias', data );
     }
 
-    function removeAlias(applicationName, alias) {
-      return $http.delete('application/' + applicationName + '/alias/' + alias);
+    function removeAlias ( applicationName, alias ) {
+      return $http.delete ( 'application/' + applicationName + '/alias/' + alias );
     }
 
 
     // Gestion des ports
 
-    function createPort(applicationName, number, nature) {
+    function createPort ( applicationName, number, nature ) {
       var data = {
         applicationName: applicationName,
         portToOpen: number,
         portNature: nature
       };
-      return $http.post('application/ports', data);
+      return $http.post ( 'application/ports', data );
     }
 
-    function removePort(applicationName, number) {
-      return $http.delete('application/' + applicationName + '/ports/' + number);
+    function removePort ( applicationName, number ) {
+      return $http.delete ( 'application/' + applicationName + '/ports/' + number );
     }
 
   }
-})();
+}) ();
 

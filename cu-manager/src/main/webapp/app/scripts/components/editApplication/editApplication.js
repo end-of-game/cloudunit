@@ -32,16 +32,13 @@
       restrict: 'E',
       templateUrl: 'scripts/components/editApplication/editApplication.html',
       scope: {
-        application: '=app',
         state: '='
       },
       controller: [
-        '$rootScope',
         '$scope',
-        '$interval',
-        'ApplicationService',
         '$stateParams',
-        'ErrorService',
+        'ApplicationService',
+        '$interval',
         EditApplicationCtrl
       ],
       controllerAs: 'editApp',
@@ -49,22 +46,25 @@
     };
   }
 
-  function EditApplicationCtrl ( $rootScope, $scope, $interval, ApplicationService, $stateParams, ErrorService ) {
+  function EditApplicationCtrl ( $scope, $stateParams, ApplicationService, $interval) {
 
     // ------------------------------------------------------------------------
     // SCOPE
     // ------------------------------------------------------------------------
 
-    var timer, vm = this;
+    var vm = this;
 
     vm.hideFeed = false;
+    vm.applicationService = ApplicationService;
 
-    init ( $stateParams.name );
 
+    vm.applicationService.init($stateParams.name).then(function(){
+      vm.application = vm.applicationService.state;
+    });
 
     // We must destroy the polling when the scope is destroyed
     $scope.$on ( '$destroy', function () {
-      $interval.cancel ( timer );
+      vm.applicationService.stopPolling();
     } );
 
     $scope.$watch ( function () {
@@ -74,35 +74,6 @@
         vm.hideFeed = oldVal.name === 'editApplication.logs' || oldVal.name === 'editApplication.monitoring';
       }
     } );
-
-    /////////////////////////////////////////////////////
-
-    function init ( applicationName ) {
-      ApplicationService.findByName ( applicationName ).then ( function success ( application ) {
-        vm.application = application;
-        timer = update ( application.name );
-        $rootScope.$broadcast ( 'application:ready', application );
-      } );
-    }
-
-    function update ( applicationName ) {
-
-      return $interval ( function () {
-        ApplicationService.findByName ( applicationName )
-          .then ( success )
-          .catch ( error );
-
-        function success ( application ) {
-          vm.application = application;
-          $rootScope.$broadcast ( 'application:refreshed', application );
-        }
-
-        function error ( response ) {
-          ErrorService.handle ( response );
-        }
-      }, 2000 );
-    }
-
   }
 }) ();
 

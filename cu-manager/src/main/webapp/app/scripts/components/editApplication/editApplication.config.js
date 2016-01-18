@@ -23,25 +23,22 @@ angular.module('webuiApp.editApplication', [])
         .state('editApplication',
           {
             url: '/editApplication/:name',
-            template: '<edit-application app="App" state="main.$state"></edit-application>',
+            template: '<edit-application state="main.$state"></edit-application>',
             abstract: true,
             data: {
               isFree: false
             },
-            controller: ['$scope', 'App', function($scope, App){
-              $scope.app = App;
-            }],
             resolve: {
-              App: ['ApplicationService', '$stateParams', function(ApplicationService, $stateParams){
-                return ApplicationService.findByName($stateParams.name);
-              }]
+              /*App: ['ApplicationService', '$stateParams', function(ApplicationService, $stateParams){
+               return ApplicationService.init($stateParams.name);
+               }]*/
             }
           })
         .state('editApplication.overview',
-        {
-          url: '/overview',
-          template: '<edit-app-overview app="editApp.application"></edit-app-overview>'
-        })
+          {
+            url: '/overview',
+            template: '<edit-app-overview app="editApp.application"></edit-app-overview>'
+          })
         .state('editApplication.addModule',
           {
             url: '/addModule',
