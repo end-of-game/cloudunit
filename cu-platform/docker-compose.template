@@ -22,8 +22,8 @@ mysql:
     environment:
         - MYSQL_ROOT_PASSWORD
         - MYSQL_DATABASE=cloudunit
-#TO_UNCOMMENT_IF_PROFILE_DEV    ports:
-#TO_UNCOMMENT_IF_PROFILE_DEV        - 3306:3306
+    ports:
+        - 3306:3306
     volumes_from:
         - mysqldata
     volumes:

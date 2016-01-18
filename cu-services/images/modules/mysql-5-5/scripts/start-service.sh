@@ -11,12 +11,13 @@ export CU_USERNAME_SSH=$6
 export MANAGER_DATABASE_PASSWORD=$7
 # To do difference between main and test env
 export ENV_EXEC=$8
+export CU_DATABASE_DNS=$9
 
 if [ $ENV_EXEC = "integration" ];
 then
     export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
 else
-    export MYSQL_ENDPOINT=cuplatform_mysql_1.mysql.cloud.unit
+    export MYSQL_ENDPOINT=$CU_DATABASE_DNS
 fi
 
 MYSQL_CMD1="mysql -h127.0.0.1 -P3306 -uroot -proot -e 'select 1 from dual;;'"
