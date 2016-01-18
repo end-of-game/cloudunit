@@ -44,7 +44,7 @@ public class PostgreSQLModuleAction
     }
 
     @Override
-    public List<String> createDockerCmd(String databasePassword, String envExec) {
+    public List<String> createDockerCmd(String databasePassword, String envExec, String databaseHostname) {
         return Arrays.asList(
             module.getModuleInfos().get("username"),
             module.getModuleInfos().get("password"),
@@ -52,7 +52,7 @@ public class PostgreSQLModuleAction
             module.getApplication().getUser().getPassword(),
             module.getApplication().getUser().getLogin(),
             databasePassword,
-            envExec);
+            envExec, databaseHostname);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class PostgreSQLModuleAction
     public List<String> createDockerCmdForClone(
         Map<String, String> map,
         String databasePassword,
-        String envExec) {
+        String envExec, String databaseHostname) {
         return Arrays.asList(
             map.get("username"),
             map.get("password"),
@@ -119,7 +119,7 @@ public class PostgreSQLModuleAction
             module.getApplication().getUser().getPassword(),
             module.getApplication().getUser().getLogin(),
             databasePassword,
-            envExec);
+            envExec, databaseHostname);
     }
 
     @Override

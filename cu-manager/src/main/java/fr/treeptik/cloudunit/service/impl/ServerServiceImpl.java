@@ -94,6 +94,9 @@ public class ServerServiceImpl
     @Value("${ip.for.registry}")
     private String registryIp;
 
+    @Value("${database.hostname}")
+    private String databaseHostname;
+
     public ServerDAO getServerDAO() {
         return this.serverDAO;
     }
@@ -188,7 +191,7 @@ public class ServerServiceImpl
                         Arrays.asList(user.getLogin(), user.getPassword(), server
                                         .getApplication().getRestHost(), server
                                         .getApplication().getName(),
-                                "jdk1.7.0_55", databasePassword, envExec)).build();
+                                "jdk1.7.0_55", databasePassword, envExec, databaseHostname)).build();
 
         try {
             // create a container and get informations

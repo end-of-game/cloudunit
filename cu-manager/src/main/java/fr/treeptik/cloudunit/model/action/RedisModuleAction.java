@@ -66,7 +66,7 @@ public class RedisModuleAction
     }
 
     @Override
-    public List<String> createDockerCmd(String databasePassword, String envExec) {
+    public List<String> createDockerCmd(String databasePassword, String envExec, String databaseHostname) {
         return Arrays.asList(
             module.getApplication().getUser().getPassword(),
             module.getApplication().getRestHost(),
@@ -74,19 +74,20 @@ public class RedisModuleAction
             module.getModuleInfos().get("password"),
             module.getModuleInfos().get("username"),
             databasePassword,
-            envExec);
+            envExec, databaseHostname);
     }
 
     @Override
     public List<String> createDockerCmdForClone(Map<String, String> map,
-                                                String databasePassword, String envExec) {
+                                                String databasePassword,
+                                                String envExec, String databaseHostname) {
         return Arrays.asList(
             module.getApplication().getUser().getPassword(),
             module.getApplication().getRestHost(),
             module.getApplication().getUser().getLogin(),
             map.get("password"),
             module.getModuleInfos().get("username"),
-            databasePassword, envExec);
+            databasePassword, envExec, databaseHostname);
     }
 
     @Override

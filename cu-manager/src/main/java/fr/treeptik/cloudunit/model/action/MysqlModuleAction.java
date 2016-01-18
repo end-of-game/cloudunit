@@ -65,7 +65,7 @@ public class MysqlModuleAction
     }
 
     @Override
-    public List<String> createDockerCmd(String databasePassword, String envExec) {
+    public List<String> createDockerCmd(String databasePassword, String envExec, String databaseHostname) {
         return Arrays.asList(
             module.getModuleInfos().get("username"),
             module.getModuleInfos().get("password"),
@@ -74,7 +74,7 @@ public class MysqlModuleAction
             module.getApplication().getRestHost(),
             module.getApplication().getUser().getLogin(),
             databasePassword,
-            envExec);
+            envExec, databaseHostname);
     }
 
     @Override
@@ -132,7 +132,8 @@ public class MysqlModuleAction
     }
 
     @Override
-    public List<String> createDockerCmdForClone(Map<String, String> map, String databasePassword, String envExec) {
+    public List<String> createDockerCmdForClone(Map<String, String> map, String databasePassword, String envExec,
+                                                String databaseHostname) {
         return Arrays.asList(
             map.get("username"),
             map.get("password"),
@@ -141,7 +142,7 @@ public class MysqlModuleAction
             module.getApplication().getRestHost(),
             module.getApplication().getUser().getLogin(),
             databasePassword,
-            envExec);
+            envExec, databaseHostname);
     }
 
     @Override

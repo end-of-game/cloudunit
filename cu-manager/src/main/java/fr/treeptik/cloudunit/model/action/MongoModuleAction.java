@@ -63,7 +63,7 @@ public class MongoModuleAction
     }
 
     @Override
-    public List<String> createDockerCmd(String databasePassword, String envExec) {
+    public List<String> createDockerCmd(String databasePassword, String envExec, String databaseHostname) {
         return Arrays.asList(module.getModuleInfos().get("username"),
             module.getModuleInfos().get("password"),
             module.getModuleInfos().get("database"),
@@ -71,7 +71,7 @@ public class MongoModuleAction
             module.getApplication().getRestHost(),
             module.getApplication().getUser().getLogin(),
             databasePassword,
-            envExec);
+            envExec, databaseHostname);
     }
 
     @Override
@@ -128,7 +128,9 @@ public class MongoModuleAction
     }
 
     @Override
-    public List<String> createDockerCmdForClone(Map<String, String> map, String databasePassword, String envExec) {
+    public List<String> createDockerCmdForClone(Map<String, String> map,
+                                                String databasePassword, String envExec,
+                                                String databaseHostname) {
         return Arrays.asList(
             map.get("username"), map.get("password"),
             module.getModuleInfos().get("database"),
@@ -136,7 +138,7 @@ public class MongoModuleAction
             module.getApplication().getRestHost(),
             module.getApplication().getUser().getLogin(),
             databasePassword,
-            envExec);
+            envExec, databaseHostname);
     }
 
     @Override

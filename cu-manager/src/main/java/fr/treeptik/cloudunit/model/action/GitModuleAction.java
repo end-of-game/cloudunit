@@ -54,7 +54,7 @@ public class GitModuleAction
     }
 
     @Override
-    public List<String> createDockerCmd(String databasePassword, String envExec) {
+    public List<String> createDockerCmd(String databasePassword, String envExec, String databaseHostname) {
         return Arrays.asList("/bin/sh", "/cloudunit/scripts/start-service.sh",
             module.getApplication().getUser().getLogin(),
             module.getApplication().getUser().getPassword(),
@@ -62,7 +62,7 @@ public class GitModuleAction
             module.getApplication().getServers().get(0).getContainerIP(),
             module.getApplication().getName(),
             databasePassword,
-            envExec);
+            envExec, databaseHostname);
     }
 
     @Override
@@ -93,7 +93,8 @@ public class GitModuleAction
 
     @Override
     public List<String> createDockerCmdForClone(Map<String, String> map,
-                                                String databasePassword, String envExec) {
+                                                String databasePassword,
+                                                String envExec, String databaseHostname) {
         return new ArrayList<>();
     }
 

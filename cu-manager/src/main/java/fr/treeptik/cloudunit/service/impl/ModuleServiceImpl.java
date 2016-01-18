@@ -98,6 +98,9 @@ public class ModuleServiceImpl
     @Value("${ip.for.registry}")
     private String registryIp;
 
+    @Value("${database.hostname}")
+    private String databaseHostname;
+
     public ModuleDAO getModuleDAO() {
         return this.moduleDAO;
     }
@@ -382,10 +385,10 @@ public class ModuleServiceImpl
 
             }
 
-            commandesSpe.addAll(module.getModuleAction().createDockerCmdForClone(map, databasePassword, envExec));
+            commandesSpe.addAll(module.getModuleAction().createDockerCmdForClone(map, databasePassword, envExec, databaseHostname));
             dockerContainer.setCmd(commandesSpe);
         } else {
-            dockerContainer.setCmd(module.getModuleAction().createDockerCmd(databasePassword, envExec));
+            dockerContainer.setCmd(module.getModuleAction().createDockerCmd(databasePassword, envExec, databaseHostname));
         }
 
         try {

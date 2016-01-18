@@ -57,9 +57,10 @@ public abstract class ModuleAction
     public abstract String getInitDataCmd()
         throws IOException;
 
-    public abstract List<String> createDockerCmd(String databasePassword, String envExec);
+    public abstract List<String> createDockerCmd(String databasePassword, String envExec, String databaseHostname);
 
-    public abstract List<String> createDockerCmdForClone(Map<String, String> map, String databasePassword, String envExec);
+    public abstract List<String> createDockerCmdForClone(Map<String, String> map,
+                                                         String databasePassword, String envExec, String databaseHostname);
 
     /**
      * add url to access to module manager (e.g phpMyAdmin)
