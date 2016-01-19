@@ -7,8 +7,8 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 ## Requirements
 
 * Linux Ubuntu/Debian
-* Git
-* Java 1.8
+* Git / Java 1.8
+* Node 5.x
 * VirtualBox 5.0.4+ (www.virtualbox.org) - install before Vagrant
 * Vagrant 1.7.8+ (www.vagrantup.com)
 * Maven 3+ (maven.apache.org)
