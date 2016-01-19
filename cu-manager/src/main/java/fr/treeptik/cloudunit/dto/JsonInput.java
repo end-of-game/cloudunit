@@ -228,4 +228,8 @@ public class JsonInput
     public void validateCreateSnapshot() throws CheckException {
         CheckUtils.validateSyntaxInput(tag, "check.snapshot.name");
     }
+
+    public void validateClone() throws CheckException {
+        CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
+    }
 }

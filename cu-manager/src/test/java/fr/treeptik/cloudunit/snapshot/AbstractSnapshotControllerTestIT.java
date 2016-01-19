@@ -15,11 +15,23 @@
 
 package fr.treeptik.cloudunit.snapshot;
 
+import static fr.treeptik.cloudunit.utils.TestUtils.downloadAndPrepareFileToDeploy;
+import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -44,16 +56,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.inject.Inject;
-import javax.servlet.Filter;
 import java.util.Random;
 
-import static fr.treeptik.cloudunit.utils.TestUtils.downloadAndPrepareFileToDeploy;
-import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import javax.inject.Inject;
+import javax.servlet.Filter;
 
 /**
  * Created by nicolas on 08/09/15.
@@ -506,6 +512,9 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats =
                 mockMvc.perform(post("/snapshot/clone").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
+
+        resultats = mockMvc.perform(get("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(jsonPath("origin").value(tagName.toLowerCase()));
 
         logger.info("**************************************");
         logger.info("Delete the snapshot");

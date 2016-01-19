@@ -292,7 +292,7 @@ public class SnapshotServiceImpl
             // creation de la nouvelle app à partir de l'image tagée
             Application application =
                     applicationService.create(applicationName, user.getLogin(), snapshot.getType(),
-                            snapshot.getUniqueTagName());
+                            snapshot.getUniqueTagName(), snapshot.getTag());
 
             // We need it to get lazy modules relationships
             application = applicationService.findByNameAndUser(application.getUser(), application.getName());
