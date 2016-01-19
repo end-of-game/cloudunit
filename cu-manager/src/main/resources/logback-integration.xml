@@ -16,10 +16,10 @@
 <included>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
+        <encoder>
             <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level [%L] %logger{36} - %msg%n
             </Pattern>
-        </layout>
+        </encoder>
     </appender>
 
     <logger name="fr.treeptik" level="debug"/>
