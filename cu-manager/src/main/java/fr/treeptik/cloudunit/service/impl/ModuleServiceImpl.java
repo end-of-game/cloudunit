@@ -194,7 +194,7 @@ public class ModuleServiceImpl
                                 + module.getInstanceNumber();
                     } else {
                         Thread.sleep(3000);
-                        Snapshot snapshot = snapshotService.findOne(tagName.split("-")[1]);
+                        Snapshot snapshot = snapshotService.findOne(tagName);
                         Map<String, String> map = new HashMap<>();
 
                         for (String key : snapshot.getAppConfig().keySet()) {
@@ -358,7 +358,7 @@ public class ModuleServiceImpl
         if (tagName != null & !module.getImage().getName().contains("git")) {
             List<String> commandesSpe = new ArrayList<>();
 
-            Snapshot snapshot = snapshotService.findOne(tagName.split("-")[1]);
+            Snapshot snapshot = snapshotService.findOne(tagName);
             Map<String, String> map = new HashMap<>();
 
             for (String key : snapshot.getAppConfig().keySet()) {

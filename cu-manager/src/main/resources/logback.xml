@@ -48,6 +48,8 @@
     <logger name="fr.treeptik.cloudunit.controller" level="info"/>
     <logger name="fr.treeptik.cloudunit.controller.MessageController" level="error"/>
     <logger name="fr.treeptik.cloudunit.service.impl.ApplicationServiceImpl" level="info"/>
+    <logger name="fr.treeptik.cloudunit.controller.LogController" level="debug"/>
+
     <logger name="org.springframework" level="info"/>
     <logger name="org.springframework.security" level="info"/>
     <logger name="net.sf.ehcache" level="debug"/>

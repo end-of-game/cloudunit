@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.service;
 
 import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.ServiceException;
 
@@ -44,5 +45,8 @@ public interface FileService {
 
     void deleteFilesFromContainer(String applicationName, String containerId, String path)
         throws ServiceException;
+
+    public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
+            throws ServiceException;
 
 }

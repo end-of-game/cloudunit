@@ -16,9 +16,11 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import com.google.common.collect.Lists;
 import com.spotify.docker.client.*;
 import com.spotify.docker.client.messages.Container;
 import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -44,6 +46,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service for file management into container
@@ -194,6 +197,64 @@ public class FileServiceImpl
                         SourceUnit sourceUnit = new SourceUnit(name);
                         files.add(sourceUnit);
                     }
+                    output.close();
+                }
+            }
+        } catch (DockerException | InterruptedException | DockerCertificateException e) {
+            throw new ServiceException("Error in listByContainerIdAndPath", e);
+        }
+
+        return files;
+    }
+
+    /**
+     * Liste les fichiers de logs du répertoire de logs
+     *
+     * @param containerId
+     * @return
+     * @throws ServiceException
+     */
+    public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
+            throws ServiceException {
+
+        List<LogLine> files = new ArrayList<>();
+        try {
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
+            List<Container> containers = docker.listContainers();
+            containers = containers.stream().filter(container1 -> container1.id().substring(0, 12).equalsIgnoreCase(containerId))
+                    .collect(Collectors.toList());
+            for (Container container : containers) {
+                String logDirectory = getLogDirectory(containerId);
+                // Exec command inside running container with attached STDOUT
+                // and STDERR
+                final String[] command = {"bash", "-c",
+                        "tail -n " + nbRows  + " /cloudunit/appconf/logs/" + file};
+                String execId;
+                String containerName = container.names().get(0);
+                execId = docker.execCreate(containerName, command,
+                        DockerClient.ExecParameter.STDOUT,
+                        DockerClient.ExecParameter.STDERR);
+                final LogStream output = docker.execStart(execId);
+                final String execOutput = output.readFully();
+                if (execOutput != null
+                        && execOutput.contains("cannot access") == false) {
+                    StringTokenizer lignes = new StringTokenizer(execOutput, "\n");
+                    while (lignes.hasMoreTokens()) {
+                        String line = lignes.nextToken();
+                        LogLine logLine = new LogLine(file, line);
+                        files.add(logLine);
+                    }
+                    files = Lists.reverse(files);
                     output.close();
                 }
             }

@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.LogUnit;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -46,11 +47,11 @@ public class LogController {
     @Inject
     private AuthentificationUtils authentificationUtils;
 
-    @Inject
-    private LogService logService;
-
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private LogService logService;
 
     /**
      * Retourne les n-dernières lignes de logs d'une application
@@ -83,7 +84,6 @@ public class LogController {
             logger.info("Number of rows must be between 1 and 1000");
             nbRows = 500;
         }
-
         return logService.listByApp(applicationName, containerId, source, nbRows);
     }
 
