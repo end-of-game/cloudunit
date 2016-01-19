@@ -8,6 +8,8 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 
 * A MacOSX computer
 * Vagrant 1.7.8+
+* Git / Java 1.8
+* Node 5.x
 * VirtualBox 5.0.4+
 * Maven 3
  
