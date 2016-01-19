@@ -26,6 +26,7 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.TestUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -203,7 +204,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -383,7 +384,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -432,7 +433,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -556,7 +557,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -618,7 +619,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -883,7 +884,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -945,7 +946,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         if (release.contains("jboss")) {
             int counter = 0;
             contentPage = getUrlContentPage(urlToCall);
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -1005,7 +1006,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
-            while (contentPage.contains("Welcome to WildFly") && counter++ < 20) {
+            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }

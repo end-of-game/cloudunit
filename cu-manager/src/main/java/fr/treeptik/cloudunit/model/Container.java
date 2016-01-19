@@ -19,9 +19,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import fr.treeptik.cloudunit.utils.JsonDateSerializer;
 
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @MappedSuperclass
 public class Container
@@ -48,12 +62,6 @@ public class Container
     protected Long memorySize;
 
     protected String containerIP;
-
-    /**
-     * This is the docker state of the container containing the server :
-     * Running, Ghost, or Stopped
-     */
-    protected String dockerState;
 
     /**
      * This is the applicative status of the server START, STOP, PENDING when
@@ -145,14 +153,6 @@ public class Container
 
     public void setContainerIP(String containerIP) {
         this.containerIP = containerIP;
-    }
-
-    public String getDockerState() {
-        return dockerState;
-    }
-
-    public void setDockerState(String dockerState) {
-        this.dockerState = dockerState;
     }
 
     public Status getStatus() {

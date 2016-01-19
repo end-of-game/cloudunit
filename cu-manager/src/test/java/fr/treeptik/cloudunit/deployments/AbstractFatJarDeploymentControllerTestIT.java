@@ -1,10 +1,22 @@
 package fr.treeptik.cloudunit.deployments;
 
+import static fr.treeptik.cloudunit.utils.TestUtils.downloadAndPrepareFileToDeploy;
+import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
-import org.junit.*;
+import fr.treeptik.cloudunit.utils.TestUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -29,15 +41,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.inject.Inject;
-import javax.servlet.Filter;
 import java.util.Random;
 
-import static fr.treeptik.cloudunit.utils.TestUtils.downloadAndPrepareFileToDeploy;
-import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import javax.inject.Inject;
+import javax.servlet.Filter;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -137,7 +144,7 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
         logger.debug(urlToCall);
         int i = 0;
         String content = null;
-        while(i++ < 10) {
+        while(i++ < TestUtils.NB_ITERATION_MAX) {
             content = getUrlContentPage(urlToCall);
             logger.debug(content);
             Thread.sleep(1000);
@@ -193,7 +200,7 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
         int i = 0;
         String content = null;
         // Wait for the deployment
-        while(i++ < 20) {
+        while(i++ < TestUtils.NB_ITERATION_MAX) {
             content = getUrlContentPage(urlToCall);
             logger.debug(content);
             Thread.sleep(1000);

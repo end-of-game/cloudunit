@@ -26,7 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 /**
@@ -37,7 +42,13 @@ public class TestUtils {
     private static final Logger logger = LoggerFactory.getLogger(TestUtils.class);
 
     /**
-     * Return the content of an URL
+     * Number of maximum iteration to test the content page.
+     * Raise the value if some tests are not fonctional.
+     */
+    public static final Integer NB_ITERATION_MAX = 30;
+
+    /**
+     * Return the content of an URL.
      *
      * @param url
      * @return
@@ -54,7 +65,7 @@ public class TestUtils {
     }
 
     /**
-     * Download from github binaries and deploy file
+     * Download from github binaries and deploy file.
      *
      * @param path
      * @return

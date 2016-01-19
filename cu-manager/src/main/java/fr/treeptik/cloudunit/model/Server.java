@@ -18,11 +18,16 @@ package fr.treeptik.cloudunit.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.treeptik.cloudunit.model.action.ServerAction;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.PostLoad;
+import javax.persistence.Transient;
 
 @Entity
 public class Server
@@ -49,7 +54,7 @@ public class Server
     private ServerAction serverAction;
 
     public Server(Integer id, Date startDate, String name, String containerID,
-                  Long memorySize, String containerIP, String dockerState,
+                  Long memorySize, String containerIP,
                   Status status, Image image, Map<String, String> listPorts) {
         super();
         this.id = id;
@@ -58,7 +63,6 @@ public class Server
         this.containerID = containerID;
         this.memorySize = memorySize;
         this.containerIP = containerIP;
-        this.dockerState = dockerState;
         this.status = status;
         this.image = image;
     }
@@ -113,11 +117,14 @@ public class Server
 
     @Override
     public String toString() {
-        return "Server [id=" + id + ", startDate=" + startDate + ", name="
-            + name + ", cloudId=" + containerID + ", memorySize="
-            + memorySize + ", containerIP=" + containerIP
-            + ", dockerState=" + dockerState + ", image=" + image
-            + ", status=" + status + "]";
+        return "Server [id=" + id +
+                ", startDate=" + startDate +
+                ", name=" + name +
+                ", cloudId=" + containerID +
+                ", memorySize=" + memorySize +
+                ", containerIP=" + containerIP +
+                ", image=" + image +
+                ", status=" + status + "]";
     }
 
 }

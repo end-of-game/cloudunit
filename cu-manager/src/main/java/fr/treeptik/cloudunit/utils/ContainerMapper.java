@@ -48,8 +48,6 @@ public class ContainerMapper
         container.setMemorySize(dockerContainer.getMemorySwap());
         container.setContainerIP(dockerContainer.getIp());
 
-        container.setDockerState(dockerContainer.getState());
-
         // Set sshPort and delete it from global list port.
         container.setSshPort(dockerContainer.getPorts().get("22/tcp"));
         dockerContainer.getPorts().remove("22/tcp");

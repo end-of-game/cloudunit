@@ -24,9 +24,24 @@ import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.*;
-import fr.treeptik.cloudunit.service.*;
-import fr.treeptik.cloudunit.utils.*;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.Snapshot;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.ImageService;
+import fr.treeptik.cloudunit.service.ModuleService;
+import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.SnapshotService;
+import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
+import fr.treeptik.cloudunit.utils.ContainerMapper;
+import fr.treeptik.cloudunit.utils.EmailUtils;
+import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
+import fr.treeptik.cloudunit.utils.PortUtils;
+import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,12 +49,19 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.persistence.PersistenceException;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
 
 @Service
 public class ModuleServiceImpl
@@ -815,7 +837,6 @@ public class ModuleServiceImpl
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
 
-            module.setDockerState(dockerContainer.getState());
             module.setStatus(Status.STOP);
             module = this.update(module);
 
