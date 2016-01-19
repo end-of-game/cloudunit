@@ -220,7 +220,7 @@ public class CloudUnitApplicationContext
         Resource[] resources = null;
 
         if (customFile.exists()) {
-            logger.info("Custom file configuration found ! : {}", customFile.getAbsolutePath());
+            logger.warn("Custom file configuration found ! : {}", customFile.getAbsolutePath());
 
             resources =
                     new Resource[]
@@ -229,8 +229,7 @@ public class CloudUnitApplicationContext
                                     new FileSystemResource(customFile)
                             };
         } else {
-            logger.error(customFile.getAbsolutePath() + " is missing. It could generate configuration error");
-
+            logger.warn(customFile.getAbsolutePath() + " is missing. Needed for production !");
             resources =
                     new Resource[]
                             {

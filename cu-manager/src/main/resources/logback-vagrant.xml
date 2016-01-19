@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
   ~ but CloudUnit is licensed too under a standard commercial license.
@@ -14,8 +13,7 @@
   ~ For any questions, contact us : contact@treeptik.fr
   -->
 
-<!DOCTYPE configuration>
-<configuration>
+<included>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
@@ -24,13 +22,14 @@
         </layout>
     </appender>
 
-    <logger name="fr.treeptik" level="debug"/>
-<!--     <logger name="fr.treeptik.cloudunit.controller" level="error"/> -->
-<!--     <logger name="fr.treeptik.cloudunit.controller.SnapshotController" level="debug"/> -->
+    <logger name="fr.treeptik.cloudunit" level="info"/>
+    <logger name="fr.treeptik.cloudunit.controller" level="debug"/>
+
     <logger name="org.springframework" level="warn"/>
-    <logger name="net.sf.ehcache" level="error"/>
+    <logger name="net.sf.ehcache" level="warn"/>
 
     <root level="warn">
         <appender-ref ref="console"/>
     </root>
-</configuration>
+
+</included>
