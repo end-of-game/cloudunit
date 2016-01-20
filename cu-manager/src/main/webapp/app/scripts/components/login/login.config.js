@@ -18,13 +18,13 @@
 angular.module('webuiApp.login', [])
   .config([
     '$stateProvider',
-    function ($stateProvider) {
+    function($stateProvider) {
       $stateProvider
         .state('login', {
           url: '/login',
-          template: '<login cu-env="main.CUEnv"></login>',
+          template: '<login cu-env="main.CUEnv" error-msg="main.systemError"></login>',
           data: {
-            isFree: true
-          }
-        })
-    }]);
+            isFree: true,
+          },
+        });
+    },]);

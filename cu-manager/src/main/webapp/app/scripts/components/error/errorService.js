@@ -13,7 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -22,10 +22,9 @@
 
   ErrorService.$inject = ['$rootScope'];
 
-
   function ErrorService($rootScope) {
     return {
-      handle: handle
+      handle: handle,
     };
 
     function handle(error) {
@@ -33,26 +32,26 @@
       if (error.status === 400) {
         console.log(error);
         $rootScope.$broadcast(':unauthorized', {
-          message: 'The username or password you entered was incorrect.'
+          message: 'The username or password you entered was incorrect.',
         });
       }
 
       if (error.status === 401) {
         console.log(error);
         $rootScope.$broadcast(':unauthorized', {
-          message: ''
+          message: 'The username or password you entered was incorrect.',
         });
       }
 
-      if(error.status === 500 || error.status === 404){
+      if (error.status === 500 || error.status === 404) {
         $rootScope.$broadcast(':systemError', {
-          message: 'Sorry, an internal error has occurred. Please login later or contact support'
+          message: 'Sorry, an internal error has occurred. Please login later or contact support',
         });
       }
 
       if (error.status === 403) {
         $rootScope.$broadcast(':forbidden', {
-          message: 'Sorry, access to this page is restricted'
+          message: 'Sorry, access to this page is restricted',
         });
       }
     }

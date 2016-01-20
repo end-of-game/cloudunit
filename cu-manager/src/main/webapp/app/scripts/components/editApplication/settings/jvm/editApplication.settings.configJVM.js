@@ -1,3 +1,4 @@
+// jscs:disable safeContextKeyword
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -13,27 +14,30 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-(function () {
+(function() {
   'use strict';
   angular
-    .module ( 'webuiApp.editApplication' )
-    .directive ( 'jvmComponent', ConfigJVMComponent );
+    .module('webuiApp.editApplication')
+    .directive('jvmComponent', ConfigJVMComponent);
 
-  function ConfigJVMComponent () {
+  function ConfigJVMComponent() {
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/editApplication/settings/jvm/editApplication.settings.configureJVM.html',
       scope: {
-        application: '=app'
+        application: '=app',
       },
       controller: ['$scope', 'JVMService', ConfigJVMCtrl],
       controllerAs: 'configjvm',
-      bindToController: true
-    }
+      bindToController: true,
+    };
   }
 
-  function ConfigJVMCtrl ( $scope, JVMService) {
+  function ConfigJVMCtrl($scope, JVMService) {
     var vm = this;
+
+    console.log(vm.application);
+
     // Config JVM
 
     vm.jvmOptions = vm.application.servers[0].jvmOptions;
@@ -42,17 +46,16 @@
     vm.selectedJvmMemory = vm.jvmMemory;
     vm.selectedJvmRelease = vm.jvmRelease;
 
-
     vm.jvmMemorySizes = [512, 1024, 2048, 3072];
     vm.jvmReleases = ['jdk1.7.0_55', 'jdk1.8.0_25'];
     vm.saveConfigurationJVM = saveConfigurationJVM;
 
     // Function to save the JVM parameters
-    function saveConfigurationJVM ( applicationName, jvmMemory, jvmOptions, jvmRelease ) {
-      JVMService.saveConfigurationJVM ( applicationName, jvmMemory, jvmOptions, jvmRelease );
-      $scope.$emit ( 'workInProgress', { delay: 10000 } );
+    function saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease) {
+      JVMService.saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease);
+      $scope.$emit('workInProgress', { delay: 10000 });
     }
 
   }
-}) ();
+})();
 

@@ -13,7 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-(function () {
+(function() {
   'use strict';
 
   /**
@@ -26,6 +26,7 @@
   angular
     .module('webuiApp',
     [
+
       // core modules
       'ngResource',
       'ngCookies',
@@ -54,24 +55,23 @@
       'webuiApp.snapshots',
       'webuiApp.account',
       'webuiApp.feed',
-      'webuiApp.tags'
+      'webuiApp.tags',
     ])
     .config([
       '$urlRouterProvider',
-      function ($urlRouterProvider) {
-        $urlRouterProvider.otherwise('/dashboard');
-      }])
+      function($urlRouterProvider) {
+        $urlRouterProvider.otherwise('/login');
+      },])
     .constant('moment', moment)
+
     // moment locale config
-    .config(function () {
+    .config(function() {
       moment.locale('en', {
         calendar: {
           lastDay: '[Yesterday]',
-          sameDay: '[Today]'
-        }
+          sameDay: '[Today]',
+        },
       });
     });
 })();
-
-
 

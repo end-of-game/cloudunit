@@ -1,3 +1,4 @@
+// jscs:disable safeContextKeyword
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -13,7 +14,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-(function () {
+(function() {
   'use strict';
 
   angular
@@ -25,55 +26,54 @@
     '$rootScope',
     'UserService',
     '$interval',
-    '$state'
+    '$state',
   ];
 
   function MainCtrl($rootScope, UserService, $interval, $state) {
 
-    var vm = this, timer;
+    var vm = this;
+    var timer;
     vm.isFrozen = false;
     vm.isAdmin = false;
-    vm.systemError = false;
+    vm.systemError = null;
     vm.isLogged = isLogged;
     vm.logout = logout;
     vm.browserOutdated = false;
     vm.CUEnv = '';
 
-
     getUserRole();
     getCUEnv();
 
-    $rootScope.$on(':loginSuccess', function () {
+    $rootScope.$on(':loginSuccess', function() {
       //reset error message
-      vm.systemError = false;
+      vm.systemError = null;
       $state.go('dashboard');
     });
 
-    $rootScope.$on(':freezeSystem', function () {
+    $rootScope.$on(':freezeSystem', function() {
       vm.isFrozen = true;
     });
 
-    $rootScope.$on(':unFreezeSystem', function () {
+    $rootScope.$on(':unFreezeSystem', function() {
       vm.isFrozen = false;
     });
 
-    $rootScope.$on(':systemError', function (e, data) {
+    $rootScope.$on(':systemError', function(e, data) {
       vm.systemError = data.message;
       logout();
     });
 
-    $rootScope.$on(':unauthorized', function (e, data) {
+    $rootScope.$on(':unauthorized', function(e, data) {
       vm.systemError = data.message;
       logout();
     });
 
-    $rootScope.$on(':forbidden', function (e, data) {
+    $rootScope.$on(':forbidden', function(e, data) {
       vm.systemError = data.message;
       $state.go('dashboard');
     });
 
-    $rootScope.$on('$stateChangeStart', function (event, toState) {
-
+    $rootScope.$on('$stateChangeStart', function(event, toState) {
       vm.$state = toState;
 
       var restrictedArea = !toState.data.isFree;
@@ -100,19 +100,18 @@
       }
     });
 
-
     function getUserRole() {
       if (isLogged()) {
-        UserService.profile().then(function (user) {
+        UserService.profile().then(function(user) {
           vm.isAdmin = user.data.role.description === 'ROLE_ADMIN';
         });
       }
     }
 
-    function getCUEnv(){
-      return UserService.getCUEnv().then(function success(response){
+    function getCUEnv() {
+      return UserService.getCUEnv().then(function success(response) {
         vm.CUEnv = response.cuInstanceName;
-      } )
+      });
     }
 
     function logout() {
@@ -130,6 +129,4 @@
     }
   }
 })();
-
-
 

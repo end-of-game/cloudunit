@@ -24,13 +24,13 @@
       </div>
       <form role="form" id="login-form" novalidate=""
             data-ng-submit="login.check(login.user.username,  login.user.password)" autofill-fix>
-        <div class="alert alert-danger" data-ng-show="main.systemError">
+        <div class="alert alert-danger" data-ng-show="login.errorMsg">
           <button type="button"
                   class="close"
-                  ng-click="main.systemError = false">
+                  ng-click="login.discardMsg()">
             <span>&times;</span>
           </button>
-          <p>{{main.systemError}}</p>
+          <p>{{login.errorMsg}}</p>
         </div>
         <div class="input-group stack">
           <label for="username">Username</label>

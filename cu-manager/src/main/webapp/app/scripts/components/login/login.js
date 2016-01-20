@@ -1,3 +1,4 @@
+// jscs:disable safeContextKeyword
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -13,7 +14,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-(function () {
+(function() {
   'use strict';
 
   /**
@@ -25,21 +26,22 @@
     .module('webuiApp.login')
     .directive('login', Login);
 
-  function Login(){
+  function Login() {
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/login/login.html',
       scope: {
-        cuEnv: '='
+        cuEnv: '=',
+        errorMsg: '=',
       },
       controller: [
         '$scope',
         'UserService',
         'ErrorService',
-        LoginCtrl
+        LoginCtrl,
       ],
       controllerAs: 'login',
-      bindToController: true
+      bindToController: true,
     };
   }
 
@@ -48,38 +50,38 @@
     var vm = this;
     vm.user = {
       username: '',
-      password: ''
+      password: '',
     };
-
+    vm.discardMsg = discardMsg;
     vm.check = check;
 
     function reset() {
       vm.user = {
         username: '',
-        password: ''
+        password: '',
       };
     }
 
     function check(username, password) {
 
       return UserService.check(username, password)
-        .then(success)
-        .catch(error);
+        .then(onSuccess)
+        .catch(onError);
 
-      function success() {
+      function onSuccess() {
         UserService.createLocalSession();
         reset();
         $scope.$emit(':loginSuccess');
       }
 
-      function error(response) {
+      function onError(response) {
         ErrorService.handle(response);
       }
     }
+
+    function discardMsg() {
+      vm.errorMsg = null;
+    }
   }
 }());
-
-
-
-
 

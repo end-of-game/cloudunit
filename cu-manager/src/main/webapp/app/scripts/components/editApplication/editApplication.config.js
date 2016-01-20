@@ -18,7 +18,7 @@
 angular.module('webuiApp.editApplication', [])
   .config([
     '$stateProvider',
-    function ($stateProvider) {
+    function($stateProvider) {
       $stateProvider
         .state('editApplication',
           {
@@ -26,53 +26,53 @@ angular.module('webuiApp.editApplication', [])
             template: '<edit-application state="main.$state"></edit-application>',
             abstract: true,
             data: {
-              isFree: false
+              isFree: false,
             },
             resolve: {
-              /*App: ['ApplicationService', '$stateParams', function(ApplicationService, $stateParams){
-               return ApplicationService.init($stateParams.name);
-               }]*/
-            }
+              App: ['ApplicationService', '$stateParams', function(ApplicationService, $stateParams) {
+                return ApplicationService.findByName($stateParams.name);
+              },],
+            },
           })
         .state('editApplication.overview',
           {
             url: '/overview',
-            template: '<edit-app-overview app="editApp.application"></edit-app-overview>'
+            template: '<edit-app-overview app="editApp.application"></edit-app-overview>',
           })
         .state('editApplication.addModule',
           {
             url: '/addModule',
-            template: '<edit-app-modules app="editApp.application"></edit-app-modules>'
+            template: '<edit-app-modules app="editApp.application"></edit-app-modules>',
           })
         .state('editApplication.deploy',
           {
             url: '/deploy',
-            template: '<edit-app-deploy app="editApp.application"></edit-app-deploy>'
+            template: '<edit-app-deploy app="editApp.application"></edit-app-deploy>',
           })
         .state('editApplication.explorer',
           {
             url: '/explorer',
-            template: '<edit-app-explorer app="editApp.application"></edit-app-explorer>'
+            template: '<edit-app-explorer app="editApp.application"></edit-app-explorer>',
           })
         .state('editApplication.logs',
           {
             url: '/logs',
-            template: '<edit-app-logs app="editApp.application" state="editApp.state"></edit-app-logs>'
+            template: '<edit-app-logs app="editApp.application" state="editApp.state"></edit-app-logs>',
           })
         .state('editApplication.monitoring',
           {
             url: '/monitoring',
-            template: '<edit-app-monitoring app="editApp.application"></edit-app-monitoring>'
+            template: '<edit-app-monitoring app="editApp.application"></edit-app-monitoring>',
           })
         .state('editApplication.snapshot',
           {
             url: '/snapshot',
-            template: '<edit-app-snapshot app="editApp.application"></edit-app-snapshot>'
+            template: '<edit-app-snapshot app="editApp.application"></edit-app-snapshot>',
           })
         .state('editApplication.settings',
           {
             url: '/settings',
-            template: '<edit-app-settings app="editApp.application"></edit-app-settings>'
-          })
+            template: '<edit-app-settings app="editApp.application"></edit-app-settings>',
+          });
 
-    }]);
+    }, ]);

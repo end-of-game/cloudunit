@@ -13,38 +13,41 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-
-(function () {
+(function() {
   'use strict';
   angular
     .module('webuiApp.editApplication')
-    .directive('editAppSettings', ['$compile', '$timeout', Settings]);
+    .directive('editAppSettings', ['$compile', Settings]);
 
-  function Settings($compile, $timeout){
+  function Settings($compile) {
     return {
       restrict: 'E',
       template: '<div class="tab-pane vertical-spacing"></div>',
       scope: {
-        application: '=app'
+        application: '=app',
       },
       controller: ['$scope', SettingsCtrl],
       controllerAs: 'settings',
       bindToController: true,
       replace: true,
-      link: function(scope, element, attrs, ctrl){
+      link: function(scope, element, attrs, ctrl) {
         var tpl = [
           '<jvm-component app="settings.application"></jvm-component>',
           '<alias-component app="settings.application"></alias-component>',
-          '<ports-component app="settings.application"></ports-component>'
+          '<ports-component app="settings.application"></ports-component>',
         ].join('');
 
         angular.element(element).append(tpl);
-
-        $timeout(function(){
+        if (ctrl.application) {
           $compile(element.contents())(scope);
-        }, 0);
-      }
-    }
+        }
+
+        //ensures application state is resolved before compiling component
+        scope.$on('application:ready', function() {
+          $compile(element.contents())(scope);
+        });
+      },
+    };
   }
 
   function SettingsCtrl($scope) {}
