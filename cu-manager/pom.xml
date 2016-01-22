@@ -9,15 +9,6 @@
 
 	<properties>
 
-		<!-- ++++++++++++++++++++++++ -->
-		<!-- User specific properties -->
-		<!-- ++++++++++++++++++++++++ -->
-		<!-- User must set this property with its own ip -->
-		<cloudunit.manager.ip>192.168.2.106</cloudunit.manager.ip>
-		<!-- redirect all emails emitted by platform : associated with vagrant 
-			spring profile -->
-		<email.force.redirect>n.muller@treeptik.fr</email.force.redirect>
-
 		<!-- Compiler plugin -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
