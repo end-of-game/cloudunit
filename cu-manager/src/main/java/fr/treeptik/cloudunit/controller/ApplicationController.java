@@ -302,8 +302,6 @@ public class ApplicationController
     @RequestMapping(method = RequestMethod.GET)
     public List<Application> findAllByUser()
             throws ServiceException {
-        logger.debug("--CALL LIST USER APPLICATIONS--");
-
         User user = this.authentificationUtils.getAuthentificatedUser();
         List<Application> applications = applicationService.findAllByUser(user);
 
