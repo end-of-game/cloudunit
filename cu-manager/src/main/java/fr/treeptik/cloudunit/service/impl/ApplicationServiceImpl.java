@@ -129,6 +129,9 @@ public class ApplicationServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
+    @Value("${cloudunit.manager.ip}")
+    private String hostName2;
+
     public ApplicationDAO getApplicationDAO() {
         return this.applicationDAO;
     }

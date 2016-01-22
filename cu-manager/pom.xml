@@ -9,6 +9,9 @@
 
 	<properties>
 
+        <!-- dynamic property via groovy script maven plugin -->
+        <cloudunit.manager.ip/>
+
 		<!-- Compiler plugin -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -573,6 +576,24 @@
 		</testResources>
 
 		<plugins>
+
+            <plugin>
+                <groupId>org.codehaus.groovy.maven</groupId>
+                <artifactId>gmaven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>
+                                project.properties["cloudunit.manager.ip"] = InetAddress.getLocalHost().getHostAddress()
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
 			<!-- Used for unit tests and IT tests -->
 			<plugin>
