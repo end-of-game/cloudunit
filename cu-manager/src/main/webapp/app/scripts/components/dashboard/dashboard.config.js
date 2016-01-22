@@ -18,13 +18,18 @@
 angular.module('webuiApp.dashboard', [])
   .config([
     '$stateProvider',
-    function ($stateProvider) {
+    function($stateProvider) {
       $stateProvider
         .state('dashboard', {
           url: '/dashboard',
           template: '<dashboard></dashboard>',
           data: {
-            isFree: false
-          }
-        })
-    }]);
+            isFree: false,
+          },
+          resolve: {
+            apps: ['ApplicationService', function(ApplicationService) {
+              return ApplicationService.list();
+            },],
+          },
+        });
+    },]);

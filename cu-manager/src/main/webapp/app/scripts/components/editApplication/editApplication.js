@@ -1,3 +1,4 @@
+// jscs:disable safeContextKeyword
 /*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
@@ -13,7 +14,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-(function () {
+(function() {
   'use strict';
 
   /**
@@ -24,29 +25,29 @@
    * Controller of the webuiApp
    */
   angular
-    .module ( 'webuiApp.editApplication' )
-    .directive ( 'editApplication', EditApplication );
+    .module('webuiApp.editApplication')
+    .directive('editApplication', EditApplication);
 
-  function EditApplication () {
+  function EditApplication() {
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/editApplication/editApplication.html',
       scope: {
-        state: '='
+        state: '=',
       },
       controller: [
+        '$rootScope',
         '$scope',
         '$stateParams',
         'ApplicationService',
-        '$interval',
-        EditApplicationCtrl
+        EditApplicationCtrl,
       ],
       controllerAs: 'editApp',
-      bindToController: true
+      bindToController: true,
     };
   }
 
-  function EditApplicationCtrl ( $scope, $stateParams, ApplicationService, $interval) {
+  function EditApplicationCtrl($rootScope, $scope, $stateParams, ApplicationService) {
 
     // ------------------------------------------------------------------------
     // SCOPE
@@ -57,23 +58,24 @@
     vm.hideFeed = false;
     vm.applicationService = ApplicationService;
 
-
-    vm.applicationService.init($stateParams.name).then(function(){
+    vm.applicationService.init($stateParams.name).then(function() {
       vm.application = vm.applicationService.state;
+      $rootScope.$broadcast('application:ready');
     });
 
     // We must destroy the polling when the scope is destroyed
-    $scope.$on ( '$destroy', function () {
+    $scope.$on('$destroy', function() {
       vm.applicationService.stopPolling();
-    } );
+    });
 
-    $scope.$watch ( function () {
+    $scope.$watch(function() {
       return vm.state;
-    }, function ( oldVal, newVal ) {
-      if(oldVal){
+    }, function(oldVal, newVal) {
+
+      if (oldVal) {
         vm.hideFeed = oldVal.name === 'editApplication.logs' || oldVal.name === 'editApplication.monitoring';
       }
-    } );
+    });
   }
-}) ();
+})();
 

@@ -13,7 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-(function () {
+(function() {
 
   'use strict';
 
@@ -24,10 +24,10 @@
   AdminService.$inject = [
     '$http',
     'moment',
-    'ErrorService'
+    'ErrorService',
   ];
 
-//////////////////////////////////////////
+  //////////////////////////////////////////
 
   function AdminService($http, moment, ErrorService) {
     return {
@@ -35,7 +35,7 @@
       createUser: createUser,
       deleteUser: deleteUser,
       changeRole: changeRole,
-      getUserLogs: getUserLogs
+      getUserLogs: getUserLogs,
     };
 
     function getUsers() {
@@ -45,15 +45,16 @@
         .catch(error);
 
       function success(users) {
-        angular.forEach(users.data, function (user) {
+        angular.forEach(users.data, function(user) {
           _setUserActivity(user);
           user.signin = _formatSigninDate(user.signin);
           _users.push(user);
         });
+
         return _users;
       }
 
-      function error(response){
+      function error(response) {
 
         ErrorService.handle(response);
       }
@@ -70,15 +71,14 @@
     function changeRole(user, role) {
       var data = {
         login: user.login,
-        role: role
+        role: role,
       };
       return $http.post('/admin/user/rights', data);
     }
 
-
     function _setUserActivity(user) {
       angular.extend(user, {
-        activity: _activityFilter(user.lastConnection)
+        activity: _activityFilter(user.lastConnection),
       });
       return user;
     }
@@ -96,6 +96,7 @@
       } else if (period > 30 && period < 60) {
         activity = 'low';
       }
+
       return activity;
     }
 
@@ -107,10 +108,9 @@
       }
     }
 
-    function _formatSigninDate(date){
+    function _formatSigninDate(date) {
       return moment(date).toDate();
     }
   }
 })();
-
 
