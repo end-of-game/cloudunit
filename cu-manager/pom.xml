@@ -8,7 +8,7 @@
 	<name>CloudUnit</name>
 
 	<properties>
-        
+
         <!-- dynamic property via groovy script maven plugin -->
         <cloudunit.manager.ip/>
         <emailForceRedirect/>
@@ -90,13 +90,13 @@
 			<version>2.7.7</version>
 		</dependency>
 
-		<!--
+
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
 			<version>0.90.9</version>
 		</dependency>
-		-->
+
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
