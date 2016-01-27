@@ -12,6 +12,7 @@
         <!-- dynamic property via groovy script maven plugin -->
         <cloudunit.manager.ip/>
         <emailForceRedirect/>
+        <email.force.redirect>n.muller@treeptik.fr</email.force.redirect>
 
 		<!-- Compiler plugin -->
 		<maven.compiler.source>1.8</maven.compiler.source>
