@@ -86,6 +86,10 @@ On your local host
 
 Finally, add a local DNS entry on your host: any address ending with cu-engine.cloudunit.io shoud point to the ip address of your server. Refere to the Local DNS section to see how to achieve this on Ubuntu.
 
+###NB : For OVH Machine
+
+In /etc/cloud/cloud.cfg, change manage_etc_hosts value to false
+
 ## KVM Exception
 
 You **may** have a strange problem with KVM virtual machine.
