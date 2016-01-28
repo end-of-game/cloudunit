@@ -8,11 +8,7 @@ if [ -f $LOG_FILE ]; then
 	rm $LOG_FILE
 fi
 
-if [ -z "$(git describe --exact-match --tags 2>/dev/null)" ]; then
 	GIT_TAG=latest
-else
-	GIT_TAG=`git describe --exact-match --tags 2>/dev/null`
-fi
 
 
 for i in 0 1 2 3 4
