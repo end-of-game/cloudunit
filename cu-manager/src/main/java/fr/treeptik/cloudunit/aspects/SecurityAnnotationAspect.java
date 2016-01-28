@@ -71,7 +71,7 @@ public class SecurityAnnotationAspect {
                 }
                 Application application = applicationService.findByNameAndUser(user, applicationName);
                 if (application == null) {
-                    throw new IllegalArgumentException("This application does not exist on this account");
+                    throw new IllegalArgumentException("This application does not exist on this account : " + applicationName + "," + user);
                 }
             }
 

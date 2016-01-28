@@ -57,11 +57,11 @@ public class MysqlModuleAction
      */
     @Override
     public void initModuleInfos() {
-        module.getModuleInfos().put("database",
-            module.getApplication().getName().toLowerCase());
-        module.getModuleInfos().put("dockerManagerAddress",
-            module.getApplication().getManagerIp());
-        module.getModuleInfos().putAll(ModuleUtils.generateRamdomUserAccess());
+                module.getModuleInfos().put("database",
+                module.getApplication().getName().toLowerCase());
+                module.getModuleInfos().put("dockerManagerAddress",
+                module.getApplication().getManagerIp());
+                module.getModuleInfos().putAll(ModuleUtils.generateRamdomUserAccess());
     }
 
     @Override

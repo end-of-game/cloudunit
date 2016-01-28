@@ -27,12 +27,14 @@ fi
 pid1=0
 pid2=0
 
+# Callback bound to the application stop
 term_handler() {
   if [ $pid1 -ne 0 ]; then
     /cloudunit/scripts/cu-stop.sh
 	/cloudunit/scripts/waiting-for-shutdown.sh java 30
-	rm -rf $CATALINA_BASE/logs/*
-	$JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER STOP $MANAGER_DATABASE_PASSWORD 
+	cat /cloudunit/appconf/logs/catalina.out >> /cloudunit/appconf/logs/catalina.out.previous
+	rm -rf /cloudunit/appconf/logs/localhost* /cloudunit/appconf/logs/manager* /cloudunit/appconf/logs/host*
+	$JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER STOP $MANAGER_DATABASE_PASSWORD
   fi
   if [ $pid2 -ne 0 ]; then
     kill -SIGTERM "$pid2"
@@ -44,9 +46,9 @@ trap 'kill ${!}; term_handler' SIGTERM
 
 if [ ! -f /init-service-ok ]; then
 
-	#################
-	# PREMIER APPEL #
-	#################
+	##############
+	# First CALL #
+	##############
 	echo "Start Services and configure password for $1" 
 
 	# Transforme les variables en variables d'environnements
@@ -93,8 +95,8 @@ else
         #################
         # SECOND APPEL  #
         #################
-        # purge des logs
-        rm -rf /cloudunit/appconf/logs/*
+	    cat /cloudunit/appconf/logs/catalina.out >> /cloudunit/appconf/logs/catalina.out.previous
+        rm -rf /cloudunit/appconf/logs/localhost* /cloudunit/appconf/logs/manager* /cloudunit/appconf/logs/host*
 
         # Redémarrage de openssh et tomcat
         echo "restarting"

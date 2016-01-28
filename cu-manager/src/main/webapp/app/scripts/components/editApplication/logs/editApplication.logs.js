@@ -61,7 +61,7 @@
       { value: 100 },
       { value: 500 },
       { value: 1000 },
-      { value: 5000 }
+      { value: 2000 }
     ];
     vm.myRows = vm.rows[0];
     vm.isLoading = true;

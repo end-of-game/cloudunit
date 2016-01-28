@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RedisModuleAction
-    extends ModuleAction {
+        extends ModuleAction {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,27 +54,29 @@ public class RedisModuleAction
 
     @Override
     public void initModuleInfos() {
-        module.getModuleInfos().put("dockerManagerAddress",
-            module.getApplication().getManagerIp());
+        module.getModuleInfos().put("database",
+                module.getApplication().getName().toLowerCase());
+        module.getModuleInfos().put("dockerManagerAddress", module.getApplication().getManagerIp());
         module.getModuleInfos().putAll(ModuleUtils.generateRamdomUserAccess());
     }
 
     @Override
     public String getInitDataCmd()
-        throws IOException {
+            throws IOException {
         return "";
     }
 
     @Override
     public List<String> createDockerCmd(String databasePassword, String envExec, String databaseHostname) {
         return Arrays.asList(
-            module.getApplication().getUser().getPassword(),
-            module.getApplication().getRestHost(),
-            module.getApplication().getUser().getLogin(),
-            module.getModuleInfos().get("password"),
-            module.getModuleInfos().get("username"),
-            databasePassword,
-            envExec, databaseHostname);
+                module.getModuleInfos().get("username"),
+                module.getModuleInfos().get("password"),
+                module.getModuleInfos().get("database"),
+                module.getApplication().getUser().getPassword(),
+                module.getApplication().getRestHost(),
+                module.getApplication().getUser().getLogin(),
+                databasePassword,
+                envExec, databaseHostname);
     }
 
     @Override
@@ -82,55 +84,55 @@ public class RedisModuleAction
                                                 String databasePassword,
                                                 String envExec, String databaseHostname) {
         return Arrays.asList(
-            module.getApplication().getUser().getPassword(),
-            module.getApplication().getRestHost(),
-            module.getApplication().getUser().getLogin(),
-            map.get("password"),
-            module.getModuleInfos().get("username"),
-            databasePassword, envExec, databaseHostname);
+                map.get("username"),
+                map.get("password"),
+                module.getModuleInfos().get("database"),
+                module.getApplication().getUser().getPassword(),
+                module.getApplication().getRestHost(),
+                module.getApplication().getUser().getLogin(),
+                databasePassword,
+                envExec, databaseHostname);
     }
 
     @Override
     public Module enableModuleManager(HipacheRedisUtils hipacheRedisUtils,
                                       Module module, Long instanceNumber) {
         hipacheRedisUtils.createModuleManagerKey(
-            module.getApplication(),
-            module.getContainerIP(),
-            DEFAULT_MANAGER_PORT,
-            module.getImage().getManagerName(),
-            instanceNumber);
+                module.getApplication(),
+                module.getContainerIP(),
+                DEFAULT_MANAGER_PORT,
+                module.getImage().getManagerName(),
+                instanceNumber);
         return module;
     }
 
     @Override
     public void updateModuleManager(HipacheRedisUtils hipacheRedisUtils) {
         hipacheRedisUtils.updatedAdminAddress(module.getApplication(), module.getContainerIP(), DEFAULT_MANAGER_PORT,
-            module
-                .getImage().getManagerName(),
-            Long.parseLong(module.getName()
-                .substring(module.getName().lastIndexOf("-")
-                    + 1)));
+                module
+                        .getImage().getManagerName(),
+                Long.parseLong(module.getName()
+                        .substring(module.getName().lastIndexOf("-")
+                                + 1)));
     }
 
     @Override
     public void unsubscribeModuleManager(HipacheRedisUtils hipacheRedisUtils) {
         hipacheRedisUtils.removePhpMyAdminKey(module.getApplication(), module
-            .getImage().getManagerName(), Long.parseLong(module.getName()
-            .substring(module.getName().lastIndexOf(
-                "-") + 1)));
+                .getImage().getManagerName(), Long.parseLong(module.getName()
+                .substring(module.getName().lastIndexOf(
+                        "-") + 1)));
     }
 
     @Override
     public ModuleConfiguration cloneProperties() {
         ModuleConfiguration moduleConfiguration = new ModuleConfiguration();
         moduleConfiguration.setName(module.getImage().getName());
-        moduleConfiguration.setPath(module.getImage().getPath() + "-"
-            + module.getInstanceNumber() + "-data");
+        moduleConfiguration.setPath(module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data");
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("password-" + module.getImage().getName(), module
-            .getModuleInfos().get("password"));
-        properties.put("username-" + module.getImage().getName(), module
-            .getModuleInfos().get("username"));
+        properties.put("username-" + module.getImage().getName(), module.getModuleInfos().get("username"));
+        properties.put("password-" + module.getImage().getName(), module.getModuleInfos().get("password"));
+        properties.put("database-" + module.getImage().getName(), module.getModuleInfos().get("database"));
         moduleConfiguration.setProperties(properties);
         return moduleConfiguration;
     }
@@ -143,13 +145,13 @@ public class RedisModuleAction
     @Override
     public String getManagerLocation(String subdomain, String suffix) {
         String managerLocation = "http://"
-            + module.getImage().getManagerName()
-            + module.getName().substring(
-            module.getName().lastIndexOf("-") + 1) + "-"
-            + module.getApplication().getName() + "-"
-            + module.getApplication().getUser().getLogin() + "-"
-            + module.getApplication().getUser().getOrganization()
-            + subdomain + suffix + "/";
+                + module.getImage().getManagerName()
+                + module.getName().substring(
+                module.getName().lastIndexOf("-") + 1) + "-"
+                + module.getApplication().getName() + "-"
+                + module.getApplication().getUser().getLogin() + "-"
+                + module.getApplication().getUser().getOrganization()
+                + subdomain + suffix + "/";
         return managerLocation;
     }
 

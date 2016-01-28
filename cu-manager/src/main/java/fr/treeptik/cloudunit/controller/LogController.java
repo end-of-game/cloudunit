@@ -21,7 +21,6 @@ import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.service.FileService;
-import fr.treeptik.cloudunit.service.LogService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +49,6 @@ public class LogController {
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private LogService logService;
-
     /**
      * Retourne les n-dernières lignes de logs d'une application
      *
@@ -66,7 +62,7 @@ public class LogController {
     @RequestMapping(value = "/{applicationName}/container/{containerId}/source/{source}/rows/{nbRows}", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<LogUnit> findByApplication(
+    List<LogLine> findByApplication(
         @PathVariable String applicationName,
         @PathVariable String containerId, @PathVariable String source,
         @PathVariable Integer nbRows)
@@ -84,7 +80,7 @@ public class LogController {
             logger.info("Number of rows must be between 1 and 1000");
             nbRows = 500;
         }
-        return logService.listByApp(applicationName, containerId, source, nbRows);
+        return fileService.catFileForNLines(containerId, source, nbRows);
     }
 
     /**
@@ -106,6 +102,8 @@ public class LogController {
         }
 
         List<SourceUnit> sources = fileService.listLogsFilesByContainer(containerId);
+        // needed by UI to call the next url
+        if (sources.size()==0) { sources.add(new SourceUnit("system.out")); }
         logger.debug("" + sources);
 
         return sources;

@@ -98,11 +98,8 @@
 
         <table ng-table="tableParams" show-filter="false" class="table ng-table-responsive terminal">
           <tr ng-repeat="logUnit in $data track by $index">
-            <td data-title="'message'" filter="{ 'message': 'text' }">
-              >> {{logUnit.message}}
-            </td>
-            <td data-title="'date'">
-              {{logUnit.date}}
+            <td filter="{ 'message': 'text' }">
+              {{logUnit.message}}
             </td>
           </tr>
         </table>

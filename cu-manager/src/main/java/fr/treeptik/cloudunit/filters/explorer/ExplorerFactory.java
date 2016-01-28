@@ -34,6 +34,7 @@ public class ExplorerFactory {
         ExplorerFactory.filters.put("mongo", new MongoFilter());
         ExplorerFactory.filters.put("jboss", new JBossFilter());
         ExplorerFactory.filters.put("fatjar", new FatJarFilter());
+        ExplorerFactory.filters.put("redis", new RedisFilter());
     }
 
     private ExplorerFactory() {

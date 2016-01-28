@@ -78,7 +78,7 @@ if [ ! -f /init-service-ok ]; then
 	usermod -s /bin/bash $CU_USER
 
 	#creation d'un fichier de log
-	touch /cloudunit/appconf/log/app.log
+	touch /cloudunit/appconf/logs/application.log
 
 	# Le montage /cloudunit n'appartient qu'à l'utilisateur créé
 	chown -R $CU_USER:$CU_USER /cloudunit
@@ -91,7 +91,7 @@ else
         # SECOND APPEL  #
         #################
         # purge des logs
-        rm -rf /cloudunit/appconf/log/*
+        rm -rf /cloudunit/appconf/logs/*
 
         # Redémarrage de openssh et java
         echo "restarting"
@@ -106,7 +106,7 @@ do
 	sleep 1
 done
 
-# Lancement de tomcat avec Attente du demarrage de tomcat
+# Run with the right user
 su - $CU_USER -c "/cloudunit/scripts/cu-start.sh" 
 
 # ENVOIE DE REST AU MANAGER

@@ -19,3 +19,5 @@ cloudunit/mysql-5-5 images/modules/mysql-5-5
 cloudunit/mysql-5-5-data images/modules/mysql-5-5-data
 cloudunit/mongo-2-6 images/modules/mongo-2-6
 cloudunit/mongo-2-6-data images/modules/mongo-2-6-data
+cloudunit/redis-3-0 images/modules/redis-3-0
+cloudunit/redis-3-0-data images/modules/redis-3-0-data

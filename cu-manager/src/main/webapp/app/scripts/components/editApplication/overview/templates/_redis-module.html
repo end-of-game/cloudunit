@@ -31,8 +31,25 @@
              value="{{module.internalDNSName}}"
              readonly="" oneclickselect="">
     </div>
-  </div>
 
+    <div class="readonly">
+      <label for="username">User: </label>
+      <input id="username"
+             type="text"
+             value="{{module.moduleInfos.username}}"
+             readonly="" oneclickselect="">
+    </div>
+
+    <div class="readonly password">
+      <label for="password-{{$index}}">Password: </label>
+      <input id="password-{{$index}}"
+             type="text"
+             value="{{module.moduleInfos.password}}"
+             readonly=""
+             oneclickselect="">
+      <a href="" class="showPass-btn button-link" reveal-password=""><i class="icon-whhg eye-view"></i></a>
+    </div>
+  </div>
   <div class="action">
     <div class="secondary-action">
       <button class="toggle-modal icon-button secondary pull-left"

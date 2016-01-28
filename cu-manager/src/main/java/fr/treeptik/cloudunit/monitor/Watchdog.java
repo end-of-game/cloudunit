@@ -30,7 +30,7 @@
 
 package fr.treeptik.cloudunit.monitor;
 
-import fr.treeptik.cloudunit.monitor.tasks.ElasticsearchTask;
+import fr.treeptik.cloudunit.monitor.tasks.BlankTask;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -44,7 +44,7 @@ import javax.inject.Inject;
 public class Watchdog implements ApplicationListener<ContextRefreshedEvent> {
 
     @Inject
-    private ElasticsearchTask elasticSearchTask;
+    private BlankTask elasticSearchTask;
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {

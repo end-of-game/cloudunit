@@ -35,6 +35,6 @@ ADD scripts /cloudunit/scripts/
 WORKDIR /data
 
 ## PORTS A EXPOSER
-EXPOSE 22 
+EXPOSE 22
 
 ENTRYPOINT ["/bin/bash", "/cloudunit/scripts/start-service.sh"]

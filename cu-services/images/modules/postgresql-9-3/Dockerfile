@@ -14,7 +14,6 @@ RUN apt-get update
 RUN apt-get -y -q install python-software-properties software-properties-common
 RUN apt-get -y -q install postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3 phppgadmin
 
-
 RUN chown -R postgres:postgres /cloudunit
 
 ## Déplacement du dossier de données

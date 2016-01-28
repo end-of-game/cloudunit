@@ -35,8 +35,8 @@ if [ ! -f /cloudunit/database/init-service-ok ]; then
 
 fi
 
-	# Démarrage de mysql
-	/usr/sbin/mysqld&
+# Démarrage de mysql
+/usr/sbin/mysqld&
 
 if [ ! -f /cloudunit/database/init-service-ok ]; then
 

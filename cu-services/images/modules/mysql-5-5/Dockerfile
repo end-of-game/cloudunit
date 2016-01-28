@@ -19,7 +19,6 @@ RUN sed -i -e"s/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/" -e"s/\/va
 #ADD my.cnf /etc/mysql/my.cnf
 ADD php.ini /etc/php5/apache2/
 
-
 RUN echo 'phpmyadmin phpmyadmin/dbconfig-install boolean true' | debconf-set-selections
 RUN echo 'phpmyadmin phpmyadmin/app-password-confirm password root' | debconf-set-selections
 RUN echo 'phpmyadmin phpmyadmin/mysql/admin-pass password root' | debconf-set-selections
@@ -32,7 +31,6 @@ ENV CU_DATABASE_HOME /cloudunit/database
 RUN mkdir /cloudunit/database
 RUN mkdir /cloudunit/backup
 RUN echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
-
 
 # Ajout des scripts utile aux managers et au démarrage container
 ADD scripts /cloudunit/scripts/

@@ -13,21 +13,41 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.service;
+package fr.treeptik.cloudunit.monitor.tasks;
 
-import fr.treeptik.cloudunit.dto.LogUnit;
-import fr.treeptik.cloudunit.exception.ServiceException;
-
-import java.util.List;
+import fr.treeptik.cloudunit.monitor.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
- * Created by nicolas on 25/08/2014.
+ * Created by nicolas on 27/11/2015.
  */
-public interface LogService {
+@Component
+public class BlankTask implements Task {
 
-    public List<LogUnit> listByApp(String applicationName, String containerId, String source, Integer nbRows)
-        throws ServiceException;
+    private final static Logger logger = LoggerFactory.getLogger(BlankTask.class);
 
-    public int deleteLogsForApplication(String applicationName)
-        throws ServiceException;
+    @Override
+    public void run() {
+        isRunning(true);
+    }
+
+    // Two minutes
+    @Scheduled(fixedDelay = 120000)
+    private void monitor() {
+        isRunning(false);
+    }
+
+    /**
+     * To evaluate if service is runnning or not
+     * If needed, we stop the jvm or send an email
+     *
+     * @param exit
+     */
+    private void isRunning(boolean exit) {
+    }
+
 }

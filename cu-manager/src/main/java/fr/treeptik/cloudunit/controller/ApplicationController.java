@@ -24,7 +24,6 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.LogService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
@@ -57,9 +56,6 @@ public class ApplicationController
 
     @Inject
     private ApplicationService applicationService;
-
-    @Inject
-    private LogService logService;
 
     @Inject
     private AuthentificationUtils authentificationUtils;
@@ -256,9 +252,6 @@ public class ApplicationController
         try {
             // Application busy
             applicationService.setStatus(application, Status.PENDING);
-
-            logger.info("delete logs for this application");
-            logService.deleteLogsForApplication(applicationName);
 
             logger.info("delete application :" + applicationName);
             applicationService.remove(application, user);

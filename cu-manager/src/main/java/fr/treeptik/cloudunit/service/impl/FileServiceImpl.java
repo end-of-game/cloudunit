@@ -174,6 +174,7 @@ public class FileServiceImpl
                 String execId;
 
                 String containerName = container.names().get(0);
+                if (containerName.startsWith("/")) containerName = containerName.substring(1);
                 execId = docker.execCreate(containerName, command,
                         DockerClient.ExecParameter.STDOUT,
                         DockerClient.ExecParameter.STDERR);
