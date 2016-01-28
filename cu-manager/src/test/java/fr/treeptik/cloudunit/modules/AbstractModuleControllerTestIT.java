@@ -213,10 +213,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-
-            .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[1].status").value("START"))
             .andExpect(jsonPath("$.modules[1].name").value(genericModule))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
@@ -242,7 +239,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[0].status").value("START"))
             .andExpect(jsonPath("$.modules[1]").doesNotExist());
 
@@ -284,10 +280,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-
-            .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[1].status").value("START"))
             .andExpect(jsonPath("$.modules[1].name").value(module1))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
@@ -321,15 +314,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[0].status").value("START"))
 
-            .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[1].status").value("START"))
             .andExpect(jsonPath("$.modules[1].name").value(module1))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1))
 
-            .andExpect(jsonPath("$.modules[2].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[2].status").value("START"))
             .andExpect(jsonPath("$.modules[2].name").value(module2))
             .andExpect(jsonPath("$.modules[2].managerLocation").value(managerExpected2));
@@ -346,9 +336,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
             .andExpect(jsonPath("$.modules[1].status").value("START"))
             .andExpect(jsonPath("$.modules[1].name").value(module2))
             .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected2))
@@ -401,10 +389,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-                .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
                 .andExpect(jsonPath("$.modules[0].status").value("START"))
-
-                .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
                 .andExpect(jsonPath("$.modules[1].status").value("START"))
                 .andExpect(jsonPath("$.modules[1].name").value(module1))
                 .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
