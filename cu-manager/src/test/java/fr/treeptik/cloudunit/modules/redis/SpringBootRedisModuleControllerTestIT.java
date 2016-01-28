@@ -13,12 +13,14 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules;
+package fr.treeptik.cloudunit.modules.redis;
 
+import com.jayway.jsonpath.JsonPath;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.TestUtils;
 import junit.framework.TestCase;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -42,6 +44,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -49,6 +53,7 @@ import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.util.Random;
 
+import static fr.treeptik.cloudunit.utils.TestUtils.downloadAndPrepareFileToDeploy;
 import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -66,10 +71,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
-public abstract class AbstractModuleControllerTestIT extends TestCase {
+public class SpringBootRedisModuleControllerTestIT extends TestCase {
 
     private final Logger logger = LoggerFactory
-        .getLogger(AbstractModuleControllerTestIT.class);
+        .getLogger(SpringBootRedisModuleControllerTestIT.class);
 
     @Autowired
     private WebApplicationContext context;
@@ -92,11 +97,11 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     private static String applicationName;
 
-    protected String server;
-    protected String module;
-    protected String managerPrefix;
-    protected String managerSuffix;
-    protected String managerPageContent;
+    protected String server = "fatjar";
+    protected String module = "redis-3-0";
+    protected String managerPrefix = "redmin";
+    protected String managerSuffix = "";
+    protected String managerPageContent = "Redis";
 
     @BeforeClass
     public static void initEnv() {
@@ -132,7 +137,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     @After
     public void teardown() {
         logger.info("teardown");
-
         SecurityContextHolder.clearContext();
         session.invalidate();
     }
@@ -153,9 +157,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("Cannot add a module because application name missing");
         String jsonString = "{\"applicationName\":\"" + "UFO" + "\", \"imageName\":\"" + module + "\"}";
         ResultActions resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().is5xxServerError());
     }
 
@@ -164,9 +168,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("Cannot add a module because module name empty");
         String jsonString = "{\"applicationName\":\"" + "REALAPP" + "\", \"imageName\":\"" + "" + "\"}";
         ResultActions resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().is5xxServerError());
     }
 
@@ -175,14 +179,14 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("Cannot add a module because module name empty");
         String jsonString = "{\"applicationName\":\"" + "REALAPP" + "\", \"imageName\":\"" + "UFO" + "\"}";
         ResultActions resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().is5xxServerError());
     }
 
     @Test
-    public void test10_CreateServerThenAddModule() throws Exception {
+    public void test10_CreateServerThenAddModuleThenTestManagerThenRemoveModule() throws Exception {
         logger.info("Create an application, add a " + module + " module and delete it");
 
         // create an application server
@@ -197,9 +201,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         // add a module
         jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().isOk());
 
         // Expected values
@@ -209,22 +213,29 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+                .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modules[0].name").value(gitModule))
+                .andExpect(jsonPath("$.modules[0].status").value("START"))
+                .andExpect(jsonPath("$.modules[1].status").value("START"))
+                .andExpect(jsonPath("$.modules[1].name").value(genericModule))
+                .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
 
-            .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(genericModule))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
+        String fullContent = resultats.andReturn().getResponse().getContentAsString();
 
-        String contentPage = getUrlContentPage(managerExpected);
+        String userNameRedis = JsonPath.read(fullContent, "$.modules[1].moduleInfos.username");
+        String passwordRedis = JsonPath.read(fullContent, "$.modules[1].moduleInfos.password");
+        String managerUrlAuth = "http://" + userNameRedis + ":" + passwordRedis + "@"
+                + managerPrefix + "1-"
+                + applicationName.toLowerCase()
+                + "-johndoe-admin.cloudunit.dev/"
+                + managerSuffix;
+
+        String contentPage = getUrlContentPage(managerUrlAuth);
         int counter = 0;
-        while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
-            contentPage = getUrlContentPage(managerExpected);
+        while (contentPage.contains("DOCTYPE")==false && counter++ < 10) {
+            contentPage = getUrlContentPage(managerUrlAuth);
             Thread.sleep(1000);
         }
 
@@ -232,19 +243,18 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // remove a module
         resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + genericModule)
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+                .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[1]").doesNotExist());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modules[0].name").value(gitModule))
+                .andExpect(jsonPath("$.modules[0].status").value("START"))
+                .andExpect(jsonPath("$.modules[1]").doesNotExist());
 
         logger.info("Delete application : " + applicationName);
         resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
@@ -252,116 +262,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     @Test
-    public void test20_CreateServerThenAddTwoModule() throws Exception {
-        logger.info("Create an application, add two " + module + " modules, stop them then delete all");
-
-        // create an application server
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        // verify if app exists
-        resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
-
-        // add a first module
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
-        resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        // Expected values
-        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
-
-        // get the detail of the applications to verify modules addition
-        resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-
-            .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(module1))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
-
-        String contentPage = getUrlContentPage(managerExpected1);
-
-        int counter = 0;
-        while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
-            contentPage = getUrlContentPage(managerExpected1);
-            Thread.sleep(1000);
-        }
-
-
-        Assert.assertTrue(contentPage.contains(managerPageContent));
-
-        // add a second module
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
-        resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        // Expected values
-        String module2 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-2";
-        String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
-
-        // get the detail of the applications to verify modules addition
-        resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-
-            .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(module1))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1))
-
-            .andExpect(jsonPath("$.modules[2].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[2].status").value("START"))
-            .andExpect(jsonPath("$.modules[2].name").value(module2))
-            .andExpect(jsonPath("$.modules[2].managerLocation").value(managerExpected2));
-
-        // remove the first module 
-        resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + module1)
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
-        // we must verify the first module disappared and second one replaced it
-        resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(module2))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected2))
-            .andExpect(jsonPath("$.modules[2]").doesNotExist());
-
-        logger.info("Delete application : " + applicationName);
-        resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-    }
-
-    @Test
-    public void test30_AddModuleThenRestart() throws Exception {
-        logger.info("Create an application, add a " + module + " modules, restart");
+    public void test20_CreateServerThenAddModuleThenDeployApplicationThenRemoveModule() throws Exception {
+        logger.info("Create an application, add a " + module + " module and delete it");
+        String binary = "spring-boot-redis-1.0.0.jar";
 
         // create an application server
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
@@ -372,48 +275,83 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
 
-        // add a first module
+        // add a module
         jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().isOk());
+
+        // Change to Java 8 for compliance with example fatjar
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+        resultats =
+                mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        // Open the 8080 port for fatjar
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"8080\",\"portNature\":\"web\"}";
+        resultats =
+                this.mockMvc.perform(post("/application/ports")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
+        resultats.andExpect(status().isOk()).andDo(print());
 
         // Expected values
-        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
+        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
         String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
-
-        // Stop the application
-        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
-        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        // Start the application
-        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
-        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
+        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
                 .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        System.out.println(resultats.andReturn().getResponse().getContentAsString());
         resultats
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-                .andExpect(jsonPath("$.modules[0].dockerState").value("Running"))
                 .andExpect(jsonPath("$.modules[0].status").value("START"))
-
-                .andExpect(jsonPath("$.modules[1].dockerState").value("Running"))
                 .andExpect(jsonPath("$.modules[1].status").value("START"))
-                .andExpect(jsonPath("$.modules[1].name").value(module1))
-                .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
+                .andExpect(jsonPath("$.modules[1].name").value(genericModule))
+                .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
+
+        String fullContent = resultats.andReturn().getResponse().getContentAsString();
+
+        String userNameRedis = JsonPath.read(fullContent, "$.modules[1].moduleInfos.username");
+        String passwordRedis = JsonPath.read(fullContent, "$.modules[1].moduleInfos.password");
+
+        // Deploy the fat Jar
+        resultats =
+                mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy")
+                        .file(downloadAndPrepareFileToDeploy(binary,
+                                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary))
+                        .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
+        resultats.andExpect(status().is2xxSuccessful());
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
+        logger.debug(urlToCall);
+        int i = 0;
+        String content = null;
+        // Wait for the deployment
+        while(i++ < TestUtils.NB_ITERATION_MAX) {
+            content = getUrlContentPage(urlToCall);
+            Thread.sleep(1000);
+            if (content == null || content.contains("Redis is great")) { break; }
+        }
+        logger.debug(content);
+        if (content != null) {
+            Assert.assertTrue(content.contains("Redis is great"));
+        }
 
         logger.info("Delete application : " + applicationName);
         resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
-
     }
 
+    @After
+    public void doNothing() {}
 
 }

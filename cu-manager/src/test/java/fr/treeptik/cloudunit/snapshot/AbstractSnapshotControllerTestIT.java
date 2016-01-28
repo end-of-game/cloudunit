@@ -391,7 +391,6 @@ public abstract class AbstractSnapshotControllerTestIT {
         }
         Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
 
-
         logger.info("**************************************");
         logger.info("Create a snapshot");
         logger.info("**************************************");
@@ -840,11 +839,6 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
     }
-
-
-
-
-
 
 
     private void cloneASnapshotWithApplicationWithModuleAndADeployment(String module, String appName,

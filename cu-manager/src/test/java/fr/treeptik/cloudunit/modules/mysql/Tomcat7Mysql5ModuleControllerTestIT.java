@@ -28,19 +28,21 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules;
+package fr.treeptik.cloudunit.modules.mysql;
+
+import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 
 /**
  * Created by nicolas on 04/10/15.
  */
-public class Tomcat8PostgresModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Tomcat7Mysql5ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat8PostgresModuleControllerTestIT() {
-        super.server = "tomcat-8";
-        super.module = "postgresql-9-3";
-        super.managerPrefix = "phppgadmin";
-        super.managerSuffix = "phppgadmin";
-        super.managerPageContent = "phpPgAdmin";
+    public Tomcat7Mysql5ModuleControllerTestIT() {
+        super.server = "tomcat-7";
+        super.module = "mysql-5-5";
+        super.managerPrefix = "phpmyadmin";
+        super.managerSuffix = "phpmyadmin";
+        super.managerPageContent = "phpMyAdmin";
     }
 
 }

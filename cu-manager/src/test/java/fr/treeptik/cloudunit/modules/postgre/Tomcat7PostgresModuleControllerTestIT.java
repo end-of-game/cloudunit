@@ -43,19 +43,21 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules;
+package fr.treeptik.cloudunit.modules.postgre;
+
+import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 
 /**
  * Created by nicolas on 04/10/15.
  */
-public class JBoss8Mongo26ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Tomcat7PostgresModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public JBoss8Mongo26ModuleControllerTestIT() {
-        super.server = "jboss-8";
-        super.module = "mongo-2-6";
-        super.managerPrefix = "mms";
-        super.managerSuffix = "";
-        super.managerPageContent = "Mongo Management Studio";
+    public Tomcat7PostgresModuleControllerTestIT() {
+        super.server = "tomcat-7";
+        super.module = "postgresql-9-3";
+        super.managerPrefix = "phppgadmin";
+        super.managerSuffix = "phppgadmin";
+        super.managerPageContent = "phpPgAdmin";
     }
 
 }
