@@ -73,8 +73,11 @@ public class JBossAction5
 
     @Override
     public String getLogLocation() {
-        return "cloudunit/appconf/server/default/log";
+        return "cloudunit/appconf/logs";
     }
+
+    @Override
+    public String getDefaultLogFile() { return "server.log"; };
 
     @Override
     public boolean hasDefaultPort() {

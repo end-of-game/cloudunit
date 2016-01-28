@@ -66,4 +66,8 @@ public class FatJarAction extends ServerAction {
     public boolean hasDefaultPort() {
         return false;
     }
+
+    @Override
+    public String getDefaultLogFile() { return "system.out"; };
+
 }

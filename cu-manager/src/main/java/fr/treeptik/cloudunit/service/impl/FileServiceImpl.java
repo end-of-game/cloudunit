@@ -95,6 +95,8 @@ public class FileServiceImpl
     }
 
     /**
+     * File Explorer Feature
+     *
      * Delete all resources (files and folders) for an application + container +
      * path.
      *
@@ -139,7 +141,9 @@ public class FileServiceImpl
     }
 
     /**
-     * Liste les fichiers de logs du répertoire de logs
+     * Logs Display Feature
+     *
+     * List the files into the Log directory
      *
      * @param containerId
      * @return
@@ -209,7 +213,9 @@ public class FileServiceImpl
     }
 
     /**
-     * Liste les fichiers de logs du répertoire de logs
+     * Logs Display Feature
+     *
+     * List the files and folder for a container
      *
      * @param containerId
      * @return
@@ -267,6 +273,8 @@ public class FileServiceImpl
     }
 
     /**
+     * File Explorer Feature
+     *
      * List the files by Container and Path
      *
      * @param containerId
@@ -391,6 +399,18 @@ public class FileServiceImpl
         return files;
     }
 
+    /**
+     * File Explorer feature
+     *
+     * Send a file into a container
+     *
+     * @param applicationName
+     * @param containerId
+     * @param file
+     * @param originalName
+     * @param destFile
+     * @throws ServiceException
+     */
     @Override
     public void sendFileToContainer(String applicationName, String containerId,
                                     File file, String originalName, String destFile)
@@ -436,6 +456,19 @@ public class FileServiceImpl
 
     }
 
+    /**
+     * File Explorer feature
+     *
+     * Gather a file from a container
+     *
+     * @param applicationName
+     * @param containerId
+     * @param file
+     * @param originalName
+     * @param destFile
+     * @return
+     * @throws ServiceException
+     */
     @Override
     public Optional<File> getFileFromContainer(String applicationName,
                                                String containerId, File file, String originalName, String destFile)
@@ -502,5 +535,23 @@ public class FileServiceImpl
 
         return location;
     }
+
+    public String getDefaultLogFile(String containerId)
+            throws ServiceException {
+        Module module = null;
+        Server server = null;
+        String file = null;
+        try {
+            server = serverService.findByContainerID(containerId);
+            if (server != null) {
+                file = server.getServerAction().getDefaultLogFile();
+            }
+        } catch (ServiceException e) {
+            throw new ServiceException("error in send file into the container",
+                    e);
+        }
+        return file;
+    }
+
 
 }

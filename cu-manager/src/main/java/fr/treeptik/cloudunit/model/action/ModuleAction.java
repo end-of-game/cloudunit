@@ -84,5 +84,4 @@ public abstract class ModuleAction
     public abstract String getLogLocation();
 
     public abstract String getManagerLocation(String subdomain, String suffix);
-
 }

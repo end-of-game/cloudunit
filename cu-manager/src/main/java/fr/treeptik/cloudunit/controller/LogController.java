@@ -103,7 +103,10 @@ public class LogController {
 
         List<SourceUnit> sources = fileService.listLogsFilesByContainer(containerId);
         // needed by UI to call the next url
-        if (sources.size()==0) { sources.add(new SourceUnit("system.out")); }
+        if (sources.size()==0) {
+            String defaultFile = fileService.getDefaultLogFile(containerId);
+            sources.add(new SourceUnit(defaultFile));
+        }
         logger.debug("" + sources);
 
         return sources;

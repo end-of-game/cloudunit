@@ -60,4 +60,5 @@ public abstract class ServerAction
 
     public abstract boolean hasDefaultPort();
 
+    public abstract String getDefaultLogFile();
 }

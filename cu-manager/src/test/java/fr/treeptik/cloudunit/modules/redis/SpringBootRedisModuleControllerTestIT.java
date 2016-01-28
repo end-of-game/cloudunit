@@ -351,7 +351,5 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
     }
 
-    @After
-    public void doNothing() {}
 
 }

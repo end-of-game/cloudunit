@@ -95,7 +95,7 @@ do
 done
 cd
 
-su - $CU_USER -c "$JBOSS_HOME/bin/standalone.sh -P=/etc/environment -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0&"
+su - $CU_USER -c "$JBOSS_HOME/bin/standalone.sh -P=/etc/environment -Djboss.server.log.dir=$CU_LOGS -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0&"
 
 ps -ef
 env

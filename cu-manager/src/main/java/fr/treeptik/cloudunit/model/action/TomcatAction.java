@@ -77,6 +77,9 @@ public class TomcatAction
     }
 
     @Override
+    public String getDefaultLogFile() { return "catalina.out"; };
+
+    @Override
     public boolean hasDefaultPort() {
         return true;
     }

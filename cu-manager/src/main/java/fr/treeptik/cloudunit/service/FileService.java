@@ -49,4 +49,6 @@ public interface FileService {
     public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
             throws ServiceException;
 
+    public String getDefaultLogFile(String containerId)
+            throws ServiceException;
 }

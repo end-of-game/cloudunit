@@ -77,6 +77,9 @@ public class JBossAction
     }
 
     @Override
+    public String getDefaultLogFile() { return "server.log"; };
+
+    @Override
     public boolean hasDefaultPort() {
         return true;
     }
