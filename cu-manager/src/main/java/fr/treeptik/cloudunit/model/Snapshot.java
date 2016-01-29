@@ -217,11 +217,6 @@ public class Snapshot
                 ", jvmRelease='" + jvmRelease + '\'' +
                 ", jvmOptions='" + jvmOptions + '\'' +
                 ", jvmMemory=" + jvmMemory +
-                ", deploymentStatus='" + deploymentStatus + '\'' +
-                ", user=" + user +
-                ", date=" + date +
-                ", appConfig=" + appConfig +
-                ", images=" + images +
                 '}';
     }
 
