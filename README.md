@@ -35,8 +35,7 @@ There are many installation guides
 ## Usage examples
 
 There are many user guides
-* [Spring petclinic](documentation/webapps/SPRINGPETCLINIC.md)
-* [RollerBlog (Soon) ](documentation/webapps/ROLLERBLOG.md)
+* [Spring MySQL Redis](documentation/webapps/SPRING-MYSQL-REDIS.md)
 
 # Licensing
 
