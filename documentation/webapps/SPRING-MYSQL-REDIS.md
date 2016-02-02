@@ -13,7 +13,7 @@ We will use the cloudunit internal mechanism based on environment variable.
 git clone https://github.com/Treeptik/cloudunit-webapp-examples
 ```
 
-## Database access
+## Redis
 
 When you add your first module REDIS, you will access to these
 * CU_DATABASE_DNS_REDIS_1
@@ -40,11 +40,25 @@ Edit the following files:
 * Add into pom.xml
 ```
 <dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>2.8.0</version>
+</dependency>
+```
+
+## MYSQL
+
+Edit the following files:
+
+* Add into pom.xml
+```
+<dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
     <version>5.1.22</version>
 </dependency>
 ```
+
 * Comment the lines about HSQL
 * Uncomment the lines into **src/main/resources/spring/data-access.properties* *
 ```
