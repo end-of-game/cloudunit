@@ -64,6 +64,8 @@ So in your configuration code, you can use them as
 </bean>
 ```
 As the same way for Redis, you could use `System.getenv` to gather them.
+They are injected into Server context so you can use them. 
+With Spring, you need to activate a place-holder to gather them.
 
 Edit the following files:
 
@@ -76,43 +78,11 @@ Edit the following files:
 </dependency>
 ```
 
-* Comment the lines about HSQL
-* Uncomment the lines into **src/main/resources/spring/data-access.properties* *
-```
-jpa.showSql=true
- 
-#-------------------------------------------------------------------------------
-# MySQL Settings
-jdbc.driverClassName=com.mysql.jdbc.Driver
-jdbc.url=jdbc:mysql://${CU_DATABASE_DNS_1}:3306/${CU_DATABASE_NAME}
-jdbc.username=${CU_DATABASE_USER_1}
-jdbc.password=${CU_DATABASE_PASSWORD_1}
- 
-# Properties that control the population of schema and data for a new data source
-jdbc.initLocation=classpath:db/mysql/initDB.sql
-jdbc.dataLocation=classpath:db/mysql/populateDB.sql
- 
-# Property that determines which Hibernate dialect to use
-# (only applied with "applicationContext-hibernate.xml")
-hibernate.dialect=org.hibernate.dialect.MySQLDialect
- 
-# Property that determines which database to use with an AbstractJpaVendorAdapter
-jpa.database=MYSQL
-```
-It is good to understand how to use environment variables from CloudUnit
-* ${CU_DATABASE_DNS_1}
-* ${CU_DATABASE_NAME}
-* ${CU_DATABASE_USER_1}
-* ${CU_DATABASE_PASSWORD_1}
-
-They are injected into Server context so you can use them. 
-With Spring, you need to activate a place-holder to gather them.
-
 ## Maven Packaging
-```
-mvn clean package -DskipTests
-```
-## Web UI
 
-## Shell
+You can package the example with maven and deploy it with WebUI
+```
+cd $HOME/cloudunit-webapp-examples/spring-mysql-redis/ && mvn clean package -DskipTests
+```
+
 
