@@ -85,4 +85,10 @@ You can package the example with maven and deploy it with WebUI
 cd $HOME/cloudunit-webapp-examples/spring-mysql-redis/ && mvn clean package -DskipTests
 ```
 
+## Visual Flow
+
+### Create a new application
+
+![CloudUnit](documentation/img/spring-mysql-redis-01.png "Spring MYSQL REDIS 01")
+
 
