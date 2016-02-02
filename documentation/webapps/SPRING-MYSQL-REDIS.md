@@ -91,6 +91,15 @@ cd $HOME/cloudunit-webapp-examples/spring-mysql-redis/ && mvn clean package -Dsk
 
 ![CloudUnit](https://github.com/Treeptik/cloudunit/blob/redis-module-feature/documentation/img/spring-mysql-redis-01.png "Spring MYSQL REDIS 01")
 
-### Create a new application
+### Add the modules
 
+![CloudUnit](https://github.com/Treeptik/cloudunit/blob/redis-module-feature/documentation/img/spring-mysql-redis-02.png "Spring MYSQL REDIS 02")
+
+### Get the informations
+
+![CloudUnit](https://github.com/Treeptik/cloudunit/blob/redis-module-feature/documentation/img/spring-mysql-redis-03.png "Spring MYSQL REDIS 03")
+
+You can use these informations to log into the two managers:
+* phpMyAdmin
+* PhpRedmin
 
