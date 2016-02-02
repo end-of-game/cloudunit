@@ -2,7 +2,7 @@
 
 ## Goals
 
-This guide explains how to create a JEE application with two modules:
+This guide explains how to create a classic SpringFramework WAR application with two modules:
 * MySQL
 * Redis
 
