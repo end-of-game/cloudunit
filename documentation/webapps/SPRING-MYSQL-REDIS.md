@@ -103,3 +103,11 @@ You can use these informations to log into the two managers:
 * phpMyAdmin
 * PhpRedmin
 
+### Deploy the war
+
+![CloudUnit](https://github.com/Treeptik/cloudunit/blob/redis-module-feature/documentation/img/spring-mysql-redis-04.png "Spring MYSQL REDIS 04")
+
+### Access to application
+
+![CloudUnit](https://github.com/Treeptik/cloudunit/blob/redis-module-feature/documentation/img/spring-mysql-redis-05.png "Spring MYSQL REDIS 05")
+
