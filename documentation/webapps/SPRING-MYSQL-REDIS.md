@@ -89,6 +89,8 @@ cd $HOME/cloudunit-webapp-examples/spring-mysql-redis/ && mvn clean package -Dsk
 
 ### Create a new application
 
-![CloudUnit](documentation/img/spring-mysql-redis-01.png "Spring MYSQL REDIS 01")
+![CloudUnit](https://github.com/Treeptik/cloudunit/blob/redis-module-feature/documentation/img/spring-mysql-redis-01.png "Spring MYSQL REDIS 01")
+
+### Create a new application
 
 
