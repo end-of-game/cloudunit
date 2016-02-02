@@ -81,7 +81,7 @@ Edit the following files:
 
 ## Maven Packaging
 
-You can package the example with maven and deploy it with WebUI
+You can package the example with maven and deploy it through WebUI
 ```
 cd $HOME/cloudunit-webapp-examples/spring-mysql-redis/ && mvn clean package -DskipTests
 ```
