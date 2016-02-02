@@ -1,4 +1,4 @@
-# SPRING MYSQL REDIS
+# .:: SPRING MYSQL REDIS ::.
 
 ## Goals
 
@@ -48,7 +48,7 @@ Edit the following files:
 
 ## MYSQL
 
-When you add your first module REDIS, you will access to these
+When you add your first module MySQL, you will access to these
 * CU_DATABASE_DNS_MYSQL_1
 * CU_DATABASE_USER_MYSQL_1
 * CU_DATABASE_PASSWORD_MYSQL_1
