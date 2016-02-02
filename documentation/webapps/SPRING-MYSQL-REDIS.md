@@ -6,7 +6,7 @@ This guide explains how to create a classic SpringFramework WAR application with
 * MySQL
 * Redis
 
-We will use the cloudunit internal mechanism based on environment variable.
+We will use the cloudunit internal mechanism based on environment variables to reach dynamically the modules. No need to change login/password databases at each time. We could create and use a generic binary.
 
 ## Clone the opensource project from SpringSource
 ```
