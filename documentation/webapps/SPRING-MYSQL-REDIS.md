@@ -1,10 +1,27 @@
-# SPRING PETCLINIC
+# SPRING MYSQL REDIS
+
+## Goals
+
+This guide explains how to create a JEE application with two modules:
+* Mysql
+* Redis
+
+We will use the cloudunit internal mechanism based on environment variable.
 
 ## Clone the opensource project from SpringSource
 ```
-git clone https://github.com/SpringSource/spring-petclinic.git
+git clone https://github.com/Treeptik/cloudunit-webapp-examples
 ```
+
 ## Database access
+
+When you add your first module, yo
+
+```
+CU_DATABASE_DNS_REDIS_1
+CU_DATABASE_USER_REDIS_1
+CU_DATABASE_PASSWORD_REDIS_1
+````
 
 Edit the following files:
 
