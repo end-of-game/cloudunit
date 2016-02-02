@@ -15,13 +15,25 @@ git clone https://github.com/Treeptik/cloudunit-webapp-examples
 
 ## Database access
 
-When you add your first module, yo
+When you add your first module REDIS, you will access to these
+* CU_DATABASE_DNS_REDIS_1
+* CU_DATABASE_USER_REDIS_1
+* CU_DATABASE_PASSWORD_REDIS_1
 
+So in your java code, you can use them as
 ```
-CU_DATABASE_DNS_REDIS_1
-CU_DATABASE_USER_REDIS_1
-CU_DATABASE_PASSWORD_REDIS_1
-````
+private Jedis jedis;
+@PostConstruct
+    public void init() {
+        String redisServer = System.getenv("CU_DATABASE_DNS_REDIS_1");
+        String redisUser = System.getenv("CU_DATABASE_USER_REDIS_1");
+        String redisPassword = System.getenv("CU_DATABASE_PASSWORD_REDIS_1");
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        JedisPool pool = new JedisPool(jedisPoolConfig, redisServer);
+        jedis = pool.getResource();
+        jedis.auth(redisPassword);
+    }
+```
 
 Edit the following files:
 
