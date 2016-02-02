@@ -3,7 +3,7 @@
 ## Goals
 
 This guide explains how to create a JEE application with two modules:
-* Mysql
+* MySQL
 * Redis
 
 We will use the cloudunit internal mechanism based on environment variable.
@@ -47,6 +47,23 @@ Edit the following files:
 ```
 
 ## MYSQL
+
+When you add your first module REDIS, you will access to these
+* CU_DATABASE_DNS_REDIS_1
+* CU_DATABASE_USER_REDIS_1
+* CU_DATABASE_PASSWORD_REDIS_1
+
+So in your configuration code, you can use them as
+```
+ <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+    <property name="url" value="jdbc:mysql://${CU_DATABASE_DNS_MYSQL_1}:3306/${CU_DATABASE_NAME}"/>
+    <property name="username" value="${CU_DATABASE_USER_MYSQL_1}"/>
+    <property name="password" value="${CU_DATABASE_PASSWORD_MYSQL_1}"/>
+    <property name="validationQuery" value="SELECT 1"/>
+</bean>
+```
+As the same way for Redis, you could use `System.getenv` to gather them.
 
 Edit the following files:
 
