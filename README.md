@@ -14,7 +14,7 @@ It is available under the terms of either the Affero GNU Public Licence 3.0
 You can find more informations there : [CloudUnit Website](http://www.cloudunit.io/)
 
 You can test the common platform online here (reseted all night)
-* https://cu-tests.cloudunit.io :: [ johndoe / abc2015 ]
+* https://sormiou.cloudunit.io :: [ johndoe / abc2015 ]
 
 
 ![CloudUnit Gif](documentation/img/cloudunitGif.gif "CloudUnit Gif")
