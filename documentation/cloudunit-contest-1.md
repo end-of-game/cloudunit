@@ -9,7 +9,7 @@ CloduUnit Developer Contest #1
 ##How to enter 
 Do you have an idea for an improvement, new feature, or updated design? Any idea, big or small, can win you an **Intellij personal license** ! 
 
- 1. Try the [oneline version of CloudUnit](https://sormiou.cloudunit.io/) or [Install your own](https://github.com/Treeptik/cloudunit/)
+ 1. Try the [online version of CloudUnit](https://sormiou.cloudunit.io/) or [Install your own demo box](https://github.com/Treeptik/cloudunit/blob/dev/documentation/DEMO-GUIDE.md)
  2. Create issues with **Feature Label** and explain with the more detail as possible your idea
  3. Cross your finger ! 
 
