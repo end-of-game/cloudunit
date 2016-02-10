@@ -1,8 +1,10 @@
 CloduUnit Developer Contest #1
 ==========================
 
-> **We are very excited to share with you today our very first CloduUnit Developer Contest !!**
+**We are very excited to share with you today our very first CloduUnit Developer Contest !!**
 
+
+![Contest Logo](img/header-contest.png "CloudUnit Dev Contest")
 
 ##How to enter 
 Do you have an idea for an improvement, new feature, or updated design? Any idea, big or small, can win you an **Intellij personal license** ! 
