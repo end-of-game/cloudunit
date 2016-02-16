@@ -27,6 +27,8 @@ echo -e "\nKilling containers\n"
 docker kill $(docker ps -aq)
 echo -e "\nRemoving containers\n"
 docker rm -vf $(docker ps -aq)
+echo -e "\nRemoving images bound with registry"
+docker rmi $(docker images | grep "172.17.42.1:5000" | awk '{print $3}')
 echo -e "\nChanging directory\n"
 cd /home/admincu/cloudunit/cu-platform
 echo -e "\nCurrent directory: `pwd`\n"
