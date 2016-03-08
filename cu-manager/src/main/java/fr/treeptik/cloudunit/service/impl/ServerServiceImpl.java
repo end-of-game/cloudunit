@@ -106,9 +106,6 @@ public class ServerServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
-    @Value("${ip.for.registry}")
-    private String registryIp;
-
     @Value("${database.hostname}")
     private String databaseHostname;
 
@@ -147,7 +144,7 @@ public class ServerServiceImpl
         String registryPrefix = "";
 
         if (tagName != null) {
-            registryPrefix = registryIp+":5000/";
+            registryPrefix = "";
         } else {
             tagName = "";
         }

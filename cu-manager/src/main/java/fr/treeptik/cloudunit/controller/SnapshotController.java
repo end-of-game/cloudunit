@@ -140,7 +140,7 @@ public class SnapshotController {
     public JsonResponse remove(@PathVariable String tag)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
-        snapshotService.remove(tag);
+        snapshotService.remove(user.getLogin()+"-"+tag);
         return new HttpOk();
     }
 

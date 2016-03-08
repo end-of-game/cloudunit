@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.treeptik.cloudunit.dao.ModuleConfigurationDAO;
 import fr.treeptik.cloudunit.dao.SnapshotDAO;
+import fr.treeptik.cloudunit.docker.DockerContainerJSON;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
@@ -87,9 +88,6 @@ public class SnapshotServiceImpl
     @Value("${cloudunit.max.apps:100}")
     private String numberMaxApplications;
 
-    @Value("${ip.for.registry}")
-    private String ipForRegistry;
-
     @Value("${docker.manager.ip:192.168.50.4:2376}")
     private String dockerManagerIp;
 
@@ -110,11 +108,12 @@ public class SnapshotServiceImpl
         ObjectMapper objectMapper = new ObjectMapper();
 
         Application application = applicationService.findByNameAndUser(user, applicationName);
+        if (tag != null) { tag = tag.toLowerCase(); }
 
         if (tagExists(tag, user.getLogin())) {
             applicationService.setStatus(application, previousStatus);
             authentificationUtils.allowUser(user);
-            throw new CheckException("this tag already exists");
+            throw new CheckException("this tag already exists for this user : " + tag + ", " + user.getLogin());
         }
 
         if (tag.equalsIgnoreCase("") || tag == null || tag.equalsIgnoreCase(" ")) {
@@ -122,10 +121,12 @@ public class SnapshotServiceImpl
             authentificationUtils.allowUser(user);
             throw new CheckException("You must put a tag name");
         }
+
         try {
             snapshot.setApplicationName(application.getName());
             snapshot.setDate(new Date());
             snapshot.setTag(tag);
+            snapshot.setFullTag(user.getLogin()+"-"+tag);
             snapshot.setCuInstanceName(cuInstanceName);
             snapshot.setDescription(description);
             snapshot.setUser(application.getUser());
@@ -158,29 +159,19 @@ public class SnapshotServiceImpl
 
             List<String> images = new ArrayList<>();
 
+
             for (Server server : application.getServers()) {
                 images.add(server.getImage().getPath());
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setName(server.getName());
                 dockerContainer.setImage(server.getImage().getName());
-                String id =
-                        (String) (objectMapper.readValue(DockerContainer.commit(dockerContainer,
-                                        snapshot.getUniqueTagName(),
+                DockerContainer.commit(dockerContainer,
+                                        user.getLogin()+"-"+snapshot.getTag(),
                                         application.getManagerIp(),
-                                        server.getImage().getPath()),
-                                HashMap.class)).get("Id");
-                DockerContainer.push(server.getImage().getPath(), snapshot.getUniqueTagName(),
-                        application.getManagerIp(), ipForRegistry);
-                DockerContainer.deleteImage(id, application.getManagerIp());
+                                        server.getImage().getPath());
             }
 
             for (Module module : application.getModules()) {
-
-                // commentaire de git
-                // if (module.getImage().getPath().contains("git")) {
-                // continue;
-                // }
-
                 String imageName = "";
                 String moduleName = "";
                 if (module.getImage().getPath().contains("git")) {
@@ -188,7 +179,6 @@ public class SnapshotServiceImpl
                     imageName = module.getImage().getPath();
                 } else {
                     moduleName = module.getName() + "-data";
-
                     imageName = module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data";
                     this.backupModule(module);
                 }
@@ -196,25 +186,23 @@ public class SnapshotServiceImpl
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setName(moduleName);
                 dockerContainer.setImage(module.getImage().getName());
-                String id =
-                        (String) (objectMapper.readValue(DockerContainer.commit(dockerContainer,
-                                        snapshot.getUniqueTagName(),
-                                        application.getManagerIp(), imageName),
-                                HashMap.class)).get("Id");
-                DockerContainer.push(imageName, snapshot.getUniqueTagName(), application.getManagerIp(), ipForRegistry);
-                DockerContainer.deleteImage(id, application.getManagerIp());
+                DockerContainer.commit(dockerContainer,
+                                        snapshot.getFullTag(),
+                                        application.getManagerIp(), imageName);
             }
+
             snapshot.setImages(images);
             snapshot = snapshotDAO.save(snapshot);
 
-        } catch (DockerJSONException | InterruptedException | IOException e) {
+        } catch (DockerJSONException | InterruptedException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
         return snapshot;
     }
 
     public Snapshot findByTagAndUser(String login, String tag) {
-        return snapshotDAO.findByTag(tag);
+        if (tag != null) { tag = tag.toLowerCase(); }
+        return snapshotDAO.findByTag(login+"-"+tag);
     }
 
     @Override
@@ -232,21 +220,29 @@ public class SnapshotServiceImpl
     public Snapshot remove(String tag)
             throws ServiceException, CheckException {
         Snapshot snapshot = null;
+        if (tag != null) { tag = tag.toLowerCase(); }
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
             snapshot = snapshotDAO.findByTag(tag);
 
             if (snapshot == null) {
-                throw new CheckException("Error : this snapshot doesn't exist");
+                throw new CheckException("Error : this snapshot doesn't exist : " + tag);
             }
 
             List<String> images = snapshotDAO.findAllImagesFromASnapshot(tag).getImages();
 
             for (String image : images) {
-                DockerContainer.deleteImageIntoTheRegistry(image + snapshot.getUniqueTagName(),
-                        snapshot.getUniqueTagName(), ipForRegistry + ":5000");
+                DockerContainer dockerContainer = new DockerContainer();
+                dockerContainer.setImage(image);
+
+                System.out.println(image+":"+tag);
+                DockerContainer.deleteImage(image+tag+":"+tag, dockerManagerIp);
             }
+
             snapshotDAO.delete(snapshotDAO.findByTag(tag));
-        } catch (DataAccessException | DockerJSONException e) {
+
+        } catch (DockerJSONException | DataAccessException e) {
             throw new ServiceException("Error : " + e.getLocalizedMessage(), e);
 
         }
@@ -284,15 +280,10 @@ public class SnapshotServiceImpl
                 throw new CheckException("This tag does not exist yet");
             }
 
-            // récupération des images associées
-            DockerContainer.pull(imageService.findByName(snapshot.getType()).getPath(), snapshot.getUniqueTagName(),
-                    dockerManagerIp, ipForRegistry);
-            DockerContainer.pull("cloudunit/git", snapshot.getUniqueTagName(), dockerManagerIp, ipForRegistry);
-
             // creation de la nouvelle app à partir de l'image tagée
             Application application =
                     applicationService.create(applicationName, user.getLogin(), snapshot.getType(),
-                            snapshot.getUniqueTagName(), snapshot.getTag());
+                            snapshot.getFullTag(), snapshot.getTag());
 
             // We need it to get lazy modules relationships
             application = applicationService.findByNameAndUser(application.getUser(), application.getName());
@@ -322,7 +313,7 @@ public class SnapshotServiceImpl
                         Integer.parseInt(savedPort.split(";")[0]));
             }
 
-        } catch (ServiceException | DockerJSONException e) {
+        } catch (ServiceException e) {
             StringBuilder msgError = new StringBuilder(1024);
             msgError.append("applicationName=[").append(applicationName).append("]");
             msgError.append(", snapshot=[").append(snapshot).append("]");
@@ -359,13 +350,13 @@ public class SnapshotServiceImpl
 
         for (String key : snapshot.getAppConfig().keySet()) {
             try {
-                DockerContainer.pull(key, snapshot.getUniqueTagName(), dockerManagerIp, ipForRegistry);
+                //DockerContainer.pull(key, snapshot.getUniqueTagName(), dockerManagerIp, ipForRegistry);
                 Module module = ModuleFactory.getModule(snapshot.getAppConfig().get(key).getName());
                 module.setApplication(application);
                 moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());
                 module.getImage().setName(snapshot.getAppConfig().get(key).getName());
                 module.setName(snapshot.getAppConfig().get(key).getName());
-                module = moduleService.initModule(application, module, snapshot.getUniqueTagName());
+                module = moduleService.initModule(application, module, snapshot.getFullTag());
                 Map<String, String> properties = new HashMap<>();
                 properties.put("username", snapshot.getAppConfig().get(key).getProperties().get("username-" + module.getImage().getName()));
                 properties.put("password", snapshot.getAppConfig().get(key).getProperties().get("password-" + module.getImage().getName()));
@@ -376,15 +367,14 @@ public class SnapshotServiceImpl
                 Thread.sleep(5000);
                 moduleService.startModule(module);
 
-            } catch (DockerJSONException | CheckException | InterruptedException e) {
+            } catch (CheckException | InterruptedException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }
         }
     }
 
-
     private boolean tagExists(String tag, String login) {
-        if (snapshotDAO.findByTag(tag) != null) {
+        if (snapshotDAO.findByTag(login + "-" + tag) != null) {
             return true;
         }
         return false;

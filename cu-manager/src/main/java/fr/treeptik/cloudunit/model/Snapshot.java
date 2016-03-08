@@ -44,6 +44,8 @@ public class Snapshot
 
     private String tag;
 
+    private String fullTag;
+
     private String cuInstanceName;
 
     @Column(columnDefinition = "TEXT")
@@ -60,6 +62,18 @@ public class Snapshot
     private Long jvmMemory;
 
     private String deploymentStatus;
+
+    @ElementCollection
+    @JsonIgnore
+    private Map<String, String> digests;
+
+    public Map<String, String> getDigests() {
+        return digests;
+    }
+
+    public void setDigests(Map<String, String> digests) {
+        this.digests = digests;
+    }
 
     @ManyToOne
     private User user;
@@ -90,11 +104,23 @@ public class Snapshot
         return tag;
     }
 
+    @JsonIgnore
+    public String getFullTag() {
+        return fullTag;
+    }
+
     public void setTag(String tag) {
         if (tag != null) {
             tag = tag.toLowerCase();
         }
         this.tag = tag;
+    }
+
+    public void setFullTag(String fullTag) {
+        if (fullTag != null) {
+            fullTag = fullTag.toLowerCase();
+        }
+        this.fullTag = fullTag;
     }
 
     public String getCuInstanceName() {
@@ -103,12 +129,6 @@ public class Snapshot
 
     public void setCuInstanceName(String cuInstanceName) {
         this.cuInstanceName = cuInstanceName;
-    }
-
-    @JsonIgnore
-    public String getUniqueTagName() {
-        //return user.getLogin() + "-" + tag;
-        return tag;
     }
 
     public String getApplicationName() {

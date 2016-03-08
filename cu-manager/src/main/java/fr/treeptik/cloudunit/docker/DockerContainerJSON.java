@@ -61,9 +61,6 @@ public class DockerContainerJSON {
     @Value("${docker.endpoint.mode}")
     private String dockerEndpointMode;
 
-    @Value("${ip.for.registry}")
-    private String registryIP;
-
     private boolean isHttpMode;
 
     private static String CU_KVM = System.getenv().get("CU_KVM");
@@ -766,7 +763,7 @@ public class DockerContainerJSON {
             uri = new URIBuilder().setScheme(dockerEndpointMode).setHost(hostIp)
                     .setPath("/commit").setParameter("container", name)
                     .setParameter("tag", tag)
-                    .setParameter("repo", registryIP+":5000/" + repo + tag)
+                    .setParameter("repo", repo + tag)
                     .build();
             response = client
                     .sendPostAndGetImageID(uri, "", "application/json");
@@ -802,6 +799,7 @@ public class DockerContainerJSON {
                     .setParameter("tag", tag.toLowerCase()).build();
             response = client.sendPostWithRegistryHost(uri, "",
                     "application/json");
+            System.out.println(response);
             int statusCode = (int) response.get("code");
 
             switch (statusCode) {
@@ -823,8 +821,13 @@ public class DockerContainerJSON {
         }
 
         logger.info((String) response.get("body"));
-
-        return (String) response.get("body");
+        String digest = "";
+        int indexOfDigest = ((String) response.get("body")).indexOf("Digest:");
+        if (indexOfDigest != -1) {
+            digest = ((String) response.get("body")).substring(indexOfDigest+8);
+            digest = digest.substring(0, digest.length()-4);
+        }
+        return digest;
 
     }
 
@@ -908,7 +911,7 @@ public class DockerContainerJSON {
                     .setScheme("http")
                     .setHost(registryIP)
                     .setPath(
-                            "/v1/repositories/" + repository + "/tags/"
+                            "/v2/" + repository + "/tags/"
                                     + tag.toLowerCase()).build();
             int statusCode = client.sendDeleteForRegistry(uri);
             switch (statusCode) {

@@ -128,7 +128,6 @@ public abstract class AbstractSnapshotControllerTestIT {
     @After
     public void teardown() {
         logger.info("teardown");
-
         SecurityContextHolder.clearContext();
         session.invalidate();
     }
@@ -168,7 +167,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("Delete the snapshot");
         logger.info("**************************************");
 
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName.toLowerCase()).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
 
         logger.info("**************************************");

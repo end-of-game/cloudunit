@@ -66,22 +66,18 @@ public class DockerContainer {
 
     private Map<String, Map<String, String>[]> portBindings;
 
-
     public DockerContainer() {
-
     }
 
     public static String checkDockerInfos(String hostAddress)
         throws DockerJSONException {
         String response = dockerContainerJSON.checkDockerInfos(hostAddress);
-
         return response;
     }
 
     public static DockerContainer findOne(DockerContainer dockerContainer,
                                           String hostIp)
         throws DockerJSONException {
-
         dockerContainer = dockerContainerJSON.findOne(
             dockerContainer.getName(), hostIp);
         return dockerContainer;
@@ -103,9 +99,10 @@ public class DockerContainer {
             hostIp, repo);
     }
 
-    public static void push(String image, String tag, String hostIp, String registryIp)
+    public static String push(String image, String tag, String hostIp, String registryIp)
         throws DockerJSONException {
-        dockerContainerJSON.push(registryIp+":5000/" + image + tag, tag, hostIp);
+        String digest = dockerContainerJSON.push(registryIp+":5000/" + image + tag, tag, hostIp);
+        return digest;
     }
 
     public static void pull(String image, String tag, String hostIp, String registryIp)

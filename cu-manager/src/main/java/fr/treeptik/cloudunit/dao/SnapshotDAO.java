@@ -30,11 +30,11 @@ public interface SnapshotDAO
     public List<Snapshot> listAll()
         throws DataAccessException;
 
-    @Query("select distinct s from Snapshot s join fetch s.images left join fetch s.appConfig where s.tag=:tag")
+    @Query("select distinct s from Snapshot s join fetch s.images left join fetch s.appConfig where s.fullTag=:tag")
     public Snapshot findByTag(@Param("tag") String tag)
         throws DataAccessException;
 
-    @Query("select distinct s from Snapshot s join fetch s.images where s.tag=:tag")
+    @Query("select distinct s from Snapshot s join fetch s.images where s.fullTag=:tag")
     public Snapshot findAllImagesFromASnapshot(@Param("tag") String tag)
         throws DataAccessException;
 
