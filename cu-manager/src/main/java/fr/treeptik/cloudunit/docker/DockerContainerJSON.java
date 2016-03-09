@@ -763,7 +763,7 @@ public class DockerContainerJSON {
             uri = new URIBuilder().setScheme(dockerEndpointMode).setHost(hostIp)
                     .setPath("/commit").setParameter("container", name)
                     .setParameter("tag", tag)
-                    .setParameter("repo", repo + tag)
+                    .setParameter("repo", repo)
                     .build();
             response = client
                     .sendPostAndGetImageID(uri, "", "application/json");
@@ -886,7 +886,7 @@ public class DockerContainerJSON {
             }
         } catch (URISyntaxException | WarningDockerJSONException
                 | ErrorDockerJSONException | IOException e) {
-            StringBuilder msgError = new StringBuilder(256);
+            StringBuilder msgError = new StringBuilder(512);
             msgError.append(id).append(",hostIP=").append(hostIp)
                     .append(",uri=").append(uri);
             logger.error(msgError.toString(), e);

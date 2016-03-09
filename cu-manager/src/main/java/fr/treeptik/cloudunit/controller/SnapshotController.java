@@ -68,8 +68,7 @@ public class SnapshotController {
             throws ServiceException, CheckException {
 
         // Replace accent characters by classic characters
-        String tagName = AlphaNumericsCharactersCheckUtils
-                    .deAccent(input.getTag());
+        String tagName = AlphaNumericsCharactersCheckUtils.deAccent(input.getTag()).toLowerCase();
         input.setTag(tagName);
         // Validate input informations for snapshot
         input.validateCreateSnapshot();

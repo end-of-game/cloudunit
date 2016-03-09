@@ -166,7 +166,7 @@ public class SnapshotServiceImpl
                 dockerContainer.setName(server.getName());
                 dockerContainer.setImage(server.getImage().getName());
                 DockerContainer.commit(dockerContainer,
-                                        user.getLogin()+"-"+snapshot.getTag(),
+                                        snapshot.getFullTag(),
                                         application.getManagerIp(),
                                         server.getImage().getPath());
             }
@@ -235,16 +235,13 @@ public class SnapshotServiceImpl
             for (String image : images) {
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setImage(image);
-
-                System.out.println(image+":"+tag);
-                DockerContainer.deleteImage(image+tag+":"+tag, dockerManagerIp);
+                DockerContainer.deleteImage(image+":"+tag, dockerManagerIp);
             }
 
             snapshotDAO.delete(snapshotDAO.findByTag(tag));
 
         } catch (DockerJSONException | DataAccessException e) {
             throw new ServiceException("Error : " + e.getLocalizedMessage(), e);
-
         }
         // we return for aop compliant. todo : change it
         return snapshot;

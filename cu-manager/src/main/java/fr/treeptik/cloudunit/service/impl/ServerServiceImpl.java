@@ -158,7 +158,6 @@ public class ServerServiceImpl
         Map<String, String> ports = new HashMap<String, String>();
 
         // General informations
-        String dockerManagerIP = server.getApplication().getManagerIp();
         server.setStatus(Status.PENDING);
         server.setJvmOptions("");
         server.setStartDate(new Date());
@@ -186,8 +185,6 @@ public class ServerServiceImpl
         logger.debug("imagePath:" + imagePath);
 
         List<String> volumesFrom = new ArrayList<>();
-
-
         if (!server.getImage().getName().contains("fatjar")) {
             volumesFrom.add(server.getImage().getName());
         }
