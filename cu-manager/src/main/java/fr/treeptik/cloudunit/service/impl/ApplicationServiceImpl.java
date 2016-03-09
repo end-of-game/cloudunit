@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
+import fr.treeptik.cloudunit.dao.ImageDAO;
 import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
@@ -74,6 +75,9 @@ public class ApplicationServiceImpl
 
     @Inject
     private ApplicationDAO applicationDAO;
+
+    @Inject
+    private ImageDAO imageDAO;
 
     @Inject
     private PortToOpenDAO portToOpenDAO;
@@ -1136,4 +1140,10 @@ public class ApplicationServiceImpl
         }
         return false;
     }
+
+    public Integer countApplicationsForImage(User user, String tag) throws CheckException, ServiceException {
+        return imageDAO.countApplicationsForImageTag(user.getLogin(), tag);
+    }
+
+
 }

@@ -179,9 +179,7 @@ public class ServerServiceImpl
             throw new ServiceException("Error rename Server", e2);
         }
 
-        String imagePath = registryPrefix + server.getImage().getPath()
-                + tagName.replace(":", "") + tagName;
-
+        String imagePath = server.getImage().getPath() + tagName;
         logger.debug("imagePath:" + imagePath);
 
         List<String> volumesFrom = new ArrayList<>();

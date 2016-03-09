@@ -81,7 +81,6 @@ else
 		sleep 1
 	done
 
-
 	# Attente du démarrage de mysql
 	echo -e "\n+++ Mysql test +++\n"
 	RETURN=1

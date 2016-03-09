@@ -42,8 +42,16 @@ public interface ImageDAO
             "and a.name=:appName and a.user.login=:userLogin " +
             "and a.cuInstanceName=:cuInstanceName")
     Long countNumberOfInstances(@Param("name") String moduleName,
-                                @Param("appName") String appName, @Param("userLogin") String userLogin,
+                                @Param("appName") String appName,
+                                @Param("userLogin") String userLogin,
                                 @Param("cuInstanceName") String cuInstanceName)
         throws DataAccessException;
+
+    @Query("select count(s) from Server s left join s.application a left join s.image i where i.path LIKE %:imageTag " +
+            "and a.user.login=:userLogin")
+    Integer countApplicationsForImageTag(
+                                @Param("userLogin") String userLogin,
+                                @Param("imageTag") String imageTag)
+            throws DataAccessException;
 
 }

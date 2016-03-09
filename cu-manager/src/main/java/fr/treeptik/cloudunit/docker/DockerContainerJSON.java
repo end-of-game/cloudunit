@@ -522,6 +522,7 @@ public class DockerContainerJSON {
             StringBuilder msgError = new StringBuilder(256);
             msgError.append(dockerContainer).append(",hostIP=").append(hostIp)
                     .append(",uri=").append(uri);
+            System.out.println(msgError);
             logger.error("" + msgError, e);
             throw new FatalDockerJSONException("docker : error fatal");
         }

@@ -361,8 +361,7 @@ public class ModuleServiceImpl
         // si le tag n'est pas nul on récupère la bonne image pour git
 
         if (tagName != null & module.getImage().getName().contains("git")) {
-            imagePath = "cloudunit/git"
-                    + tagName.replace(":", "") + tagName;
+            imagePath = "cloudunit/git" + tagName;
         }
 
         DockerContainer dockerContainer = new DockerContainer();
@@ -486,7 +485,7 @@ public class ModuleServiceImpl
         if (tagName != null) {
             imagePath = imagePath.replaceAll("-data",
                     "-" + module.getInstanceNumber() + "-data")
-                    + tagName + ":" + tagName;
+                     + ":" + tagName;
         }
 
         Application application = module.getApplication();
