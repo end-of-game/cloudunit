@@ -895,43 +895,5 @@ public class DockerContainerJSON {
         }
     }
 
-    /**
-     * @param tag
-     * @return
-     * @throws DockerJSONException
-     * @throws ParseException      Appels à la registry docker pour la suppression des
-     *                             containers liés au snapshot
-     */
-    public void deleteImageIntoTheRegistry(String registryIP, String tag,
-                                           String repository)
-            throws DockerJSONException {
-        URI uri = null;
-        try {
-
-            uri = new URIBuilder()
-                    .setScheme("http")
-                    .setHost(registryIP)
-                    .setPath(
-                            "/v2/" + repository + "/tags/"
-                                    + tag.toLowerCase()).build();
-            int statusCode = client.sendDeleteForRegistry(uri);
-            switch (statusCode) {
-                case 401:
-                    throw new WarningDockerJSONException("Requires authorization");
-                case 404:
-                    throw new ErrorDockerJSONException("docker : Tag not found : "
-                            + tag);
-                case 500:
-                    throw new ErrorDockerJSONException("docker : server error");
-            }
-        } catch (URISyntaxException | WarningDockerJSONException
-                | ErrorDockerJSONException | IOException e) {
-            StringBuilder msgError = new StringBuilder(256);
-            msgError.append(tag.toLowerCase()).append(",hostIP=")
-                    .append(registryIP).append(",uri=").append(uri);
-            logger.error(msgError.toString(), e);
-            throw new FatalDockerJSONException("docker : error fatal");
-        }
-    }
 
 }

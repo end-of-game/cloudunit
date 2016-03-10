@@ -1141,9 +1141,8 @@ public class ApplicationServiceImpl
         return false;
     }
 
-    public Integer countApplicationsForImage(User user, String tag) throws CheckException, ServiceException {
-        return imageDAO.countApplicationsForImageTag(user.getLogin(), tag);
+    public Integer countApplicationsForImage(String cuInstanceName, User user, String tag) throws CheckException, ServiceException {
+        return applicationDAO.countAppForTagLike(cuInstanceName, user.getLogin(), tag);
     }
-
 
 }

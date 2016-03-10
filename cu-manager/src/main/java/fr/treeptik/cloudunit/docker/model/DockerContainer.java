@@ -115,12 +115,6 @@ public class DockerContainer {
         dockerContainerJSON.deleteImage(id, hostIp);
     }
 
-    public static void deleteImageIntoTheRegistry(String repository,
-                                                  String tag, String registryIP)
-        throws DockerJSONException {
-        dockerContainerJSON.deleteImageIntoTheRegistry(registryIP, tag,
-            repository);
-    }
 
     public static List<DockerContainer> listAllContainers(String hostAddress)
         throws DockerJSONException {

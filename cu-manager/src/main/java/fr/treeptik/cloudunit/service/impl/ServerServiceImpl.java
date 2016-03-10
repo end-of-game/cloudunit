@@ -397,6 +397,7 @@ public class ServerServiceImpl
             DockerContainer.remove(dockerContainer,
                     application.getManagerIp());
 
+            /*
             try {
                 if (application.isAClone()) {
                     DockerContainer.deleteImage(imageName,
@@ -405,6 +406,7 @@ public class ServerServiceImpl
             } catch (DockerJSONException e) {
                 logger.info("Others apps use this docker images");
             }
+            */
 
             // Remove server on cloudunit :
             hipacheRedisUtils.removeServerAddress(application);

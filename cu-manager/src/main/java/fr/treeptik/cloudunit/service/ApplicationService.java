@@ -103,5 +103,5 @@ public interface ApplicationService {
 
     void removePort(Application application, Integer port) throws CheckException, ServiceException;
 
-    Integer countApplicationsForImage(User user, String tag) throws CheckException, ServiceException;
+    Integer countApplicationsForImage(String cuInstanceName, User user, String tag) throws CheckException, ServiceException;
 }

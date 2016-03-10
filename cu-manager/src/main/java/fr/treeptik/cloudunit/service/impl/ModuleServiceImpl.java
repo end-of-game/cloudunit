@@ -672,6 +672,7 @@ public class ModuleServiceImpl
             }
             DockerContainer.remove(dockerContainer, application.getManagerIp());
 
+            /*
             try {
                 if (application.isAClone()) {
                     DockerContainer.deleteImage(imageId,
@@ -680,6 +681,7 @@ public class ModuleServiceImpl
             } catch (DockerJSONException e) {
                 logger.info("Others apps use this docker images");
             }
+            */
 
             // Delete in database
             if (isModuleRemoving) {

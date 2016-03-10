@@ -75,4 +75,11 @@ public interface ApplicationDAO
                   @Param("cuInstanceName") String cuInstanceName)
             throws DataAccessException;
 
+    @Query("select count(a) from Application a where a.user.login=:userLogin and a.cuInstanceName=:cuInstanceName and a.origin=:imageTag")
+    Integer countAppForTagLike(
+            @Param("cuInstanceName") String cuInstanceName,
+            @Param("userLogin") String userLogin,
+            @Param("imageTag") String imageTag)
+            throws DataAccessException;
+
 }

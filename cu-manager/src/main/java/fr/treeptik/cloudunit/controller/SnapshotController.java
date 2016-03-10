@@ -139,6 +139,10 @@ public class SnapshotController {
     public JsonResponse remove(@PathVariable String tag)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
+        int count = applicationService.countApplicationsForImage(cuInstanceName, user, tag);
+        if (count > 0) {
+            throw new CheckException("At least one application uses this template. You must delete it before.");
+        }
         snapshotService.remove(user.getLogin()+"-"+tag);
         return new HttpOk();
     }
