@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOG_FILE=/home/admincu/cloudunit/cu-services/build-log
+LOG_FILE=/home/$USER/cloudunit/cu-services/build-log
 CACHE=false
 
 if [ $CACHE = true ]; then
@@ -9,16 +9,7 @@ elif [ $CACHE = false ]; then
 	BUILD_CMD="docker build --rm --no-cache -t"
 fi
 
-if [ -f $LOG_FILE ]; then
-	rm $LOG_FILE
-fi
-
-if [ -z "$(git describe --exact-match --tags 2>/dev/null)" ]; then
-	GIT_TAG=latest
-else
-	GIT_TAG=`git describe --exact-match --tags 2>/dev/null`
-fi
-
+GIT_TAG=latest
 
 while read line
 do

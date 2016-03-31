@@ -2,7 +2,7 @@
 
 CONT_NAME=(java tomcat-6 tomcat-7 tomcat-8 jboss-8)
 IMAGE_NAME=(cloudunit/java cloudunit/tomcat-6 cloudunit/tomcat-7 cloudunit/tomcat-8 cloudunit/jboss-8)
-LOG_FILE=/home/admincu/cloudunit/cu-services/run-log
+LOG_FILE=/home/$USER/cloudunit/cu-services/run-log
 
 if [ -f $LOG_FILE ]; then
 	rm $LOG_FILE
