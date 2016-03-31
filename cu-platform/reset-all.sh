@@ -30,13 +30,13 @@ docker rm -vf $(docker ps -aq)
 echo -e "\nRemoving images bound with registry"
 docker rmi $(docker images | grep "172.17.42.1:5000" | awk '{print $3}')
 echo -e "\nChanging directory\n"
-cd /home/admincu/cloudunit/cu-platform
+cd /home/$USER/cloudunit/cu-platform
 echo -e "\nCurrent directory: `pwd`\n"
 sudo rm -rf /registry/* /var/log/cloudunit
 echo -e "\nStarting the platform\n"
-/home/admincu/cloudunit/cu-platform/start-platform.sh reset
+/home/$USER/cloudunit/cu-platform/start-platform.sh reset
 echo -e "\nChanging directory\n"
-cd /home/admincu/cloudunit/cu-services
+cd /home/$USER/cloudunit/cu-services
 echo -e "\nCurrent directory: `pwd`\n"
 echo -e "\nRunning services\n"
-/home/admincu/cloudunit/cu-services/run-services.sh
+/home/$USER/cloudunit/cu-services/run-services.sh

@@ -23,7 +23,7 @@ DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 export CU_SUB_DOMAIN=.$(hostname)
 
 
-source /home/admincu/.profile
+source /home/$USER/.profile
 if [ -e "$LOCK" ]; then
 	echo "start-platform est déjà en train d'être exécuté"
 	exit 1
@@ -96,7 +96,7 @@ else
     if [ "$FROM_RESET" == "reset" ]; then
     echo "cu-monitor is not launched -- reset mode"
 #    else
-#	/home/admincu/cloudunit/monitoring_scripts/cu-monitor.sh
+#	/home/$USER/cloudunit/monitoring_scripts/cu-monitor.sh
     fi
 
 	if [ $PROFILE == "prod" ]; then
