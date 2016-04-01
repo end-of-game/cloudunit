@@ -38,8 +38,8 @@ term_handler() {
   fi
   if [ $pid2 -ne 0 ]; then
     kill -SIGTERM "$pid2"
-  fi	
-  exit 42; 
+  fi
+  exit 42;
 }
 
 trap 'kill ${!}; term_handler' SIGTERM

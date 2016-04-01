@@ -20,6 +20,14 @@ else
     export MYSQL_ENDPOINT=$CU_DATABASE_DNS
 fi
 
+# Callback bound to the application stop
+term_handler() {
+  echo "stop" > /cloudunit/nicolas.txt
+  exit 42;
+}
+
+trap 'kill ${!}; term_handler' SIGTERM
+
 ## Si l'initialisation a été déja faite, il faut démarrer Postgres
 if [ ! -f /init-service-ok ]; then
 
@@ -77,26 +85,37 @@ else
 	/usr/sbin/apachectl start
 fi
 
+
 RETURN=1
+count=0;
 # Attente du démarrage du processus sshd pour confirmer au manager
-until [ "$RETURN" -eq "0" ];
+until [ "$RETURN" -eq "0" ] || [ $count -gt $kwait ]
 do
 	echo -n -e  "\nWaiting for ssh\n"
 	nc -z localhost 22
 	RETURN=$?
 	sleep 1
+	let count=$count+1;
 done
 
 # Attente du démarrage de postgre
 RETURN=1
-until [ "$RETURN" -eq "0" ];
-do
-	nc -z localhost 5432
-	RETURN=$?
-	echo -n -e "\nwaiting for postgre to start"
-	sleep 1
-done
+count2=0;
+if [ $count -gt $kwait ]; then
+    until [ "$RETURN" -eq "0" ] || [ $count2 -gt $kwait ]
+    do
+        nc -z localhost 5432
+        RETURN=$?
+        echo -n -e "\nwaiting for postgre to start"
+        sleep 1
+        let count2=$count2+1;
+    done
+fi
 
-/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+if [ $count -gt $kwait ] || [ $count2 -gt $kwait ]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+fi
 
 tail -f /init-service-ok

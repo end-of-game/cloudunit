@@ -9,8 +9,6 @@ RUN apt-get install -y vim openssh-server cron
 RUN mkdir /var/run/sshd
 RUN mkdir -p /cloudunit/backup
 
-LABEL upgrade="commit"
-
 ADD scripts /cloudunit/scripts
 
 VOLUME /cloudunit/database

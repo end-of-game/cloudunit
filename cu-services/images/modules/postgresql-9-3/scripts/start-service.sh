@@ -13,6 +13,14 @@ export MANAGER_DATABASE_PASSWORD=$6
 export ENV_EXEC=$7
 export CU_DATABASE_DNS=$8
 
+# Callback bound to the application stop
+term_handler() {
+  echo "stop " >> /cloudunit/status.txt
+  exit 42;
+}
+
+trap 'kill ${!}; term_handler' SIGTERM
+
 if [ $ENV_EXEC = "integration" ];
 then
     export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
@@ -20,7 +28,9 @@ else
     export MYSQL_ENDPOINT=$CU_DATABASE_DNS
 fi
 
-## Si l'initialisation a été déja faite, il faut démarrer Postgres
+# ###########
+# First call
+ # ###########
 if [ ! -f /init-service-ok ]; then
 
 	# Préparation du dossier de données de postgres
@@ -28,26 +38,20 @@ if [ ! -f /init-service-ok ]; then
 	chown postgres:postgres -R /cloudunit/database
 	chmod 0700 -R /cloudunit/database
 
-	useradd $CU_SSH_USER && echo "$CU_SSH_USER:$CU_ROOT_PASSWORD" | chpasswd 
-
-	## TODO : comment
+	useradd $CU_SSH_USER && echo "$CU_SSH_USER:$CU_ROOT_PASSWORD" | chpasswd
 	echo "root:$CU_ROOT_PASSWORD" | chpasswd
 
 	chmod 600 -R /etc/ssh
 	/usr/sbin/sshd
 
-	# Ajout de l'utilisateur / creation et  modif du home directory
 	mkdir -p $CU_USER_HOME/.ssh
 	usermod -d $CU_USER_HOME $CU_SSH_USER
-
-	#Ajout du Shell à l'utilisateur
 	usermod -s /bin/bash $CU_SSH_USER
-
-	## TODO : comment
+	# TODO : verify these two lines ???
 	cp /root/.bashrc $CU_USER_HOME
 	cp /root/.profile $CU_USER_HOME
 
-	## Création d'un superadmin 'docker' pour postgres. On n'utilise pas 'root'
+	# Creation a dedicated superadmin docker for post. No use of root
 	/etc/init.d/postgresql start
 	su - postgres -c "psql --command \"CREATE USER docker WITH SUPERUSER PASSWORD '$CU_ROOT_PASSWORD';\""
 	su - postgres -c "createdb -O docker docker"
@@ -70,33 +74,48 @@ if [ ! -f /init-service-ok ]; then
 	su - postgres -c "createdb -O $CU_USER $CU_DATABASE_NAME"
 	
 	touch /init-service-ok
-else 
-    # mount /dev/pts
+else
+    # Here : not the first start.
+    # we use classic command
 	/usr/sbin/sshd
 	/etc/init.d/postgresql start
 	/usr/sbin/apachectl start
 fi
 
 RETURN=1
-# Attente du démarrage du processus sshd pour confirmer au manager
-until [ "$RETURN" -eq "0" ];
-do
+count=0
+# ########################
+# Waiting for sshd start #
+# ########################
+until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $kwait ]]; do
 	echo -n -e  "\nWaiting for ssh\n"
 	nc -z localhost 22
 	RETURN=$?
 	sleep 1
+	let count=$count+1;
 done
 
-# Attente du démarrage de postgre
+# ###########################
+# Waiting for Postgre start #
+# ###########################
 RETURN=1
-until [ "$RETURN" -eq "0" ];
-do
-	nc -z localhost 5432
-	RETURN=$?
-	echo -n -e "\nwaiting for postgre to start"
-	sleep 1
+count2=0
+until [[ "$RETURN" -eq "0" ]] || [[ $count2 -gt $kwait ]]; do
+    nc -z localhost 5432
+    RETURN=$?
+    echo -n -e "\nWaiting for Postgre to start"
+    sleep 1
+    let count2=$count2+1;
 done
 
-/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+# ####################################
+# If postgre is started we notify it #
+# ####################################
+if [[ $count2 -gt $kwait ]]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+fi
 
+# Blocking step
 tail -f /init-service-ok

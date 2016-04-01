@@ -77,24 +77,29 @@ else
 	/usr/sbin/apachectl start
 fi
 
+
 RETURN=1
+count=0;
 # Attente du démarrage du processus sshd pour confirmer au manager
-until [ "$RETURN" -eq "0" ];
+until [ "$RETURN" -eq "0" ] || [ $count -gt $kwait ]
 do
 	echo -n -e  "\nWaiting for ssh\n"
 	nc -z localhost 22
 	RETURN=$?
 	sleep 1
+	let count=$count+1;
 done
 
 # Attente du démarrage de postgre
 RETURN=1
-until [ "$RETURN" -eq "0" ];
+count=0;
+until [ "$RETURN" -eq "0" ] || [ $count -gt $kwait ]
 do
 	nc -z localhost 5432
 	RETURN=$?
 	echo -n -e "\nwaiting for postgre to start"
 	sleep 1
+	let count=$count+1;
 done
 
 /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD

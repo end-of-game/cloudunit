@@ -32,13 +32,15 @@ fi
 echo "Tomcat is listening on port 8005"
 
 echo "Waiting for Tomcat start with log trace"
+count=0;
 RETURN=1
-until [ "$RETURN" -eq "0" ];
+until [ "$RETURN" -eq "0" ] || [ $count -gt $kwait ]
 do
         echo -e "\nWaiting for tomcat to start"
         grep 'Server startup in' /cloudunit/appconf/logs/catalina.out
         RETURN=$?
         sleep 1
+        let count=$count+1;
 done
 
 echo "Server Tomcat is started"
