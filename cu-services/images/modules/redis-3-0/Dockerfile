@@ -2,14 +2,16 @@ FROM cloudunit/base-14.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV CU_DATABASE_HOME /cloudunit/database
+ENV REDIS_VERSION 3.0.1
 
 RUN \
   curl -sL https://deb.nodesource.com/setup | sudo bash - &&\
   apt-get install -yq apache2 build-essential nodejs
 
+
 # Installation de redis
-RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/redis-3.0.tar.gz -O /tmp/redis-3.0.tar.gz
-RUN tar xvzf /tmp/redis-3.0.tar.gz -C /tmp && \
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/redis-$REDIS_VERSION.tar.gz -O /tmp/redis-$REDIS_VERSION.tar.gz
+RUN tar xvzf /tmp/redis-$REDIS_VERSION.tar.gz -C /tmp && \
   cd /tmp/redis-stable && \
   make && \
   make install && \

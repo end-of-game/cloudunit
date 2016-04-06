@@ -3,9 +3,9 @@ FROM cloudunit/base-12.04
 ENV DEBIAN_FRONTEND noninteractive
 ENV CU_DATABASE_HOME /cloudunit/database
 
-# 'apt-cache madison postgresql-9.3' to know all possibilites
-ENV PG_MAJOR 9.3
-ENV PG_VERSION 9.3.12-1.pgdg12.4+1
+# 'apt-cache madison postgresql-9.4' to know all possibilites
+ENV PG_MAJOR 9.4
+ENV PG_VERSION 9.4.7-1.pgdg12.4+1
 
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
 RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
@@ -28,19 +28,19 @@ RUN apt-get -y -q install postgresql-$PG_MAJOR=$PG_VERSION \
 RUN chown -R postgres:postgres /cloudunit
 
 ## Déplacement du dossier de données
-RUN sed -i -e"s:/var/lib/postgresql/9.3/main:/cloudunit/database/main:g" /etc/postgresql/9.3/main/postgresql.conf
+RUN sed -i -e"s:/var/lib/postgresql/9.4/main:/cloudunit/database/main:g" /etc/postgresql/9.4/main/postgresql.conf
 
 ## On écoute sur toutes les IP. La sécurité est faite avant. 
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
+RUN echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf
 
 ## Suppression du fichier de configuration d'accès
-RUN rm /etc/postgresql/9.3/main/pg_hba.conf 
+RUN rm /etc/postgresql/9.4/main/pg_hba.conf 
 
 ## Autorisation en mode 'md5' (password demandé) pour les IP autre que localhost
-RUN echo "local	all all trust"              >> /etc/postgresql/9.3/main/pg_hba.conf
-RUN echo "host	all all 127.0.0.1/32 trust" >> /etc/postgresql/9.3/main/pg_hba.conf
-RUN echo "host  all all ::1/128      md5" >> /etc/postgresql/9.3/main/pg_hba.conf
-RUN echo "host	all all 0.0.0.0/0    md5"   >> /etc/postgresql/9.3/main/pg_hba.conf
+RUN echo "local	all all trust"              >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "host	all all 127.0.0.1/32 trust" >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "host  all all ::1/128      md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "host	all all 0.0.0.0/0    md5"   >> /etc/postgresql/9.4/main/pg_hba.conf
 
 ADD scripts /cloudunit/scripts
 

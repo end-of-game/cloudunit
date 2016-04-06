@@ -13,8 +13,6 @@ RUN mkdir -p /cloudunit/appconf/scripts
 ADD scripts/ /cloudunit/appconf/scripts
 RUN chmod +x /cloudunit/appconf/scripts/*
 
-LABEL upgrade="commit"
-
 # EXPOSE PORT
 EXPOSE 22
 

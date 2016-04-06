@@ -3,9 +3,9 @@ INSERT IGNORE INTO `Role` (`id`, `description`) VALUES
   (2, 'ROLE_USER');
 
 INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `imageType`, `managerName`) VALUES
-  (1, 'tomcat-6', 'cloudunit/tomcat-appconf6', '1.0', '', 1, 'server', ''),
-  (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', '1.0', '', 1, 'server', ''),
-  (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '1.0', '', 1, 'server', ''),
+  (1, 'tomcat-6', 'cloudunit/tomcat-appconf6', '6.0.41', '', 1, 'server', ''),
+  (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', '7.0.47', '', 1, 'server', ''),
+  (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '8.0.14', '', 1, 'server', ''),
   (4, 'jboss-8', 'cloudunit/jboss-appconf8', '1.0', '', 1, 'server', ''),
   (5, 'fatjar', 'cloudunit/fatjar', '1.0', '', 1, 'server', ''),
   (6, 'git', 'cloudunit/git', '1.0', '', 1, 'tool', ''),
@@ -13,14 +13,14 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `i
   (8, 'mysql-5-5-data-db', 'cloudunit/mysql-5-5-data-db', '1.0', '', 1, 'tool', ''),
   (9, 'mongo-2-6', 'cloudunit/mongo-2-6', '1.0', '', 1, 'module', 'mms'),
   (10, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '1.0', '', 1, 'tool', ''),
-  (11, 'redis-3-0', 'cloudunit/redis-3-0', '1.0', '', 1, 'module', 'redmin'),
-  (12, 'redis-3-0-data-db', 'cloudunit/redis-3-0-data-db', '1.0', '', 1, 'tool', ''),
-  (13, 'postgresql-9-3-data-db', 'cloudunit/postgresql-9-3-data-db', '1.0', '', 1, 'tool', ''),
-  (14, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin'),
-  (15, 'postgresql-9-4-data-db', 'cloudunit/postgresql-9-4-data-db', '1.0', '', 1, 'tool', ''),
-  (16, 'postgresql-9-4', 'cloudunit/postgresql-9-4', '1.0', '', 1, 'module', 'phppgadmin'),
-  (17, 'postgresql-9-5-data-db', 'cloudunit/postgresql-9-5-data-db', '1.0', '', 1, 'tool', ''),
-  (18, 'postgresql-9-5', 'cloudunit/postgresql-9-5', '1.0', '', 1, 'module', 'phppgadmin');
+  (11, 'redis-3-0.1', 'cloudunit/redis-3-0', '1.0', '', 1, 'module', 'redmin'),
+  (12, 'redis-3-0.1-data-db', 'cloudunit/redis-3-0-data-db', '1.0', '', 1, 'tool', ''),
+  (13, 'postgresql-9-3.12-data-db', 'cloudunit/postgresql-9-3-data-db', '1.0', '', 1, 'tool', ''),
+  (14, 'postgresql-9-3.12', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin'),
+  (15, 'postgresql-9-4.7-data-db', 'cloudunit/postgresql-9-4-data-db', '1.0', '', 1, 'tool', ''),
+  (16, 'postgresql-9-4.7', 'cloudunit/postgresql-9-4', '1.0', '', 1, 'module', 'phppgadmin'),
+  (17, 'postgresql-9-5.2-data-db', 'cloudunit/postgresql-9-5-data-db', '1.0', '', 1, 'tool', ''),
+  (18, 'postgresql-9-5.2', 'cloudunit/postgresql-9-5', '1.0', '', 1, 'module', 'phppgadmin');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES

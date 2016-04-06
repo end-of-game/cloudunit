@@ -52,7 +52,8 @@
               <span>Explorer</span>
             </a>
           </li>
-          <li ui-sref-active="active">
+          <li ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="logs-tab" ui-sref="editApplication.logs" ripple="">
               <span>Logs</span>
             </a>
@@ -66,12 +67,13 @@
           </li>
 
           <li ui-sref-active="active"
-              data-ng-class="{'disabled':editApp.disableLinks}">
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="snapshot-tab" ui-sref="editApplication.snapshot" ripple="">
               <span>Create template</span>
             </a>
           </li>
-          <li ui-sref-active="active">
+          <li ui-sref-active="active"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="settings-tab" ui-sref="editApplication.settings" ripple="">
               <span>Settings</span>
             </a>

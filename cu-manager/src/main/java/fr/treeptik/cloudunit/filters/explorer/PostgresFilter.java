@@ -41,11 +41,12 @@ public class PostgresFilter
 
         String breadcrumb = fileUnit.getBreadcrump();
         if (breadcrumb.equalsIgnoreCase("/cloudunit")
-            || breadcrumb.startsWith("/cloudunit/backup")
-            || breadcrumb.startsWith("/cloudunit/database")
-            || breadcrumb.startsWith("/cloudunit/tmp")
-            || breadcrumb.equalsIgnoreCase("/var")
-            || breadcrumb.startsWith("/var/log")) {
+                || breadcrumb.startsWith("/cloudunit/backup")
+                || breadcrumb.startsWith("/cloudunit/database")
+                || breadcrumb.startsWith("/cloudunit/tmp")
+                || breadcrumb.startsWith("/etc")
+                || breadcrumb.equalsIgnoreCase("/var")
+                || breadcrumb.startsWith("/var/log")) {
             return true;
         }
 
@@ -77,9 +78,10 @@ public class PostgresFilter
 
         String breadcrumb = fileUnit.getBreadcrump();
         if (breadcrumb.equalsIgnoreCase("/cloudunit")
-            || breadcrumb.equalsIgnoreCase("/cloudunit/backup")
-            || breadcrumb.equalsIgnoreCase("/cloudunit/appconf")
-            || breadcrumb.equalsIgnoreCase("/cloudunit/binaries/lib")) {
+                || breadcrumb.startsWith("/etc")
+                || breadcrumb.equalsIgnoreCase("/cloudunit/backup")
+                || breadcrumb.equalsIgnoreCase("/cloudunit/appconf")
+                || breadcrumb.equalsIgnoreCase("/cloudunit/binaries/lib")) {
             fileUnit.safe(true);
         } else {
             fileUnit.safe(false);
