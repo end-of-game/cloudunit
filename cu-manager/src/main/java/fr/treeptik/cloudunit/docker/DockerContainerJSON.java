@@ -710,6 +710,7 @@ public class DockerContainerJSON {
                     .setPath(
                             "/containers/" + dockerContainer.getName()
                                     + "/stop").setParameter("t", "5").build();
+            System.out.println(uri.toString());
             int statusCode = client.sendPost(uri, "", "application/json");
             switch (statusCode) {
                 case 304:

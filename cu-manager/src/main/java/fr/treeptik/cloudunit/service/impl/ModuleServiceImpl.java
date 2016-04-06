@@ -17,6 +17,9 @@ package fr.treeptik.cloudunit.service.impl;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificates;
+import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
@@ -51,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,6 +63,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.persistence.PersistenceException;
@@ -119,6 +124,27 @@ public class ModuleServiceImpl
 
     @Value("${database.hostname}")
     private String databaseHostname;
+
+    @Value("${certs.dir.path}")
+    private String certsDirPath;
+
+    @Value("${docker.endpoint.mode}")
+    private String dockerEndpointMode;
+
+    @Value("${docker.manager.ip:192.168.50.4:2376}")
+    private String dockerManagerIp;
+
+    private boolean isHttpMode;
+
+    @PostConstruct
+    public void initDockerEndPointMode() {
+        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
+            logger.warn("Docker TLS mode is disabled");
+            isHttpMode = true;
+        } else {
+            isHttpMode = false;
+        }
+    }
 
     public ModuleDAO getModuleDAO() {
         return this.moduleDAO;
@@ -1180,32 +1206,32 @@ public class ModuleServiceImpl
     }
 
     private void restoreDataModule(Module module) {
-        Application application;
-        try {
-            Thread.sleep(5000);
-            application = applicationService.findByNameAndUser(module
-                            .getApplication().getUser(),
-                    module.getApplication()
-                            .getName());
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(module.getName() + "-data");
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
-            Map<String, String> configShell = new HashMap<>();
-            configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
-            configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
-            String rootPassword = module.getApplication().getUser()
-                    .getPassword();
-            configShell.put("password", rootPassword);
-            int code = shellUtils.executeShell(
-                    "/cloudunit/scripts/restore-data.sh", configShell);
-            logger.info("The backup script return : " + code);
 
-        } catch (ServiceException | CheckException | DockerJSONException
-                | InterruptedException e) {
-            logger.error("" + module, e);
+        try {
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
+
+            final String[] commandStart = {"bash", "-c", "/cloudunit/scripts/cu-start.sh"};
+            final String[] commandStop = {"bash", "-c", "/cloudunit/scripts/cu-stop.sh"};
+            final String[] commandRestoreData = {"bash", "-c", "/cloudunit/scripts/restore-data.sh"};
+
+            docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            docker.execCreate(module.getName()+"-data", commandRestoreData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage() + ", " + module);
         }
+
     }
 
 }

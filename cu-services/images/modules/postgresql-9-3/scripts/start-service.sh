@@ -14,12 +14,19 @@ export ENV_EXEC=$7
 export CU_DATABASE_DNS=$8
 
 # Callback bound to the application stop
-term_handler() {
-  echo "stop " >> /cloudunit/status.txt
-  exit 42;
+terminate_handler() {
+  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD" > /cloudunit/command.txt
+  service postgresql stop
+  CODE=$?
+  if [[ "$CODE" -eq "0" ]]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD
+  else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+  fi
+  exit $CODE;
 }
 
-trap 'kill ${!}; term_handler' SIGTERM
+trap 'terminate_handler' SIGTERM
 
 if [ $ENV_EXEC = "integration" ];
 then
@@ -28,9 +35,9 @@ else
     export MYSQL_ENDPOINT=$CU_DATABASE_DNS
 fi
 
-# ###########
-# First call
- # ###########
+# ############
+# First call #
+# ############
 if [ ! -f /init-service-ok ]; then
 
 	# Préparation du dossier de données de postgres
@@ -78,7 +85,7 @@ else
     # Here : not the first start.
     # we use classic command
 	/usr/sbin/sshd
-	/etc/init.d/postgresql start
+	service postgresql start
 	/usr/sbin/apachectl start
 fi
 
@@ -111,11 +118,14 @@ done
 # ####################################
 # If postgre is started we notify it #
 # ####################################
-if [[ $count2 -gt $kwait ]]; then
+if [[ $count -gt $kwait ]] && [[ $count2 -gt $kwait ]]; then
     /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
 else
     /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
 fi
 
 # Blocking step
-tail -f /init-service-ok
+while true
+do
+  tail -f /dev/null & wait ${!}
+done
