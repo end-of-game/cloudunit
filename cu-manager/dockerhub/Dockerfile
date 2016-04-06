@@ -23,28 +23,13 @@ ENV MAVEN_HOME /usr/share/maven
 ENV JAVA_HOME /cloudunit/java/jdk1.8.0_25
 
 # Dépendances Debian
-RUN apt-get update && apt-get install -y\
-    ruby-full\
-    nodejs\
-    nodejs-legacy\
-    git \
-    wget \
-    git-core \
-    npm
-
-# Dépendances Ruby
-RUN gem install sass compass
-
-# Dépendances Node.js
-RUN apt-get -y install nodejs npm ruby ruby-dev
-RUN npm install bower -g
-RUN npm install grunt -g
-RUN npm install grunt-cli -g
-RUN sudo gem install compass
-RUN npm install bower
-RUN sudo npm install grunt
-RUN sudo npm install grunt-cli
-RUN sudo npm bower
+RUN apt-get update
+RUN apt-get install -y git
+RUN apt-get install -y wget
+RUN apt-get install -y git-core
+RUN apt-get install -y nodejs npm
+RUN ln -s "$(which nodejs)" /usr/bin/node
+RUN npm install -g grunt grunt-cli bower
 
 # Fix pour permettre de tirer correctement certaines dépendances
 RUN git config --global url."https://".insteadOf git://
@@ -65,6 +50,7 @@ WORKDIR /home/cloudunit/app
 
 RUN cd /home/cloudunit/app && git clone https://github.com/Treeptik/CloudUnit.git -b redis-module-feature --depth 1
 
+RUN npm version
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && npm install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && bower --allow-root install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && grunt build

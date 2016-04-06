@@ -14,6 +14,7 @@ RUN mkdir -p /cloudunit/tools
 RUN mkdir -p /cloudunit/appconf
 RUN mkdir -p /cloudunit/appconf/logs
 RUN mkdir -p /cloudunit/software
+RUN mkdir -p /cloudunit/hooks/
 RUN mkdir -p /var/run/sshd
 
 # VARIABLES ENVIRONNEMENTS
@@ -22,8 +23,11 @@ ENV CU_LOGS /cloudunit/appconf/logs
 ENV CU_JAVA /cloudunit/java
 ENV CU_SCRIPTS /cloudunit/scripts
 ENV CU_USER_HOME /cloudunit/home
+ENV CU_HOOKS /cloudunit/hooks
 
-RUN echo -n "CU_JAVA=$CU_JAVA\nCU_SCRIPTS=$CU_SCRIPTS\nCU_USER_HOME=$CU_USER_HOME\nCU_LOGS=$CU_LOGS\n" >> /etc/environment
+RUN echo -n "CU_JAVA=$CU_JAVA\nCU_SCRIPTS=$CU_SCRIPTS\nCU_USER_HOME=$CU_USER_HOME\nCU_LOGS=$CU_LOGS\nCU_HOOKS=$CU_HOOKS\n" >> /etc/environment
+
+COPY hooks /cloudunit
 
 # AGENT Cloud Unit pour mettre à jour le status en fin de démarrage (ssh)
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/cloudunitAgent-1.0-SNAPSHOT.jar -O /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar

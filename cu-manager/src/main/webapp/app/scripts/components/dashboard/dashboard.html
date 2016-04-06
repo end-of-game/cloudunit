@@ -133,13 +133,13 @@
             <div class="features">
               <p class="subhead">Services</p>
 
-              <p>{{ application.servers[0].image.name}}</p>
+              <p>{{ application.servers[0].image.name}}{{ application.servers[0].image.version}} </p>
 
               <p ng-hide="application.modules.length > 1">No modules</p>
               <ul class="modules" ng-show="application.modules.length > 1">
                 <li class="module-name"
                     data-ng-repeat="module in application.modules | filter: {image: {imageType: 'module'}}">
-                  {{module.image.name | lowercase }}
+                  {{module.image.name | lowercase }}{{ module.image.version }}
                 </li>
               </ul>
             </div>

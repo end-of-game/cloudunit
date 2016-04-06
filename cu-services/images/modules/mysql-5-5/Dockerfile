@@ -15,8 +15,6 @@ RUN apt-get install -y mysql-server-5.5
 RUN chown mysql:mysql /var/run/mysqld
 
 RUN sed -i -e"s/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/" -e"s/\/var\/lib\/mysql/\/cloudunit\/database/g" -e"/skip-external-locking/ a\lower_case_table_names = 1" /etc/mysql/my.cnf
-#RUN rm /etc/mysql/my.cnf
-#ADD my.cnf /etc/mysql/my.cnf
 ADD php.ini /etc/php5/apache2/
 
 RUN echo 'phpmyadmin phpmyadmin/dbconfig-install boolean true' | debconf-set-selections
