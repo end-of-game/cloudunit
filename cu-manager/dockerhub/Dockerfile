@@ -58,7 +58,6 @@ RUN cd /usr/lib/node_modules/npm \
   && npm install fs-extra \
   && sed -i -e s/graceful-fs/fs-extra/ -e s/fs\.move/fs.rename/ ./lib/utils/rename.js
 
-RUN npm -v
 RUN npm install -g grunt grunt-cli bower
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && npm install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && bower --allow-root install
