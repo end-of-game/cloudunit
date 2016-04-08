@@ -82,7 +82,7 @@ public class GitlabController {
                 } else {
                     System.out.println("New Build on existing branch for : " + token + ", sessionId : " + session.getId());
                 }
-                applicationManager.create(body.getUserName() + counter.incrementAndGet(), body.getUserName(), "tomcat-8");
+                //applicationManager.create(body.getUserName() + counter.incrementAndGet(), body.getUserName(), "tomcat-8");
             } catch (Exception e) {
                 e.printStackTrace();
             }
