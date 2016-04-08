@@ -5,31 +5,50 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.gitlab.GitlabPushEvents;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.manager.ApplicationManager;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by nicolas on 07/04/2016.
  */
 
-@RestController("/gitlab")
+@RestController
+@RequestMapping("/gitlab")
 public class GitlabController {
-
-    private Logger logger = LoggerFactory.getLogger(GitlabController.class);
 
     private static String GITLAB_IP = "192.168.50.4:480";
     private static String privateToken = "-Vv1_P1BWR_XaNytin1D";
     private static String CU_BACK_LINK = "192.168.2.106:8080";
+    private AtomicInteger counter = new AtomicInteger(0);
+    private Logger logger = LoggerFactory.getLogger(GitlabController.class);
+    @Inject
+    private AuthenticationManager authenticationManager;
+
+    @Inject
+    private ApplicationManager applicationManager;
+
+    @Inject
+    private UserService userService;
 
     /**
      * Print if a new branch is created in a project
@@ -39,9 +58,34 @@ public class GitlabController {
      * @throws IOException
      */
     @RequestMapping(value = "/listen/branch", method = RequestMethod.POST)
-    public String listenBranch(@RequestBody GitlabPushEvents body) throws IOException {
-        if (body.getBefore().equals("0000000000000000000000000000000000000000")) {
-            System.out.println("New branch added");
+    public String listenBranch(@RequestBody GitlabPushEvents body, @RequestParam String token, HttpSession session) throws IOException {
+        if (token.equals("XXX")) {
+            System.out.println(body);
+            User user = null;
+            try {
+                user = userService.findByLogin(body.getUserName());
+            } catch (ServiceException e) {
+                logger.error(e.getLocalizedMessage());
+            }
+
+            Authentication authentication = null;
+            if (user != null) {
+                authentication = new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword());
+            }
+            Authentication result = authenticationManager.authenticate(authentication);
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(result);
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+            try {
+                if (body.getBefore().equals("0000000000000000000000000000000000000000")) {
+                    System.out.println("New branch added for : " + token + ", sessionId : " + session.getId());
+                } else {
+                    System.out.println("New Build on existing branch for : " + token + ", sessionId : " + session.getId());
+                }
+                applicationManager.create(body.getUserName() + counter.incrementAndGet(), body.getUserName(), "tomcat-8");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return new HttpOk().toString();
     }
@@ -93,7 +137,7 @@ public class GitlabController {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.createObjectNode();
             ((ObjectNode) rootNode).put("project_id", id);
-            ((ObjectNode) rootNode).put("url", "http://" + GITLAB_IP + "/listenBranch");
+            ((ObjectNode) rootNode).put("url", "http://" + CU_BACK_LINK + "/gitlab/listen/branch");
             ((ObjectNode) rootNode).put("push_events", true);
             ((ObjectNode) rootNode).put("enable_ssl_verification", true);
             String jsonString = mapper.writeValueAsString(rootNode);

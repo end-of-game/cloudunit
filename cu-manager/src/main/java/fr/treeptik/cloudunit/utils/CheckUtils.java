@@ -153,7 +153,7 @@ public class CheckUtils {
         if (field == null
                 || field.trim().length() == 0
                 || "undefined".equals(field)
-                || field.length() > 15
+                || field.length() > 25
                 || !StringUtils.isAlphanumeric(field)) {
 
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);

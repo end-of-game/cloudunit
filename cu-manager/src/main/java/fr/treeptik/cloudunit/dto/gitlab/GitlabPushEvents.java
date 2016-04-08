@@ -19,6 +19,12 @@ public class GitlabPushEvents {
     @JsonProperty("after")
     private String after;
 
+    @JsonProperty("user_email")
+    private String userEmail;
+
+    @JsonProperty("user_name")
+    private String userName;
+
     public String getObjectKind() {
         return objectKind;
     }
@@ -41,7 +47,25 @@ public class GitlabPushEvents {
                 "objectKind='" + objectKind + '\'' +
                 ", before='" + before + '\'' +
                 ", after='" + after + '\'' +
+                ", userEmail='" + userEmail + '\'' +
+                ", userName='" + userName + '\'' +
                 '}';
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getAfter() {
@@ -52,3 +76,20 @@ public class GitlabPushEvents {
         this.after = after;
     }
 }
+
+/*
+@JsonIgnoreProperties(ignoreUnknown = true)
+class Project {
+
+    @JsonProperty("name")
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+*/

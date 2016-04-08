@@ -142,7 +142,8 @@ public class SecurityConfiguration
             .antMatchers("/snapshot/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/monitoring/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/messages/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-            .antMatchers( "/nopublic/**").permitAll().and()
+            .antMatchers("/gitlab/**").permitAll()
+            .antMatchers("/nopublic/**").permitAll().and()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
 
         if ("true".equals(System.getProperty("httpsOnly"))) {
