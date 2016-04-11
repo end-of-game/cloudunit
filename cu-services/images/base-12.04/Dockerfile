@@ -29,5 +29,7 @@ RUN echo -n "CU_JAVA=$CU_JAVA\nCU_SCRIPTS=$CU_SCRIPTS\nCU_USER_HOME=$CU_USER_HOM
 
 COPY hooks /cloudunit
 
+LABEL origin cloudunit
+
 # AGENT Cloud Unit pour mettre à jour le status en fin de démarrage (ssh)
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/cloudunitAgent-1.0-SNAPSHOT.jar -O /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar

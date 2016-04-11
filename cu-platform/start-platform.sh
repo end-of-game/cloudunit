@@ -22,7 +22,6 @@ DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 
 export CU_SUB_DOMAIN=.$(hostname)
 
-
 source /home/$USER/.profile
 if [ -e "$LOCK" ]; then
 	echo "start-platform est déjà en train d'être exécuté"
@@ -45,9 +44,9 @@ else
 	# Attente du démarrage de dnsdock
 	echo -e "\n+++ Dns test +++\n"
 
-	until [ $(eval "$DNS_CMD") -eq "1" ];
+	until [ ! $(eval "$DNS_CMD") -eq "0" ];
 	do	
-		echo -e "\nWaiting for dnsdock\n";
+		echo -e "\nWaiting for dnsdock : $DNS_CMD \n";
 		sleep 1
 	done
 
