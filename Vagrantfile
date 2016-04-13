@@ -7,7 +7,6 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.provider "virtualbox" do |vb|
-    	# vb.customize ["modifyvm", :id, "--memory", "4096", "--cpus", "2"]
 		vb.customize ["modifyvm", :id, "--memory", "8092", "--cpus", "2"]
 	end
 
@@ -15,9 +14,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vbguest.auto_update = true
 	config.vbguest.no_remote = false
-
-	config.vm.box = "ubuntu/trusty64"
-
 	config.vm.synced_folder "./", "/home/vagrant/cloudunit"
+
+    config.vm.box = "cloudunit/dev"
 
 end
