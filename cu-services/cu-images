@@ -17,8 +17,8 @@ cloudunit/postgresql-9-3 images/modules/postgresql-9-3
 cloudunit/postgresql-9-3-data images/modules/postgresql-9-3-data
 cloudunit/postgresql-9-4 images/modules/postgresql-9-4
 cloudunit/postgresql-9-4-data images/modules/postgresql-9-4-data
-cloudunit/postgresql-9-4 images/modules/postgresql-9-5
-cloudunit/postgresql-9-4-data images/modules/postgresql-9-5-data
+cloudunit/postgresql-9-5 images/modules/postgresql-9-5
+cloudunit/postgresql-9-5-data images/modules/postgresql-9-5-data
 cloudunit/mysql-5-5 images/modules/mysql-5-5
 cloudunit/mysql-5-5-data images/modules/mysql-5-5-data
 cloudunit/mongo-2-6 images/modules/mongo-2-6
