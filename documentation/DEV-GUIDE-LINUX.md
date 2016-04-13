@@ -12,7 +12,6 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 * VirtualBox 5.0.4+ (www.virtualbox.org) - install before Vagrant
 * Vagrant 1.7.8+ (www.vagrantup.com)
 * Maven 3+ (maven.apache.org)
-* Ansible (see further for installation)
 
 ## Architecture sources
 
@@ -46,15 +45,6 @@ sudo apt-get install dnsmasq
 sudo vi /etc/dnsmasq.conf
 # Add the line: address=/.cloudunit.dev/192.168.50.4                      
 sudo service dnsmasq restart
-```
-
-### How to install Ansible 1.9+ if needed
-
-```
-sudo apt-get install software-properties-common
-sudo apt-add-repository ppa:ansible/ansible
-sudo apt-get update
-sudo apt-get install ansible
 ```
 
 ### How to install Vagrant plugins
