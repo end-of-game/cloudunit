@@ -88,6 +88,5 @@ sudo mv docker-compose /usr/local/bin
 #sudo service docker stop
 #sudo service docker start
 
-cd /home/vagrant/cloudunit/cu-services && sudo ./build-services.sh
+cd /home/vagrant/cloudunit/cu-services && ./build-services.sh
 cd /home/vagrant/cloudunit/cu-platform && ./reset-all.sh -y
-
