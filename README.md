@@ -28,9 +28,9 @@ You can test the common platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Local Demo guide](documentation/DEMO-GUIDE.md)
 * [Server installation guide](documentation/SERVER-GUIDE.md)
-* [Development guide](documentation/DEV-GUIDE.md)
+* [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
+* [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
 
 ## Go further
 
