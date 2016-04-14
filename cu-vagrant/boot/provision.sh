@@ -13,6 +13,7 @@ sudo apt-get update
 sudo apt-get upgrade
 
 cp -f cloudunit/cu-vagrant/files/profile /home/vagrant/.profile
+source /home/vagrant/.profile
 cp -f cloudunit/cu-vagrant/files/hosts /etc/hosts
 cp -f cloudunit/cu-vagrant/files/environment /etc/environment
 cp -f cloudunit/cu-vagrant/files/.bashrc /home/vagrant/.bashrc
