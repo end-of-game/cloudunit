@@ -113,10 +113,10 @@ vagrant plugin install vagrant-vbguest
 1 - Start the vagrant
 
 ```
-cd $HOME/CloudUnit 
-vagrant up
-vagrant ssh 
-cd cloudunit/cu-platform && ./reset-all.sh -y
+Mac> cd $HOME/CloudUnit 
+Mac> vagrant up
+Mac> vagrant ssh 
+Vagrant> cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 
 2 - Run the UI for development (http://0.0.0.0:9000)
