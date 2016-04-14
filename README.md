@@ -28,7 +28,7 @@ You can test the common platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Server installation guide](documentation/SERVER-GUIDE.md)
+* [Server installation guide](documentation/SERVER-GUIDE.md) [SOON UPDATED]
 * [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
 * [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
 
@@ -36,7 +36,7 @@ There are many installation guides
 
 * [CloudUnit CLI guide](documentation/README.md)
 * [CloudUnit Maven Plugin](documentation/master/README.md)
-* [CloudUnit with Jenkins2/GitLab](documentation/master/CI-CD.md)
+* [CloudUnit with Jenkins2/GitLab](documentation/master/CI-CD.md) [SOON UPDATED]
 
 # Licensing
 
