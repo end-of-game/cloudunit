@@ -1,5 +1,5 @@
 ![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
-
+![Jenkins2 Logo](https://wiki.jenkins-ci.org/display/JENKINS/Logo "Jenkins")
 
 # The Turnkey Java PaaS - [![Build Status](https://travis-ci.org/Treeptik/cloudunit.svg?branch=master)](https://travis-ci.org/Treeptik/cloudunit)
 
