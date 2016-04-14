@@ -110,7 +110,7 @@ vagrant plugin install vagrant-vbguest
 
 ## How to start Environment Developpment
 
-1. Start the vagrant
+1 - Start the vagrant
 
 ```
 cd $HOME/CloudUnit 
@@ -119,13 +119,13 @@ vagrant ssh
 cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 
-2. Run the UI for development (http://0.0.0.0:9000)
+2 - Run the UI for development (http://0.0.0.0:9000)
 
 ```
 cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
 ```
 
-3. Start the Java Backend
+3 - Start the Java Backend
 
 ```
 cd $HOME/CloudUnit/cu-manager
