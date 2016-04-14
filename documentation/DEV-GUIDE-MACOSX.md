@@ -86,7 +86,7 @@ For more information in this environment, please read this [article](http://pass
 
 Mac Users are invited to follow the instructions given by the [npm website](https://nodejs.org)
 
-### Source code installation
+### How to build Angular project
 
 Follow these instructions
 
@@ -110,11 +110,24 @@ vagrant plugin install vagrant-vbguest
 
 ## How to start Environment Developpment
 
-To run the UI for development (http://0.0.0.0:9000)
+1. Start the vagrant
 
 ```
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && vagrant up dev
+cd $HOME/CloudUnit 
+vagrant up
+vagrant ssh 
+cd cloudunit/cu-platform && ./reset-all.sh -y
+```
+
+2. Run the UI for development (http://0.0.0.0:9000)
+
+```
 cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
+```
+
+3. Start the Java Backend
+
+```
 cd $HOME/CloudUnit/cu-manager
 mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
