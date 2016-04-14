@@ -15,6 +15,8 @@
 
 #Start containers in the right sequence
 
+source $HOME/.profile
+
 FROM_RESET=$1
 DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 
