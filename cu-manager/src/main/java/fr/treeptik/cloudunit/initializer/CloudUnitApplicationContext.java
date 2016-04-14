@@ -89,11 +89,7 @@ public class CloudUnitApplicationContext
     @Profile("vagrant")
     public static PropertySourcesPlaceholderConfigurer properties()
         throws Exception {
-        String OS = System.getProperty("os.name").toLowerCase();
-        String file = "application-vagrant-linux.properties";
-        if (OS.indexOf("mac") >= 0) {
-            file = "application-vagrant-macos.properties";
-        }
+        String file = "application-vagrant.properties";
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
         pspc.setLocations(getResources(file));
@@ -119,11 +115,8 @@ public class CloudUnitApplicationContext
     @Profile("integration")
     public static PropertySourcesPlaceholderConfigurer propertiesForIntegration()
         throws Exception {
-        String OS = System.getProperty("os.name").toLowerCase();
-        String file = "application-integration-linux.properties";
-        if (OS.indexOf("mac") >= 0) {
-            file = "application-integration-macos.properties";
-        }
+        String file = "application-integration.properties";
+
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
         pspc.setLocations(getResources(file));
