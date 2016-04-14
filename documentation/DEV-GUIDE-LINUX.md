@@ -62,14 +62,28 @@ cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 ```
 
-## How to start Environment Development
+## How to start Environment Developpment
 
-To run the UI for development (http://0.0.0.0:9000)
+1 - Start the vagrantbox and run Docker into Vagrant
+
 ```
-cd $HOME/cloudunit/cu-manager/src/main/webapp && vagrant up
-cd $HOME/cloudunit/cu-manager
-mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
-cd $HOME/cloudunit/cu-manager/src/main/webapp && npm start
+$ cd $HOME/CloudUnit 
+$ vagrant up
+$ vagrant ssh 
+cd cloudunit/cu-platform && ./reset-all.sh -y
+```
+
+2 - Run the UI for development (http://0.0.0.0:9000) from Linux
+
+```
+$ cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
+```
+
+3 - Start the Java Backend from Linux
+
+```
+$ cd $HOME/CloudUnit/cu-manager
+$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 # FAQ
@@ -88,12 +102,7 @@ cloudunit/cu-platform/reset-all.sh -y
 Update your sources, build the images and reninit the database :
 
 ```
-vagrant ssh dev
-cloudunit/cu-services/build-services.sh
-cloudunit/cu-platform/reset-all.sh -y
+$ vagrant ssh dev
+$ cloudunit/cu-services/build-services.sh
+$ cloudunit/cu-platform/reset-all.sh -y
 ```
-
-By default, docker cache is disabled. So all images will be built again.
-To speed up, you can activate the cache but it could be dangerous 
-if you modify a parent image with docker inheritance.
-

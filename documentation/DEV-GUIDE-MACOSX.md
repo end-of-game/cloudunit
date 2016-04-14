@@ -110,7 +110,7 @@ vagrant plugin install vagrant-vbguest
 
 ## How to start Environment Developpment
 
-1 - Start the vagrant and run Docker into Vagrant
+1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
 $ cd $HOME/CloudUnit 
@@ -128,16 +128,16 @@ $ cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
 3 - Start the Java Backend from Mac
 
 ```
-cd $HOME/CloudUnit/cu-manager
-mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+$ cd $HOME/CloudUnit/cu-manager
+$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 ## How to reset Environment Developpment
 
 ```
-cd $HOME/CloudUnit
-vagrant ssh dev
-cloudunit/cu-platform/reset-all.sh -y
+$ cd $HOME/CloudUnit
+$ vagrant ssh dev
+$ cloudunit/cu-platform/reset-all.sh -y
 ```
 
 
