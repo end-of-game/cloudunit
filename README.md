@@ -36,6 +36,7 @@ There are many installation guides
 
 * [CloudUnit CLI guide](documentation/README.md)
 * [CloudUnit Maven Plugin](documentation/master/README.md)
+* [CloudUnit with Jenkins2/GitLab](documentation/master/CI-CD.md)
 
 # Licensing
 
