@@ -10,7 +10,8 @@ This guide is relevant if you want to try CloudUnit without going through any co
 ## Start the box
 You can launch it in 2 commands:
 ```
-$ wget https://github.com/Treeptik/CloudUnit/releases/download/1.0/Vagrantfile
+$ git clone https://github.com/Treeptik/cloudunit.git
+$ cd cloudunit/cu-demo
 $ vagrant up
 ```
 

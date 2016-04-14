@@ -16,26 +16,19 @@ You can find more informations there : [CloudUnit Website](http://www.cloudunit.
 You can test the common platform online here (reseted all night)
 * https://sormiou.cloudunit.io :: [ johndoe / abc2015 ]
 
-
 ![CloudUnit Gif](documentation/img/cloudunitGif.gif "CloudUnit Gif")
 
 ## Getting started
 
 There are many installation guides
-* [Demonstration guide](documentation/DEMO-GUIDE.md)
+* [Local Demo guide](documentation/DEMO-GUIDE.md)
 * [Server installation guide](documentation/SERVER-GUIDE.md)
-* [Development guide MAC](documentation/DEV-GUIDE-MAC.md)
-* [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
+* [Development guide](documentation/DEV-GUIDE.md)
 
 ## Go further
 
 * [CloudUnit CLI guide](documentation/README.md)
 * [CloudUnit Maven Plugin](documentation/master/README.md)
-
-## Usage examples
-
-There are many user guides
-* [Spring MySQL Redis](documentation/webapps/SPRING-MYSQL-REDIS.md)
 
 # Licensing
 
