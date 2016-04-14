@@ -1,16 +1,18 @@
 ![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
 
-A complete plaform for devops featuring
-* Jenkins 2 for CI/CD
-* GitLab CE 
-
-![Jenkins2 Logo](documentation/img/plateforme.png "Devops Plateforme")
 
 # The Turnkey Java PaaS - [![Build Status](https://travis-ci.org/Treeptik/cloudunit.svg?branch=master)](https://travis-ci.org/Treeptik/cloudunit)
 
 Thanks to CloudUnit PaaS's powerful provisioning and execution capabilities, classical servers as Tomcat and JBoss, developers can build secure and scalable Java Web applications. So deploy your Java applications in the cloud almost instantly without changing your code.
 
 CloudUnit takes care of the plumbing.
+
+A complete plaform for devops featuring
+* Docker with its friends : Compose, Machine and soon Swarm
+* Jenkins 2 for CI/CD
+* GitLab CE 
+
+![Jenkins2 Logo](documentation/img/plateforme.png "Devops Plateforme")
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
