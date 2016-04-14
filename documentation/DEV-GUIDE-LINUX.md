@@ -28,7 +28,6 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 * The frontend is an AngularJS 1.x consuming the backend API
 * You run the project with an embedded tomcat via maven tasks (tomcat:run). No need to install Tomcat locally.
 * Mysql is included into vagrantbox so no need to install it locally.
-* Ansible is needed locally to provision Vagrantbox (it will disapear in a near future...)
 
 ## Installation 
 
@@ -54,14 +53,11 @@ vagrant plugin install vagrant-vbguest
 ```
 ### Source code installation
 
-Follow these instructions : 
+Follow these instructions :
 ```
 sudo apt-get install nodejs npm
 sudo ln -s "$(which nodejs)" /usr/bin/node
 sudo npm install -g grunt grunt-cli bower 
-mkdir $HOME/infrastructure
-cd $HOME/infrastructure
-git clone https://github.com/Treeptik/CU-infrastructure
 cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 ```
@@ -70,7 +66,7 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 
 To run the UI for development (http://0.0.0.0:9000)
 ```
-cd $HOME/cloudunit/cu-manager/src/main/webapp && vagrant up dev
+cd $HOME/cloudunit/cu-manager/src/main/webapp && vagrant up
 cd $HOME/cloudunit/cu-manager
 mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 cd $HOME/cloudunit/cu-manager/src/main/webapp && npm start
@@ -83,7 +79,7 @@ All questions and answers about dev tasks
 ## How to reset Environment Development
 
 ```
-vagrant ssh dev
+vagrant ssh
 cloudunit/cu-platform/reset-all.sh -y
 ```
 
