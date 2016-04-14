@@ -1,0 +1,4 @@
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+
+MYSQL_ROOT_PASSWORD=changeit
+DOCKER_HOST=tcp://cloudunit.serv:4243
