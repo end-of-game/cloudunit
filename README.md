@@ -1,7 +1,10 @@
 ![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
 
-A complete plaform for devops featuring 
-![Jenkins2 Logo](documentation/img/jenkins_logo.png "Jenkins") ![GitLab Logo](documentation/img/GitLab_Logo.png "Jenkins")
+A complete plaform for devops featuring
+* Jenkins 2 for CI/CD
+* GitLab CE 
+
+![Jenkins2 Logo](documentation/img/plateforme.png "Devops Plateforme")
 
 # The Turnkey Java PaaS - [![Build Status](https://travis-ci.org/Treeptik/cloudunit.svg?branch=master)](https://travis-ci.org/Treeptik/cloudunit)
 
