@@ -145,9 +145,32 @@ You can play this to verify if everything is good.
 
 ```
 docker ps | grep jenkins2
-jenkinsci/jenkins:2.0-rc-1      0.0.0.0:8081->8080/tcp, 0.0.0.0:50000->50000/tcp    jenkins2
+jenkinsci/jenkins:2.0-rc-1      0.0.0.0:9090->8080/tcp, 0.0.0.0:50000->50000/tcp    jenkins2
 ```
 
-So you have a container **jenkins2** exposing its ports at 
-* HTTP open at 8081
+So you have a container **jenkins2** exposing its HTTP at 9080.
+To access the application, you can open the URL [http://192.168.50.4:9080](http://192.168.50.4:9080).
+
+The root password is displayed with command:
+
+``
+docker logs -f jenkins2
+...
+...
+*************************************************************
+*************************************************************
+
+Jenkins initial setup is required. An admin user has been created and a password generated.
+Please use the following password to proceed to installation:
+
+3c4675ee3c4c4c3e9e89dba406a4a206
+
+This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+*************************************************************
+...
+...
+*************************************************************
+*************************************************************
+``
 
