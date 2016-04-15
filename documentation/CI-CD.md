@@ -153,7 +153,7 @@ To access the application, you can open the URL [http://192.168.50.4:9080](http:
 
 The root password is displayed with command:
 
-``
+```
 docker logs -f jenkins2
 ...
 ...
@@ -172,5 +172,5 @@ This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
 ...
 *************************************************************
 *************************************************************
-``
+```
 
