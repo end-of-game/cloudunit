@@ -22,7 +22,7 @@ cloudunit/cu-services : Docker images
 
 ## Dev Rules and Principles
 
-![Architecture Dev](documentation/img/architecture-dev.png "Architecture Development")
+![Architecture Dev](img/architecture-dev.png "Architecture Development")
 
 * You have to configure a local dns (see further) to send any requests from your host to VM (IP fixed at 192.168.50.4) 
 * A reverse proxy is included into vagrantbox to route the request (*.cloudunit.dev) to the right app.
