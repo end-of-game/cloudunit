@@ -1,6 +1,6 @@
 # OVERVIEW
 
-TODO
+![Jenkins2 Logo](documentation/img/plateforme-trio.png "Devops Plateforme")
 
 # CONTEXT
 
