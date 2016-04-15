@@ -2,7 +2,6 @@
 # CloudUnit developement environment
 
 You are reading the wright guide, if you want to setup an environment to contribute to CloudUnit development.
-If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box](DEMO-GUIDE.md).
 
 ## Requirements
 
@@ -15,9 +14,11 @@ If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box
 
 ## Architecture sources
 
-* `cloudunit/cu-manager`  : Maven project 
-* `cloudunit/cu-plaform`  : Shell scripts for administration 
-* `cloudunit/cu-services` : Docker images
+```
+* cloudunit/cu-manager  : Maven project 
+* cloudunit/cu-plaform  : Shell scripts for administration 
+* cloudunit/cu-services : Docker images
+```
 
 ## Dev Rules and Principles
 
