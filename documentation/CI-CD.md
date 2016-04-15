@@ -60,12 +60,14 @@ To access the application, you can open the URL [http://192.168.50.4:480](http:/
 
 ![GitLab Choose Password](img/gitlab-choose-password.png "Choose Password")    
 
-Choose a **root** password and note it preciously.
+`Choose a **root** password and note it preciously.`
 
-Create a new project.
+`Create a new project.`
+
 ![GitLab Create new project](img/gitlab-create-new-project.png "Create new project")    
 
-Name it **helloworld**
+`Name it **helloworld**``
+
 ![GitLab Create project helloworld](img/gitlab-create-project-helloworld.png "Create project helloworld")    
 
 
