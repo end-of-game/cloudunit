@@ -132,9 +132,7 @@ $ cloudunit/cu-services/build-services.sh
 $ cloudunit/cu-platform/reset-all.sh -y
 ```
 
-![GitLab Choose Password](img/gitlab-choose-password.png "Choose Password")    
 
-Choose a **root** password and note it preciously.
 
 
 
