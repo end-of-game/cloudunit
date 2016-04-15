@@ -15,12 +15,14 @@ You are reading the wright guide, if you want to setup an environment to contrib
 ## Architecture sources
 
 ```
-* cloudunit/cu-manager  : Maven project 
-* cloudunit/cu-plaform  : Shell scripts for administration 
-* cloudunit/cu-services : Docker images
+cloudunit/cu-manager  : Maven project 
+cloudunit/cu-plaform  : Shell scripts for administration 
+cloudunit/cu-services : Docker images
 ```
 
 ## Dev Rules and Principles
+
+![Architecture Dev](documentation/img/architecture-dev.png "Architecture Development")
 
 * You have to configure a local dns (see further) to send any requests from your host to VM (IP fixed at 192.168.50.4) 
 * A reverse proxy is included into vagrantbox to route the request (*.cloudunit.dev) to the right app.
