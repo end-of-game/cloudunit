@@ -71,8 +71,45 @@ Name it **helloworld**
 To follow this example, we will clone a skeleton project example:
 
 ```
-git clone https://github.com/Treeptik/cloudunit-skeleton
-cd gitlab-ce-helloworld
+mkdir test-gitlab-jenkins2
+cd test-gitlab-jenkins2
+wget https://github.com/Treeptik/cloudunit/releases/download/1.0/skeleton-gitlab-jenkins2-helloworld.zip
+unzip skeleton-gitlab-jenkins2-helloworld.zip
+cd helloworld
+git init
+git remote add origin http://192.168.50.4:480/root/helloworld.git
+git add .
+git commit -am "First Commit"
+git push -u origin master
 ```
 
+This application is the most simple jee webapp with a single jsp.
+The important file to analyze is **Jenkinsfile** because it allows the pipeline as code plugin into Jenkins2.
 
+```
+Stage "Create CU-Server"
+node {
+    checkout scm
+    mvn 'clean package'
+    sh "wget https://github.com/Treeptik/cloudunit/releases/download/1.0/CloudUnitCLI.jar -O /tmp/cloudunit-cli.jar"
+    sh "wget http://192.168.50.4:480/root/helloworld/raw/master/cu-cli/create-server -O /tmp/create-server"
+    sh "cat /tmp/create-server"
+    sh "pwd"
+    java '-jar /tmp/cloudunit-cli.jar --cmdfile /tmp/create-server'
+}
+
+def mvn(args) {
+    sh "${tool 'M3'}/bin/mvn ${args}"
+}
+
+def java(args) {
+    sh "${tool 'JAVA8'}/bin/java ${args}"
+}
+```
+We introduce many concepts here as :
+* the use of cloudunit-cli a new kid frol CloudUnitStack to manage the API through a CLI written in Spring shell
+* the definition of a list of commands for CloudUnit into the **create-server**
+
+The variables will defined into Jenkins configuration in the next chapter
+* M3 for Maven installation
+* JAVA8 for Java 8 installation
