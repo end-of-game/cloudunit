@@ -42,13 +42,17 @@ CloudUnit uses Docker and Java but others components. As pre-requisites, you nee
 Dnsmasq is a lightweight, easy to configure DNS forwarder 
 and DHCP server […] is targeted at home networks[.]
 ```
-You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with admin.cloudunit.io shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
+You need to add a local DNS entry pointing to the vagrant IP address.
+More precisely, any address ending with admin.cloudunit.dev shoud point to `192.168.50.4`. 
+On Ubuntu, a simple way to achieve this is to install dnsmasq:
 ```
 sudo apt-get install dnsmasq
 sudo vi /etc/dnsmasq.conf
 # Add the line: address=/.cloudunit.dev/192.168.50.4                      
 sudo service dnsmasq restart
 ```
+
+You should ping **foo.cloudunit.dev** to **192.168.50.4**
 
 ### Step 2 - How to install Vagrant plugins
 ```
