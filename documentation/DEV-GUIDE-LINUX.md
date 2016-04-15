@@ -12,17 +12,11 @@ You are reading the wright guide, if you want to setup an environment to contrib
 * Vagrant 1.8+ (www.vagrantup.com)
 * Maven 3+ (maven.apache.org)
 
-## Architecture sources
-
-```
-cloudunit/cu-manager  : Maven project 
-cloudunit/cu-plaform  : Shell scripts for administration 
-cloudunit/cu-services : Docker images
-```
-
-## Dev Rules and Principles
+## Architecture for developpment
 
 ![Architecture Dev](img/plateforme-dev.png "Architecture Development")    
+
+### General Rules
 
 * You have to configure a local dns (see further) to send any requests from your host to VM (IP fixed at 192.168.50.4) 
 * You use your favorite idea (intellij, Eclipse) to develop the maven project into 'cloudunit/cu-manager'.
@@ -30,6 +24,14 @@ cloudunit/cu-services : Docker images
 * The frontend is an AngularJS 1.4 consuming the backend API from Spring Java
 * You run the project with an embedded tomcat via maven tasks (tomcat:run). No need to install Tomcat locally.
 * Mysql is included into vagrantbox so no need to install it locally.
+
+### Architecture sources
+
+```
+cloudunit/cu-manager  : Maven project 
+cloudunit/cu-plaform  : Shell scripts for administration 
+cloudunit/cu-services : Docker images
+```
 
 ## Installation 
 
