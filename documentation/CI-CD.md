@@ -56,6 +56,6 @@ So you have a container **gitlab** exposing its ports at
 * WebApp HTTP at 480
 * API HTTPS at 4443
 
-To access the application, you can open the URL [http://192.168.50.4](http://192.168.50.4).
+To access the application, you can open the URL [http://192.168.50.4:480](http://192.168.50.4:480).
 
  
