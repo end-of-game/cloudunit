@@ -35,7 +35,7 @@ cloudunit/cu-services : Docker images
 
 ## Installation 
 
-### Local DNS
+### Step 1 - Local DNS
 
 CloudUnit uses Docker and Java but others components. As pre-requisites, you need to install them to have a complete dev stack. You need to install a local DNS for entry.
 ```
@@ -50,23 +50,30 @@ sudo vi /etc/dnsmasq.conf
 sudo service dnsmasq restart
 ```
 
-### How to install Vagrant plugins
+### Step 2 - How to install Vagrant plugins
 ```
 vagrant plugin install vagrant-reload
 vagrant plugin install vagrant-vbguest
 ```
-### Source code installation
+
+### Step 3 - How to install source code
+
+```
+cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
+```
+
+### Step 4 - How to install Angular Project dependencies 
 
 Follow these instructions :
+
 ```
 sudo apt-get install nodejs npm
 sudo ln -s "$(which nodejs)" /usr/bin/node
 sudo npm install -g grunt grunt-cli bower 
-cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 ```
 
-## How to start Environment Developpment
+## Step 5 - How to start the application
 
 1 - Start the vagrantbox and run Docker into Vagrant
 
@@ -77,17 +84,17 @@ $ vagrant ssh
 cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 
-2 - Run the UI for development (http://0.0.0.0:9000) from Linux
-
-```
-$ cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
-```
-
-3 - Start the Java Backend from Linux
+2 - Start the Java Backend from Linux
 
 ```
 $ cd $HOME/CloudUnit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+```
+
+3 - Run the UI for development (http://0.0.0.0:9000) from Linux
+
+```
+$ cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
 ```
 
 # FAQ
