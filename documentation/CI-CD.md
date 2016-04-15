@@ -68,4 +68,11 @@ Name it **helloworld**
 
 ![GitLab Create project helloworld](img/gitlab-create-project-helloworld.png "Create project helloworld")    
 
+To follow this example, we will clone a skeleton project example:
+
+```
+git clone https://github.com/Treeptik/cloudunit-skeleton
+cd gitlab-ce-helloworld
+```
+
 
