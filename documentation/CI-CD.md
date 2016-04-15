@@ -44,7 +44,7 @@ Status: Downloaded newer image for gitlab/gitlab-ce:latest
 70a38bf4b8d9132c7dcdf1b319ee8572787e9127b48cb56d718ea1170fe10160
 ````
 
-You can run this command to verify if everything is good.
+You can play this to verify if everything is good.
 
 ```
 docker ps | grep gitlab
@@ -113,3 +113,41 @@ We introduce many concepts here as :
 The variables will defined into Jenkins configuration in the next chapter
 * M3 for Maven installation
 * JAVA8 for Java 8 installation
+
+## Jenkins 2
+
+Follow these steps during the first time to run and configure GitLab
+
+Into the vagrantbox 
+```
+cd cloudunit/cu-platform
+./jenkins2.sh
+````
+Docker will pull the image 
+```
+Unable to find image 'jenkinsci/jenkins:2.0-rc-1' locally
+2.0-rc-1: Pulling from jenkinsci/jenkins
+d8bd0657b25f: Pulling fs layer
+a582cd499e0f: Pulling fs layer
+3c3e582d88fa: Pulling fs layer
+5901462573ab: Pull complete
+6d048f1c223b: Pull complete
+fd0e93cdc2d1: Pull complete
+2f6ac4bc61e5: Pull complete
+2fac80947c78: Pull complete
+7f79e88ab057: Pull complete
+Digest: sha256:beb15e5a612f0ef85b75fe98727aeb62d84ce023c1ebbcbdb0b1ff186c6eec8e
+Status: Downloaded newer image for jenkinsci/jenkins:2.0-rc-1
+b09e613e8f519b04ddf386d88232cc889b4749944c125804ff43292496146fbb
+```
+
+You can play this to verify if everything is good.
+
+```
+docker ps | grep jenkins2
+jenkinsci/jenkins:2.0-rc-1      0.0.0.0:8081->8080/tcp, 0.0.0.0:50000->50000/tcp    jenkins2
+```
+
+So you have a container **jenkins2** exposing its ports at 
+* HTTP open at 8081
+
