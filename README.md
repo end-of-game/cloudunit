@@ -12,7 +12,7 @@ A complete plaform for devops featuring
 * Jenkins 2 for CI/CD
 * GitLab CE 
 
-![Jenkins2 Logo](documentation/img/plateforme.png "Devops Plateforme")
+![Jenkins2 Logo](documentation/img/plateforme-trio.png "Devops Plateforme")
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
