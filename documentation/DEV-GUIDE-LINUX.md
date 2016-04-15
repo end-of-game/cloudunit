@@ -77,13 +77,23 @@ sudo npm install -g grunt grunt-cli bower
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 ```
 
-## Step 5 - How to start the application
+## Step 5 - How to build the vagrant box
+
+Warning because this step could need lot of times !
+
+```
+$ cd $HOME/CloudUnit 
+$ vagrant up
+$ vagrant provision 
+```
+
+## Step 6 - How to start the application
 
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
 $ cd $HOME/CloudUnit 
-$ vagrant up
+$ vagrant up (if not running)
 $ vagrant ssh 
 cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
