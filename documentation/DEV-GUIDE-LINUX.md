@@ -43,7 +43,7 @@ Dnsmasq is a lightweight, easy to configure DNS forwarder
 and DHCP server […] is targeted at home networks[.]
 ```
 You need to add a local DNS entry pointing to the vagrant IP address.
-More precisely, any address ending with admin.cloudunit.dev shoud point to `192.168.50.4`. 
+More precisely, any address ending with **.cloudunit.dev** should be directed to **192.168.50.4**. 
 On Ubuntu, a simple way to achieve this is to install dnsmasq:
 ```
 sudo apt-get install dnsmasq
