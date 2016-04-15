@@ -1,6 +1,6 @@
 # OVERVIEW
 
-![Jenkins2 Logo](documentation/img/plateforme-trio.png "Devops Plateforme")
+![Jenkins2 Logo](img/plateforme-trio.png "Devops Plateforme")
 
 # CONTEXT
 
