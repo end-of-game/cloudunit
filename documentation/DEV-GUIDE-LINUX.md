@@ -33,7 +33,15 @@ cloudunit/cu-plaform  : Shell scripts for administration
 cloudunit/cu-services : Docker images
 ```
 
-## Installation 
+## Auto Installation
+
+```
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit-v2/master/boot.sh | sudo bash
+```
+
+If you met problem or anything else, please try the manual installation
+
+## Manual Installation 
 
 ### Step 1 - Local DNS
 
