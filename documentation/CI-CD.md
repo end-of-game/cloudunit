@@ -93,23 +93,43 @@ This application is the most simple jee webapp with a single jsp.
 The important file to analyze is **Jenkinsfile** because it allows the pipeline as code plugin into Jenkins2.
 
 ```
-Stage "Create CU-Server"
+def cloudunit
+
+stage "Init SCM"
 node {
     checkout scm
-    mvn 'clean package'
-    sh "wget https://github.com/Treeptik/cloudunit/releases/download/1.0/CloudUnitCLI.jar -O /tmp/cloudunit-cli.jar"
-    sh "wget http://192.168.50.4:480/root/helloworld/raw/master/cu-cli/create-server -O /tmp/create-server"
-    sh "cat /tmp/create-server"
-    sh "pwd"
-    java '-jar /tmp/cloudunit-cli.jar --cmdfile /tmp/create-server'
+    cloudunit = load 'cloudunit.groovy'
+    cloudunit.install_cli()
 }
 
-def mvn(args) {
-    sh "${tool 'M3'}/bin/mvn ${args}"
+stage "Build application WAR"
+node {
+    cloudunit.mvn 'clean package'
 }
 
-def java(args) {
-    sh "${tool 'JAVA8'}/bin/java ${args}"
+stage "Create CU-Server"
+node {
+    cloudunit.callAction 'cu-cli/create-server'
+}
+
+stage "Add MYSQL Module"
+node {
+    cloudunit.callAction 'cu-cli/add-module'
+}
+
+stage "Change JVM Config"
+node {
+    cloudunit.callAction 'cu-cli/jvm-configuration'
+}
+
+stage "Deploy Application"
+node {
+    cloudunit.callAction 'cu-cli/deploy-app'
+}
+
+input message: "Does the application look good?"
+node {
+    cloudunit.callAction 'cu-cli/deploy-to-production'
 }
 ```
 We introduce many concepts here as :
