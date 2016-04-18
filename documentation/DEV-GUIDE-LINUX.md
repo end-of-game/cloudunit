@@ -131,7 +131,11 @@ TODO
 
 Open the project with your favorite IDE into **root** directory and add **cu-manager** as Maven Project.
 Simply select the **pom.xml** and right click to select this option.
+
+
 ![Architecture Dev](img/intellij_root.png "Architecture Development")
+
+
 
 You can run CloudUnit with a Maven task easily as :
     
