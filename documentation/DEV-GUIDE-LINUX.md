@@ -78,8 +78,6 @@ cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
 Follow these instructions :
 
 ```
-sudo apt-get install nodejs npm
-sudo ln -s "$(which nodejs)" /usr/bin/node
 sudo npm install -g grunt grunt-cli bower 
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 ```
