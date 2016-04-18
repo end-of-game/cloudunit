@@ -134,7 +134,7 @@ cloudunit/cu-platform/reset-all.sh -y
 Update your sources, build the images and reninit the database :
 
 ```
-$ vagrant ssh dev
+$ vagrant ssh 
 $ cloudunit/cu-services/build-services.sh
 $ cloudunit/cu-platform/reset-all.sh -y
 ```
