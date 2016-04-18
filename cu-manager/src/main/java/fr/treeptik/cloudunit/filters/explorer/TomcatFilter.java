@@ -80,6 +80,7 @@ public class TomcatFilter
         String breadcrumb = fileUnit.getBreadcrump();
         if (breadcrumb.equalsIgnoreCase("/cloudunit")
             || breadcrumb.equalsIgnoreCase("/cloudunit/backup")
+                || breadcrumb.equalsIgnoreCase("/cloudunit/hooks")
             || breadcrumb.startsWith("/cloudunit/appconf")) {
             fileUnit.safe(true);
         } else {

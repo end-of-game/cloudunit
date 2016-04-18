@@ -15,6 +15,9 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificates;
+import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
@@ -45,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -523,6 +527,13 @@ public class ServerServiceImpl
                             .getServerPort(),
                     server.getServerAction()
                             .getServerManagerPort());
+
+            try {
+
+            } catch(Exception e) {
+                logger.error("Call Hook Post Start");
+            }
+
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
             throw new ServiceException("Error database :  "
