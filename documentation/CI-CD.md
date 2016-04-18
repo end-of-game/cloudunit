@@ -9,6 +9,12 @@ We are working for a full distribution between all these products.
 We want to have the same users and roles from CloudUnit to Jenkins2 and GitLab-CE.
 CloudUnit will be the masterchief to admin the others products.
 
+# DIRECT ACCESS
+
+Direct URL to applications:
+* [http://192.168.50.4:480] for GitLab CE
+* [http://192.168.50.4:8081] for Jenkins 2
+
 # INSTALLATION
 
 ## GitLab
