@@ -99,7 +99,7 @@ $ vagrant provision
 
 ## First steps with CloudUnit
 
-1 - Start the vagrantbox and run Docker into Vagrant
+1 - Start the vagrantbox and run Docker **into Vagrant**
 
 ```
 $ cd $HOME/cloudUnit/cu-vagrant 
@@ -108,14 +108,14 @@ $ vagrant ssh
 cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 
-2 - Start the Java Backend from Linux
+2 - Start the Java Backend from **your Linux Destkop**
 
 ```
 $ cd $HOME/CloudUnit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
-3 - Run the UI for development (http://0.0.0.0:9000) from Linux
+3 - Run the UI for development (http://0.0.0.0:9000) from **your Linux Destkop**
 
 ```
 $ cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
