@@ -13,7 +13,7 @@ CloudUnit will be the masterchief to admin the others products.
 
 Direct URL to applications:
 * [http://192.168.50.4:480] for GitLab CE
-* [http://192.168.50.4:8081] for Jenkins 2
+* [http://192.168.50.4:9080] for Jenkins 2
 
 # INSTALLATION
 
