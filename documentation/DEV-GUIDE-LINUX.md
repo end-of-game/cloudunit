@@ -36,7 +36,7 @@ cloudunit/cu-services : Docker images
 ## Auto Installation
 
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit-v2/master/boot.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu.sh | sudo bash
 ```
 
 If you met problem or anything else, please try the manual installation
