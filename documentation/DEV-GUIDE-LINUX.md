@@ -76,6 +76,11 @@ cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
 ### Step 4 - How to install Angular Project dependencies 
 
 Follow these instructions :
+```
+Installation Node 5.x :
+    curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
+    sudo apt-get install nodejs
+```
 
 ```
 sudo npm install -g grunt grunt-cli bower 
@@ -87,7 +92,7 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 Warning because this step could need lot of times !
 
 ```
-$ cd $HOME/CloudUnit 
+$ cd $HOME/cloudUnit/cu-vagrant 
 $ vagrant up
 $ vagrant provision 
 ```
@@ -97,7 +102,7 @@ $ vagrant provision
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/CloudUnit 
+$ cd $HOME/cloudUnit/cu-vagrant 
 $ vagrant up (if not running)
 $ vagrant ssh 
 cd cloudunit/cu-platform && ./reset-all.sh -y
