@@ -121,6 +121,16 @@ $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 $ cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
 ```
 
+# IDE CONFIGURATION
+
+## ECLIPSE 
+
+TODO
+
+## INTELLIJ
+
+
+
 # FAQ
 
 All questions and answers about dev tasks
