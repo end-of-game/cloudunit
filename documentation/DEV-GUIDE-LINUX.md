@@ -129,6 +129,9 @@ TODO
 
 ## INTELLIJ
 
+![Architecture Dev](img/intellij_root.png "Architecture Development")
+    
+![Architecture Dev](img/intellij_conf.png "Architecture Development")
 
 
 # FAQ
