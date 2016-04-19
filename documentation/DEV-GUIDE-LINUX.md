@@ -104,7 +104,7 @@ vagrant provision
 ```
 cd $HOME/cloudunit/cu-vagrant 
 vagrant up (if not running)
-vagrant ssh dev
+vagrant ssh
 cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 
