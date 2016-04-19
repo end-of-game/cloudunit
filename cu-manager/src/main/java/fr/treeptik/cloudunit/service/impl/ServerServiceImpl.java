@@ -26,16 +26,14 @@ import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.hooks.HookAction;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.ServerFactory;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.ContainerMapper;
@@ -81,7 +79,7 @@ public class ServerServiceImpl
     private ApplicationService applicationService;
 
     @Inject
-    private AuthentificationUtils authentificationUtils;
+    private HookService hookService;
 
     @Inject
     private ShellUtils shellUtils;
@@ -91,9 +89,6 @@ public class ServerServiceImpl
 
     @Inject
     private ContainerMapper containerMapper;
-
-    @Inject
-    private PortToOpenDAO portToOpenDAO;
 
     @Value("${cloudunit.max.servers:1}")
     private String maxServers;
@@ -511,6 +506,8 @@ public class ServerServiceImpl
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
 
+            // Call the hook for pre start
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
 
             DockerContainer.start(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
@@ -528,11 +525,8 @@ public class ServerServiceImpl
                     server.getServerAction()
                             .getServerManagerPort());
 
-            try {
-
-            } catch(Exception e) {
-                logger.error("Call Hook Post Start");
-            }
+            // Call the hook for post start
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_START);
 
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
@@ -556,12 +550,20 @@ public class ServerServiceImpl
             DockerContainer dockerContainer = new DockerContainer();
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
+
+            // Call the hook for pre stop
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_STOP);
+
             DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
 
             server.setStatus(Status.STOP);
             server = update(server);
+
+            // Call the hook for post stop
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_STOP);
+
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
                     + e.getLocalizedMessage(), e);

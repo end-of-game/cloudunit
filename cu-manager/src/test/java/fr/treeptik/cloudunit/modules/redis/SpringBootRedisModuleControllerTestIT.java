@@ -217,8 +217,6 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         resultats
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-                .andExpect(jsonPath("$.modules[0].status").value("START"))
-                .andExpect(jsonPath("$.modules[1].status").value("START"))
                 .andExpect(jsonPath("$.modules[1].name").value(genericModule))
                 .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
 

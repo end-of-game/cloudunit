@@ -27,18 +27,14 @@ import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.hooks.HookAction;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Snapshot;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.SnapshotService;
-import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.ContainerMapper;
 import fr.treeptik.cloudunit.utils.EmailUtils;
@@ -96,16 +92,13 @@ public class ModuleServiceImpl
     private ShellUtils shellUtils;
 
     @Inject
-    private PortUtils portUtils;
+    private HookService hookService;
 
     @Inject
     private HipacheRedisUtils hipacheRedisUtils;
 
     @Inject
     private ContainerMapper containerMapper;
-
-    @Inject
-    private ApplicationService applicationService;
 
     @Inject
     private SnapshotService snapshotService;
@@ -812,6 +805,9 @@ public class ModuleServiceImpl
                         module.getSshPort());
             }
 
+            // Call the hook for pre start
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
+
             DockerContainer
                     .start(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
@@ -830,6 +826,9 @@ public class ModuleServiceImpl
             // Unsubscribe module manager
             module.getModuleAction()
                     .updateModuleManager(hipacheRedisUtils);
+
+            // Call the hook for post start
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_START);
 
         } catch (PersistenceException e) {
             module.setStatus(Status.FAIL);
@@ -856,12 +855,19 @@ public class ModuleServiceImpl
             DockerContainer dockerContainer = new DockerContainer();
             dockerContainer.setName(module.getName());
             dockerContainer.setImage(module.getImage().getName());
+
+            // Call the hook for pre stop
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_STOP);
+
             DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
 
             module.setStatus(Status.STOP);
             module = this.update(module);
+
+            // Call the hook for post stop
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_STOP);
 
         } catch (DataAccessException e) {
             module.setStatus(Status.FAIL);

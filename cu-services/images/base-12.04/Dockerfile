@@ -28,6 +28,7 @@ ENV CU_HOOKS /cloudunit/appconf/hooks
 RUN echo -n "CU_JAVA=$CU_JAVA\nCU_SCRIPTS=$CU_SCRIPTS\nCU_USER_HOME=$CU_USER_HOME\nCU_LOGS=$CU_LOGS\nCU_HOOKS=$CU_HOOKS\n" >> /etc/environment
 
 COPY hooks /cloudunit/appconf/hooks
+RUN chmod a+x /cloudunit/appconf/hooks/*
 
 LABEL origin cloudunit
 

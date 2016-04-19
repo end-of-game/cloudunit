@@ -98,24 +98,6 @@ public class SnapshotServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
-    @Value("${certs.dir.path}")
-    private String certsDirPath;
-
-    @Value("${docker.endpoint.mode}")
-    private String dockerEndpointMode;
-
-    private boolean isHttpMode;
-
-    @PostConstruct
-    public void initDockerEndPointMode() {
-        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
-            logger.warn("Docker TLS mode is disabled");
-            isHttpMode = true;
-        } else {
-            isHttpMode = false;
-        }
-    }
-
     @Override
     public Snapshot findOne(String tag) {
         return snapshotDAO.findByTag(tag);
@@ -343,29 +325,24 @@ public class SnapshotServiceImpl
     }
 
     private void backupModule(Module module) {
+        Application application;
         try {
-            DockerClient docker = null;
-            if (Boolean.valueOf(isHttpMode)) {
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
-
-            final String[] commandStart = {"bash", "-c", "/cloudunit/scripts/cu-start.sh"};
-            final String[] commandStop = {"bash", "-c", "/cloudunit/scripts/cu-stop.sh"};
-            final String[] commandBackupData = {"bash", "-c", "/cloudunit/scripts/backup-data.sh"};
-
-            docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            docker.execCreate(module.getName()+"-data", commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            application =
+                    applicationService.findByNameAndUser(module.getApplication().getUser(),
+                            module.getApplication().getName());
+            DockerContainer dockerContainer = new DockerContainer();
+            dockerContainer.setName(module.getName() + "-data");
+            dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
+            Map<String, String> configShell = new HashMap<>();
+            configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
+            configShell.put("dockerManagerAddress", application.getManagerIp());
+            String rootPassword = module.getApplication().getUser().getPassword();
+            configShell.put("password", rootPassword);
+            int code = shellUtils.executeShell("/cloudunit/scripts/backup-data.sh", configShell);
+            logger.info("The backup script return : " + code);
 
         } catch (Exception e) {
-            logger.error(e.getMessage() + ", " + module);
+            e.printStackTrace();
         }
     }
 

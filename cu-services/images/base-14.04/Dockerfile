@@ -25,6 +25,7 @@ ENV CU_USER_HOME /cloudunit/
 ENV CU_HOOKS /cloudunit/appconf/hooks
 
 COPY hooks /cloudunit/appconf/hooks
+RUN chmod a+x /cloudunit/appconf/hooks/*
 
 LABEL origin cloudunit
 
