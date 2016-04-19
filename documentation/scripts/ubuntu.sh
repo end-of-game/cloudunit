@@ -1,10 +1,5 @@
 #!/bin/bash
 
-###### Compass #######
-sudo apt-get -y install ruby-full
-sudo gem install compass
-
-
 sudo apt-get -y install git
 
 ###### Java #######
