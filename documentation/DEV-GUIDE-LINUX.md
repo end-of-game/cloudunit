@@ -32,15 +32,7 @@ cloudunit/cu-plaform  : Shell scripts for administration
 cloudunit/cu-services : Docker images
 ```
 
-## Auto Installation
-
-```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu.sh | sudo bash
-```
-
-If you met problem or anything else, please try the manual installation
-
-## Manual Installation 
+## Installation 
 
 ### Step 1 - Local DNS
 
@@ -84,41 +76,41 @@ Installation Node 5.x :
 
 ```
 sudo npm install -g grunt grunt-cli bower 
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
+cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && sudo bower install
 ```
 
-### Step 5 - How to build the vagrant box
+## Step 5 - How to build the vagrant box
 
 Warning because this step could need lot of times !
 
 ```
-cd $HOME/cloudunit/cu-vagrant 
-vagrant up
-vagrant provision 
+$ cd $HOME/cloudUnit/cu-vagrant 
+$ vagrant up
+$ vagrant provision /*** commande inutile ***/
 ```
 
-## First steps with CloudUnit
+## Step 6 - How to start the application
 
-1 - Start the vagrantbox and run Docker **into Vagrant**
+1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-cd $HOME/cloudunit/cu-vagrant 
-vagrant up (if not running)
-vagrant ssh
+$ cd $HOME/cloudUnit/cu-vagrant 
+$ vagrant up (if not running)
+$ vagrant ssh 
 cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 
-2 - Start the Java Backend from **your Linux Destkop**
+2 - Start the Java Backend from Linux
 
 ```
-cd $HOME/cloudunit/cu-manager
-mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+$ cd $HOME/cloudUnit/cu-manager
+$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
-3 - Run the UI for development (http://0.0.0.0:9000) from **your Linux Destkop**
+3 - Run the UI for development (http://0.0.0.0:9000) from Linux
 
 ```
-$ cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+$ cd $HOME/cloudUnit/cu-manager/src/main/webapp && grunt serve
 ```
 
 # IDE CONFIGURATION
@@ -158,12 +150,7 @@ cloudunit/cu-platform/reset-all.sh -y
 Update your sources, build the images and reninit the database :
 
 ```
-$ vagrant ssh 
+$ vagrant ssh dev
 $ cloudunit/cu-services/build-services.sh
 $ cloudunit/cu-platform/reset-all.sh -y
 ```
-
-
-
-
-
