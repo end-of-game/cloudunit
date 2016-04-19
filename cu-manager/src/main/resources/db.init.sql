@@ -16,11 +16,11 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `i
   (11, 'redis-3-0', 'cloudunit/redis-3-0', '3.1.0', '', 1, 'module', 'redmin'),
   (12, 'redis-3-0-data-db', 'cloudunit/redis-3-0-data-db', '3.1.0', '', 1, 'tool', ''),
   (13, 'postgresql-9-3-data-db', 'cloudunit/postgresql-9-3-data-db', '.12', '', 1, 'tool', ''),
-  (14, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin'),
-  (15, 'postgresql-9-4-data-db', 'cloudunit/postgresql-9-4-data-db', '.7', '', 1, 'tool', ''),
-  (16, 'postgresql-9-4', 'cloudunit/postgresql-9-4', '1.0', '', 1, 'module', 'phppgadmin'),
-  (17, 'postgresql-9-5-data-db', 'cloudunit/postgresql-9-5-data-db', '.2', '', 1, 'tool', ''),
-  (18, 'postgresql-9-5', 'cloudunit/postgresql-9-5', '1.0', '', 1, 'module', 'phppgadmin');
+  (14, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin');
+  -- (15, 'postgresql-9-4-data-db', 'cloudunit/postgresql-9-4-data-db', '.7', '', 1, 'tool', ''),
+  -- (16, 'postgresql-9-4', 'cloudunit/postgresql-9-4', '1.0', '', 1, 'module', 'phppgadmin'),
+  -- (17, 'postgresql-9-5-data-db', 'cloudunit/postgresql-9-5-data-db', '.2', '', 1, 'tool', ''),
+  -- (18, 'postgresql-9-5', 'cloudunit/postgresql-9-5', '1.0', '', 1, 'module', 'phppgadmin');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
