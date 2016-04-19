@@ -8,7 +8,6 @@ You are reading the wright guide, if you want to setup an environment to contrib
 * Linux Ubuntu/Debian
 * Git / Java 1.8
 * Node 5.x
-* Compass 1+
 * VirtualBox 5.0.4+ (www.virtualbox.org) - install before Vagrant
 * Vagrant 1.8+ (www.vagrantup.com)
 * Maven 3+ (maven.apache.org)
