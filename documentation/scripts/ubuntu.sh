@@ -1,7 +1,5 @@
 #!/bin/bash
 
-sudo apt-get -y install git
-
 ###### Java #######
 if type -p java; then
 	echo found java executable in PATH
@@ -91,8 +89,5 @@ sudo npm install -g grunt grunt-cli bower
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 
 cd $HOME/cloudunit/cu-vagrant
-sudo vagrant up
+vagrant up
 vagrant provision 
-
-#rm -f vagrant_1.8.1_x86_64.deb
-#rm -f debian
