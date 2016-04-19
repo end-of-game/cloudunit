@@ -86,7 +86,7 @@ Warning because this step could need lot of times !
 ```
 $ cd $HOME/cloudUnit/cu-vagrant 
 $ vagrant up
-$ vagrant provision /*** commande inutile ***/
+$ vagrant provision
 ```
 
 ## Step 6 - How to start the application
