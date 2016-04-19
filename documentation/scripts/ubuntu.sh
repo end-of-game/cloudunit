@@ -96,8 +96,6 @@ sudo npm install -g grunt grunt-cli bower
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 
 cd $HOME/cloudunit/cu-vagrant
-sudo vagrant up
+vagrant up
 vagrant provision 
 
-#rm -f vagrant_1.8.1_x86_64.deb
-#rm -f debian
