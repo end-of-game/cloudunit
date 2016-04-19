@@ -3,9 +3,9 @@ INSERT IGNORE INTO `Role` (`id`, `description`) VALUES
   (2, 'ROLE_USER');
 
 INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `imageType`, `managerName`) VALUES
-  (1, 'tomcat-6', 'cloudunit/tomcat-appconf6', '0.1', '', 1, 'server', ''),
-  (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', '0.1', '', 1, 'server', ''),
-  (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '0.1', '', 1, 'server', ''),
+  (1, 'tomcat-6', 'cloudunit/tomcat-appconf6', '.0.41', '', 1, 'server', ''),
+  (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', '.0.47', '', 1, 'server', ''),
+  (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '.0.14', '', 1, 'server', ''),
   (4, 'jboss-8', 'cloudunit/jboss-appconf8', '0.1', '', 1, 'server', ''),
   (5, 'git', 'cloudunit/git', '0.1', '', 1, 'tool', ''),
   (6, 'mysql-5-5', 'cloudunit/mysql-5-5', '0.1', '', 1, 'module', 'phpmyadmin'),
@@ -14,7 +14,13 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `i
   (9, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '0.1', '', 1, 'module', 'phppgadmin'),
   (10, 'mongo-2-6', 'cloudunit/mongo-2-6', '0.1', '', 1, 'module', 'mms'),
   (11, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '0.1', '', 1, 'tool', ''),
-  (12, 'fatjar', 'cloudunit/fatjar', '1.0', '', 1, 'server', '');
+  (12, 'fatjar', 'cloudunit/fatjar', '1.0', '', 1, 'server', ''),
+  (13, 'redis-3-0', 'cloudunit/redis-3-0', '3.1.0', '', 1, 'module', 'redmin'),
+  (14, 'redis-3-0-data-db', 'cloudunit/redis-3-0-data-db', '3.1.0', '', 1, 'tool', ''),
+  (15, 'postgresql-9-4-data-db', 'cloudunit/postgresql-9-4-data-db', '.7', '', 1, 'tool', ''),
+  (16, 'postgresql-9-4', 'cloudunit/postgresql-9-4', '1.0', '', 1, 'module', 'phppgadmin'),
+  (17, 'postgresql-9-5-data-db', 'cloudunit/postgresql-9-5-data-db', '.2', '', 1, 'tool', ''),
+  (18, 'postgresql-9-5', 'cloudunit/postgresql-9-5', '1.0', '', 1, 'module', 'phppgadmin');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
