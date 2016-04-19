@@ -41,6 +41,7 @@ import fr.treeptik.cloudunit.utils.EmailUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import fr.treeptik.cloudunit.utils.PortUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
+import jnr.ffi.annotations.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,10 +96,16 @@ public class ModuleServiceImpl
     private HookService hookService;
 
     @Inject
+    private PortUtils portUtils;
+
+    @Inject
     private HipacheRedisUtils hipacheRedisUtils;
 
     @Inject
     private ContainerMapper containerMapper;
+
+    @Inject
+    private ApplicationService applicationService;
 
     @Inject
     private SnapshotService snapshotService;
@@ -1212,30 +1219,31 @@ public class ModuleServiceImpl
     }
 
     private void restoreDataModule(Module module) {
-
+        Application application;
         try {
-            DockerClient docker = null;
-            if (Boolean.valueOf(isHttpMode)) {
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
+            Thread.sleep(5000);
+            application = applicationService.findByNameAndUser(module
+                            .getApplication().getUser(),
+                    module.getApplication()
+                            .getName());
+            DockerContainer dockerContainer = new DockerContainer();
+            dockerContainer.setName(module.getName() + "-data");
+            dockerContainer = DockerContainer.findOne(dockerContainer,
+                    application.getManagerIp());
+            Map<String, String> configShell = new HashMap<>();
+            configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
+            configShell.put("dockerManagerAddress",
+                    application.getManagerIp());
+            String rootPassword = module.getApplication().getUser()
+                    .getPassword();
+            configShell.put("password", rootPassword);
+            int code = shellUtils.executeShell(
+                    "/cloudunit/scripts/restore-data.sh", configShell);
+            logger.info("The backup script return : " + code);
 
-            final String[] commandStart = {"bash", "-c", "/cloudunit/scripts/cu-start.sh"};
-            final String[] commandStop = {"bash", "-c", "/cloudunit/scripts/cu-stop.sh"};
-            final String[] commandRestoreData = {"bash", "-c", "/cloudunit/scripts/restore-data.sh"};
-
-            docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            docker.execCreate(module.getName()+"-data", commandRestoreData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-
-        } catch (Exception e) {
-            logger.error(e.getMessage() + ", " + module);
+        } catch (ServiceException | CheckException | DockerJSONException
+                | InterruptedException e) {
+            logger.error("" + module, e);
         }
 
     }
