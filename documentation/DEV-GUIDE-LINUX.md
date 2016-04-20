@@ -96,7 +96,7 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && sudo bower 
 Warning because this step could need lot of times !
 
 ```
-$ cd $HOME/cloudUnit/cu-vagrant 
+$ cd $HOME/cloudunit/cu-vagrant 
 $ vagrant up
 $ vagrant provision
 ```
@@ -106,7 +106,7 @@ $ vagrant provision
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/cloudUnit/cu-vagrant 
+$ cd $HOME/cloudunit/cu-vagrant 
 $ vagrant up (if not running)
 $ vagrant ssh 
 cd cloudunit/cu-platform && ./reset-all.sh -y
@@ -115,14 +115,14 @@ cd cloudunit/cu-platform && ./reset-all.sh -y
 2 - Start the Java Backend from Linux
 
 ```
-$ cd $HOME/cloudUnit/cu-manager
+$ cd $HOME/cloudunit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 3 - Run the UI for development (http://0.0.0.0:9000) from Linux
 
 ```
-$ cd $HOME/cloudUnit/cu-manager/src/main/webapp && grunt serve
+$ cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
 ```
 
 # IDE CONFIGURATION
