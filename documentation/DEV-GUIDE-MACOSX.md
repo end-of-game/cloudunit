@@ -101,9 +101,8 @@ cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install grunt -g
 cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install grunt-cli -g
 cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install bower -g
 cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install -g n
-cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo stable n
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo n stable
 cd $HOME/cloudUnit/cu-manager/src/main/webapp && bower install
-cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo gem install compass /* command useless */
 ```
 
 ## How to install Vagrant plugins
