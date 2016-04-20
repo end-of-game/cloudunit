@@ -34,6 +34,11 @@ cloudunit/cu-services : Docker images
 
 ## Installation 
 
+You can use script to autoinstall step 1 to 5 :
+* [Ubuntu 15.04](https://github.com/Treeptik/cloudunit/blob/master/documentation/scripts/ubuntu-15.04.sh)
+* [Ubuntu 16.04](https://github.com/Treeptik/cloudunit/blob/master/documentation/scripts/ubuntu-16.04.sh)
+
+
 ### Step 1 - Local DNS
 
 CloudUnit uses Docker and Java but others components. As pre-requisites, you need to install them to have a complete dev stack. You need to install a local DNS for entry.
