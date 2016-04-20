@@ -39,14 +39,14 @@ function install_maven {
 	if [ "$ISMAVEN" != "installed" ]
 	then 
 		sudo apt-get -y update
-		sudo apt-get -y install maven
+		sudo apt -y install maven
 	else
 		MAVENVER=$(dpkg -s maven | grep -e Version | head -n 1 | awk '{print $2}' | colrm 2)
 		if (( $MAVENVER < 3 ))
 		then
 			sudo apt-get -y remove maven
 			sudo apt-get -y update
-			sudo apt-get -y install maven
+			sudo apt -y install maven
 		fi
 	fi
 }
@@ -84,28 +84,41 @@ function install_vagrant {
 	fi
 }
 
+function install_dnsmasq {
+	sudo apt-get -y install dnsmasq
+	ADDRESS="address=/.cloudunit.dev/192.168.50.4"
+	sudo bash -c "echo $ADDRESS >> /etc/dnsmasq.conf"
+	sudo service dnsmasq restart
+}
+
+function install_vagrant_plugin {
+	vagrant plugin install vagrant-reload
+	vagrant plugin install vagrant-vbguest
+}
+
+function install_cloudunit {
+	cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
+
+	sudo ln -s "$(which nodejs)" /usr/bin/node
+	sudo npm install -g grunt grunt-cli bower 
+	cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && bower install
+
+	cd $HOME/cloudunit/cu-vagrant
+
+	if [ -d ".vagrant" ]
+	then
+		sudo rm -rf .vagrant
+	fi
+
+	vagrant up
+	vagrant provision 
+}
+
 install_java
 install_node
 install_maven
 install_virtualbox
 install_vagrant
-
-source $HOME/.bashrc
-
-sudo apt-get -y install dnsmasq
-ADDRESS="address=/.cloudunit.dev/192.168.50.4"
-sudo bash -c "echo $ADDRESS >> /etc/dnsmasq.conf"
-sudo service dnsmasq restart
-
-vagrant plugin install vagrant-reload
-vagrant plugin install vagrant-vbguest
-
-cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
-
-sudo ln -s "$(which nodejs)" /usr/bin/node
-sudo npm install -g grunt grunt-cli bower 
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && bower install
-
-cd $HOME/cloudunit/cu-vagrant
-vagrant up
-vagrant provision 
+install_dnsmasq
+install_vagrant_plugin
+install_cloudunit

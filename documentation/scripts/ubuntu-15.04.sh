@@ -16,20 +16,27 @@ function install_java {
 	    version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}')
 	    echo version "$version"
 	    if [[ "$version" < "1.8" ]]; then
-		echo version is less than 1.8
+		echo "version is less than 1.8"
 		exit 0
 	    fi
 	fi
 }
 
 function install_node {
-	curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
-	sudo apt-get -y install nodejs
+	
 	NODEVER=$(node -v | cut -c2)
-	if (( $NODEVER < 5 ))
+	if (( $NODEVER == 5 )) 
 	then
-		echo 'Node can not be installed'
-		exit 0
+		echo "Node 5 already installed"
+	else
+		curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
+		sudo apt-get -y install nodejs
+		NODEVER=$(node -v | cut -c2)
+		if (( $NODEVER < 5 ))
+		then
+			echo 'Node can not be installed'
+			exit 0
+		fi
 	fi
 }
 
@@ -53,18 +60,12 @@ function install_virtualbox {
 
 	if [ "$ISVIRTUALBOX" != "installed" ]
 	then 
-		wget http://download.virtualbox.org/virtualbox/debian vivid contrib
-		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
-		sudo apt-get -y update
-		sudo apt-get -y install virtualbox-5.0
+		sudo apt-get -y install virtualbox-qt
 	else
 		VIRTUALBOXVER=$(dpkg -s virtualbox | grep -e Version | head -n 1 | awk '{print $2}' | colrm 6)
 		if ( (( "$(echo $VIRTUALBOXVER | cut -c1)" <= 5 )) && (( "$(echo $VIRTUALBOXVER | cut -c3)" <= 0 )) &&  (( "$(echo $VIRTUALBOXVER | cut -c5)" < 4)) )
 		then
-			wget http://download.virtualbox.org/virtualbox/debian vivid contrib
-			wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
-			sudo apt-get -y update
-			sudo apt-get -y install virtualbox-5.0
+			sudo apt-get -y install virtualbox-qt
 		fi
 	fi
 }
@@ -87,31 +88,41 @@ function install_vagrant {
 	fi
 }
 
+function install_dnsmasq {
+	sudo apt-get -y install dnsmasq
+	ADDRESS="address=/.cloudunit.dev/192.168.50.4"
+	sudo bash -c "echo $ADDRESS >> /etc/dnsmasq.conf"
+	sudo service dnsmasq restart
+}
+
+function install_vagrant_plugin {
+	vagrant plugin install vagrant-reload
+	vagrant plugin install vagrant-vbguest
+}
+
+function install_cloudunit {
+	cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
+
+	sudo ln -s "$(which nodejs)" /usr/bin/node
+	sudo npm install -g grunt grunt-cli bower 
+	cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && bower install
+
+	cd $HOME/cloudunit/cu-vagrant
+
+	if [ -d ".vagrant" ]
+	then
+		sudo rm -rf .vagrant
+	fi
+
+	vagrant up
+	vagrant provision 
+}
+
 install_java
 install_node
 install_maven
 install_virtualbox
 install_vagrant
-
-source $HOME/.bashrc
-
-sudo apt-get -y install dnsmasq
-ADDRESS="address=/.cloudunit.dev/192.168.50.4"
-sudo bash -c "echo $ADDRESS >> /etc/dnsmasq.conf"
-sudo service dnsmasq restart
-
-vagrant plugin install vagrant-reload
-vagrant plugin install vagrant-vbguest
-
-cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
-
-sudo ln -s "$(which nodejs)" /usr/bin/node
-sudo npm install -g grunt grunt-cli bower 
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && bower install
-
-cd $HOME/cloudunit/cu-vagrant
-vagrant up
-vagrant provision 
-
-rm -f vagrant_1.8.1_x86_64.deb
-rm -f debian
+install_dnsmasq
+install_vagrant_plugin
+install_cloudunit

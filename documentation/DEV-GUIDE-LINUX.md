@@ -96,7 +96,7 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && sudo bower 
 Warning because this step could need lot of times !
 
 ```
-$ cd $HOME/cloudunit/cu-vagrant 
+$ cd $HOME/cloudUnit/cu-vagrant 
 $ vagrant up
 $ vagrant provision
 ```
@@ -106,7 +106,7 @@ $ vagrant provision
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/cloudunit/cu-vagrant 
+$ cd $HOME/cloudUnit/cu-vagrant 
 $ vagrant up (if not running)
 $ vagrant ssh 
 cd cloudunit/cu-platform && ./reset-all.sh -y
@@ -115,21 +115,34 @@ cd cloudunit/cu-platform && ./reset-all.sh -y
 2 - Start the Java Backend from Linux
 
 ```
-$ cd $HOME/cloudunit/cu-manager
+$ cd $HOME/cloudUnit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 3 - Run the UI for development (http://0.0.0.0:9000) from Linux
 
 ```
-$ cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+$ cd $HOME/cloudUnit/cu-manager/src/main/webapp && grunt serve
 ```
 
 # IDE CONFIGURATION
 
 ## ECLIPSE 
 
-TODO
+In your favorite IDE, select Import in File menu then **Existing Maven project**.
+Into **root** directory, select **cu-manager** and Finish.
+When you have **Setup Maven plugins connectors** window, click on Finish button.
+
+Select **pom.xml** in the package explorer and right click to select.
+
+
+![Architecture Dev](img/eclipse_root.png "Architecture Development")
+
+
+You can run CloudUnit with a Maven task easily as :
+    
+![Architecture Dev](img/eclipse_conf.png "Architecture Development")
+
 
 ## INTELLIJ
 
