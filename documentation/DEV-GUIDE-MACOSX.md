@@ -96,14 +96,14 @@ Mac Users are invited to follow the instructions given by the [npm website](http
 Follow these instructions
 
 ```
-cd $HOME && git clone https://github.com/Treeptik/CloudUnit.git
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install grunt -g
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install grunt-cli -g
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install bower -g
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install -g n
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo stable n
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && bower install
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo gem install compass
+cd $HOME && git clone https://github.com/Treeptik/cloudUnit.git
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install grunt -g
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install grunt-cli -g
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install bower -g
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install -g n
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo stable n
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && bower install
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo gem install compass /* command useless */
 ```
 
 ## How to install Vagrant plugins
@@ -118,7 +118,7 @@ vagrant plugin install vagrant-vbguest
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/CloudUnit 
+$ cd $HOME/cloudUnit 
 $ vagrant up
 $ vagrant ssh 
 cd cloudunit/cu-platform && ./reset-all.sh -y
@@ -127,20 +127,20 @@ cd cloudunit/cu-platform && ./reset-all.sh -y
 2 - Run the UI for development (http://0.0.0.0:9000) from Mac
 
 ```
-$ cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
+$ cd $HOME/cloudUnit/cu-manager/src/main/webapp && grunt serve
 ```
 
 3 - Start the Java Backend from Mac
 
 ```
-$ cd $HOME/CloudUnit/cu-manager
+$ cd $HOME/cloudUnit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 ## How to reset Environment Developpment
 
 ```
-$ cd $HOME/CloudUnit
+$ cd $HOME/cloudUnit
 $ vagrant ssh dev
 $ cloudunit/cu-platform/reset-all.sh -y
 ```
