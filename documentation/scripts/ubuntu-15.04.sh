@@ -23,7 +23,6 @@ function install_java {
 }
 
 function install_node {
-	
 	NODEVER=$(node -v | cut -c2)
 	if (( $NODEVER == 5 )) 
 	then
@@ -45,12 +44,15 @@ function install_maven {
 
 	if [ "$ISMAVEN" != "installed" ]
 	then 
-		sudo apt-get -y update && sudo apt-get -y install maven
+		sudo apt-get -y update 
+		sudo apt-get -y install maven
 	else
 		MAVENVER=$(dpkg -s maven | grep -e Version | head -n 1 | awk '{print $2}' | colrm 2)
 		if (( $MAVENVER < 3 ))
 		then
-			sudo apt-get -y remove maven && sudo apt-get -y update && sudo apt-get -y install maven
+			sudo apt-get -y remove maven 
+			sudo apt-get -y update 
+			sudo apt-get -y install maven
 		fi
 	fi
 }
@@ -101,11 +103,13 @@ function install_vagrant_plugin {
 }
 
 function install_cloudunit {
-	cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
+	cd $HOME 
+	git clone https://github.com/Treeptik/cloudunit.git
 
-	sudo ln -s "$(which nodejs)" /usr/bin/node
 	sudo npm install -g grunt grunt-cli bower 
-	cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && bower install
+	cd $HOME/cloudunit/cu-manager/src/main/webapp
+	sudo npm install 
+	bower install
 
 	cd $HOME/cloudunit/cu-vagrant
 
