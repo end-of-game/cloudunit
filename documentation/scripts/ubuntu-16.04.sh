@@ -1,6 +1,8 @@
 #!/bin/bash
 
-function install_java {
+#rm -rf cloudunit/
+
+function verify_java {
 	if type -p java; then
 		echo found java executable in PATH
 		_java=java
@@ -16,25 +18,38 @@ function install_java {
 	    version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}')
 	    echo version "$version"
 	    if [[ "$version" < "1.8" ]]; then
-		echo version is less than 1.8
+		echo "version is less than 1.8"
 		exit 0
 	    fi
 	fi
 }
 
 function install_node {
-	curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
-	sudo apt-get -y install nodejs
-	NODEVER=$(node -v | cut -c2)
-	if (( $NODEVER < 5 ))
+	ISNODE=$(dpkg -s node | grep -e Status | head -n 1 | awk '{print $4}')
+	if [ "$ISNODE" != "installed" ]
 	then
-		echo 'Node can not be installed'
-		exit 0
+		curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
+		sudo apt-get -y install nodejs
+	else		
+		NODEVER=$(node -v | cut -c2)		
+		if (( $NODEVER == 5 )) 		
+		then		
+			echo "Node 5 already installed"		
+		else		
+			curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -		
+			sudo apt-get -y install nodejs		
+			NODEVER=$(node -v | cut -c2)		
+			if (( $NODEVER < 5 ))		
+			then		
+				echo 'Node can not be installed'		
+				exit 0		
+			fi		
+		fi
 	fi
 }
 
 function install_maven {
-	ISMAVEN=$(dpkg -s maven | grep -e Version | head -n 1 | awk '{print $4}')
+	ISMAVEN=$(dpkg -s maven | grep -e Status | head -n 1 | awk '{print $4}')
 
 	if [ "$ISMAVEN" != "installed" ]
 	then 
@@ -52,7 +67,7 @@ function install_maven {
 }
 
 function install_virtualbox {
-	ISVIRTUALBOX=$(dpkg -s virtualbox | grep -e Version | head -n 1 | awk '{print $4}')
+	ISVIRTUALBOX=$(dpkg -s virtualbox | grep -e Status | head -n 1 | awk '{print $4}')
 
 	if [ "$ISVIRTUALBOX" != "installed" ]
 	then 
@@ -68,8 +83,6 @@ function install_virtualbox {
 
 function install_vagrant {
 	ISVAGRANT=$(dpkg -s vagrant | grep -e Status | head -n 1 | awk '{print $4}')
-	echo $ISVAGRANT
-
 	if [ "$ISVAGRANT" != "installed" ]
 	then 
 		wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
@@ -78,6 +91,7 @@ function install_vagrant {
 		VAGRANTVER=$(dpkg -s vagrant | grep -e Version | head -n 1  | awk '{print $2}' | cut -c3-5)
 		if ( (( "$(echo $VAGRANTVER | cut -c1)" <= 1 )) && (( "$(echo $VAGRANTVER | cut -c3)" < 8 )) )
 		then
+			echo "Vagrant not install or not good version"			
 			wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
 			sudo dpkg -i vagrant_1.8.1_x86_64.deb
 		fi
@@ -96,6 +110,15 @@ function install_vagrant_plugin {
 	vagrant plugin install vagrant-vbguest
 }
 
+function install_git {
+	ISGIT=$(dpkg -s git | grep -e Status | head -n 1 | awk '{print $4}')
+
+	if [ "$ISGIT" != "installed" ]
+	then
+		sudo apt-get -y install git
+	fi
+}
+
 function install_cloudunit {
 	cd $HOME 
 	git clone https://github.com/Treeptik/cloudunit.git
@@ -103,9 +126,8 @@ function install_cloudunit {
 	sudo ln -s "$(which nodejs)" /usr/bin/node
 	sudo npm install -g grunt grunt-cli bower 
 	
-	cd $HOME/cloudunit/cu-manager/src/main/webapp 
-	sudo npm install 
-	bower install
+	cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install 
+	cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
 
 	cd $HOME/cloudunit/cu-vagrant
 
@@ -118,7 +140,13 @@ function install_cloudunit {
 	vagrant provision 
 }
 
-install_java
+if [ -d "cloudunit" ]
+then 
+	rm -rf cloudunit/
+fi
+
+install_git
+verify_java
 install_node
 install_maven
 install_virtualbox
@@ -126,3 +154,5 @@ install_vagrant
 install_dnsmasq
 install_vagrant_plugin
 install_cloudunit
+
+rm -f vagrant_1.8.1_x86_64.deb
