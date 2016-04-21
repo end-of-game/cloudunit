@@ -23,24 +23,32 @@ function install_java {
 }
 
 function install_node {
-	NODEVER=$(node -v | cut -c2)
-	if (( $NODEVER == 5 )) 
+	
+	ISNODE=$(dpkg -s node | grep -e Status | head -n 1 | awk '{print $4}')
+	if [ "$ISNODE" != "installed" ]
 	then
-		echo "Node 5 already installed"
+		NODEVER=$(node -v | cut -c2)
+		if (( $NODEVER == 5 )) 
+		then
+			echo "Node 5 already installed"
+		else
+			curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
+			sudo apt-get -y install nodejs
+			NODEVER=$(node -v | cut -c2)
+			if (( $NODEVER < 5 ))
+			then
+				echo 'Node can not be installed'
+				exit 0
+			fi
+		fi
 	else
 		curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
 		sudo apt-get -y install nodejs
-		NODEVER=$(node -v | cut -c2)
-		if (( $NODEVER < 5 ))
-		then
-			echo 'Node can not be installed'
-			exit 0
-		fi
 	fi
 }
 
 function install_maven {
-	ISMAVEN=$(dpkg -s maven | grep -e Version | head -n 1 | awk '{print $4}')
+	ISMAVEN=$(dpkg -s maven | grep -e Status | head -n 1 | awk '{print $4}')
 
 	if [ "$ISMAVEN" != "installed" ]
 	then 
@@ -58,7 +66,7 @@ function install_maven {
 }
 
 function install_virtualbox {
-	ISVIRTUALBOX=$(dpkg -s virtualbox | grep -e Version | head -n 1 | awk '{print $4}')
+	ISVIRTUALBOX=$(dpkg -s virtualbox | grep -e Status | head -n 1 | awk '{print $4}')
 
 	if [ "$ISVIRTUALBOX" != "installed" ]
 	then 
