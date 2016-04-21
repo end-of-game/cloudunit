@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function install_java {
+function verify_java {
 	if type -p java; then
 		echo found java executable in PATH
 		_java=java
@@ -110,14 +110,21 @@ function install_vagrant_plugin {
 	vagrant plugin install vagrant-vbguest
 }
 
+function install_git {
+	ISGIT=$(dpkg -s git | grep -e Status | head -n 1 | awk '{print $4}')	
+	if [ "$ISGIT" != "installed" ]
+	then 
+		sudo apt-get -y install git
+	fi
+}
+
 function install_cloudunit {
 	cd $HOME 
 	git clone https://github.com/Treeptik/cloudunit.git
 
 	sudo npm install -g grunt grunt-cli bower 
-	cd $HOME/cloudunit/cu-manager/src/main/webapp
-	sudo npm install 
-	bower install
+	cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install 
+	cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
 
 	cd $HOME/cloudunit/cu-vagrant
 
@@ -130,7 +137,8 @@ function install_cloudunit {
 	vagrant provision 
 }
 
-install_java
+install_git
+verify_java
 install_node
 install_maven
 install_virtualbox
