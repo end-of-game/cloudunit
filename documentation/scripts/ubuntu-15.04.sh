@@ -27,6 +27,9 @@ function install_node {
 	ISNODE=$(dpkg -s node | grep -e Status | head -n 1 | awk '{print $4}')
 	if [ "$ISNODE" != "installed" ]
 	then
+		curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
+		sudo apt-get -y install nodejs		
+	else
 		NODEVER=$(node -v | cut -c2)
 		if (( $NODEVER == 5 )) 
 		then
@@ -41,9 +44,6 @@ function install_node {
 				exit 0
 			fi
 		fi
-	else
-		curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
-		sudo apt-get -y install nodejs
 	fi
 }
 
