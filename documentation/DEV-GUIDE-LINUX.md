@@ -35,16 +35,9 @@ cloudunit/cu-services : Docker images
 ## Installation 
 
 You can use script to autoinstall step 1 to 5 :
-* Ubuntu 15.04 :
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/master/documentation/scripts/ubuntu-15.04.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/master/documentation/scripts/ubuntu-15.10.sh | bash
 ```
-
-* Ubuntu 16.04 :
-```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/master/documentation/scripts/ubuntu-16.04.sh | sudo bash
-```
-
 
 ### Step 1 - Local DNS
 
@@ -88,10 +81,11 @@ Installation Node 5.x :
 
 ```
 sudo npm install -g grunt grunt-cli bower 
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install && sudo bower install
+cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
+cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
 ```
 
-## Step 5 - How to build the vagrant box
+### Step 5 - How to build the vagrant box
 
 Warning because this step could need lot of times !
 
@@ -101,7 +95,7 @@ $ vagrant up
 $ vagrant provision
 ```
 
-## Step 6 - How to start the application
+### Step 6 - How to start the application
 
 1 - Start the vagrantbox and run Docker into Vagrant
 
@@ -123,6 +117,11 @@ $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 
 ```
 $ cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+```
+You can use default password and login
+```
+login: johndoe
+password: abc2015
 ```
 
 # IDE CONFIGURATION
