@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#rm -rf cloudunit/
+
 function verify_java {
 	if type -p java; then
 		echo found java executable in PATH
@@ -137,6 +139,11 @@ function install_cloudunit {
 	vagrant provision 
 }
 
+if [ -d "cloudunit" ]
+then 
+	rm -rf cloudunit/
+fi
+
 install_git
 verify_java
 install_node
@@ -146,3 +153,5 @@ install_vagrant
 install_dnsmasq
 install_vagrant_plugin
 install_cloudunit
+
+rm -f vagrant_1.8.1_x86_64.deb
