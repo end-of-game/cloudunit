@@ -257,7 +257,6 @@ public class SnapshotServiceImpl
             throws ServiceException, InterruptedException, CheckException {
 
         Snapshot snapshot = null;
-        // Tests préliminaires de la création d'une application
         try {
             User user = authentificationUtils.getAuthentificatedUser();
             snapshot = this.findByTagAndUser(user.getLogin(), tag);
@@ -289,16 +288,7 @@ public class SnapshotServiceImpl
             // We need it to get lazy modules relationships
             application = applicationService.findByNameAndUser(application.getUser(), application.getName());
 
-            Module moduleGit = moduleService.findGitModule(user.getLogin(), application);
-
             for (Server server : application.getServers()) {
-                while (!server.getStatus().equals(Status.START) || !moduleGit.getStatus().equals(Status.START)) {
-                    Thread.sleep(500);
-                    logger.info(" wait git and server sshd processus start");
-                    logger.info("SSHDSTATUS = server : " + server.getStatus() + " - module : " + moduleGit.getStatus());
-                    moduleGit = moduleService.findById(moduleGit.getId());
-                    server = serverService.findById(server.getId());
-                }
                 serverService.update(server, snapshot.getJvmMemory().toString(), snapshot.getJvmOptions(),
                         snapshot.getJvmRelease(), false);
             }

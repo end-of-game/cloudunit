@@ -39,9 +39,7 @@ import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.ContainerMapper;
 import fr.treeptik.cloudunit.utils.EmailUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.PortUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
-import jnr.ffi.annotations.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,9 +92,6 @@ public class ModuleServiceImpl
 
     @Inject
     private HookService hookService;
-
-    @Inject
-    private PortUtils portUtils;
 
     @Inject
     private HipacheRedisUtils hipacheRedisUtils;
@@ -1204,18 +1199,6 @@ public class ModuleServiceImpl
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
         return module;
-    }
-
-    @Override
-    public Module findGitModule(String login, Application application)
-            throws ServiceException {
-        try {
-            return moduleDAO.findGitModule(login, application.getName(), cuInstanceName);
-        } catch (PersistenceException e) {
-            logger.error("Error ModuleService : error find git container Method : "
-                    + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
     }
 
     private void restoreDataModule(Module module) {

@@ -25,6 +25,7 @@ sudo apt-get update
 sudo apt-get install -y apt-transport-https
 sudo apt-get install -y curl
 sudo apt-get install -y vim
+sudo apt-get install -y haveged
 #sudo apt-get install -y golang
 
 #==========================================================#

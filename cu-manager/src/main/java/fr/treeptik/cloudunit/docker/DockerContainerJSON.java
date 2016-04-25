@@ -22,7 +22,6 @@ import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.WarningDockerJSONException;
-import fr.treeptik.cloudunit.utils.PortUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -54,9 +53,6 @@ public class DockerContainerJSON {
 
     @Inject
     private JSONClient client;
-
-    @Inject
-    private PortUtils portUtils;
 
     @Value("${docker.endpoint.mode}")
     private String dockerEndpointMode;
@@ -626,11 +622,6 @@ public class DockerContainerJSON {
                 volumes.add(cuKvmDevRandomPolicy);
             }
 
-            Predicate<String> isContainerGit = s -> s.contains("-git-");
-            if (isContainerGit.test(dockerContainer.getName())) {
-                volumes.add("/var/log/cloudunit/git/auth-"
-                        + dockerContainer.getId() + ":/var/log/cloudunit");
-            }
             config.put("Binds", volumes);
 
             /**

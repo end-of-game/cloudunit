@@ -90,7 +90,4 @@ public interface ModuleService {
     Module initModule(Application application, Module module, String tag)
         throws ServiceException, CheckException;
 
-    Module findGitModule(String login, Application application)
-        throws ServiceException;
-
 }

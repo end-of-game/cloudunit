@@ -196,42 +196,6 @@ public class UserController
         return new ModelAndView("redirect:/webui/#validated");
     }
 
-    /**
-     * Pass id_rsa.pub in json property with "rsa_pub_key" as key.
-     *
-     * @param userEmail
-     * @param rsa_pub_key
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @RequestMapping(value = "/userEmail/{userEmail}/authentificationGit", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String authentificationGit(
-            @PathVariable String userEmail, @RequestBody String rsa_pub_key)
-            throws ServiceException, CheckException {
-
-        logger.info("--GIT AUTHENTIFICATION --");
-        logger.debug("UserController - User " + userEmail + " rsa_pub_key : "
-                + rsa_pub_key);
-
-        JSONParser parser = new JSONParser();
-        Object obj = null;
-        try {
-            obj = parser.parse(rsa_pub_key);
-        } catch (ParseException e) {
-            logger.error("Git Authentification - problem to parse Json - " + e);
-            e.printStackTrace();
-        }
-        userEmail = this.replaceByArobase(userEmail);
-        JSONObject jsonObject = (JSONObject) obj;
-        rsa_pub_key = (String) jsonObject.get("rsa_pub_key");
-        User user = userService.findByEmail(userEmail).get(0);
-        userService.authentificationGit(user, rsa_pub_key);
-
-        return "You are authentified on cloudunit git repository";
-    }
 
     /**
      * Get CloudUnit instance name.

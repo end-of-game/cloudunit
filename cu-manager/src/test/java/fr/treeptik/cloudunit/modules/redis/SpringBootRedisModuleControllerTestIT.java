@@ -216,14 +216,13 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
                 .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-                .andExpect(jsonPath("$.modules[1].name").value(genericModule))
-                .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
+                .andExpect(jsonPath("$.modules[0].name").value(genericModule))
+                .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected));
 
         String fullContent = resultats.andReturn().getResponse().getContentAsString();
 
-        String userNameRedis = JsonPath.read(fullContent, "$.modules[1].moduleInfos.username");
-        String passwordRedis = JsonPath.read(fullContent, "$.modules[1].moduleInfos.password");
+        String userNameRedis = JsonPath.read(fullContent, "$.modules[0].moduleInfos.username");
+        String passwordRedis = JsonPath.read(fullContent, "$.modules[0].moduleInfos.password");
         String managerUrlAuth = "http://" + userNameRedis + ":" + passwordRedis + "@"
                 + managerPrefix + "1-"
                 + applicationName.toLowerCase()
@@ -250,9 +249,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
                 .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-                .andExpect(jsonPath("$.modules[0].status").value("START"))
-                .andExpect(jsonPath("$.modules[1]").doesNotExist());
+                .andExpect(jsonPath("$.modules[0]").doesNotExist());
 
         logger.info("Delete application : " + applicationName);
         resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
@@ -311,16 +308,14 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         System.out.println(resultats.andReturn().getResponse().getContentAsString());
         resultats
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.modules[0].name").value(gitModule))
                 .andExpect(jsonPath("$.modules[0].status").value("START"))
-                .andExpect(jsonPath("$.modules[1].status").value("START"))
-                .andExpect(jsonPath("$.modules[1].name").value(genericModule))
-                .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
+                .andExpect(jsonPath("$.modules[0].name").value(genericModule))
+                .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected));
 
         String fullContent = resultats.andReturn().getResponse().getContentAsString();
 
-        String userNameRedis = JsonPath.read(fullContent, "$.modules[1].moduleInfos.username");
-        String passwordRedis = JsonPath.read(fullContent, "$.modules[1].moduleInfos.password");
+        String userNameRedis = JsonPath.read(fullContent, "$.modules[0].moduleInfos.username");
+        String passwordRedis = JsonPath.read(fullContent, "$.modules[0].moduleInfos.password");
 
         // Deploy the fat Jar
         resultats =

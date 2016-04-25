@@ -52,13 +52,7 @@ public class DeploymentAspect
     public void beforeDeployment(JoinPoint joinPoint)
         throws MonitorException {
         try {
-            User user = null;
-            if (!joinPoint.getArgs()[1].equals(Type.GITPUSH)) {
-                user = this.getAuthentificatedUser();
-            } else {
-                // TODO : BUG to fix :: we don't notice the deployment with git : bug with spring cache and aop.
-                return;
-            }
+            User user = this.getAuthentificatedUser();
             Application application = (Application) joinPoint.getArgs()[0];
             Message message = null;
             switch (joinPoint.getSignature().getName().toUpperCase()) {
