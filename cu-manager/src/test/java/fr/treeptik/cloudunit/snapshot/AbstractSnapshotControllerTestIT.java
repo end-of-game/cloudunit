@@ -92,7 +92,7 @@ public abstract class AbstractSnapshotControllerTestIT {
 
     private static String applicationName;
 
-    private final static String tagName = "myTag";
+    private final static String tagName = "mytag";
 
     protected String release;
 
@@ -317,14 +317,6 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(get("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(6115));
 
-
-        logger.info("**************************************");
-        logger.info("Delete the snapshot");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
         logger.info("**************************************");
         logger.info("Delete application : " + applicationName);
         logger.info("**************************************");
@@ -332,6 +324,12 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
 
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
+        resultats.andExpect(status().isOk());
 
         logger.info("**************************************");
         logger.info("Delete the cloned application");

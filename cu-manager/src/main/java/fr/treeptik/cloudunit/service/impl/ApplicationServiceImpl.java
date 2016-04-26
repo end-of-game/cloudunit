@@ -718,11 +718,6 @@ public class ApplicationServiceImpl
                         // Ajout des containers de type module
                         List<Module> modules = application.getModules();
                         for (Module module : modules) {
-                            // on evite de remonter les modules de type toolkit
-                            // (git, maven...)
-                            if (module.isTool()) {
-                                continue;
-                            }
                             DockerContainer dockerContainer = new DockerContainer();
                             dockerContainer.setName(module.getName());
                             dockerContainer = DockerContainer.findOne(
