@@ -81,9 +81,10 @@ Add the following line
 nameserver 127.0.0.1
 ```
 
-Finally, start dnsmasq:
+Make a link with LaunchDaemons directory and then start dnsmasq
 ```
-$ sudo launchctl start homebrew.mxcl.dnsmasq
+sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons
+sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
 ```
 For more information in this environment, please read this [article](http://passingcuriosity.com/2013/dnsmasq-dev-osx/)
 
@@ -128,12 +129,27 @@ cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 $ cd $HOME/cloudUnit/cu-manager/src/main/webapp && grunt serve
 ```
+>! **Issue** if you have the following issue
+```
+grunt-cli: The grunt command line interface (v1.2.0)
+Fatal error: Unable to find local grunt.
+```
+Run the following command :
+```
+sudo npm update
+```
 
 3 - Start the Java Backend from Mac
 
 ```
 $ cd $HOME/cloudUnit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+```
+
+You can use default password and login
+```
+login: johndoe
+password: abc2015
 ```
 
 ## How to reset Environment Developpment
