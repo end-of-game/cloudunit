@@ -1,5 +1,5 @@
 /.bundle
-/cu-platform/docker-compose.yml
+/cu-vagrant/.vagrant
 /.vagrant
 .idea
 *.class

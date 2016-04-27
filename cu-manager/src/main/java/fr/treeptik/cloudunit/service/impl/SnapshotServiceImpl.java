@@ -257,6 +257,7 @@ public class SnapshotServiceImpl
             throws ServiceException, InterruptedException, CheckException {
 
         Snapshot snapshot = null;
+        // Tests préliminaires de la création d'une application
         try {
             User user = authentificationUtils.getAuthentificatedUser();
             snapshot = this.findByTagAndUser(user.getLogin(), tag);
