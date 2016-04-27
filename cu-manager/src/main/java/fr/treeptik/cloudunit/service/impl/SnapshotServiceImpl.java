@@ -178,14 +178,9 @@ public class SnapshotServiceImpl
             for (Module module : application.getModules()) {
                 String imageName = "";
                 String moduleName = "";
-                if (module.getImage().getPath().contains("git")) {
-                    moduleName = module.getName();
-                    imageName = module.getImage().getPath();
-                } else {
-                    moduleName = module.getName() + "-data";
-                    imageName = module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data";
-                    this.backupModule(module);
-                }
+                moduleName = module.getName() + "-data";
+                imageName = module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data";
+                this.backupModule(module);
                 images.add(imageName);
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setName(moduleName);

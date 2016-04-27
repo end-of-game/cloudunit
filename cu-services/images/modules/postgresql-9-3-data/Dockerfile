@@ -7,8 +7,8 @@ ADD scripts /cloudunit/scripts
 
 VOLUME /cloudunit/database
 
-
-
+# SSH
+EXPOSE 22
 
 
 

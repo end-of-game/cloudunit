@@ -368,8 +368,7 @@ public class ModuleServiceImpl
         module = initNewModule(module, application.getName(), 1);
         DockerContainer dataDockerContainer = new DockerContainer();
 
-        if (module.getImage().getImageType().equals("module")
-                & !module.getName().contains("git")) {
+        if (module.getImage().getImageType().equals("module")) {
             dataDockerContainer = this.createAndStartDataContainer(module,
                     module.getName(), tagName);
         }
@@ -377,12 +376,6 @@ public class ModuleServiceImpl
         String imagePath = module.getImage().getPath();
         if (logger.isDebugEnabled()) {
             logger.info("imagePath:" + imagePath);
-        }
-
-        // si le tag n'est pas nul on récupère la bonne image pour git
-
-        if (tagName != null & module.getImage().getName().contains("git")) {
-            imagePath = "cloudunit/git" + tagName;
         }
 
         DockerContainer dockerContainer = new DockerContainer();
@@ -394,7 +387,7 @@ public class ModuleServiceImpl
 
         module.getModuleAction().initModuleInfos();
 
-        if (tagName != null & !module.getImage().getName().contains("git")) {
+        if (tagName != null) {
             List<String> commandesSpe = new ArrayList<>();
 
             Snapshot snapshot = snapshotService.findOne(tagName);
@@ -441,12 +434,6 @@ public class ModuleServiceImpl
                 volumesFrom.add(dataDockerContainer.getName());
                 volumesFrom.add("java");
                 dockerContainer.setVolumesFrom(volumesFrom);
-            }
-
-            if (module.getImage().getName().contains("git")) {
-                dockerContainer.setPortBindings("22/tcp", "0.0.0.0",
-                        module.getSshPort());
-                dockerContainer.setVolumesFrom(Arrays.asList("java"));
             }
 
             dockerContainer = DockerContainer.start(dockerContainer,
@@ -677,16 +664,10 @@ public class ModuleServiceImpl
             dockerContainer.setName(module.getName());
             dockerContainer.setImage(module.getImage().getName());
 
-            String imageId = "";
-            if (module.getName().contains("git")) {
-                imageId = DockerContainer.findOneWithImageID(dockerContainer,
-                        application.getManagerIp()).getImageID();
-            } else {
-                DockerContainer dataContainer = new DockerContainer();
-                dataContainer.setName(dockerContainer.getName() + "-data");
-                imageId = DockerContainer.findOneWithImageID(dataContainer,
-                        application.getManagerIp()).getImageID();
-            }
+            DockerContainer dataContainer = new DockerContainer();
+            dataContainer.setName(dockerContainer.getName() + "-data");
+            String imageId = DockerContainer.findOneWithImageID(dataContainer,
+                    application.getManagerIp()).getImageID();
 
             if (module.getStatus().equals(Status.START)) {
                 DockerContainer.stop(dockerContainer, application.getManagerIp());
@@ -801,10 +782,6 @@ public class ModuleServiceImpl
 
             if (module.getImage().getImageType().equals("module")) {
                 dockerContainer.setVolumesFrom(module.getVolumesFrom());
-            }
-            if (module.getImage().getName().contains("git")) {
-                dockerContainer.setPortBindings("22/tcp", "0.0.0.0",
-                        module.getSshPort());
             }
 
             // Call the hook for pre start

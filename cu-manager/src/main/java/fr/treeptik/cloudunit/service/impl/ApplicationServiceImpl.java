@@ -206,58 +206,6 @@ public class ApplicationServiceImpl
         return application;
     }
 
-    /**
-    /**
-     * Lancer par signal de NoPublicController quand le processus sshd est
-     * démarré dans les containers serveur et git
-     */
-    public Application updateEnv(Application application, User user)
-            throws ServiceException {
-
-        logger.info("--update Env of Server--");
-        String command = null;
-        Map<String, String> configShellServer = new HashMap<>();
-
-        Server server = application.getServers().get(0);
-
-        String rootPassword = application.getUser().getPassword();
-        logger.info("new server ip : " + server.getContainerIP());
-        try {
-            int counter = 0;
-            while (!server.getStatus().equals(Status.START)) {
-                if (counter == 100) {
-                    break;
-                }
-                Thread.sleep(1000);
-                logger.info(" wait git and server sshd processus start");
-                logger.info("SSHDSTATUS = server : " + server.getStatus());
-                server = serverService.findById(server.getId());
-                counter++;
-            }
-
-            configShellServer.put("port", server.getSshPort());
-            configShellServer.put("dockerManagerAddress", server.getApplication().getManagerIp());
-            configShellServer.put("password", rootPassword);
-            command = ". /cloudunit/scripts/rm-auth-keys.sh ";
-            logger.info("command shell to execute [" + command + "]");
-
-            shellUtils.executeShell(command, configShellServer);
-            String cleanCommand = server.getServerAction().cleanCommand();
-            if (cleanCommand != null) {
-                shellUtils.executeShell(
-                        server.getServerAction().cleanCommand(),
-                        configShellServer);
-            }
-        } catch (Exception e) {
-            server.setStatus(Status.FAIL);
-            server = serverService.saveInDB(server);
-            logger.error("Error :  Error during update Env var of GIT " + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-        return application;
-    }
-
-
     /* Methode qui teste la validité d'une application
      *
      * @param applicationName

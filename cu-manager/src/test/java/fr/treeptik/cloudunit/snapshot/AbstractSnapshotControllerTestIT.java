@@ -325,19 +325,21 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(status().isOk());
 
         logger.info("**************************************");
-        logger.info("Delete the snapshot");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Delete the cloned application");
         logger.info("**************************************");
 
         resultats =
                 mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
+
+
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
+        resultats.andExpect(status().isOk());
+
     }
 
     @Test()

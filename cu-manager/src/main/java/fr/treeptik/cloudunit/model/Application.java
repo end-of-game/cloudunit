@@ -94,8 +94,6 @@ public class Application
     private Set<Deployment> deployments;
 
 
-    private String gitAddress;
-
     @ElementCollection
     private Set<String> aliases;
 
@@ -117,12 +115,6 @@ public class Application
 
     @JsonIgnore
     private String restHost;
-
-    @JsonIgnore
-    private String gitContainerIP;
-
-    @JsonIgnore
-    private String gitSshProxyPort;
 
     private String deploymentStatus;
 
@@ -232,14 +224,6 @@ public class Application
         this.deployments = new HashSet<>(deployments);
     }
 
-    public String getGitAddress() {
-        return gitAddress;
-    }
-
-    public void setGitAddress(String gitAddress) {
-        this.gitAddress = gitAddress;
-    }
-
     public String getSuffixCloudUnitIO() {
         return suffixCloudUnitIO;
     }
@@ -270,22 +254,6 @@ public class Application
 
     public void setRestHost(String restHost) {
         this.restHost = restHost;
-    }
-
-    public String getGitContainerIP() {
-        return gitContainerIP;
-    }
-
-    public void setGitContainerIP(String gitContainerIP) {
-        this.gitContainerIP = gitContainerIP;
-    }
-
-    public String getGitSshProxyPort() {
-        return gitSshProxyPort;
-    }
-
-    public void setGitSshProxyPort(String gitSshProxyPort) {
-        this.gitSshProxyPort = gitSshProxyPort;
     }
 
     public String getLocation() {
@@ -322,10 +290,7 @@ public class Application
                 ", managerPort='" + managerPort + '\'' +
                 ", jvmRelease='" + jvmRelease + '\'' +
                 ", restHost='" + restHost + '\'' +
-                ", gitContainerIP='" + gitContainerIP + '\'' +
                 ", deploymentStatus='" + deploymentStatus + '\'' +
-                ", gitSshProxyPort='" + gitSshProxyPort + '\'' +
-                ", gitAddress='" + gitAddress + '\'' +
                 ", suffixCloudUnitIO='" + suffixCloudUnitIO + '\'' +
                 ", isAClone=" + isAClone +
                 ", cuInstanceName=" + cuInstanceName +
