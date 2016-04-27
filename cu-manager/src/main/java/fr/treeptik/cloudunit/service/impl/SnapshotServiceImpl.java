@@ -324,6 +324,9 @@ public class SnapshotServiceImpl
             configShell.put("dockerManagerAddress", application.getManagerIp());
             String rootPassword = module.getApplication().getUser().getPassword();
             configShell.put("password", rootPassword);
+
+            System.out.println( dockerContainer.getPorts().get("22/tcp") +" " + application.getManagerIp() + module.getApplication().getUser().getPassword() );
+
             int code = shellUtils.executeShell("/cloudunit/scripts/backup-data.sh", configShell);
             logger.info("The backup script return : " + code);
 
