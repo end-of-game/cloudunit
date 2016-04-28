@@ -45,10 +45,6 @@ public interface ModuleService {
     void checkImageExist(String moduleName)
         throws ServiceException;
 
-    void initDb(User user, String applicationName, final String moduleName,
-                File file)
-        throws ServiceException;
-
     Module saveInDB(Module module)
         throws ServiceException;
 
@@ -84,10 +80,10 @@ public interface ModuleService {
                   Boolean isModuleRemoving, Status previousApplicationStatus)
         throws ServiceException, CheckException;
 
-    Module restoreBackup(String moduleName)
-        throws ServiceException;
-
     Module initModule(Application application, Module module, String tag)
         throws ServiceException, CheckException;
 
+    public void initDb(User user, String applicationName,
+                       final String moduleName, File file)
+            throws ServiceException;
 }

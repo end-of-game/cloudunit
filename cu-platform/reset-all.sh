@@ -38,6 +38,7 @@ docker rm -vf cuplatform_dnsdock_1
 
 # delete all NONE images
 docker rmi $(docker images | grep "^<none>" | awk '{print $3}')
+docker rmi $(docker images | grep "^johndoe" | awk '{print $3}')
 
 echo -e "\nChanging directory\n"
 cd /home/$USER/cloudunit/cu-platform

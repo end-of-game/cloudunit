@@ -44,6 +44,8 @@ RUN echo "host	all all 0.0.0.0/0    md5"   >> /etc/postgresql/9.3/main/pg_hba.co
 
 ADD scripts /cloudunit/scripts
 
+VOLUME /cloudunit/database
+
 EXPOSE 22
 
 ENTRYPOINT ["/bin/bash", "/cloudunit/scripts/start-service.sh"]

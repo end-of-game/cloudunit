@@ -12,6 +12,8 @@ ADD scripts /cloudunit/scripts
 
 VOLUME /cloudunit/database
 
+LABEL origin cloudunit
+
 # SSH
 EXPOSE 22
 

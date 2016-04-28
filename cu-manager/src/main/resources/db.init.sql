@@ -11,7 +11,6 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `i
   (6, 'git', 'cloudunit/git', '1.0', '', 1, 'tool', ''),
   (7, 'mysql-5-5', 'cloudunit/mysql-5-5', '1.0', '', 1, 'module', 'phpmyadmin'),
   (8, 'mysql-5-5-data-db', 'cloudunit/mysql-5-5-data-db', '1.0', '', 1, 'tool', ''),
-  (9, 'postgresql-9-3-data-db', 'cloudunit/postgresql-9-3-data-db', '1.0', '', 1, 'tool', ''),
   (10, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin'),
   (11, 'mongo-2-6', 'cloudunit/mongo-2-6', '1.0', '', 1, 'module', 'mms'),
   (12, 'mongo-2-6-data-db', 'cloudunit/mongo-2-6-data-db', '1.0', '', 1, 'tool', ''),

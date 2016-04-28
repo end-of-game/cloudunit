@@ -738,12 +738,6 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(jsonPath("$.servers[0].jvmMemory").value(1024)).andExpect(jsonPath(
                 "$.servers[0].jvmRelease").value("jdk1.8.0_25")).andExpect(jsonPath(
                 "$.servers[0].jvmOptions").value("-Dkey1=value1"));
-        logger.info("**************************************");
-        logger.info("Delete the snapshot");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
 
         logger.info("**************************************");
         logger.info("Delete the cloned application");
@@ -752,6 +746,14 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats =
                 mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
+
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
+        resultats.andExpect(status().isOk());
+
     }
 
 

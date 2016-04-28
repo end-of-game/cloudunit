@@ -98,6 +98,24 @@ public class SnapshotServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
+    @Value("${certs.dir.path}")
+    private String certsDirPath;
+
+    @Value("${docker.endpoint.mode}")
+    private String dockerEndpointMode;
+
+    private boolean isHttpMode;
+
+    @PostConstruct
+    public void initDockerEndPointMode() {
+        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
+            logger.warn("Docker TLS mode is disabled");
+            isHttpMode = true;
+        } else {
+            isHttpMode = false;
+        }
+    }
+
     @Override
     public Snapshot findOne(String tag) {
         return snapshotDAO.findByTag(tag);
@@ -178,8 +196,8 @@ public class SnapshotServiceImpl
             for (Module module : application.getModules()) {
                 String imageName = "";
                 String moduleName = "";
-                moduleName = module.getName() + "-data";
-                imageName = module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data";
+                moduleName = module.getName();
+                imageName = module.getImage().getPath() + "-" + module.getInstanceNumber();
                 this.backupModule(module);
                 images.add(imageName);
                 DockerContainer dockerContainer = new DockerContainer();
@@ -311,27 +329,29 @@ public class SnapshotServiceImpl
     }
 
     private void backupModule(Module module) {
-        Application application;
         try {
-            application =
-                    applicationService.findByNameAndUser(module.getApplication().getUser(),
-                            module.getApplication().getName());
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(module.getName() + "-data");
-            dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
-            Map<String, String> configShell = new HashMap<>();
-            configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
-            configShell.put("dockerManagerAddress", application.getManagerIp());
-            String rootPassword = module.getApplication().getUser().getPassword();
-            configShell.put("password", rootPassword);
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
 
-            System.out.println( dockerContainer.getPorts().get("22/tcp") +" " + application.getManagerIp() + module.getApplication().getUser().getPassword() );
+            final String[] commandStop = {"bash", "-c", "/cloudunit/scripts/cu-stop.sh"};
+            final String[] commandBackupData = {"bash", "-c", "/cloudunit/scripts/backup-data.sh"};
+            final String[] commandStart = {"bash", "-c", "/cloudunit/scripts/cu-start.sh"};
 
-            int code = shellUtils.executeShell("/cloudunit/scripts/backup-data.sh", configShell);
-            logger.info("The backup script return : " + code);
+            docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            docker.execCreate(module.getName(), commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage() + ", " + module);
         }
     }
 
@@ -340,7 +360,6 @@ public class SnapshotServiceImpl
 
         for (String key : snapshot.getAppConfig().keySet()) {
             try {
-                //DockerContainer.pull(key, snapshot.getUniqueTagName(), dockerManagerIp, ipForRegistry);
                 Module module = ModuleFactory.getModule(snapshot.getAppConfig().get(key).getName());
                 module.setApplication(application);
                 moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());
@@ -353,11 +372,11 @@ public class SnapshotServiceImpl
                 properties.put("database", snapshot.getAppConfig().get(key).getProperties().get("database-" + module.getImage().getName()));
                 module.setModuleInfos(properties);
                 module = moduleService.saveInDB(module);
-                moduleService.stopModule(module);
-                Thread.sleep(5000);
-                moduleService.startModule(module);
+                //moduleService.stopModule(module);
+                //Thread.sleep(5000);
+                //moduleService.startModule(module);
 
-            } catch (CheckException | InterruptedException e) {
+            } catch (CheckException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }
         }

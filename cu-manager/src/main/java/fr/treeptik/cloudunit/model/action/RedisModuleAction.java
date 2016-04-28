@@ -128,7 +128,7 @@ public class RedisModuleAction
     public ModuleConfiguration cloneProperties() {
         ModuleConfiguration moduleConfiguration = new ModuleConfiguration();
         moduleConfiguration.setName(module.getImage().getName());
-        moduleConfiguration.setPath(module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data");
+        moduleConfiguration.setPath(module.getImage().getPath() + "-" + module.getInstanceNumber());
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("username-" + module.getImage().getName(), module.getModuleInfos().get("username"));
         properties.put("password-" + module.getImage().getName(), module.getModuleInfos().get("password"));
