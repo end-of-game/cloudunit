@@ -25,7 +25,7 @@ if [ "$1" != "-y" ]; then
 fi
 
 echo -e "\nRemoving containers\n"
-docker rm -v $(docker ps -a | grep "Dead" | awk "{print $3}")
+docker rm -v $(docker ps -a | grep "Dead" | awk '{print $3}')
 docker rm -v $(docker ps -q --filter="status=exited")
 docker rm -vf $(docker ps -aq --filter "label=origin=cloudunit")
 docker rm -vf cuplatform_mysqldata_1
