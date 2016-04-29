@@ -40,10 +40,9 @@ var LoginPage = function () {
 };
 
 describe('e2e test: login', function () {
-  var loginPage, ptor, params;
+  var loginPage, params;
   beforeEach(function () {
-    ptor = protractor.getInstance();
-    ptor.ignoreSynchronization = true;
+    browser.ignoreSynchronization=true;
     loginPage = new LoginPage();
     params = browser.params;
   });
