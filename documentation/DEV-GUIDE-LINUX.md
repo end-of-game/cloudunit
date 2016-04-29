@@ -35,8 +35,14 @@ cloudunit/cu-services : Docker images
 ## Installation 
 
 You can use script to autoinstall step 1 to 5 :
+
+For Ubuntu 15.10
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/master/documentation/scripts/ubuntu-15.10.sh | bash
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-15.10.sh | bash
+```
+For Ubuntu 16.04
+```
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-16.04.sh | bash
 ```
 
 ### Step 1 - Local DNS
