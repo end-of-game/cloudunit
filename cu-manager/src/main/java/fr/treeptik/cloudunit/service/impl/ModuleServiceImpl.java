@@ -324,7 +324,7 @@ public class ModuleServiceImpl
             // user = userService.findById(user.getId());
 
             module.setImage(imageService
-                    .findByName(module.getImage().getName()));
+                  .findByName(module.getImage().getName()));
 
             // Create container module in docker
             module = this.create(application, module, tagName);
@@ -333,7 +333,11 @@ public class ModuleServiceImpl
 
             // Add extra properties
             module.setStartDate(new Date());
-            module.setInternalDNSName(module.getName() + "." + module.getImage().getName() + ".cloud.unit");
+            if (tagName != null) {
+                module.setInternalDNSName(module.getName() + "." + module.getImage().getName() + "-" + instanceNumber + ".cloud.unit");
+            } else {
+                module.setInternalDNSName(module.getName() + "." + module.getImage().getName() + ".cloud.unit");
+            }
 
             this.addModuleManager(module, instanceNumber);
 
@@ -366,9 +370,10 @@ public class ModuleServiceImpl
 
         // Nommage du module - Méthode recursive, on part de 1
         module = initNewModule(module, application.getName(), 1);
-        DockerContainer dataDockerContainer = new DockerContainer();
 
         String imagePath = module.getImage().getPath();
+        if (tagName != null) { imagePath = imagePath + ":" + tagName; }
+
         if (logger.isDebugEnabled()) {
             logger.info("imagePath:" + imagePath);
         }
@@ -391,6 +396,11 @@ public class ModuleServiceImpl
             for (String key : snapshot.getAppConfig().keySet()) {
                 if (key.equalsIgnoreCase(module.getImage().getPath() + "-"
                         + module.getInstanceNumber())) {
+
+                    dockerContainer = DockerContainerBuilder.dockerContainer()
+                            .withName(module.getName()).withImage(key+":"+tagName).withMemory(0L)
+                            .withMemorySwap(0L).build();
+
 
                     if (logger.isDebugEnabled()) {
                         logger.debug("KEY : " + key);
@@ -993,6 +1003,9 @@ public class ModuleServiceImpl
     }
 
 
+
+
+    /*
     private void restoreDataModule(Module module) {
 
         try {
@@ -1014,9 +1027,6 @@ public class ModuleServiceImpl
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
         }
-
-
-
     }
-
+    */
 }

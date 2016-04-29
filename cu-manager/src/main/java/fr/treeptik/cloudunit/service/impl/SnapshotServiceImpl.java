@@ -307,7 +307,7 @@ public class SnapshotServiceImpl
                         snapshot.getJvmRelease(), false);
             }
 
-            restoreModule(snapshot, application, tag);
+            restoreModules(snapshot, application, tag);
 
             application.setDeploymentStatus(snapshot.getDeploymentStatus());
             applicationService.saveInDB(application);
@@ -346,16 +346,37 @@ public class SnapshotServiceImpl
             final String[] commandBackupData = {"bash", "-c", "/cloudunit/scripts/backup-data.sh"};
             final String[] commandStart = {"bash", "-c", "/cloudunit/scripts/cu-start.sh"};
 
-            docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            docker.execCreate(module.getName(), commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            String execId = docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            LogStream output = docker.execStart(execId);
+            String execOutput = output.readFully();
+            System.out.println(execOutput);
+            if (output != null) { output.close(); }
+
+            execId = docker.execCreate(module.getName(), commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            output = docker.execStart(execId);
+            execOutput = output.readFully();
+            System.out.println(execOutput);
+            if (output != null) { output.close(); }
+
+            execId = docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            output = docker.execStart(execId);
+            execOutput = output.readFully();
+            System.out.println(execOutput);
+            if (output != null) { output.close(); }
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
         }
     }
 
-    private void restoreModule(Snapshot snapshot, Application application, String tag)
+    /**
+     * Restore all modules
+     * @param snapshot
+     * @param application
+     * @param tag
+     * @throws ServiceException
+     */
+    private void restoreModules(Snapshot snapshot, Application application, String tag)
             throws ServiceException {
 
         for (String key : snapshot.getAppConfig().keySet()) {
@@ -366,19 +387,56 @@ public class SnapshotServiceImpl
                 module.getImage().setName(snapshot.getAppConfig().get(key).getName());
                 module.setName(snapshot.getAppConfig().get(key).getName());
                 module = moduleService.initModule(application, module, snapshot.getFullTag());
+
                 Map<String, String> properties = new HashMap<>();
                 properties.put("username", snapshot.getAppConfig().get(key).getProperties().get("username-" + module.getImage().getName()));
                 properties.put("password", snapshot.getAppConfig().get(key).getProperties().get("password-" + module.getImage().getName()));
                 properties.put("database", snapshot.getAppConfig().get(key).getProperties().get("database-" + module.getImage().getName()));
                 module.setModuleInfos(properties);
                 module = moduleService.saveInDB(module);
-                //moduleService.stopModule(module);
-                //Thread.sleep(5000);
-                //moduleService.startModule(module);
+
+                if (tag != null) {
+                    restoreDataModule(module);
+                }
+
+                moduleService.stopModule(module);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                moduleService.startModule(module);
 
             } catch (CheckException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }
+        }
+    }
+
+    private void restoreDataModule(Module module) {
+        Application application;
+        try {
+            application = applicationService.findByNameAndUser(module
+                            .getApplication().getUser(),
+                    module.getApplication()
+                            .getName());
+            DockerContainer dockerContainer = new DockerContainer();
+            dockerContainer.setName(module.getName());
+            dockerContainer = DockerContainer.findOne(dockerContainer,
+                    application.getManagerIp());
+            Map<String, String> configShell = new HashMap<>();
+            configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
+            configShell.put("dockerManagerAddress",
+                    application.getManagerIp());
+            String rootPassword = module.getApplication().getUser()
+                    .getPassword();
+            configShell.put("password", rootPassword);
+            int code = shellUtils.executeShell(
+                    "/cloudunit/scripts/restore-data.sh", configShell);
+            logger.info("The backup script return : " + code);
+
+        } catch (ServiceException | CheckException | DockerJSONException e) {
+            logger.error("" + module, e);
         }
     }
 
