@@ -15,7 +15,7 @@ export CU_DATABASE_DNS=$8
 
 # Callback bound to the application stop
 terminate_handler() {
-  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD" > /cloudunit/command.txt
+  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
   service postgresql stop
   CODE=$?
   if [[ "$CODE" -eq "0" ]]; then
@@ -54,7 +54,7 @@ if [ ! -f /init-service-ok ]; then
 	mkdir -p $CU_USER_HOME/.ssh
 	usermod -d $CU_USER_HOME $CU_SSH_USER
 	usermod -s /bin/bash $CU_SSH_USER
-	# TODO : verify these two lines ???
+
 	cp /root/.bashrc $CU_USER_HOME
 	cp /root/.profile $CU_USER_HOME
 

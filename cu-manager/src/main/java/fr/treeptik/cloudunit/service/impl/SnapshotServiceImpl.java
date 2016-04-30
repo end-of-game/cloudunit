@@ -399,6 +399,7 @@ public class SnapshotServiceImpl
                     restoreDataModule(module);
                 }
 
+                /*
                 moduleService.stopModule(module);
                 try {
                     Thread.sleep(2000);
@@ -406,7 +407,7 @@ public class SnapshotServiceImpl
                     e.printStackTrace();
                 }
                 moduleService.startModule(module);
-
+                */
             } catch (CheckException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }
