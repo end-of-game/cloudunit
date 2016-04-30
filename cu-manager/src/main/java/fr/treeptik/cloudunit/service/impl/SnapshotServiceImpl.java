@@ -399,15 +399,6 @@ public class SnapshotServiceImpl
                     restoreDataModule(module);
                 }
 
-                /*
-                moduleService.stopModule(module);
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                moduleService.startModule(module);
-                */
             } catch (CheckException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }
@@ -415,30 +406,31 @@ public class SnapshotServiceImpl
     }
 
     private void restoreDataModule(Module module) {
-        Application application;
-        try {
-            application = applicationService.findByNameAndUser(module
-                            .getApplication().getUser(),
-                    module.getApplication()
-                            .getName());
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(module.getName());
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
-            Map<String, String> configShell = new HashMap<>();
-            configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
-            configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
-            String rootPassword = module.getApplication().getUser()
-                    .getPassword();
-            configShell.put("password", rootPassword);
-            int code = shellUtils.executeShell(
-                    "/cloudunit/scripts/restore-data.sh", configShell);
-            logger.info("The backup script return : " + code);
 
-        } catch (ServiceException | CheckException | DockerJSONException e) {
-            logger.error("" + module, e);
+        try {
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
+
+            final String[] commandRestoreData = {"bash", "-c", "/cloudunit/scripts/restore-data.sh"};
+            String execId = docker.execCreate(module.getName(), commandRestoreData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            LogStream output = docker.execStart(execId);
+            String execOutput = output.readFully();
+            System.out.println(execOutput);
+            if (output != null) { output.close(); }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage() + ", " + module);
         }
+
     }
 
     private boolean tagExists(String tag, String login) {

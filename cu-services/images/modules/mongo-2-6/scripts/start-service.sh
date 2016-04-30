@@ -68,7 +68,7 @@ if [ ! -f /cloudunit/database/init-service-ok ]; then
 fi
 
 # Démarrage de l'UI
-lx-mms&
+lx-mms &
 
 # Attente du démarrage du processus sshd pour confirmer au manager
 RETURN=1

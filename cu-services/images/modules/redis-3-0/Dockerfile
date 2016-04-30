@@ -1,18 +1,20 @@
 FROM cloudunit/base-14.04
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV CU_DATABASE_HOME /cloudunit/database
 ENV REDIS_VERSION 3.0.1
 
-RUN \
-  curl -sL https://deb.nodesource.com/setup | sudo bash - &&\
-  apt-get install -yq apache2 build-essential nodejs
+# VARIABLES ENVIRONNEMENT
+ENV CU_DATABASE_HOME /cloudunit/database
+RUN mkdir /cloudunit/database
+RUN echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
 
+RUN curl -sL https://deb.nodesource.com/setup | sudo bash -
+RUN apt-get install -yq apache2 build-essential nodejs
 
 # Installation de redis
-RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/redis-$REDIS_VERSION.tar.gz -O /tmp/redis-$REDIS_VERSION.tar.gz
+RUN wget http://download.redis.io/releases/redis-$REDIS_VERSION.tar.gz -O /tmp/redis-$REDIS_VERSION.tar.gz
 RUN tar xvzf /tmp/redis-$REDIS_VERSION.tar.gz -C /tmp && \
-  cd /tmp/redis-stable && \
+  cd /tmp/redis-$REDIS_VERSION && \
   make && \
   make install && \
   cp -f src/redis-sentinel /usr/local/bin && \
@@ -23,18 +25,19 @@ RUN tar xvzf /tmp/redis-$REDIS_VERSION.tar.gz -C /tmp && \
   sed -i 's/^\(daemonize .*\)$/# \1/' /etc/redis/redis.conf && \
   sed -i "s|dir .\/|dir $CU_DATABASE_HOME|" /etc/redis/redis.conf && \
   sed -i 's/^\(logfile .*\)$/# \1/' /etc/redis/redis.conf && \
-  sed -i 's/appendonly no/appendonly yes/g' /etc/redis/redis.conf && \
-  mkdir $CU_DATABASE_HOME && \
-  echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
+  sed -i 's/appendonly no/appendonly yes/g' /etc/redis/redis.conf
+
+RUN groupadd -r redis && useradd -r -g redis redis
 
 # Installation de redis-commander
 RUN npm install -g redis-commander
- 
-VOLUME ["/data"]
 
+# Add custom scripts
 ADD scripts /cloudunit/scripts/
+RUN chmod +x /cloudunit/scripts/*
 
-WORKDIR /data
+# expose datadir as volume for performance cow
+VOLUME /cloudunit/database
 
 ## PORTS A EXPOSER
 EXPOSE 22
