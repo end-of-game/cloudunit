@@ -43,7 +43,7 @@ if [ ! -f /cloudunit/database/init-service-ok ]; then
 	# Attente du démarrage de mysql
 	RETURN=1
 	until [ "$RETURN" -eq "0" ];
-	do	
+	do
 		echo -n -e "\nWaiting for mysql\n"
 		eval "$MYSQL_CMD1"
 		RETURN=$?

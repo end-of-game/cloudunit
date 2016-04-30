@@ -6,16 +6,17 @@ WAITFOR=20
 count=0
 RETURN=1
 
-service postgresql stop
+redis-cli shutdown
 
 until [ "$RETURN" -eq "1" ] || [ $count -gt $WAITFOR ]
 do
-	echo -n -e "\nWaiting for PostgreSQL stop\n"
-	nc -z localhost 5432
+	echo -n -e "\nWaiting for REDIS stop\n"
+	nc -z localhost 6379
+
 	RETURN=$?
 	sleep 1
 	let count=$count+1;
 done
 
-echo "PostgreSQL is stoped"
+echo "REDIS is stoped"
 
