@@ -11,6 +11,7 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `i
   (7, 'mysql-5-5', 'cloudunit/mysql-5-5', '1.0', '', 1, 'module', 'phpmyadmin'),
   (10, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin'),
   (11, 'mongo-2-6', 'cloudunit/mongo-2-6', '1.0', '', 1, 'module', 'mms'),
+  (12, 'postgis-2-2', 'cloudunit/postgis-2-2', '1.0', '', 1, 'module', 'phppgadmin'),
   (13, 'redis-3-0', 'cloudunit/redis-3-0', '1.0', '', 1, 'module', 'redmin');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
