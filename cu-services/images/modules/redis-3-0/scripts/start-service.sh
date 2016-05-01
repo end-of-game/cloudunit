@@ -14,6 +14,24 @@ export MANAGER_DATABASE_PASSWORD=$7
 export ENV_EXEC=$8
 export CU_DATABASE_DNS=$9
 
+MAX=30
+
+# Callback bound to the application stop
+terminate_handler() {
+  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
+  kill -s SIGTERM $(pidof redis-server)
+  CODE=$?
+  if [[ "$CODE" -eq "0" ]]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD
+  else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+  fi
+  exit $CODE;
+}
+
+trap 'terminate_handler' SIGTERM
+
+
 if [ $ENV_EXEC = "integration" ];
 then
     export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
@@ -39,18 +57,30 @@ service ssh start
 chown -R redis /cloudunit/database /cloudunit/backup
 su -l redis -c "redis-server /etc/redis/redis.conf &"
 
+count=0
+
 # Attente du démarrage de redis pour lancer le webui
-until [ "`nc -z localhost 6379 && echo $?`" -eq "0" ]
+until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]];
 do
-	echo -n -e "\nwaiting for redis to start";
+    echo -e "Waiting for redis to start ( $count / $MAX )"
+    nc -z localhost 6379
+    RETURN=$?
+	let count=$count+1;
 	sleep 1
 done
 
 # WebUI Redis Manager
 redis-commander --redis-password $CU_PASSWORD --http-auth-username $CU_USER --http-auth-password $CU_PASSWORD &
 
-# Notification with aget
-/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+# ####################################
+# If redis is started we notify it #
+# ####################################
+echo -e "END : " + $count " / " $MAX
+if [[ $count -gt $MAX ]]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+fi
 
 # Blocking step
 while true

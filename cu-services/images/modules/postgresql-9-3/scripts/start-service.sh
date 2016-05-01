@@ -16,7 +16,7 @@ export CU_DATABASE_DNS=$8
 # Callback bound to the application stop
 terminate_handler() {
   echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
-  service postgresql stop
+
   CODE=$?
   if [[ "$CODE" -eq "0" ]]; then
     /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD
@@ -34,6 +34,8 @@ then
 else
     export MYSQL_ENDPOINT=$CU_DATABASE_DNS
 fi
+
+MAX=10
 
 # ############
 # First call #
@@ -55,9 +57,6 @@ if [ ! -f /init-service-ok ]; then
 	usermod -d $CU_USER_HOME $CU_SSH_USER
 	usermod -s /bin/bash $CU_SSH_USER
 
-	cp /root/.bashrc $CU_USER_HOME
-	cp /root/.profile $CU_USER_HOME
-
 	# Creation a dedicated superadmin docker for post. No use of root
 	/etc/init.d/postgresql start
 	su - postgres -c "psql --command \"CREATE USER docker WITH SUPERUSER PASSWORD '$CU_ROOT_PASSWORD';\""
@@ -73,8 +72,17 @@ if [ ! -f /init-service-ok ]; then
 	/etc/init.d/postgresql start
 	/usr/sbin/apachectl start
 
-	## SURTOUT NE PAS SUPPRIMER LA TEMPO !
-	sleep 5
+    # ###########################
+    # Waiting for Postgre start #
+    # ###########################
+    until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]]; do
+        echo -n -e "\nWaiting for posgresql to start ( $count / $MAX )";
+        nc -z localhost 5432
+        RETURN=$?
+        sleep 1
+        let count=$count+1;
+    done
+
 	## Création du compte généré dynamiquement côté Java
 	psql -U docker --command "CREATE USER $CU_USER WITH SUPERUSER PASSWORD '$CU_PASSWORD'"
 	## Création de la base de données du compte et association avec -O (owner) de la BDD et du compte
@@ -84,44 +92,31 @@ if [ ! -f /init-service-ok ]; then
 else
     # Here : not the first start.
     # we use classic command
-	/usr/sbin/sshd
-	service postgresql start
-	/usr/sbin/apachectl start
+
 fi
+
 
 RETURN=1
 count=0
-# ########################
-# Waiting for sshd start #
-# ########################
-until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $kwait ]]; do
-	echo -n -e  "\nWaiting for ssh\n"
-	nc -z localhost 22
-	RETURN=$?
-	sleep 1
-	let count=$count+1;
-done
-
 # ###########################
 # Waiting for Postgre start #
 # ###########################
-RETURN=1
-count2=0
-until [[ "$RETURN" -eq "0" ]] || [[ $count2 -gt $kwait ]]; do
+until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]]; do
+    echo -n -e "\nWaiting for posgresql to start ( $count / $MAX )";
     nc -z localhost 5432
     RETURN=$?
-    echo -n -e "\nWaiting for Postgre to start"
     sleep 1
-    let count2=$count2+1;
+    let count=$count+1;
 done
 
 # ####################################
 # If postgre is started we notify it #
 # ####################################
-if [[ $count -gt $kwait ]] && [[ $count2 -gt $kwait ]]; then
-    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
-else
+echo -e "END : " + $count " / " $MAX
+if [[ $count -gt $MAX ]]; then
     /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
 fi
 
 # Blocking step

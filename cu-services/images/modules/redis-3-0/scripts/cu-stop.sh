@@ -6,7 +6,7 @@ WAITFOR=20
 count=0
 RETURN=1
 
-redis-cli shutdown
+kill -s SIGTERM $(pidof redis-server)
 
 until [ "$RETURN" -eq "1" ] || [ $count -gt $WAITFOR ]
 do

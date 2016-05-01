@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Ajout des variables d'environnement
+# Add env variable
 export CU_USER=$1
 export CU_PASSWORD=$2
 export CU_DATABASE_NAME=$3
@@ -20,74 +20,79 @@ else
     export MYSQL_ENDPOINT=$CU_DATABASE_DNS
 fi
 
-MYSQL_CMD1="mysql -h127.0.0.1 -P3306 -uroot -proot -e 'select 1 from dual;;'"
-MYSQL_CMD2="mysql -h127.0.0.1 -P3306 -uroot -p$CU_PASSWORD -e 'select 1 from dual;;'"
+MAX=30
+
+# Callback bound to the application stop
+terminate_handler() {
+  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
+  kill -s SIGTERM $(pidof mysqld)
+  CODE=$?
+  if [[ "$CODE" -eq "0" ]]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD
+  else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+  fi
+  exit $CODE;
+}
+
+trap 'terminate_handler' SIGTERM
 
 if [ ! -f /cloudunit/database/init-service-ok ]; then
 
-	# Création de l'utilisateur ssh (johndoe) et définition du password
+	# Create the user and set his password
 	useradd -d $CU_USER_HOME -s /bin/bash $CU_USERNAME_SSH
+	useradd -G mysql $CU_USERNAME_SSH
 	echo "$CU_USERNAME_SSH:$CU_ROOT_PASSWORD" | chpasswd && echo "root:$CU_ROOT_PASSWORD" | chpasswd
 
-	# Création du MYSQL_HOME / transfert de l'arborescence MySQL
+	# Change mysql-data directory
 	cp -rfp /var/lib/mysql/* $CU_DATABASE_HOME
 	chown -R mysql:mysql $CU_DATABASE_HOME
-
 fi
 
-# Démarrage de mysql
-/usr/sbin/mysqld&
+/usr/sbin/mysqld &
+/usr/sbin/sshd &
+source /etc/apache2/envvars && /usr/sbin/apache2 -DFOREGROUND &
 
 if [ ! -f /cloudunit/database/init-service-ok ]; then
-
-	# Attente du démarrage de mysql
 	RETURN=1
-	until [ "$RETURN" -eq "0" ];
+	count=0
+    until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]];
 	do
-		echo -n -e "\nWaiting for mysql\n"
-		eval "$MYSQL_CMD1"
+        echo -n -e "\nwaiting for mysql to start ( $count / $MAX )";
+	    nc -z localhost 3306
 		RETURN=$?
+		let count=$count+1;
 		sleep 1
 	done
-
-
-	# Création de l'utilisateur client MySQL (admin***)
+	# Create the admin user
 	mysql -u root --password=root -e 'GRANT ALL PRIVILEGES ON *.* TO '$CU_USER'@"localhost" IDENTIFIED BY "'$CU_PASSWORD'" WITH GRANT OPTION; GRANT ALL PRIVILEGES ON *.* TO '$CU_USER'@"%" IDENTIFIED BY "'$CU_PASSWORD'" WITH GRANT OPTION; FLUSH PRIVILEGES; CREATE DATABASE IF NOT EXISTS `'$CU_DATABASE_NAME'`;ALTER DATABASE `'$CU_DATABASE_NAME'` charset=utf8;'
-
 	mysql -u $CU_USER --password=$CU_PASSWORD -e 'UPDATE mysql.user SET password=PASSWORD("'$CU_PASSWORD'") WHERE user="root";'
-
 	touch /cloudunit/database/init-service-ok
-else
-
-	echo "SECOND APPEL !"
-
-	# Attente du démarrage de mysql
-	RETURN=1
-	until [ "$RETURN" -eq "0" ];
-	do	
-		echo -n -e "\nWaiting for mysql\n"
-		eval "$MYSQL_CMD2"
-		RETURN=$?
-		sleep 1
-	done
-
 fi
 
-
-# Lancement de ssh et apache
-/usr/sbin/sshd&
-source /etc/apache2/envvars && /usr/sbin/apache2 -DFOREGROUND&
-
-# Attente du démarrage du processus sshd pour confirmer au manager
-until [ "$RETURN" -eq "0" ];
-do	
-	echo -n -e  "\nWaiting for ssh\n"
-	nc -z localhost 22
-	RETURN=$?
+count=0
+until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]];
+do
+    echo -n -e "\nwaiting for mysql to start ( $count / $MAX )";
+	nc -z localhost 3306
+    RETURN=$?
+	let count=$count+1;
 	sleep 1
 done
 
-/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+# ####################################
+# If mysql is started we notify it #
+# ####################################
+echo -e "END : " + $count " / " $MAX
+if [[ $count -gt $MAX ]]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+fi
 
-tailf /var/log/faillog
+# Blocking step
+while true
+do
+  tail -f /dev/null & wait ${!}
+done
 
