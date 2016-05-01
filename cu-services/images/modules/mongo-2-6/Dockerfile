@@ -43,6 +43,8 @@ COPY config.js /opt/lx-mms/config.js
 # Ajout des scripts utile aux managers et au démarrage container                
 ADD scripts /cloudunit/scripts/
 
+VOLUME /cloudunit/database
+
 # SSH
 EXPOSE 22
 

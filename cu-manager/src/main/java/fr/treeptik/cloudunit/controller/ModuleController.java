@@ -200,7 +200,6 @@ public class ModuleController
                 fileUpload.getOriginalFilename());
             fileUpload.transferTo(file);
 
-            moduleService.initDb(user, applicationName, moduleName, file);
 
         } catch (IOException e) {
             throw new ServiceException("initDb Error while creating file", e);

@@ -24,17 +24,9 @@ if [ "$1" != "-y" ]; then
     fi
 fi
 
-echo -e "\nKilling containers\n"
-docker kill $(docker ps -aq --filter "label=origin=cloudunit")
-docker kill cuplatform_mysqldata_1
-docker kill cuplatform_mysql_1
-docker kill cuplatform_testmysqldata_1
-docker kill cuplatform_testmysql_1
-docker kill cuplatform_redis_1
-docker kill cuplatform_hipache_1
-docker kill cuplatform_dnsdock_1
-
 echo -e "\nRemoving containers\n"
+docker rm -v $(docker ps -a | grep "Dead" | awk '{print $3}')
+docker rm -v $(docker ps -q --filter="status=exited")
 docker rm -vf $(docker ps -aq --filter "label=origin=cloudunit")
 docker rm -vf cuplatform_mysqldata_1
 docker rm -vf cuplatform_mysql_1
@@ -43,6 +35,10 @@ docker rm -vf cuplatform_testmysql_1
 docker rm -vf cuplatform_redis_1
 docker rm -vf cuplatform_hipache_1
 docker rm -vf cuplatform_dnsdock_1
+
+# delete all NONE images
+docker rmi $(docker images | grep "<none>" | awk '{print $3}')
+docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
 
 echo -e "\nChanging directory\n"
 cd /home/$USER/cloudunit/cu-platform

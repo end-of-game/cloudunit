@@ -60,6 +60,9 @@ public class ExplorerFactory {
         if (name.contains("mongo")) {
             name = "mongo";
         }
+        if (name.contains("redis")) {
+            name = "redis";
+        }
         if (name.contains("postgres")) {
             name = "postgres";
         }

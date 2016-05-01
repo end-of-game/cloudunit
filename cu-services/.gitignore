@@ -12,7 +12,6 @@ images/servers/binaries/tomcat-6/apache-tomcat-6.0.41.tar.gz
 images/servers/binaries/tomcat-7/apache-tomcat-7.0.47.tar.gz
 images/servers/binaries/tomcat-8/apache-tomcat-8.0.14.tar.gz
 images/servers/binaries/jboss-5-1-0-GA/jboss5.1.0.GAbin.tar.gz
-images/tools/git/apache-maven-3.0.5-bin.tar.gz
 images/tools/java/jdk-7u55-linux-x64.tar.gz
 images/tools/java/jdk-8u25-linux-x64.tar.gz
 images/modules/mongo-2-6/mongo.tgz

@@ -92,7 +92,7 @@ public abstract class AbstractSnapshotControllerTestIT {
 
     private static String applicationName;
 
-    private final static String tagName = "myTag";
+    private final static String tagName = "mytag";
 
     protected String release;
 
@@ -317,21 +317,12 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(get("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(6115));
 
-
-        logger.info("**************************************");
-        logger.info("Delete the snapshot");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
         logger.info("**************************************");
         logger.info("Delete application : " + applicationName);
         logger.info("**************************************");
         resultats =
                 mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
-
 
         logger.info("**************************************");
         logger.info("Delete the cloned application");
@@ -340,6 +331,15 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats =
                 mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
+
+
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
+        resultats.andExpect(status().isOk());
+
     }
 
     @Test()
@@ -438,6 +438,14 @@ public abstract class AbstractSnapshotControllerTestIT {
         }
         Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
 
+        logger.info("***************************************************");
+        logger.info("Delete the cloned application before the snapshot");
+        logger.info("***************************************************");
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
         logger.info("**************************************");
         logger.info("Delete the snapshot");
         logger.info("**************************************");
@@ -452,14 +460,6 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
 
-
-        logger.info("**************************************");
-        logger.info("Delete the cloned application");
-        logger.info("**************************************");
-
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test()
@@ -500,6 +500,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
 
+
         logger.info("**************************************");
         logger.info("Clone an application : " + applicationName + "cloned");
         logger.info("**************************************");
@@ -516,18 +517,18 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(jsonPath("origin").value(tagName.toLowerCase()));
 
         logger.info("**************************************");
-        logger.info("Delete the snapshot");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Delete the cloned application");
         logger.info("**************************************");
 
         resultats =
                 mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
     }
 
@@ -625,18 +626,18 @@ public abstract class AbstractSnapshotControllerTestIT {
         Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
 
         logger.info("**************************************");
-        logger.info("Delete the snapshot");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Delete the cloned application");
         logger.info("**************************************");
 
         resultats =
                 mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
     }
 
@@ -737,12 +738,6 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(jsonPath("$.servers[0].jvmMemory").value(1024)).andExpect(jsonPath(
                 "$.servers[0].jvmRelease").value("jdk1.8.0_25")).andExpect(jsonPath(
                 "$.servers[0].jvmOptions").value("-Dkey1=value1"));
-        logger.info("**************************************");
-        logger.info("Delete the snapshot");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
 
         logger.info("**************************************");
         logger.info("Delete the cloned application");
@@ -751,6 +746,14 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats =
                 mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
+
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
+        resultats.andExpect(status().isOk());
+
     }
 
 
@@ -947,18 +950,18 @@ public abstract class AbstractSnapshotControllerTestIT {
         Assert.assertTrue(contentPage.contains(keywordIntoPage));
 
         logger.info("**************************************");
-        logger.info("Delete the snapshot");
-        logger.info("**************************************");
-
-        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Delete the cloned application");
         logger.info("**************************************");
 
         resultats =
                 mockMvc.perform(delete("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+        logger.info("**************************************");
+        logger.info("Delete the snapshot");
+        logger.info("**************************************");
+
+        resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
     }
 

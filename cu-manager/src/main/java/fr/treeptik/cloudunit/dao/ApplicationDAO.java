@@ -29,7 +29,7 @@ public interface ApplicationDAO
 
     @Query("Select distinct a from Application a " +
             "join fetch a.servers s " +
-            "join fetch a.modules m " +
+            "left join fetch a.modules m " +
             "left join fetch a.deployments " +
             "left join fetch a.aliases " +
             "left join fetch m.moduleInfos " +
@@ -44,7 +44,7 @@ public interface ApplicationDAO
 
     @Query("Select distinct a from Application a " +
             "join fetch a.servers " +
-            "join fetch a.modules " +
+            "left join fetch a.modules " +
             "left join fetch a.deployments " +
             "left join fetch a.aliases " +
             "left join fetch a.portsToOpen " +

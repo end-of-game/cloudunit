@@ -178,6 +178,7 @@ public class SnapshotController {
             // Validate input information for clone
             input.validateClone();
 
+            System.out.println(input.getApplicationName() + ", " + input.getTag());
             snapshotService.cloneFromASnapshot(input.getApplicationName(), input.getTag());
 
             Application application = applicationService.findByNameAndUser(user, input.getApplicationName());

@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* 
 	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 ENV LANG en_US.utf8
 
+# VARIABLES ENVIRONNEMENT
+ENV CU_DATABASE_HOME /cloudunit/database
 RUN mkdir /cloudunit/database
 RUN echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
 
@@ -42,7 +44,12 @@ RUN echo "host	all all 127.0.0.1/32 trust" >> /etc/postgresql/9.3/main/pg_hba.co
 RUN echo "host  all all ::1/128      md5" >> /etc/postgresql/9.3/main/pg_hba.conf
 RUN echo "host	all all 0.0.0.0/0    md5"   >> /etc/postgresql/9.3/main/pg_hba.conf
 
+# add custom scripts
 ADD scripts /cloudunit/scripts
+RUN chmod +x /cloudunit/scripts/*
+
+# expose datadir as volume for performance cow
+VOLUME /cloudunit/database
 
 EXPOSE 22
 

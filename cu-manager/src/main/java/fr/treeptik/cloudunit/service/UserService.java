@@ -50,9 +50,6 @@ public interface UserService {
     User findByLogin(String login)
         throws ServiceException;
 
-    void authentificationGit(User user, String rsa_pub_key)
-        throws ServiceException;
-
     void changeEmail(User user, String newEmail)
         throws ServiceException;
 

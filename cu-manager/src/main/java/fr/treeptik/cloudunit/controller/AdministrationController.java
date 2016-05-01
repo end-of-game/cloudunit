@@ -196,28 +196,6 @@ public class AdministrationController
     }
 
     /**
-     * restore a backup
-     *
-     * @param input
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/module/restore", method = RequestMethod.POST)
-    public JsonResponse restoreBackup(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
-
-        logger.info("input.getModuleName():" + input.getModuleName());
-
-        CheckUtils.validateInput(input.getModuleName(),
-            "Le nom du module doit être renseigné.");
-        final JsonResponse response = new HttpOk();
-        this.moduleService.restoreBackup(input.getModuleName());
-        return response;
-    }
-
-    /**
      * List all actions for an user. Needed for admin panel
      *
      * @param login

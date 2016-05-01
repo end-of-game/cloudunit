@@ -39,9 +39,7 @@ import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.ContainerMapper;
 import fr.treeptik.cloudunit.utils.EmailUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.PortUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
-import jnr.ffi.annotations.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -94,9 +92,6 @@ public class ModuleServiceImpl
 
     @Inject
     private HookService hookService;
-
-    @Inject
-    private PortUtils portUtils;
 
     @Inject
     private HipacheRedisUtils hipacheRedisUtils;
@@ -210,7 +205,7 @@ public class ModuleServiceImpl
 
                     int counter = 0;
                     while (!server.getStatus().equals(Status.START)) {
-                        if (counter == 100) {
+                        if (counter == 10) {
                             break;
                         }
                         Thread.sleep(1000);
@@ -329,7 +324,7 @@ public class ModuleServiceImpl
             // user = userService.findById(user.getId());
 
             module.setImage(imageService
-                    .findByName(module.getImage().getName()));
+                  .findByName(module.getImage().getName()));
 
             // Create container module in docker
             module = this.create(application, module, tagName);
@@ -338,7 +333,11 @@ public class ModuleServiceImpl
 
             // Add extra properties
             module.setStartDate(new Date());
-            module.setInternalDNSName(module.getName() + "." + module.getImage().getName() + ".cloud.unit");
+            if (tagName != null) {
+                module.setInternalDNSName(module.getName() + "." + module.getImage().getName() + "-" + instanceNumber + ".cloud.unit");
+            } else {
+                module.setInternalDNSName(module.getName() + "." + module.getImage().getName() + ".cloud.unit");
+            }
 
             this.addModuleManager(module, instanceNumber);
 
@@ -371,23 +370,12 @@ public class ModuleServiceImpl
 
         // Nommage du module - Méthode recursive, on part de 1
         module = initNewModule(module, application.getName(), 1);
-        DockerContainer dataDockerContainer = new DockerContainer();
-
-        if (module.getImage().getImageType().equals("module")
-                & !module.getName().contains("git")) {
-            dataDockerContainer = this.createAndStartDataContainer(module,
-                    module.getName(), tagName);
-        }
 
         String imagePath = module.getImage().getPath();
+        if (tagName != null) { imagePath = imagePath + ":" + tagName; }
+
         if (logger.isDebugEnabled()) {
             logger.info("imagePath:" + imagePath);
-        }
-
-        // si le tag n'est pas nul on récupère la bonne image pour git
-
-        if (tagName != null & module.getImage().getName().contains("git")) {
-            imagePath = "cloudunit/git" + tagName;
         }
 
         DockerContainer dockerContainer = new DockerContainer();
@@ -399,7 +387,7 @@ public class ModuleServiceImpl
 
         module.getModuleAction().initModuleInfos();
 
-        if (tagName != null & !module.getImage().getName().contains("git")) {
+        if (tagName != null) {
             List<String> commandesSpe = new ArrayList<>();
 
             Snapshot snapshot = snapshotService.findOne(tagName);
@@ -407,11 +395,16 @@ public class ModuleServiceImpl
 
             for (String key : snapshot.getAppConfig().keySet()) {
                 if (key.equalsIgnoreCase(module.getImage().getPath() + "-"
-                        + module.getInstanceNumber() + "-data")) {
+                        + module.getInstanceNumber())) {
+
+                    dockerContainer = DockerContainerBuilder.dockerContainer()
+                            .withName(module.getName()).withImage(key+":"+tagName).withMemory(0L)
+                            .withMemorySwap(0L).build();
+
 
                     if (logger.isDebugEnabled()) {
                         logger.debug("KEY : " + key);
-                        logger.debug("MODULE : " + module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data");
+                        logger.debug("MODULE : " + module.getImage().getPath() + "-" + module.getInstanceNumber());
                     }
 
                     map.put("username",
@@ -443,15 +436,8 @@ public class ModuleServiceImpl
 
             if (module.getImage().getImageType().equals("module")) {
                 List<String> volumesFrom = new ArrayList<>();
-                volumesFrom.add(dataDockerContainer.getName());
                 volumesFrom.add("java");
                 dockerContainer.setVolumesFrom(volumesFrom);
-            }
-
-            if (module.getImage().getName().contains("git")) {
-                dockerContainer.setPortBindings("22/tcp", "0.0.0.0",
-                        module.getSshPort());
-                dockerContainer.setVolumesFrom(Arrays.asList("java"));
             }
 
             dockerContainer = DockerContainer.start(dockerContainer,
@@ -489,88 +475,6 @@ public class ModuleServiceImpl
         return module;
     }
 
-    /**
-     * Creation d'un container contenant uniquement les données liées au
-     * container mysql
-     *
-     * @param module
-     * @param containerName
-     * @param tagName
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @Transactional
-    private DockerContainer createAndStartDataContainer(Module module,
-                                                        String containerName, String tagName)
-            throws ServiceException,
-            CheckException {
-
-        String imagePath = module.getImage().getPath() + "-data";
-
-        if (tagName != null) {
-            imagePath = imagePath.replaceAll("-data",
-                    "-" + module.getInstanceNumber() + "-data")
-                     + ":" + tagName;
-        }
-
-        Application application = module.getApplication();
-
-        String dataContainerName = containerName + "-data";
-
-        logger.debug("create : Methods parameters : " + module + " -- "
-                + application + " -- containerName = " + containerName);
-        logger.info("logger.ModuleService : Starting creating data container for "
-                + module.getName());
-
-        Map<String, String> ports = new HashMap<String, String>();
-        logger.debug("imagePath:" + imagePath);
-        DockerContainer dataContainer = DockerContainerBuilder
-                .dockerContainer()
-                .withName(dataContainerName)
-                .withImage(imagePath)
-                .withMemory(0L)
-                .withMemorySwap(0L)
-                .withPorts(ports)
-                .withCmd(
-                        Arrays.asList("/bin/sh",
-                                "/cloudunit/scripts/start-service.sh",
-                                module.getApplication().getUser().getLogin(),
-                                module.getApplication().getUser().getPassword()))
-                .build();
-
-        try {
-
-            DockerContainer.create(dataContainer, application.getManagerIp());
-            dataContainer = DockerContainer.findOne(dataContainer,
-                    application.getManagerIp());
-
-            /**
-             * Création du volume entre l'hôte et le dossier de destination du
-             * tar de /cloudunit/database un crontab fera un tar toutes les
-             * heures de /cloudunit/database vers /cloudunit/backup ce tar sera
-             * accessible directement sur l'hôte même si le container est
-             * supprimé.
-             */
-
-            DockerContainer.start(dataContainer, application.getManagerIp());
-
-            dataContainer = DockerContainer.findOne(dataContainer,
-                    application.getManagerIp());
-
-            if (tagName != null) {
-                this.restoreDataModule(module);
-            }
-
-        } catch (DockerJSONException e) {
-            module.setStatus(Status.FAIL);
-            module = this.saveInDB(module);
-            logger.error("ModuleService Error : Create data container" + e);
-            throw new ServiceException("Error docker : "
-                    + e.getLocalizedMessage(), e);
-        }
-        return dataContainer;
-    }
 
     private void sendEmail(Module module)
             throws ServiceException {
@@ -682,32 +586,13 @@ public class ModuleServiceImpl
             dockerContainer.setName(module.getName());
             dockerContainer.setImage(module.getImage().getName());
 
-            String imageId = "";
-            if (module.getName().contains("git")) {
-                imageId = DockerContainer.findOneWithImageID(dockerContainer,
-                        application.getManagerIp()).getImageID();
-            } else {
-                DockerContainer dataContainer = new DockerContainer();
-                dataContainer.setName(dockerContainer.getName() + "-data");
-                imageId = DockerContainer.findOneWithImageID(dataContainer,
-                        application.getManagerIp()).getImageID();
-            }
+            DockerContainer dataContainer = new DockerContainer();
+            dataContainer.setName(dockerContainer.getName());
 
             if (module.getStatus().equals(Status.START)) {
                 DockerContainer.stop(dockerContainer, application.getManagerIp());
             }
             DockerContainer.remove(dockerContainer, application.getManagerIp());
-
-            /*
-            try {
-                if (application.isAClone()) {
-                    DockerContainer.deleteImage(imageId,
-                            application.getManagerIp());
-                }
-            } catch (DockerJSONException e) {
-                logger.info("Others apps use this docker images");
-            }
-            */
 
             // Delete in database
             if (isModuleRemoving) {
@@ -804,14 +689,6 @@ public class ModuleServiceImpl
             dockerContainer.setPorts(forwardedPorts);
             dockerContainer.setImage(module.getImage().getName());
 
-            if (module.getImage().getImageType().equals("module")) {
-                dockerContainer.setVolumesFrom(module.getVolumesFrom());
-            }
-            if (module.getImage().getName().contains("git")) {
-                dockerContainer.setPortBindings("22/tcp", "0.0.0.0",
-                        module.getSshPort());
-            }
-
             // Call the hook for pre start
             hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
 
@@ -819,13 +696,6 @@ public class ModuleServiceImpl
                     .start(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
-
-            if (module.getImage().getImageType().equals("module")) {
-                dataDockerContainer.setName(module.getName() + "-data");
-
-                DockerContainer.start(dataDockerContainer,
-                        application.getManagerIp());
-            }
 
             module = containerMapper.mapDockerContainerToModule(
                     dockerContainer, module);
@@ -856,10 +726,11 @@ public class ModuleServiceImpl
     public Module stopModule(Module module)
             throws ServiceException {
 
+        DockerContainer dockerContainer = null;
         try {
             Application application = module.getApplication();
 
-            DockerContainer dockerContainer = new DockerContainer();
+            dockerContainer = new DockerContainer();
             dockerContainer.setName(module.getName());
             dockerContainer.setImage(module.getImage().getName());
 
@@ -876,17 +747,13 @@ public class ModuleServiceImpl
             // Call the hook for post stop
             hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_STOP);
 
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | DockerJSONException e) {
             module.setStatus(Status.FAIL);
             module = this.saveInDB(module);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            module.setStatus(Status.FAIL);
-            module = this.saveInDB(module);
-            logger.error("Fail to stop Module" + e);
+            logger.error("[" + dockerContainer.getName() + "] Fail to stop Module : " + module);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
-        return module;
+         return module;
     }
 
     @Override
@@ -1017,78 +884,6 @@ public class ModuleServiceImpl
 
     }
 
-    public Module restoreBackup(String moduleName)
-            throws ServiceException {
-
-        Module module = this.findByName(moduleName);
-
-        logger.debug("restoreBackup  of module : : " + module);
-
-        String scriptHostPath = "/vagrant_cloudunit/cu-services/scriptHost/";
-        String dataContainerName = module.getName() + "-data";
-        logger.info("logger.ModuleService : Starting finding data container for "
-                + dataContainerName);
-
-        Application application = module.getApplication();
-
-        DockerContainer dataContainer = new DockerContainer();
-        dataContainer.setName(dataContainerName);
-        try {
-            dataContainer = DockerContainer.findOne(dataContainer,
-                    application.getManagerIp());
-        } catch (DockerJSONException e) {
-            module.setStatus(Status.FAIL);
-            this.saveInDB(module);
-            logger.error("ModuleService Error : Create Module" + e);
-            throw new ServiceException("Error docker : "
-                    + e.getLocalizedMessage(), e);
-        }
-
-        Map<String, String> configShell = new HashMap<>();
-        configShell.put("port", "22");
-        configShell.put("dockerManagerAddress", application.getManagerIp());
-        String command;
-
-        try {
-            command = "expect " + scriptHostPath + "restoreBackupExpect.sh "
-                    + module.getName() + " "
-                    + module.getModuleInfos().get("username") + " "
-                    + module.getModuleInfos().get("password") + " "
-                    + module.getApplication().getName() + " "
-                    + module.getApplication().getUser().getPassword();
-            shellUtils.executeShell(command, configShell);
-
-            logger.info(command);
-
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(module.getName());
-            dockerContainer.setImage(module.getImage().getName());
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
-
-            module = containerMapper.mapDockerContainerToModule(
-                    dockerContainer, module);
-
-            this.update(module);
-
-            hipacheRedisUtils.updatedAdminAddress(application,
-                    application.getManagerIp(),
-                    module.getListPorts().get("80/tcp"), module.getImage()
-                            .getManagerName(),
-                    Long.parseLong(module.getName()
-                            .substring(module.getName().lastIndexOf("-")
-                                    + 1)));
-
-        } catch (DockerJSONException e) {
-            application.setStatus(Status.FAIL);
-
-            logger.error("ServerService Error : fail to start server" + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-        return module;
-
-    }
-
     @Override
     @Transactional
     public void initDb(User user, String applicationName,
@@ -1158,6 +953,7 @@ public class ModuleServiceImpl
 
     }
 
+
     /**
      * Affecte un nom disponible pour le module que l'on souhaite créer
      *
@@ -1206,46 +1002,31 @@ public class ModuleServiceImpl
         return module;
     }
 
-    @Override
-    public Module findGitModule(String login, Application application)
-            throws ServiceException {
-        try {
-            return moduleDAO.findGitModule(login, application.getName(), cuInstanceName);
-        } catch (PersistenceException e) {
-            logger.error("Error ModuleService : error find git container Method : "
-                    + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-    }
 
+
+
+    /*
     private void restoreDataModule(Module module) {
-        Application application;
+
         try {
-            Thread.sleep(5000);
-            application = applicationService.findByNameAndUser(module
-                            .getApplication().getUser(),
-                    module.getApplication()
-                            .getName());
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(module.getName() + "-data");
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
-            Map<String, String> configShell = new HashMap<>();
-            configShell.put("port", dockerContainer.getPorts().get("22/tcp"));
-            configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
-            String rootPassword = module.getApplication().getUser()
-                    .getPassword();
-            configShell.put("password", rootPassword);
-            int code = shellUtils.executeShell(
-                    "/cloudunit/scripts/restore-data.sh", configShell);
-            logger.info("The backup script return : " + code);
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
 
-        } catch (ServiceException | CheckException | DockerJSONException
-                | InterruptedException e) {
-            logger.error("" + module, e);
+            final String[] commandBackupData = {"bash", "-c", "/cloudunit/scripts/restore-data.sh"};
+            docker.execCreate(module.getName(), commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage() + ", " + module);
         }
-
     }
-
+    */
 }

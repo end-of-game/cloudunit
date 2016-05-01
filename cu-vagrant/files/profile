@@ -22,4 +22,6 @@ if [ -d "$HOME/bin" ] ; then
 fi
 
 PROFILE=dev
+CU_HOME=/home/$USER/cloudunit
+
 

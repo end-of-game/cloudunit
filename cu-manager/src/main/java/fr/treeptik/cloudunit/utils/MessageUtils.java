@@ -248,9 +248,7 @@ public class MessageUtils {
 
         switch (type) {
             case "CREATE":
-                body = user == null ? "A deployment from git push has been done at "
-                    + application.getName()
-                    : user.getFirstName() + " " + user.getLastName()
+                body = user.getFirstName() + " " + user.getLastName()
                     + " attempts to deploy a new Application : "
                     + application.getName();
                 break;

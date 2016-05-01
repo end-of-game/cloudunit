@@ -5,6 +5,8 @@ FROM cloudunit/base-12.04
 
 ENV DEBIAN_FRONTEND noninteractive 
 
+LABEL origin cloudunit
+
 RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" >> /etc/apt/sources.list
 RUN apt-get update
 
@@ -27,11 +29,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y phpmyadmin
 # VARIABLES ENVIRONNEMENT
 ENV CU_DATABASE_HOME /cloudunit/database
 RUN mkdir /cloudunit/database
-RUN mkdir /cloudunit/backup
 RUN echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
 
-# Ajout des scripts utile aux managers et au démarrage container
+# Add custom scripts
 ADD scripts /cloudunit/scripts/
+
+# expose datadir as volume for performance cow
+VOLUME /cloudunit/database
 
 # SSH
 EXPOSE 22	

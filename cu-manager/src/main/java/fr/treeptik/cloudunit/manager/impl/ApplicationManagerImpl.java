@@ -93,25 +93,6 @@ public class ApplicationManagerImpl
             }
         }
 
-        // Recopy ssh key and update redis
-        applicationService.postStart(application, application.getUser());
-
-        // Wait for the module has a status START (set by shell agent)
-        for (Module module : application.getModules()) {
-            int counter = 0;
-            while (!module.getStatus().equals(Status.START)) {
-                if (counter == 60) {
-                    break;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
-                module = moduleService.findById(module.getId());
-                counter++;
-            }
-        }
-
         // Application is now started
         applicationService.setStatus(application, Status.START);
     }
@@ -148,9 +129,6 @@ public class ApplicationManagerImpl
                     counter++;
                 }
             }
-
-            // Recopy ssh key and update redis
-            applicationService.postStart(application, application.getUser());
 
             // Wait for the module has a status START (set by shell agent)
             for (Module module : application.getModules()) {

@@ -56,16 +56,6 @@
               readonly="">
           </div>
           <div class="readonly">
-            <label for="git-address">Git address: </label>
-            <input class="large"
-                   id="git-address"
-                   type="text"
-                   value="{{ overview.app.gitAddress }}"
-                   readonly=""
-                   oneclickselect="">
-          </div>
-
-          <div class="readonly">
             <label for="jvm-memory">JVM memory: </label>
             <input
               id="jvm-memory"
@@ -107,7 +97,7 @@
     <h3 class="subhead">Installed modules</h3>
   </div>
   <div id="{{overview.app.name}}-modules" class="modules-list clearfix">
-    <div class="card small blank" data-ng-hide="overview.app.modules.length > 1">
+    <div class="card small blank" data-ng-hide="overview.app.modules.length > 0">
       <div class="content clearfix">
         <div class="no-data" ng-if="!snapshot.snapshots.length">
           <h3 class="title">No modules added</h3>

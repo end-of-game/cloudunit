@@ -204,7 +204,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
         String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
@@ -212,11 +211,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(genericModule))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected));
+            .andExpect(jsonPath("$.modules[0].name").value(genericModule))
+            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected));
 
         String contentPage = getUrlContentPage(managerExpected);
         int counter = 0;
@@ -238,9 +235,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[1]").doesNotExist());
+            .andExpect(jsonPath("$.modules[0]").doesNotExist());
 
         logger.info("Delete application : " + applicationName);
         resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
@@ -271,7 +266,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
         String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
@@ -279,11 +273,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(module1))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
+            .andExpect(jsonPath("$.modules[0].name").value(module1))
+            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1));
 
         String contentPage = getUrlContentPage(managerExpected1);
 
@@ -313,16 +305,14 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
+
             .andExpect(jsonPath("$.modules[0].status").value("START"))
+            .andExpect(jsonPath("$.modules[0].name").value(module1))
+            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1))
 
             .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(module1))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1))
-
-            .andExpect(jsonPath("$.modules[2].status").value("START"))
-            .andExpect(jsonPath("$.modules[2].name").value(module2))
-            .andExpect(jsonPath("$.modules[2].managerLocation").value(managerExpected2));
+            .andExpect(jsonPath("$.modules[1].name").value(module2))
+            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected2));
 
         // remove the first module 
         resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + module1)
@@ -335,12 +325,10 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].name").value(gitModule))
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(module2))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected2))
-            .andExpect(jsonPath("$.modules[2]").doesNotExist());
+            .andExpect(jsonPath("$.modules[0].name").value(module2))
+            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected2))
+            .andExpect(jsonPath("$.modules[1]").doesNotExist());
 
         logger.info("Delete application : " + applicationName);
         resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
@@ -370,7 +358,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
         String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
 
         // Stop the application
@@ -388,11 +375,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.modules[0].name").value(gitModule))
                 .andExpect(jsonPath("$.modules[0].status").value("START"))
-                .andExpect(jsonPath("$.modules[1].status").value("START"))
-                .andExpect(jsonPath("$.modules[1].name").value(module1))
-                .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected1));
+                .andExpect(jsonPath("$.modules[0].name").value(module1))
+                .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1));
 
         logger.info("Delete application : " + applicationName);
         resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));

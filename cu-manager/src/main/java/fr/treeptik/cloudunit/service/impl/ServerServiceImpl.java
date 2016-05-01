@@ -724,38 +724,6 @@ public class ServerServiceImpl
                 throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
             }
         }
-
-        //
-        // PARTIE GIT
-        //
-        Module moduleGit = moduleService.findGitModule(application.getUser()
-                .getLogin(), application);
-        try {
-            configShell.put("password", moduleGit.getApplication().getUser()
-                    .getPassword());
-            configShell.put("port", moduleGit.getSshPort());
-            configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
-
-            // Besoin des permissions ROOT
-            command = "bash /cloudunit/scripts/change-java-version.sh "
-                    + javaVersion;
-            logger.info("command shell to execute [" + command + "]");
-
-            shellUtils.executeShell(command, configShell);
-
-            application.setJvmRelease(javaVersion);
-            application = applicationService.saveInDB(application);
-        } catch (Exception e) {
-            moduleGit.setStatus(Status.FAIL);
-            moduleService.saveInDB(moduleGit);
-            logger.error(
-                    "java version = " + javaVersion + " - "
-                            + application.toString() + " - "
-                            + moduleGit.toString(), e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-
     }
 
     /**

@@ -63,13 +63,7 @@ public interface ApplicationService {
     Application stop(Application application)
             throws ServiceException;
 
-    Application saveGitPush(Application application, String login)
-            throws ServiceException, CheckException;
-
     List<ContainerUnit> listContainers(String applicationName)
-            throws ServiceException;
-
-    List<String> listContainersId(String applicationName)
             throws ServiceException;
 
     List<String> getListAliases(Application application)
@@ -84,17 +78,8 @@ public interface ApplicationService {
     void removeAlias(Application application, String alias)
             throws ServiceException, CheckException;
 
-    Application updateEnv(Application application, User user)
-            throws ServiceException;
-
-    Application postStart(Application application, User user)
-            throws ServiceException;
-
     Application remove(Application application, User user)
             throws ServiceException, CheckException;
-
-    Application sshCopyIDToServer(Application application, User user)
-            throws ServiceException;
 
     Application create(String applicationName, String login, String serverName, String tagName, String origin)
             throws ServiceException, CheckException;

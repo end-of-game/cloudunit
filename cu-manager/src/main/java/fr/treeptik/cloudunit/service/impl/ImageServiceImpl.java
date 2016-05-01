@@ -141,8 +141,8 @@ public class ImageServiceImpl
             Image image = imageDAO.findByName(name);
             logger.info("image with id " + image.getName() + " found!");
             return image;
-        } catch (PersistenceException e) {
-            logger.error("Error ImageService : error findById Method : " + e);
+        } catch (Exception e) {
+            logger.error("Image Name : " + name);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
     }

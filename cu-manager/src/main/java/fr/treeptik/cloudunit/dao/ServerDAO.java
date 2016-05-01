@@ -35,7 +35,6 @@ public interface ServerDAO
 
     @Query("Select distinct s " +
         "from Server s " +
-
             "left join fetch s.image " +
         "where s.application.id=:appId")
     List<Server> findByApp(@Param("appId") Integer applicationId)

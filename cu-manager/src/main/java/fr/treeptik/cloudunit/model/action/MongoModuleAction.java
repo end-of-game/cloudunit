@@ -115,7 +115,7 @@ public class MongoModuleAction
         ModuleConfiguration moduleConfiguration = new ModuleConfiguration();
         moduleConfiguration.setName(module.getImage().getName());
         moduleConfiguration.setPath(module.getImage().getPath() + "-"
-            + module.getInstanceNumber() + "-data");
+            + module.getInstanceNumber());
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("username-" + module.getImage().getName(), module
             .getModuleInfos().get("username"));
