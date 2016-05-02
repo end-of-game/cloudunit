@@ -1,5 +1,7 @@
 cloudunit/base-12.04 images/base-12.04
 cloudunit/base-14.04 images/base-14.04
+cloudunit/base-16.04 images/base-16.04
+
 cloudunit/java images/tools/java
 cloudunit/tomcat-base images/servers/binaries/tomcat-base
 cloudunit/tomcat-appconf6 images/servers/appconf/tomcat-appconf6

@@ -10,9 +10,11 @@ RUN apt-get update
 RUN echo mysql-server-5.6 mysql-server/root_password password 'root' | debconf-set-selections
 RUN echo mysql-server-5.6 mysql-server/root_password_again password 'root' | debconf-set-selections
 
-RUN apt-get install -y mysql-server-5.6
-RUN chown mysql:mysql /var/run/mysqld
+ENV MYSQL_MAJOR 5.6
+ENV MYSQL_VERSION 5.6.30-0ubuntu0.14.04.1
+RUN apt-get install -y mysql-server-$MYSQL_MAJOR=$MYSQL_VERSION
 
+RUN chown mysql:mysql /var/run/mysqld
 RUN sed -i -e"s/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/" -e"s/\/var\/lib\/mysql/\/cloudunit\/database/g" -e"/skip-external-locking/ a\lower_case_table_names = 1" /etc/mysql/my.cnf
 ADD php.ini /etc/php5/apache2/
 

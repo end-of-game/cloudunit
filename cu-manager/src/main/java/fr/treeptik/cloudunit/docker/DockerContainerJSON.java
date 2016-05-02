@@ -511,7 +511,7 @@ public class DockerContainerJSON {
                     throw new ErrorDockerJSONException(
                             "impossible to attach (container not running)");
                 case 500:
-                    throw new ErrorDockerJSONException("server error");
+                    throw new ErrorDockerJSONException("server error : " + dockerContainer);
             }
 
         } catch (URISyntaxException | IOException e) {

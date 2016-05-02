@@ -43,9 +43,15 @@ public class Image
 
     private String path;
 
-    private String cmd;
+    private String displayName;
 
-    private String version;
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
     private Integer status;
 
@@ -101,22 +107,6 @@ public class Image
         this.servers = servers;
     }
 
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getCmd() {
-        return cmd;
-    }
-
-    public void setCmd(String cmd) {
-        this.cmd = cmd;
-    }
-
     public Integer getStatus() {
         return status;
     }
@@ -144,8 +134,7 @@ public class Image
     @Override
     public String toString() {
         return "Image [id=" + id + ", name=" + name + ", path=" + path
-            + ", cmd=" + cmd + ", version=" + version + ", status="
-            + status + ", imageType=" + imageType + "]";
+            + ", status=" + status + ", imageType=" + imageType + "]";
     }
 
     @Override
