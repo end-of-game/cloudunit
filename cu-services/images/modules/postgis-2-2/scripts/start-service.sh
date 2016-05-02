@@ -15,8 +15,7 @@ export CU_DATABASE_DNS=$8
 
 # Callback bound to the application stop
 terminate_handler() {
-  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
-
+  service postgresql stop
   CODE=$?
   if [[ "$CODE" -eq "0" ]]; then
     /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD
@@ -43,7 +42,7 @@ MAX=10
 if [ ! -f /init-service-ok ]; then
 
 	# Préparation du dossier de données de postgres
-	mv /var/lib/postgresql/9.3/main /cloudunit/database
+	mv /var/lib/postgresql/9.4/main /cloudunit/database
 	chown postgres:postgres -R /cloudunit/database
 	chmod 0700 -R /cloudunit/database
 
@@ -61,36 +60,40 @@ if [ ! -f /init-service-ok ]; then
 	/etc/init.d/postgresql start
 	su - postgres -c "psql --command \"CREATE USER docker WITH SUPERUSER PASSWORD '$CU_ROOT_PASSWORD';\""
 	su - postgres -c "createdb -O docker docker"
+
+    # Perform all actions as $POSTGRES_USER
+    export PGUSER=docker
+
+    # Create the 'template_postgis' template db
+    psql --dbname="postgis" <<- 'EOSQL'
+    CREATE DATABASE template_postgis;
+    UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template_postgis';
+    EOSQL
+
+    # Load PostGIS into both template_database and $POSTGRES_DB
+    for DB in template_postgis postgis; do
+        echo "Loading PostGIS extensions into $DB"
+        psql --dbname="$DB" <<-'EOSQL'
+            CREATE EXTENSION postgis;
+            CREATE EXTENSION postgis_topology;
+            CREATE EXTENSION fuzzystrmatch;
+            CREATE EXTENSION postgis_tiger_geocoder;
+    EOSQL
+    done
+
 	/etc/init.d/postgresql stop
-	
+
+
 	# Transformation des variables en variables d'environnement
 	chown -R $CU_SSH_USER:$CU_SSH_USER $CU_USER_HOME
 
 	sed -i -e"s:deny from all:# deny from all:g" /etc/apache2/conf.d/phppgadmin
 	sed -i -e"s:# allow from all:allow from all:g" /etc/apache2/conf.d/phppgadmin
 
-	/etc/init.d/postgresql start
-	/usr/sbin/apachectl start
-
-    # ###########################
-    # Waiting for Postgre start #
-    # ###########################
-    until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]]; do
-        echo -n -e "\nWaiting for posgresql to start ( $count / $MAX )";
-        nc -z localhost 5432
-        RETURN=$?
-        sleep 1
-        let count=$count+1;
-    done
-
-	## Création du compte généré dynamiquement côté Java
-	psql -U docker --command "CREATE USER $CU_USER WITH SUPERUSER PASSWORD '$CU_PASSWORD'"
-	## Création de la base de données du compte et association avec -O (owner) de la BDD et du compte
-	su - postgres -c "createdb -O $CU_USER $CU_DATABASE_NAME"
-	
-	touch /init-service-ok
 fi
 
+/etc/init.d/postgresql start
+/usr/sbin/apachectl start
 
 RETURN=1
 count=0
@@ -105,10 +108,16 @@ until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]]; do
     let count=$count+1;
 done
 
+if [ ! -f /init-service-ok ]; then
+	psql -U docker --command "CREATE USER $CU_USER WITH SUPERUSER PASSWORD '$CU_PASSWORD'"
+	su - postgres -c "createdb -O $CU_USER $CU_DATABASE_NAME"
+	touch /init-service-ok
+fi
+
 # ####################################
 # If postgre is started we notify it #
 # ####################################
-echo -e "END : " + $count " / " $MAX
+echo -e -n "END : " + $count " / " $MAX
 if [[ $count -gt $MAX ]]; then
     /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
 else

@@ -12,7 +12,7 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `displayName`, `status`, `imag
   (11, 'mysql-5-6', 'cloudunit/mysql-5-6', 'MySQL 5.6.30', 1, 'module', 'phpmyadmin'),
   (12, 'mysql-5-7', 'cloudunit/mysql-5-7', 'MySQL 5.7.12', 1, 'module', 'phpmyadmin'),
   (20, 'mongo-2-6', 'cloudunit/mongo-2-6', 'Mongo 2.6', 1, 'module', 'mms'),
-  (30, 'redis-2-8', 'cloudunit/redis-2-8', 'Redis 2.8.23', 1, 'module', 'redmin'),
+  (30, 'redis-2-8', 'cloudunit/redis-2-8', 'Redis 2.8.24', 1, 'module', 'redmin'),
   (31, 'redis-3-0', 'cloudunit/redis-3-0', 'Redis 3.0.7', 1, 'module', 'redmin'),
   (40, 'postgresql-9-3', 'cloudunit/postgresql-9-3', 'PostgreSQL 9.3.12', 1, 'module', 'phppgadmin'),
   (41, 'postgresql-9-4', 'cloudunit/postgresql-9-4', 'PostgreSQL 9.4.7', 1, 'module', 'phppgadmin'),

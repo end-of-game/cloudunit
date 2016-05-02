@@ -17,5 +17,5 @@ do
 	let count=$count+1;
 done
 
-echo "PostgreSQL is stoped"
+echo "PostgreSQL is stopped"
 
