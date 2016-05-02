@@ -14,6 +14,9 @@ cloudunit/jboss-appconf8 images/servers/appconf/jboss-appconf8
 cloudunit/fatjar images/servers/appconf/fatjar
 
 cloudunit/postgresql-9-3 images/modules/postgresql-9-3
+cloudunit/postgresql-9-4 images/modules/postgresql-9-4
+cloudunit/postgresql-9-5 images/modules/postgresql-9-4
+
 cloudunit/mysql-5-5 images/modules/mysql-5-5
 cloudunit/mongo-2-6 images/modules/mongo-2-6
 cloudunit/redis-3-0 images/modules/redis-3-0

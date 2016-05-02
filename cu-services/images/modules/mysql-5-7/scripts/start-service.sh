@@ -24,6 +24,7 @@ MAX=30
 
 # Callback bound to the application stop
 terminate_handler() {
+  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
   kill -s SIGTERM $(pidof mysqld)
   CODE=$?
   if [[ "$CODE" -eq "0" ]]; then

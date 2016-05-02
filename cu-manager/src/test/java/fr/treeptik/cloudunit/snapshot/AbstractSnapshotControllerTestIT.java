@@ -38,6 +38,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
@@ -95,6 +96,9 @@ public abstract class AbstractSnapshotControllerTestIT {
     private final static String tagName = "mytag";
 
     protected String release;
+
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
 
     @BeforeClass
     public static void initEnv() {
@@ -201,9 +205,16 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);
+        int counter = 0;
+
         if (release.contains("jboss")) {
-            int counter = 0;
+            counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
+                contentPage = getUrlContentPage(urlToCall);
+                Thread.sleep(1000);
+            }
+        } else {
+            while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -251,9 +262,21 @@ public abstract class AbstractSnapshotControllerTestIT {
     }
 
     @Test()
-    public void test013_CreateAPostGresBasedApplicationSnapshot()
+    public void test030_CreateAPostGre93BasedApplicationSnapshot()
             throws Exception {
         createApplicationSnapshotWithAModuleAndADeployment("postgresql-9-3", "pizzashop-postgres", "Pizzas");
+    }
+
+    @Test()
+    public void test031_CreateAPostGre94BasedApplicationSnapshot()
+            throws Exception {
+        createApplicationSnapshotWithAModuleAndADeployment("postgresql-9-4", "pizzashop-postgres", "Pizzas");
+    }
+
+    @Test()
+    public void test032_CreateAPostGre95BasedApplicationSnapshot()
+            throws Exception {
+        createApplicationSnapshotWithAModuleAndADeployment("postgresql-9-5", "pizzashop-postgres", "Pizzas");
     }
 
     @Test()
@@ -1000,9 +1023,14 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);
+        int counter = 0;
         if (release.contains("jboss")) {
-            int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
+                contentPage = getUrlContentPage(urlToCall);
+                Thread.sleep(1000);
+            }
+        } else {
+            while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }

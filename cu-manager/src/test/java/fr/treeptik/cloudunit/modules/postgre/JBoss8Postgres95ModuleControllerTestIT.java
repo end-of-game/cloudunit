@@ -50,11 +50,11 @@ import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 /**
  * Created by nicolas on 04/10/15.
  */
-public class Tomcat6PostgresModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class JBoss8Postgres95ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat6PostgresModuleControllerTestIT() {
-        super.server = "tomcat-6";
-        super.module = "postgresql-9-3";
+    public JBoss8Postgres95ModuleControllerTestIT() {
+        super.server = "jboss-8";
+        super.module = "postgresql-9-5";
         super.managerPrefix = "phppgadmin";
         super.managerSuffix = "phppgadmin";
         super.managerPageContent = "phpPgAdmin";

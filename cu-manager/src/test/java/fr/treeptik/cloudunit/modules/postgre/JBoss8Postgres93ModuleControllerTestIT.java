@@ -50,9 +50,9 @@ import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 /**
  * Created by nicolas on 04/10/15.
  */
-public class JBoss8PostgresModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class JBoss8Postgres93ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public JBoss8PostgresModuleControllerTestIT() {
+    public JBoss8Postgres93ModuleControllerTestIT() {
         super.server = "jboss-8";
         super.module = "postgresql-9-3";
         super.managerPrefix = "phppgadmin";

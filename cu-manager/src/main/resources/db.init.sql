@@ -8,13 +8,17 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `version`, `cmd`, `status`, `i
   (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', '.0.14', '', 1, 'server', ''),
   (4, 'jboss-8', 'cloudunit/jboss-appconf8', '1.0', '', 1, 'server', ''),
   (5, 'fatjar', 'cloudunit/fatjar', '1.0', '', 1, 'server', ''),
-  (7, 'mysql-5-5', 'cloudunit/mysql-5-5', '1.0', '', 1, 'module', 'phpmyadmin'),
-  (10, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin'),
-  (11, 'mongo-2-6', 'cloudunit/mongo-2-6', '1.0', '', 1, 'module', 'mms'),
-  (12, 'postgis-2-2', 'cloudunit/postgis-2-2', '1.0', '', 1, 'module', 'phppgadmin'),
-  (13, 'redis-3-0', 'cloudunit/redis-3-0', '1.0', '', 1, 'module', 'redmin');
+  (10, 'mysql-5-5', 'cloudunit/mysql-5-5', '1.0', '', 1, 'module', 'phpmyadmin'),
+  (11, 'mysql-5-6', 'cloudunit/mysql-5-6', '1.0', '', 1, 'module', 'phpmyadmin'),
+  (12, 'mysql-5-7', 'cloudunit/mysql-5-7', '1.0', '', 1, 'module', 'phpmyadmin'),
+  (20, 'mongo-2-6', 'cloudunit/mongo-2-6', '1.0', '', 1, 'module', 'mms'),
+  (30, 'redis-3-0', 'cloudunit/redis-3-0', '1.0', '', 1, 'module', 'redmin'),
+  (40, 'postgresql-9-3', 'cloudunit/postgresql-9-3', '1.0', '', 1, 'module', 'phppgadmin'),
+  (41, 'postgresql-9-4', 'cloudunit/postgresql-9-4', '1.0', '', 1, 'module', 'phppgadmin'),
+  (42, 'postgresql-9-5', 'cloudunit/postgresql-9-5', '1.0', '', 1, 'module', 'phppgadmin'),
+  (43, 'postgis-2-2', 'cloudunit/postgis-2-2', '1.0', '', 1, 'module', 'phppgadmin');
 
-INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
+  INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
   (1, 'John', 'Doe', 'johndoe.doe@gmail.com', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 1, 1, '2013-08-22 09:22:06', 'johndoe',
    'admin');

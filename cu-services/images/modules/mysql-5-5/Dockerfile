@@ -1,7 +1,7 @@
 # docker build -t cloudunit/mysql-5-5 .
 # Run like "docker run -d cloudunit/mysql-5-5"
 
-FROM cloudunit/base-12.04
+FROM cloudunit/base-14.04
 
 ENV DEBIAN_FRONTEND noninteractive 
 

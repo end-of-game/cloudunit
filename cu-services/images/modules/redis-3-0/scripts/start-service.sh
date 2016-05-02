@@ -18,7 +18,6 @@ MAX=30
 
 # Callback bound to the application stop
 terminate_handler() {
-  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
   kill -s SIGTERM $(pidof redis-server)
   CODE=$?
   if [[ "$CODE" -eq "0" ]]; then
@@ -72,9 +71,9 @@ done
 # WebUI Redis Manager
 redis-commander --redis-password $CU_PASSWORD --http-auth-username $CU_USER --http-auth-password $CU_PASSWORD &
 
-# ####################################
+# ##################################
 # If redis is started we notify it #
-# ####################################
+# ##################################
 echo -e "END : " + $count " / " $MAX
 if [[ $count -gt $MAX ]]; then
     /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD

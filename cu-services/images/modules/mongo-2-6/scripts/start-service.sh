@@ -14,6 +14,22 @@ export MANAGER_DATABASE_PASSWORD=$7
 export ENV_EXEC=$8
 export CU_DATABASE_DNS=$9
 
+MAX=10
+
+# Callback bound to the application stop
+terminate_handler() {
+  kill -s SIGTERM $(pidof mongodb)
+  CODE=$?
+  if [[ "$CODE" -eq "0" ]]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD
+  else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+  fi
+  exit $CODE;
+}
+
+trap 'terminate_handler' SIGTERM
+
 if [ $ENV_EXEC = "integration" ];
 then
     export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
@@ -22,18 +38,9 @@ else
 fi
 
 if [ ! -f /cloudunit/database/init-service-ok ]; then
-
 	useradd $CU_USERNAME_SSH && echo "$CU_USERNAME_SSH:$CU_ROOT_PASSWORD" | chpasswd && echo "root:$CU_ROOT_PASSWORD" | chpasswd
-
-	# Création du MYSQL_HOME ET DU HOME_DIRECTORY / transfert de l'arborescence MySQL
-	mkdir -p $CU_USER_HOME/.ssh
-
-	# Ajout de l'utilisateur et modif du home directory
 	usermod -d $CU_USER_HOME $CU_USERNAME_SSH
-
-	#Ajout du Shell |  l'utilisateur
-	usermod -s /bin/bash $CU_USERNAME_SSH
-
+    usermod -s /bin/bash $CU_USERNAME_SSH
 fi
 
 # Démarrage de ssh, puis mongo
@@ -44,42 +51,45 @@ if $numa true &> /dev/null; then
 	set -- $numa mongod 
 fi
 
-chown -R mongodb:mongodb /cloudunit/database 
-exec gosu mongodb mongod --smallfiles --dbpath /cloudunit/database --auth& > /mongo/mongo.log
-
-# Attente du démarrage de mongo
-RETURN=1
-until [ "$RETURN" -eq "0" ];
-do	
-	nc -z localhost 27017
-	RETURN=$?
-	echo -n -e "\nwaiting for mongo to start"
-	sleep 1
-done
-
+chown -R mongodb:mongodb /cloudunit/database /cloudunit/backup
+exec gosu mongodb mongod --smallfiles --dbpath /cloudunit/database --auth & > /mongo/mongo.log
 
 if [ ! -f /cloudunit/database/init-service-ok ]; then
 	# Création de l'utilisateur de la db admin
 	sed "s/USER/$CU_USER/g" /mongo/user.js > /mongo/user.tmp.js && sed "s/PASS/$CU_PASSWORD/g" /mongo/user.tmp.js > /mongo/user.js
 	mongo mongo/user.js
-
 	touch /cloudunit/database/init-service-ok
-
 fi
 
 # Démarrage de l'UI
 lx-mms &
 
-# Attente du démarrage du processus sshd pour confirmer au manager
 RETURN=1
-until [ "$RETURN" -eq "0" ];
-do	
-	nc -z localhost 22
-	RETURN=$? 
-	echo -n -e "\nwaiting for sshd process start"
+count=0
+
+until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]];
+do
+    echo -n -e "\nwaiting for mongo to start ( $count / $MAX )";
+	nc -z localhost 27017
+    RETURN=$?
+	let count=$count+1;
 	sleep 1
 done
 
-/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+# ####################################
+# If mongo is started we notify it #
+# ####################################
+echo -e "END : " + $count " / " $MAX
+if [[ $count -gt $MAX ]]; then
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME FAIL $MANAGER_DATABASE_PASSWORD
+else
+    /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME START $MANAGER_DATABASE_PASSWORD
+fi
 
-tailf /mongo/mongo.log
+# Blocking step
+while true
+do
+  tail -f /dev/null & wait ${!}
+done
+
+
