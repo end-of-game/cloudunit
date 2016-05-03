@@ -15,74 +15,93 @@
 
 var EditApplicationPage = require('../../pages/EditApplicationPage');
 var DashboardPage = require('../../pages/DashboardPage');
+var waitForPromise = require('../../pages/waitForPromise');
+
 
 var OverviewSection = function () {
   'use strict';
   this.serverBtn = element(by.css('.server-btn'));
-  this.serverStatus = element(by.binding('editApp.application.status'));
+  this.serverStatus = element(by.binding('overview.app.status'));
   this.creationDate = element(by.id('creation-date'));
   this.serverName = element(by.id('server'));
   this.gitAddress = element(by.id('git-address'));
   this.jvmMemory = element(by.id('jvm-memory'));
   this.jvmOption = element(by.id('jvm-options'));
   this.jvmRelease = element(by.id('jvm-release'));
-  this.serverManagerLink = element(by.id('server-manager'));
+  this.serverAdminLink = element(by.id('server-admin-link'));
 };
 
 describe('E2E: Edit Application Overview', function () {
   'use strict';
 
-  var ptor, overview, editApp, dashboard;
-
-  login(browser.params.loginAdmin);
-
+  var overview, editApp, dashboard;
+  
+  
+login(browser.params.loginAdmin);
   beforeEach(function () {
-    ptor = protractor.getInstance();
-    ptor.ignoreSynchronization = true;
+    //login(browser.params.loginAdmin);
     editApp = new EditApplicationPage();
     overview = new OverviewSection();
     dashboard = new DashboardPage();
   });
 
+  afterEach(function () {
+    //logout();
+  });
+
   describe('Application details', function () {
     it('should display application main properties', function () {
-
       // set test environment
+      browser.get('/#/dashboard');
       dashboard.createApp('testOverview', 1);
-      browser.driver.sleep(6000);
+      browser.driver.sleep(20000);
+      
       browser.get('/#/editApplication/testOverview/overview');
-      browser.driver.sleep(2000);
 
-      browser.driver.sleep(1000);
       expect(overview.creationDate.getAttribute('value')).not.toEqual('');
       expect(overview.serverName.getAttribute('value')).not.toEqual('');
       expect(overview.gitAddress.getAttribute('value')).not.toEqual('');
       expect(overview.jvmMemory.getAttribute('value')).not.toEqual('');
       expect(overview.jvmRelease.getAttribute('value')).not.toEqual('');
-      browser.driver.sleep(1000);
+      expect(overview.serverAdminLink.getAttribute('value')).not.toEqual('');
     })
   });
 
   describe('toggle server', function () {
     it('should stop server', function () {
+            browser.get('/#/editApplication/testOverview/overview');
       overview.serverBtn.click();
-      browser.driver.sleep(3000);
+      
+      /*
+        waitForPromise(overview.serverStatus.getText,
+        function (status) {
+          return status === 'Stop';
+        });
+      */
+      browser.driver.sleep(20000);
       expect(overview.serverStatus.getText()).toEqual('Stop');
-      browser.driver.sleep(500);
     });
 
     it('should start server', function () {
+
+      browser.get('/#/editApplication/testOverview/overview');
       overview.serverBtn.click();
-      browser.driver.sleep(3000);
+
+      browser.sleep(20000);
       expect(overview.serverStatus.getText()).toEqual('Start');
-      browser.driver.sleep(500);
+      
+      /*
+        waitForPromise(overview.serverStatus.getText,
+        function (status) {
+          return status === 'Start';
+        }):
+      */
 
       // reset test environment
       browser.get('/#/dashboard');
-      browser.driver.sleep(3000);
-      dashboard.deleteApp('testOverview');
-      browser.driver.sleep(3000);
+      dashboard.deleteApp('testoverview');
       logout();
+
     })
   });
 });
