@@ -40,6 +40,9 @@ var DashboardPage = (function () {
           })
       });
     }
+    this.serverChoice = function (serverChoice) {
+      return element(by.repeater('serverImage in createApp.serverImages').row(serverChoice));
+    }
     this.getAppProperty = function (propertyName, appChoice) {
       return element(by.repeater('application in dashboard.applications').row(appChoice).column('application.' + propertyName));
     }
