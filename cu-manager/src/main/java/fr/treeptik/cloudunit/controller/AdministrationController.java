@@ -16,7 +16,7 @@
 package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.dto.HttpOk;
-import fr.treeptik.cloudunit.dto.JsonInput;
+import fr.treeptik.cloudunit.dto.JenkinsUser;
 import fr.treeptik.cloudunit.dto.JsonInputForAdmin;
 import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.dto.gitlab.GitLabUser;
@@ -27,7 +27,6 @@ import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -45,12 +44,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin")
 public class AdministrationController
-    implements Serializable {
+        implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private final Logger logger = LoggerFactory
-        .getLogger(AdministrationController.class);
+            .getLogger(AdministrationController.class);
 
     @Inject
     private ImageService imageService;
@@ -63,6 +62,9 @@ public class AdministrationController
 
     @Inject
     private MessageService messageService;
+
+    @Inject
+    private JenkinsService jenkinsService;
 
     @Inject
     private GitlabService gitlabService;
@@ -82,11 +84,11 @@ public class AdministrationController
     @ResponseBody
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     public JsonResponse createUser(@RequestBody JsonInputForAdmin input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
 
         User user = new User(input.getLogin(), input.getFirstName(),
-            input.getLastName(), input.getOrganization(), input.getEmail(),
-            input.getPassword());
+                input.getLastName(), input.getOrganization(), input.getEmail(),
+                input.getPassword());
 
         // create a new user
         user = this.userService.create(user);
@@ -95,8 +97,12 @@ public class AdministrationController
         GitLabUser gitlabUser = new GitLabUser(input.getLogin(), input.getFirstName() + " " + input.getLastName(),
                 input.getEmail(), input.getPassword(), false);
 
+        JenkinsUser jenkinsUser = new JenkinsUser(input.getLogin(), input.getPassword(), input.getFirstName() + " "
+                + input.getLastName(), input.getEmail());
+
         HttpStatus status = this.gitlabService.createUser(gitlabUser);
 
+        this.jenkinsService.addUser(jenkinsUser);
         // activate the user account
         this.userService.activationAccount(user);
 
@@ -114,15 +120,16 @@ public class AdministrationController
     @ResponseBody
     @RequestMapping(value = "/user/{login}", method = RequestMethod.DELETE)
     public JsonResponse removeUser(@PathVariable String login)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         User user = this.userService.findByLogin(login);
         String contextLogin = this.authentificationUtils
-            .getAuthentificatedUser().getLogin();
+                .getAuthentificatedUser().getLogin();
         if (login.equalsIgnoreCase(contextLogin)) {
             throw new CheckException(
-                "You can't delete your own account from this interface");
+                    "You can't delete your own account from this interface");
         }
         this.gitlabService.deleteUser(login);
+        this.jenkinsService.deleteUser(login);
         this.userService.remove(user);
         return new HttpOk();
     }
@@ -138,7 +145,7 @@ public class AdministrationController
     @ResponseBody
     @RequestMapping(value = "/user/{login}", method = RequestMethod.GET)
     public User findByLogin(@PathVariable String login)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         return this.userService.findByLogin(login);
     }
 
@@ -152,7 +159,7 @@ public class AdministrationController
     @ResponseBody
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     public List<User> findAll()
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         return this.userService.findAll();
     }
 
@@ -166,9 +173,9 @@ public class AdministrationController
      */
     @RequestMapping(value = "/user/rights", method = RequestMethod.POST)
     public JsonResponse changeRights(@RequestBody JsonInputForAdmin input)
-        throws ServiceException, CheckException {
+            throws ServiceException, CheckException {
         String login = this.authentificationUtils.getAuthentificatedUser()
-            .getLogin();
+                .getLogin();
         if (login.equalsIgnoreCase(input.getLogin())) {
             throw new CheckException("You can't change your own rights");
         }
@@ -186,7 +193,7 @@ public class AdministrationController
     @ResponseBody
     @RequestMapping(value = "/images/imageName/{imageName}/enable", method = RequestMethod.POST)
     public Image enableImage(@PathVariable String imageName)
-        throws ServiceException {
+            throws ServiceException {
         return this.imageService.enableImage(imageName);
     }
 
@@ -200,30 +207,8 @@ public class AdministrationController
     @ResponseBody
     @RequestMapping(value = "/images/imageName/{imageName}/disable", method = RequestMethod.POST)
     public Image disableImage(@PathVariable String imageName)
-        throws ServiceException {
+            throws ServiceException {
         return this.imageService.disableImage(imageName);
-    }
-
-    /**
-     * restore a backup
-     *
-     * @param input
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/module/restore", method = RequestMethod.POST)
-    public JsonResponse restoreBackup(@RequestBody JsonInput input)
-        throws ServiceException, CheckException {
-
-        logger.info("input.getModuleName():" + input.getModuleName());
-
-        CheckUtils.validateInput(input.getModuleName(),
-            "Le nom du module doit être renseigné.");
-        final JsonResponse response = new HttpOk();
-        this.moduleService.restoreBackup(input.getModuleName());
-        return response;
     }
 
     /**
@@ -239,10 +224,11 @@ public class AdministrationController
     @RequestMapping(value = "/messages/rows/{rows}/login/{login}", method = RequestMethod.GET)
     public List<Message> listMessages(@PathVariable String login,
                                       @PathVariable String rows)
-        throws NumberFormatException,
-        ServiceException {
+            throws NumberFormatException,
+            ServiceException {
         return messageService.listByUser(userService.findByLogin(login),
-            Integer.parseInt(rows));
+                Integer.parseInt(rows));
     }
+
 
 }

@@ -36,8 +36,8 @@ public class GitlabServiceImpl implements GitlabService {
             String line;
             this.privateToken = "";
             while ((line = br.readLine()) != null) {
-                if(line.contains("gitlab.token"))
-                    this.privateToken = line.split("=")[1];
+                if(line.contains("gitlab.token") && line.split("=").length > 1)
+                        this.privateToken = line.split("=")[1];
             }
             br.close();
         } catch (IOException e) {
@@ -52,8 +52,6 @@ public class GitlabServiceImpl implements GitlabService {
      * @return
      */
     public HttpStatus createUser(GitLabUser user) {
-        System.out.println("privateToken = " + this.privateToken);
-
         DataOutputStream wr = null;
         HttpURLConnection connPost = null;
         HttpStatus code = HttpStatus.EXPECTATION_FAILED;
