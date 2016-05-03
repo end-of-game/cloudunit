@@ -214,7 +214,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                 Thread.sleep(1000);
             }
         } else {
-            while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
+            while (contentPage.contains("CloudUnit PaaS")==false || counter++ < 10) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -1030,7 +1030,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                 Thread.sleep(1000);
             }
         } else {
-            while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
+            while (contentPage.contains(keywordIntoPage)==false || counter++ < 10) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }

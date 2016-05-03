@@ -217,7 +217,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         String contentPage = getUrlContentPage(managerExpected);
         int counter = 0;
-        while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
+        while (contentPage.contains(managerPageContent)==false || counter++ < 10) {
             contentPage = getUrlContentPage(managerExpected);
             Thread.sleep(1000);
         }
@@ -280,12 +280,13 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         String contentPage = getUrlContentPage(managerExpected1);
 
         int counter = 0;
-        while (contentPage.contains("Error 502 - Application Not Responding") && counter++ < 10) {
+        while (contentPage.contains(managerPageContent)==false || counter++ < 20) {
             contentPage = getUrlContentPage(managerExpected1);
             Thread.sleep(1000);
         }
 
-
+        System.out.println(contentPage);
+        System.out.println(managerPageContent);
         Assert.assertTrue(contentPage.contains(managerPageContent));
 
         // add a second module

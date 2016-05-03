@@ -32,31 +32,9 @@ fi
 
 MAX=10
 
-# ############
-# First call #
-# ############
-if [ ! -f /init-service-ok ]; then
-	/etc/init.d/postgresql stop
-
-	useradd $CU_SSH_USER && echo "$CU_SSH_USER:$CU_ROOT_PASSWORD" | chpasswd
-	echo "root:$CU_ROOT_PASSWORD" | chpasswd
-
-	$CU_USER_HOME $CU_SSH_USER
-	usermod -s /bin/bash $CU_SSH_USER
-	useradd -G postgres $CU_SSH_USER
-
-	su - postgres -c "psql --command \"CREATE USER docker WITH SUPERUSER PASSWORD '$CU_ROOT_PASSWORD';\""
-	su - postgres -c "createdb -O docker docker"
-    psql -U docker --command "CREATE USER $CU_USER WITH SUPERUSER PASSWORD '$CU_PASSWORD'"
-	su - postgres -c "createdb -O $CU_USER $CU_DATABASE_NAME"
-
-	sed -i -e"s:deny from all:# deny from all:g" /etc/apache2/conf.d/phppgadmin
-	sed -i -e"s:# allow from all:allow from all:g" /etc/apache2/conf.d/phppgadmin
-fi
-
 /usr/sbin/sshd
-/etc/init.d/postgresql start
 /usr/sbin/apachectl start
+/etc/init.d/postgresql start
 
 RETURN=1
 count=0
@@ -70,6 +48,28 @@ until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]]; do
     sleep 1
     let count=$count+1;
 done
+
+# ############
+# First call #
+# ############
+if [ ! -f /init-service-ok ]; then
+	useradd $CU_SSH_USER && echo "$CU_SSH_USER:$CU_ROOT_PASSWORD" | chpasswd
+	echo "root:$CU_ROOT_PASSWORD" | chpasswd
+
+	usermod -s /bin/bash $CU_SSH_USER
+	useradd -G postgres $CU_SSH_USER
+
+	su - postgres -c "psql --command \"CREATE USER docker WITH SUPERUSER PASSWORD '$CU_ROOT_PASSWORD';\""
+	su - postgres -c "createdb -O docker docker"
+    psql -U docker --command "CREATE USER $CU_USER WITH SUPERUSER PASSWORD '$CU_PASSWORD'"
+	su - postgres -c "createdb -O $CU_USER $CU_DATABASE_NAME"
+
+    sed -i -e"s:Require local:# Require local:g" /etc/apache2/conf-enabled/phppgadmin.conf
+	sed -i -e"s:deny from all:# deny from all:g" /etc/apache2/conf-enabled/phppgadmin.conf
+	sed -i -e"s:# allow from all:allow from all:g" /etc/apache2/conf-enabled/phppgadmin.conf
+	service apache2 restart
+	touch /init-service-ok
+fi
 
 # ####################################
 # If postgre is started we notify it #
