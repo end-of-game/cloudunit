@@ -19,19 +19,18 @@ import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonInput;
 import fr.treeptik.cloudunit.dto.JsonInputForAdmin;
 import fr.treeptik.cloudunit.dto.JsonResponse;
+import fr.treeptik.cloudunit.dto.gitlab.GitLabUser;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.MessageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,6 +65,9 @@ public class AdministrationController
     private MessageService messageService;
 
     @Inject
+    private GitlabService gitlabService;
+
+    @Inject
     private AuthentificationUtils authentificationUtils;
 
     /**
@@ -88,6 +90,12 @@ public class AdministrationController
 
         // create a new user
         user = this.userService.create(user);
+
+        // create a new user in Gitlab
+        GitLabUser gitlabUser = new GitLabUser(input.getLogin(), input.getFirstName() + " " + input.getLastName(),
+                input.getEmail(), input.getPassword(), false);
+
+        HttpStatus status = this.gitlabService.createUser(gitlabUser);
 
         // activate the user account
         this.userService.activationAccount(user);
@@ -114,6 +122,7 @@ public class AdministrationController
             throw new CheckException(
                 "You can't delete your own account from this interface");
         }
+        this.gitlabService.deleteUser(login);
         this.userService.remove(user);
         return new HttpOk();
     }
@@ -193,6 +202,28 @@ public class AdministrationController
     public Image disableImage(@PathVariable String imageName)
         throws ServiceException {
         return this.imageService.disableImage(imageName);
+    }
+
+    /**
+     * restore a backup
+     *
+     * @param input
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @ResponseBody
+    @RequestMapping(value = "/module/restore", method = RequestMethod.POST)
+    public JsonResponse restoreBackup(@RequestBody JsonInput input)
+        throws ServiceException, CheckException {
+
+        logger.info("input.getModuleName():" + input.getModuleName());
+
+        CheckUtils.validateInput(input.getModuleName(),
+            "Le nom du module doit être renseigné.");
+        final JsonResponse response = new HttpOk();
+        this.moduleService.restoreBackup(input.getModuleName());
+        return response;
     }
 
     /**
