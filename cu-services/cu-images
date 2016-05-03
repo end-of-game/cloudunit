@@ -1,3 +1,4 @@
+cloudunit/base-jessie images/base-jessie
 cloudunit/base-12.04 images/base-12.04
 cloudunit/base-14.04 images/base-14.04
 cloudunit/base-16.04 images/base-16.04

@@ -59,6 +59,16 @@ public class Image
 
     private String managerName;
 
+    private String prefixEnv;
+
+    public String getPrefixEnv() {
+        return prefixEnv;
+    }
+
+    public void setPrefixEnv(String prefixEnv) {
+        this.prefixEnv = prefixEnv;
+    }
+
     @JsonIgnore
     @OneToMany(mappedBy = "image")
     private List<Module> modules;

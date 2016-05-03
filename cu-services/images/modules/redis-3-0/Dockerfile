@@ -21,6 +21,7 @@ RUN tar xvzf /tmp/redis-$REDIS_VERSION.tar.gz -C /tmp && \
   mkdir -p /etc/redis && \
   cp -f *.conf /etc/redis && \
   rm -rf /tmp/redis-3-0* && \
+  apt-get purge -y --auto-remove $buildDeps && \
   sed -i 's/^\(bind .*\)$/# \1/' /etc/redis/redis.conf && \
   sed -i 's/^\(daemonize .*\)$/# \1/' /etc/redis/redis.conf && \
   sed -i "s|dir .\/|dir $CU_DATABASE_HOME|" /etc/redis/redis.conf && \

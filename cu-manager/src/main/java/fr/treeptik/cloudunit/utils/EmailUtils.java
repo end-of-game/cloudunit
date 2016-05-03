@@ -244,7 +244,7 @@ public class EmailUtils {
                 template = configuration
                     .getTemplate("emailModuleInformations-mysql.ftl");
 
-            } else if (module.getName().contains("postgres")) {
+            } else if (module.getName().contains("postgres") || module.getName().contains("postgis")) {
                 mapVariables.put("pgDatabase", moduleInfos.get("database"));
                 mapVariables.put("pgAlias", moduleInfos.get("linkAlias"));
                 mapVariables.put("pgPort", module.getListPorts().get("pgPort"));

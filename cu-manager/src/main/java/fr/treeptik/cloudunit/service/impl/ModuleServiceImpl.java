@@ -224,13 +224,8 @@ public class ModuleServiceImpl
                                 + " "
                                 + module.getInternalDNSName()
                                 + " "
-                                + module.getImage()
-                                .getName()
-                                .substring(
-                                        0,
-                                        module.getImage().getName()
-                                                .indexOf("-"))
-                                .toUpperCase() + "_"
+                                + module.getImage().getPrefixEnv().toUpperCase()
+                                + "_"
                                 + module.getInstanceNumber();
                     } else {
                         Thread.sleep(3000);
@@ -277,13 +272,7 @@ public class ModuleServiceImpl
                                 + " "
                                 + module.getInternalDNSName()
                                 + " "
-                                + module.getImage()
-                                .getName()
-                                .substring(
-                                        0,
-                                        module.getImage().getName()
-                                                .indexOf("-"))
-                                .toUpperCase()
+                                + module.getImage().getPrefixEnv().toUpperCase()
                                 + "_"
                                 + module.getInstanceNumber();
                     }

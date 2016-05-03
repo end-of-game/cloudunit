@@ -16,9 +16,9 @@ RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* 
 ENV LANG en_US.utf8
 
 # VARIABLES ENVIRONNEMENT
-ENV CU_DATABASE_HOME /cloudunit/database
-RUN mkdir /cloudunit/database
-RUN echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
+#ENV CU_DATABASE_HOME /cloudunit/database
+#RUN mkdir /cloudunit/database
+#RUN echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
 
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 # RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
@@ -31,13 +31,13 @@ RUN apt-get -y -q install postgresql-$PG_MAJOR=$PG_VERSION \
                           postgresql-contrib-$PG_MAJOR=$PG_VERSION \
                           phppgadmin
 
-RUN apt-get -y -q install postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
-                          postgis=$POSTGIS_VERSION
+#RUN apt-get -y -q install postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
+ #                         postgis=$POSTGIS_VERSION
 
-RUN chown -R postgres:postgres /cloudunit
+#RUN chown -R postgres:postgres /cloudunit
 
 ## Déplacement du dossier de données
-RUN sed -i -e"s:/var/lib/postgresql/9.4/main:/cloudunit/database/main:g" /etc/postgresql/9.4/main/postgresql.conf
+#RUN sed -i -e"s:/var/lib/postgresql/9.4/main:/cloudunit/database/main:g" /etc/postgresql/9.4/main/postgresql.conf
 
 ## On écoute sur toutes les IP. La sécurité est faite avant. 
 RUN echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf
@@ -56,7 +56,7 @@ ADD scripts /cloudunit/scripts
 RUN chmod +x /cloudunit/scripts/*
 
 # expose datadir as volume for performance cow
-VOLUME /cloudunit/database
+VOLUME /var/lib/postgresql/9.4/main
 
 EXPOSE 22
 
