@@ -1,20 +1,16 @@
 #!/usr/bin/env bash
 
-
-
-#!/usr/bin/env bash
-
-export GL_MAJOR=latest
+export GL_MAJOR=8.7.2-ce.0
 
 docker images |grep gitlab/gitlab-ce |grep $GL_MAJOR
 if [ "$?" == "1" ]; then
     docker pull gitlab/gitlab-ce:$GL_MAJOR
 fi
 
-RETURN=`docker ps | grep gitlab`
+docker ps | grep gitlab
 
 # If jenkins is not running
-if [ "$RETURN" == "1" ]; then
+if [ "$?" == "1" ]; then
 
     docker run --detach \
         --hostname gitlab.cloudunit.serv \
@@ -24,7 +20,7 @@ if [ "$RETURN" == "1" ]; then
         --volume /srv/gitlab/config:/etc/gitlab \
         --volume /srv/gitlab/logs:/var/log/gitlab \
         --volume /srv/gitlab/data:/var/opt/gitlab \
-        gitlab/gitlab-ce:latest
+        gitlab/gitlab-ce:$GL_MAJOR
 
     # Maybe it could already exist
     if [ "$?" == "1" ]; then
@@ -32,7 +28,6 @@ if [ "$RETURN" == "1" ]; then
     fi
 fi
 
-echo -e "\nThink about 'docker logs -f jenkins2' to get password\n"
 echo -e "***************************************************"
 echo -e "* ACCESS TO GITLAB AT --> http://192.168.50.4:480"
 echo -e "***************************************************"
