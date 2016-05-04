@@ -4,6 +4,10 @@ ENV DEBIAN_FRONTEND noninteractive
 
 ENV PG_MAJOR 9.4
 ENV PG_VERSION 9.4.7-1.pgdg80+1
+
+ENV POSTGIS_MAJOR 2.1
+#ENV POSTGIS_VERSION 2.1.8+dfsg-5~97.git43a09cc.pgdg80+1
+
 ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
 ENV PGDATA /var/lib/postgresql/data
 ENV LANG en_US.utf8
@@ -23,6 +27,13 @@ RUN set -x \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true \
 	&& apt-get purge -y --auto-remove ca-certificates wget
+
+# RUN echo "apt-get update && apt-get install -y postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION"
+# RUN apt-get update && apt-get install -y postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION
+RUN apt-get update && \
+    apt-get install -y postgresql-9.4-postgis-2.1 \
+                       postgis-2.1
+
 
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
 RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
