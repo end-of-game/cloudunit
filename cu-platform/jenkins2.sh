@@ -2,30 +2,30 @@
 
 export JK_MAJOR=2.1
 
-docker images | grep jenkinsci/jenkins
+docker images |grep jenkinsci/jenkins |grep $JK_MAJOR
 if [ "$?" == "1" ]; then
     docker pull jenkinsci/jenkins:$JK_MAJOR
 fi
 
-
-docker inspect -f {{.State.Running}} jenkins2
+RETURN=`docker ps | grep jenkins2`
 
 # If jenkins is not running
-if [ "$?" == "1" ]; then
+if [ "$RETURN" == "1" ]; then
 
     mkdir -p /home/vagrant/jenkins_home
-
     docker run  --name jenkins2 \
                 -d -p 9080:8080 -p 50000:50000 \
                 -v /home/vagrant/jenkins_home:/var/jenkins_home \
                 jenkinsci/jenkins:$JK_MAJOR
 
+    # Maybe it could already exist
     if [ "$?" == "1" ]; then
         sudo chown -R vagrant /home/vagrant/jenkins_home
         docker start jenkins2
     fi
 fi
 
-docker ps -a | grep jenkins2
-
-echo -e "\nACCESS TO JENKINS AT --> http://192.168.50.4:9080\n"
+echo -e "\nThink about 'docker logs -f jenkins2' to get password\n"
+echo -e "*****************************************************"
+echo -e "* ACCESS TO JENKINS AT --> http://192.168.50.4:9080"
+echo -e "*****************************************************"
