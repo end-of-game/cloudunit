@@ -8,6 +8,7 @@ import fr.treeptik.cloudunit.service.GitlabService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,30 +24,13 @@ import java.net.URL;
 @Service
 public class GitlabServiceImpl implements GitlabService {
 
-    private static String GITLAB_IP = "192.168.50.4:480";
-    private static String privateToken;
+    private final Logger logger = LoggerFactory.getLogger(GitlabServiceImpl.class);
 
-    private final Logger logger = LoggerFactory
-            .getLogger(GitlabServiceImpl.class);
-    /**
-     * Get the root's private token of Gitlab for the differents methods
-     */
-    @Autowired
-    public void getToken () {
-        try {
-            File file = new File("src/main/resources/application.properties");
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            this.privateToken = "";
-            while ((line = br.readLine()) != null) {
-                if(line.contains("gitlab.token") && line.split("=").length > 1)
-                    this.privateToken = line.split("=")[1];
-            }
-            br.close();
-        } catch (IOException e) {
-            logger.debug("Exception read getToken");
-        }
-    }
+    @Value("${gitlab.token}")
+    private String gitlabToken;
+
+    @Value("${gitlab.api}")
+    private String gitlabAPI;
 
     /**
      * Create an user on Gitlab
@@ -58,8 +42,19 @@ public class GitlabServiceImpl implements GitlabService {
         DataOutputStream wr = null;
         HttpURLConnection connPost = null;
         HttpStatus code = HttpStatus.EXPECTATION_FAILED;
+
+        if (gitlabToken == null) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        if (gitlabAPI == null) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
         try {
-            URL urlPost = new URL("http://" + this.GITLAB_IP + "/api/v3/users?private_token=" + this.privateToken);
+            URL urlPost = new URL(gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
             connPost = (HttpURLConnection) urlPost.openConnection();
             connPost.setDoOutput(true);
             connPost.setDoInput(true);
@@ -97,13 +92,25 @@ public class GitlabServiceImpl implements GitlabService {
      * @return
      */
     public HttpStatus deleteUser(String username) {
+
+        if (gitlabToken == null) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        if (gitlabAPI == null) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+
         HttpURLConnection connPost = null;
         HttpStatus code = HttpStatus.EXPECTATION_FAILED;
         try {
 
             int id = getIdUser(username);
 
-            URL urlPost = new URL("http://" + this.GITLAB_IP + "/api/v3/users/" + id + "?private_token=" + this.privateToken);
+            URL urlPost = new URL(gitlabAPI + "/api/v3/users/" + id + "?private_token=" + gitlabToken);
             connPost = (HttpURLConnection) urlPost.openConnection();
             connPost.setDoOutput(true);
             connPost.setDoInput(true);
@@ -113,7 +120,6 @@ public class GitlabServiceImpl implements GitlabService {
             connPost.connect();
 
             code = HttpStatus.valueOf(connPost.getResponseCode());
-
 
         } catch (IOException e) {
             logger.debug("IOException deleteUser : " + username);
@@ -132,7 +138,7 @@ public class GitlabServiceImpl implements GitlabService {
         URL url = null;
         int status = -1;
         try {
-            url = new URL("http://" + this.GITLAB_IP + "/api/v3/users?private_token=" + this.privateToken);
+            url = new URL(gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
             c = (HttpURLConnection) url.openConnection();
             c.setRequestMethod("GET");
             c.setRequestProperty("Content-length", "0");
@@ -147,7 +153,6 @@ public class GitlabServiceImpl implements GitlabService {
         String jsonS;
         if (status == 200) {
             StringBuilder sb = new StringBuilder();
-
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
                 String line;

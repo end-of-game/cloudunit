@@ -17,9 +17,9 @@ if [ "$?" == "1" ]; then
         --publish 4443:443 --publish 480:80 --publish 422:22 \
         --name gitlab \
         --restart always \
-        --volume /srv/gitlab/config:/etc/gitlab \
-        --volume /srv/gitlab/logs:/var/log/gitlab \
-        --volume /srv/gitlab/data:/var/opt/gitlab \
+        --volume /home/vagrant/gitlab_home/config:/etc/gitlab \
+        --volume /home/vagrant/gitlab_home/logs:/var/log/gitlab \
+        --volume /home/vagrant/gitlab_home/data:/var/opt/gitlab \
         gitlab/gitlab-ce:$GL_MAJOR
 
     # Maybe it could already exist
@@ -31,3 +31,4 @@ fi
 echo -e "***************************************************"
 echo -e "* ACCESS TO GITLAB AT --> http://192.168.50.4:480"
 echo -e "***************************************************"
+

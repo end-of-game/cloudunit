@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
  */
 public interface GitlabService {
 
-    public void getToken();
-
     public HttpStatus createUser(User user);
 
     public HttpStatus deleteUser(String login);

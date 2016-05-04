@@ -91,7 +91,7 @@ public class AdministrationController
         user = this.userService.create(user);
 
         this.gitlabService.createUser(user);
-        this.jenkinsService.addUser(user);
+        //this.jenkinsService.addUser(user);
         this.userService.activationAccount(user);
 
         return new HttpOk();
@@ -117,7 +117,7 @@ public class AdministrationController
                     "You can't delete your own account from this interface");
         }
         this.gitlabService.deleteUser(login);
-        this.jenkinsService.deleteUser(login);
+        //this.jenkinsService.deleteUser(login);
         this.userService.remove(user);
 
         return new HttpOk();
