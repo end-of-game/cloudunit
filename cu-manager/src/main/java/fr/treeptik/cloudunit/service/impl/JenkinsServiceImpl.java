@@ -1,6 +1,6 @@
 package fr.treeptik.cloudunit.service.impl;
 
-import fr.treeptik.cloudunit.dto.JenkinsUser;
+import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.JenkinsService;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -8,13 +8,12 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -28,12 +27,14 @@ public class JenkinsServiceImpl implements JenkinsService {
     private static String rootName;
     private static String rootPassword;
 
+    private final Logger logger = LoggerFactory
+            .getLogger(JenkinsServiceImpl.class);
 
     /**
      * Get the root's private token of Gitlab for the differents methods
      */
     @Autowired
-    public void getToken () {
+    public void getRootInfos () {
         try {
             File file = new File("src/main/resources/application.properties");
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -48,7 +49,7 @@ public class JenkinsServiceImpl implements JenkinsService {
             }
             br.close();
         } catch (IOException e) {
-            System.out.println("Exception read");
+            logger.debug("Exception read getRootInfos");
         }
     }
 
@@ -57,18 +58,17 @@ public class JenkinsServiceImpl implements JenkinsService {
      * Add a user to the Jenkins server
      * @param user
      */
-    public void addUser(JenkinsUser user) {
-
+    public void addUser(User user) {
         try {
             DefaultHttpClient httpclient = new DefaultHttpClient();
 
             ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
             HttpPost post = new HttpPost("http://" + JENKINS_IP + "/securityRealm/createAccountByAdmin");
-            parameters.add(new BasicNameValuePair("username", user.getUsername()));
+            parameters.add(new BasicNameValuePair("username", user.getLogin()));
             parameters.add(new BasicNameValuePair("password1", user.getPassword()));
             parameters.add(new BasicNameValuePair("password2", user.getPassword()));
-            parameters.add(new BasicNameValuePair("fullname", user.getFullname()));
+            parameters.add(new BasicNameValuePair("fullname", user.getFirstName() + " " + user.getLastName()));
             parameters.add(new BasicNameValuePair("email", user.getEmail()));
             parameters.add(new BasicNameValuePair("json", createJson(user)));
             parameters.add(new BasicNameValuePair("Submit", "Créer un utilisateur"));
@@ -81,7 +81,9 @@ public class JenkinsServiceImpl implements JenkinsService {
             post.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
             HttpResponse response = httpclient.execute(post);
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            logger.debug("Exception addUser : " + user.getLogin());
+        }
     }
 
     /**
@@ -106,7 +108,9 @@ public class JenkinsServiceImpl implements JenkinsService {
             post.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
             HttpResponse response = httpclient.execute(post);
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            logger.debug("Exception deleteUser : " + username);
+        }
     }
 
     /**
@@ -115,11 +119,11 @@ public class JenkinsServiceImpl implements JenkinsService {
      * @param user
      * @return
      */
-    private String createJson(JenkinsUser user) {
-        return "{\"username\": \""+ user.getUsername() + "\"," +
+    private String createJson(User user) {
+        return "{\"username\": \""+ user.getLogin() + "\"," +
                 " \"password1\": \"" + user.getPassword() + "\"," +
                 " \"password2\": \"" + user.getPassword() + "\"," +
-                " \"fullname\": \"" + user.getFullname() + "\"," +
+                " \"fullname\": \"" + user.getFirstName() + " " + user.getLastName() + "\"," +
                 " \"email\": \"" + user.getEmail() + "\"}";
     }
 }

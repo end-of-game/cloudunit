@@ -1,6 +1,6 @@
 package fr.treeptik.cloudunit.service;
 
-import fr.treeptik.cloudunit.dto.gitlab.GitLabUser;
+import fr.treeptik.cloudunit.model.User;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -10,7 +10,7 @@ public interface GitlabService {
 
     public void getToken();
 
-    public HttpStatus createUser(GitLabUser user);
+    public HttpStatus createUser(User user);
 
     public HttpStatus deleteUser(String login);
 }

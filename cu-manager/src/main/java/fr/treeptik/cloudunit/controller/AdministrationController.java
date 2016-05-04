@@ -16,10 +16,8 @@
 package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.dto.HttpOk;
-import fr.treeptik.cloudunit.dto.JenkinsUser;
 import fr.treeptik.cloudunit.dto.JsonInputForAdmin;
 import fr.treeptik.cloudunit.dto.JsonResponse;
-import fr.treeptik.cloudunit.dto.gitlab.GitLabUser;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
@@ -29,7 +27,6 @@ import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,17 +90,8 @@ public class AdministrationController
         // create a new user
         user = this.userService.create(user);
 
-        // create a new user in Gitlab
-        GitLabUser gitlabUser = new GitLabUser(input.getLogin(), input.getFirstName() + " " + input.getLastName(),
-                input.getEmail(), input.getPassword(), false);
-
-        JenkinsUser jenkinsUser = new JenkinsUser(input.getLogin(), input.getPassword(), input.getFirstName() + " "
-                + input.getLastName(), input.getEmail());
-
-        HttpStatus status = this.gitlabService.createUser(gitlabUser);
-
-        this.jenkinsService.addUser(jenkinsUser);
-        // activate the user account
+        this.gitlabService.createUser(user);
+        this.jenkinsService.addUser(user);
         this.userService.activationAccount(user);
 
         return new HttpOk();
@@ -131,6 +119,7 @@ public class AdministrationController
         this.gitlabService.deleteUser(login);
         this.jenkinsService.deleteUser(login);
         this.userService.remove(user);
+
         return new HttpOk();
     }
 

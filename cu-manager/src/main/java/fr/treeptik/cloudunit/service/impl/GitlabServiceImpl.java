@@ -3,8 +3,10 @@ package fr.treeptik.cloudunit.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import fr.treeptik.cloudunit.dto.gitlab.GitLabUser;
+import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.GitlabService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,8 +25,9 @@ public class GitlabServiceImpl implements GitlabService {
 
     private static String GITLAB_IP = "192.168.50.4:480";
     private static String privateToken;
-    private static String CU_BACK_LINK = "192.168.2.106:8080";
 
+    private final Logger logger = LoggerFactory
+            .getLogger(GitlabServiceImpl.class);
     /**
      * Get the root's private token of Gitlab for the differents methods
      */
@@ -37,11 +40,11 @@ public class GitlabServiceImpl implements GitlabService {
             this.privateToken = "";
             while ((line = br.readLine()) != null) {
                 if(line.contains("gitlab.token") && line.split("=").length > 1)
-                        this.privateToken = line.split("=")[1];
+                    this.privateToken = line.split("=")[1];
             }
             br.close();
         } catch (IOException e) {
-            System.out.println("Exception read");
+            logger.debug("Exception read getToken");
         }
     }
 
@@ -51,7 +54,7 @@ public class GitlabServiceImpl implements GitlabService {
      * @param user
      * @return
      */
-    public HttpStatus createUser(GitLabUser user) {
+    public HttpStatus createUser(User user) {
         DataOutputStream wr = null;
         HttpURLConnection connPost = null;
         HttpStatus code = HttpStatus.EXPECTATION_FAILED;
@@ -66,8 +69,8 @@ public class GitlabServiceImpl implements GitlabService {
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.createObjectNode();
-            ((ObjectNode) rootNode).put("username", user.getUsername());
-            ((ObjectNode) rootNode).put("name", user.getName());
+            ((ObjectNode) rootNode).put("username", user.getLogin());
+            ((ObjectNode) rootNode).put("name", user.getFirstName() + " " + user.getLastName());
             ((ObjectNode) rootNode).put("email", user.getEmail());
             ((ObjectNode) rootNode).put("password", user.getPassword());
             String jsonString = mapper.writeValueAsString(rootNode);
@@ -77,6 +80,7 @@ public class GitlabServiceImpl implements GitlabService {
             code = HttpStatus.valueOf(connPost.getResponseCode());
 
         } catch (IOException e) {
+            logger.debug("IOException createUser : " + user.getLogin());
         } finally {
             try {
                 if (wr != null) wr.flush();
@@ -112,7 +116,7 @@ public class GitlabServiceImpl implements GitlabService {
 
 
         } catch (IOException e) {
-            System.out.println("IOException");
+            logger.debug("IOException deleteUser : " + username);
         }
         return code;
     }
@@ -126,26 +130,18 @@ public class GitlabServiceImpl implements GitlabService {
     private int getIdUser(String username) {
         HttpURLConnection c = null;
         URL url = null;
+        int status = -1;
         try {
             url = new URL("http://" + this.GITLAB_IP + "/api/v3/users?private_token=" + this.privateToken);
             c = (HttpURLConnection) url.openConnection();
             c.setRequestMethod("GET");
-        } catch (IOException e) {
-            System.out.println("Exception Connexion 1");
-        }
-
-        c.setRequestProperty("Content-length", "0");
-        c.setUseCaches(false);
-        c.setAllowUserInteraction(false);
-
-        int status = -1;
-
-        try {
-            c = (HttpURLConnection) url.openConnection();
+            c.setRequestProperty("Content-length", "0");
+            c.setUseCaches(false);
+            c.setAllowUserInteraction(false);
             c.connect();
             status = c.getResponseCode();
         } catch (IOException e) {
-            System.out.println("Exception Connexion 2");
+            logger.debug("IOException getIdUser get infos : " + username);
         }
 
         String jsonS;
@@ -160,7 +156,7 @@ public class GitlabServiceImpl implements GitlabService {
                 }
                 br.close();
             } catch (IOException e) {
-                System.out.println("Exception read");
+                logger.debug("IOException getIdUser read : " + username);
             }
 
 
@@ -181,7 +177,7 @@ public class GitlabServiceImpl implements GitlabService {
                 try {
                     node = mapper.readTree(s);
                 } catch (IOException e) {
-                    System.out.println("Exception JSON");
+                    logger.debug("IOException getIdUser JSON : " + username);
                 }
 
                 String localUsername = node.get("username").toString();
