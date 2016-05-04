@@ -25,19 +25,19 @@
                name="name"
                type="text"
                data-ng-model="createApp.applicationName"
-               data-ng-pattern="/^[a-zA-Z0-9]*$/"
                data-ng-change="createApp.isValid(createApp.applicationName, createApp.serverImageChoice.name)"
                data-ng-disabled="createApp.isPending"
                required>
 
-        <p
+        <!-- Display errors -->
+        <!--<p
           data-ng-if="createApp.createAppForm.name.$error.pattern && !createApp.createAppForm.name.$pristine"
           class="hint format error">
           Use alphanumeric character only
         </p>
 
         <p class="hint error " data-ng-if="!createApp.createAppForm.name.$pristine && createApp.message"
-           data-ng-bind="createApp.message"></p>
+           data-ng-bind="createApp.message"></p>-->
       </div>
       <div class="input-group stack">
         <div class="dropdown" dropdown="">

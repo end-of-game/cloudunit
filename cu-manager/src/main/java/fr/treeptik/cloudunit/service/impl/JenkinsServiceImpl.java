@@ -10,10 +10,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -24,34 +24,15 @@ import java.util.ArrayList;
 public class JenkinsServiceImpl implements JenkinsService {
 
     private static String JENKINS_IP = "192.168.50.4:9080";
+
+    @Value("${jenkins.rootName}")
     private static String rootName;
+
+    @Value("${jenkins.rootPassword}")
     private static String rootPassword;
 
     private final Logger logger = LoggerFactory
             .getLogger(JenkinsServiceImpl.class);
-
-    /**
-     * Get the root's private token of Gitlab for the differents methods
-     */
-    @Autowired
-    public void getRootInfos () {
-        try {
-            File file = new File("src/main/resources/application.properties");
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            this.rootName = "";
-            this.rootPassword="";
-            while ((line = br.readLine()) != null) {
-                if(line.contains("jenkins.rootName") && line.split("=").length > 1)
-                    this.rootName = line.split("=")[1];
-                if(line.contains("jenkins.rootPassword") && line.split("=").length > 1)
-                    this.rootPassword = line.split("=")[1];
-            }
-            br.close();
-        } catch (IOException e) {
-            logger.debug("Exception read getRootInfos");
-        }
-    }
 
 
     /**

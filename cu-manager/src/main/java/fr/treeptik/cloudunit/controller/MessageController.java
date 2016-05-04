@@ -68,7 +68,9 @@ public class MessageController {
         }
         // Retourne par défaut le 10 derniers messages
         User user = authentificationUtils.getAuthentificatedUser();
-        return messageService.listByApp(user, applicationName, 10);
+
+        String applicationNameLocal = applicationName.replaceAll("[^a-z]", "");
+        return messageService.listByApp(user, applicationNameLocal, 10);
     }
 
     /**
@@ -93,7 +95,9 @@ public class MessageController {
             logger.debug("nbRows = " + nbRows);
         }
         User user = authentificationUtils.getAuthentificatedUser();
-        return messageService.listByApp(user, applicationName, nbRows);
+
+        String applicationNameLocal = applicationName.replaceAll("[^a-z]", "");
+        return messageService.listByApp(user, applicationNameLocal, nbRows);
     }
 
     /**

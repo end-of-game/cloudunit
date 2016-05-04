@@ -7,11 +7,14 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.GitlabService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -24,29 +27,12 @@ import java.net.URL;
 public class GitlabServiceImpl implements GitlabService {
 
     private static String GITLAB_IP = "192.168.50.4:480";
+
+    @Value("gitlab.token")
     private static String privateToken;
 
     private final Logger logger = LoggerFactory
             .getLogger(GitlabServiceImpl.class);
-    /**
-     * Get the root's private token of Gitlab for the differents methods
-     */
-    @Autowired
-    public void getToken () {
-        try {
-            File file = new File("src/main/resources/application.properties");
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            this.privateToken = "";
-            while ((line = br.readLine()) != null) {
-                if(line.contains("gitlab.token") && line.split("=").length > 1)
-                    this.privateToken = line.split("=")[1];
-            }
-            br.close();
-        } catch (IOException e) {
-            logger.debug("Exception read getToken");
-        }
-    }
 
     /**
      * Create an user on Gitlab
