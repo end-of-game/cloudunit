@@ -70,7 +70,7 @@ public class MessageController {
         User user = authentificationUtils.getAuthentificatedUser();
 
         String applicationNameLocal = applicationName.replaceAll("[^a-z]", "");
-        return messageService.listByApp(user, applicationNameLocal, 10);
+        return messageService.listByApp(user, applicationName, 10);
     }
 
     /**

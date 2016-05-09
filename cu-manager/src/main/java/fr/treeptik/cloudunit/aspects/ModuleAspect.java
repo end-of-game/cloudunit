@@ -70,7 +70,7 @@ public class ModuleAspect
                 Application application = (Application) joinPoint.getArgs()[0];
                 module = (Module) joinPoint.getArgs()[1];
                 message = MessageUtils.writeBeforeModuleMessage(user,
-                    module.getName(), application.getName(),
+                    module.getName(), application.getDisplayName(),
                     createType);
                 logger.info(message.toString());
                 messageService.create(message);
