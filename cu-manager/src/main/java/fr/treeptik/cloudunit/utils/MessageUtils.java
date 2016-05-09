@@ -221,17 +221,17 @@ public class MessageUtils {
         switch (type) {
             case "CREATE":
                 body = user.getFirstName() + " " + user.getLastName()
-                    + " has created a new snapshot " + snapshot.getTag()
-                    + " from : " + snapshot.getApplicationName();
+                    + " has created a new snapshot " + snapshot.getDisplayTag()
+                    + " from : " + snapshot.getApplicationDisplayName();
                 break;
             case "REMOVE":
                 body = user.getFirstName() + " " + user.getLastName()
-                    + " has removed the snapshot " + snapshot.getTag();
+                    + " has removed the snapshot " + snapshot.getDisplayTag();
                 break;
             case "CLONEFROMASNAPSHOT":
                 body = user.getFirstName() + " " + user.getLastName()
                     + " has created a new application from : "
-                    + snapshot.getTag();
+                    + snapshot.getDisplayTag();
                 break;
         }
         message.setEvent(body);

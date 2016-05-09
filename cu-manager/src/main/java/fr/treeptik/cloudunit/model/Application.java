@@ -137,7 +137,6 @@ public class Application
     public void setName(String name) {
         name = name.toLowerCase();
         this.name = name.replaceAll("[^a-z]", "");
-        System.out.println("this.name = " + this.name);
     }
 
     public String getDisplayName() { return displayName; }

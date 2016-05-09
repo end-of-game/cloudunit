@@ -52,9 +52,9 @@
 
         <div data-ng-repeat="(key, value) in snapshots.list | groupBy: 'calendarDate'">
           <div ng-if="snapshots.list.length" class="cards">
-            <div ng-repeat="item in value | orderBy: '-date' | filter:snapshots.search.tag" class="card small template">
+            <div ng-repeat="item in value | orderBy: '-date' | filter:snapshots.search.displayTag" class="card small template">
               <div class="content">
-                <h3 class="title">{{item.tag}}</h3>
+                <h3 class="title">{{item.displayTag}}</h3>
                 <div class="features">
                   <p>Build from: {{item.applicationName}}</p>
                   <p>Instance: {{item.cuInstanceName}}</p>

@@ -16,32 +16,18 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
 import fr.treeptik.cloudunit.dao.ModuleConfigurationDAO;
 import fr.treeptik.cloudunit.dao.SnapshotDAO;
-import fr.treeptik.cloudunit.docker.DockerContainerJSON;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
-import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.ModuleConfiguration;
-import fr.treeptik.cloudunit.model.ModuleFactory;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Snapshot;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.SnapshotService;
+import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
@@ -51,13 +37,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 @Service
 public class SnapshotServiceImpl
@@ -146,8 +130,10 @@ public class SnapshotServiceImpl
 
         try {
             snapshot.setApplicationName(application.getName());
+            snapshot.setApplicationDisplayName(application.getDisplayName());
             snapshot.setDate(new Date());
             snapshot.setTag(tag);
+            snapshot.setDisplayTag(tag);
             snapshot.setFullTag(user.getLogin()+"-"+tag);
             snapshot.setCuInstanceName(cuInstanceName);
             snapshot.setDescription(description);
