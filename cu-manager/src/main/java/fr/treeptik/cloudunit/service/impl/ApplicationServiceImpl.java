@@ -135,6 +135,9 @@ public class ApplicationServiceImpl
                 throw new CheckException(messageSource.getMessage("app.exists",
                         null, locale));
             }
+            if(checkNameLength(application.getName())) {
+                throw new CheckException("This name has length equal to zero : " + application.getName());
+            }
             if (imageService.findByName(serverName) == null)
                 throw new CheckException(messageSource.getMessage(
                         "image.not.found", null, locale));
@@ -165,6 +168,12 @@ public class ApplicationServiceImpl
         } else {
             return true;
         }
+    }
+
+    public boolean checkNameLength(String applicationName) {
+        if(applicationName.length() == 0)
+            return true;
+        return false;
     }
 
     /**

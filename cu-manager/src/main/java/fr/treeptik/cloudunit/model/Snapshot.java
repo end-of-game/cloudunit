@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,9 @@ public class Snapshot
     public void setTag(String tag) {
         if (tag != null) {
             tag = tag.toLowerCase();
-            tag = tag.replaceAll("[^a-z]", "");
+            tag = Normalizer.normalize(tag, Normalizer.Form.NFD);
+            tag = tag.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+            tag = tag.replaceAll("[^a-z0-9]", "");
         }
         this.tag = tag;
     }
@@ -123,7 +126,9 @@ public class Snapshot
     public void setFullTag(String fullTag) {
         if (fullTag != null) {
             fullTag = fullTag.toLowerCase();
-            fullTag = fullTag.replaceAll("[^a-z-]", "");
+            fullTag = Normalizer.normalize(fullTag, Normalizer.Form.NFD);
+            fullTag = fullTag.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+            fullTag = fullTag.replaceAll("[^a-z0-9-]", "");
         }
         this.fullTag = fullTag;
     }
@@ -142,7 +147,9 @@ public class Snapshot
 
     public void setApplicationName(String applicationName) {
         applicationName = applicationName.toLowerCase();
-        this.applicationName = applicationName.replaceAll("[^a-z]", "");
+        applicationName = Normalizer.normalize(applicationName, Normalizer.Form.NFD);
+        applicationName = applicationName.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        this.applicationName = applicationName.replaceAll("[^a-z0-9]", "");
     }
 
     public String getApplicationDisplayName() { return applicationDisplayName; }

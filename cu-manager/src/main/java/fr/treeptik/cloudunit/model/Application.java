@@ -22,6 +22,7 @@ import fr.treeptik.cloudunit.utils.JsonDateSerializer;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.*;
 
 @Entity
@@ -136,7 +137,9 @@ public class Application
 
     public void setName(String name) {
         name = name.toLowerCase();
-        this.name = name.replaceAll("[^a-z]", "");
+        name = Normalizer.normalize(name, Normalizer.Form.NFD);
+        name = name.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        this.name = name.replaceAll("[^a-z0-9]", "");
     }
 
     public String getDisplayName() { return displayName; }

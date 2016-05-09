@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.nio.file.Paths;
+import java.text.Normalizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -114,6 +115,19 @@ public class SnapshotServiceImpl
         ObjectMapper objectMapper = new ObjectMapper();
 
         Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        String testTag = tag.toLowerCase();
+        testTag = Normalizer.normalize(testTag, Normalizer.Form.NFD);
+        testTag = testTag.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        testTag = testTag.replaceAll("[^a-z0-9]", "");
+
+        if(testTag.length() == 0) {
+            applicationService.setStatus(application, previousStatus);
+            authentificationUtils.allowUser(user);
+            throw new CheckException("This tag has a length equal to zero : " + tag);
+        }
+
+
         if (tag != null) { tag = tag.toLowerCase(); }
 
         if (tagExists(tag, user.getLogin())) {
