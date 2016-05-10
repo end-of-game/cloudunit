@@ -94,7 +94,7 @@
              data-ng-repeat="application in dashboard.applications | orderBy:sortorder | filter:{status: dashboard.search} track by $index">
           <div class="content">
             <h3 class="title">
-              {{application.name | lowercase}}
+              {{application.displayName}}
               <a data-ng-href="#editApplication/{{ application.name }}/overview"
                  class="edit-btn button primary pull-right"
                  ripple="">

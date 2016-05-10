@@ -172,7 +172,7 @@ public abstract class AbstractApplicationControllerTestIT {
     public void test012_FailCreateWrongNameApplication()
         throws Exception {
         logger.info("Create application with a wrong syntax name");
-        final String jsonString = "{\"applicationName\":\"" + "WRONG-NAME" + "\", \"serverName\":\"" + release + "\"}";
+        final String jsonString = "{\"applicationName\":\"" + "         " + "\", \"serverName\":\"" + release + "\"}";
         ResultActions resultats =
             this.mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());

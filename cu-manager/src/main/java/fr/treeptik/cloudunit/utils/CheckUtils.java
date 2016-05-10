@@ -17,7 +17,6 @@ package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.model.Application;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 
 import java.util.Arrays;
@@ -72,7 +71,7 @@ public class CheckUtils {
             throws CheckException {
         if (field == null
                 || field.trim().length() == 0
-                || "undefined".equals(field)
+                /*|| "undefined".equals(field)*/
                 || field.length() > size) {
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated + " : " + field);
@@ -152,9 +151,10 @@ public class CheckUtils {
 
         if (field == null
                 || field.trim().length() == 0
-                || "undefined".equals(field)
-                || field.length() > 25
-                || !StringUtils.isAlphanumeric(field)) {
+                //|| "undefined".equals(field)
+                || field.length() > 25)
+                //|| !StringUtils.isAlphanumeric(field))
+        {
 
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated);

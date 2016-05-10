@@ -17,20 +17,12 @@ package fr.treeptik.cloudunit.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.*;
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 public class Snapshot
@@ -44,6 +36,8 @@ public class Snapshot
 
     private String tag;
 
+    private String displayTag;
+
     private String fullTag;
 
     private String cuInstanceName;
@@ -52,6 +46,8 @@ public class Snapshot
     private String description;
 
     private String applicationName;
+
+    private String applicationDisplayName;
 
     private String type;
 
@@ -104,6 +100,10 @@ public class Snapshot
         return tag;
     }
 
+    public String getDisplayTag() {
+        return displayTag;
+    }
+
     @JsonIgnore
     public String getFullTag() {
         return fullTag;
@@ -112,13 +112,23 @@ public class Snapshot
     public void setTag(String tag) {
         if (tag != null) {
             tag = tag.toLowerCase();
+            tag = Normalizer.normalize(tag, Normalizer.Form.NFD);
+            tag = tag.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+            tag = tag.replaceAll("[^a-z0-9]", "");
         }
         this.tag = tag;
+    }
+
+    public void setDisplayTag(String displayTag) {
+        this.displayTag = displayTag;
     }
 
     public void setFullTag(String fullTag) {
         if (fullTag != null) {
             fullTag = fullTag.toLowerCase();
+            fullTag = Normalizer.normalize(fullTag, Normalizer.Form.NFD);
+            fullTag = fullTag.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+            fullTag = fullTag.replaceAll("[^a-z0-9-]", "");
         }
         this.fullTag = fullTag;
     }
@@ -136,8 +146,15 @@ public class Snapshot
     }
 
     public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
+        applicationName = applicationName.toLowerCase();
+        applicationName = Normalizer.normalize(applicationName, Normalizer.Form.NFD);
+        applicationName = applicationName.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        this.applicationName = applicationName.replaceAll("[^a-z0-9]", "");
     }
+
+    public String getApplicationDisplayName() { return applicationDisplayName; }
+
+    public void setApplicationDisplayName(String applicationDisplayName) { this.applicationDisplayName = applicationDisplayName; }
 
     public User getUser() {
         return user;
