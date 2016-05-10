@@ -28,3 +28,7 @@
 .page-content {
   @include clearfix();
 }
+
+.page-content.table.th, .page-content.table.td {
+  padding: 15px;
+}
