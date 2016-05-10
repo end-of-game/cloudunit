@@ -8,6 +8,7 @@ import fr.treeptik.cloudunit.service.GitlabService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -109,7 +110,7 @@ public class GitlabServiceImpl implements GitlabService {
 
             int id = getIdUser(username);
 
-            URL urlPost = new URL("http://" + this.GITLAB_IP + "/api/v3/users/" + id + "?private_token=" + this.privateToken);
+            URL urlPost = new URL(gitlabAPI + "/api/v3/users/" + id + "?private_token=" + gitlabToken);
             connPost = (HttpURLConnection) urlPost.openConnection();
             connPost.setDoOutput(true);
             connPost.setDoInput(true);
@@ -119,7 +120,6 @@ public class GitlabServiceImpl implements GitlabService {
             connPost.connect();
 
             code = HttpStatus.valueOf(connPost.getResponseCode());
-
 
         } catch (IOException e) {
             logger.debug("IOException deleteUser : " + username);
@@ -138,7 +138,7 @@ public class GitlabServiceImpl implements GitlabService {
         URL url = null;
         int status = -1;
         try {
-            url = new URL("http://" + this.GITLAB_IP + "/api/v3/users?private_token=" + this.privateToken);
+            url = new URL(gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
             c = (HttpURLConnection) url.openConnection();
             c.setRequestMethod("GET");
             c.setRequestProperty("Content-length", "0");
@@ -153,7 +153,6 @@ public class GitlabServiceImpl implements GitlabService {
         String jsonS;
         if (status == 200) {
             StringBuilder sb = new StringBuilder();
-
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
                 String line;
