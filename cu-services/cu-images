@@ -31,3 +31,5 @@ cloudunit/mongo-2-6 images/modules/mongo-2-6
 
 cloudunit/redis-2-8 images/modules/redis-2-8
 cloudunit/redis-3-0 images/modules/redis-3-0
+
+cloudunit/apache-2-2 images/modules/apache-2-2

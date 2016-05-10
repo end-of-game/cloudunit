@@ -53,6 +53,8 @@ public class ModuleFactory {
             result = new RedisModuleAction(module);
         } else if (imageName.toLowerCase().contains("mongo")) {
             result = new MongoModuleAction(module);
+        } else if (imageName.toLowerCase().contains("apache")) {
+            result = new ApacheModuleAction(module);
         }
 
         return result;

@@ -36,6 +36,7 @@ public class ExplorerFactory {
         ExplorerFactory.filters.put("jboss", new JBossFilter());
         ExplorerFactory.filters.put("fatjar", new FatJarFilter());
         ExplorerFactory.filters.put("redis", new RedisFilter());
+        ExplorerFactory.filters.put("apache", new ApacheFilter());
     }
 
     private ExplorerFactory() {
@@ -72,6 +73,9 @@ public class ExplorerFactory {
         }
         if (name.contains("fatjar")) {
             name = "fatjar";
+        }
+        if (name.contains("apache")) {
+            name = "apache";
         }
         return filters.get(name);
     }

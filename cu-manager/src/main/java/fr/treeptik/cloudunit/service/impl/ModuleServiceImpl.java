@@ -478,7 +478,9 @@ public class ModuleServiceImpl
         mapConfigEmail.put("emailType", "moduleInformations");
 
         try {
-            emailUtils.sendEmail(mapConfigEmail);
+            if ("apache".equalsIgnoreCase(module.getName())==false) {
+                emailUtils.sendEmail(mapConfigEmail);
+            }
         } catch (MessagingException e) {
             logger.error("Error while sending email " + e);
             // On ne bloque pas l'appli pour une erreur d'email
