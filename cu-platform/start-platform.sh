@@ -14,29 +14,14 @@
 #!/bin/bash
 
 #Start containers in the right sequence
-
 source $HOME/.profile
-
-FROM_RESET=$1
-DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 
 export CU_SUB_DOMAIN=.$(hostname)
 
-if [ "$PROFILE" == "dev" ]; then
-    echo -e "\nVous utilisez un profile de $PROFILE.\n"
-    sed 's/#TO_UNCOMMENT_IF_PROFILE_DEV//' docker-compose.template > docker-compose.yml
-elif [ "$PROFILE" == "prod" ]; then
-    echo -e "\nVous utilisez un profile de $PROFILE.\n"
-    cp docker-compose.template docker-compose.yml
-else
-    echo -e "\nERREUR: RENSEIGNEZ PROFILE=dev/prod DANS .profile !!\n"
-fi
+DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 
 docker-compose up -d dnsdock
-
-# Attente du démarrage de dnsdock
 echo -e "\n+++ Dns test +++\n"
-
 until [ ! $(eval "$DNS_CMD") -eq "0" ];
 do
     echo -e "\nWaiting for dnsdock : $DNS_CMD \n";
@@ -46,15 +31,13 @@ done
 docker-compose up -d mysqldata
 docker-compose up -d mysql
 
-if [ $PROFILE == "dev" ]; then
-    docker-compose up -d testmysqldata
-    docker-compose up -d testmysql
-fi
+docker-compose up -d testmysqldata
+docker-compose up -d testmysql
 
 docker-compose up -d hipache
 docker-compose up -d registry
 
-# Vérification du bon démarrage de dnsdock
+# DNS DOCK
 echo -e "\n+++ Dns test inside a container +++\n"
 
 RETURN=1
@@ -85,20 +68,7 @@ do
     sleep 1
 done
 
-if [ "$FROM_RESET" == "reset" ]; then
-echo "cu-monitor is not launched -- reset mode"
-#    else
-#	/home/$USER/cloudunit/monitoring_scripts/cu-monitor.sh
-fi
-
-if [ $PROFILE == "prod" ]; then
-    if [ "$CU_KVM" == "true" ]; then
-        sed 's/#TO_UNCOMMENT_IF_CU_KVM_TRUE//' docker-compose.template > docker-compose.yml
-    fi
-    docker-compose up -d tomcat
-    docker-compose up -d nginx
-fi
-
 docker-compose up -d cadvisor
+
 
 

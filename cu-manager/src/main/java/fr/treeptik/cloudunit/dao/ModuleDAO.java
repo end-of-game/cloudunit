@@ -66,17 +66,4 @@ public interface ModuleDAO
                            @Param("cuInstanceName") String cuInstanceName)
         throws DataAccessException;
 
-    @Query("select m from Module m " +
-        "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
-        "left join fetch m.image " +
-        "where m.application.name=:applicationName " +
-        "and m.image.name='git' " +
-        "and m.application.user.login=:login " +
-        "and m.application.cuInstanceName=:cuInstanceName")
-    Module findGitModule(@Param("login") String userLogin,
-                         @Param("applicationName") String applicationName,
-                         @Param("cuInstanceName") String cuInstanceName)
-        throws DataAccessException;
-
 }

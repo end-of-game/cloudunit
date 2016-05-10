@@ -44,14 +44,14 @@
           <label for="name">App Server</label>
           <a class="dropdown-toggle"
              dropdown-toggle=""
-             data-ng_bind="createApp.serverImageChoice.name"
+             data-ng_bind="createApp.serverImageChoice.displayName"
              data-ng-disabled="createApp.isPending">
           </a>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
             <li data-ng-repeat="serverImage in createApp.serverImages">
               <a ng-href=""
                  data-ng-click="createApp.serverImageChoice = serverImage; createApp.isValid(createApp.applicationName, createApp.serverImageChoice.name)"
-                 data-ng-bind="serverImage.name">
+                 data-ng-bind="serverImage.displayName">
               </a>
             </li>
           </ul>

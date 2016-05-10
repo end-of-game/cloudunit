@@ -321,42 +321,6 @@ public class UserServiceImpl
         }
     }
 
-    @Transactional
-    @Override
-    public void authentificationGit(User user, String rsa_pub_key)
-            throws ServiceException {
-        Map<String, String> configShell = new HashMap<>();
-        user = this.findById(user.getId());
-        List<Application> listApplications = user.getApplications();
-        try {
-
-            for (Application application : listApplications) {
-                for (Server server : application.getServers()) {
-                    configShell.put("port", server.getSshPort());
-                    configShell.put("dockerManagerAddress", server
-                            .getApplication().getManagerIp());
-                    configShell.put("password", server.getApplication()
-                            .getUser().getPassword());
-
-                    /**
-                     * Execute a script in server container to copy id-rsa.pub
-                     * of user, so he can use git without write password
-                     */
-                    String command = "sh /cloudunit/scripts/authentificationGit.sh "
-                            + "\"" + rsa_pub_key + "\"";
-                    logger.debug(command);
-
-                    shellUtils.executeShell(command, configShell);
-                }
-            }
-
-        } catch (Exception e) {
-            logger.error("Git authentification - Error execute ssh Request - "
-                    + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-    }
-
     @Override
     public void changeEmail(User user, String newEmail)
             throws ServiceException {

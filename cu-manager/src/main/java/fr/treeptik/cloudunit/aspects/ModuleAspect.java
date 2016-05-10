@@ -69,18 +69,16 @@ public class ModuleAspect
             case initModule:
                 Application application = (Application) joinPoint.getArgs()[0];
                 module = (Module) joinPoint.getArgs()[1];
-                if (!module.getName().contains("git")) {
-                    message = MessageUtils.writeBeforeModuleMessage(user,
-                        module.getName(), application.getName(),
-                        createType);
-                    logger.info(message.toString());
-                    messageService.create(message);
-                }
+                message = MessageUtils.writeBeforeModuleMessage(user,
+                    module.getName(), application.getName(),
+                    createType);
+                logger.info(message.toString());
+                messageService.create(message);
                 break;
 
             case deleteType:
                 module = (Module) joinPoint.getArgs()[2];
-                if (module != null && !module.getName().contains("git")) {
+                if (module != null) {
                     message = MessageUtils
                         .writeBeforeModuleMessage(user, module.getName(),
                             ((User) joinPoint.getArgs()[1]).getLogin(),

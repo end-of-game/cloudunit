@@ -180,7 +180,7 @@ public class EmailUtils {
             // For Spring vagrant profil, we redirect all emails
             // If value is not set, we use the classic configuration
             if (applicationContext.getEnvironment().acceptsProfiles("vagrant")
-                && emailForceRedirect.trim().length() > 0) {
+                    && emailForceRedirect.trim().length() > 0) {
                 message.setRecipients(Message.RecipientType.TO, emailForceRedirect);
             } else {
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(user.getEmail()));
@@ -190,12 +190,14 @@ public class EmailUtils {
 
             Transport.send(message);
 
+            logger.info("Email of " + emailType + " send to " + user.getEmail());
+
+        } catch(AuthenticationFailedException auex) {
+            logger.error("Email of " + emailType + " send to " + user.getEmail(), auex);
         } catch (MessagingException e) {
             logger.error("Error sendEmail method - " + e);
             e.printStackTrace();
         }
-        logger.info("Email of " + emailType + " send to " + user.getEmail());
-
     }
 
     private Map<String, Object> constructModuleInformationsEmail(
@@ -242,7 +244,7 @@ public class EmailUtils {
                 template = configuration
                     .getTemplate("emailModuleInformations-mysql.ftl");
 
-            } else if (module.getName().contains("postgres")) {
+            } else if (module.getName().contains("postgres") || module.getName().contains("postgis")) {
                 mapVariables.put("pgDatabase", moduleInfos.get("database"));
                 mapVariables.put("pgAlias", moduleInfos.get("linkAlias"));
                 mapVariables.put("pgPort", module.getListPorts().get("pgPort"));

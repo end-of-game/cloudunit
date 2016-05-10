@@ -142,7 +142,6 @@ public class GitlabController {
             ((ObjectNode) rootNode).put("enable_ssl_verification", true);
             String jsonString = mapper.writeValueAsString(rootNode);
             logger.debug(jsonString);
-            System.out.println(jsonString);
 
             wr = new DataOutputStream(connPost.getOutputStream());
             wr.writeBytes(jsonString);

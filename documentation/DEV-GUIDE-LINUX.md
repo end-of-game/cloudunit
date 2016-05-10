@@ -32,15 +32,18 @@ cloudunit/cu-plaform  : Shell scripts for administration
 cloudunit/cu-services : Docker images
 ```
 
-## Auto Installation
+## Installation 
 
+You can use script to autoinstall step 1 to 5 :
+
+For Ubuntu 15.10
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-15.10.sh | bash
 ```
-
-If you met problem or anything else, please try the manual installation
-
-## Manual Installation 
+For Ubuntu 16.04
+```
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-16.04.sh | bash
+```
 
 ### Step 1 - Local DNS
 
@@ -85,6 +88,7 @@ Installation Node 5.x :
 ```
 sudo npm install -g grunt grunt-cli bower 
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
+cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
 ```
 
 ### Step 5 - How to build the vagrant box
@@ -92,40 +96,58 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
 Warning because this step could need lot of times !
 
 ```
-cd $HOME/cloudunit/cu-vagrant 
-vagrant up
-vagrant provision 
+$ cd $HOME/cloudunit/cu-vagrant 
+$ vagrant up
+$ vagrant provision
 ```
 
-## First steps with CloudUnit
+### Step 6 - How to start the application
 
-1 - Start the vagrantbox and run Docker **into Vagrant**
+1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-cd $HOME/cloudunit/cu-vagrant 
-vagrant up (if not running)
-vagrant ssh
+$ cd $HOME/cloudunit/cu-vagrant 
+$ vagrant up (if not running)
+$ vagrant ssh 
 cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 
-2 - Start the Java Backend from **your Linux Destkop**
+2 - Start the Java Backend from Linux
 
 ```
-cd $HOME/cloudunit/cu-manager
-mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+$ cd $HOME/cloudunit/cu-manager
+$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
-3 - Run the UI for development (http://0.0.0.0:9000) from **your Linux Destkop**
+3 - Run the UI for development (http://0.0.0.0:9000) from Linux
 
 ```
 $ cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+```
+You can use default password and login
+```
+login: johndoe
+password: abc2015
 ```
 
 # IDE CONFIGURATION
 
 ## ECLIPSE 
 
-TODO
+In your favorite IDE, select Import in File menu then **Existing Maven project**.
+Into **root** directory, select **cu-manager** and Finish.
+When you have **Setup Maven plugins connectors** window, click on Finish button.
+
+Select **pom.xml** in the package explorer and right click to select.
+
+
+![Architecture Dev](img/eclipse_root.png "Architecture Development")
+
+
+You can run CloudUnit with a Maven task easily as :
+    
+![Architecture Dev](img/eclipse_conf.png "Architecture Development")
+
 
 ## INTELLIJ
 
@@ -158,12 +180,7 @@ cloudunit/cu-platform/reset-all.sh -y
 Update your sources, build the images and reninit the database :
 
 ```
-$ vagrant ssh 
+$ vagrant ssh dev
 $ cloudunit/cu-services/build-services.sh
 $ cloudunit/cu-platform/reset-all.sh -y
 ```
-
-
-
-
-

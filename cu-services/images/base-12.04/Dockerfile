@@ -15,6 +15,7 @@ RUN mkdir -p /cloudunit/appconf
 RUN mkdir -p /cloudunit/appconf/logs
 RUN mkdir -p /cloudunit/software
 RUN mkdir -p /cloudunit/appconf/hooks/
+RUN mkdir -p /cloudunit/backup
 RUN mkdir -p /var/run/sshd
 
 # VARIABLES ENVIRONNEMENTS

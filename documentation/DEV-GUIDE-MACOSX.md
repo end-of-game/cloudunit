@@ -81,9 +81,10 @@ Add the following line
 nameserver 127.0.0.1
 ```
 
-Finally, start dnsmasq:
+Make a link with LaunchDaemons directory and then start dnsmasq
 ```
-$ sudo launchctl start homebrew.mxcl.dnsmasq
+sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons
+sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
 ```
 For more information in this environment, please read this [article](http://passingcuriosity.com/2013/dnsmasq-dev-osx/)
 
@@ -96,14 +97,13 @@ Mac Users are invited to follow the instructions given by the [npm website](http
 Follow these instructions
 
 ```
-cd $HOME && git clone https://github.com/Treeptik/CloudUnit.git
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install grunt -g
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install grunt-cli -g
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install bower -g
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo npm install -g n
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo stable n
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && bower install
-cd $HOME/CloudUnit/cu-manager/src/main/webapp && sudo gem install compass
+cd $HOME && git clone https://github.com/Treeptik/cloudUnit.git
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install grunt -g
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install grunt-cli -g
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install bower -g
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install -g n
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo n stable
+cd $HOME/cloudUnit/cu-manager/src/main/webapp && bower install
 ```
 
 ## How to install Vagrant plugins
@@ -118,7 +118,7 @@ vagrant plugin install vagrant-vbguest
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/CloudUnit 
+$ cd $HOME/cloudUnit 
 $ vagrant up
 $ vagrant ssh 
 cd cloudunit/cu-platform && ./reset-all.sh -y
@@ -127,20 +127,35 @@ cd cloudunit/cu-platform && ./reset-all.sh -y
 2 - Run the UI for development (http://0.0.0.0:9000) from Mac
 
 ```
-$ cd $HOME/CloudUnit/cu-manager/src/main/webapp && grunt serve
+$ cd $HOME/cloudUnit/cu-manager/src/main/webapp && grunt serve
+```
+>! **Issue** if you have the following issue
+```
+grunt-cli: The grunt command line interface (v1.2.0)
+Fatal error: Unable to find local grunt.
+```
+Run the following command :
+```
+sudo npm update
 ```
 
 3 - Start the Java Backend from Mac
 
 ```
-$ cd $HOME/CloudUnit/cu-manager
+$ cd $HOME/cloudUnit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+```
+
+You can use default password and login
+```
+login: johndoe
+password: abc2015
 ```
 
 ## How to reset Environment Developpment
 
 ```
-$ cd $HOME/CloudUnit
+$ cd $HOME/cloudUnit
 $ vagrant ssh dev
 $ cloudunit/cu-platform/reset-all.sh -y
 ```

@@ -25,6 +25,7 @@ sudo apt-get update
 sudo apt-get install -y apt-transport-https
 sudo apt-get install -y curl
 sudo apt-get install -y vim
+sudo apt-get install -y haveged
 #sudo apt-get install -y golang
 
 #==========================================================#
@@ -50,6 +51,7 @@ sudo apt-get update
 sudo apt-get install -y linux-image-extra-$(uname -r)
 sudo apt-get install -y lxc-docker-1.6.2 1.6.2
 sudo apt-get install -y mysql-client
+
 #sudo apt-mark hold lxc-docker
 sudo usermod -aG docker vagrant
 

@@ -11,4 +11,3 @@ mysqldata
 /tomcat/apache-tomcat-7.0.55.tar.gz
 /nginx/cloudunit.io/cloudunit.io-bundle.crt
 /nginx/cloudunit.io/cloudunit.io.pem
-docker-compose.yml
