@@ -81,7 +81,7 @@
             .catch(error);
 
           function success(messages) {
-          console.log(messages);
+            console.log(messages);
             $scope.messages = messages;
             return vm.messages;
           }

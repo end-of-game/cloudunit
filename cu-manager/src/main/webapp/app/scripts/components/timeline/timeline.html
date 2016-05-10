@@ -47,18 +47,16 @@
         <p class="hint" ng-if="!messages.length">No recent event</p>
       </div>
 
-      <div  class="application card small" data-ng-repeat="message in messages track by message.id">
-        <div class="content">
-          <h2 class="title large">
+        <div>
+          <h2>
             {{ message.event }}
           </h2>
-          <div class="features">
-            <p class="subhead" style="position:absolute; bottom:10px;">
+          <div >
+            <p style="position:absolute; bottom:10px;">
               {{ message.dateAsString }}
             </p>
           </div>
         </div>
-      </div>
 
 
 
