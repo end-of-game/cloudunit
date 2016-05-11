@@ -12,8 +12,6 @@
   ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
   ~     For any questions, contact us : contact@treeptik.fr
   -->
-
-{{ dashboard }}
 <section id="timelines" class="clearfix">
   <header>
     <div class="page-header">
@@ -33,15 +31,13 @@
     </div>
   </header>
 
-  <!--{{ messages }} -->
-
   <div class="page-content">
     <div class="page">
       <div class="subheader">
         <div class="subheader-form" ng-if="messages.length">
           <div class="input-group inline">
-            <span class="label">Search task by application: </span>
-            <input type="text" ng-model="timelines.search.tag" class="filter-input ng-pristine ng-untouched ng-valid">
+            <span class="label">Search task by user: </span>
+            <input type="text" class="filter-input ng-pristine ng-untouched ng-valid">
           </div>
         </div>
         <p class="hint" ng-if="!messages.length">No recent event</p>
@@ -49,9 +45,9 @@
 
       <table>
           <tr data-ng-repeat="message in messages">
-              <th><h3>{{ message.applicationName }}</h3></th>
-              <td>{{ message.dateAsString }}</td>
-              <td>{{ message.event }}</td>
+              <th class="mess"><h3>{{ message.applicationName }}</h3></th>
+              <td class="mess">{{ message.dateAsString }}</td>
+              <td class="mess">{{ message.event }}</td>
           </tr>
       </table>
     </div>

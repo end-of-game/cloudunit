@@ -21,7 +21,7 @@ angular.module('webuiApp.timelines', [])
     function ($stateProvider) {
       $stateProvider
         .state('timelines', {
-          url: '/timelines',
+          url: '/messages',
           template: '<timelines></timelines>',
           data: {
             isFree: false
