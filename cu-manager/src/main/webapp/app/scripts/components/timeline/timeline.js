@@ -76,7 +76,7 @@
         }
 
         function updateMessages() {
-          FeedService.listMessages()
+          FeedService.listMessagesFirstRows()
             .then(success)
             .catch(error);
 

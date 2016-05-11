@@ -41,6 +41,9 @@ public interface MessageService {
     List<Message> listByUser(User user, int index)
         throws ServiceException;
 
+    List<Message> listByUserNoLimitRows(User user)
+            throws ServiceException;
+
     @Cacheable(value = "messageFindCache", key = "{#user.login, #applicationName}")
     List<Message> listByApp(User user, String applicationName, int index)
         throws ServiceException;

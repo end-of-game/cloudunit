@@ -26,14 +26,22 @@
 
     return {
       listMessages: listMessages,
+      listMessagesFirstRows: listMessagesFirstRows,
       listMessagesForCurrentApplication: listMessagesForCurrentApplication
     };
 
 
     function listMessages() {
+      console.log('ListMessages')
       var logs = $resource('messages/rows/10');
       return logs.query().$promise;
     }
+
+    function listMessagesFirstRows() {
+        console.log('ListMessagesFirstRows')
+        var logs = $resource('messages/rows');
+        return logs.query().$promise;
+     }
 
     // Liste de toutes les images qui sont activés quelque soit leur type
     function listMessagesForCurrentApplication(application) {

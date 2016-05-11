@@ -136,4 +136,25 @@ public class MessageController {
             authentificationUtils.getAuthentificatedUser(), nbRows);
     }
 
+    /**
+     * Retourne tous les messages pour un utilisateur quelque soit son
+     * application
+     *
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping(value = "/rows", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    List<Message> listMessagesFirstRows()
+            throws ServiceException,
+            CheckException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("nbRows:" + 500);
+        }
+        return messageService.listByUserNoLimitRows(
+                authentificationUtils.getAuthentificatedUser());
+    }
+
 }
