@@ -81,7 +81,6 @@ public class MessageServiceImpl
     @Override
     public List<Message> listByUserNoLimitRows(User user)
             throws ServiceException {
-        System.out.println("ListByUserNoPageable");
         try {
             Pageable pageable = new PageRequest(0, 500, sortByLastNameAsc());
             Page<Message> requestedPage = messageDAO.listByUserAndCuInstance(user, cuInstanceName, pageable);

@@ -54,8 +54,7 @@
         currentApp = $stateParams.name;
         vm = this;
 
-        vm.messages = {};
-
+        vm.keyword = '';
 
         init();
         updateMessages();
@@ -114,6 +113,8 @@
             }
           }
         }
+
+
   }
 }) ();
 

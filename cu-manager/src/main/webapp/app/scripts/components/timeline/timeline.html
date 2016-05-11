@@ -17,7 +17,7 @@
     <div class="page-header">
       <div class="page-title">
         <h2 class="title">
-          Browse app templates
+          Tasks timeline
         </h2>
       </div>
       <div class="alert alert-danger" data-ng-show="timeline.errorMsg">
@@ -33,27 +33,29 @@
 
   <div class="page-content">
     <div class="page">
-      <div class="subheader">
-        <div class="subheader-form" ng-if="messages.length">
+
+      <div class = "subheader">
+        <div class="subheader-form" ng-if="!messages.length">
           <div class="input-group inline">
-            <span class="label">Search task by user: </span>
-            <input type="text" class="filter-input ng-pristine ng-untouched ng-valid">
+            <span class="label">No recent event</span>
           </div>
         </div>
-        <p class="hint" ng-if="!messages.length">No recent event</p>
+        <div class="subheader-form" ng-if="messages.length">
+          <div class="input-group inline">
+            <span class="label">Search task by keyword: </span>
+            <input type="search" ng-model="timeline.keyword">
+          </div>
+        </div>
       </div>
 
       <table>
-          <tr data-ng-repeat="message in messages">
-              <th class="mess"><h3>{{ message.applicationName }}</h3></th>
-              <td class="mess">{{ message.dateAsString }}</td>
-              <td class="mess">{{ message.event }}</td>
+          <tr data-ng-repeat="message in messages | filter:{event:timeline.keyword}">
+            <th class="mess"><h3>{{ message.applicationName }}</h3></th>
+            <td class="mess">{{ message.dateAsString }}</td>
+            <td class="mess">{{ message.event }}</td>
           </tr>
       </table>
+
     </div>
   </div>
 </section>
-
-
-
-
