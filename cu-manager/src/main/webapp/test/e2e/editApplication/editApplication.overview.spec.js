@@ -24,7 +24,6 @@ var OverviewSection = function () {
   this.serverStatus = element(by.binding('overview.app.status'));
   this.creationDate = element(by.id('creation-date'));
   this.serverName = element(by.id('server'));
-  this.gitAddress = element(by.id('git-address'));
   this.jvmMemory = element(by.id('jvm-memory'));
   this.jvmOption = element(by.id('jvm-options'));
   this.jvmRelease = element(by.id('jvm-release'));
@@ -60,7 +59,6 @@ login(browser.params.loginAdmin);
 
       expect(overview.creationDate.getAttribute('value')).not.toEqual('');
       expect(overview.serverName.getAttribute('value')).not.toEqual('');
-      expect(overview.gitAddress.getAttribute('value')).not.toEqual('');
       expect(overview.jvmMemory.getAttribute('value')).not.toEqual('');
       expect(overview.jvmRelease.getAttribute('value')).not.toEqual('');
       expect(overview.serverAdminLink.getAttribute('value')).not.toEqual('');
@@ -69,7 +67,7 @@ login(browser.params.loginAdmin);
 
   describe('toggle server', function () {
     it('should stop server', function () {
-            browser.get('/#/editApplication/testOverview/overview');
+      browser.get('/#/editApplication/testOverview/overview');
       overview.serverBtn.click();
       
       /*
