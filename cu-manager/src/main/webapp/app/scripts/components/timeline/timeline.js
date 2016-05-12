@@ -54,7 +54,9 @@
         currentApp = $stateParams.name;
         vm = this;
 
-        vm.keyword = '';
+        vm.event = '';
+        vm.date = '';
+        vm.applicationName = '';
 
         init();
         updateMessages();

@@ -41,15 +41,28 @@
           </div>
         </div>
         <div class="subheader-form" ng-if="messages.length">
-          <div class="input-group inline">
+          <div class="input-group">
             <span class="label">Search task by keyword: </span>
-            <input type="search" ng-model="timeline.keyword">
+            <input type="search" ng-model="timeline.event">
           </div>
+          <br>
+          <div class="input-group">
+            <span class="label">Search task by date: </span>
+            <input type="search" ng-model="timeline.date">
+          </div>
+          <br>
+          <div class="input-group">
+            <span class="label">Search task by application: </span>
+            <input type="search" ng-model="timeline.applicationName">
+          </div>
+          <br>
         </div>
       </div>
 
+      <br><br>
+
       <table>
-          <tr data-ng-repeat="message in messages | filter:{event:timeline.keyword}">
+          <tr data-ng-repeat="message in messages | filter:{event:timeline.event, dateAsString:timeline.date, applicationName:timeline.applicationName}">
             <th class="mess"><h3>{{ message.applicationName }}</h3></th>
             <td class="mess">{{ message.dateAsString }}</td>
             <td class="mess">{{ message.event }}</td>
