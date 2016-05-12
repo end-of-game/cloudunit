@@ -51,9 +51,9 @@ exports.config = {
   },
   suites: {
     login: '../test/e2e/login/login.spec.js',
-    routeAdmin: '../test/e2e/routes/role-admin.spec.js',
-    routeUser: '../test/e2e/routes/role-user.spec.js',
-    dashboard: '../test/e2e/dashboard/dashboard.spec.js',
+    //routeAdmin: '../test/e2e/routes/role-admin.spec.js',
+    //routeUser: '../test/e2e/routes/role-user.spec.js',
+    //dashboard: '../test/e2e/dashboard/dashboard.spec.js',
     editApplication: '../test/e2e/editApplication/editApplication.spec.js',
     editApplicationOverview: '../test/e2e/editApplication/editApplication.overview.spec.js',
     editApplicationAlias: '../test/e2e/editApplication/editApplication.alias.spec.js',
