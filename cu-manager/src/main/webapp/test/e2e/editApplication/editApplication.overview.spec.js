@@ -98,6 +98,7 @@ login(browser.params.loginAdmin);
       // reset test environment
       browser.get('/#/dashboard');
       dashboard.deleteApp('testoverview');
+      browser.sleep(2000);
       logout();
 
     })

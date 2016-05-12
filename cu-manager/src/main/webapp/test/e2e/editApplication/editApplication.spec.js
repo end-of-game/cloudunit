@@ -108,7 +108,6 @@ describe('E2E: EditApplication', function () {
           browser.driver.sleep(1000);
           //expect(editApp.deployContent.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/deploy');
-
         });
       });
 
@@ -118,7 +117,6 @@ describe('E2E: EditApplication', function () {
           browser.driver.sleep(1000);
           //expect(editApp.explorerContent.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/explorer');
-
         });
       });
 
@@ -147,7 +145,6 @@ describe('E2E: EditApplication', function () {
           //expect(editApp.snapshotContent.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/snapshot');
           browser.driver.sleep(1000);
-          
         });
       });
 
@@ -158,7 +155,6 @@ describe('E2E: EditApplication', function () {
           //expect(editApp.settingsContent.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/settings');
           browser.driver.sleep(1000);
-          
         });
       });
     })
@@ -170,7 +166,7 @@ describe('E2E: EditApplication', function () {
         browser.get('/#/dashboard');
         browser.driver.sleep(1000);
         dashboard.deleteApp('testapp');
-        browser.driver.sleep(10000);
+        browser.driver.sleep(5000);
         expect(element(by.id('application-testapp')).isPresent()).toBeFalsy();
         logout();
       });

@@ -74,7 +74,7 @@ exports.config = {
     // If true, include stack traces in failures.
     includeStackTrace: true,
     // Default time to wait in ms before a test fails.
-    defaultTimeoutInterval: 30000
+    defaultTimeoutInterval: 60000
   },
   onPrepare: function () {
     global.dvr = browser.driver;
