@@ -1,5 +1,5 @@
 # Base Dockerfile for all TOMCAT IMAGES
-FROM cloudunit/base-12.04
+FROM cloudunit/base-14.04
 
 # AJOUT DE LA VERSION DE TOMCAT
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/tomcat-appconf8.tar.gz -O /tmp/tomcat-appconf8.tar.gz \

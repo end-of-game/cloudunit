@@ -6,7 +6,7 @@ WAITFOR=20
 count=0
 RETURN=1
 
-kill -s SIGTERM $(pidof httpd)
+kill -s SIGTERM $(pidof apache2)
 
 until [ "$RETURN" -eq "1" ] || [ $count -gt $WAITFOR ]
 do

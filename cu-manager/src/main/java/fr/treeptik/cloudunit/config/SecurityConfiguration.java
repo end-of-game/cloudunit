@@ -153,13 +153,13 @@ public class SecurityConfiguration
     }
 
     /**
-     * Protection CSRF is critical for production env and vagrant usecases
+     * Protection CSRF is critical for production env only
      *
      * @param http
      * @throws Exception
      */
 
-    @Profile({"production", "vagrant"})
+    @Profile({"production"})
     private void activateProtectionCRSF(HttpSecurity http)
         throws Exception {
         // CSRF protection

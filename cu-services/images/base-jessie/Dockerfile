@@ -16,6 +16,7 @@ RUN mkdir -p /cloudunit/appconf/logs
 RUN mkdir -p /cloudunit/software
 RUN mkdir -p /cloudunit/appconf/hooks/
 RUN mkdir -p /cloudunit/backup
+RUN mkdir -p /cloudunit/shared
 RUN mkdir -p /var/run/sshd
 
 # VARIABLES ENVIRONNEMENTS
@@ -24,6 +25,7 @@ ENV CU_JAVA /cloudunit/java
 ENV CU_SCRIPTS /cloudunit/scripts
 ENV CU_USER_HOME /cloudunit/
 ENV CU_HOOKS /cloudunit/appconf/hooks
+ENV CU_SHARED /cloudunit/shared
 
 COPY hooks /cloudunit/appconf/hooks
 RUN chmod a+x /cloudunit/appconf/hooks/*
@@ -31,6 +33,7 @@ RUN chmod a+x /cloudunit/appconf/hooks/*
 LABEL origin cloudunit
 
 RUN echo -n "CU_JAVA=$CU_JAVA\nCU_SCRIPTS=$CU_SCRIPTS\nCU_USER_HOME=$CU_USER_HOME\nCU_LOGS=$CU_LOGS\nCU_HOOKS=$CU_HOOKS\n" >> /etc/environment
+RUN sed -i 's/without-password/yes/g' /etc/ssh/sshd_config
 
 RUN apt-get install -y wget
 

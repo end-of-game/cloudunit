@@ -60,6 +60,8 @@ public class ServerFactory {
             result = new JBossAction(server);
         } else if (imageName.toLowerCase().contains("fatjar")) {
             result = new FatJarAction(server);
+        } else if (imageName.toLowerCase().contains("apache")) {
+            result = new ApacheAction(server);
         }
         return result;
 

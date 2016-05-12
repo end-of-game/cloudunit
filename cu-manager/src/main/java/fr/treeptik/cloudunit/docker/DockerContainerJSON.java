@@ -609,6 +609,8 @@ public class DockerContainerJSON {
                 {
                     add("/etc/localtime:/etc/localtime:ro");
                     add("/etc/timezone:/etc/timezone:ro");
+                    //add("/home/vagrant/shared:/cloudunit/shared");
+                    add("/cloudunit/shared:/home/vagrant/shared");
                 }
             };
 

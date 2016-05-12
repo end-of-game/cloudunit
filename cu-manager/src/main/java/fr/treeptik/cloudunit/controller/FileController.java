@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.HttpErrorServer;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -29,6 +30,7 @@ import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -139,28 +141,27 @@ public class FileController {
         applicationService.setStatus(application, Status.PENDING);
 
         if (application != null) {
-            File file = File.createTempFile("upload-",
-                FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
+            File file = File.createTempFile("upload-", FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
+            //File file = new File(fileUpload.getOriginalFilename());
             fileUpload.transferTo(file);
-
             try {
                 fileService.sendFileToContainer(applicationName, containerId,
                     file, fileUpload.getOriginalFilename(), path);
-
             } catch (ServiceException e) {
-                logger.error("Error during file upload : " + file);
-                logger.error("containerId : " + containerId);
-                logger.error("applicationName : " + applicationName);
-
+                StringBuilder msgError = new StringBuilder();
+                msgError.append("Error during file upload : " + file);
+                msgError.append("containerId : " + containerId);
+                msgError.append("applicationName : " + applicationName);
+                msgError.append(e.getMessage());
+                return new HttpErrorServer(msgError.toString());
             } finally {
                 // in all case, the error during file upload cannot be critical.
                 // We prefer to set the application in started mode
                 applicationService.setStatus(application, Status.START);
+                if (file != null) { file.delete(); }
             }
         }
-
         return new HttpOk();
-
     }
 
     /**
@@ -254,6 +255,8 @@ public class FileController {
         InputStream inputStream = new FileInputStream(file); //load the file
         IOUtils.copy(inputStream, response.getOutputStream());
         response.flushBuffer();
+
+        file.delete();
 
     }
 

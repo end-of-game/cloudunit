@@ -180,9 +180,11 @@ public class ServerServiceImpl
 
         String imagePath = server.getImage().getPath() + tagName;
         logger.debug("imagePath:" + imagePath);
+        Map<String, String> sharedDir = new HashMap<>();
+        sharedDir.put("/home/vagrant/shared/dir1", "/cloudunit/shared");
 
         List<String> volumesFrom = new ArrayList<>();
-        if (!server.getImage().getName().contains("fatjar")) {
+        if (!server.getImage().getName().contains("fatjar") && !server.getImage().getName().startsWith("apache")) {
             volumesFrom.add(server.getImage().getName());
         }
         volumesFrom.add("java");

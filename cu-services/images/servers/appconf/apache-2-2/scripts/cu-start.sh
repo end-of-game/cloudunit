@@ -4,7 +4,7 @@ WAITFOR=20
 count=0
 RETURN=1
 
-httpd-background
+service apache2 start
 
 until [ "$RETURN" -eq "0" ] || [ $count -gt $WAITFOR ]
 do
