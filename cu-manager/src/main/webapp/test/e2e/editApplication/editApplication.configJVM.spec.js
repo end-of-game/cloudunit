@@ -23,65 +23,71 @@ var ConfigJVMSection = function () {
   this.setOption = function (option) {
     this.optionInput.sendKeys(option);
   }
-};
 
+  this.selectedMemory = element(by.id('memory-2048'));
+  this.labelMemory = $('label[for="memory-2048"]');
+  this.lastRelease = element.all(by.repeater('jvmReleases in configjvm.jvmReleases')).last();
+  this.lastReleaseRadioElement = element.all(by.repeater('jvmReleases in configjvm.jvmReleases')).last().element(by.css('input[type="radio"]'));
+};
 
 describe('E2E: Edit Application config JVM', function () {
   "use strict";
 
-  var ptor, configJVM, editApp, dashboard;
+  var configJVM, editApp, dashboard, lastReleaseValue;
 
   login(browser.params.loginAdmin);
 
   beforeEach(function () {
-    ptor = protractor.getInstance();
-    ptor.ignoreSynchronization = true;
     configJVM = new ConfigJVMSection();
     editApp = new EditApplicationPage();
     dashboard = new DashboardPage();
   });
 
-  it('should have a default value', function () {
+  it('should display the config JVM card in settings url', function () {
+    // set test environment
     dashboard.createApp('testJVM', 1);
-    browser.driver.sleep(6000);
-    browser.get('/#/editApplication/testJVM/configureJVM');
-    browser.driver.sleep(2000);
-    expect(element(by.id('memory-512')).getAttribute('checked')).toBeTruthy();
+    browser.driver.sleep(20000);
+    browser.get('/#/editApplication/testJVM/settings');
+    expect(element(by.id('config-JVM'))).toBeTruthy();
+  });
+
+  it('should have a default value : 512 Mo', function () {
+    browser.get('/#/editApplication/testJVM/settings');
+    expect(element(by.css('input[name="selectedJvmMemory"]:checked')).getAttribute('value')).toBe('512');
   });
 
   it('should change jvm configuration', function () {
-    var selectedMemory = element(by.id('memory-2048'));
-    var labelMemory = $('label[for="memory-2048"]');
-
-    var selectedRelease = element(by.id('release-8'));
-    var labelRelease = $('label[for="release-8"]');
-
-    labelMemory.click();
+    lastReleaseValue = configJVM.lastReleaseRadioElement.getAttribute('value');
+    configJVM.labelMemory.click();
     configJVM.optionInput.sendKeys('-Dfoo=bar');
-    labelRelease.click();
-
-    browser.driver.sleep(500);
+    configJVM.lastRelease.click();
     configJVM.submitBtn.click();
     browser.driver.sleep(20000);
-    expect(selectedMemory.getAttribute('checked')).toBeTruthy();
-    expect(selectedRelease.getAttribute('checked')).toBeTruthy();
+
+    expect(configJVM.selectedMemory.getAttribute('checked')).toBeTruthy();
+    expect(configJVM.lastReleaseRadioElement.getAttribute('checked')).toBeTruthy();
     expect(configJVM.optionInput.getAttribute('value')).toMatch('-Dfoo=bar');
-    browser.driver.sleep(500);
-    editApp.overviewTab.click();
-    browser.driver.sleep(500);
+    
+  });
+
+  it('should display change jvm configuration in overview', function () {
+    browser.get('/#/editApplication/testJVM/overview');
     expect(element(by.id('jvm-memory')).getAttribute('value')).toMatch('2048 Mo');
     expect(element(by.id('jvm-options')).getAttribute('value')).toMatch('-Dfoo=bar');
-    expect(element(by.id('jvm-release')).getAttribute('value')).toMatch('8');
+    expect(element(by.id('jvm-release')).getAttribute('value')).toMatch(lastReleaseValue);
 
-    waitForPromise(element(by.binding('editApp.application.status')).getText,
-      function (status) {
-        return status === 'Start';
+    /*
+      waitForPromise(element(by.binding('overview.app.status')).getText,
+        function (status) {
+          return status === 'Start';
       });
+    */
+    expect(element(by.binding('overview.app.status')).getText()).toEqual('Start');
 
     browser.get('/#/dashboard');
-    browser.driver.sleep(3000);
-    dashboard.deleteApp('testJVM');
-    browser.driver.sleep(3000);
+    browser.driver.sleep(2000);
+    dashboard.deleteApp('testjvm');
+    browser.driver.sleep(2000);
     logout();
   });
 });
