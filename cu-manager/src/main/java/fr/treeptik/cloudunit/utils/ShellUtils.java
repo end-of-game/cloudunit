@@ -272,7 +272,7 @@ public class ShellUtils {
             e.printStackTrace();
             StringBuilder msgError = new StringBuilder(512);
             msgError.append(", ").append("file=").append(file);
-            msgError.append(", ").append("destPathFile=").append(destPathFile);
+            msgError.append(", ").append("destPathFile+file.getName()=").append(destPathFile+file.getName());
             msgError.append(", ").append(e);
             throw new CheckException("Error during file copying : " + msgError);
 

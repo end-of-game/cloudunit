@@ -40,10 +40,8 @@ public class ApacheFilter
         }
 
         String breadcrumb = fileUnit.getBreadcrump();
-        if (breadcrumb.equalsIgnoreCase("/cloudunit")
-                || breadcrumb.startsWith("/cloudunit/backup")
-                || breadcrumb.startsWith("/cloudunit/database")
-                || breadcrumb.startsWith("/cloudunit/tmp")
+            if (breadcrumb.equalsIgnoreCase("/cloudunit")
+                ||breadcrumb.startsWith("/cloudunit/shared")
                 || breadcrumb.startsWith("/etc")
                 || breadcrumb.startsWith("/usr")
                 || breadcrumb.startsWith("/var")) {

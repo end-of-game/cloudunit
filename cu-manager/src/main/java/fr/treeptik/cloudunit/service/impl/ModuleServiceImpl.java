@@ -35,11 +35,7 @@ import fr.treeptik.cloudunit.model.Snapshot;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.*;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.ContainerMapper;
-import fr.treeptik.cloudunit.utils.EmailUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.ShellUtils;
+import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -429,8 +425,9 @@ public class ModuleServiceImpl
                 dockerContainer.setVolumesFrom(volumesFrom);
             }
 
+            String sharedDir = JvmOptionsUtils.extractDirectory(application.getServers().get(0).getJvmOptions());
             dockerContainer = DockerContainer.start(dockerContainer,
-                    application.getManagerIp());
+                    application.getManagerIp(), sharedDir);
 
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
@@ -684,7 +681,7 @@ public class ModuleServiceImpl
             hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
 
             DockerContainer
-                    .start(dockerContainer, application.getManagerIp());
+                    .start(dockerContainer, application.getManagerIp(), "lol");
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
 

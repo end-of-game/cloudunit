@@ -33,7 +33,7 @@ RUN chmod a+x /cloudunit/appconf/hooks/*
 LABEL origin cloudunit
 
 RUN echo -n "CU_JAVA=$CU_JAVA\nCU_SCRIPTS=$CU_SCRIPTS\nCU_USER_HOME=$CU_USER_HOME\nCU_LOGS=$CU_LOGS\nCU_HOOKS=$CU_HOOKS\n" >> /etc/environment
-RUN sed -i 's/without-password/yes/g' /etc/ssh/sshd_config
+ADD sshd_config /etc/ssh
 
 RUN apt-get install -y wget
 

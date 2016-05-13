@@ -41,7 +41,7 @@ public class TomcatFilter
 
         String breadcrumb = fileUnit.getBreadcrump();
         if (breadcrumb.equalsIgnoreCase("/cloudunit")
-            || breadcrumb.startsWith("/cloudunit/backup")
+            || breadcrumb.startsWith("/cloudunit/shared")
             || breadcrumb.startsWith("/cloudunit/appconf")
             || breadcrumb.startsWith("/cloudunit/binaries")
             || breadcrumb.startsWith("/cloudunit/tmp")) {

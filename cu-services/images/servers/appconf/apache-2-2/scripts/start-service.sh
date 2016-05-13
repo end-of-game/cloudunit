@@ -33,7 +33,6 @@ else
     export MYSQL_ENDPOINT=cuplatform_mysql_1.mysql.cloud.unit
 fi
 
-
 MAX=10
 
 if [ ! -f /init-service-ok ]; then
@@ -42,6 +41,7 @@ if [ ! -f /init-service-ok ]; then
 	touch /init-service-ok
 fi
 
+/usr/sbin/sshd
 service apache2 start
 
 RETURN=1
@@ -67,7 +67,6 @@ if [[ $count -gt $MAX ]]; then
 else
     /cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER START $MANAGER_DATABASE_PASSWORD
 fi
-
 
 # Blocking step
 while true

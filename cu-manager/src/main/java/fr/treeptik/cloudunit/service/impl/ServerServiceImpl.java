@@ -34,11 +34,7 @@ import fr.treeptik.cloudunit.model.ServerFactory;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.*;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.ContainerMapper;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.ShellUtils;
+import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -180,8 +176,6 @@ public class ServerServiceImpl
 
         String imagePath = server.getImage().getPath() + tagName;
         logger.debug("imagePath:" + imagePath);
-        Map<String, String> sharedDir = new HashMap<>();
-        sharedDir.put("/home/vagrant/shared/dir1", "/cloudunit/shared");
 
         List<String> volumesFrom = new ArrayList<>();
         if (!server.getImage().getName().contains("fatjar") && !server.getImage().getName().startsWith("apache")) {
@@ -218,7 +212,8 @@ public class ServerServiceImpl
             logger.info("env.CU_SUB_DOMAIN=" + subdomain);
 
             server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
-            DockerContainer.start(dockerContainer, application.getManagerIp());
+            String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
+            DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
 
             server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
@@ -510,8 +505,8 @@ public class ServerServiceImpl
 
             // Call the hook for pre start
             hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
-
-            DockerContainer.start(dockerContainer, application.getManagerIp());
+            String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
+            DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
             server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
 

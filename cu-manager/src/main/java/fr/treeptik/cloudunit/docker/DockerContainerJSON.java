@@ -570,7 +570,7 @@ public class DockerContainerJSON {
 
     // methodes d'appels pour les backups
 
-    public DockerContainer start(DockerContainer dockerContainer, String hostIp)
+    public DockerContainer start(DockerContainer dockerContainer, String hostIp, String sharedDir)
             throws DockerJSONException {
         URI uri = null;
         try {
@@ -609,8 +609,9 @@ public class DockerContainerJSON {
                 {
                     add("/etc/localtime:/etc/localtime:ro");
                     add("/etc/timezone:/etc/timezone:ro");
-                    //add("/home/vagrant/shared:/cloudunit/shared");
-                    add("/cloudunit/shared:/home/vagrant/shared");
+                    if (sharedDir != null) {
+                        add(sharedDir + ":/cloudunit/shared:rw");
+                    }
                 }
             };
 
