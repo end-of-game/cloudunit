@@ -11,6 +11,9 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 
 ## Installation
 
+We hope to provide a simple installation following KISS principles.
+So you just need to run this command as root :
+
 ```
 curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
 ```
