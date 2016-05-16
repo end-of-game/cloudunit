@@ -63,7 +63,7 @@
     };
     vm.upDir = upDir;
     vm.folderClick = folderClick;
-    vm.downloadFile = downloadFile;
+    //vm.downloadFile = downloadFile;
     vm.deleteFile = deleteFile;
     vm.refresh = refresh;
 
@@ -196,7 +196,7 @@
     };
 
 
-    function downloadFile ( containerId, path, file ) {
+    /*function downloadFile ( containerId, path, file ) {
       if ( file.dir ) {
         return;
       }
@@ -204,7 +204,7 @@
         var blob = new Blob ( [result.data], { type: result.headers['content-type'] } );
         saveAs ( blob, file.name );
       } )
-    }
+    }*/
   }
 }) ();
 
