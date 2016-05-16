@@ -25,6 +25,7 @@ function provision_env {
  apt-get install -y mysql-client
 }
 
+# install docker 
 function provision_docker {
   apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9 
   cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
@@ -39,6 +40,7 @@ function provision_docker {
   mv docker-compose /usr/local/bin
 }
 
+# install certificats for docker engine and client
 function install_certs {
   mkdir -p /root/.docker
   cp /home/admincu/cloudunit/conf/cert/server/* /root/.docker
@@ -50,11 +52,17 @@ function install_certs {
   cp $CU_INSTALL_DIR/files/environment /etc/environment
   cp $CU_INSTALL_DIR/files/hosts /etc/hosts
 }
-# create_admincu
+
+function build_cloudunit {
+ su -l admincu -c "cd /home/admincu/cloudunit/cu-services && ./build-services.sh" 
+}
+
+create_admincu
 provision_env
 clone_cloudunit
-#provision_docker
+provision_docker
 install_certs
+build_cloudunit
 
 set +x
 
