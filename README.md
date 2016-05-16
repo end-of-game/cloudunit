@@ -11,6 +11,8 @@ A complete plaform for devops featuring
 * Docker with its friends : Compose, Machine and soon Swarm
 * Jenkins 2 for CI/CD
 * GitLab CE 
+* EKL Stack for monitoring resources in a near future
+* Sonar to analyse and reports in the future
 
 ![Jenkins2 Logo](documentation/img/plateforme-trio.png "Devops Plateforme")
 
