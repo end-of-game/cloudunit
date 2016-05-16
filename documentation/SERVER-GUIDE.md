@@ -9,13 +9,10 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 
 ```No mysql server because it is provided by docker.  If present, you must save your data and remove it. ```
 
-## Installation from source code
+## Installation
 
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-15.10.sh | bash
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
 ```
 
-## Installation from DockerHUB
-
-```TODO```
-
+## Custom 
