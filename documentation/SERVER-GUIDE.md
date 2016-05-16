@@ -20,8 +20,11 @@ curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/master/cu-producti
 
 ## Certificats
 
-TODO
+By default, we cannot know your domain name. So we provide default certificats for HTTPS but without valid CA.
+You have to replace those provided by yours.
+
+NGINX is provided as docker container. The certificats can be modified on filesystem through a volume.
 
 ## Security
 
-TODO
+Work in progress
