@@ -68,5 +68,5 @@ For any questions, contact us : contact@treeptik.fr
 
 Else ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
 
-Copyright 2015 Treeptik
+Copyright 2016 Treeptik
 
