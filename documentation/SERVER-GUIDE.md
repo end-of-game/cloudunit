@@ -5,12 +5,20 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 ## Requirements
 
 * A server with Ubuntu 14.04 LTS
+* Git installed and a root account
+* Mysql **client** only installed : *apt-get install -y mysql-client*
 
-## Installation from another host
+```No mysql server because it is provided by docker.  If present, you must save your data and remove it. ```
+
+## Installation from source code
 
 ```
 $ git clone https://github.com/Treeptik/cloudunit.git
 $ cd cloudunit/cu-production
 $ ./boot.sh
 ```
+
+## Installation from DockerHUB
+
+```TODO```
 
