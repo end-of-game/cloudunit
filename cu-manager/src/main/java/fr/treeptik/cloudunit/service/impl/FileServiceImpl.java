@@ -473,7 +473,7 @@ public class FileServiceImpl
      * @throws ServiceException
      */
     @Override
-    public Optional<File> getFileFromContainer(String applicationName,
+    public File getFileFromContainer(String applicationName,
                                                String containerId, File file, String originalName, String destFile)
             throws ServiceException {
 
@@ -510,10 +510,8 @@ public class FileServiceImpl
             throw new ServiceException(msgError.toString(), e);
         }
 
-        return Optional.of(file);
+        return file;
     }
-
-    ;
 
     private String convertDestPathFile(String pathFile) {
         return "/" + pathFile.replaceAll("__", "/") + "/";
