@@ -12,9 +12,7 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 ## Installation from source code
 
 ```
-$ git clone https://github.com/Treeptik/cloudunit.git
-$ cd cloudunit/cu-production
-$ ./boot.sh
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-15.10.sh | bash
 ```
 
 ## Installation from DockerHUB
