@@ -99,7 +99,7 @@
       vm.subFolder = [];
       vm.currentPath = [];
       init ( index );
-    } 
+    }
 
     function deleteFile ( containerId, path, item ) {
 

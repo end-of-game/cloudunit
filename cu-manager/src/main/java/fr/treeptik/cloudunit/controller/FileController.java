@@ -246,7 +246,6 @@ public class FileController {
 
         BufferedReader br = new BufferedReader(new FileReader(fileFromContainer));
         if (br.readLine() == null) {
-            System.out.println("if");
             file = File.createTempFile(fileName, "");
             // put an empty space for empty file
             FileUtils.write(file, " ");
@@ -254,8 +253,7 @@ public class FileController {
 
         response.reset();
         String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-        System.out.println(mimeType);
-        String contentDisposition = String.format("attachment; filename=%s", file.getName());
+        String contentDisposition = String.format("attachment; filename=%s", fileName);
         int fileSize = Long.valueOf(file.length()).intValue();
 
         response.setContentType(mimeType);
@@ -273,9 +271,8 @@ public class FileController {
         } catch (IOException ex) {
             // clean error handling
         }
-        logger.info("Download complete");
 
-        //file.delete();174666632
+        file.delete();
     }
 
     private String convertPathFromUI(String path) {

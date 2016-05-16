@@ -102,11 +102,11 @@
                   >{{item.name}} <span ng-show="item.safe">&midast;</span>
                 </a>
                 <a
+                  target="_blank"
                   ng-switch-when="false"
-                  ng-href=""
+                  href="{{ '/file/container/' + explorer.myContainer.id + '/application/' + explorer.app.name + '/path/' + explorer.currentPath + '/fileName/' + item.name }}"
                   class="file"
                   ng-class="item.safe ? 'safe' : 'unsafe'"
-                  ng-click="explorer.downloadFile(explorer.myContainer.id, explorer.currentPath, item)"
                   >{{item.name}} <span ng-show="item.safe">&midast;</span>
                 </a>
                 <button class="action icon-button"
