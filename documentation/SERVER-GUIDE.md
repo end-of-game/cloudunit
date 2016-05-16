@@ -18,6 +18,21 @@ So you just need to run this command as root :
 curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/master/cu-production/boot.sh | bash
 ```
 
+## Configuration
+
+# CloudUnit properties.
+
+The default configuration files is `/home/admincu/.docker/application.properties`
+
+# Database password 
+
+You have to change MYSQL root password (*changeit* by default)
+To do it, you have to change the 
+* /home/admincu/.docker/application.properties
+* /etc/profile
+
+Run `/home/admincu/cloudunit/cu-production/reset.sh -y`
+
 ## Certificats
 
 By default, we cannot know your domain name. So we provide default certificats for HTTPS but without valid CA.
