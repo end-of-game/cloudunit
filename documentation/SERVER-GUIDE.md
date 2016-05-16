@@ -15,7 +15,7 @@ We hope to provide a simple installation following KISS principles.
 So you just need to run this command as root :
 
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/master/cu-production/boot.sh | bash
 ```
 
 ## Certificats
