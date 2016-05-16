@@ -15,4 +15,10 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
 ```
 
-## Custom 
+## Certificats
+
+TODO
+
+## Security
+
+TODO
