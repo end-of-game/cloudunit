@@ -31,7 +31,7 @@ To do it, you have to change the
 * /home/admincu/.docker/application.properties
 * /etc/profile
 
-Run `/home/admincu/cloudunit/cu-production/reset.sh -y`
+Run `/home/admincu/cloudunit/cu-platform/reset.sh -y`
 
 ## Certificats
 
