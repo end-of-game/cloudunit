@@ -16,32 +16,18 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
 import fr.treeptik.cloudunit.dao.ModuleConfigurationDAO;
 import fr.treeptik.cloudunit.dao.SnapshotDAO;
-import fr.treeptik.cloudunit.docker.DockerContainerJSON;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
-import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.ModuleConfiguration;
-import fr.treeptik.cloudunit.model.ModuleFactory;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Snapshot;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.SnapshotService;
+import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
@@ -51,13 +37,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.nio.file.Paths;
+import java.text.Normalizer;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SnapshotServiceImpl
@@ -130,6 +115,19 @@ public class SnapshotServiceImpl
         ObjectMapper objectMapper = new ObjectMapper();
 
         Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        String testTag = tag.toLowerCase();
+        testTag = Normalizer.normalize(testTag, Normalizer.Form.NFD);
+        testTag = testTag.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        testTag = testTag.replaceAll("[^a-z0-9]", "");
+
+        if(testTag.length() == 0) {
+            applicationService.setStatus(application, previousStatus);
+            authentificationUtils.allowUser(user);
+            throw new CheckException("This tag has a length equal to zero : " + tag);
+        }
+
+
         if (tag != null) { tag = tag.toLowerCase(); }
 
         if (tagExists(tag, user.getLogin())) {
@@ -146,8 +144,10 @@ public class SnapshotServiceImpl
 
         try {
             snapshot.setApplicationName(application.getName());
+            snapshot.setApplicationDisplayName(application.getDisplayName());
             snapshot.setDate(new Date());
             snapshot.setTag(tag);
+            snapshot.setDisplayTag(tag);
             snapshot.setFullTag(user.getLogin()+"-"+tag);
             snapshot.setCuInstanceName(cuInstanceName);
             snapshot.setDescription(description);
@@ -196,14 +196,9 @@ public class SnapshotServiceImpl
             for (Module module : application.getModules()) {
                 String imageName = "";
                 String moduleName = "";
-                if (module.getImage().getPath().contains("git")) {
-                    moduleName = module.getName();
-                    imageName = module.getImage().getPath();
-                } else {
-                    moduleName = module.getName() + "-data";
-                    imageName = module.getImage().getPath() + "-" + module.getInstanceNumber() + "-data";
-                    this.backupModule(module);
-                }
+                moduleName = module.getName();
+                imageName = module.getImage().getPath() + "-" + module.getInstanceNumber();
+                this.backupModule(module);
                 images.add(imageName);
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setName(moduleName);
@@ -307,21 +302,12 @@ public class SnapshotServiceImpl
             // We need it to get lazy modules relationships
             application = applicationService.findByNameAndUser(application.getUser(), application.getName());
 
-            Module moduleGit = moduleService.findGitModule(user.getLogin(), application);
-
             for (Server server : application.getServers()) {
-                while (!server.getStatus().equals(Status.START) || !moduleGit.getStatus().equals(Status.START)) {
-                    Thread.sleep(500);
-                    logger.info(" wait git and server sshd processus start");
-                    logger.info("SSHDSTATUS = server : " + server.getStatus() + " - module : " + moduleGit.getStatus());
-                    moduleGit = moduleService.findById(moduleGit.getId());
-                    server = serverService.findById(server.getId());
-                }
                 serverService.update(server, snapshot.getJvmMemory().toString(), snapshot.getJvmOptions(),
                         snapshot.getJvmRelease(), false);
             }
 
-            restoreModule(snapshot, application, tag);
+            restoreModules(snapshot, application, tag);
 
             application.setDeploymentStatus(snapshot.getDeploymentStatus());
             applicationService.saveInDB(application);
@@ -356,45 +342,95 @@ public class SnapshotServiceImpl
                         .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
             }
 
-            final String[] commandStart = {"bash", "-c", "/cloudunit/scripts/cu-start.sh"};
             final String[] commandStop = {"bash", "-c", "/cloudunit/scripts/cu-stop.sh"};
             final String[] commandBackupData = {"bash", "-c", "/cloudunit/scripts/backup-data.sh"};
+            final String[] commandStart = {"bash", "-c", "/cloudunit/scripts/cu-start.sh"};
 
-            docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            docker.execCreate(module.getName()+"-data", commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            String execId = docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            LogStream output = docker.execStart(execId);
+            String execOutput = output.readFully();
+            System.out.println(execOutput);
+            if (output != null) { output.close(); }
+
+            execId = docker.execCreate(module.getName(), commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            output = docker.execStart(execId);
+            execOutput = output.readFully();
+            System.out.println(execOutput);
+            if (output != null) { output.close(); }
+
+            execId = docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            output = docker.execStart(execId);
+            execOutput = output.readFully();
+            System.out.println(execOutput);
+            if (output != null) { output.close(); }
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
         }
     }
 
-    private void restoreModule(Snapshot snapshot, Application application, String tag)
+    /**
+     * Restore all modules
+     * @param snapshot
+     * @param application
+     * @param tag
+     * @throws ServiceException
+     */
+    private void restoreModules(Snapshot snapshot, Application application, String tag)
             throws ServiceException {
 
         for (String key : snapshot.getAppConfig().keySet()) {
             try {
-                //DockerContainer.pull(key, snapshot.getUniqueTagName(), dockerManagerIp, ipForRegistry);
                 Module module = ModuleFactory.getModule(snapshot.getAppConfig().get(key).getName());
                 module.setApplication(application);
                 moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());
                 module.getImage().setName(snapshot.getAppConfig().get(key).getName());
                 module.setName(snapshot.getAppConfig().get(key).getName());
                 module = moduleService.initModule(application, module, snapshot.getFullTag());
+
                 Map<String, String> properties = new HashMap<>();
                 properties.put("username", snapshot.getAppConfig().get(key).getProperties().get("username-" + module.getImage().getName()));
                 properties.put("password", snapshot.getAppConfig().get(key).getProperties().get("password-" + module.getImage().getName()));
                 properties.put("database", snapshot.getAppConfig().get(key).getProperties().get("database-" + module.getImage().getName()));
                 module.setModuleInfos(properties);
                 module = moduleService.saveInDB(module);
-                moduleService.stopModule(module);
-                Thread.sleep(5000);
-                moduleService.startModule(module);
 
-            } catch (CheckException | InterruptedException e) {
+                if (tag != null) {
+                    restoreDataModule(module);
+                }
+
+            } catch (CheckException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }
         }
+    }
+
+    private void restoreDataModule(Module module) {
+
+        try {
+            DockerClient docker = null;
+            if (Boolean.valueOf(isHttpMode)) {
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+                docker = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
+
+            final String[] commandRestoreData = {"bash", "-c", "/cloudunit/scripts/restore-data.sh"};
+            String execId = docker.execCreate(module.getName(), commandRestoreData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            LogStream output = docker.execStart(execId);
+            String execOutput = output.readFully();
+            System.out.println(execOutput);
+            if (output != null) { output.close(); }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage() + ", " + module);
+        }
+
     }
 
     private boolean tagExists(String tag, String login) {

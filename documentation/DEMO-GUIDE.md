@@ -10,7 +10,8 @@ This guide is relevant if you want to try CloudUnit without going through any co
 ## Start the box
 You can launch it in 2 commands:
 ```
-$ wget https://github.com/Treeptik/CloudUnit/releases/download/1.0/Vagrantfile
+$ git clone https://github.com/Treeptik/cloudunit.git
+$ cd cloudunit/cu-demo
 $ vagrant up
 ```
 
@@ -65,11 +66,11 @@ You should get an "Insecure connection" warning. This is expected as we don't pr
 If you want to restart from the beginning, you can reset the platform.
 
 ![](https://github.com/Treeptik/CloudUnit-images/blob/master/warning2.png)
-
 **All your data will be lost!**
 
 In the repository where you have downloaded the `Vagrantfile`, run: `vagrant ssh` to ssh into the box. Finally reset everything:
 ```
-$ vagrant ssh -c "cloudunit reset"
+$ vagrant ssh 
+$ cd cloudunit/cu-platform && ./reset-all.sh -y
 ```
 

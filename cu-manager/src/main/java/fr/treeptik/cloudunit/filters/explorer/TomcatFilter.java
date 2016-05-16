@@ -41,7 +41,7 @@ public class TomcatFilter
 
         String breadcrumb = fileUnit.getBreadcrump();
         if (breadcrumb.equalsIgnoreCase("/cloudunit")
-            || breadcrumb.startsWith("/cloudunit/backup")
+            || breadcrumb.startsWith("/cloudunit/shared")
             || breadcrumb.startsWith("/cloudunit/appconf")
             || breadcrumb.startsWith("/cloudunit/binaries")
             || breadcrumb.startsWith("/cloudunit/tmp")) {
@@ -80,6 +80,7 @@ public class TomcatFilter
         String breadcrumb = fileUnit.getBreadcrump();
         if (breadcrumb.equalsIgnoreCase("/cloudunit")
             || breadcrumb.equalsIgnoreCase("/cloudunit/backup")
+                || breadcrumb.equalsIgnoreCase("/cloudunit/hooks")
             || breadcrumb.startsWith("/cloudunit/appconf")) {
             fileUnit.safe(true);
         } else {

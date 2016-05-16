@@ -2,45 +2,59 @@
 # CloudUnit developement environment
 
 You are reading the wright guide, if you want to setup an environment to contribute to CloudUnit development.
-If you simply wish to test CloudUnit, you should maybe run our [Demo Vagrant box](DEMO-GUIDE.md).
 
 ## Requirements
 
 * Linux Ubuntu/Debian
 * Git / Java 1.8
-* Node 5.x
 * VirtualBox 5.0.4+ (www.virtualbox.org) - install before Vagrant
-* Vagrant 1.7.8+ (www.vagrantup.com)
+* Vagrant 1.8+ (www.vagrantup.com)
 * Maven 3+ (maven.apache.org)
-* Ansible (see further for installation)
 
-## Architecture sources
+## Architecture for developpment
 
-* `cloudunit/cu-manager`  : Maven project 
-* `cloudunit/cu-plaform`  : Shell scripts for administration 
-* `cloudunit/cu-services` : Docker images
+![Architecture Dev](img/plateforme-dev.png "Architecture Development")    
 
-## Dev Rules and Principles
+### General Rules
 
 * You have to configure a local dns (see further) to send any requests from your host to VM (IP fixed at 192.168.50.4) 
-* A reverse proxy is included into vagrantbox to route the request (*.cloudunit.dev) to the right app.
 * You use your favorite idea (intellij, Eclipse) to develop the maven project into 'cloudunit/cu-manager'.
 * The backend is a spring application exposing a REST API
-* The frontend is an AngularJS 1.x consuming the backend API
+* The frontend is an AngularJS 1.4 consuming the backend API from Spring Java
 * You run the project with an embedded tomcat via maven tasks (tomcat:run). No need to install Tomcat locally.
 * Mysql is included into vagrantbox so no need to install it locally.
-* Ansible is needed locally to provision Vagrantbox (it will disapear in a near future...)
+
+### Architecture sources
+
+```
+cloudunit/cu-manager  : Maven project 
+cloudunit/cu-plaform  : Shell scripts for administration 
+cloudunit/cu-services : Docker images
+```
 
 ## Installation 
 
-### Local DNS
+You can use script to autoinstall step 1 to 5 :
+
+For Ubuntu 15.10
+```
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-15.10.sh | bash
+```
+For Ubuntu 16.04
+```
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-16.04.sh | bash
+```
+
+### Step 1 - Local DNS
 
 CloudUnit uses Docker and Java but others components. As pre-requisites, you need to install them to have a complete dev stack. You need to install a local DNS for entry.
 ```
 Dnsmasq is a lightweight, easy to configure DNS forwarder 
 and DHCP server […] is targeted at home networks[.]
 ```
-You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with admin.cloudunit.io shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
+You need to add a local DNS entry pointing to the vagrant IP address.
+More precisely, any address ending with **.cloudunit.dev** should be directed to **192.168.50.4**. 
+On Ubuntu, a simple way to achieve this is to install dnsmasq:
 ```
 sudo apt-get install dnsmasq
 sudo vi /etc/dnsmasq.conf
@@ -48,43 +62,107 @@ sudo vi /etc/dnsmasq.conf
 sudo service dnsmasq restart
 ```
 
-### How to install Ansible 1.9+ if needed
+You should ping **foo.cloudunit.dev** to **192.168.50.4**
 
-```
-sudo apt-get install software-properties-common
-sudo apt-add-repository ppa:ansible/ansible
-sudo apt-get update
-sudo apt-get install ansible
-```
-
-### How to install Vagrant plugins
+### Step 2 - How to install Vagrant plugins
 ```
 vagrant plugin install vagrant-reload
 vagrant plugin install vagrant-vbguest
 ```
-### Source code installation
 
-Follow these instructions : 
+### Step 3 - How to install source code
+
 ```
-sudo apt-get install nodejs npm
-sudo ln -s "$(which nodejs)" /usr/bin/node
-sudo npm install -g grunt grunt-cli bower 
-mkdir $HOME/infrastructure
-cd $HOME/infrastructure
-git clone https://github.com/Treeptik/CU-infrastructure
 cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
+```
+
+### Step 4 - How to install Angular Project dependencies 
+
+Follow these instructions :
+```
+Installation Node 5.x :
+    curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
+    sudo apt-get install nodejs
+```
+
+```
+sudo npm install -g grunt grunt-cli bower 
 cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
+cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
 ```
 
-## How to start Environment Development
+### Step 5 - How to build the vagrant box
 
-To run the UI for development (http://0.0.0.0:9000)
+Warning because this step could need lot of times !
+
 ```
-cd $HOME/cloudunit/cu-manager/src/main/webapp && vagrant up dev
-cd $HOME/cloudunit/cu-manager
-mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
-cd $HOME/cloudunit/cu-manager/src/main/webapp && npm start
+$ cd $HOME/cloudunit/cu-vagrant 
+$ vagrant up
+$ vagrant provision
 ```
+
+### Step 6 - How to start the application
+
+1 - Start the vagrantbox and run Docker into Vagrant
+
+```
+$ cd $HOME/cloudunit/cu-vagrant 
+$ vagrant up (if not running)
+$ vagrant ssh 
+cd cloudunit/cu-platform && ./reset-all.sh -y
+```
+
+2 - Start the Java Backend from Linux
+
+```
+$ cd $HOME/cloudunit/cu-manager
+$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+```
+
+3 - Run the UI for development (http://0.0.0.0:9000) from Linux
+
+```
+$ cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+```
+You can use default password and login
+```
+login: johndoe
+password: abc2015
+```
+
+# IDE CONFIGURATION
+
+## ECLIPSE 
+
+In your favorite IDE, select Import in File menu then **Existing Maven project**.
+Into **root** directory, select **cu-manager** and Finish.
+When you have **Setup Maven plugins connectors** window, click on Finish button.
+
+Select **pom.xml** in the package explorer and right click to select.
+
+
+![Architecture Dev](img/eclipse_root.png "Architecture Development")
+
+
+You can run CloudUnit with a Maven task easily as :
+    
+![Architecture Dev](img/eclipse_conf.png "Architecture Development")
+
+
+## INTELLIJ
+
+Open the project with your favorite IDE into **root** directory and add **cu-manager** as Maven Project.
+Simply select the **pom.xml** and right click to select this option.
+
+
+![Architecture Dev](img/intellij_root.png "Architecture Development")
+
+
+
+You can run CloudUnit with a Maven task easily as :
+    
+![Architecture Dev](img/intellij_conf.png "Architecture Development")
+
 
 # FAQ
 
@@ -93,7 +171,7 @@ All questions and answers about dev tasks
 ## How to reset Environment Development
 
 ```
-vagrant ssh dev
+vagrant ssh
 cloudunit/cu-platform/reset-all.sh -y
 ```
 
@@ -102,12 +180,7 @@ cloudunit/cu-platform/reset-all.sh -y
 Update your sources, build the images and reninit the database :
 
 ```
-vagrant ssh dev
-cloudunit/cu-services/build-services.sh
-cloudunit/cu-platform/reset-all.sh -y
+$ vagrant ssh dev
+$ cloudunit/cu-services/build-services.sh
+$ cloudunit/cu-platform/reset-all.sh -y
 ```
-
-By default, docker cache is disabled. So all images will be built again.
-To speed up, you can activate the cache but it could be dangerous 
-if you modify a parent image with docker inheritance.
-

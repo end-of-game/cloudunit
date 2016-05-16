@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LOG_FILE=/home/$USER/cloudunit/cu-services/build-log
+
 CACHE=false
 
 if [ $CACHE = true ]; then
@@ -20,8 +20,8 @@ do
 	docker images | grep $image | grep $GIT_TAG
 	return=$?
 	if [ "$return" -eq "0" ]; then
-		echo -e "\nThe docker image $image:$GIT_TAG has been correctly built.\n" >> $LOG_FILE
+		echo -e "\nThe docker image $image:$GIT_TAG has been correctly built.\n"
 	else
-		echo -e "\nPROBLEM: the docker image $image:$GIT_TAG has not been built!\n" >> $LOG_FILE
+		echo -e "\nPROBLEM: the docker image $image:$GIT_TAG has not been built!\n"
 	fi
 done < cu-images

@@ -47,10 +47,8 @@ public class ModuleFactory {
         ModuleAction result = null;
         if (imageName.toLowerCase().contains("mysql")) {
             result = new MysqlModuleAction(module);
-        } else if (imageName.toLowerCase().contains("postgresql")) {
+        } else if (imageName.toLowerCase().contains("postgresql") || imageName.toLowerCase().contains("postgis")) {
             result = new PostgreSQLModuleAction(module);
-        } else if (imageName.toLowerCase().contains("git")) {
-            result = new GitModuleAction(module);
         } else if (imageName.toLowerCase().contains("redis")) {
             result = new RedisModuleAction(module);
         } else if (imageName.toLowerCase().contains("mongo")) {

@@ -102,30 +102,30 @@ public class MessageUtils {
             case "CREATE":
                 body = user.getFirstName() + " " + user.getLastName()
                     + " has created a new Application : "
-                    + application.getName();
+                    + application.getDisplayName();
                 break;
             case "UPDATE":
                 body = user.getFirstName() + " " + user.getLastName()
-                    + " has updated the Application : " + application.getName();
+                    + " has updated the Application : " + application.getDisplayName();
                 break;
 
             case "REMOVE":
                 body = user.getFirstName() + " " + user.getLastName()
-                    + " has removed the Application : " + application.getName();
+                    + " has removed the Application : " + application.getDisplayName();
                 break;
             case "START":
-                body = "The application " + application.getName()
+                body = "The application " + application.getDisplayName()
                     + " was correctly started by " + user.getFirstName() + " "
                     + user.getLastName();
                 break;
             case "STOP":
-                body = "The application " + application.getName()
+                body = "The application " + application.getDisplayName()
                     + " was correctly stopped by " + user.getFirstName() + " "
                     + user.getLastName();
 
                 break;
             case "RESTART":
-                body = "The application " + application.getName()
+                body = "The application " + application.getDisplayName()
                     + " was correctly restarted by " + user.getFirstName()
                     + " " + user.getLastName();
                 break;
@@ -201,7 +201,7 @@ public class MessageUtils {
             case "CREATE":
                 body = user.getFirstName() + " " + user.getLastName()
                     + " has deployed a new Application : "
-                    + deployment.getApplication().getName() + " from "
+                    + deployment.getApplication().getDisplayName() + " from "
                     + deployment.getType().toString();
                 break;
         }
@@ -221,17 +221,17 @@ public class MessageUtils {
         switch (type) {
             case "CREATE":
                 body = user.getFirstName() + " " + user.getLastName()
-                    + " has created a new snapshot " + snapshot.getTag()
-                    + " from : " + snapshot.getApplicationName();
+                    + " has created a new snapshot " + snapshot.getDisplayTag()
+                    + " from : " + snapshot.getApplicationDisplayName();
                 break;
             case "REMOVE":
                 body = user.getFirstName() + " " + user.getLastName()
-                    + " has removed the snapshot " + snapshot.getTag();
+                    + " has removed the snapshot " + snapshot.getDisplayTag();
                 break;
             case "CLONEFROMASNAPSHOT":
                 body = user.getFirstName() + " " + user.getLastName()
                     + " has created a new application from : "
-                    + snapshot.getTag();
+                    + snapshot.getDisplayTag();
                 break;
         }
         message.setEvent(body);
@@ -248,11 +248,9 @@ public class MessageUtils {
 
         switch (type) {
             case "CREATE":
-                body = user == null ? "A deployment from git push has been done at "
-                    + application.getName()
-                    : user.getFirstName() + " " + user.getLastName()
+                body = user.getFirstName() + " " + user.getLastName()
                     + " attempts to deploy a new Application : "
-                    + application.getName();
+                    + application.getDisplayName();
                 break;
         }
 

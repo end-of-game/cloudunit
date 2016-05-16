@@ -15,6 +15,9 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificates;
+import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
@@ -23,21 +26,15 @@ import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.hooks.HookAction;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.ServerFactory;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.ContainerMapper;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.ShellUtils;
+import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -77,7 +75,7 @@ public class ServerServiceImpl
     private ApplicationService applicationService;
 
     @Inject
-    private AuthentificationUtils authentificationUtils;
+    private HookService hookService;
 
     @Inject
     private ShellUtils shellUtils;
@@ -87,9 +85,6 @@ public class ServerServiceImpl
 
     @Inject
     private ContainerMapper containerMapper;
-
-    @Inject
-    private PortToOpenDAO portToOpenDAO;
 
     @Value("${cloudunit.max.servers:1}")
     private String maxServers;
@@ -183,7 +178,7 @@ public class ServerServiceImpl
         logger.debug("imagePath:" + imagePath);
 
         List<String> volumesFrom = new ArrayList<>();
-        if (!server.getImage().getName().contains("fatjar")) {
+        if (!server.getImage().getName().contains("fatjar") && !server.getImage().getName().startsWith("apache")) {
             volumesFrom.add(server.getImage().getName());
         }
         volumesFrom.add("java");
@@ -217,7 +212,8 @@ public class ServerServiceImpl
             logger.info("env.CU_SUB_DOMAIN=" + subdomain);
 
             server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
-            DockerContainer.start(dockerContainer, application.getManagerIp());
+            String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
+            DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
 
             server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
@@ -507,8 +503,10 @@ public class ServerServiceImpl
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
 
-
-            DockerContainer.start(dockerContainer, application.getManagerIp());
+            // Call the hook for pre start
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
+            String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
+            DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
             server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
 
@@ -523,6 +521,10 @@ public class ServerServiceImpl
                             .getServerPort(),
                     server.getServerAction()
                             .getServerManagerPort());
+
+            // Call the hook for post start
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_START);
+
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
             throw new ServiceException("Error database :  "
@@ -545,12 +547,20 @@ public class ServerServiceImpl
             DockerContainer dockerContainer = new DockerContainer();
             dockerContainer.setName(server.getName());
             dockerContainer.setImage(server.getImage().getName());
+
+            // Call the hook for pre stop
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_STOP);
+
             DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
 
             server.setStatus(Status.STOP);
             server = update(server);
+
+            // Call the hook for post stop
+            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_STOP);
+
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
                     + e.getLocalizedMessage(), e);
@@ -711,38 +721,6 @@ public class ServerServiceImpl
                 throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
             }
         }
-
-        //
-        // PARTIE GIT
-        //
-        Module moduleGit = moduleService.findGitModule(application.getUser()
-                .getLogin(), application);
-        try {
-            configShell.put("password", moduleGit.getApplication().getUser()
-                    .getPassword());
-            configShell.put("port", moduleGit.getSshPort());
-            configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
-
-            // Besoin des permissions ROOT
-            command = "bash /cloudunit/scripts/change-java-version.sh "
-                    + javaVersion;
-            logger.info("command shell to execute [" + command + "]");
-
-            shellUtils.executeShell(command, configShell);
-
-            application.setJvmRelease(javaVersion);
-            application = applicationService.saveInDB(application);
-        } catch (Exception e) {
-            moduleGit.setStatus(Status.FAIL);
-            moduleService.saveInDB(moduleGit);
-            logger.error(
-                    "java version = " + javaVersion + " - "
-                            + application.toString() + " - "
-                            + moduleGit.toString(), e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-
     }
 
     /**

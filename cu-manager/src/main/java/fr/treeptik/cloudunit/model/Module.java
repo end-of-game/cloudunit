@@ -83,20 +83,6 @@ public class Module
         ModuleFactory.updateModule(this);
     }
 
-    /**
-     * Méthode permettant de savoir si oui ou non
-     * c'est un tool plutot qu'un module fonctionnel
-     */
-    @JsonIgnore
-    public boolean isTool() {
-        if (name != null &&
-            (name.contains("git"))
-            || name.contains("maven")) {
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public String toString() {
         return "Module [id=" + id + ", startDate=" + startDate + ", name="

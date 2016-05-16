@@ -7,6 +7,13 @@ Thanks to CloudUnit PaaS's powerful provisioning and execution capabilities, cla
 
 CloudUnit takes care of the plumbing.
 
+A complete plaform for devops featuring
+* Docker with its friends : Compose, Machine and soon Swarm
+* Jenkins 2 for CI/CD
+* GitLab CE 
+
+![Jenkins2 Logo](documentation/img/plateforme-trio.png "Devops Plateforme")
+
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
 It is available under the terms of either the Affero GNU Public Licence 3.0
@@ -16,26 +23,20 @@ You can find more informations there : [CloudUnit Website](http://www.cloudunit.
 You can test the common platform online here (reseted all night)
 * https://sormiou.cloudunit.io :: [ johndoe / abc2015 ]
 
-
 ![CloudUnit Gif](documentation/img/cloudunitGif.gif "CloudUnit Gif")
 
 ## Getting started
 
 There are many installation guides
-* [Demonstration guide](documentation/DEMO-GUIDE.md)
-* [Server installation guide](documentation/SERVER-GUIDE.md)
-* [Development guide MAC](documentation/DEV-GUIDE-MAC.md)
+* [Server installation guide](documentation/SERVER-GUIDE.md) [SOON UPDATED]
 * [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
+* [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
 
 ## Go further
 
 * [CloudUnit CLI guide](documentation/README.md)
-* [CloudUnit Maven Plugin](documentation/master/README.md)
-
-## Usage examples
-
-There are many user guides
-* [Spring MySQL Redis](documentation/webapps/SPRING-MYSQL-REDIS.md)
+* [CloudUnit Maven Plugin](documentation/README.md)
+* [CloudUnit with Jenkins2/GitLab](documentation/CI-CD.md) [SOON UPDATED]
 
 # Licensing
 

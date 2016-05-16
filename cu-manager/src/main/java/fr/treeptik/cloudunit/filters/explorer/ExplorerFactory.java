@@ -31,10 +31,12 @@ public class ExplorerFactory {
         ExplorerFactory.filters.put("tomcat", new TomcatFilter());
         ExplorerFactory.filters.put("mysql", new MysqlFilter());
         ExplorerFactory.filters.put("postgres", new PostgresFilter());
+        ExplorerFactory.filters.put("postgis", new PostgresFilter());
         ExplorerFactory.filters.put("mongo", new MongoFilter());
         ExplorerFactory.filters.put("jboss", new JBossFilter());
         ExplorerFactory.filters.put("fatjar", new FatJarFilter());
         ExplorerFactory.filters.put("redis", new RedisFilter());
+        ExplorerFactory.filters.put("apache", new ApacheFilter());
     }
 
     private ExplorerFactory() {
@@ -60,7 +62,10 @@ public class ExplorerFactory {
         if (name.contains("mongo")) {
             name = "mongo";
         }
-        if (name.contains("postgres")) {
+        if (name.contains("redis")) {
+            name = "redis";
+        }
+        if (name.contains("postgres") || name.contains("postgis")) {
             name = "postgres";
         }
         if (name.contains("jboss")) {
@@ -68,6 +73,9 @@ public class ExplorerFactory {
         }
         if (name.contains("fatjar")) {
             name = "fatjar";
+        }
+        if (name.contains("apache")) {
+            name = "apache";
         }
         return filters.get(name);
     }

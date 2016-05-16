@@ -94,7 +94,7 @@
              data-ng-repeat="application in dashboard.applications | orderBy:sortorder | filter:{status: dashboard.search} track by $index">
           <div class="content">
             <h3 class="title">
-              {{application.name | lowercase}}
+              {{application.displayName}}
               <a data-ng-href="#editApplication/{{ application.name }}/overview"
                  class="edit-btn button primary pull-right"
                  ripple="">
@@ -133,13 +133,13 @@
             <div class="features">
               <p class="subhead">Services</p>
 
-              <p>{{ application.servers[0].image.name}}{{ application.servers[0].image.version}} </p>
+              <p>{{ application.servers[0].image.displayName}}</p>
 
-              <p ng-hide="application.modules.length > 1">No modules</p>
-              <ul class="modules" ng-show="application.modules.length > 1">
+              <p ng-hide="application.modules.length > 0">No modules</p>
+              <ul class="modules" ng-show="application.modules.length > 0">
                 <li class="module-name"
                     data-ng-repeat="module in application.modules | filter: {image: {imageType: 'module'}}">
-                  {{module.image.name | lowercase }}{{ module.image.version }}
+                  {{module.image.displayName | lowercase }}
                 </li>
               </ul>
             </div>

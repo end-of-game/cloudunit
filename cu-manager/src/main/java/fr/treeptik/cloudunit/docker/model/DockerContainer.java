@@ -136,44 +136,20 @@ public class DockerContainer {
         throws DockerJSONException {
 
         dockerContainerJSON.remove(dockerContainer.getName(), hostIp);
-
-        /**
-         * TODO : data temporaire
-         */
-        if (dockerContainer.getImage().contains("mysql")
-            || dockerContainer.getImage().contains("postgres")
-            || dockerContainer.getImage().contains("mongo")
-            || dockerContainer.getImage().contains("redis")) {
-            dockerContainerJSON.remove(dockerContainer.getName() + "-data",
-                hostIp);
-        }
-
     }
 
     public static DockerContainer start(DockerContainer dockerContainer,
-                                        String hostIp)
+                                        String hostIp, String sharedDir)
         throws DockerJSONException {
-        dockerContainer = dockerContainerJSON.start(dockerContainer, hostIp);
+        dockerContainer = dockerContainerJSON.start(dockerContainer, hostIp, sharedDir);
         return dockerContainer;
     }
 
     public static void stop(DockerContainer dockerContainer, String hostIp)
         throws DockerJSONException {
-
         // Stop du container application
         logger.debug("Stop dockerContainer : " + dockerContainer);
         dockerContainerJSON.stop(dockerContainer, hostIp);
-
-        // Stop du container de données associés
-        if (dockerContainer.getImage().contains("mysql")
-            || dockerContainer.getImage().contains("postgres")
-            || dockerContainer.getImage().contains("mongo")
-            || dockerContainer.getImage().contains("redis")) {
-            logger.debug("Stop docker DataContainer : " + dockerContainer);
-            dockerContainer = dockerContainerJSON.findOne(
-                dockerContainer.getName() + "-data", hostIp);
-            dockerContainerJSON.stop(dockerContainer, hostIp);
-        }
     }
 
     public List<String> getVolumesFrom() {

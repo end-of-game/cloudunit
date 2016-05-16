@@ -20,29 +20,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import fr.treeptik.cloudunit.utils.JsonDateSerializer;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import java.text.Normalizer;
+import java.util.*;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "name", "cuInstanceName"}))
@@ -60,6 +41,8 @@ public class Application
     private Integer id;
 
     private String name;
+
+    private String displayName;
 
     /**
      * CloudUnit instance name (e.g. DEV, QA, PROD).
@@ -94,8 +77,6 @@ public class Application
     private Set<Deployment> deployments;
 
 
-    private String gitAddress;
-
     @ElementCollection
     private Set<String> aliases;
 
@@ -117,12 +98,6 @@ public class Application
 
     @JsonIgnore
     private String restHost;
-
-    @JsonIgnore
-    private String gitContainerIP;
-
-    @JsonIgnore
-    private String gitSshProxyPort;
 
     private String deploymentStatus;
 
@@ -161,8 +136,15 @@ public class Application
     }
 
     public void setName(String name) {
-        this.name = name;
+        name = name.toLowerCase();
+        name = Normalizer.normalize(name, Normalizer.Form.NFD);
+        name = name.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        this.name = name.replaceAll("[^a-z0-9]", "");
     }
+
+    public String getDisplayName() { return displayName; }
+
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
 
     public String getCuInstanceName() { return cuInstanceName; }
 
@@ -232,14 +214,6 @@ public class Application
         this.deployments = new HashSet<>(deployments);
     }
 
-    public String getGitAddress() {
-        return gitAddress;
-    }
-
-    public void setGitAddress(String gitAddress) {
-        this.gitAddress = gitAddress;
-    }
-
     public String getSuffixCloudUnitIO() {
         return suffixCloudUnitIO;
     }
@@ -270,22 +244,6 @@ public class Application
 
     public void setRestHost(String restHost) {
         this.restHost = restHost;
-    }
-
-    public String getGitContainerIP() {
-        return gitContainerIP;
-    }
-
-    public void setGitContainerIP(String gitContainerIP) {
-        this.gitContainerIP = gitContainerIP;
-    }
-
-    public String getGitSshProxyPort() {
-        return gitSshProxyPort;
-    }
-
-    public void setGitSshProxyPort(String gitSshProxyPort) {
-        this.gitSshProxyPort = gitSshProxyPort;
     }
 
     public String getLocation() {
@@ -322,10 +280,7 @@ public class Application
                 ", managerPort='" + managerPort + '\'' +
                 ", jvmRelease='" + jvmRelease + '\'' +
                 ", restHost='" + restHost + '\'' +
-                ", gitContainerIP='" + gitContainerIP + '\'' +
                 ", deploymentStatus='" + deploymentStatus + '\'' +
-                ", gitSshProxyPort='" + gitSshProxyPort + '\'' +
-                ", gitAddress='" + gitAddress + '\'' +
                 ", suffixCloudUnitIO='" + suffixCloudUnitIO + '\'' +
                 ", isAClone=" + isAClone +
                 ", cuInstanceName=" + cuInstanceName +

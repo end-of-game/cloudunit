@@ -60,12 +60,13 @@ public class ServerAspect
         Server server = (Server) joinPoint.getArgs()[0];
         User user = getAuthentificatedUser();
         Message message = null;
-        String applicationName = server.getApplication().getName();
+        //String applicationName = server.getApplication().getName();
+        String applicationDisplayName = server.getApplication().getDisplayName();
 
         switch (joinPoint.getSignature().getName().toUpperCase()) {
             case updateType:
                 message = MessageUtils.writeBeforeApplicationMessage(user,
-                    applicationName, updateType);
+                    applicationDisplayName, updateType);
                 break;
         }
         logger.info(message.toString());

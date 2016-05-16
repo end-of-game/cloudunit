@@ -99,7 +99,7 @@
       vm.subFolder = [];
       vm.currentPath = [];
       init ( index );
-    }
+    } 
 
     function deleteFile ( containerId, path, item ) {
 
@@ -112,7 +112,9 @@
           }, 1000 );
         } )
         .catch ( function onFileDeleteError ( error ) {
-          console.log ( 'Cannot delete file : ' + error )
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
         } )
     }
 

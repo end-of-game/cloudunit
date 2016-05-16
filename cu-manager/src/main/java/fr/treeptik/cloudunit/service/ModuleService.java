@@ -84,13 +84,7 @@ public interface ModuleService {
                   Boolean isModuleRemoving, Status previousApplicationStatus)
         throws ServiceException, CheckException;
 
-    Module restoreBackup(String moduleName)
-        throws ServiceException;
-
     Module initModule(Application application, Module module, String tag)
         throws ServiceException, CheckException;
-
-    Module findGitModule(String login, Application application)
-        throws ServiceException;
 
 }

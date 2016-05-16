@@ -22,29 +22,9 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.ModuleFactory;
-import fr.treeptik.cloudunit.model.PortToOpen;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.ServerFactory;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.Type;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.DeploymentService;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.ContainerMapper;
-import fr.treeptik.cloudunit.utils.DomainUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.PortUtils;
-import fr.treeptik.cloudunit.utils.ShellUtils;
+import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,16 +33,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
+import java.io.File;
+import java.util.*;
 
 @Service
 public class ApplicationServiceImpl
@@ -102,9 +76,6 @@ public class ApplicationServiceImpl
 
     @Inject
     private AuthentificationUtils authentificationUtils;
-
-    @Inject
-    private PortUtils portUtils;
 
     @Inject
     private ContainerMapper containerMapper;
@@ -164,6 +135,9 @@ public class ApplicationServiceImpl
                 throw new CheckException(messageSource.getMessage("app.exists",
                         null, locale));
             }
+            if(checkNameLength(application.getName())) {
+                throw new CheckException("This name has length equal to zero : " + application.getName());
+            }
             if (imageService.findByName(serverName) == null)
                 throw new CheckException(messageSource.getMessage(
                         "image.not.found", null, locale));
@@ -196,6 +170,12 @@ public class ApplicationServiceImpl
         }
     }
 
+    public boolean checkNameLength(String applicationName) {
+        if(applicationName.length() == 0)
+            return true;
+        return false;
+    }
+
     /**
      * Save app in just in DB, not create container use principally to charge
      * status.PENDING of entity until it's really functionnal
@@ -211,205 +191,7 @@ public class ApplicationServiceImpl
         return application;
     }
 
-    /**
-     * Add git container to application associated to server
-     *
-     * @param application
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    private Module addGitContainer(Application application, String tagName)
-            throws ServiceException, CheckException {
-
-        Module moduleGit = ModuleFactory.getModule("git");
-        // todo : externaliser la variable
-        String containerGitAddress = "/cloudunit/git/.git";
-
-        try {
-            // Assign fixed host ports for forwarding git ports (22)
-            Map<String, String> mapProxyPorts = portUtils
-                    .assignProxyPorts(application);
-            String freeProxySshPortNumber = mapProxyPorts
-                    .get("freeProxySshPortNumber");
-
-            // Creation of git container fo application
-            moduleGit.setName("git");
-            moduleGit.setImage(imageService.findByName("git"));
-            moduleGit.setApplication(application);
-
-            moduleGit.setSshPort(freeProxySshPortNumber);
-            moduleGit = moduleService.initModule(application, moduleGit, tagName);
-
-            application.getModules().add(moduleGit);
-            application.setGitContainerIP(moduleGit.getContainerIP());
-
-            application.setGitSshProxyPort(freeProxySshPortNumber);
-
-            // Update GIT respository informations in the current application
-            application.setGitAddress("ssh://"
-                    + AlphaNumericsCharactersCheckUtils
-                    .convertToAlphaNumerics(application.getUser()
-                            .getLogin()) + "@" + application.getName()
-                    + "." + application.getSuffixCloudUnitIO().substring(1)
-                    + ":" + application.getGitSshProxyPort()
-                    + containerGitAddress);
-
-            moduleGit.setStatus(Status.START);
-            moduleGit = moduleService.update(moduleGit);
-
-        } catch (UnsupportedEncodingException e) {
-            moduleGit.setStatus(Status.FAIL);
-            logger.error("Error :  Error during persist git module " + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-        return moduleGit;
-    }
-
-    /**
-     * Lancer par signal de NoPublicController quand le processus sshd est
-     * démarré dans les containers serveur et git
-     */
-    public Application updateEnv(Application application, User user)
-            throws ServiceException {
-
-        logger.info("--update Env of Server--");
-        String command = null;
-        Map<String, String> configShellModule = new HashMap<>();
-        Map<String, String> configShellServer = new HashMap<>();
-
-        Module moduleGit = moduleService.findGitModule(user.getLogin(), application);
-        Server server = application.getServers().get(0);
-
-        String rootPassword = application.getUser().getPassword();
-        configShellModule.put("port", moduleGit.getSshPort());
-        configShellModule.put("dockerManagerAddress", moduleGit.getApplication().getManagerIp());
-        configShellModule.put("password", rootPassword);
-        configShellModule.put("dockerManagerAddress", application.getManagerIp());
-        logger.info("new server ip : " + server.getContainerIP());
-        try {
-            int counter = 0;
-            while (!server.getStatus().equals(Status.START)
-                    || !moduleGit.getStatus().equals(Status.START)) {
-                if (counter == 100) {
-                    break;
-                }
-                Thread.sleep(1000);
-                logger.info(" wait git and server sshd processus start");
-                logger.info("SSHDSTATUS = server : " + server.getStatus() + " - module : " + moduleGit.getStatus());
-                moduleGit = moduleService.findById(moduleGit.getId());
-                server = serverService.findById(server.getId());
-                counter++;
-            }
-            command = ". /cloudunit/scripts/update-env.sh " + server.getContainerIP();
-            logger.info("command shell to execute [" + command + "]");
-
-            shellUtils.executeShell(command, configShellModule);
-
-            configShellServer.put("port", server.getSshPort());
-            configShellServer.put("dockerManagerAddress", server.getApplication().getManagerIp());
-            configShellServer.put("password", rootPassword);
-            command = ". /cloudunit/scripts/rm-auth-keys.sh ";
-            logger.info("command shell to execute [" + command + "]");
-
-            shellUtils.executeShell(command, configShellServer);
-            String cleanCommand = server.getServerAction().cleanCommand();
-            if (cleanCommand != null) {
-                shellUtils.executeShell(
-                        server.getServerAction().cleanCommand(),
-                        configShellServer);
-            }
-        } catch (Exception e) {
-            moduleGit.setStatus(Status.FAIL);
-            moduleGit = moduleService.saveInDB(moduleGit);
-            server.setStatus(Status.FAIL);
-            server = serverService.saveInDB(server);
-            logger.error("Error :  Error during update Env var of GIT " + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-        return application;
-    }
-
-    /**
-     * Lancer par signal de NoPublicController quand le processus sshd est
-     * (re)démarré dans container serveur et git, pour mettre à jour la nouvelle
-     * IP du serveur
-     */
-    @Override
-    public Application sshCopyIDToServer(Application application, User user)
-            throws ServiceException {
-        String command = null;
-        Map<String, String> configShell = new HashMap<>();
-
-        Module moduleGit = moduleService.findGitModule(user.getLogin(),
-                application);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("--ssh Copy ID To Server--");
-            logger.debug("ssh port : " + moduleGit.getSshPort());
-            logger.debug("manager ip : " + application.getManagerIp());
-        }
-
-        for (Server server : application.getServers()) {
-            configShell.put("password", server.getApplication().getUser().getPassword());
-            configShell.put("port", moduleGit.getSshPort());
-            configShell.put("dockerManagerAddress", application.getManagerIp());
-            configShell.put("userLogin", server.getApplication().getUser().getLogin());
-
-            try {
-                int counter = 0;
-                while (!server.getStatus().equals(Status.START)
-                        || !moduleGit.getStatus().equals(Status.START)) {
-                    if (counter == 100) {
-                        break;
-                    }
-                    Thread.sleep(1000);
-                    logger.info(" wait git and server ssh processus start");
-                    logger.info("STATUS = server : " + server.getStatus()
-                            + " - module : " + moduleGit.getStatus());
-
-                    moduleGit = moduleService.findById(moduleGit.getId());
-                    server = serverService.findById(server.getId());
-                    counter++;
-                }
-
-                // To permit ssh access on server from git container
-                command = "expect /cloudunit/scripts/ssh-copy-id-expect.sh "
-                        + moduleGit.getApplication().getUser().getPassword();
-                logger.info("command shell to execute [" + command + "]");
-
-                shellUtils.executeShell(command, configShell);
-
-            } catch (Exception e) {
-                moduleGit.setStatus(Status.FAIL);
-                moduleGit = moduleService.saveInDB(moduleGit);
-                server.setStatus(Status.FAIL);
-                server = serverService.saveInDB(server);
-                logger.error("Error :  Error during permit git to access to server " + e);
-
-                throw new ServiceException(e.getLocalizedMessage(), e);
-            }
-        }
-
-        try {
-            moduleGit = moduleService.update(moduleGit);
-
-            application.getModules().add(moduleGit);
-            application.setGitContainerIP(moduleGit.getContainerIP());
-
-        } catch (ServiceException e) {
-            moduleGit.setStatus(Status.FAIL);
-            moduleService.saveInDB(moduleGit);
-            logger.error("Error :  Error during persist git module " + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-        logger.info("ApplicationService : Application " + application.getName()
-                + " successfully created.");
-        return application;
-    }
-
-    /**
-     * Methode qui teste la validité d'une application
+    /* Methode qui teste la validité d'une application
      *
      * @param applicationName
      * @param serverName
@@ -429,6 +211,7 @@ public class ApplicationServiceImpl
         }
 
         application.setName(applicationName);
+        application.setDisplayName(applicationName);
         application.setUser(user);
         application.setModules(new ArrayList<>());
 
@@ -444,9 +227,6 @@ public class ApplicationServiceImpl
         // if tagname is null, we prefix with a ":"
         if (tagName != null) {
             tagName = ":" + tagName;
-        }
-        if (applicationName != null) {
-            applicationName = applicationName.toLowerCase();
         }
 
         logger.info("--CALL CREATE NEW APP--");
@@ -464,6 +244,7 @@ public class ApplicationServiceImpl
         }
 
         application.setName(applicationName);
+        application.setDisplayName(applicationName);
         application.setUser(user);
         application.setCuInstanceName(cuInstanceName);
         application.setModules(new ArrayList<>());
@@ -513,20 +294,8 @@ public class ApplicationServiceImpl
             servers.add(server);
             application.setServers(servers);
 
-            // BLOC MODULE
-            Module moduleGit = this.addGitContainer(application, tagName);
-            application.getModules().add(moduleGit);
-            application.setGitContainerIP(moduleGit.getContainerIP());
-
             // Persistence for Application model
             application = applicationDAO.save(application);
-
-            // Copy the ssh key from the server to git container to be able to deploy war with gitpush
-            // During clone processus, env variables are not updated. We must wait for a restart before
-            // to copy the ssh keys for git push
-            if (tagName == null) {
-                this.sshCopyIDToServer(application, user);
-            }
 
         } catch (DataAccessException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -591,7 +360,6 @@ public class ApplicationServiceImpl
                 if (listServers.indexOf(server) == listServers.size() - 1) {
                     hipacheRedisUtils.removeRedisAppKey(application);
                     applicationDAO.delete(server.getApplication());
-                    portUtils.releaseProxyPorts(application);
                 }
             }
 
@@ -668,13 +436,6 @@ public class ApplicationServiceImpl
         return application;
     }
 
-    @Override
-    public Application postStart(Application application, User user)
-            throws ServiceException {
-        application = this.updateEnv(application, user);
-        application = this.sshCopyIDToServer(application, user);
-        return application;
-    }
 
     @Override
     @Transactional
@@ -839,15 +600,6 @@ public class ApplicationServiceImpl
     }
 
     @Override
-    @Transactional
-    public Application saveGitPush(Application application, String login)
-            throws ServiceException, CheckException {
-        logger.info("parameters - application : " + application.toString());
-        deploymentService.create(application, Type.GITPUSH);
-        return application;
-    }
-
-    @Override
     public Long countApp(User user)
             throws ServiceException {
         try {
@@ -898,11 +650,6 @@ public class ApplicationServiceImpl
                         // Ajout des containers de type module
                         List<Module> modules = application.getModules();
                         for (Module module : modules) {
-                            // on evite de remonter les modules de type toolkit
-                            // (git, maven...)
-                            if (module.isTool()) {
-                                continue;
-                            }
                             DockerContainer dockerContainer = new DockerContainer();
                             dockerContainer.setName(module.getName());
                             dockerContainer = DockerContainer.findOne(
