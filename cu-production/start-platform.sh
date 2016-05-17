@@ -32,7 +32,6 @@ docker-compose up -d mysqldata
 docker-compose up -d mysql
 
 docker-compose up -d hipache
-docker-compose up -d registry
 
 # DNS DOCK
 echo -e "\n+++ Dns test inside a container +++\n"
