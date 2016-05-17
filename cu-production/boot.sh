@@ -56,7 +56,19 @@ function install_certs {
 }
 
 function build_cloudunit {
-     su -l admincu -c "cd /home/admincu/cloudunit/cu-services && ./build-services.sh"
+  su -l admincu -c "cd /home/admincu/cloudunit/cu-services && ./build-services.sh"
+}
+
+function compile_war {
+  cd /home/admincu/cloudunit/cu-manager
+  ./compile-root-war.sh
+  cp target/ROOT.war /home/admincu/cloudunit/cu-production/tomcat
+  chown -R admincu:admincu /home/admincu/.docker
+}
+
+function start_cloudunit {
+  cd /home/admincu/cloudunit/cu-production
+  ./reset-all.sh -y
 }
 
 # ------------------------------
@@ -67,5 +79,7 @@ clone_cloudunit
 provision_docker
 install_certs
 build_cloudunit
+compile_war
+start_cloudunit
 
 
