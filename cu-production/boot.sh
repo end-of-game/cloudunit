@@ -8,8 +8,6 @@ export CU_INSTALL_DIR=$CU_HOME/cu-production
 # install admincu account
 function create_admincu {
   useradd -m admincu
-  echo "Choose a password for admincu"
-  passwd admincu
 }
 
 # clone the project
