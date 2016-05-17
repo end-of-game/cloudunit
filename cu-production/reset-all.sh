@@ -30,8 +30,6 @@ docker rm -v $(docker ps -q --filter="status=exited")
 docker rm -vf $(docker ps -aq --filter "label=origin=cloudunit")
 docker rm -vf cuplatform_mysqldata_1
 docker rm -vf cuplatform_mysql_1
-docker rm -vf cuplatform_testmysqldata_1
-docker rm -vf cuplatform_testmysql_1
 docker rm -vf cuplatform_redis_1
 docker rm -vf cuplatform_hipache_1
 docker rm -vf cuplatform_dnsdock_1
