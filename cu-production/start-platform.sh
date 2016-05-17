@@ -30,6 +30,7 @@ done
 
 docker-compose up -d mysqldata
 docker-compose up -d mysql
+docker-compose up -d tomcat
 
 docker-compose up -d hipache
 
@@ -65,7 +66,6 @@ do
 done
 
 docker-compose up -d cadvisor
-docker-compose up -d tomcat
 
 
 
