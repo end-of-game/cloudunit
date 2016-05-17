@@ -28,11 +28,11 @@ echo -e "\nRemoving containers\n"
 docker rm -v $(docker ps -a | grep "Dead" | awk '{print $3}')
 docker rm -v $(docker ps -q --filter="status=exited")
 docker rm -vf $(docker ps -aq --filter "label=origin=cloudunit")
-docker rm -vf cuplatform_mysqldata_1
-docker rm -vf cuplatform_mysql_1
-docker rm -vf cuplatform_redis_1
-docker rm -vf cuplatform_hipache_1
-docker rm -vf cuplatform_dnsdock_1
+docker rm -vf cuproduction_mysqldata_1
+docker rm -vf cuproduction_mysql_1
+docker rm -vf cuproduction_redis_1
+docker rm -vf cuproduction_hipache_1
+docker rm -vf cuproduction_dnsdock_1
 
 # delete all NONE images
 docker rmi $(docker images | grep "<none>" | awk '{print $3}')

@@ -42,7 +42,7 @@ COUNTER=1
 until [ "$RETURN" -eq "0" ];
 do
     echo Testing $COUNTER time.
-    docker exec cuplatform_hipache_1 ping -c 1 cuplatform_dnsdock_1.dnsdock.cloud.unit | grep -q '1 received'
+    docker exec cuproduction_hipache_1 ping -c 1 cuproduction_dnsdock_1.dnsdock.cloud.unit | grep -q '1 received'
     RETURN=$?
     if [ "$COUNTER" -eq "5" ]; then
         echo Dnsdock has not started correctly. You should restart Docker.
@@ -60,7 +60,7 @@ RETURN=1
 until [ "$RETURN" -eq "0" ];
 do
     echo -e "\nWaiting for mysql\n";
-    mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) -P3306 -uroot -p${MYSQL_ROOT_PASSWORD} -e 'select 1 from dual;;'	--silent &>/dev/null
+    mysql -h$(docker inspect --format {{.NetworkSettings.IPAddress}} cuproduction_mysql_1) -P3306 -uroot -p${MYSQL_ROOT_PASSWORD} -e 'select 1 from dual;;'	--silent &>/dev/null
     RETURN=$?
     sleep 1
 done
