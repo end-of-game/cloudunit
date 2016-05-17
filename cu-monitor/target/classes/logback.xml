@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<logger name="fr.treeptik" level="info" />
+
+	<appender name="errors-log"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>cloudunit-errors.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<maxHistory>30</maxHistory>
+			<fileNamePattern>/tmp/logFile.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+		</rollingPolicy>
+
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>[%d{dd MMM yyyy HH:mm:ss.SSS}][%5p] %t (%c:%L) - %m%n
+			</Pattern>
+		</layout>
+	</appender>
+
+
+	<root level="info">
+		<appender-ref ref="console" />
+		<appender-ref ref="errors-log" />
+	</root>
+
+
+</configuration>
