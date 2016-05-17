@@ -18,11 +18,35 @@ So you just need to run this command as root :
 curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
 ```
 
+After installation, you need to set a password for *admincu* user account. 
+
 ## Configuration
 
 # CloudUnit properties.
 
 The default configuration files is `/home/admincu/.docker/application.properties`
+The template is 
+
+```
+# cloudunit.max.apps=100
+
+# mail.apiKey=
+# mail.emailFrom=
+# mail.secretKey=
+# mail.smtpHost=smtp.gmail.com
+# mail.socketFactoryPort=587
+# mail.smtpPort=587
+
+cloudunit.instance.name=PROD
+
+# database password must be the same in /etc/environment
+# database.hostname=cuplatform_mysql_1.mysql.cloud.unit
+# database.port=3306
+# database.schema=cloudunit
+# database.user=root
+# database.password=changeit
+
+```
 
 # Database password 
 
