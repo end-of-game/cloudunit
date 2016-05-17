@@ -1,6 +1,4 @@
 #!/bin/bash
- 
-set -x
 
 export CU_HOME=/home/admincu/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
@@ -70,5 +68,4 @@ provision_docker
 install_certs
 build_cloudunit
 
-set +x
 
