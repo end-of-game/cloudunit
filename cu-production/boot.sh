@@ -20,7 +20,7 @@ function clone_cloudunit {
 }
 
 # prepare the environment
-function provision_env {
+function provision_packages {
  apt-get install -y git
  apt-get install -y mysql-client
 }
@@ -42,6 +42,8 @@ function provision_docker {
 
 # install certificats for docker engine and client
 function install_certs {
+  cp $CU_INSTALL_DIR/files/docker.secure /etc/default/docker
+
   mkdir -p /root/.docker
   cp /home/admincu/cloudunit/conf/cert/server/* /root/.docker
 
@@ -51,14 +53,20 @@ function install_certs {
 
   cp $CU_INSTALL_DIR/files/environment /etc/environment
   cp $CU_INSTALL_DIR/files/hosts /etc/hosts
+
+  service docker stop
+  sleep 5
+  service docker start
 }
 
 function build_cloudunit {
  su -l admincu -c "cd /home/admincu/cloudunit/cu-services && ./build-services.sh" 
 }
 
+# ------------------------------
+
 create_admincu
-provision_env
+provision_packages
 clone_cloudunit
 provision_docker
 install_certs
