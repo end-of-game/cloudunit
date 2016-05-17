@@ -26,10 +26,10 @@ public class JenkinsServiceImpl implements JenkinsService {
     private static String JENKINS_IP = "192.168.50.4:9080";
 
     @Value("${jenkins.rootName}")
-    private static String rootName;
+    private  String rootName;
 
     @Value("${jenkins.rootPassword}")
-    private static String rootPassword;
+    private  String rootPassword;
 
     private final Logger logger = LoggerFactory
             .getLogger(JenkinsServiceImpl.class);
