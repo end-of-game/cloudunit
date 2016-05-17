@@ -67,8 +67,7 @@ function compile_war {
 }
 
 function start_cloudunit {
-  cd /home/admincu/cloudunit/cu-production
-  ./reset-all.sh -y
+  su -l admincu -c "cd /home/admincu/cloudunit/cu-production && ./reset-all.sh -y"
 }
 
 # ------------------------------
