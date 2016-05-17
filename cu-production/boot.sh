@@ -56,7 +56,7 @@ function install_certs {
 }
 
 function build_cloudunit {
- su -l admincu -c "cd /home/admincu/cloudunit/cu-services && ./build-services.sh" 
+     su -l admincu -c "cd /home/admincu/cloudunit/cu-services && ./build-services.sh"
 }
 
 # ------------------------------
