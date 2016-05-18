@@ -35,6 +35,8 @@ mysqldata:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro   
 
+
+
 dnsdock:
     image: tonistiigi/dnsdock:v1.10.0
     volumes:
@@ -48,8 +50,8 @@ dnsdock:
 tomcat:
     image: tomcat:7-jre8
     volumes:
-        - ./certificats:/usr/local/tomcat/certificats
         - ./tomcat:/usr/local/tomcat/webapps
+        - ./certificats:/usr/local/tomcat/certificats
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro 
         - /var/log/cloudunit/tomcat/culogin.log:/var/log/culogin.log
@@ -88,15 +90,3 @@ nginx:
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
-
-tomcat:
-    image: tomcat:7-jre8
-    volumes:
-        - ./tomcat:/usr/local/tomcat/webapps
-        - /etc/localtime:/etc/localtime:ro
-        - /etc/timezone:/etc/timezone:ro
-        - /var/log/cloudunit/tomcat/culogin.log:/var/log/culogin.log
-    environment:
-        - CU_SUB_DOMAIN
-        - CU_KVM
-        - CATALINA_OPTS="-Dspring.profiles.active=production"
