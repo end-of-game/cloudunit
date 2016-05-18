@@ -33,6 +33,7 @@ docker rm -vf cuproduction_mysql_1
 docker rm -vf cuproduction_redis_1
 docker rm -vf cuproduction_hipache_1
 docker rm -vf cuproduction_dnsdock_1
+docker rm -vf cuproduction_tomcat_1
 
 # delete all NONE images
 docker rmi $(docker images | grep "<none>" | awk '{print $3}')
