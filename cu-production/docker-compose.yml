@@ -48,8 +48,8 @@ dnsdock:
 tomcat:
     image: tomcat:7-jre8
     volumes:
-        - ./tomcat:/usr/local/tomcat/webapps
         - ./certificats:/usr/local/tomcat/certificats
+        - ./tomcat:/usr/local/tomcat/webapps
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro 
         - /var/log/cloudunit/tomcat/culogin.log:/var/log/culogin.log
