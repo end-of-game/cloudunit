@@ -430,7 +430,6 @@ public class SnapshotServiceImpl
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
         }
-
     }
 
     private boolean tagExists(String tag, String login) {
