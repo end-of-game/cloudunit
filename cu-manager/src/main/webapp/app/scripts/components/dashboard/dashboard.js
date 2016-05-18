@@ -55,7 +55,7 @@
     vm.deleteApplication = deleteApplication;
     vm.toggleServer = toggleServer;
     vm.buffer = '';
-
+    
     update();
 
     // Polling on refresh
@@ -87,7 +87,7 @@
       function success(applications) {
 
         var newApp = _.find(applications, function(app){
-          return app.name === vm.buffer.toLowerCase();
+          return app.name === vm.buffer.toLowerCase().replace(/[^a-z0-9]/gi,'');
         });
 
         // display shadow app while new app is being created
