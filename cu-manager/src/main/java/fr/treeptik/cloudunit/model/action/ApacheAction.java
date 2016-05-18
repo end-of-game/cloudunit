@@ -60,6 +60,9 @@ public class ApacheAction
     @Override
     public Snapshot cloneProperties(Snapshot snapshot) {
         snapshot.setType(parent.getImage().getName());
+        snapshot.setJvmRelease(parent.getJvmRelease());
+        snapshot.setJvmOptions(parent.getJvmOptions());
+        snapshot.setJvmMemory(parent.getJvmMemory());
         return snapshot;
     }
 
@@ -70,11 +73,11 @@ public class ApacheAction
 
     @Override
     public String getLogLocation() {
-        return "cloudunit/appconf/logs";
+        return "/var/log/apache2";
     }
 
     @Override
-    public String getDefaultLogFile() { return "apache.log"; };
+    public String getDefaultLogFile() { return "access.log"; };
 
     @Override
     public boolean hasDefaultPort() {
