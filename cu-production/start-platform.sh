@@ -66,6 +66,8 @@ do
 done
 
 docker-compose up -d cadvisor
+docker-compose up -d nginx
+
 
 
 
