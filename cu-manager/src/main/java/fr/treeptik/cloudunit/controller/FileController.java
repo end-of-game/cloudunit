@@ -28,9 +28,7 @@ import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.StringBuilderWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -40,13 +38,13 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 /*
  * Controller for resources (files + folders) into Container.
@@ -139,7 +137,7 @@ public class FileController {
 
         // Application is now pending
         applicationService.setStatus(application, Status.PENDING);
-
+        
         if (application != null) {
             File file = File.createTempFile("upload-", FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
             //File file = new File(fileUpload.getOriginalFilename());
@@ -242,22 +240,39 @@ public class FileController {
         File file = File.createTempFile("previousDownload", FilesUtils.setSuffix(fileName));
 
         path = convertPathFromUI(path);
-        Optional<File> fileFromContainer =
+        File fileFromContainer =
             fileService.getFileFromContainer(applicationName, containerId, file, fileName, path);
 
-        // File can be empty but we need to return one
-        if (fileFromContainer.filter(x -> x.length() == 0).isPresent()) {
+
+        BufferedReader br = new BufferedReader(new FileReader(fileFromContainer));
+        if (br.readLine() == null) {
             file = File.createTempFile(fileName, "");
             // put an empty space for empty file
             FileUtils.write(file, " ");
         }
 
-        InputStream inputStream = new FileInputStream(file); //load the file
-        IOUtils.copy(inputStream, response.getOutputStream());
-        response.flushBuffer();
+        response.reset();
+        String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+        String contentDisposition = String.format("attachment; filename=%s", fileName);
+        int fileSize = Long.valueOf(file.length()).intValue();
+
+        response.setContentType(mimeType);
+        response.setHeader("Content-Disposition", contentDisposition);
+        response.setContentLength(fileSize);
+        response.setHeader("Content-Description", "File Transfer");
+        response.setCharacterEncoding("binary");
+
+        Path path2 = Paths.get(file.getAbsolutePath());
+        byte[] data = Files.readAllBytes(path2);
+
+        try (OutputStream stream = response.getOutputStream()) {
+            stream.write(data);
+            stream.flush(); // commits response!
+        } catch (IOException ex) {
+            // clean error handling
+        }
 
         file.delete();
-
     }
 
     private String convertPathFromUI(String path) {
