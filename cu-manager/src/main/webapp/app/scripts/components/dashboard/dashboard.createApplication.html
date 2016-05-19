@@ -38,7 +38,7 @@
           class="hint format error">
           Use alphanumeric character only
         </p>-->
-        
+
         <p
           data-ng-if="createApp.createAppForm.name.$error.maxlength"
           class="hint format error">
@@ -73,7 +73,7 @@
               ripple=""
               click-once=""
               data-ng-disabled="createApp.notValidated || createApp.isPending || createApp.createAppForm.name.$error.maxlength"
-              data-ng-submit="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
+              data-ng-click="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
         <span>Create New App</span>
       </button>
     </form>
