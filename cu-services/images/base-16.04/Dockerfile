@@ -1,5 +1,5 @@
+# Base Dockerfile for all IMAGES
 FROM ubuntu:16.04
-
 # Install default software
 RUN apt-get update && apt-get install -y vim \
                                          openssh-server \
@@ -40,12 +40,3 @@ LABEL origin cloudunit
 
 # CloudUnit agent for database sync status
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/cloudunitAgent-1.0-SNAPSHOT.jar -O /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar
-
-
-
-
-
-
-
-
-

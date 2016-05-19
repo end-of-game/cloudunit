@@ -1,3 +1,4 @@
+# Base Dockerfile for all IMAGES
 FROM ubuntu:12.04
 
 # Install default software
@@ -40,12 +41,3 @@ LABEL origin cloudunit
 
 # CloudUnit agent for database sync status
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/cloudunitAgent-1.0-SNAPSHOT.jar -O /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar
-
-
-
-
-
-
-
-
-
