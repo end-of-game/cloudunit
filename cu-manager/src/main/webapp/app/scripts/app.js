@@ -53,7 +53,7 @@
       'webuiApp.dashboard',
       'webuiApp.editApplication',
       'webuiApp.snapshots',
-      'webuiApp.timelines',
+      'webuiApp.mainTimeline',
       'webuiApp.account',
       'webuiApp.feed',
       'webuiApp.tags',

@@ -15,14 +15,14 @@
 
 'use strict';
 
-angular.module('webuiApp.timelines', [])
+angular.module('webuiApp.mainTimeline', [])
   .config([
     '$stateProvider',
     function ($stateProvider) {
       $stateProvider
-        .state('timelines', {
+        .state('mainTimeline', {
           url: '/messages',
-          template: '<timelines></timelines>',
+          template: '<main-timeline></main-timeline>',
           data: {
             isFree: false
           }

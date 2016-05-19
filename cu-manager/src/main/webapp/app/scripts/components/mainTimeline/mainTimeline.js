@@ -24,14 +24,14 @@
    * Controller of the webuiApp
    */
   angular
-    .module ( 'webuiApp.timelines' )
-    .directive ( 'timelines', Timelines );
+    .module ( 'webuiApp.mainTimeline' )
+    .directive ( 'mainTimeline', MainTimeline );
 
 
-  function Timelines () {
+  function MainTimeline () {
     return {
       restrict: 'E',
-      templateUrl: 'scripts/components/timeline/timeline.html',
+      templateUrl: 'scripts/components/mainTimeline/mainTimeline.html',
       scope: {
         context: '='
       },
@@ -55,7 +55,8 @@
         vm = this;
 
         vm.event = '';
-        vm.date = '';
+        vm.date = 'recent';
+        vm.orderByDate = true;
         vm.applicationName = '';
 
         init();
@@ -69,7 +70,7 @@
         $scope.$on('$destroy', function () {
           $interval.cancel(timer);
         });
-
+        
         ////////////////////////////////////////////////////
 
         function init() {
@@ -82,8 +83,7 @@
             .catch(error);
 
           function success(messages) {
-            console.log(messages);
-            $scope.messages = messages;
+            vm.messages = messages;
             return vm.messages;
           }
 
@@ -99,23 +99,24 @@
           if(!currentApp){
             return;
           }
+          
           FeedService.listMessagesForCurrentApplication(currentApp)
-            .then(success)
-            .catch(error);
-
-          function success(messages) {
-            vm.messages = messages;
-            return vm.messages;
-          }
-
-          function error(response) {
-            FeedService.handle(response);
-            if(timer){
-              $interval.cancel(timer);
-            }
-          }
+            .then( function onComplete (messages) {
+                vm.messages = messages;
+                $scope.tableParams.reload ();
+              }
+            )
+            .catch(function onError(response) {
+              FeedService.handle(response);
+              if(timer){
+                $interval.cancel(timer);
+              }
+            });
         }
-
+        
+        $scope.orderBy = function () {
+          vm.orderByDate = (vm.date === "Recent") ? true : false;
+        }
 
   }
 }) ();
