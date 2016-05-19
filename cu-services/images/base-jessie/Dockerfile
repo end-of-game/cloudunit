@@ -35,6 +35,7 @@ COPY sshd_config /etc/ssh/sshd_config
 COPY hooks /cloudunit/appconf/hooks
 RUN chmod a+x /cloudunit/appconf/hooks/*
 
+# needed for shell script filter and deletion
 LABEL origin cloudunit
 
 # CloudUnit agent for database sync status
