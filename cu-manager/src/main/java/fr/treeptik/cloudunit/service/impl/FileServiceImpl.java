@@ -302,8 +302,6 @@ public class FileServiceImpl
             }
             List<Container> containers = docker.listContainers();
             for (Container container : containers) {
-                // b10da42def6c1737c40b981b1692acb24e28414944b4017814713afb811ae51b
-                // log.debug(container.id() + " : " + container.names());
                 if (container.id().substring(0, 12).equals(containerId) == false) {
                     continue;
                 }
@@ -424,34 +422,39 @@ public class FileServiceImpl
             Map<String, String> configShell = new HashMap<>();
 
             String sshPort = application.getSShPortByContainerId(containerId);
-            String rootPassword = application.getUser().getPassword();
+            //String userLogin = application.getUser().getLogin();
+            String userPassword = application.getUser().getPassword();
             configShell.put("port", sshPort);
             configShell.put("dockerManagerAddress",
                     application.getManagerIp());
-            configShell.put("password", rootPassword);
+            //configShell.put("userLogin", userLogin);
+            configShell.put("password", userPassword);
 
             // send the file on container
             shellUtils
-                    .sendFile(file, rootPassword, sshPort,
+                    .sendFile(file, userPassword, sshPort,
                             application.getManagerIp(),
                             convertDestPathFile(destFile));
-            /*
-             * déporter ce script dans le container (au plus au niveau)
-			 * 
-			 * renommer le fichier sur place et met les droits au user
-			 */
 
             shellUtils.executeShell("mv " + convertDestPathFile(destFile)
-                            + file.getName() + " " + convertDestPathFile(destFile)
-                            + originalName + " && chown "
+                            + file.getName().replaceAll(" ", "\\ ") + " " + convertDestPathFile(destFile)
+                            + originalName.replaceAll(" ", "\\ ") + " && chown "
                             + authentificationUtils.getAuthentificatedUser().getLogin()
                             + ":"
                             + authentificationUtils.getAuthentificatedUser().getLogin()
                             + " " + convertDestPathFile(destFile) + originalName,
                     configShell);
+
         } catch (ServiceException | CheckException e) {
-            throw new ServiceException("error in send file into the container",
-                    e);
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            StringBuilder msgError = new StringBuilder(512);
+            msgError.append("applicationName=").append(applicationName);
+            msgError.append(",").append("containerId=").append(containerId);
+            msgError.append(",").append("file=").append(file);
+            msgError.append(",").append("originalName=").append(originalName);
+            msgError.append(",").append("destFile=").append(destFile);
+            throw new ServiceException("error in send file into the container : " + msgError, e);
         }
 
     }
@@ -470,10 +473,12 @@ public class FileServiceImpl
      * @throws ServiceException
      */
     @Override
-    public Optional<File> getFileFromContainer(String applicationName,
+    public File getFileFromContainer(String applicationName,
                                                String containerId, File file, String originalName, String destFile)
             throws ServiceException {
 
+        String sshPort = null;
+        String rootPassword = null;
         Application application;
         try {
             application = applicationService.findByNameAndUser(
@@ -482,8 +487,8 @@ public class FileServiceImpl
 
             Map<String, String> configShell = new HashMap<>();
 
-            String sshPort = application.getSShPortByContainerId(containerId);
-            String rootPassword = application.getUser().getPassword();
+            sshPort = application.getSShPortByContainerId(containerId);
+            rootPassword = application.getUser().getPassword();
             configShell.put("port", sshPort);
             configShell.put("dockerManagerAddress",
                     application.getManagerIp());
@@ -500,13 +505,13 @@ public class FileServiceImpl
             msgError.append(",file.toPath()=").append(file.toPath());
             msgError.append("originalName=").append(originalName);
             msgError.append("destFile=").append(destFile);
+            msgError.append("sshPort=").append(sshPort);
+            msgError.append("rootPassword=").append(rootPassword);
             throw new ServiceException(msgError.toString(), e);
         }
 
-        return Optional.of(file);
+        return file;
     }
-
-    ;
 
     private String convertDestPathFile(String pathFile) {
         return "/" + pathFile.replaceAll("__", "/") + "/";

@@ -139,9 +139,9 @@ public class DockerContainer {
     }
 
     public static DockerContainer start(DockerContainer dockerContainer,
-                                        String hostIp)
+                                        String hostIp, String sharedDir)
         throws DockerJSONException {
-        dockerContainer = dockerContainerJSON.start(dockerContainer, hostIp);
+        dockerContainer = dockerContainerJSON.start(dockerContainer, hostIp, sharedDir);
         return dockerContainer;
     }
 

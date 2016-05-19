@@ -11,6 +11,8 @@ A complete plaform for devops featuring
 * Docker with its friends : Compose, Machine and soon Swarm
 * Jenkins 2 for CI/CD
 * GitLab CE 
+* EKL Stack for monitoring resources in a near future
+* Sonar to analyse and reports in the future
 
 ![Jenkins2 Logo](documentation/img/plateforme-trio.png "Devops Plateforme")
 
@@ -28,7 +30,7 @@ You can test the common platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Server installation guide](documentation/SERVER-GUIDE.md) [SOON UPDATED]
+* [Server installation guide](documentation/SERVER-GUIDE.md)
 * [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
 * [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
 
@@ -66,5 +68,5 @@ For any questions, contact us : contact@treeptik.fr
 
 Else ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
 
-Copyright 2015 Treeptik
+Copyright 2016 Treeptik
 

@@ -2,9 +2,7 @@ cloudunit/base-jessie images/base-jessie
 cloudunit/base-12.04 images/base-12.04
 cloudunit/base-14.04 images/base-14.04
 cloudunit/base-16.04 images/base-16.04
-
 cloudunit/java images/tools/java
-
 cloudunit/tomcat-base images/servers/binaries/tomcat-base
 cloudunit/tomcat-appconf6 images/servers/appconf/tomcat-appconf6
 cloudunit/tomcat-appconf7 images/servers/appconf/tomcat-appconf7
@@ -12,22 +10,18 @@ cloudunit/tomcat-appconf8 images/servers/appconf/tomcat-appconf8
 cloudunit/tomcat-6 images/servers/binaries/tomcat-6
 cloudunit/tomcat-7 images/servers/binaries/tomcat-7
 cloudunit/tomcat-8 images/servers/binaries/tomcat-8
-
 cloudunit/jboss-base images/servers/binaries/jboss-base
 cloudunit/jboss-8 images/servers/binaries/jboss-8
 cloudunit/jboss-appconf8 images/servers/appconf/jboss-appconf8
-
 cloudunit/fatjar images/servers/appconf/fatjar
-
+cloudunit/apache-2-2 images/servers/appconf/apache-2-2
 cloudunit/postgresql-9-3 images/modules/postgresql-9-3
 cloudunit/postgresql-9-4 images/modules/postgresql-9-4
 cloudunit/postgresql-9-5 images/modules/postgresql-9-4
-
+cloudunit/postgis-2-2 images/modules/postgis-2-2
 cloudunit/mysql-5-5 images/modules/mysql-5-5
 cloudunit/mysql-5-6 images/modules/mysql-5-6
 cloudunit/mysql-5-7 images/modules/mysql-5-7
-
 cloudunit/mongo-2-6 images/modules/mongo-2-6
-
 cloudunit/redis-2-8 images/modules/redis-2-8
 cloudunit/redis-3-0 images/modules/redis-3-0

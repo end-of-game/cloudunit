@@ -27,7 +27,7 @@
 
     return {
       buildTree: buildTree,
-      downloadFile: downloadFile,
+      //downloadFile: downloadFile,
       deleteFile: deleteFile
     };
 
@@ -53,7 +53,7 @@
       } ).$promise;
     }
 
-    function downloadFile ( containerId, applicationName, path, fileName ) {
+    /*function downloadFile ( containerId, applicationName, path, fileName ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
         containerId: containerId,
         applicationName: applicationName,
@@ -73,7 +73,7 @@
 
       return file.get ().$promise;
 
-    }
+    }*/
   }
 }) ();
 

@@ -57,7 +57,7 @@ if [ ! -f /init-service-ok ]; then
 	echo "root:$CU_ROOT_PASSWORD" | chpasswd
 
 	usermod -s /bin/bash $CU_SSH_USER
-	useradd -G postgres $CU_SSH_USER
+	usermod -G postgres $CU_SSH_USER
 
 	su - postgres -c "psql --command \"CREATE USER docker WITH SUPERUSER PASSWORD '$CU_ROOT_PASSWORD';\""
 	su - postgres -c "createdb -O docker docker"

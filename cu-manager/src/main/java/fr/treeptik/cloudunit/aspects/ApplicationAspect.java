@@ -72,11 +72,11 @@ public class ApplicationAspect
     public void beforeApplication(JoinPoint joinPoint)
         throws MonitorException, ServiceException {
 
-        String applicationName = null;
+        String applicationDisplayName = null;
         if (joinPoint.getArgs()[0] instanceof String) {
-            applicationName = (String) joinPoint.getArgs()[0];
+            applicationDisplayName = (String) joinPoint.getArgs()[0];
         } else if (joinPoint.getArgs()[0] instanceof Application) {
-            applicationName = ((Application) joinPoint.getArgs()[0]).getName();
+            applicationDisplayName = ((Application) joinPoint.getArgs()[0]).getDisplayName();
         }
 
         Message message = null;
@@ -85,19 +85,19 @@ public class ApplicationAspect
         switch (joinPoint.getSignature().getName().toUpperCase()) {
             case createType:
                 message = MessageUtils.writeBeforeApplicationMessage(user,
-                    applicationName, createType);
+                        applicationDisplayName, createType);
                 break;
             case deleteType:
                 message = MessageUtils.writeBeforeApplicationMessage(user,
-                    applicationName, deleteType);
+                        applicationDisplayName, deleteType);
                 break;
             case startType:
                 message = MessageUtils.writeBeforeApplicationMessage(user,
-                    applicationName, startType);
+                        applicationDisplayName, startType);
                 break;
             case stopType:
                 message = MessageUtils.writeBeforeApplicationMessage(user,
-                    applicationName, stopType);
+                        applicationDisplayName, stopType);
                 break;
         }
         if (message != null) {

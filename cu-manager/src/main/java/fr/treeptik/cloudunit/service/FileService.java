@@ -22,7 +22,6 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by nicolas on 20/05/15.
@@ -39,7 +38,7 @@ public interface FileService {
                              File file, String originalName, String destFile)
         throws ServiceException;
 
-    Optional<File> getFileFromContainer(String applicationName, String containerId,
+    File getFileFromContainer(String applicationName, String containerId,
                                         File file, String originalName, String destFile)
         throws ServiceException;
 

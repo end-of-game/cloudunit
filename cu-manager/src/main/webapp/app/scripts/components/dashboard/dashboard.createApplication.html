@@ -24,16 +24,25 @@
         <input id="name"
                name="name"
                type="text"
+
+               ng-maxlength="25"
                data-ng-model="createApp.applicationName"
-               data-ng-pattern="/^[a-zA-Z0-9]*$/"
                data-ng-change="createApp.isValid(createApp.applicationName, createApp.serverImageChoice.name)"
                data-ng-disabled="createApp.isPending"
+                protectinput=""
                required>
 
-        <p
+        <!-- Display errors -->
+        <!--<p
           data-ng-if="createApp.createAppForm.name.$error.pattern && !createApp.createAppForm.name.$pristine"
           class="hint format error">
           Use alphanumeric character only
+        </p>-->
+        
+        <p
+          data-ng-if="createApp.createAppForm.name.$error.maxlength"
+          class="hint format error">
+          Application name must have less than 25 chars (only alphanumerics)
         </p>
 
         <p class="hint error " data-ng-if="!createApp.createAppForm.name.$pristine && createApp.message"
@@ -63,8 +72,8 @@
               class="button primary pull-right"
               ripple=""
               click-once=""
-              data-ng-disabled="createApp.notValidated || createApp.isPending"
-              data-ng-click="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
+              data-ng-disabled="createApp.notValidated || createApp.isPending || createApp.createAppForm.name.$error.maxlength"
+              data-ng-submit="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
         <span>Create New App</span>
       </button>
     </form>

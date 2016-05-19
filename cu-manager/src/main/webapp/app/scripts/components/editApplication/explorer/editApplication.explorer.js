@@ -63,7 +63,7 @@
     };
     vm.upDir = upDir;
     vm.folderClick = folderClick;
-    vm.downloadFile = downloadFile;
+    //vm.downloadFile = downloadFile;
     vm.deleteFile = deleteFile;
     vm.refresh = refresh;
 
@@ -112,7 +112,9 @@
           }, 1000 );
         } )
         .catch ( function onFileDeleteError ( error ) {
-          console.log ( 'Cannot delete file : ' + error )
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
         } )
     }
 
@@ -194,7 +196,7 @@
     };
 
 
-    function downloadFile ( containerId, path, file ) {
+    /*function downloadFile ( containerId, path, file ) {
       if ( file.dir ) {
         return;
       }
@@ -202,7 +204,7 @@
         var blob = new Blob ( [result.data], { type: result.headers['content-type'] } );
         saveAs ( blob, file.name );
       } )
-    }
+    }*/
   }
 }) ();
 

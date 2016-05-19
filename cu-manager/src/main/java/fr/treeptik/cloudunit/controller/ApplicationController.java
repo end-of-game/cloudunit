@@ -24,7 +24,6 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -105,8 +104,12 @@ public class ApplicationController
             throws ServiceException, CheckException, InterruptedException {
 
         // replace accent characters
-        String applicationName = AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
-        input.setApplicationName(applicationName);
+
+        /* **** Check accent in server side **** */
+        //String applicationName = AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
+        //input.setApplicationName(applicationName);
+
+
         // validate the input
         input.validateCreateApp();
 

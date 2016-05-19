@@ -8,6 +8,7 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `displayName`, `prefixEnv`, `i
   (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', 'Tomcat 8.0.14', 'tomcat', 'server', ''),
   (4, 'jboss-8', 'cloudunit/jboss-appconf8', 'jBoss 8', 'jboss', 'server', ''),
   (5, 'fatjar', 'cloudunit/fatjar', 'FatJar', 'fatjar', 'server', ''),
+  (6, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', ''),
   (10, 'mysql-5-5', 'cloudunit/mysql-5-5', 'MySQL 5.5.49', 'mysql', 'module', 'phpmyadmin'),
   (11, 'mysql-5-6', 'cloudunit/mysql-5-6', 'MySQL 5.6.30', 'mysql', 'module', 'phpmyadmin'),
   (12, 'mysql-5-7', 'cloudunit/mysql-5-7', 'MySQL 5.7.12', 'mysql', 'module', 'phpmyadmin'),

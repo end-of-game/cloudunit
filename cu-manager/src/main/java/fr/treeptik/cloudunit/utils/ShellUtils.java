@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -165,61 +162,11 @@ public class ShellUtils {
 
     }
 
-    /**
-     * TODO : COMMENT
-     *
-     * @param file
-     * @param rootPassword
-     * @param sshPort
-     * @param dockerManagerAddress
-     * @param destParentDirectory
-     * @throws CheckException
-     */
-    public void sendFile(File file, String rootPassword, String sshPort,
-                         String dockerManagerAddress, String destParentDirectory)
-        throws CheckException {
 
-        Channel channel = null;
-        FileInputStream fileInputStream = null;
-        try {
-
-            String dockerManagerIP = dockerManagerAddress.substring(0,
-                dockerManagerAddress.length() - 5);
-            channel = this.getSession("root", rootPassword, dockerManagerIP,
-                sshPort).openChannel("sftp");
-
-            channel.connect();
-            fileInputStream = new FileInputStream(file);
-            ChannelSftp sftpChannel = (ChannelSftp) channel;
-            sftpChannel
-                .put(fileInputStream, destParentDirectory + file.getName(),
-                    ChannelSftp.OVERWRITE);
-
-            logger.debug("File send correctly");
-
-        } catch (IOException | SftpException | JSchException e) {
-            logger.error(e.getMessage());
-            throw new CheckException("Error during file copying");
-        } finally {
-            try {
-                if (fileInputStream != null) {
-                    fileInputStream.close();
-                }
-            } catch (Exception ignore) {
-            }
-            try {
-                if (channel != null) {
-                    channel.disconnect();
-                }
-            } catch (Exception ignore) {
-            }
-        }
-    }
 
     /**
      * TODO : COMMENT
      *
-     * @param file
      * @param rootPassword
      * @param sshPort
      * @param dockerManagerAddress
@@ -230,6 +177,9 @@ public class ShellUtils {
                              String dockerManagerAddress, String completeFilePath)
         throws CheckException {
         Channel channel = null;
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+
         try {
             String dockerManagerIP = dockerManagerAddress.substring(0,
                 dockerManagerAddress.length() - 5);
@@ -238,6 +188,7 @@ public class ShellUtils {
             channel.connect();
             ChannelSftp sftpChannel = (ChannelSftp) channel;
             // file source, file destination
+            
             sftpChannel.get(completeFilePath, file.getAbsolutePath());
 
             logger.debug("File received correctly");
@@ -256,7 +207,7 @@ public class ShellUtils {
     }
 
     /**
-     * TODO : COMMENT
+     * Get a SSH session
      *
      * @param userName
      * @param password
@@ -284,41 +235,50 @@ public class ShellUtils {
     }
 
     /**
-     * TODO : COMMENT
+     * Send a file through sFTP
      *
      * @param file
      * @param userName
      * @param password
      * @param sshPort
-     * @param addressIp
-     * @param destPathFie
+     * @param address
+     * @param destPathFile
      * @throws CheckException
      */
     public void sendFile(File file, String userName, String password,
-                         String sshPort, String addressIp, String destPathFie)
+                         String sshPort, String address, String destPathFile)
         throws CheckException {
 
         logger.debug("Send file " + file.getAbsolutePath() + " To Host "
-            + userName + "@+" + addressIp + ":" + destPathFie);
+            + userName + "@+" + address + ":" + destPathFile);
 
         FileInputStream fileInputStream = null;
         Channel channel = null;
         try {
+            String dockerManagerIP =
+                    address.substring(0, address.length() - 5);
 
-            channel = this.getSession(userName, password, addressIp, sshPort)
+            channel = this.getSession(userName, password, dockerManagerIP, sshPort)
                 .openChannel("sftp");
             channel.connect();
             fileInputStream = new FileInputStream(file);
+
             ChannelSftp sftpChannel = (ChannelSftp) channel;
             sftpChannel
-                .put(fileInputStream, destPathFie, ChannelSftp.OVERWRITE);
+                .put(fileInputStream, destPathFile+file.getName(), ChannelSftp.OVERWRITE);
 
             logger.debug("File send correctly");
 
         } catch (IOException | SftpException | JSchException e) {
-            throw new CheckException("Error during file copying");
+            e.printStackTrace();
+            StringBuilder msgError = new StringBuilder(512);
+            msgError.append(", ").append("file=").append(file);
+            msgError.append(", ").append("destPathFile+file.getName()=").append(destPathFile+file.getName());
+            msgError.append(", ").append(e);
+            throw new CheckException("Error during file copying : " + msgError);
+
         } finally {
-            try {
+           try {
                 if (fileInputStream != null) {
                     fileInputStream.close();
                 }
@@ -331,6 +291,22 @@ public class ShellUtils {
             } catch (Exception ignore) {
             }
         }
+    }
+
+    /**
+     * Send a file via sFtp with ROOT user
+     *
+     * @param file
+     * @param rootPassword
+     * @param sshPort
+     * @param address
+     * @param destParentDirectory
+     * @throws CheckException
+     */
+    public void sendFile(File file, String rootPassword, String sshPort,
+                         String address, String destParentDirectory)
+            throws CheckException {
+        sendFile(file, "root", rootPassword, sshPort, address, destParentDirectory);
     }
 
 }
