@@ -3,9 +3,15 @@
 export CU_HOME=/home/admincu/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
 
+function init {
+ apt-get update
+}
+
 # install admincu account
 function create_admincu {
   useradd -m admincu
+  usermod admincu -aG sudo
+  cp -f files/sudoers /etc/sudoers
 }
 
 # clone the project
