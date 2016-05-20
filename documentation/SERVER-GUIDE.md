@@ -4,6 +4,7 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 
 ## Requirements
 
+* A virtual or baremetal server with at least 8 Go RAM. 32 or 64 will be better !
 * A server with Ubuntu 14.04 LTS with a 3.13 or 3.19 kernel. Ok for 4.x
 * Git installed and a root account
 
@@ -12,7 +13,7 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 ## Installation
 
 We hope to provide a simple installation following KISS principles.
-So you just need to run this command as *root* :
+So you just need to run this command as *ROOT* :
 
 ```
 curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
