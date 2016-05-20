@@ -67,8 +67,6 @@ You have to replace the certificats into `/home/admincu/cloudunit/cu-production/
 
 # FAQ
 
-All questions and answers about dev tasks
-
 ## How to reset Environment Production
 
 ```
