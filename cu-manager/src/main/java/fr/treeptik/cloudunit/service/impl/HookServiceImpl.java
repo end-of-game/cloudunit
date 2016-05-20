@@ -55,7 +55,7 @@ public class HookServiceImpl implements HookService {
         }
     }
 
-    public void call(String containerName, HookAction action){
+    public void call(String containerName, HookAction action) {
 
         try {
             DockerClient docker = null;

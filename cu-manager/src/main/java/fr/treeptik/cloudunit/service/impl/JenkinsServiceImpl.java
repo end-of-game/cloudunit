@@ -24,19 +24,16 @@ import java.util.ArrayList;
 public class JenkinsServiceImpl implements JenkinsService {
 
     private static String JENKINS_IP = "192.168.50.4:9080";
-
-    @Value("${jenkins.rootName}")
-    private  String rootName;
-
-    @Value("${jenkins.rootPassword}")
-    private  String rootPassword;
-
     private final Logger logger = LoggerFactory
             .getLogger(JenkinsServiceImpl.class);
-
+    @Value("${jenkins.rootName}")
+    private String rootName;
+    @Value("${jenkins.rootPassword}")
+    private String rootPassword;
 
     /**
      * Add a user to the Jenkins server
+     *
      * @param user
      */
     public void addUser(User user) {
@@ -69,6 +66,7 @@ public class JenkinsServiceImpl implements JenkinsService {
 
     /**
      * Delete a user from a Jenkins server
+     *
      * @param username
      */
     public void deleteUser(String username) {
@@ -101,7 +99,7 @@ public class JenkinsServiceImpl implements JenkinsService {
      * @return
      */
     private String createJson(User user) {
-        return "{\"username\": \""+ user.getLogin() + "\"," +
+        return "{\"username\": \"" + user.getLogin() + "\"," +
                 " \"password1\": \"" + user.getPassword() + "\"," +
                 " \"password2\": \"" + user.getPassword() + "\"," +
                 " \"fullname\": \"" + user.getFirstName() + " " + user.getLastName() + "\"," +

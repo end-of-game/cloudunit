@@ -15,11 +15,7 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerCertificates;
-import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
-import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
@@ -27,12 +23,7 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.hooks.HookAction;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.ServerFactory;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
@@ -41,17 +32,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 @Service
 public class ServerServiceImpl

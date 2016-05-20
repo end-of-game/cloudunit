@@ -40,7 +40,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
 
 @Component
 @SuppressWarnings("unchecked")
@@ -820,8 +819,8 @@ public class DockerContainerJSON {
         String digest = "";
         int indexOfDigest = ((String) response.get("body")).indexOf("Digest:");
         if (indexOfDigest != -1) {
-            digest = ((String) response.get("body")).substring(indexOfDigest+8);
-            digest = digest.substring(0, digest.length()-4);
+            digest = ((String) response.get("body")).substring(indexOfDigest + 8);
+            digest = digest.substring(0, digest.length() - 4);
         }
         return digest;
 

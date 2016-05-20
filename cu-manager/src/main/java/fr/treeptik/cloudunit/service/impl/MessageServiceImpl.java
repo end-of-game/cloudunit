@@ -35,7 +35,7 @@ import java.util.List;
 
 @Service
 public class MessageServiceImpl
-    implements MessageService {
+        implements MessageService {
 
     @Inject
     private MessageDAO messageDAO;
@@ -46,7 +46,7 @@ public class MessageServiceImpl
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Message create(Message message)
-        throws ServiceException {
+            throws ServiceException {
         try {
             message.setCuInstanceName(cuInstanceName);
             return messageDAO.save(message);
@@ -58,7 +58,7 @@ public class MessageServiceImpl
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void delete(Message message)
-        throws ServiceException {
+            throws ServiceException {
         try {
             messageDAO.delete(message);
         } catch (PersistenceException e) {
@@ -68,7 +68,7 @@ public class MessageServiceImpl
 
     @Override
     public List<Message> listByUser(User user, int nbRows)
-        throws ServiceException {
+            throws ServiceException {
         try {
             Pageable pageable = new PageRequest(0, nbRows, sortByLastNameAsc());
             Page<Message> requestedPage = messageDAO.listByUserAndCuInstance(user, cuInstanceName, pageable);
@@ -93,12 +93,12 @@ public class MessageServiceImpl
     @Override
     public List<Message> listByApp(User user, String applicationName,
                                    int nbMessages)
-        throws ServiceException {
+            throws ServiceException {
         try {
             Pageable pageable = new PageRequest(0, nbMessages,
-                sortByLastNameAsc());
+                    sortByLastNameAsc());
             Page<Message> requestedPage = messageDAO.listByApp(user,
-                applicationName, cuInstanceName, pageable);
+                    applicationName, cuInstanceName, pageable);
             return requestedPage.getContent();
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);

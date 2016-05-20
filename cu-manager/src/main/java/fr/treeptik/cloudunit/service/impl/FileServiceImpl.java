@@ -96,7 +96,7 @@ public class FileServiceImpl
 
     /**
      * File Explorer Feature
-     *
+     * <p>
      * Delete all resources (files and folders) for an application + container +
      * path.
      *
@@ -142,7 +142,7 @@ public class FileServiceImpl
 
     /**
      * Logs Display Feature
-     *
+     * <p>
      * List the files into the Log directory
      *
      * @param containerId
@@ -214,7 +214,7 @@ public class FileServiceImpl
 
     /**
      * Logs Display Feature
-     *
+     * <p>
      * List the files and folder for a container
      *
      * @param containerId
@@ -245,7 +245,7 @@ public class FileServiceImpl
                 // Exec command inside running container with attached STDOUT
                 // and STDERR
                 final String[] command = {"bash", "-c",
-                        "tail -n " + nbRows  + " /cloudunit/appconf/logs/" + file};
+                        "tail -n " + nbRows + " /cloudunit/appconf/logs/" + file};
                 String execId;
                 String containerName = container.names().get(0);
                 execId = docker.execCreate(containerName, command,
@@ -274,7 +274,7 @@ public class FileServiceImpl
 
     /**
      * File Explorer Feature
-     *
+     * <p>
      * List the files by Container and Path
      *
      * @param containerId
@@ -399,7 +399,7 @@ public class FileServiceImpl
 
     /**
      * File Explorer feature
-     *
+     * <p>
      * Send a file into a container
      *
      * @param applicationName
@@ -461,7 +461,7 @@ public class FileServiceImpl
 
     /**
      * File Explorer feature
-     *
+     * <p>
      * Gather a file from a container
      *
      * @param applicationName
@@ -474,7 +474,7 @@ public class FileServiceImpl
      */
     @Override
     public File getFileFromContainer(String applicationName,
-                                               String containerId, File file, String originalName, String destFile)
+                                     String containerId, File file, String originalName, String destFile)
             throws ServiceException {
 
         String sshPort = null;

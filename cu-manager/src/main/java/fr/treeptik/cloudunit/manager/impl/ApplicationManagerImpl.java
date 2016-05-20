@@ -114,7 +114,7 @@ public class ApplicationManagerImpl
             // Application en cours de démarrage
             applicationService.start(application);
 
-            // Wait for the server has a status START (set by shell agent)
+            // Wait for the server has a status START
             for (Server server : application.getServers()) {
                 int counter = 0;
                 while (!server.getStatus().equals(Status.START)) {

@@ -7,12 +7,14 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.GitlabService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -80,7 +82,8 @@ public class GitlabServiceImpl implements GitlabService {
             try {
                 if (wr != null) wr.flush();
                 if (wr != null) wr.close();
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
         }
         return code;
     }
@@ -173,9 +176,9 @@ public class GitlabServiceImpl implements GitlabService {
         String[] jsonA = jsonS.split("(?<=\\})");
         ObjectMapper mapper = new ObjectMapper();
 
-        for (int i = 0; i < jsonA.length-1; i++) {
+        for (int i = 0; i < jsonA.length - 1; i++) {
             String s = jsonA[i];
-            if(s != null) {
+            if (s != null) {
                 s = s.substring(1);
 
                 JsonNode node = null;

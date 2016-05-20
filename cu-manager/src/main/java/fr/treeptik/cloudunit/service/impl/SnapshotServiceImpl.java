@@ -121,14 +121,16 @@ public class SnapshotServiceImpl
         testTag = testTag.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         testTag = testTag.replaceAll("[^a-z0-9]", "");
 
-        if(testTag.length() == 0) {
+        if (testTag.length() == 0) {
             applicationService.setStatus(application, previousStatus);
             authentificationUtils.allowUser(user);
             throw new CheckException("This tag has a length equal to zero : " + tag);
         }
 
 
-        if (tag != null) { tag = tag.toLowerCase(); }
+        if (tag != null) {
+            tag = tag.toLowerCase();
+        }
 
         if (tagExists(tag, user.getLogin())) {
             applicationService.setStatus(application, previousStatus);
@@ -148,7 +150,7 @@ public class SnapshotServiceImpl
             snapshot.setDate(new Date());
             snapshot.setTag(tag);
             snapshot.setDisplayTag(tag);
-            snapshot.setFullTag(user.getLogin()+"-"+tag);
+            snapshot.setFullTag(user.getLogin() + "-" + tag);
             snapshot.setCuInstanceName(cuInstanceName);
             snapshot.setDescription(description);
             snapshot.setUser(application.getUser());
@@ -188,9 +190,9 @@ public class SnapshotServiceImpl
                 dockerContainer.setName(server.getName());
                 dockerContainer.setImage(server.getImage().getName());
                 DockerContainer.commit(dockerContainer,
-                                        snapshot.getFullTag(),
-                                        application.getManagerIp(),
-                                        server.getImage().getPath());
+                        snapshot.getFullTag(),
+                        application.getManagerIp(),
+                        server.getImage().getPath());
             }
 
             for (Module module : application.getModules()) {
@@ -204,8 +206,8 @@ public class SnapshotServiceImpl
                 dockerContainer.setName(moduleName);
                 dockerContainer.setImage(module.getImage().getName());
                 DockerContainer.commit(dockerContainer,
-                                        snapshot.getFullTag(),
-                                        application.getManagerIp(), imageName);
+                        snapshot.getFullTag(),
+                        application.getManagerIp(), imageName);
             }
 
             snapshot.setImages(images);
@@ -218,8 +220,10 @@ public class SnapshotServiceImpl
     }
 
     public Snapshot findByTagAndUser(String login, String tag) {
-        if (tag != null) { tag = tag.toLowerCase(); }
-        return snapshotDAO.findByTag(login+"-"+tag);
+        if (tag != null) {
+            tag = tag.toLowerCase();
+        }
+        return snapshotDAO.findByTag(login + "-" + tag);
     }
 
     @Override
@@ -237,7 +241,9 @@ public class SnapshotServiceImpl
     public Snapshot remove(String tag)
             throws ServiceException, CheckException {
         Snapshot snapshot = null;
-        if (tag != null) { tag = tag.toLowerCase(); }
+        if (tag != null) {
+            tag = tag.toLowerCase();
+        }
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -252,7 +258,7 @@ public class SnapshotServiceImpl
             for (String image : images) {
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setImage(image);
-                DockerContainer.deleteImage(image+":"+tag, dockerManagerIp);
+                DockerContainer.deleteImage(image + ":" + tag, dockerManagerIp);
             }
 
             snapshotDAO.delete(snapshotDAO.findByTag(tag));
@@ -350,19 +356,25 @@ public class SnapshotServiceImpl
             LogStream output = docker.execStart(execId);
             String execOutput = output.readFully();
             System.out.println(execOutput);
-            if (output != null) { output.close(); }
+            if (output != null) {
+                output.close();
+            }
 
             execId = docker.execCreate(module.getName(), commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             output = docker.execStart(execId);
             execOutput = output.readFully();
             System.out.println(execOutput);
-            if (output != null) { output.close(); }
+            if (output != null) {
+                output.close();
+            }
 
             execId = docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             output = docker.execStart(execId);
             execOutput = output.readFully();
             System.out.println(execOutput);
-            if (output != null) { output.close(); }
+            if (output != null) {
+                output.close();
+            }
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
@@ -371,6 +383,7 @@ public class SnapshotServiceImpl
 
     /**
      * Restore all modules
+     *
      * @param snapshot
      * @param application
      * @param tag
@@ -425,7 +438,9 @@ public class SnapshotServiceImpl
             LogStream output = docker.execStart(execId);
             String execOutput = output.readFully();
             System.out.println(execOutput);
-            if (output != null) { output.close(); }
+            if (output != null) {
+                output.close();
+            }
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);

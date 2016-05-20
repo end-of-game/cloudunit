@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DockerContainerBuilder
-    extends
-    DockerContainerBuilderBase<DockerContainerBuilder> {
+        extends
+        DockerContainerBuilderBase<DockerContainerBuilder> {
     public DockerContainerBuilder() {
         super(new DockerContainer());
     }
