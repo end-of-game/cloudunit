@@ -676,11 +676,11 @@ public class DockerContainerJSON {
             switch (statusCode) {
                 case 304:
                     throw new WarningDockerJSONException(
-                            "container already started");
+                            "container already started" + dockerContainer);
                 case 404:
-                    throw new ErrorDockerJSONException("docker : no such container");
+                    throw new ErrorDockerJSONException("docker : no such container" + dockerContainer);
                 case 500:
-                    throw new ErrorDockerJSONException("docker : error server");
+                    throw new ErrorDockerJSONException("docker : error server : " + dockerContainer);
             }
             dockerContainer = this.findOne(dockerContainer.getName(), hostIp);
         } catch (URISyntaxException | IOException e) {
