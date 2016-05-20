@@ -61,7 +61,6 @@ Run `/home/admincu/cloudunit/cu-platform/reset.sh -y`
 
 By default, we cannot know your domain name. 
 So we provide default certificats for HTTPS but without valid CA.
-You have to replace those provided by yours.
 
 NGINX is provided as docker container. The certificats can be modified on filesystem through a volume.
 You have to replace the certificats into `/home/admincu/cloudunit/cu-production/nginx`
@@ -73,8 +72,7 @@ All questions and answers about dev tasks
 ## How to reset Environment Development
 
 ```
-vagrant ssh
-cloudunit/cu-production/reset-all.sh -y
+/home/admincu/cloudunit/cu-production/reset-all.sh -y
 ```
 
 ## How to rebuild images
@@ -82,8 +80,8 @@ cloudunit/cu-production/reset-all.sh -y
 Update your sources, build the images and reninit the database :
 
 ```
-cloudunit/cu-services/build-services.sh
-cloudunit/cu-production/reset-all.sh -y
+/home/admincu/cloudunit/cu-services/build-services.sh
+/home/admincu/cloudunit/cu-production/reset-all.sh -y
 ```
 
 
