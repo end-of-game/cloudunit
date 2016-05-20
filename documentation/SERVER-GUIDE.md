@@ -22,7 +22,7 @@ After installation, you need to set a password for *admincu* user account.
 
 ## Configuration
 
-# CloudUnit properties.
+### CloudUnit properties.
 
 The default configuration files is `/home/admincu/.docker/application.properties`
 The template is 
@@ -48,7 +48,7 @@ cloudunit.instance.name=PROD
 
 ```
 
-# Database password 
+### Database password 
 
 You have to change MYSQL root password (*changeit* by default)
 To do it, you have to change the 
@@ -59,11 +59,8 @@ Run `/home/admincu/cloudunit/cu-platform/reset.sh -y`
 
 ## Certificats
 
-By default, we cannot know your domain name. So we provide default certificats for HTTPS but without valid CA.
+By default, we cannot know your domain name. 
+So we provide default certificats for HTTPS but without valid CA.
 You have to replace those provided by yours.
 
 NGINX is provided as docker container. The certificats can be modified on filesystem through a volume.
-
-## Security
-
-Work in progress
