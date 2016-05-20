@@ -3,7 +3,7 @@ FROM cloudunit/base-jessie
 ENV DEBIAN_FRONTEND noninteractive
 
 ENV PG_MAJOR 9.4
-ENV PG_VERSION 9.4.7-1.pgdg80+1
+ENV PG_VERSION 9.4.8-1.pgdg80+1
 ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
 ENV PGDATA /var/lib/postgresql/data
 ENV LANG en_US.utf8
