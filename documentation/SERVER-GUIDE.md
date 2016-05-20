@@ -69,19 +69,11 @@ You have to replace the certificats into `/home/admincu/cloudunit/cu-production/
 
 All questions and answers about dev tasks
 
-## How to reset Environment Development
+## How to reset Environment Production
 
 ```
 /home/admincu/cloudunit/cu-production/reset-all.sh -y
 ```
 
-## How to rebuild images
-
-Update your sources, build the images and reninit the database :
-
-```
-/home/admincu/cloudunit/cu-services/build-services.sh
-/home/admincu/cloudunit/cu-production/reset-all.sh -y
-```
 
 
