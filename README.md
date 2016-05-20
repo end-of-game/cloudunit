@@ -14,6 +14,13 @@ A complete plaform for devops featuring
 * EKL Stack for monitoring resources in a near future
 * Sonar to analyse and reports in the future
 
+Today we have many servers :
+* Tomcat(s)
+* JBoss / WildFly 10 in progress
+* FatJar for SpringBoot, Vertx, PlayFramework...
+
+And for modules : Mysql, Redis, Mongo, PostGreSQL, PostGis. Each module in different major release.
+
 ![Jenkins2 Logo](documentation/img/plateforme-trio.png "Devops Plateforme")
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
