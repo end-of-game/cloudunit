@@ -44,7 +44,7 @@ There are many installation guides
 ## Go further
 
 * [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit-cli/blob/dev/README.md)
-* [CloudUnit Maven Plugin](documentation/README.md)
+* [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit-maven-plugin/blob/master/README.md)
 * [CloudUnit with Jenkins2/GitLab](documentation/CI-CD.md) [SOON UPDATED]
 
 # Licensing
