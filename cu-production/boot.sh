@@ -65,5 +65,3 @@ chown -R $CU_USER:$CU_USER /home/$CU_USER/.docker
 # RESET ALL FOR FIRST START
 su -l $CU_USER -c "cd $CU_HOME/cu-production && ./reset-all.sh -y"
 
-
-
