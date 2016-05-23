@@ -50,12 +50,32 @@
     vm.applicationName = '';
     vm.serverImages = [];
     vm.serverImageChoice = {};
+    vm.serverImageSelect2 = undefined;
+    vm.group = [];
     vm.notValidated = true;
     vm.message = '';
     vm.isPending = false;
-
+    
     vm.createApplication = createApplication;
     vm.isValid = isValid;
+
+    vm.selectConfig = {
+      optgroupField: 'idPrefixEnv',
+      optgroupLabelField: 'title',
+      maxItems: 1,
+      valueField: 'id',
+      labelField: 'name',
+      searchField: 'name',
+      placeholder: 'Select Server',
+      render: {
+        optgroup_header: function(data, escape) {
+          return '<div class="label">' + escape(data.title) + '</div>';
+        }
+      },
+      onChange(value) {
+        vm.serverImageChoice =  vm.serverImages[vm.serverImages.map(function(x) {return x.id; }).indexOf(+value)];
+      }
+    };
 
     init();
 
@@ -65,8 +85,28 @@
         .catch(error);
 
       function success(serverImages) {
-        vm.serverImages = serverImages;
-        vm.serverImageChoice = serverImages[2];
+        //vm.serverImages = serverImages;
+      
+        for(var i = 0; i < serverImages.length; i++) {
+          vm.serverImages[i] = serverImages[i];
+          var res = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[i].prefixEnv);
+          if(res != -1) {    
+            vm.serverImages[i].idPrefixEnv = vm.group[res].idPrefixEnv;
+          } else {
+            var prefiEnv = serverImages[i].prefixEnv;
+            var idPrefixEnv = vm.group.length + 1;
+            vm.serverImages[i].idPrefixEnv = idPrefixEnv;
+            vm.group.push({
+              id: idPrefixEnv,
+              title: prefiEnv,
+              idPrefixEnv: idPrefixEnv
+            });
+          }
+      }
+/*       console.log(vm.group);
+       console.log( vm.serverImages);*/
+
+        vm.serverImageChoice = serverImages[0];
       }
 
       function error(response) {
@@ -114,5 +154,3 @@
     }
   }
 })();
-
-

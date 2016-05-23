@@ -48,6 +48,7 @@
         <p class="hint error " data-ng-if="!createApp.createAppForm.name.$pristine && createApp.message"
            data-ng-bind="createApp.message"></p>
       </div>
+      <!--
       <div class="input-group stack">
         <div class="dropdown" dropdown="">
           <label for="name">App Server</label>
@@ -65,14 +66,17 @@
             </li>
           </ul>
         </div>
+      </div>-->
+      <div class="input-group stack">
+        <label for="name">Apps Server</label>
+        <selectize config="createApp.selectConfig" optgroups="createApp.group" options='createApp.serverImages' ng-model="createApp.serverImageSelect2"></selectize>
       </div>
-
       <button id="create-btn"
               type="submit"
               class="button primary pull-right"
               ripple=""
               click-once=""
-              data-ng-disabled="createApp.notValidated || createApp.isPending || createApp.createAppForm.name.$error.maxlength"
+              data-ng-disabled="createApp.notValidated || createApp.isPending || createApp.createAppForm.name.$error.maxlength || !createApp.serverImageSelect2"
               data-ng-click="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
         <span>Create New App</span>
       </button>
