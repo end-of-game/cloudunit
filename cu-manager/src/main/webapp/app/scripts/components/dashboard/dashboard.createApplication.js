@@ -73,7 +73,7 @@
         }
       },
       onChange(value) {
-        vm.serverImageChoice =  vm.serverImages[vm.serverImages.map(function(x) {return x.id; }).indexOf(+value)];
+        vm.serverImageChoice =  vm.serverImages[vm.serverImages.map(function(x) {return x.id; }).indexOf(+value)];      
       }
     };
 
@@ -125,6 +125,10 @@
         vm.createAppForm.$setPristine();
         vm.applicationName = '';
         vm.isPending = false;
+        vm.serverImageSelect2 = undefined;
+        setTimeout(function() {
+          vm.serverImageChoice = vm.serverImages[0];
+        }, 1);
       }
 
       function error(response) {
@@ -134,20 +138,20 @@
     }
 
     function isValid(applicationName, serverName) {
-      ApplicationService.isValid(applicationName, serverName)
+        ApplicationService.isValid(applicationName, serverName)
         .then(success)
         .catch(error);
 
-      function success() {
-        vm.notValidated = false;
-        vm.message = '';
-      }
+        function success() {
+          vm.notValidated = false;
+          vm.message = '';
+        }
 
-      function error(response) {
-        vm.message = response.data.message;
-        vm.notValidated = true;
-        vm.isPending = false;
-      }
+        function error(response) {
+          vm.message = response.data.message;
+          vm.notValidated = true;
+          vm.isPending = false;
+        }     
     }
   }
 })();
