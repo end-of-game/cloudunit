@@ -1,21 +1,24 @@
 #!/bin/bash
 
-trap "set +x; sleep 5; set -x" DEBUG
+# trap "set +x; sleep 5; set -x" DEBUG
 
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
 
 # INIT
-apt-get update
+apt-get update &
+wait
 
 # CREATE ADMINCU USER admincu account
 useradd -m $CU_USER
 usermod $CU_USER -aG sudo
 
 # PROVISION THE ENV
-apt-get install -y git
-apt-get install -y mysql-client
+apt-get install -y git &
+wait
+apt-get install -y mysql-client &
+wait
 
 # CLONE CLOUDUNIT
 cd /home/$CU_USER
@@ -26,10 +29,13 @@ chown -R $CU_USER:$CU_USER /home/$CU_USER
 # INSTALL DOCKER
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
 cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
-apt-get update
-apt-get install -y lxc-docker-1.6.2 1.6.2
+apt-get update &
+wait
+apt-get install -y lxc-docker-1.6.2 1.6.2 &
+wait
 apt-mark hold lxc-docker
-apt-get install -y linux-image-extra-$(uname -r)
+apt-get install -y linux-image-extra-$(uname -r) &
+wait
 usermod -aG docker $CU_USER
 curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > docker-compose
 chmod +x docker-compose
