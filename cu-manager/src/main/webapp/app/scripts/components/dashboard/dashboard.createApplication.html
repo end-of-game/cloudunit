@@ -48,28 +48,10 @@
         <p class="hint error " data-ng-if="!createApp.createAppForm.name.$pristine && createApp.message"
            data-ng-bind="createApp.message"></p>
       </div>
-      <!--
+
       <div class="input-group stack">
-        <div class="dropdown" dropdown="">
-          <label for="name">App Server</label>
-          <a class="dropdown-toggle"
-             dropdown-toggle=""
-             data-ng_bind="createApp.serverImageChoice.displayName"
-             data-ng-disabled="createApp.isPending">
-          </a>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-            <li data-ng-repeat="serverImage in createApp.serverImages">
-              <a ng-href=""
-                 data-ng-click="createApp.serverImageChoice = serverImage; createApp.isValid(createApp.applicationName, createApp.serverImageChoice.name)"
-                 data-ng-bind="serverImage.displayName">
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>-->
-      <div class="input-group stack">
-        <label for="name">Apps Server</label>
-        <selectize config="createApp.selectConfig" optgroups="createApp.group" options='createApp.serverImages' ng-model="createApp.serverImageSelect2"></selectize>
+        <label for="name">App Server</label>
+        <selectize config="createApp.selectConfig" optgroups="createApp.group" options='createApp.serverImages' ng-clear='createApp.isPending' ng-model="createApp.serverImageSelect2"></selectize>
       </div>
       <button id="create-btn"
               type="submit"

@@ -51,11 +51,11 @@
     vm.serverImages = [];
     vm.serverImageChoice = {};
     vm.serverImageSelect2 = undefined;
+    
     vm.group = [];
     vm.notValidated = true;
     vm.message = '';
     vm.isPending = false;
-    
     vm.createApplication = createApplication;
     vm.isValid = isValid;
 
@@ -85,26 +85,23 @@
         .catch(error);
 
       function success(serverImages) {
-        //vm.serverImages = serverImages;
+        vm.serverImages = serverImages;
       
-        for(var i = 0; i < serverImages.length; i++) {
-          vm.serverImages[i] = serverImages[i];
-          var res = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[i].prefixEnv);
-          if(res != -1) {    
-            vm.serverImages[i].idPrefixEnv = vm.group[res].idPrefixEnv;
+         serverImages.forEach(function (element, index) {
+          var rang = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[index].prefixEnv);
+          if(rang != -1) {    
+            vm.serverImages[index].idPrefixEnv = vm.group[rang].idPrefixEnv;
           } else {
-            var prefiEnv = serverImages[i].prefixEnv;
+            var prefiEnv = serverImages[index].prefixEnv;
             var idPrefixEnv = vm.group.length + 1;
-            vm.serverImages[i].idPrefixEnv = idPrefixEnv;
+            vm.serverImages[index].idPrefixEnv = idPrefixEnv;
             vm.group.push({
               id: idPrefixEnv,
               title: prefiEnv,
               idPrefixEnv: idPrefixEnv
             });
           }
-      }
-/*       console.log(vm.group);
-       console.log( vm.serverImages);*/
+         });
 
         vm.serverImageChoice = serverImages[0];
       }
