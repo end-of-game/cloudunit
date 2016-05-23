@@ -92,12 +92,12 @@
           if(rang != -1) {    
             vm.serverImages[index].idPrefixEnv = vm.group[rang].idPrefixEnv;
           } else {
-            var prefiEnv = serverImages[index].prefixEnv;
+            var prefixEnv = serverImages[index].prefixEnv;
             var idPrefixEnv = vm.group.length + 1;
             vm.serverImages[index].idPrefixEnv = idPrefixEnv;
             vm.group.push({
               id: idPrefixEnv,
-              title: prefiEnv,
+              title: prefixEnv,
               idPrefixEnv: idPrefixEnv
             });
           }
