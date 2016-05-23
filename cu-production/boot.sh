@@ -24,6 +24,7 @@ chown -R $CU_USER:$CU_USER /home/$CU_USER
 # INSTALL DOCKER
 apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
 cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
+apt-get update
 apt-get install -y lxc-docker-1.6.2 1.6.2
 apt-mark hold lxc-docker
 apt-get install -y linux-image-extra-$(uname -r)
