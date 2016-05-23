@@ -1,5 +1,7 @@
 #!/bin/bash
 
+trap "set +x; sleep 5; set -x" DEBUG
+
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
