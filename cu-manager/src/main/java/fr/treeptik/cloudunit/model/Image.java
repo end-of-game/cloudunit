@@ -61,6 +61,10 @@ public class Image
 
     private String prefixEnv;
 
+    public int getPrefixId() {
+        return prefixEnv.hashCode();
+    }
+
     public String getPrefixEnv() {
         return prefixEnv;
     }
