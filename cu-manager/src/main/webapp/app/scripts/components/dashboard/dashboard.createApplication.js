@@ -60,7 +60,7 @@
     vm.isValid = isValid;
 
     vm.selectConfig = {
-      optgroupField: 'idPrefixEnv',
+      optgroupField: 'prefixId',
       optgroupLabelField: 'title',
       maxItems: 1,
       valueField: 'id',
@@ -89,16 +89,11 @@
       
          serverImages.forEach(function (element, index) {
           var rang = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[index].prefixEnv);
-          if(rang != -1) {    
-            vm.serverImages[index].idPrefixEnv = vm.group[rang].idPrefixEnv;
-          } else {
-            var prefixEnv = serverImages[index].prefixEnv;
-            var idPrefixEnv = vm.group.length + 1;
-            vm.serverImages[index].idPrefixEnv = idPrefixEnv;
+          if(rang == -1) {
             vm.group.push({
-              id: idPrefixEnv,
-              title: prefixEnv,
-              idPrefixEnv: idPrefixEnv
+              id: serverImages[index].prefixId,
+              title: serverImages[index].prefixEnv,
+              prefixId: serverImages[index].prefixId
             });
           }
          });
