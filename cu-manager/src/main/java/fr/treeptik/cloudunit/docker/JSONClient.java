@@ -110,6 +110,7 @@ public class JSONClient {
 
         httpPost.setEntity(new StringEntity(body));
         HttpResponse response = httpclient.execute(httpPost);
+        /*
         if (logger.isDebugEnabled()) {
             InputStreamReader reader = null;
             reader = new InputStreamReader(response.getEntity()
@@ -122,7 +123,7 @@ public class JSONClient {
             }
             logger.debug(jsonStringBuilder.toString());
         }
-
+        */
         StatusLine statusLine = response.getStatusLine();
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri " + uri + " returns "

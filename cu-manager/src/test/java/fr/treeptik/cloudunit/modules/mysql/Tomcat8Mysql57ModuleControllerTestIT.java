@@ -20,11 +20,11 @@ import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 /**
  * Created by nicolas on 04/10/15.
  */
-public class Tomcat8Mysql5ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Tomcat8Mysql57ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat8Mysql5ModuleControllerTestIT() {
+    public Tomcat8Mysql57ModuleControllerTestIT() {
         super.server = "tomcat-8";
-        super.module = "mysql-5-5";
+        super.module = "mysql-5-7";
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
         super.managerPageContent = "phpMyAdmin";
