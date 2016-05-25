@@ -202,6 +202,39 @@ public class FileController {
     }
 
     /**
+     * Delete resources (files and folders) into a container for a path
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     */
+    @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path:.*}",
+            method = RequestMethod.POST)
+    public
+    @ResponseBody
+    JsonResponse createDirectory(
+            @PathVariable final String containerId,
+            @PathVariable final String applicationName,
+            @PathVariable String path)
+            throws ServiceException, CheckException,
+            IOException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("applicationName:" + applicationName);
+            logger.debug("path:" + path);
+        }
+        System.out.println("####################################################################################");
+        System.out.println("/file/container/" + containerId + "/application/" + applicationName + "/path/" + path);
+        System.out.println("####################################################################################");
+        return new HttpOk();
+    }
+
+    /**
      * Download a file into a container
      *
      * @param containerId
