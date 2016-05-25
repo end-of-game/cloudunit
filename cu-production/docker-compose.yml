@@ -1,3 +1,15 @@
+jenkins:
+    image: jenkinsci/jenkins:2.1
+    volumes:
+        - /home/vagrant/jenkins_home:/var/jenkins_home
+
+gitlab:
+    image: gitlab/gitlab-ce:8.7.2-ce.0
+    volumes:
+        - /home/admincu/gitlab_home/config:/etc/gitlab
+        - /home/admincu/gitlab_home/logs:/var/log/gitlab
+        - /home/admincu/gitlab_home/data:/var/opt/gitlab
+
 hipache:
     image: tutum/hipache:0.3.1
     ports:
@@ -83,6 +95,8 @@ nginx:
         - "443:443"
     links:
         - tomcat:tomcat
+        - gitlab:gitlab
+        - jenkins:jenkins
     volumes:
         - ./nginx/sites-enabled:/etc/nginx/sites-enabled
         - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
