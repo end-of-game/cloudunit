@@ -51,6 +51,7 @@
       rootPath = '__',
       uploader;
 
+    vm.newDirectoryName = '';
     vm.containers = [];
     vm.myContainer = {};
     vm.rootFolder = [];
@@ -65,6 +66,7 @@
     vm.folderClick = folderClick;
     //vm.downloadFile = downloadFile;
     vm.deleteFile = deleteFile;
+    vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
 
     init ();
@@ -99,6 +101,24 @@
       vm.subFolder = [];
       vm.currentPath = [];
       init ( index );
+    }
+    
+    function addNewDirectory(containerId, path, newDirectoryName) {
+
+      var slug = '__' + path.join ( '__' ) + '__' + newDirectoryName;
+      console.log("/file/container/" + containerId + "/application/" + $stateParams.name + "/path/" + slug + newDirectoryName);
+      
+       ExplorerService.addDirectory ( containerId, $stateParams.name, slug )
+        .then ( function onDirectoryAdd () {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } )
+        .catch ( function onDirectoryAddError ( error ) {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } ) 
     }
 
     function deleteFile ( containerId, path, item ) {
@@ -173,13 +193,17 @@
     uploader = $scope.uploader = new FileUploader ( {
       autoUpload: false,
       removeAfterUpload: true,
-      queueLimit: 1
+      //queueLimit: 1
     } );
 
 
-    uploader.onAfterAddingFile = function ( fileItem ) {
+    uploader.onAfterAddingAll = function ( fileItem ) {
+      console.log(fileItem);
       vm.dropped = false;
-      fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
+      fileItem.forEach(function(element, index) {
+        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
+      });
+      //fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
       uploader.uploadAll ();
       vm.isUploading = true;
       vm.dropped = true;

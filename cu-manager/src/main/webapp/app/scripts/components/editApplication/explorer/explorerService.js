@@ -28,7 +28,8 @@
     return {
       buildTree: buildTree,
       //downloadFile: downloadFile,
-      deleteFile: deleteFile
+      deleteFile: deleteFile,
+      addDirectory: addDirectory
     };
 
 
@@ -53,6 +54,18 @@
       } ).$promise;
     }
 
+    function addDirectory ( containerId, applicationName, path ) {
+      console.log("/file/container/" + containerId + "/application/" + applicationName + "/path/" + path);
+    
+      var request = $resource ( '/file/container/:containerId/application/:applicationName/path/:path', {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path
+      } );
+      
+      return request.save ().$promise;
+    }
+    
     /*function downloadFile ( containerId, applicationName, path, fileName ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
         containerId: containerId,
