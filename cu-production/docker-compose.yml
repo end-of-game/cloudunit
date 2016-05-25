@@ -1,5 +1,8 @@
 jenkins:
     image: jenkinsci/jenkins:2.1
+    # Maybe we will need this port for api management...
+    #ports:
+    #   - 50000:50000
     volumes:
         - /home/admincu/jenkins_home:/var/jenkins_home
 
