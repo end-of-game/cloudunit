@@ -55,8 +55,6 @@
     }
 
     function addDirectory ( containerId, applicationName, path ) {
-      console.log("/file/container/" + containerId + "/application/" + applicationName + "/path/" + path);
-    
       var request = $resource ( '/file/container/:containerId/application/:applicationName/path/:path', {
         containerId: containerId,
         applicationName: applicationName,

@@ -106,8 +106,7 @@
     function addNewDirectory(containerId, path, newDirectoryName) {
 
       var slug = '__' + path.join ( '__' ) + '__' + newDirectoryName;
-      console.log("/file/container/" + containerId + "/application/" + $stateParams.name + "/path/" + slug + newDirectoryName);
-      
+
        ExplorerService.addDirectory ( containerId, $stateParams.name, slug )
         .then ( function onDirectoryAdd () {
           $timeout ( function () {
@@ -192,18 +191,16 @@
     // file upload
     uploader = $scope.uploader = new FileUploader ( {
       autoUpload: false,
-      removeAfterUpload: true,
-      //queueLimit: 1
+      removeAfterUpload: true
     } );
 
 
     uploader.onAfterAddingAll = function ( fileItem ) {
-      console.log(fileItem);
       vm.dropped = false;
       fileItem.forEach(function(element, index) {
         fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
       });
-      //fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
+      
       uploader.uploadAll ();
       vm.isUploading = true;
       vm.dropped = true;
