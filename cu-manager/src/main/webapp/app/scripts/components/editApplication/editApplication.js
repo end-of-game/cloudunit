@@ -55,7 +55,6 @@
 
     var vm = this;
 
-    vm.hideFeed = false;
     vm.applicationService = ApplicationService;
 
     vm.applicationService.init($stateParams.name).then(function() {
@@ -68,14 +67,6 @@
       vm.applicationService.stopPolling();
     });
 
-    $scope.$watch(function() {
-      return vm.state;
-    }, function(oldVal, newVal) {
-
-      if (oldVal) {
-        vm.hideFeed = oldVal.name === 'editApplication.logs' || oldVal.name === 'editApplication.monitoring';
-      }
-    });
   }
 })();
 
