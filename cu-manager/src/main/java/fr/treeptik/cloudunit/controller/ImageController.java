@@ -15,7 +15,6 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import fr.treeptik.cloudunit.dto.ImageList;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.service.ImageService;
@@ -62,27 +61,6 @@ public class ImageController {
     List<Image> listAllEnabledServerImages()
         throws ServiceException {
         return imageService.findEnabledImagesByType("server");
-    }
-
-    @RequestMapping(value = "/server/selection", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    Map<String, ImageList> listServerSelection()
-            throws ServiceException {
-
-        Map<String, ImageList> imageLists = new TreeMap<>();
-
-        ImageList imageListTomcat = new ImageList();
-        imageListTomcat.add("tomcat-8.0.35", true);
-        imageListTomcat.add("tomcat-8.0.21", false);
-        imageLists.put("tomcat", imageListTomcat);
-
-        ImageList imageListJBoss = new ImageList();
-        imageListJBoss.add("jboss-8.0", false);
-        imageListJBoss.add("jboss-10", true);
-        imageLists.put("jboss", imageListJBoss);
-
-        return imageLists;
     }
 
     @RequestMapping(value = "/version", method = RequestMethod.GET)

@@ -88,9 +88,9 @@ public class FileController {
         @PathVariable String containerId, @PathVariable String path)
         throws ServiceException, CheckException {
 
-        if (logger.isInfoEnabled()) {
-            logger.info("containerId:" + containerId);
-            logger.info("path:" + path);
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("path:" + path);
         }
 
         path = convertPathFromUI(path);
