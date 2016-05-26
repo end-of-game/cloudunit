@@ -29,9 +29,6 @@ public class ApacheFilter
 
     @Override
     public boolean isValid(FileUnit fileUnit) {
-
-        // On laisse passer tous les fichiers.
-        // la sélection a été fait en aval
         if (!fileUnit.isDir())
             return true;
 
@@ -40,8 +37,8 @@ public class ApacheFilter
         }
 
         String breadcrumb = fileUnit.getBreadcrump();
-            if (breadcrumb.equalsIgnoreCase("/cloudunit")
-                ||breadcrumb.startsWith("/cloudunit/shared")
+            if (   breadcrumb.startsWith("/cloudunit")
+                    || breadcrumb.startsWith("/opt")
                 || breadcrumb.startsWith("/etc")
                 || breadcrumb.startsWith("/usr")
                 || breadcrumb.startsWith("/var")) {
