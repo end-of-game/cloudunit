@@ -52,7 +52,7 @@ angular.module('webuiApp.directives')
                     return false;
                 }
                 
-                if(((keyCode == 58) && shiftPressed) || ((keyCode == 188) && shiftPressed)) {
+                if(((keyCode == 58) && shiftPressed) || ((keyCode == 188) && shiftPressed) || ((keyCode == 191) && shiftPressed)) {
                     return false;
                 }
                 
