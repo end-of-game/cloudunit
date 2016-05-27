@@ -31,6 +31,7 @@ import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,9 +83,9 @@ public class FileController {
      * @throws CheckException
      */
     @RequestMapping(value = "/container/{containerId}/path/{path}", method = RequestMethod.GET)
-    public
     @ResponseBody
-    List<FileUnit> listByContainerIdAndPath(
+    @ResponseStatus(HttpStatus.OK)
+    public List<FileUnit> listByContainerIdAndPath(
         @PathVariable String containerId, @PathVariable String path)
         throws ServiceException, CheckException {
 
@@ -108,11 +109,12 @@ public class FileController {
      * @throws ServiceException
      * @throws CheckException
      */
-    @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path}", method = RequestMethod.POST, consumes = {
-        "multipart/form-data"})
-    public
+    @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path}",
+            method = RequestMethod.POST,
+            consumes = {"multipart/form-data"})
     @ResponseBody
-    JsonResponse uploadFileToContainer(
+    @ResponseStatus(HttpStatus.OK)
+    public JsonResponse uploadFileToContainer(
         @RequestPart("file") MultipartFile fileUpload,
         @PathVariable final String containerId,
         @PathVariable final String applicationName,
@@ -175,9 +177,9 @@ public class FileController {
      */
     @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path:.*}",
         method = RequestMethod.DELETE)
-    public
     @ResponseBody
-    JsonResponse deleteResourcesIntoContainer(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public JsonResponse deleteResourcesIntoContainer(
         @PathVariable final String containerId,
         @PathVariable final String applicationName,
         @PathVariable String path)
@@ -231,6 +233,8 @@ public class FileController {
         System.out.println("####################################################################################");
         System.out.println("/file/container/" + containerId + "/application/" + applicationName + "/path/" + path);
         System.out.println("####################################################################################");
+
+        fileService.createDirectory(applicationName, containerId, path);
         return new HttpOk();
     }
 
