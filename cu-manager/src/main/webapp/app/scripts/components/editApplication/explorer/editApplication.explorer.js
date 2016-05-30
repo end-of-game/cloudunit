@@ -109,7 +109,6 @@
 
        ExplorerService.addDirectory ( containerId, $stateParams.name, slug )
         .then ( function onDirectoryAdd () {
-          //vm.subFolder = [];
           vm.isCreatingDirectory = true;
           vm.newDirectoryName = "";
           $timeout ( function () {
