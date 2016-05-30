@@ -54,7 +54,7 @@
         </ul>
       </div>
     </div>
-    <div class="card card--explorer col-lg-9 " ng-class="{pending: explorer.isUploading}">
+    <div class="card card--explorer col-lg-9" ng-class="{pending: explorer.isUploading || explorer.isCreatingDirectory}">
       <div class="content">
         <div class="breadcrumb toolbar clearfix">
           <div class="pull-left">
@@ -101,6 +101,13 @@
                  ng-style="{ 'width': uploader.progress + '%' }">
             </div>
           </div>
+        </div>  
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
         </div>
         <div class="explorer__sub" nv-file-over="" nv-file-drop="" uploader="uploader"
              ng-class="{'nv-file-drop': explorer.dropped}">
