@@ -10,4 +10,6 @@ public interface JenkinsService {
     public void addUser(User user);
 
     public void deleteUser(String username);
+
+    public void createProject(String name);
 }

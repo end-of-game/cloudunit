@@ -7,10 +7,10 @@ if [ "$?" == "1" ]; then
     docker pull gitlab/gitlab-ce:$GL_MAJOR
 fi
 
-docker ps | grep gitlab
+RETURN=`docker ps | grep gitlab`
 
 # If jenkins is not running
-if [ "$?" == "1" ]; then
+if [ -z "$RETURN" ]; then
 
     docker run --detach \
         --hostname gitlab.cloudunit.serv \
