@@ -109,8 +109,12 @@
 
        ExplorerService.addDirectory ( containerId, $stateParams.name, slug )
         .then ( function onDirectoryAdd () {
+          vm.isCreatingDirectory = true;
+          vm.newDirectoryName = "";
           $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' ).then ( function () {
+              vm.isCreatingDirectory = false;
+            } );
           }, 1000 );
         } )
         .catch ( function onDirectoryAddError ( error ) {
@@ -210,8 +214,8 @@
     uploader.onCompleteAll = function () {
       vm.dropped = false;
       vm.uploadSuccess = true;
-      vm.isUploading = false;
       buildTree ( vm.currentPath.join ( '__' ), 'subFolder' ).then ( function () {
+        vm.isUploading = false;
         vm.uploadSuccess = false;
       } );
     };
