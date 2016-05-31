@@ -45,26 +45,26 @@ public class FatJarFilter
 
     @Override
     public boolean isValid(FileUnit fileUnit) {
+        if (!fileUnit.isDir())
+            return true;
 
         if (logger.isDebugEnabled()) {
-            logger.debug("breadcrump : " + fileUnit.getBreadcrump());
-        }
-
-        if (!fileUnit.isDir()) {
-            return true;
+            logger.debug("--> fileUnit : " + fileUnit.getBreadcrump());
         }
 
         String breadcrumb = fileUnit.getBreadcrump();
-        if (breadcrumb.equalsIgnoreCase("/cloudunit")
-            || breadcrumb.startsWith("/cloudunit/backup")
-            || breadcrumb.startsWith("/cloudunit/appconf")
-            || breadcrumb.startsWith("/cloudunit/binaries")
-            || breadcrumb.startsWith("/cloudunit/tmp")) {
+        if (   breadcrumb.startsWith("/cloudunit")
+                || breadcrumb.startsWith("/opt")
+                || breadcrumb.startsWith("/etc")
+                || breadcrumb.startsWith("/usr")
+                || breadcrumb.startsWith("/var")) {
             return true;
         }
 
         return false;
     }
+
+
 
     @Override
     public void isRemovable(FileUnit fileUnit) {
