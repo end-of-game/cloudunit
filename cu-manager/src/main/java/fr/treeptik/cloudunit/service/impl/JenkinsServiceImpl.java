@@ -2,7 +2,6 @@ package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.JenkinsService;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -39,6 +38,13 @@ public class JenkinsServiceImpl implements JenkinsService {
      */
     public void addUser(User user) {
         try {
+            logger.info("JenkinsService : addUser " + user.getLogin());
+
+            if (rootToken == null) {
+                logger.error("Cannot use this feature because no token for Jenkins");
+                return;
+            }
+
             DefaultHttpClient httpclient = new DefaultHttpClient();
 
             ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -70,6 +76,13 @@ public class JenkinsServiceImpl implements JenkinsService {
      */
     public void deleteUser(String username) {
         try {
+            logger.info("JenkinsService : deleteUser " + username);
+
+            if (rootToken == null) {
+                logger.error("Cannot use this feature because no token for Jenkins");
+                return;
+            }
+
             DefaultHttpClient httpclient = new DefaultHttpClient();
 
             ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -92,6 +105,12 @@ public class JenkinsServiceImpl implements JenkinsService {
     public void createProject(String applicationName) {
         try {
             logger.info("JenkinsService : createProject " + applicationName);
+
+            if (rootToken == null) {
+                logger.error("Cannot use this feature because no token for Jenkins");
+                return;
+            }
+
             DefaultHttpClient httpclient = new DefaultHttpClient();
             File config = new File("src/main/resources/config.xml");
             FileEntity entity = new FileEntity(config);
@@ -114,6 +133,12 @@ public class JenkinsServiceImpl implements JenkinsService {
     public void deleteProject(String applicationName) {
         try {
             logger.info("JenkinsService : deleteProject " + applicationName);
+
+            if (rootToken == null) {
+                logger.error("Cannot use this feature because no token for Jenkins");
+                return;
+            }
+
             DefaultHttpClient httpclient = new DefaultHttpClient();
             File config = new File("src/main/resources/config.xml");
 

@@ -8,8 +8,12 @@ import org.springframework.http.HttpStatus;
  */
 public interface GitlabService {
 
-    public HttpStatus createUser(User user);
+    HttpStatus createUser(User user);
 
-    public HttpStatus deleteUser(String login);
+    HttpStatus deleteUser(String login);
+
+    HttpStatus createProject(String applicationName);
+
+    HttpStatus deleteProject(String applicationName);
 }
 

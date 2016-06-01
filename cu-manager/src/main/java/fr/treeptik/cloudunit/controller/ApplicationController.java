@@ -24,6 +24,7 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.GitlabService;
 import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
@@ -62,6 +63,9 @@ public class ApplicationController
 
     @Inject
     private ApplicationManager applicationManager;
+
+    @Inject
+    private GitlabService gitlabService;
 
     @Inject
     private JenkinsService jenkinsService;
@@ -121,6 +125,7 @@ public class ApplicationController
         User user = authentificationUtils.getAuthentificatedUser();
         authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
+        gitlabService.createProject(input.getApplicationName());
         jenkinsService.createProject(input.getApplicationName());
         applicationManager.create(input.getApplicationName(), input.getLogin(), input.getServerName());
 
@@ -262,9 +267,10 @@ public class ApplicationController
             applicationService.setStatus(application, Status.PENDING);
 
             logger.info("delete application :" + applicationName);
-            jenkinsService.deleteProject(applicationName);
-            applicationService.remove(application, user);
 
+            applicationService.remove(application, user);
+            jenkinsService.deleteProject(applicationName);
+            gitlabService.deleteProject(applicationName);
         } catch (ServiceException e) {
             logger.error(application.toString(), e);
             applicationService.setStatus(application, Status.FAIL);

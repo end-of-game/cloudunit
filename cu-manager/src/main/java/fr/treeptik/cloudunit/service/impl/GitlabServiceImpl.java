@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.GitlabService;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
 
 /**
  * This class is used for all interactions with Gitlab concerning users
@@ -31,8 +33,7 @@ public class GitlabServiceImpl implements GitlabService {
     @Value("${gitlab.token}")
     private String gitlabToken;
 
-    @Value("${gitlab.api}")
-    private String gitlabAPI;
+    private String gitlabAPI = "192.168.50.4:480";
 
     /**
      * Create an user on Gitlab
@@ -41,6 +42,8 @@ public class GitlabServiceImpl implements GitlabService {
      * @return
      */
     public HttpStatus createUser(User user) {
+        logger.info("GitlabService : createUser " + user.getLogin());
+
         DataOutputStream wr = null;
         HttpURLConnection connPost = null;
         HttpStatus code = HttpStatus.EXPECTATION_FAILED;
@@ -56,7 +59,7 @@ public class GitlabServiceImpl implements GitlabService {
         }
 
         try {
-            URL urlPost = new URL(gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
+            URL urlPost = new URL("http://" + gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
             connPost = (HttpURLConnection) urlPost.openConnection();
             connPost.setDoOutput(true);
             connPost.setDoInput(true);
@@ -95,6 +98,7 @@ public class GitlabServiceImpl implements GitlabService {
      * @return
      */
     public HttpStatus deleteUser(String username) {
+        logger.info("GitlabService : deleteUser " + username);
 
         if (gitlabToken == null) {
             logger.error("Cannot use this feature because no token for GitLab");
@@ -113,7 +117,7 @@ public class GitlabServiceImpl implements GitlabService {
 
             int id = getIdUser(username);
 
-            URL urlPost = new URL(gitlabAPI + "/api/v3/users/" + id + "?private_token=" + gitlabToken);
+            URL urlPost = new URL("http://" + gitlabAPI + "/api/v3/users/" + id + "?private_token=" + gitlabToken);
             connPost = (HttpURLConnection) urlPost.openConnection();
             connPost.setDoOutput(true);
             connPost.setDoInput(true);
@@ -130,6 +134,97 @@ public class GitlabServiceImpl implements GitlabService {
         return code;
     }
 
+    @Override
+    public HttpStatus createProject(String applicationName) {
+        logger.info("GitlabService : createProject " + applicationName);
+
+        if (gitlabToken == null) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        if (gitlabAPI == null) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        DataOutputStream wr = null;
+        HttpURLConnection connPost = null;
+        HttpStatus code = HttpStatus.EXPECTATION_FAILED;
+        try {
+            String uri = "http://" + gitlabAPI + "/api/v3/projects?private_token=" + gitlabToken;
+            System.out.println("uri = " + uri);
+            
+            URL urlPost = new URL(uri);
+            connPost = (HttpURLConnection) urlPost.openConnection();
+            connPost.setDoOutput(true);
+            connPost.setDoInput(true);
+            connPost.setRequestProperty("Content-Type", "application/json");
+            connPost.setRequestProperty("Accept", "application/json");
+            connPost.setRequestMethod("POST");
+            connPost.connect();
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.createObjectNode();
+            ((ObjectNode) rootNode).put("name", applicationName);
+            String jsonString = mapper.writeValueAsString(rootNode);
+
+            wr = new DataOutputStream(connPost.getOutputStream());
+            wr.writeBytes(jsonString);
+            code = HttpStatus.valueOf(connPost.getResponseCode());
+
+            System.out.println("code = " + code);
+
+        } catch (IOException e) {
+            logger.debug("IOException createProject : " + applicationName);
+        }
+        return code;
+    }
+
+    @Override
+    public HttpStatus deleteProject(String applicationName) {
+        logger.info("GitlabService : deleteProject " + applicationName);
+
+        if (gitlabToken == null) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        if (gitlabAPI == null) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        DataOutputStream wr = null;
+        HttpURLConnection connPost = null;
+        HttpStatus code = HttpStatus.EXPECTATION_FAILED;
+        try {
+            int id = getIdProject(applicationName);
+
+            URL urlPost = new URL("http://" + gitlabAPI + "/api/v3/projects/" + id + "?private_token=" + gitlabToken);
+            connPost = (HttpURLConnection) urlPost.openConnection();
+            connPost.setDoOutput(true);
+            connPost.setDoInput(true);
+            connPost.setRequestProperty("Content-Type", "application/json");
+            connPost.setRequestProperty("Accept", "application/json");
+            connPost.setRequestMethod("DELETE");
+            connPost.connect();
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.createObjectNode();
+            ((ObjectNode) rootNode).put("name", applicationName);
+            String jsonString = mapper.writeValueAsString(rootNode);
+
+            wr = new DataOutputStream(connPost.getOutputStream());
+            wr.writeBytes(jsonString);
+            code = HttpStatus.valueOf(connPost.getResponseCode());
+
+        } catch (IOException e) {
+            logger.debug("IOException createProject : " + applicationName);
+        }
+        return code;
+    }
+
     /**
      * Get Gitlab id of an user with his username
      *
@@ -141,7 +236,7 @@ public class GitlabServiceImpl implements GitlabService {
         URL url = null;
         int status = -1;
         try {
-            url = new URL(gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
+            url = new URL("http://" + gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
             c = (HttpURLConnection) url.openConnection();
             c.setRequestMethod("GET");
             c.setRequestProperty("Content-length", "0");
@@ -167,36 +262,76 @@ public class GitlabServiceImpl implements GitlabService {
                 logger.debug("IOException getIdUser read : " + username);
             }
 
+            jsonS = sb.toString();
+        } else {
+            logger.error("GitlabService : status " + status);
+            return -2;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        try{
+            Iterator<JsonNode> nodes = mapper.readTree(jsonS).elements();
+            while(nodes.hasNext()) {
+                JsonNode node = nodes.next();
+                if(node.get("username").asText().equals(username)){
+                    return node.get("id").asInt();
+                }
+            }
+        } catch (IOException e) {
+            logger.error("GitlabService : error getIdProject json : " + e.getLocalizedMessage());
+        }
+
+        return -1;
+    }
+
+    public int getIdProject(String applicationName) {
+        HttpURLConnection c = null;
+        URL url = null;
+        int status = -1;
+        try {
+            url = new URL("http://" + gitlabAPI + "/api/v3/projects/all?private_token=" + gitlabToken);
+            c = (HttpURLConnection) url.openConnection();
+            c.setRequestMethod("GET");
+            c.setRequestProperty("Content-length", "0");
+            c.setUseCaches(false);
+            c.setAllowUserInteraction(false);
+            c.connect();
+            status = c.getResponseCode();
+        } catch (IOException e) {
+            logger.debug("IOException getIdProject get infos : " + applicationName);
+        }
+
+        String jsonS;
+        if (status == 200) {
+            StringBuilder sb = new StringBuilder();
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+            } catch (IOException e) {
+                logger.debug("IOException getIdProject read : " + applicationName);
+            }
+
 
             jsonS = sb.toString();
         } else {
             return -2;
         }
 
-        String[] jsonA = jsonS.split("(?<=\\})");
         ObjectMapper mapper = new ObjectMapper();
-
-        for (int i = 0; i < jsonA.length - 1; i++) {
-            String s = jsonA[i];
-            if (s != null) {
-                s = s.substring(1);
-
-                JsonNode node = null;
-                try {
-                    node = mapper.readTree(s);
-                } catch (IOException e) {
-                    logger.debug("IOException getIdUser JSON : " + username);
+        try{
+            Iterator<JsonNode> nodes = mapper.readTree(jsonS).elements();
+            while(nodes.hasNext()) {
+                JsonNode node = nodes.next();
+                if(node.get("name").asText().equals(applicationName)){
+                    return node.get("id").asInt();
                 }
-
-                String localUsername = node.get("username").toString();
-                String localId = node.get("id").toString();
-
-                localUsername = localUsername.replace("\"", "");
-                localId = localId.replace("\"", "");
-
-                if (localUsername.equals(username))
-                    return Integer.parseInt(localId);
             }
+        } catch (IOException e) {
+            logger.error("GitlabService : error getIdProject json : " + e.getLocalizedMessage());
         }
 
         return -1;
