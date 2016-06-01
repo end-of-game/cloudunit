@@ -51,7 +51,7 @@ count=0
 # ########################
 until [[ "$RETURN" -eq "0" ]] || [[ $count -gt $MAX ]]; do
     echo -n -e "\nWaiting for http to start ( $count / $MAX )";
-    nc -z localhost 9990
+    nc -z localhost 80
     RETURN=$?
     sleep 1
     let count=$count+1;

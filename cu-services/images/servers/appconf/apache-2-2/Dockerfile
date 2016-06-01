@@ -29,5 +29,6 @@ RUN mkdir -p /cloudunit/appconf/logs/
 RUN ln -s /var/log/apache2/* /cloudunit/appconf/logs/
 
 VOLUME /var/log
+VOLUME /cloudunit/shared
 
 ENTRYPOINT ["/cloudunit/scripts/start-service.sh"]

@@ -49,9 +49,6 @@ public class ServerFactory {
     private static ServerAction getServerAction(String imageName, Server server) {
 
         ServerAction result = null;
-
-        // TODO : HACK TO REMOVE MODULE VERSION
-
         if (imageName.toLowerCase().contains("tomcat")) {
             result = new TomcatAction(server);
         } else if (imageName.toLowerCase().contains("jboss-5")) {
