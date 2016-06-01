@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -13,16 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
@@ -61,10 +54,10 @@ public class JenkinsServiceImpl implements JenkinsService {
 
             post.setEntity(new UrlEncodedFormEntity(parameters));
 
-            post.setHeader("Token", rootToken);
+            post.setHeader("Authorization", rootToken);
             post.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-            HttpResponse response = httpclient.execute(post);
+            httpclient.execute(post);
         } catch (IOException e) {
             logger.debug("JenkinsService : Exception addUser " + user.getLogin());
         }
@@ -87,25 +80,53 @@ public class JenkinsServiceImpl implements JenkinsService {
 
             post.setEntity(new UrlEncodedFormEntity(parameters));
 
-            post.setHeader("Token", rootToken);
+            post.setHeader("Authorization", rootToken);
             post.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-            HttpResponse response = httpclient.execute(post);
+            httpclient.execute(post);
         } catch (IOException e) {
             logger.debug("JenkinsService : Exception deleteUser " + username);
         }
     }
 
-    public void createProject(String name) {
-        /*JenkinsServer jenkins = null;
+    public void createProject(String applicationName) {
         try {
-           jenkins = new JenkinsServer(new URI("http://" + JENKINS_IP), rootName, rootPassword);
-           jenkins.createJob(name, createXmlConfigFile());
-        } catch (URISyntaxException e) {
-            logger.error("JenkinsService : Error connecting to jenkins " + e.getLocalizedMessage());
+            logger.info("JenkinsService : createProject " + applicationName);
+            DefaultHttpClient httpclient = new DefaultHttpClient();
+            File config = new File("src/main/resources/config.xml");
+            FileEntity entity = new FileEntity(config);
+            
+            String uri = "http://" + JENKINS_IP + "/createItem?name=" + applicationName + "&mode=hudson.model.FreeStyleProject";
+
+            HttpPost post = new HttpPost(uri);
+
+            post.setEntity(entity);
+
+            post.setHeader("Authorization", rootToken);
+            post.setHeader("Content-Type", "application/xml");
+
+            httpclient.execute(post);
         } catch (IOException e) {
-            logger.error("JenkinsService : Error creating xml config string " + e.getLocalizedMessage());
-        }*/
+            logger.debug("JenkinsService : Exception createProject " + applicationName);
+        }
+    }
+
+    public void deleteProject(String applicationName) {
+        try {
+            logger.info("JenkinsService : deleteProject " + applicationName);
+            DefaultHttpClient httpclient = new DefaultHttpClient();
+            File config = new File("src/main/resources/config.xml");
+
+            String uri = "http://" + JENKINS_IP + "/job/" + applicationName + "/doDelete";
+
+            HttpPost post = new HttpPost(uri);
+
+            post.setHeader("Authorization", rootToken);
+
+            httpclient.execute(post);
+        } catch (IOException e) {
+            logger.debug("JenkinsService : Exception deleteProject " + applicationName);
+        }
     }
 
     /**
@@ -120,74 +141,5 @@ public class JenkinsServiceImpl implements JenkinsService {
                 " \"password2\": \"" + user.getPassword() + "\"," +
                 " \"fullname\": \"" + user.getFirstName() + " " + user.getLastName() + "\"," +
                 " \"email\": \"" + user.getEmail() + "\"}";
-    }
-
-    public String createXmlConfigFile() {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        Document doc = null;
-        try {
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            doc = dBuilder.newDocument();
-        } catch (Exception e) {
-            logger.error("JenkinsService/createXmlConfigFile : Error creating Document : " + e.getLocalizedMessage());
-        }
-
-        Element rootElement = doc.createElement("project");
-        doc.appendChild(rootElement);
-
-        Element keepDependencies = doc.createElement("keepDependencies");
-        keepDependencies.appendChild(doc.createTextNode("false"));
-        rootElement.appendChild(keepDependencies);
-
-        Element properties = doc.createElement("properties");
-        rootElement.appendChild(properties);
-
-        Element scm = doc.createElement("scm");
-        scm.setAttribute("class", "hudson.scm.NullSCM");
-        rootElement.appendChild(scm);
-
-        Element canRoam = doc.createElement("canRoam");
-        canRoam.appendChild(doc.createTextNode("false"));
-        rootElement.appendChild(canRoam);
-
-        Element disabled = doc.createElement("disabled");
-        disabled.appendChild(doc.createTextNode("false"));
-        rootElement.appendChild(disabled);
-
-        Element blockBuildWhenDownstreamBuilding = doc.createElement("blockBuildWhenDownstreamBuilding");
-        blockBuildWhenDownstreamBuilding.appendChild(doc.createTextNode("false"));
-        rootElement.appendChild(blockBuildWhenDownstreamBuilding);
-
-        Element blockBuildWhenUpstreamBuilding = doc.createElement("blockBuildWhenUpstreamBuilding");
-        blockBuildWhenUpstreamBuilding.appendChild(doc.createTextNode("false"));
-        rootElement.appendChild(blockBuildWhenUpstreamBuilding);
-
-        Element triggers = doc.createElement("triggers");
-        rootElement.appendChild(triggers);
-
-        Element concurrentBuild = doc.createElement("concurrentBuild");
-        disabled.appendChild(doc.createTextNode("false"));
-        rootElement.appendChild(concurrentBuild);
-
-        Element builders = doc.createElement("builders");
-        rootElement.appendChild(builders);
-
-        Element publishers = doc.createElement("publishers");
-        rootElement.appendChild(publishers);
-
-        Element buildWrappers = doc.createElement("buildWrappers");
-        rootElement.appendChild(buildWrappers);
-
-        String output = "";
-        try {
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            StringWriter writer = new StringWriter();
-            transformer.transform(new DOMSource(doc), new StreamResult(writer));
-            output = writer.getBuffer().toString();
-        } catch (Exception e) {
-            logger.error("JenkinsService/createXmlConfigFile : Error tranform xml string : " + e.getLocalizedMessage());
-        }
-
-        return output;
     }
 }

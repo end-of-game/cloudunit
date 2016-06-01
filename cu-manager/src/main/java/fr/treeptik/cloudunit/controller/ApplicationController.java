@@ -121,8 +121,8 @@ public class ApplicationController
         User user = authentificationUtils.getAuthentificatedUser();
         authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
-        applicationManager.create(input.getApplicationName(), input.getLogin(), input.getServerName());
         jenkinsService.createProject(input.getApplicationName());
+        applicationManager.create(input.getApplicationName(), input.getLogin(), input.getServerName());
 
         return new HttpOk();
     }
@@ -262,6 +262,7 @@ public class ApplicationController
             applicationService.setStatus(application, Status.PENDING);
 
             logger.info("delete application :" + applicationName);
+            jenkinsService.deleteProject(applicationName);
             applicationService.remove(application, user);
 
         } catch (ServiceException e) {
