@@ -50,6 +50,24 @@
 
       function success ( images ) {
         vm.moduleImages = images;
+        vm.moduleImages.push({
+          id: 9999,
+          name: "influxdb",
+          path: "cloudunit/influxdb",
+          displayName: "Influxdb",
+          status: null,
+          isTemp: true
+        });
+        
+        vm.moduleImages.push({
+          id: 9998,
+          name: "mongo-3-2",
+          path: "cloudunit/mongo-3-2",
+          displayName: "Mongo 3.2",
+          status: null,
+          isTemp: true
+        });
+        
         return vm.moduleImages;
       }
 
