@@ -557,16 +557,12 @@ public class ApplicationServiceImpl
 
         try {
             // get app with all its components
-
             for (Server server : application.getServers()) {
 
                 // loading server ssh informations
-
-                String rootPassword = server.getApplication().getUser()
-                        .getPassword();
+                String rootPassword = server.getApplication().getUser() .getPassword();
                 configShell.put("port", server.getSshPort());
-                configShell.put("dockerManagerAddress",
-                        application.getManagerIp());
+                configShell.put("dockerManagerAddress", application.getManagerIp());
                 configShell.put("password", rootPassword);
                 String destFile = "/cloudunit/tmp/";
 
@@ -576,7 +572,6 @@ public class ApplicationServiceImpl
                         application.getManagerIp(), destFile);
 
                 // call deployment script
-
                 code = shellUtils.executeShell(
                         "bash /cloudunit/scripts/deploy.sh " + file.getName()
                                 + " " + application.getUser().getLogin(),
@@ -585,11 +580,10 @@ public class ApplicationServiceImpl
             }
 
             // if all is ok, create a new deployment tag and set app to starting
-
             if (code == 0) {
                 deploymentService.create(application, Type.WAR);
             } else {
-                throw new CheckException("No way to deploy application " + file + ", " + application);
+                throw new ServiceException("No way to deploy application " + file + ", " + application);
             }
 
         } catch (Exception e) {

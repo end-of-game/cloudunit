@@ -62,6 +62,8 @@ public class ServerFactory {
             result = new FatJarAction(server);
         } else if (imageName.toLowerCase().contains("apache")) {
             result = new ApacheAction(server);
+        } else  {
+            result = new GenericAction(server);
         }
         return result;
 

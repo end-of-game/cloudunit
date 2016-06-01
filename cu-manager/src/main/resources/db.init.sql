@@ -6,7 +6,6 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `displayName`, `prefixEnv`, `i
   (1, 'tomcat-6', 'cloudunit/tomcat-appconf6', 'Tomcat 6.0.41', 'tomcat', 'server', ''),
   (2, 'tomcat-7', 'cloudunit/tomcat-appconf7', 'Tomcat 7.0.47', 'tomcat', 'server', ''),
   (3, 'tomcat-8', 'cloudunit/tomcat-appconf8', 'Tomcat 8.0.14', 'tomcat', 'server', ''),
-  (4, 'jboss-8', 'cloudunit/jboss-appconf8', 'jBoss 8', 'jboss', 'server', ''),
   (5, 'fatjar', 'cloudunit/fatjar', 'FatJar', 'fatjar', 'server', ''),
   (6, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', ''),
   (10, 'mysql-5-5', 'cloudunit/mysql-5-5', 'MySQL 5.5.49', 'mysql', 'module', 'phpmyadmin'),
@@ -18,7 +17,9 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `displayName`, `prefixEnv`, `i
   (40, 'postgresql-9-3', 'cloudunit/postgresql-9-3', 'PostgreSQL 9.3.12', 'postgresql', 'module', 'phppgadmin'),
   (41, 'postgresql-9-4', 'cloudunit/postgresql-9-4', 'PostgreSQL 9.4.7', 'postgresql', 'module', 'phppgadmin'),
   (42, 'postgresql-9-5', 'cloudunit/postgresql-9-5', 'PostgreSQL 9.5.2', 'postgresql', 'module', 'phppgadmin'),
-  (43, 'postgis-2-2', 'cloudunit/postgis-2-2', 'PostGIS 2.2.1 (9.4)', 'postgresql', 'module', 'phppgadmin');
+  (43, 'postgis-2-2', 'cloudunit/postgis-2-2', 'PostGIS 2.2.1 (9.4)', 'postgresql', 'module', 'phppgadmin'),
+  (50, 'jboss-8', 'cloudunit/jboss-appconf8', 'jBoss 8', 'jboss', 'server', ''),
+  (51, 'wildfly-10', 'cloudunit/wildfly-10', 'WildFly 10', 'jboss', 'server', '');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES

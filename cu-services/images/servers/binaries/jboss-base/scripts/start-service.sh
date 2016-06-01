@@ -10,10 +10,7 @@ export CU_REST_IP=$3
 export CU_DATABASE_NAME=$4
 export JAVA_HOME=/cloudunit/java/$5
 export JBOSS_HOME=/cloudunit/binaries
-
-# Database password for Manager
 export MANAGER_DATABASE_PASSWORD=$6
-# To do difference between main and test env
 export ENV_EXEC=$7
 export CU_DATABASE_DNS=$8
 

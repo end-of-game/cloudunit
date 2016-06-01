@@ -84,4 +84,6 @@ public class JBossAction5
         return true;
     }
 
+    @Override
+    public String getDefaultJavaRelease() { return "jdk1.7.0_55"; }
 }
