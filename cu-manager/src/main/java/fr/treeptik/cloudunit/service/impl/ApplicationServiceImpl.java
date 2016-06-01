@@ -559,6 +559,7 @@ public class ApplicationServiceImpl
             // get app with all its components
             for (Server server : application.getServers()) {
 
+
                 // loading server ssh informations
                 String rootPassword = server.getApplication().getUser() .getPassword();
                 configShell.put("port", server.getSshPort());

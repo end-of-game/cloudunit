@@ -50,6 +50,8 @@ if [ ! -f /init-service-ok ]; then
 	echo  "JAVA_HOME=$JAVA_HOME" >> /etc/environment
 	echo  "PATH=$JAVA_HOME/bin:$PATH" >> /etc/environment
 	echo  "JBOSS_HOME=$CU_HOME/wildfly" >> /etc/environment
+	echo  "JAVA_OPTS=-Xms96M -Xmx512M -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true" >> /etc/environment
+
 	touch /init-service-ok
 fi
 

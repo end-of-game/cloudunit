@@ -630,8 +630,9 @@ public class ServerServiceImpl
                 String command = "bash /cloudunit/appconf/scripts/change-server-config.sh "
                         + jvmMemory + " " + "\"" + jvmOptions + "\"";
 
-
-                if (server.getImage().getName().contains("jar")) {
+                if (server.getImage().getName().contains("jar")
+                        || server.getImage().getName().contains("wildfly")
+                        || server.getImage().getName().contains("apache")) {
                     command = "bash /cloudunit/scripts/change-server-config.sh "
                             + jvmMemory + " " + "\"" + jvmOptions + "\"";
                 }

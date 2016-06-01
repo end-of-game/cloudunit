@@ -30,13 +30,13 @@ fi
 
 chown -R $CU_USER:$CU_USER /cloudunit
 /cloudunit/scripts/cu-start.sh
-RETURN=$?
+
+sleep 2
 
 echo "###############################"
 echo "# CLOUDUNIT SERVER DEPLOY END #"
 echo "###############################"
 
-exit $RETURN
 
 
 
