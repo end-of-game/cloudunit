@@ -126,7 +126,8 @@ public class ApplicationController
         authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
         gitlabService.createProject(input.getApplicationName());
-        jenkinsService.createProject(input.getApplicationName());
+        String repository = gitlabService.getGitRepository(input.getApplicationName());
+        jenkinsService.createProject(input.getApplicationName(), repository);
         applicationManager.create(input.getApplicationName(), input.getLogin(), input.getServerName());
 
         return new HttpOk();
@@ -270,6 +271,7 @@ public class ApplicationController
 
             applicationService.remove(application, user);
             jenkinsService.deleteProject(applicationName);
+            gitlabService.listBranches(applicationName);
             gitlabService.deleteProject(applicationName);
         } catch (ServiceException e) {
             logger.error(application.toString(), e);

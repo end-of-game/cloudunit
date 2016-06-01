@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.JenkinsService;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -12,7 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -102,7 +111,7 @@ public class JenkinsServiceImpl implements JenkinsService {
         }
     }
 
-    public void createProject(String applicationName) {
+    public void createProject(String applicationName, String repository) {
         try {
             logger.info("JenkinsService : createProject " + applicationName);
 
@@ -112,6 +121,8 @@ public class JenkinsServiceImpl implements JenkinsService {
             }
 
             DefaultHttpClient httpclient = new DefaultHttpClient();
+            createConfigFile(repository);
+
             File config = new File("src/main/resources/config.xml");
             FileEntity entity = new FileEntity(config);
             
@@ -125,6 +136,10 @@ public class JenkinsServiceImpl implements JenkinsService {
             post.setHeader("Content-Type", "application/xml");
 
             httpclient.execute(post);
+
+            if(config.delete())
+                logger.info("JenkinsService : createProject " + config.getName() + " is deleted!");
+
         } catch (IOException e) {
             logger.debug("JenkinsService : Exception createProject " + applicationName);
         }
@@ -140,7 +155,6 @@ public class JenkinsServiceImpl implements JenkinsService {
             }
 
             DefaultHttpClient httpclient = new DefaultHttpClient();
-            File config = new File("src/main/resources/config.xml");
 
             String uri = "http://" + JENKINS_IP + "/job/" + applicationName + "/doDelete";
 
@@ -152,6 +166,121 @@ public class JenkinsServiceImpl implements JenkinsService {
         } catch (IOException e) {
             logger.debug("JenkinsService : Exception deleteProject " + applicationName);
         }
+    }
+
+    private void createConfigFile (String repository) {
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("project");
+            doc.appendChild(rootElement);
+
+            Element actions = doc.createElement("actions");
+            rootElement.appendChild(actions);
+
+            Element description = doc.createElement("description");
+            rootElement.appendChild(description);
+
+            Element keepDependencies = doc.createElement("keepDependencies");
+            keepDependencies.appendChild(doc.createTextNode("false"));
+            rootElement.appendChild(keepDependencies);
+
+            Element properties = doc.createElement("properties");
+            rootElement.appendChild(properties);
+
+            Element scm = doc.createElement("scm");
+            if(repository.equals("")) {
+                scm.setAttribute("class", "hudson.scm.NullSCM");
+                rootElement.appendChild(scm);
+            }
+            else {
+                scm.setAttribute("class", "hudson.plugins.git.GitSCM");
+                scm.setAttribute("plugin", "git@2.4.4");
+
+                Element configVersion = doc.createElement("configVersion");
+                configVersion.appendChild(doc.createTextNode("2"));
+                scm.appendChild(configVersion);
+
+                Element userRemoteConfigs = doc.createElement("userRemoteConfigs");
+                Element userRemoteConfig = doc.createElement("hudson.plugins.git.UserRemoteConfig");
+                userRemoteConfigs.appendChild(userRemoteConfig);
+                scm.appendChild(userRemoteConfigs);
+
+                Element branches = doc.createElement("branches");
+                Element branchSpec = doc.createElement("hudson.plugins.git.BranchSpec");
+                Element name = doc.createElement("name");
+                name.appendChild(doc.createTextNode("*/master"));
+                branchSpec.appendChild(name);
+                branches.appendChild(branchSpec);
+                scm.appendChild(branches);
+
+                Element doGenerateSubmoduleConfigurations = doc.createElement("doGenerateSubmoduleConfigurations");
+                doGenerateSubmoduleConfigurations.appendChild(doc.createTextNode("false"));
+                scm.appendChild(doGenerateSubmoduleConfigurations);
+
+                Element browser = doc.createElement("browser");
+                browser.setAttribute("class", "hudson.plugins.git.browser.GitLab");
+                Element url = doc.createElement("url");
+                url.appendChild(doc.createTextNode(repository));
+                browser.appendChild(url);
+                Element version = doc.createElement("version");
+                version.appendChild(doc.createTextNode("8.7"));
+                browser.appendChild(version);
+                scm.appendChild(browser);
+
+                Element submoduleCfg = doc.createElement("submoduleCfg");
+                submoduleCfg.setAttribute("class", "list");
+                scm.appendChild(submoduleCfg);
+
+                Element extensions = doc.createElement("extensions");
+                scm.appendChild(extensions);
+            }
+            rootElement.appendChild(scm);
+
+            Element canRoam = doc.createElement("canRoam");
+            canRoam.appendChild(doc.createTextNode("true"));
+            rootElement.appendChild(canRoam);
+
+            Element disabled = doc.createElement("disabled");
+            disabled.appendChild(doc.createTextNode("false"));
+            rootElement.appendChild(disabled);
+
+            Element blockBuildWhenDownstreamBuilding = doc.createElement("blockBuildWhenDownstreamBuilding");
+            blockBuildWhenDownstreamBuilding.appendChild(doc.createTextNode("false"));
+            rootElement.appendChild(blockBuildWhenDownstreamBuilding);
+
+            Element blockBuildWhenUpstreamBuilding = doc.createElement("blockBuildWhenUpstreamBuilding");
+            blockBuildWhenUpstreamBuilding.appendChild(doc.createTextNode("false"));
+            rootElement.appendChild(blockBuildWhenUpstreamBuilding);
+
+            Element triggers = doc.createElement("triggers");
+            rootElement.appendChild(triggers);
+
+            Element concurrentBuild = doc.createElement("concurrentBuild");
+            concurrentBuild.appendChild(doc.createTextNode("false"));
+            rootElement.appendChild(concurrentBuild);
+
+            Element builders = doc.createElement("builders");
+            rootElement.appendChild(builders);
+
+            Element publishers = doc.createElement("publishers");
+            rootElement.appendChild(publishers);
+
+            Element buildWrappers = doc.createElement("buildWrappers");
+            rootElement.appendChild(buildWrappers);
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File("src/main/resources/config.xml"));
+            transformer.transform(source, result);
+
+        } catch (Exception e) {
+            logger.error("JenkinsService : createConfigFile " + e.getLocalizedMessage());
+        }
+
     }
 
     /**

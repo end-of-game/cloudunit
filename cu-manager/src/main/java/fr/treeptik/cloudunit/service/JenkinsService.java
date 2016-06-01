@@ -11,7 +11,7 @@ public interface JenkinsService {
 
     void deleteUser(String username);
 
-    void createProject(String applicationName);
+    void createProject(String applicationName, String repository);
 
     void deleteProject(String applicationName);
 }

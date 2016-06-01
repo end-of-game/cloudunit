@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class is used for all interactions with Gitlab concerning users
@@ -153,8 +155,7 @@ public class GitlabServiceImpl implements GitlabService {
         HttpStatus code = HttpStatus.EXPECTATION_FAILED;
         try {
             String uri = "http://" + gitlabAPI + "/api/v3/projects?private_token=" + gitlabToken;
-            System.out.println("uri = " + uri);
-            
+
             URL urlPost = new URL(uri);
             connPost = (HttpURLConnection) urlPost.openConnection();
             connPost.setDoOutput(true);
@@ -172,9 +173,6 @@ public class GitlabServiceImpl implements GitlabService {
             wr = new DataOutputStream(connPost.getOutputStream());
             wr.writeBytes(jsonString);
             code = HttpStatus.valueOf(connPost.getResponseCode());
-
-            System.out.println("code = " + code);
-
         } catch (IOException e) {
             logger.debug("IOException createProject : " + applicationName);
         }
@@ -223,6 +221,64 @@ public class GitlabServiceImpl implements GitlabService {
             logger.debug("IOException createProject : " + applicationName);
         }
         return code;
+    }
+
+    public List<JsonNode> listBranches(String applicationName) {
+        logger.info("GitlabService : listBranches " + applicationName);
+
+        if (gitlabToken == null) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return new ArrayList<>();
+        }
+
+        if (gitlabAPI == null) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return new ArrayList<>();
+        }
+
+        DataOutputStream wr = null;
+        HttpURLConnection connPost = null;
+        HttpStatus code = HttpStatus.EXPECTATION_FAILED;
+        try {
+            int id = getIdProject(applicationName);
+
+            URL urlPost = new URL("http://" + gitlabAPI + "/api/v3/projects/" + id + "/repository/branches?private_token=" + gitlabToken);
+            connPost = (HttpURLConnection) urlPost.openConnection();
+            connPost.setDoOutput(true);
+            connPost.setDoInput(true);
+            connPost.setRequestProperty("Content-Type", "application/json");
+            connPost.setRequestProperty("Accept", "application/json");
+            connPost.setRequestMethod("GET");
+            connPost.connect();
+
+            int status = connPost.getResponseCode();
+            String jsonS = "";
+            if (status == 200) {
+                StringBuilder sb = new StringBuilder();
+                try {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(connPost.getInputStream()));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    br.close();
+                } catch (IOException e) {
+                    logger.debug("GitlabService : IOException listBranches read " + applicationName);
+                }
+
+                jsonS = sb.toString();
+            } else {
+                logger.error("GitlabService : status " + status);
+            }
+
+            logger.info("GitlabService : listBranches " + jsonS);
+
+
+        } catch (IOException e) {
+            logger.debug("IOException createProject : " + applicationName);
+        }
+
+        return new ArrayList<>();
     }
 
     /**
@@ -335,5 +391,71 @@ public class GitlabServiceImpl implements GitlabService {
         }
 
         return -1;
+    }
+
+    public String getGitRepository(String applicationName) {
+        logger.info("GitlabService : getGitRepository " + applicationName);
+
+        if (gitlabToken == null) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return "";
+        }
+
+        if (gitlabAPI == null) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return "";
+        }
+
+        HttpURLConnection connPost = null;
+        int status = -1;
+        try {
+            int id = getIdProject(applicationName);
+
+            URL urlPost = new URL("http://" + gitlabAPI + "/api/v3/projects/" + id + "?private_token=" + gitlabToken);
+            connPost = (HttpURLConnection) urlPost.openConnection();
+            connPost.setDoOutput(true);
+            connPost.setDoInput(true);
+            connPost.setRequestProperty("Content-Type", "application/json");
+            connPost.setRequestProperty("Accept", "application/json");
+            connPost.setRequestMethod("GET");
+            connPost.connect();
+            status = connPost.getResponseCode();
+        } catch (IOException e) {
+            logger.debug("IOException createProject : " + applicationName);
+        }
+
+        String jsonS;
+        if (status == 200) {
+            StringBuilder sb = new StringBuilder();
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(connPost.getInputStream()));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                br.close();
+            } catch (IOException e) {
+                logger.debug("IOException getIdProject read : " + applicationName);
+            }
+            jsonS = sb.toString();
+        } else {
+            logger.error("GitlabService : getGitRepository error " + status);
+            return "";
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(jsonS);
+            if(!node.get("http_url_to_repo").equals(null))
+                return node.get("http_url_to_repo").asText();
+            else
+                logger.error("GitlabService : Repository doesn't exist");
+
+        } catch (IOException e) {
+            logger.error("GitlabService : getGitRepository error " + e.getLocalizedMessage());
+        }
+
+
+        return "";
     }
 }
