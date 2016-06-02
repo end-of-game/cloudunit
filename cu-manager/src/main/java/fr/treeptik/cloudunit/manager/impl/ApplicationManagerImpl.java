@@ -117,8 +117,8 @@ public class ApplicationManagerImpl
             // Wait for the server has a status START
             for (Server server : application.getServers()) {
                 int counter = 0;
-                while (!server.getStatus().equals(Status.START)) {
-                    if (counter == 600) {
+                while (server.getStatus() != null && !server.getStatus().equals(Status.START)) {
+                    if (counter == 60) {
                         break;
                     }
                     try {
@@ -133,8 +133,8 @@ public class ApplicationManagerImpl
             // Wait for the module has a status START (set by shell agent)
             for (Module module : application.getModules()) {
                 int counter = 0;
-                while (!module.getStatus().equals(Status.START)) {
-                    if (counter == 600) {
+                while (module.getStatus() != null && !module.getStatus().equals(Status.START)) {
+                    if (counter == 60) {
                         break;
                     }
                     try {

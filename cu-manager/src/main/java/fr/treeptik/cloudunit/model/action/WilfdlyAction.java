@@ -33,12 +33,12 @@ package fr.treeptik.cloudunit.model.action;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Snapshot;
 
-public class GenericAction
+public class WilfdlyAction
     extends ServerAction {
 
     private static final long serialVersionUID = 1L;
 
-    public GenericAction(Server parent) {
+    public WilfdlyAction(Server parent) {
         super(parent);
     }
 

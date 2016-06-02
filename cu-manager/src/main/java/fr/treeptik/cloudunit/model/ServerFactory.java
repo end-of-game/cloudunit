@@ -60,7 +60,7 @@ public class ServerFactory {
         } else if (imageName.toLowerCase().contains("apache")) {
             result = new ApacheAction(server);
         } else  {
-            result = new GenericAction(server);
+            result = new WilfdlyAction(server);
         }
         return result;
 

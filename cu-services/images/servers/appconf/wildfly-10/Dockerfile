@@ -29,6 +29,9 @@ RUN chmod +x /cloudunit/scripts/*
 RUN mkdir -p /cloudunit/appconf/logs/
 RUN ln -s /cloudunit/appconf/wildfly/standalone/log/server.log /cloudunit/appconf/logs
 
+VOLUME /cloudunit/appconf/logs
+VOLUME /cloudunit/appconf/wildfly/standalone/log
+
 ENTRYPOINT ["/cloudunit/scripts/start-service.sh"]
 
 
