@@ -2,7 +2,7 @@
 #!/bin/bash
 
 node_dir=src/main/webapp
-tomcat_dir=/home/admincu/cloudunit/cu-platform/tomcat
+tomcat_dir=/home/admincu/cloudunit/cu-production/tomcat
 
 if [ ! -d "$tomcat_dir" ]; then
 	mkdir $tomcat_dir
