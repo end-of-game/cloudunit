@@ -86,13 +86,14 @@
                     data-ng-model="explorer.newDirectoryName"
                      protectinput=""
                     placeholder="Name">
-          </div>
-          <button class="button raised primary pull-right"
+            <button class="button raised primary pull-right"
                   ripple=""
                   data-ng-disabled="!explorer.newDirectoryName"
                   data-ng-click="explorer.addNewDirectory(explorer.myContainer.id, explorer.currentPath, explorer.newDirectoryName)">
-            <span>Create</span>
-          </button>
+              <span>Create</span>
+            </button>
+          </div>
+        <br>
         </div>
         <div class="upload-progress" data-ng-show="uploader.isUploading">
           <div class="progress" ng-class="{'success': explorer.uploadSuccess}">
