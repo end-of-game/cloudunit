@@ -69,7 +69,7 @@ public class GitlabServiceImpl implements GitlabService {
                     null, null, null, null, null, null, null, null, false, false, false);
             return HttpStatus.OK;
         } catch(IOException e) {
-            logger.debug("IOException createUser : " + user.getLogin());
+            logger.error("GitlabService : Exception createUser : " + user.getLogin() + " " + e.getLocalizedMessage());
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -105,7 +105,7 @@ public class GitlabServiceImpl implements GitlabService {
             }
             return HttpStatus.NOT_FOUND;
         } catch(IOException e) {
-            logger.debug("IOException createUser : " + username);
+            logger.error("GitlabService : Exception deleteUser : " + username + " " + e.getLocalizedMessage());
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -134,7 +134,7 @@ public class GitlabServiceImpl implements GitlabService {
             api.createProject(applicationName);
             return HttpStatus.OK;
         } catch (IOException e) {
-            logger.debug("IOException createProject : " + applicationName);
+            logger.error("GitlabService : Exception createProject : " + applicationName + " " + e.getLocalizedMessage());
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -170,7 +170,7 @@ public class GitlabServiceImpl implements GitlabService {
             }
             return HttpStatus.NOT_FOUND;
         } catch (IOException e) {
-            logger.debug("IOException createProject : " + applicationName);
+            logger.error("GitlabService : Exception deleteProject : " + applicationName + " " + e.getLocalizedMessage());
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -205,7 +205,7 @@ public class GitlabServiceImpl implements GitlabService {
             }
             return new ArrayList<>();
         } catch (IOException e) {
-            logger.debug("IOException createProject : " + applicationName);
+            logger.error("GitlabService : Exception listBranches : " + applicationName + " " + e.getLocalizedMessage());
             return new ArrayList<>();
         }
     }
@@ -240,7 +240,7 @@ public class GitlabServiceImpl implements GitlabService {
             }
             return HttpStatus.NOT_FOUND.toString();
         } catch (IOException e) {
-            logger.debug("IOException createProject : " + applicationName);
+            logger.error("GitlabService : Exception getGitRepository : " + applicationName + " " + e.getLocalizedMessage());
             return HttpStatus.BAD_REQUEST.toString();
         }
     }

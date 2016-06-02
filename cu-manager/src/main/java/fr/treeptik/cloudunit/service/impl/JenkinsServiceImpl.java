@@ -342,7 +342,7 @@ public class JenkinsServiceImpl implements JenkinsService {
 
     /**
      * Test if we can call Jenkins url
-     * 
+     *
      * @return
      */
     private Boolean testJenkins() {
