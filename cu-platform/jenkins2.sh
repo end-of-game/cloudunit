@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export JK_MAJOR=2.1
+export JK_MAJOR=2.7
 
 docker images |grep jenkinsci/jenkins |grep $JK_MAJOR
 if [ "$?" == "1" ]; then
