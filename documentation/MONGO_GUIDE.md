@@ -16,6 +16,8 @@ Then add Mongo module to your application :
 
 ![Module page for Mongo](img/MongoTestModule.png)
 
+Restart your application for update changes.
+
 ## Using environment variables in your application
 
 CloudUnit provides you some variables for using in your application :
