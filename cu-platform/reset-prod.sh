@@ -39,11 +39,8 @@ docker rm -vf cuplatform_tomcat_1
 docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
 
-echo -e "\nChanging directory\n"
-cd /home/admincu/cloudunit/cu-production
-
 echo -e "\nStarting the platform\n"
-/home/admincu/cloudunit/cu-platform/start-platform-prod.sh reset
+/home/admincu/cloudunit/cu-platform/start-platform-prod.sh
 
 echo -e "\nRunning services\n"
 /home/admincu/cloudunit/cu-services/run-services.sh

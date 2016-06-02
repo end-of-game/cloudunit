@@ -13,8 +13,6 @@
 
 #!/bin/bash
 
-set -x
-
 export COMPOSE_FILE=docker-compose-prod.yml
 
 #Start containers in the right sequence
