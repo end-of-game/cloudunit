@@ -63,5 +63,6 @@ mkdir -p $CU_HOME/cu-production/tomcat && cp target/ROOT.war $CU_HOME/cu-product
 chown -R $CU_USER:$CU_USER /home/$CU_USER/.docker
 
 # RESET ALL FOR FIRST START
-su -l $CU_USER -c "cd $CU_HOME/cu-production && ./reset-all.sh -y"
+su -l $CU_USER -c "cd $CU_HOME/cu-platform && ./reset-all.sh -y"
+
 

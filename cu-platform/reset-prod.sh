@@ -30,29 +30,23 @@ docker rm -v $(docker ps -q --filter="status=exited")
 docker rm -vf $(docker ps -aq --filter "label=origin=cloudunit")
 docker rm -vf cuplatform_mysqldata_1
 docker rm -vf cuplatform_mysql_1
-docker rm -vf cuplatform_testmysqldata_1
-docker rm -vf cuplatform_testmysql_1
 docker rm -vf cuplatform_redis_1
 docker rm -vf cuplatform_hipache_1
 docker rm -vf cuplatform_dnsdock_1
+docker rm -vf cuplatform_tomcat_1
 
 # delete all NONE images
 docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
 
 echo -e "\nChanging directory\n"
-cd /home/$USER/cloudunit/cu-platform
+cd /home/admincu/cloudunit/cu-production
 
 echo -e "\nStarting the platform\n"
-/home/$USER/cloudunit/cu-platform/start-platform.sh reset
-
-echo -e "\nChanging directory\n"
-cd /home/$USER/cloudunit/cu-services
-
-echo -e "\nCurrent directory: `pwd`\n"
+/home/admincu/cloudunit/cu-platform/start-platform-prod.sh reset
 
 echo -e "\nRunning services\n"
-/home/$USER/cloudunit/cu-services/run-services.sh
+/home/admincu/cloudunit/cu-services/run-services.sh
 
 
 

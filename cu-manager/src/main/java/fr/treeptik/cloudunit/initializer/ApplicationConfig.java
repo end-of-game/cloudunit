@@ -36,6 +36,7 @@ public class ApplicationConfig
     @Override
     public void onStartup(ServletContext servletContext)
         throws ServletException {
+
         AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(CloudUnitApplicationContext.class);
 
