@@ -51,7 +51,7 @@
     vm.serverImages = [];
     vm.serverImageChoice = {};
     vm.serverImageSelect2 = undefined;
-    
+
     vm.group = [];
     vm.notValidated = true;
     vm.message = '';
@@ -72,8 +72,8 @@
           return '<div class="selectize">' + escape(data.title) + '</div>';
         }
       },
-      onChange(value) {
-        vm.serverImageChoice =  vm.serverImages[vm.serverImages.map(function(x) {return x.id; }).indexOf(+value)];      
+      onChange: function(value) {
+        vm.serverImageChoice =  vm.serverImages[vm.serverImages.map(function(x) {return x.id; }).indexOf(+value)];
       }
     };
 
@@ -86,7 +86,7 @@
 
       function success(serverImages) {
         vm.serverImages = serverImages;
-      
+
          serverImages.forEach(function (element, index) {
           var rang = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[index].prefixEnv);
           if(rang == -1) {
@@ -146,7 +146,7 @@
           vm.message = response.data.message;
           vm.notValidated = true;
           vm.isPending = false;
-        }     
+        }
     }
   }
 })();
