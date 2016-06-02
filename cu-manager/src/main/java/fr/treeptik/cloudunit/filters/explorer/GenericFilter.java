@@ -13,21 +13,6 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-/*
- * LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
- * but CloudUnit is licensed too under a standard commercial license.
- * Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
- * If you are not sure whether the AGPL is right for you,
- * you can always test our software under the AGPL and inspect the source code before you contact us
- * about purchasing a commercial license.
- *
- * LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
- * or promote products derived from this project without prior written permission from Treeptik.
- * Products or services derived from this software may not be called "CloudUnit"
- * nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
- * For any questions, contact us : contact@treeptik.fr
- */
-
 package fr.treeptik.cloudunit.filters.explorer;
 
 import fr.treeptik.cloudunit.dto.FileUnit;
@@ -35,13 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class used into FileExplorer feature
- * to display or hide paths for users.
+ * Created by nicolas on 08/06/15.
  */
-public class FatJarFilter
+public class GenericFilter
     implements ExplorerFilter {
 
-    private final Logger logger = LoggerFactory.getLogger(FatJarFilter.class);
+    private final Logger logger = LoggerFactory.getLogger(GenericFilter.class);
 
     @Override
     public boolean isValid(FileUnit fileUnit) {
@@ -70,7 +54,7 @@ public class FatJarFilter
     public void isRemovable(FileUnit fileUnit) {
 
         if (logger.isDebugEnabled()) {
-            logger.debug("breadcrump : " + fileUnit.getBreadcrump());
+            logger.debug("--> fileUnit : " + fileUnit.getBreadcrump());
         }
 
         String breadcrumb = fileUnit.getBreadcrump();
@@ -89,7 +73,7 @@ public class FatJarFilter
     @Override
     public void isSafe(FileUnit fileUnit) {
         if (logger.isDebugEnabled()) {
-            logger.debug("breadcrump : " + fileUnit.getBreadcrump());
+            logger.debug("--> fileUnit : " + fileUnit.getBreadcrump());
         }
 
         String breadcrumb = fileUnit.getBreadcrump();

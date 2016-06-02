@@ -1,12 +1,12 @@
-# Use latest jboss/base-jdk:8 image as the base
-FROM jboss/base-jdk:8
+FROM cloudunit/base-14.04
 
 # Set the WILDFLY_VERSION env variable
 ENV WILDFLY_VERSION 10.0.0.Final
 ENV WILDFLY_SHA1 c0dd7552c5207b0d116a9c25eb94d10b4f375549
-ENV JBOSS_HOME /opt/jboss/wildfly
+ENV JBOSS_HOME /cloudunit/appconf/wildfly
+ENV JAVA_HOME /cloudunit/java/jdk1.8.0_25
 
-# Add the WildFly distribution to /opt, and make wildfly the owner of the extracted tar content
+# Add the WildFly distribution to /cloudunit/appconf, and make wildfly the owner of the extracted tar content
 # Make sure the distribution is available from a well-known place
 RUN cd $HOME \
     && curl -O https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
@@ -20,10 +20,15 @@ ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
 # Expose the ports we're interested in
 EXPOSE 8080
+EXPOSE 22
 
-# CLOUDUNIT EXTENSION #
-add cloudunit /cloudunit
+# add custom scripts
+ADD scripts /cloudunit/scripts
+RUN chmod +x /cloudunit/scripts/*
 
-CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+RUN mkdir -p /cloudunit/appconf/logs/
+RUN ln -s /cloudunit/appconf/wildfly/standalone/log/server.log /cloudunit/appconf/logs
+
+ENTRYPOINT ["/cloudunit/scripts/start-service.sh"]
 
 

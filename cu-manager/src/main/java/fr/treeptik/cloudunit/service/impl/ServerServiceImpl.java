@@ -162,7 +162,9 @@ public class ServerServiceImpl
         logger.debug("imagePath:" + imagePath);
 
         List<String> volumesFrom = new ArrayList<>();
-        if (!server.getImage().getName().contains("fatjar") && !server.getImage().getName().startsWith("apache")) {
+        if (!server.getImage().getName().contains("fatjar")
+                && !server.getImage().getName().startsWith("apache")
+                && !server.getImage().getName().startsWith("wildfly")) {
             volumesFrom.add(server.getImage().getName());
         }
         volumesFrom.add("java");
@@ -177,7 +179,8 @@ public class ServerServiceImpl
                         Arrays.asList(user.getLogin(), user.getPassword(), server
                                         .getApplication().getRestHost(), server
                                         .getApplication().getName(),
-                                "jdk1.7.0_55", databasePassword, envExec, databaseHostname)).build();
+                                server.getServerAction().getDefaultJavaRelease(),
+                                databasePassword, envExec, databaseHostname)).build();
 
         try {
             // create a container and get informations
@@ -221,7 +224,7 @@ public class ServerServiceImpl
                     + server.getServerAction().getServerManagerPath());
             server.setStatus(Status.START);
             server.setJvmMemory(512L);
-            server.setJvmRelease("jdk1.7.0_55");
+            server.setJvmRelease(server.getServerAction().getDefaultJavaRelease());
 
             server = this.update(server);
 
@@ -627,8 +630,9 @@ public class ServerServiceImpl
                 String command = "bash /cloudunit/appconf/scripts/change-server-config.sh "
                         + jvmMemory + " " + "\"" + jvmOptions + "\"";
 
-
-                if (server.getImage().getName().contains("jar")) {
+                if (server.getImage().getName().contains("jar")
+                        || server.getImage().getName().contains("wildfly")
+                        || server.getImage().getName().contains("apache")) {
                     command = "bash /cloudunit/scripts/change-server-config.sh "
                             + jvmMemory + " " + "\"" + jvmOptions + "\"";
                 }
@@ -730,10 +734,7 @@ public class ServerServiceImpl
                     continue;
                 }
             }
-            /**
-             * TODO : REFACTOR quand on pourra avoir plusieurs instances de
-             * serveur
-             */
+
             server = this.findByApp(application).get(0);
             server.setStatus(Status.START);
             server = this.saveInDB(server);

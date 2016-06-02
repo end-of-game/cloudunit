@@ -33,23 +33,23 @@ package fr.treeptik.cloudunit.model.action;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Snapshot;
 
-public class TomcatAction
+public class GenericAction
     extends ServerAction {
 
     private static final long serialVersionUID = 1L;
 
-    public TomcatAction(Server parent) {
+    public GenericAction(Server parent) {
         super(parent);
     }
 
     @Override
     public String getServerManagerPath() {
-        return "/manager/html?";
+        return "";
     }
 
     @Override
     public String getServerManagerPort() {
-        return "8080";
+        return "9990";
     }
 
     @Override
@@ -77,7 +77,7 @@ public class TomcatAction
     }
 
     @Override
-    public String getDefaultLogFile() { return "catalina.out"; };
+    public String getDefaultLogFile() { return "server.log"; };
 
     @Override
     public boolean hasDefaultPort() {

@@ -45,6 +45,9 @@ public interface FileService {
     void deleteFilesFromContainer(String applicationName, String containerId, String path)
         throws ServiceException;
 
+    void createDirectory(String applicationName, String containerId, String path)
+            throws ServiceException;
+
     public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
             throws ServiceException;
 

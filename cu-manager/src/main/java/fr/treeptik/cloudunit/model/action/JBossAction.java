@@ -83,4 +83,7 @@ public class JBossAction
     public boolean hasDefaultPort() {
         return true;
     }
+
+    @Override
+    public String getDefaultJavaRelease() { return "jdk1.7.0_55"; }
 }

@@ -215,6 +215,7 @@ public class ApplicationManagerImpl
                 throw new CheckException(messageSource.getMessage("check.war.ear", null, Locale.ENGLISH));
             }
         } catch (IOException e) {
+            e.printStackTrace();
             applicationService.setStatus(application, Status.FAIL);
             throw new ServiceException(e.getMessage());
         }

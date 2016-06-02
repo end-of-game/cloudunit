@@ -9,7 +9,7 @@ export CU_PASSWORD=$2
 export CU_REST_IP=$3	
 export CU_DATABASE_NAME=$4
 export CU_HOME=/cloudunit/appconf
-    export JAVA_HOME=/cloudunit/java/$5
+export JAVA_HOME=/cloudunit/java/$5
 # Database password for Manager
 export MANAGER_DATABASE_PASSWORD=$6
 # To do difference between main and test env

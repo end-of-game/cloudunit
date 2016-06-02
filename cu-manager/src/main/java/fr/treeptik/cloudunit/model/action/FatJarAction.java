@@ -70,4 +70,6 @@ public class FatJarAction extends ServerAction {
     @Override
     public String getDefaultLogFile() { return "system.out"; };
 
+    @Override
+    public String getDefaultJavaRelease() { return "jdk1.7.0_55"; }
 }

@@ -108,18 +108,9 @@ public class FileServiceImpl
     public void deleteFilesFromContainer(String applicationName,
                                          String containerId, String path)
             throws ServiceException {
+        DockerClient docker = null;
         try {
-            DockerClient docker = null;
-            if (isHttpMode) {
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
+            docker = getDockerClient();
             List<Container> containers = docker.listContainers();
             for (Container container : containers) {
                 if (container.id().substring(0, 12).equals(containerId) == false) {
@@ -136,8 +127,52 @@ public class FileServiceImpl
                 }
             }
         } catch (DockerException | InterruptedException | DockerCertificateException e) {
-            throw new ServiceException("Error in listByContainerIdAndPath", e);
+            throw new ServiceException("Cannot delete files " + path + " for " + containerId, e);
+        } finally {
+             if (docker != null) { docker.close(); }
         }
+    }
+
+    @Override
+    public void createDirectory(String applicationName, String containerId, String path) throws ServiceException {
+        DockerClient docker = null;
+        try {
+            docker = getDockerClient();
+            List<Container> containers = docker.listContainers();
+            for (Container container : containers) {
+                if (container.id().substring(0, 12).equals(containerId) == false) {
+                    continue;
+                }
+                final String[] command = {"bash", "-c", "mkdir -p " + convertDestPathFile(path)};
+                String containerName = container.names().get(0);
+                String execId = docker.execCreate(containerName, command,
+                        DockerClient.ExecParameter.STDOUT,
+                        DockerClient.ExecParameter.STDERR);
+                final LogStream output = docker.execStart(execId);
+                if (output != null) {
+                    output.close();
+                }
+            }
+        } catch (DockerException | InterruptedException | DockerCertificateException e) {
+            throw new ServiceException("Cannot create directory " + path + " for " + containerId, e);
+        } finally {
+            if (docker != null) { docker.close(); }
+        }
+    }
+
+    private DockerClient getDockerClient() throws DockerCertificateException {
+        DockerClient docker = null;
+        if (isHttpMode) {
+            docker = DefaultDockerClient
+                    .builder()
+                    .uri("http://" + dockerManagerIp).build();
+        } else {
+            final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
+            docker = DefaultDockerClient
+                    .builder()
+                    .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+        }
+        return docker;
     }
 
     /**
@@ -514,7 +549,9 @@ public class FileServiceImpl
     }
 
     private String convertDestPathFile(String pathFile) {
-        return "/" + pathFile.replaceAll("__", "/") + "/";
+        pathFile =  pathFile.replaceAll("__", "/") + "/";
+        if (!pathFile.startsWith("/")) pathFile = "/" + pathFile;
+        return pathFile;
     }
 
     private String getLogDirectory(String containerId)

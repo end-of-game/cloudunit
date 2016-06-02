@@ -54,7 +54,7 @@
         </ul>
       </div>
     </div>
-    <div class="card card--explorer col-lg-9 " ng-class="{pending: explorer.isUploading}">
+    <div class="card card--explorer col-lg-9" ng-class="{pending: explorer.isUploading || explorer.isCreatingDirectory}">
       <div class="content">
         <div class="breadcrumb toolbar clearfix">
           <div class="pull-left">
@@ -79,6 +79,21 @@
             </div>
           </div>
         </div>
+        <div class="form-group">
+          <div class="input-group stack">
+            <label>Add directory...</label>
+            <input type="text" id="add-directory"
+                    data-ng-model="explorer.newDirectoryName"
+                     protectinput=""
+                    placeholder="Name">
+          </div>
+          <button class="button raised primary pull-right"
+                  ripple=""
+                  data-ng-disabled="!explorer.newDirectoryName"
+                  data-ng-click="explorer.addNewDirectory(explorer.myContainer.id, explorer.currentPath, explorer.newDirectoryName)">
+            <span>Create</span>
+          </button>
+        </div>
         <div class="upload-progress" data-ng-show="uploader.isUploading">
           <div class="progress" ng-class="{'success': explorer.uploadSuccess}">
             <div class="progress-bar"
@@ -86,6 +101,13 @@
                  ng-style="{ 'width': uploader.progress + '%' }">
             </div>
           </div>
+        </div>  
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
         </div>
         <div class="explorer__sub" nv-file-over="" nv-file-drop="" uploader="uploader"
              ng-class="{'nv-file-drop': explorer.dropped}">

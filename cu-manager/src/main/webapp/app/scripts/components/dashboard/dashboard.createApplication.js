@@ -64,12 +64,12 @@
       optgroupLabelField: 'title',
       maxItems: 1,
       valueField: 'id',
-      labelField: 'name',
-      searchField: 'name',
+      labelField: 'displayName',
+      searchField: 'displayName',
       placeholder: 'Select Server',
       render: {
         optgroup_header: function(data, escape) {
-          return '<div class="label">' + escape(data.title) + '</div>';
+          return '<div class="selectize">' + escape(data.title) + '</div>';
         }
       },
       onChange(value) {
