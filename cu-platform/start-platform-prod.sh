@@ -13,6 +13,8 @@
 
 #!/bin/bash
 
+export COMPOSE_FILE=docker-compose-dev.yml
+
 #Start containers in the right sequence
 source $HOME/.profile
 
@@ -20,7 +22,7 @@ export CU_SUB_DOMAIN=.$(hostname)
 
 DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 
-docker-compose up -d dnsdock
+docker-compose -f $COMPOSE_FILE up -d dnsdock
 echo -e "\n+++ Dns test +++\n"
 until [ ! $(eval "$DNS_CMD") -eq "0" ];
 do
@@ -28,11 +30,11 @@ do
     sleep 1
 done
 
-docker-compose up -d mysqldata
-docker-compose up -d mysql
-docker-compose up -d tomcat
+docker-compose -f $COMPOSE_FILE up -d mysqldata
+docker-compose -f $COMPOSE_FILE up -d mysql
+docker-compose -f $COMPOSE_FILE up -d tomcat
 
-docker-compose up -d hipache
+docker-compose -f $COMPOSE_FILE up -d hipache
 
 # DNS DOCK
 echo -e "\n+++ Dns test inside a container +++\n"
@@ -65,8 +67,8 @@ do
     sleep 1
 done
 
-docker-compose up -d cadvisor
-docker-compose up -d nginx
+docker-compose -f $COMPOSE_FILE up -d cadvisor
+docker-compose -f $COMPOSE_FILE up -d nginx
 
 
 

@@ -20,7 +20,7 @@ export CU_SUB_DOMAIN=.$(hostname)
 
 DNS_CMD="dig cloud.unit @172.17.42.1 +short | wc -l"
 
-docker-compose up -d dnsdock
+docker-compose -f $COMPOSE_FILE up -d dnsdock
 echo -e "\n+++ Dns test +++\n"
 until [ ! $(eval "$DNS_CMD") -eq "0" ];
 do
@@ -28,14 +28,14 @@ do
     sleep 1
 done
 
-docker-compose up -d mysqldata
-docker-compose up -d mysql
+docker-compose -f $COMPOSE_FILE up -d mysqldata
+docker-compose -f $COMPOSE_FILE up -d mysql
 
-docker-compose up -d testmysqldata
-docker-compose up -d testmysql
+docker-compose -f $COMPOSE_FILE up -d testmysqldata
+docker-compose -f $COMPOSE_FILE up -d testmysql
 
-docker-compose up -d hipache
-docker-compose up -d registry
+docker-compose -f $COMPOSE_FILE up -d hipache
+docker-compose -f $COMPOSE_FILE up -d registry
 
 # DNS DOCK
 echo -e "\n+++ Dns test inside a container +++\n"
@@ -68,7 +68,7 @@ do
     sleep 1
 done
 
-docker-compose up -d cadvisor
+docker-compose -f $COMPOSE_FILE up -d cadvisor
 
 
 
