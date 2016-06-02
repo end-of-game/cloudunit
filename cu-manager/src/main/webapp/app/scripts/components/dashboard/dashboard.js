@@ -33,6 +33,7 @@
       templateUrl: 'scripts/components/dashboard/dashboard.html',
       scope: {},
       controller: [
+        '$rootScope',
         '$scope',
         '$interval',
         'ApplicationService',
@@ -47,15 +48,17 @@
 
 
 
-  function DashboardCtrl($scope, $interval, ApplicationService, ErrorService) {
+  function DashboardCtrl($rootScope, $scope, $interval, ApplicationService, ErrorService) {
     var timer, vm = this;
     vm.applications = [];
     vm.selectedItem = 'All';
+    vm.selectedServerSearch = 'All';
+    vm.selectedServer = '';
     vm.search = '';
     vm.deleteApplication = deleteApplication;
     vm.toggleServer = toggleServer;
     vm.buffer = '';
-    
+
     update();
 
     // Polling on refresh
@@ -75,7 +78,11 @@
     $scope.$on('app:create:fail', function(e, data){
       vm.buffer = '';
     });
-
+    
+    $scope.$on('app:serverImages', function(event, args) {
+      vm.serverImages = args.serverImages;
+    });
+    
     /////////////////////////////////////////////
 
     // Refresh the application list
@@ -101,8 +108,8 @@
             vm.buffer = '';
           }
         }
-
-        vm.applications = applications;
+        
+        vm.applications = applications;     
         return vm.applications;
       }
 

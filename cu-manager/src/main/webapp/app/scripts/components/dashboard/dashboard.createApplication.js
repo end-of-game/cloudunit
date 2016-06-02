@@ -93,11 +93,12 @@
             vm.group.push({
               id: serverImages[index].prefixId,
               title: serverImages[index].prefixEnv,
-              prefixId: serverImages[index].prefixId
             });
           }
          });
-
+         
+        $rootScope.$broadcast('app:serverImages', {serverImages: vm.group});
+        
         vm.serverImageChoice = serverImages[0];
       }
 
