@@ -154,6 +154,11 @@
     & .spinner {
       color: $color-muted;
     }
+    
+    &.allowed {
+      pointer-events: auto;
+      cursor:  pointer;
+    }
   }
 
   input[type='text'], textarea {
