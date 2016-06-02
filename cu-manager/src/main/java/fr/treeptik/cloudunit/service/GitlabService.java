@@ -1,6 +1,5 @@
 package fr.treeptik.cloudunit.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import fr.treeptik.cloudunit.model.User;
 import org.gitlab.api.models.GitlabBranch;
 import org.springframework.http.HttpStatus;
