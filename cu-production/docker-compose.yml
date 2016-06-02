@@ -1,5 +1,4 @@
 jenkins:
-    container_name: my-web-container
     image: jenkinsci/jenkins:2.1
     # Maybe we will need this port for api management...
     #ports:

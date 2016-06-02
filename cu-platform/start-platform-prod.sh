@@ -13,6 +13,8 @@
 
 #!/bin/bash
 
+set -x
+
 export COMPOSE_FILE=docker-compose-prod.yml
 
 #Start containers in the right sequence
@@ -70,6 +72,6 @@ done
 docker-compose -f $COMPOSE_FILE up -d cadvisor
 docker-compose -f $COMPOSE_FILE up -d nginx
 
-
+set +x
 
 
