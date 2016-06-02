@@ -136,7 +136,12 @@ public class GitlabServiceImpl implements GitlabService {
         return code;
     }
 
-    @Override
+    /**
+     * Create a project on Gitlab
+     *
+     * @param applicationName
+     * @return
+     */
     public HttpStatus createProject(String applicationName) {
         logger.info("GitlabService : createProject " + applicationName);
 
@@ -179,7 +184,12 @@ public class GitlabServiceImpl implements GitlabService {
         return code;
     }
 
-    @Override
+    /**
+     * Delete a project on Gitlab
+     *
+     * @param applicationName
+     * @return
+     */
     public HttpStatus deleteProject(String applicationName) {
         logger.info("GitlabService : deleteProject " + applicationName);
 
@@ -223,6 +233,12 @@ public class GitlabServiceImpl implements GitlabService {
         return code;
     }
 
+    /**
+     * List all branches of a project on Gitlab
+     *
+     * @param applicationName
+     * @return
+     */
     public List<JsonNode> listBranches(String applicationName) {
         logger.info("GitlabService : listBranches " + applicationName);
 
@@ -340,6 +356,12 @@ public class GitlabServiceImpl implements GitlabService {
         return -1;
     }
 
+    /**
+     * Get Gitlab id of a project with his name
+     *
+     * @param applicationName
+     * @return
+     */
     public int getIdProject(String applicationName) {
         HttpURLConnection c = null;
         URL url = null;
@@ -393,6 +415,12 @@ public class GitlabServiceImpl implements GitlabService {
         return -1;
     }
 
+    /**
+     * Get Git repository address of a project for Jenkins initialization
+     *
+     * @param applicationName
+     * @return
+     */
     public String getGitRepository(String applicationName) {
         logger.info("GitlabService : getGitRepository " + applicationName);
 

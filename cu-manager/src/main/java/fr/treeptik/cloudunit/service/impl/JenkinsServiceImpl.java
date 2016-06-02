@@ -2,7 +2,6 @@ package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.JenkinsService;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -111,6 +110,12 @@ public class JenkinsServiceImpl implements JenkinsService {
         }
     }
 
+    /**
+     * Create a job identifiying a project in Jenkins
+     *
+     * @param applicationName
+     * @param repository
+     */
     public void createProject(String applicationName, String repository) {
         try {
             logger.info("JenkinsService : createProject " + applicationName);
@@ -145,6 +150,11 @@ public class JenkinsServiceImpl implements JenkinsService {
         }
     }
 
+    /**
+     * Delete a job identifying a project in Jenkins
+     *
+     * @param applicationName
+     */
     public void deleteProject(String applicationName) {
         try {
             logger.info("JenkinsService : deleteProject " + applicationName);
@@ -168,6 +178,11 @@ public class JenkinsServiceImpl implements JenkinsService {
         }
     }
 
+    /**
+     * Create a config file of project for initialization in Jenkins
+     *
+     * @param repository
+     */
     private void createConfigFile (String repository) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
