@@ -4,6 +4,12 @@
   border-radius: 0px;
   background-color: $color-primary;
   min-width:100%;
+  padding-left: 7px;
+  font-weight: bold;
+}
+
+.selectize:first-letter {
+  text-transform:capitalize;
 }
 
 .selectize-dropdown-content {
