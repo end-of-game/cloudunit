@@ -13,7 +13,7 @@
 
 #!/bin/bash
 
-export COMPOSE_FILE=docker-compose-dev.yml
+export COMPOSE_FILE=docker-compose-prod.yml
 
 #Start containers in the right sequence
 source $HOME/.profile
