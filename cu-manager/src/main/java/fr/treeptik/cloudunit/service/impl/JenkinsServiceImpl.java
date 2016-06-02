@@ -2,14 +2,19 @@ package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.JenkinsService;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -40,6 +45,14 @@ public class JenkinsServiceImpl implements JenkinsService {
     @Value("${jenkins.token}")
     private String rootToken;
 
+    private boolean jenkinsOpen;
+
+    @Autowired
+    public void init()
+    {
+        jenkinsOpen = testJenkins();
+    }
+
     /**
      * Add a user to the Jenkins server
      *
@@ -54,25 +67,27 @@ public class JenkinsServiceImpl implements JenkinsService {
                 return;
             }
 
-            DefaultHttpClient httpclient = new DefaultHttpClient();
+            if(jenkinsOpen) {
+                HttpClient httpclient = HttpClientBuilder.create().build();
 
-            ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+                ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
-            HttpPost post = new HttpPost("http://" + JENKINS_IP + "/securityRealm/createAccountByAdmin");
-            parameters.add(new BasicNameValuePair("username", user.getLogin()));
-            parameters.add(new BasicNameValuePair("password1", user.getPassword()));
-            parameters.add(new BasicNameValuePair("password2", user.getPassword()));
-            parameters.add(new BasicNameValuePair("fullname", user.getFirstName() + " " + user.getLastName()));
-            parameters.add(new BasicNameValuePair("email", user.getEmail()));
-            parameters.add(new BasicNameValuePair("json", createJson(user)));
-            parameters.add(new BasicNameValuePair("Submit", "Créer un utilisateur"));
+                HttpPost post = new HttpPost("http://" + JENKINS_IP + "/securityRealm/createAccountByAdmin");
+                parameters.add(new BasicNameValuePair("username", user.getLogin()));
+                parameters.add(new BasicNameValuePair("password1", user.getPassword()));
+                parameters.add(new BasicNameValuePair("password2", user.getPassword()));
+                parameters.add(new BasicNameValuePair("fullname", user.getFirstName() + " " + user.getLastName()));
+                parameters.add(new BasicNameValuePair("email", user.getEmail()));
+                parameters.add(new BasicNameValuePair("json", createJson(user)));
+                parameters.add(new BasicNameValuePair("Submit", "Créer un utilisateur"));
 
-            post.setEntity(new UrlEncodedFormEntity(parameters));
+                post.setEntity(new UrlEncodedFormEntity(parameters));
 
-            post.setHeader("Authorization", rootToken);
-            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                post.setHeader("Authorization", rootToken);
+                post.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-            httpclient.execute(post);
+                httpclient.execute(post);
+            }
         } catch (IOException e) {
             logger.debug("JenkinsService : Exception addUser " + user.getLogin());
         }
@@ -92,20 +107,22 @@ public class JenkinsServiceImpl implements JenkinsService {
                 return;
             }
 
-            DefaultHttpClient httpclient = new DefaultHttpClient();
+            if(jenkinsOpen) {
+                HttpClient httpclient = HttpClientBuilder.create().build();
 
-            ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+                ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 
-            HttpPost post = new HttpPost("http://" + JENKINS_IP + "/securityRealm/user/" + username + "/doDelete");
-            parameters.add(new BasicNameValuePair("json", "{}"));
-            parameters.add(new BasicNameValuePair("Submit", "Oui"));
+                HttpPost post = new HttpPost("http://" + JENKINS_IP + "/securityRealm/user/" + username + "/doDelete");
+                parameters.add(new BasicNameValuePair("json", "{}"));
+                parameters.add(new BasicNameValuePair("Submit", "Oui"));
 
-            post.setEntity(new UrlEncodedFormEntity(parameters));
+                post.setEntity(new UrlEncodedFormEntity(parameters));
 
-            post.setHeader("Authorization", rootToken);
-            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                post.setHeader("Authorization", rootToken);
+                post.setHeader("Content-Type", "application/x-www-form-urlencoded");
 
-            httpclient.execute(post);
+                httpclient.execute(post);
+            }
         } catch (IOException e) {
             logger.debug("JenkinsService : Exception deleteUser " + username);
         }
@@ -126,33 +143,33 @@ public class JenkinsServiceImpl implements JenkinsService {
                 return;
             }
 
-            DefaultHttpClient httpclient = new DefaultHttpClient();
+            if(jenkinsOpen) {
+                HttpClient httpclient = HttpClientBuilder.create().build();
+                File config = new File("src/main/resources/config.xml");
+                if(config.exists()) {
+                    PrintWriter writer = new PrintWriter(config);
+                    writer.print("");
+                    writer.close();
+                }
+                createConfigFile(repository, config);
 
-            File config = new File("src/main/resources/config.xml");
-            if(config.exists()) {
-                PrintWriter writer = new PrintWriter(config);
-                writer.print("");
-                writer.close();
+                FileEntity entity = new FileEntity(config);
+
+                String uri = "http://" + JENKINS_IP + "/createItem?name=" + applicationName + "&mode=hudson.model.FreeStyleProject";
+
+                HttpPost post = new HttpPost(uri);
+
+                post.setEntity(entity);
+
+                post.setHeader("Authorization", rootToken);
+                post.setHeader("Content-Type", "application/xml");
+
+                httpclient.execute(post);
+
+                config.delete();
+                if(!config.exists())
+                    logger.info("JenkinsService : createProject " + config.getName() + " is deleted!");
             }
-            createConfigFile(repository, config);
-
-            FileEntity entity = new FileEntity(config);
-            
-            String uri = "http://" + JENKINS_IP + "/createItem?name=" + applicationName + "&mode=hudson.model.FreeStyleProject";
-
-            HttpPost post = new HttpPost(uri);
-
-            post.setEntity(entity);
-
-            post.setHeader("Authorization", rootToken);
-            post.setHeader("Content-Type", "application/xml");
-
-            httpclient.execute(post);
-
-            config.delete();
-            if(!config.exists())
-                logger.info("JenkinsService : createProject " + config.getName() + " is deleted!");
-
         } catch (IOException e) {
             logger.debug("JenkinsService : Exception createProject " + applicationName);
         }
@@ -172,15 +189,17 @@ public class JenkinsServiceImpl implements JenkinsService {
                 return;
             }
 
-            DefaultHttpClient httpclient = new DefaultHttpClient();
+            if(jenkinsOpen) {
+                HttpClient httpclient = HttpClientBuilder.create().build();
 
-            String uri = "http://" + JENKINS_IP + "/job/" + applicationName + "/doDelete";
+                String uri = "http://" + JENKINS_IP + "/job/" + applicationName + "/doDelete";
 
-            HttpPost post = new HttpPost(uri);
+                HttpPost post = new HttpPost(uri);
 
-            post.setHeader("Authorization", rootToken);
+                post.setHeader("Authorization", rootToken);
 
-            httpclient.execute(post);
+                httpclient.execute(post);
+            }
         } catch (IOException e) {
             logger.debug("JenkinsService : Exception deleteProject " + applicationName);
         }
@@ -190,6 +209,7 @@ public class JenkinsServiceImpl implements JenkinsService {
      * Create a config file of project for initialization in Jenkins
      *
      * @param repository
+     * @param config
      */
     private void createConfigFile (String repository, File config) {
         try {
@@ -318,5 +338,35 @@ public class JenkinsServiceImpl implements JenkinsService {
                 " \"password2\": \"" + user.getPassword() + "\"," +
                 " \"fullname\": \"" + user.getFirstName() + " " + user.getLastName() + "\"," +
                 " \"email\": \"" + user.getEmail() + "\"}";
+    }
+
+    /**
+     * Test if we can call Jenkins url
+     * 
+     * @return
+     */
+    private Boolean testJenkins() {
+        try {
+            logger.info("JenkinsService : testJenkins");
+
+            HttpClient httpclient = HttpClientBuilder.create().build();
+
+            String uri = "http://" + JENKINS_IP + "/api/";
+
+            HttpGet get = new HttpGet(uri);
+
+            HttpResponse response = httpclient.execute(get);
+
+            logger.info("JenkinsService : testJenkins " + response.getStatusLine());
+
+            if(response.getStatusLine().getStatusCode() == 200)
+                return true;
+            else
+                return false;
+
+        } catch (Exception e) {
+            logger.error("JenkinsService : testJenkins " + e.getLocalizedMessage());
+            return false;
+        }
     }
 }
