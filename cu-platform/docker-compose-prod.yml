@@ -104,6 +104,7 @@ nginx:
         - ./nginx/sites-enabled:/etc/nginx/sites-enabled
         - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
         - ./nginx/log:/var/log/nginx
+        - ./nginx/www:/var/www
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
