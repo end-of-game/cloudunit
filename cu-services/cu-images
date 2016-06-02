@@ -25,3 +25,4 @@ cloudunit/mysql-5-7 images/modules/mysql-5-7
 cloudunit/mongo-2-6 images/modules/mongo-2-6
 cloudunit/redis-2-8 images/modules/redis-2-8
 cloudunit/redis-3-0 images/modules/redis-3-0
+cloudunit/wildfly-10 images/servers/appconf/wildfly-10
