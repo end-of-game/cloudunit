@@ -142,7 +142,8 @@ public class JenkinsServiceImpl implements JenkinsService {
 
             httpclient.execute(post);
 
-            if(config.delete())
+            config.delete();
+            if(!config.exists())
                 logger.info("JenkinsService : createProject " + config.getName() + " is deleted!");
 
         } catch (IOException e) {

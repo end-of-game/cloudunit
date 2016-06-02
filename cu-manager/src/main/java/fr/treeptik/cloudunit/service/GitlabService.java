@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fr.treeptik.cloudunit.model.User;
+import org.gitlab.api.models.GitlabBranch;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface GitlabService {
 
     HttpStatus deleteProject(String applicationName);
 
-    List<JsonNode> listBranches(String applicationName);
+    List<GitlabBranch> listBranches(String applicationName);
 
     String getGitRepository(String applicationName);
 }

@@ -455,6 +455,14 @@
 			<version>2.6.9</version>
 		</dependency>
 
+		<!-- GitLab API -->
+		<dependency>
+			<groupId>org.gitlab</groupId>
+			<artifactId>java-gitlab-api</artifactId>
+			<version>1.2.5</version>
+		</dependency>
+
+
 
 	</dependencies>
 
