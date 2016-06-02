@@ -23,6 +23,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
@@ -126,9 +127,15 @@ public class JenkinsServiceImpl implements JenkinsService {
             }
 
             DefaultHttpClient httpclient = new DefaultHttpClient();
-            createConfigFile(repository);
 
             File config = new File("src/main/resources/config.xml");
+            if(config.exists()) {
+                PrintWriter writer = new PrintWriter(config);
+                writer.print("");
+                writer.close();
+            }
+            createConfigFile(repository, config);
+
             FileEntity entity = new FileEntity(config);
             
             String uri = "http://" + JENKINS_IP + "/createItem?name=" + applicationName + "&mode=hudson.model.FreeStyleProject";
@@ -184,7 +191,7 @@ public class JenkinsServiceImpl implements JenkinsService {
      *
      * @param repository
      */
-    private void createConfigFile (String repository) {
+    private void createConfigFile (String repository, File config) {
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -290,7 +297,7 @@ public class JenkinsServiceImpl implements JenkinsService {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File("src/main/resources/config.xml"));
+            StreamResult result = new StreamResult(config);
             transformer.transform(source, result);
 
         } catch (Exception e) {
