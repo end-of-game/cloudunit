@@ -79,20 +79,22 @@
             </div>
           </div>
         </div>
-        <div class="form-group">
-          <div class="input-group stack">
+        <div class="form-group" style="overflow: hidden;">
+          <div class="input-group stack col-lg-9">
             <label>Add directory...</label>
-            <input type="text" id="add-directory"
+            <input type="text" id="add-directory" class="pull-left"
                     data-ng-model="explorer.newDirectoryName"
                      protectinput=""
                     placeholder="Name">
+
           </div>
           <button class="button raised primary pull-right"
-                  ripple=""
-                  data-ng-disabled="!explorer.newDirectoryName"
-                  data-ng-click="explorer.addNewDirectory(explorer.myContainer.id, explorer.currentPath, explorer.newDirectoryName)">
+                ripple=""
+                data-ng-disabled="!explorer.newDirectoryName"
+                data-ng-click="explorer.addNewDirectory(explorer.myContainer.id, explorer.currentPath, explorer.newDirectoryName)">
             <span>Create</span>
           </button>
+        <br>
         </div>
         <div class="upload-progress" data-ng-show="uploader.isUploading">
           <div class="progress" ng-class="{'success': explorer.uploadSuccess}">
