@@ -24,12 +24,19 @@ import java.util.function.Predicate;
 public class FileUnit {
 
     private static Predicate<FileUnit> edition() {
-        return f -> f.getName().endsWith("xml")
-                    || f.getName().endsWith("yml")
-                    || f.getName().endsWith("sh")
-                    || f.getName().endsWith("md")
-                    || f.getName().endsWith("conf")
-                    || f.getName().endsWith("txt");
+        return f -> f.getName().endsWith(".xml")
+                || f.getName().endsWith(".yml")
+                || f.getName().endsWith(".sh")
+                || f.getName().endsWith(".md")
+                || f.getName().endsWith(".conf")
+                || f.getName().endsWith(".policy")
+                || f.getName().endsWith(".jsp")
+                || f.getName().endsWith(".xsl")
+                || f.getName().endsWith(".xsd")
+                || f.getName().endsWith(".html")
+                || f.getName().endsWith(".htm")
+                || f.getName().endsWith(".properties")
+                || f.getName().endsWith(".txt");
     };
 
     private static Predicate<FileUnit> zip() {
