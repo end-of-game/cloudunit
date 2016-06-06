@@ -48,16 +48,19 @@
     }
        
    function unzipFile ( containerId, applicationName, path ) {
+      console.log(containerId);
+      console.log(applicationName);
+      console.log(path);
       var file = $resource ( 'unzip/file/container/:containerId/application/:applicationName/path/:path',
-      {},
-      { 'update': { method: 'PUT' }
-      });
-
-      return file.update ( {
+      {
         containerId: containerId,
         applicationName: applicationName,
         path: path
-      } ).$promise;
+      },
+      { 'update': { method: 'PUT' }
+      });
+
+      return file.update ().$promise;
     }
      
     function editFile ( containerId, applicationName, path ) {
