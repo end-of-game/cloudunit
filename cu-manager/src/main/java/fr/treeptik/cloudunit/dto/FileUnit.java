@@ -16,10 +16,28 @@
 
 package fr.treeptik.cloudunit.dto;
 
+import java.util.function.Predicate;
+
 /**
  * Created by nicolas on 20/05/15.
  */
 public class FileUnit {
+
+    private static Predicate<FileUnit> edition() {
+        return f -> f.getName().endsWith("xml")
+                    || f.getName().endsWith("yml")
+                    || f.getName().endsWith("sh")
+                    || f.getName().endsWith("md")
+                    || f.getName().endsWith("conf")
+                    || f.getName().endsWith("txt");
+    };
+
+    private static Predicate<FileUnit> zip() {
+        return f -> f.getName().endsWith("tar.gz")
+                || f.getName().endsWith("tar")
+                || f.getName().endsWith("tgz")
+                || f.getName().endsWith("zip");
+    };
 
     private String name;
 
@@ -39,6 +57,10 @@ public class FileUnit {
     private boolean exec;
 
     private boolean isRemovable;
+
+    private boolean isZipable;
+
+    private boolean isEditable;
 
     private String breadcrumb;
 
@@ -90,6 +112,10 @@ public class FileUnit {
     public void safe(boolean safe) {
         this.safe = safe;
     }
+
+    public boolean isZipable() { return zip().test(this); }
+
+    public boolean isEditable() { return edition().test(this); }
 
     public boolean isRemovable() {
         return isRemovable;

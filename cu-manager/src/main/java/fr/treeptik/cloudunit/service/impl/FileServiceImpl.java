@@ -16,6 +16,7 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.spotify.docker.client.*;
 import com.spotify.docker.client.messages.Container;
@@ -55,6 +56,8 @@ import java.util.stream.Collectors;
 @Service
 public class FileServiceImpl
         implements FileService {
+
+
 
     private Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
