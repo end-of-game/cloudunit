@@ -32,6 +32,7 @@ import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -269,16 +270,75 @@ public class FileController {
             logger.debug("fileName:" + fileName);
         }
 
-        String command =  "tar xvf " + convertPathFromUI(path) + "/" + fileName;
-        String contentFile = dockerService.exec(containerId, command);
-        if (contentFile != null) {
-            System.out.println(contentFile);
-            response.setContentType("text/plain");
-            Writer writer = response.getWriter();
-            writer.write(contentFile);
-            writer.close();
+        String command =  "tar xvf " + convertPathFromUI(path) + "/" + fileName + " -C "  + convertPathFromUI(path);
+        logger.debug(command);
+        String commandExec = dockerService.exec(containerId, command);
+        if (commandExec != null) {
+            logger.debug(commandExec);
         } else {
             logger.error("No content for : " + command);
+        }
+    }
+
+    /**
+     * Display content file from a container
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @param fileName
+     * @param request
+     * @param response
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     * @returnoriginalName
+     */
+    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
+            method = RequestMethod.PUT)
+    public void saveContentFileIntoContainer(
+            @PathVariable final String containerId,
+            @PathVariable final String applicationName,
+            @PathVariable String path, @PathVariable final String fileName,
+            @Param("fileContent") String fileContent,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("applicationName:" + applicationName);
+            logger.debug("fileName:" + fileName);
+            logger.debug("fileContent: " + fileContent);
+        }
+
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user,
+                applicationName);
+
+        // We must be sure there is no running action before starting new one
+        this.authentificationUtils.canStartNewAction(user, application, locale);
+
+        // Application is now pending
+        applicationService.setStatus(application, Status.PENDING);
+
+        if (application != null) {
+            File file = File.createTempFile("upload", "tmp");
+            FileUtils.write(file, fileContent);
+            try {
+                fileService.sendFileToContainer(applicationName, containerId,
+                        file, fileName, path);
+            } catch (ServiceException e) {
+                StringBuilder msgError = new StringBuilder();
+                msgError.append("Error during file upload : " + file);
+                msgError.append("containerId : " + containerId);
+                msgError.append("applicationName : " + applicationName);
+                msgError.append(e.getMessage());
+            } finally {
+                // in all case, the error during file upload cannot be critical.
+                // We prefer to set the application in started mode
+                applicationService.setStatus(application, Status.START);
+                if (file != null) { file.delete(); }
+            }
         }
     }
 
@@ -312,9 +372,10 @@ public class FileController {
         }
 
         String command =  "cat " + convertPathFromUI(path) + "/" + fileName;
+        logger.debug(command);
         String contentFile = dockerService.exec(containerId, command);
         if (contentFile != null) {
-            System.out.println(contentFile);
+            logger.debug(contentFile);
             response.setContentType("text/plain");
             Writer writer = response.getWriter();
             writer.write(contentFile);

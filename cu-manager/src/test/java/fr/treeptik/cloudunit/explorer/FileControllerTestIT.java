@@ -187,6 +187,41 @@ public class FileControllerTestIT {
     }
 
     @Test
+    public void saveContentFileIntoContainer() throws Exception {
+        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
+        String url = "/file/content/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/context.xml";
+        logger.debug(url);
+        ResultActions resultats = this.mockMvc
+                .perform(
+                        get(url)
+                                .session(session));
+        String contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        resultats.andExpect(status().isOk());
+
+        logger.debug(url);
+        resultats = this.mockMvc
+                .perform(
+                        put(url)
+                                .param("fileContent", "Hello")
+                                .session(session));
+        contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        resultats.andExpect(status().isOk());
+
+        logger.debug(url);
+        resultats = this.mockMvc
+                .perform(
+                        get(url)
+                                .session(session));
+        contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        System.out.println(contentAsString);
+        logger.debug(contentAsString);
+        Assert.assertTrue(contentAsString.contains("Hello"));
+    }
+
+
+    @Test
     public void unzipFileIntoContainer() throws Exception {
         String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
         String url = "/file/unzip/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/context.xml";
