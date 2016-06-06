@@ -147,18 +147,20 @@
 
       var slug = '__' + path.join ( '__' ) + '__' + item.name;
       
-      console.log(containerId + path + item);
-      /*ExplorerService.unzipFile ( containerId, $stateParams.name, slug )
-        .then ( function onFileUnzip () {
+      //console.log(containerId + path + item);
+      ExplorerService.unzipFile ( containerId, $stateParams.name, slug )
+        .then ( function onFileUnzip (res) {
+          console.log(res);
           $timeout ( function () {
             buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
           }, 1000 );
         } )
         .catch ( function onFileUnzipError ( error ) {
+          console.log(error);
           $timeout ( function () {
             buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
           }, 1000 );
-        } )*/
+        } )
     }
     
     function editFile ( containerId, path, item ) {

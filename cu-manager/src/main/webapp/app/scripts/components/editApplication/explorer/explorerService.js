@@ -29,8 +29,11 @@
       buildTree: buildTree,
       //downloadFile: downloadFile,
       deleteFile: deleteFile,
-      addDirectory: addDirectory
+      addDirectory: addDirectory,
+      unzipFile: unzipFile,
+      editFile: editFile
     };
+
 
 
     ////////////////////////////////////////////////////////////////////
@@ -43,7 +46,20 @@
         path: path
       } ).$promise;
     }
+       
+   function unzipFile ( containerId, applicationName, path ) {
+      var file = $resource ( 'unzip/file/container/:containerId/application/:applicationName/path/:path',
+      {},
+      { 'update': { method: 'PUT' }
+      });
 
+      return file.update ( {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path
+      } ).$promise;
+    }
+         
     function deleteFile ( containerId, applicationName, path ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path' );
 
