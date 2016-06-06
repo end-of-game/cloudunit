@@ -59,7 +59,18 @@
         path: path
       } ).$promise;
     }
-         
+     
+    function editFile ( containerId, applicationName, path ) {
+      
+      var file = $resource ( 'content/file/container/:containerId/application/:applicationName/path/:path');
+      return file.query ( {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path
+      } ).$promise;
+      
+    }
+        
     function deleteFile ( containerId, applicationName, path ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path' );
 

@@ -168,8 +168,9 @@
       var slug = '__' + path.join ( '__' ) + '__' + item.name;
       
       console.log(containerId + path + item);
-      /*ExplorerService.editFile ( containerId, $stateParams.name, slug )
-        .then ( function onFileUnzip () {
+      ExplorerService.editFile ( containerId, $stateParams.name, slug )
+        .then ( function onFileUnzip (res) {
+          console.log(res);
           $timeout ( function () {
             buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
           }, 1000 );
@@ -178,7 +179,7 @@
           $timeout ( function () {
             buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
           }, 1000 );
-        } )*/
+        } )
     }
     
     function getContainers () {
