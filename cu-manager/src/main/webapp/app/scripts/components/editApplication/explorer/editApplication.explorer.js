@@ -66,6 +66,8 @@
     vm.folderClick = folderClick;
     //vm.downloadFile = downloadFile;
     vm.deleteFile = deleteFile;
+    vm.unzipFile = unzipFile;
+    vm.editFile = editFile;
     vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
 
@@ -141,6 +143,42 @@
         } )
     }
 
+    function unzipFile ( containerId, path, item ) {
+
+      var slug = '__' + path.join ( '__' ) + '__' + item.name;
+      
+      console.log(containerId + path + item);
+      /*ExplorerService.unzipFile ( containerId, $stateParams.name, slug )
+        .then ( function onFileUnzip () {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } )
+        .catch ( function onFileUnzipError ( error ) {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } )*/
+    }
+    
+    function editFile ( containerId, path, item ) {
+
+      var slug = '__' + path.join ( '__' ) + '__' + item.name;
+      
+      console.log(containerId + path + item);
+      /*ExplorerService.editFile ( containerId, $stateParams.name, slug )
+        .then ( function onFileUnzip () {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } )
+        .catch ( function onFileUnzipError ( error ) {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } )*/
+    }
+    
     function getContainers () {
       var deferred = $q.defer ();
       ApplicationService.listContainers ( $stateParams.name )
