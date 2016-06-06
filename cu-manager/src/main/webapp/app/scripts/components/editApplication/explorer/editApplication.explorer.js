@@ -145,10 +145,9 @@
 
     function unzipFile ( containerId, path, item ) {
 
-      var slug = '__' + path.join ( '__' ) + '__' + item.name;
+      var slug = '__' + path.join ( '__' );
       
-      //console.log(containerId + path + item);
-      ExplorerService.unzipFile ( containerId, $stateParams.name, slug )
+      ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
         .then ( function onFileUnzip (res) {
           console.log(res);
           $timeout ( function () {
