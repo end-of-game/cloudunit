@@ -48,10 +48,7 @@
     }
        
    function unzipFile ( containerId, applicationName, path ) {
-      console.log(containerId);
-      console.log(applicationName);
-      console.log(path);
-      var file = $resource ( 'unzip/file/container/:containerId/application/:applicationName/path/:path',
+      var file = $resource ( 'file/unzip/container/:containerId/application/:applicationName/path/:path',
       {
         containerId: containerId,
         applicationName: applicationName,
