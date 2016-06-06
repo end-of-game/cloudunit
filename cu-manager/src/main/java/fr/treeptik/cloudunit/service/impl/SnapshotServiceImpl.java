@@ -335,8 +335,8 @@ public class SnapshotServiceImpl
     }
 
     private void backupModule(Module module) {
+        DockerClient docker = null;
         try {
-            DockerClient docker = null;
             if (Boolean.valueOf(isHttpMode)) {
                 docker = DefaultDockerClient
                         .builder()
@@ -355,7 +355,7 @@ public class SnapshotServiceImpl
             String execId = docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             LogStream output = docker.execStart(execId);
             String execOutput = output.readFully();
-            System.out.println(execOutput);
+            logger.debug(execOutput);
             if (output != null) {
                 output.close();
             }
@@ -363,7 +363,7 @@ public class SnapshotServiceImpl
             execId = docker.execCreate(module.getName(), commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             output = docker.execStart(execId);
             execOutput = output.readFully();
-            System.out.println(execOutput);
+            logger.debug(execOutput);
             if (output != null) {
                 output.close();
             }
@@ -371,13 +371,15 @@ public class SnapshotServiceImpl
             execId = docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             output = docker.execStart(execId);
             execOutput = output.readFully();
-            System.out.println(execOutput);
+            logger.debug(execOutput);
             if (output != null) {
                 output.close();
             }
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
+        } finally {
+            if (docker != null) { docker.close(); }
         }
     }
 
@@ -419,9 +421,8 @@ public class SnapshotServiceImpl
     }
 
     private void restoreDataModule(Module module) {
-
+        DockerClient docker = null;
         try {
-            DockerClient docker = null;
             if (Boolean.valueOf(isHttpMode)) {
                 docker = DefaultDockerClient
                         .builder()
@@ -437,13 +438,15 @@ public class SnapshotServiceImpl
             String execId = docker.execCreate(module.getName(), commandRestoreData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             LogStream output = docker.execStart(execId);
             String execOutput = output.readFully();
-            System.out.println(execOutput);
+            logger.debug(execOutput);
             if (output != null) {
                 output.close();
             }
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
+        } finally {
+            if (docker != null) { docker.close(); }
         }
     }
 

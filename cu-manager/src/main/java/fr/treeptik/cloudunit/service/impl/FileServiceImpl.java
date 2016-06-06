@@ -187,9 +187,9 @@ public class FileServiceImpl
     public List<SourceUnit> listLogsFilesByContainer(String containerId)
             throws ServiceException {
 
+        DockerClient docker = null;
         List<SourceUnit> files = new ArrayList<>();
         try {
-            DockerClient docker = null;
             if (Boolean.valueOf(isHttpMode)) {
                 docker = DefaultDockerClient
                         .builder()
@@ -237,11 +237,14 @@ public class FileServiceImpl
                         SourceUnit sourceUnit = new SourceUnit(name);
                         files.add(sourceUnit);
                     }
-                    output.close();
+
                 }
+                if (output != null) { output.close(); }
             }
         } catch (DockerException | InterruptedException | DockerCertificateException e) {
             throw new ServiceException("Error in listByContainerIdAndPath", e);
+        } finally {
+            if (docker != null) { docker.close(); }
         }
 
         return files;
@@ -297,8 +300,8 @@ public class FileServiceImpl
                         files.add(logLine);
                     }
                     files = Lists.reverse(files);
-                    output.close();
                 }
+                if (output != null) { output.close(); }
             }
         } catch (DockerException | InterruptedException | DockerCertificateException e) {
             throw new ServiceException("Error in listByContainerIdAndPath", e);
@@ -529,19 +532,19 @@ public class FileServiceImpl
                     application.getManagerIp());
             configShell.put("password", rootPassword);
 
+            String convertedDestPathFile = convertDestPathFile(destFile);
             shellUtils.downloadFile(file, rootPassword, sshPort,
-                    application.getManagerIp(), convertDestPathFile(destFile)
-                            + originalName);
+                    application.getManagerIp(), convertedDestPathFile + originalName);
 
         } catch (ServiceException | CheckException e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("applicationName=").append("=").append(applicationName);
-            msgError.append(",containerId=").append("=").append(containerId);
-            msgError.append(",file.toPath()=").append(file.toPath());
-            msgError.append("originalName=").append(originalName);
-            msgError.append("destFile=").append(destFile);
-            msgError.append("sshPort=").append(sshPort);
-            msgError.append("rootPassword=").append(rootPassword);
+            msgError.append(", containerId=").append("=").append(containerId);
+            msgError.append(", file.toPath()=").append(file.toPath());
+            msgError.append(", originalName=").append(originalName);
+            msgError.append(", destFile=").append(destFile);
+            msgError.append(", sshPort=").append(sshPort);
+            msgError.append(", rootPassword=").append(rootPassword);
             throw new ServiceException(msgError.toString(), e);
         }
 

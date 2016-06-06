@@ -177,25 +177,21 @@ public class ShellUtils {
                              String dockerManagerAddress, String completeFilePath)
         throws CheckException {
         Channel channel = null;
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
 
         try {
             String dockerManagerIP = dockerManagerAddress.substring(0,
                 dockerManagerAddress.length() - 5);
-            channel = this.getSession("root", rootPassword, dockerManagerIP,
-                sshPort).openChannel("sftp");
+            channel = this.getSession("root", rootPassword, dockerManagerIP, sshPort).openChannel("sftp");
             channel.connect();
             ChannelSftp sftpChannel = (ChannelSftp) channel;
-            // file source, file destination
             
             sftpChannel.get(completeFilePath, file.getAbsolutePath());
 
             logger.debug("File received correctly");
 
         } catch (SftpException | JSchException e) {
-            logger.error(e.getMessage());
-            throw new CheckException("Error during file downloading");
+            e.printStackTrace();
+            throw new CheckException("Error during file downloading", e);
         } finally {
             try {
                 if (channel != null) {

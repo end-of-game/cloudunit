@@ -56,9 +56,8 @@ public class HookServiceImpl implements HookService {
     }
 
     public void call(String containerName, HookAction action) {
-
+        DockerClient docker = null;
         try {
-            DockerClient docker = null;
             if (Boolean.valueOf(isHttpMode)) {
                 docker = DefaultDockerClient
                         .builder()
@@ -78,6 +77,8 @@ public class HookServiceImpl implements HookService {
         } catch (Exception ignore) {
             // dev in progress. No log
             //logger.error(action.toString(), e);
+        } finally {
+            if (docker != null) { docker.close(); }
         }
     }
 

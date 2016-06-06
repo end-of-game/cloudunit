@@ -1,5 +1,5 @@
 jenkins:
-    image: jenkinsci/jenkins:2.1
+    image: jenkinsci/jenkins:2.7
     # Maybe we will need this port for api management...
     #ports:
     #   - 50000:50000

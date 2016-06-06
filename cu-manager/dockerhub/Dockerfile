@@ -29,7 +29,6 @@ RUN apt-get install -y git
 RUN apt-get install -y wget
 RUN apt-get install -y git-core
 
-
 # Fix pour permettre de tirer correctement certaines dépendances
 RUN git config --global url."https://".insteadOf git://
 
