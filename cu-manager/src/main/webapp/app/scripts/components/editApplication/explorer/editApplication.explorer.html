@@ -128,7 +128,7 @@
                 <a
                   target="_blank"
                   ng-switch-when="false"
-                  href="{{ '/file/container/' + explorer.myContainer.id + '/application/' + explorer.app.name + '/path/' + explorer.currentPath + '/fileName/' + item.name }}"
+                  href="{{ '/file/container/' + explorer.myContainer.id + '/application/' + explorer.app.name + '/path/' + explorer.currentPath.join('__') + '/fileName/' + item.name }}"
                   class="file"
                   ng-class="item.safe ? 'safe' : 'unsafe'"
                   >{{item.name}} <span ng-show="item.safe">&midast;</span>
