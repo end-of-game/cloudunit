@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.explorer;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.UserService;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -83,13 +84,16 @@ public class FileControllerTestIT {
     @Inject
     private UserService userService;
 
+    @Inject
+    private DockerService dockerService;
+
     private MockHttpSession session;
 
     private static String applicationName;
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "App" + new Random().nextInt(1000);
+        applicationName = "app" + new Random().nextInt(100000);
     }
 
     @Before
@@ -131,7 +135,7 @@ public class FileControllerTestIT {
         }
     }
 
-    @After
+
     public void teardown() throws Exception {
         logger.info("**********************************");
         logger.info("           teardown               ");
@@ -165,5 +169,32 @@ public class FileControllerTestIT {
         Assert.assertTrue(content.contains("/cloudunit/appconf"));
     }
 
+    @Test
+    public void displayContentFileFromContainer() throws Exception {
+        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
+        String url = "/file/content/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/context.xml";
+        logger.debug(url);
+        ResultActions resultats = this.mockMvc
+                .perform(
+                        get(url)
+                                .session(session));
+        String contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        resultats.andExpect(status().isOk());
+    }
+
+    @Test
+    public void unzipFileIntoContainer() throws Exception {
+        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
+        String url = "/file/unzip/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/context.xml";
+        logger.debug(url);
+        ResultActions resultats = this.mockMvc
+                .perform(
+                        put(url)
+                                .session(session));
+        String contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        resultats.andExpect(status().isOk());
+    }
 
 }

@@ -13,11 +13,8 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-
 package fr.treeptik.cloudunit.service.impl;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import com.spotify.docker.client.*;
 import com.spotify.docker.client.messages.Container;
 import fr.treeptik.cloudunit.dto.FileUnit;
@@ -302,7 +299,7 @@ public class FileServiceImpl
                         LogLine logLine = new LogLine(file, line);
                         files.add(logLine);
                     }
-                    files = Lists.reverse(files);
+                    Collections.reverse(files);
                 }
                 if (output != null) { output.close(); }
             }

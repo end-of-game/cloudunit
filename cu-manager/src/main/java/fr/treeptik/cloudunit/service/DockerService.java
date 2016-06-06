@@ -16,19 +16,19 @@
 package fr.treeptik.cloudunit.service;
 
 import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.DockerJSONException;
-import fr.treeptik.cloudunit.exception.ProviderException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 
+import java.util.List;
+
+/**
+ * Created by Nicolas MULLER on 03/05/16.
+ */
 public interface DockerService {
 
-    public void checkAllContainersStatus()
-        throws ServiceException, CheckException;
+    public String exec(String containerName, String command) throws CheckException, ServiceException;
 
-    void checkAllApplicationContainersStatus()
-        throws ServiceException,
-        CheckException, DockerJSONException, ProviderException;
+    public Boolean isRunning(String containerName) throws CheckException, ServiceException;
 
-    public String checkDockerInfos()
-        throws ServiceException;
+    public String getContainerId(String containerName) throws CheckException, ServiceException;
 }
+

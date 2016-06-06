@@ -25,6 +25,7 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
@@ -50,8 +51,6 @@ import java.util.Locale;
 /*
  * Controller for resources (files + folders) into Container.
  *
- * TODO : ADD Status Application management. UseCase : disable user action durant long time download/upload
- *
  * Created by nicolas on 20/05/15.
  */
 
@@ -66,6 +65,9 @@ public class FileController {
 
     @Inject
     private FileService fileService;
+
+    @Inject
+    private DockerService dockerService;
 
     @Inject
     private ApplicationService applicationService;
@@ -97,6 +99,7 @@ public class FileController {
         path = convertPathFromUI(path);
         List<FileUnit> fichiers = fileService.listByContainerIdAndPath(
             containerId, path);
+
 
         return fichiers;
     }
@@ -178,7 +181,6 @@ public class FileController {
     @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path:.*}",
         method = RequestMethod.DELETE)
     @ResponseBody
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public JsonResponse deleteResourcesIntoContainer(
         @PathVariable final String containerId,
         @PathVariable final String applicationName,
@@ -237,6 +239,91 @@ public class FileController {
         fileService.createDirectory(applicationName, containerId, path);
         return new HttpOk();
     }
+
+    /**
+     * Unzip content file into Container
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @param fileName
+     * @param request
+     * @param response
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     * @returnoriginalName
+     */
+    @RequestMapping(value = "/unzip/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
+            method = RequestMethod.PUT)
+    public void unzipFileIntoContainer(
+            @PathVariable final String containerId,
+            @PathVariable final String applicationName,
+            @PathVariable String path, @PathVariable final String fileName,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("applicationName:" + applicationName);
+            logger.debug("fileName:" + fileName);
+        }
+
+        String command =  "tar " + convertPathFromUI(path) + "/" + fileName;
+        String contentFile = dockerService.exec(containerId, command);
+        if (contentFile != null) {
+            System.out.println(contentFile);
+            response.setContentType("text/plain");
+            Writer writer = response.getWriter();
+            writer.write(contentFile);
+            writer.close();
+        } else {
+            logger.error("No content for : " + command);
+        }
+    }
+
+    /**
+     * Display content file from a container
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @param fileName
+     * @param request
+     * @param response
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     * @returnoriginalName
+     */
+    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
+            method = RequestMethod.GET)
+    public void displayContentFileFromContainer(
+            @PathVariable final String containerId,
+            @PathVariable final String applicationName,
+            @PathVariable String path, @PathVariable final String fileName,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("applicationName:" + applicationName);
+            logger.debug("fileName:" + fileName);
+        }
+
+        String command =  "cat " + convertPathFromUI(path) + "/" + fileName;
+        String contentFile = dockerService.exec(containerId, command);
+        if (contentFile != null) {
+            System.out.println(contentFile);
+            response.setContentType("text/plain");
+            Writer writer = response.getWriter();
+            writer.write(contentFile);
+            writer.close();
+        } else {
+            logger.error("No content for : " + command);
+        }
+    }
+
 
     /**
      * Download a file into a container
