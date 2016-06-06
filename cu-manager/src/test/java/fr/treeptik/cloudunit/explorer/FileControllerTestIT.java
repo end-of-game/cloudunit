@@ -135,7 +135,7 @@ public class FileControllerTestIT {
         }
     }
 
-
+    @After
     public void teardown() throws Exception {
         logger.info("**********************************");
         logger.info("           teardown               ");
@@ -151,21 +151,14 @@ public class FileControllerTestIT {
     }
 
     @Test
-    public void test() throws Exception {
-        ResultActions resultats =
-            mockMvc.perform(get("/application/" + applicationName.toLowerCase() + "/containers").session(session).contentType(MediaType.APPLICATION_JSON));
-        ResultActions resultActions = resultats.andExpect(status().isOk()).andDo(print());
-        String content = resultActions.andReturn().getResponse().getContentAsString();
-        String subContent = content.substring(content.indexOf("\"id\":\"")+6);
-        String containerId = subContent.substring(0, subContent.indexOf("\",\"type\""));
-
-        resultats =
+    public void dir_exists() throws Exception {
+        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
+        ResultActions resultActions =
             mockMvc.perform(get("/file/container/"+containerId+"/path/__cloudunit__")
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON));
-        resultActions = resultats.andExpect(status().isOk());
-        content = resultActions.andReturn().getResponse().getContentAsString();
-
+        resultActions = resultActions.andExpect(status().isOk());
+        String content = resultActions.andReturn().getResponse().getContentAsString();
         Assert.assertTrue(content.contains("/cloudunit/appconf"));
     }
 
@@ -181,6 +174,16 @@ public class FileControllerTestIT {
         String contentAsString = resultats.andReturn().getResponse().getContentAsString();
         logger.debug(contentAsString);
         resultats.andExpect(status().isOk());
+
+        url = "/file/content/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/UNDEF.xml";
+        logger.debug(url);
+        resultats = this.mockMvc
+                .perform(
+                        get(url)
+                                .session(session));
+        contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        Assert.assertTrue(contentAsString.contains("No such file or directory"));
     }
 
     @Test
@@ -194,7 +197,7 @@ public class FileControllerTestIT {
                                 .session(session));
         String contentAsString = resultats.andReturn().getResponse().getContentAsString();
         logger.debug(contentAsString);
-        resultats.andExpect(status().isOk());
+        Assert.assertTrue(contentAsString.contains("This does not look like a tar archive"));
     }
 
 }
