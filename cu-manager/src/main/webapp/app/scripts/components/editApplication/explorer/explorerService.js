@@ -31,7 +31,8 @@
       deleteFile: deleteFile,
       addDirectory: addDirectory,
       unzipFile: unzipFile,
-      editFile: editFile
+      editFile: editFile,
+      getFile: getFile
     };
 
 
@@ -47,12 +48,13 @@
       } ).$promise;
     }
        
-   function unzipFile ( containerId, applicationName, path ) {
-      var file = $resource ( 'file/unzip/container/:containerId/application/:applicationName/path/:path',
+   function unzipFile ( containerId, applicationName, path, item) {
+      var file = $resource ( 'file/unzip/container/:containerId/application/:applicationName/path/:path/fileName/:item',
       {
         containerId: containerId,
         applicationName: applicationName,
-        path: path
+        path: path, 
+        item: item
       },
       { 'update': { method: 'PUT' }
       });
@@ -62,7 +64,7 @@
      
     function editFile ( containerId, applicationName, path ) {
       
-      var file = $resource ( 'content/file/container/:containerId/application/:applicationName/path/:path');
+      var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path');
       return file.query ( {
         containerId: containerId,
         applicationName: applicationName,
@@ -70,7 +72,24 @@
       } ).$promise;
       
     }
-        
+     
+    function getFile ( containerId, applicationName, path, newData ) {
+            
+      var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path',
+      {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path
+      },
+      { 'update': { method: 'PUT' }
+      });
+      
+      return file.update ( {
+        data: newData
+      } ).$promise;
+      
+    }
+       
     function deleteFile ( containerId, applicationName, path ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path' );
 
