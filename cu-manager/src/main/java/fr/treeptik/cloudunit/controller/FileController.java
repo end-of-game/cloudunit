@@ -269,7 +269,7 @@ public class FileController {
             logger.debug("fileName:" + fileName);
         }
 
-        String command =  "tar " + convertPathFromUI(path) + "/" + fileName;
+        String command =  "tar xvf " + convertPathFromUI(path) + "/" + fileName;
         String contentFile = dockerService.exec(containerId, command);
         if (contentFile != null) {
             System.out.println(contentFile);
