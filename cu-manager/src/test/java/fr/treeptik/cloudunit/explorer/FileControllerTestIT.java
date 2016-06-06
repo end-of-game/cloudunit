@@ -174,6 +174,16 @@ public class FileControllerTestIT {
         String contentAsString = resultats.andReturn().getResponse().getContentAsString();
         logger.debug(contentAsString);
         resultats.andExpect(status().isOk());
+
+        url = "/file/content/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/UNDEF.xml";
+        logger.debug(url);
+        resultats = this.mockMvc
+                .perform(
+                        get(url)
+                                .session(session));
+        contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        Assert.assertTrue(contentAsString.contains("No such file or directory"));
     }
 
     @Test
@@ -187,7 +197,7 @@ public class FileControllerTestIT {
                                 .session(session));
         String contentAsString = resultats.andReturn().getResponse().getContentAsString();
         logger.debug(contentAsString);
-        resultats.andExpect(status().isOk());
+        Assert.assertTrue(contentAsString.contains("This does not look like a tar archive"));
     }
 
 }
