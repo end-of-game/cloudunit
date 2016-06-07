@@ -41,6 +41,10 @@
   }
 }
 
+.form.smaller {
+  @include make-lg-column(3, 16px);  
+}
+
 .app-creation .form .content {
   box-shadow: none;
 }

@@ -116,6 +116,10 @@
   }
 }
 
+.card.smaller {
+  @include make-lg-column(3, 1rem);
+}
+
 .card.small {
   @include make-lg-column(4, 1rem);
 }

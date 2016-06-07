@@ -90,7 +90,7 @@
         <!--application list-->
 
         <div id='application-{{application.name}}'
-             class="application card small {{ application.status | lowercase}}"
+             class="application card smaller {{ application.status | lowercase}}"
              data-ng-repeat="application in dashboard.applications | orderBy:sortorder | filter:{status: dashboard.search} track by $index">
           <div class="content">
             <h3 class="title">
