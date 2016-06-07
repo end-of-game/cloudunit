@@ -295,7 +295,7 @@ public class FileController {
      * @returnoriginalName
      */
     @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
-            method = RequestMethod.POST)
+            method = RequestMethod.PUT)
     public void saveContentFileIntoContainer(
             @PathVariable final String containerId,
             @PathVariable final String applicationName,

@@ -97,7 +97,8 @@
         applicationName: applicationName,
         path: path,
         fileName: fileName
-      },{ update: {method:'POST', params: { fileContent: fileContent}}});
+      },{ update: {method:'PUT', params: { fileContent: fileContent}}
+    });
 
       return file.update ( ).$promise;
     }
