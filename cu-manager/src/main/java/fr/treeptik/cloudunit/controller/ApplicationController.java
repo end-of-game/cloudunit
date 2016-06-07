@@ -24,6 +24,7 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -55,6 +56,9 @@ public class ApplicationController
 
     @Inject
     private ApplicationService applicationService;
+
+    @Inject
+    private DockerService dockerService;
 
     @Inject
     private AuthentificationUtils authentificationUtils;
@@ -511,8 +515,30 @@ public class ApplicationController
         Integer port = Integer.parseInt(input.getPortToOpen());
         applicationService.removePort(application, port);
 
-
         return new HttpOk();
     }
 
+    /**
+     * Display env variable for a container
+     *
+     * @param applicationName
+     * @param containerId
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @CloudUnitSecurable
+    @ResponseBody
+    @RequestMapping(value = "/{applicationName}/container/{containerId}/env", method = RequestMethod.GET)
+    public JsonResponse displayEnv(@PathVariable String applicationName, @PathVariable String containerId)
+            throws ServiceException, CheckException {
+
+        User user = this.authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        String content = dockerService.exec(containerId, "env");
+        System.out.println(content);
+
+        return new HttpOk();
+    }
 }

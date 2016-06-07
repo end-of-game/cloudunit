@@ -428,7 +428,6 @@ public class FileController {
         File fileFromContainer =
             fileService.getFileFromContainer(applicationName, containerId, file, fileName, path);
 
-
         BufferedReader br = new BufferedReader(new FileReader(fileFromContainer));
         if (br.readLine() == null) {
             file = File.createTempFile(fileName, "");

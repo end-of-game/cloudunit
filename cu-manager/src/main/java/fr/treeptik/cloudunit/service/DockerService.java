@@ -30,5 +30,6 @@ public interface DockerService {
     public Boolean isRunning(String containerName) throws CheckException, ServiceException;
 
     public String getContainerId(String containerName) throws CheckException, ServiceException;
+    
 }
 
