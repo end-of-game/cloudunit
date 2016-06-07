@@ -18,6 +18,6 @@ package fr.treeptik.cloudunit.snapshot;
 public class Tomcat6SnapshotControllerTestIT
     extends AbstractSnapshotControllerTestIT {
     public Tomcat6SnapshotControllerTestIT() {
-        super.release = "tomcat-8";
+        super.release = "tomcat-6";
     }
 }
