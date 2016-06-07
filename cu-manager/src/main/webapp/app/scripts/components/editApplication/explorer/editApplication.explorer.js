@@ -68,7 +68,7 @@
     vm.deleteFile = deleteFile;
     vm.unzipFile = unzipFile;
     vm.editFile = editFile;
-    vm.test = "";
+    vm.fileContent = "";
     vm.getFile = getFile;
     vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
@@ -163,18 +163,17 @@
 
       ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
         .then ( function onFileUnzip (res) {
-          vm.test = res.data; 
+          vm.fileContent = res.data; 
         } )
     }
     
-    function editFile ( containerId, path, item, newData) {
-
+    function editFile ( containerId, path, item, fileContent) {
       var slug = '__' + path.join ( '__' );
-      console.log(containerId + path + item + newData);
-      ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name )
+      //console.log(containerId + path + item + newData);
+      ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name, fileContent )
         .then ( function onFileEdit (res) {
           console.log(res);
-          vm.test = res.data;
+          vm.fileContent = res.data;
         } )
     }
     

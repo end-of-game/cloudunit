@@ -19,11 +19,12 @@
     .factory ( 'ExplorerService', ExplorerService );
 
   ExplorerService.$inject = [
-    '$resource'
+    '$resource',
+    '$http'
   ];
 
 
-  function ExplorerService ( $resource ) {
+  function ExplorerService ( $resource, $http ) {
 
     return {
       buildTree: buildTree,
@@ -90,15 +91,26 @@
     }
      
     function editFile ( containerId, applicationName, path, fileName, fileContent ) { 
-      var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName',
+      console.log(fileContent);
+      var data, headers;
+            headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json, text/plain, */*'
+      };
+      data = "fileContent=" + fileContent;
+      return $http.post('file/content/container/' + containerId + '/application/' + applicationName + '/path/'+path + '/fileName/' + fileName, data, {
+        headers: headers
+      });
+      
+      /*var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName',
       {
         containerId: containerId,
         applicationName: applicationName,
         path: path,
         fileName: fileName
-      });
-      
-      return file.save (JSON.stringify(fileContent) ).$promise;
+      },{ test: {method:'POST', params: { fileContent: fileContent}}});
+
+      return file.test ( ).$promise;*/
     }
        
     function deleteFile ( containerId, applicationName, path ) {
