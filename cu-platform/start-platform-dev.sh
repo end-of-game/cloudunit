@@ -13,7 +13,7 @@
 
 #!/bin/bash
 
-/home/vagrant/cloudunit/cu-platform/start-platform.sh DEV docker-compose-dev.yml
+/home/vagrant/cloudunit/cu-platform/_start-platform.sh DEV docker-compose.yml
 
 
 
