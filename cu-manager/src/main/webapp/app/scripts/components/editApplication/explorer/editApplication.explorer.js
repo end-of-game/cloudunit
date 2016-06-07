@@ -68,6 +68,8 @@
     vm.deleteFile = deleteFile;
     vm.unzipFile = unzipFile;
     vm.editFile = editFile;
+    vm.test = "";
+    vm.getFile = getFile;
     vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
 
@@ -148,36 +150,31 @@
       var slug = '__' + path.join ( '__' );
       
       ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
-        .then ( function onFileUnzip (res) {
-          console.log(res);
-          $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
-          }, 1000 );
-        } )
-        .catch ( function onFileUnzipError ( error ) {
-          console.log(error);
+        .then ( function onFileUnzip (data) {
           $timeout ( function () {
             buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
           }, 1000 );
         } )
     }
     
-    function editFile ( containerId, path, item ) {
+    function getFile ( containerId, path, item ) {
 
-      var slug = '__' + path.join ( '__' ) + '__' + item.name;
-      
-      console.log(containerId + path + item);
-      ExplorerService.editFile ( containerId, $stateParams.name, slug )
+      var slug = '__' + path.join ( '__' );
+
+      ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
         .then ( function onFileUnzip (res) {
-          console.log(res);
-          $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
-          }, 1000 );
+          vm.test = res.data; 
         } )
-        .catch ( function onFileUnzipError ( error ) {
-          $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
-          }, 1000 );
+    }
+    
+    function editFile ( containerId, path, item, newData) {
+
+      var slug = '__' + path.join ( '__' );
+      console.log(containerId + path + item + newData);
+      ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name )
+        .then ( function onFileEdit (res) {
+          console.log(res);
+          vm.test = res.data;
         } )
     }
     

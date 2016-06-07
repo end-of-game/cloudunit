@@ -140,6 +140,7 @@
                         data-keyboard="true"><i class="icon-whhg trash"></i></button>
                 <button class="action icon-button"
                         ng-if="item.editable"
+                        ng-click="explorer.getFile(explorer.myContainer.id, explorer.currentPath, item)"
                         data-toggle="modal"
                         data-target="#edit-{{$index}}"
                         data-keyboard="true"><i class="icon-whhg edit"></i></button>
@@ -197,11 +198,8 @@
                      modaldismiss="">
                   <div class="modal-inner">
                     <div class="content">
-                      <h3 class="title">Edit confirmation required</h3>
-
-                      <!--<p class="alert">Caution, <strong> this is a permanent action</strong>. It can cause malfunctions
-                        in your application.</p>-->
-
+                      <h3 class="title">Edit File</h3>
+                      <textarea class="textarea-full" style="height: auto; min-height: 300px; padding: 6px 12px; width: 100%; max-width: 100%; margin-top: 10px;" >{{ explorer.test}}</textarea>
                       <div class="action">
                         <button type="button" class="button secondary" data-dismiss="modal">Cancel
                         </button>
@@ -226,4 +224,4 @@
 
 
 
-
+{{ explorer.test}}

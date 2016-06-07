@@ -56,38 +56,49 @@
         path: path, 
         item: item
       },
-      { 'update': { method: 'PUT' }
+      { 'update': { method: 'PUT',
+          transformResponse: function ( data, headers ) {
+            var response = {};
+            response.data = data;
+            response.headers = headers ();
+            return response;
+          } }
       });
 
       return file.update ().$promise;
     }
      
-    function editFile ( containerId, applicationName, path ) {
-      
-      var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path');
-      return file.query ( {
+    function getFile ( containerId, applicationName, path, fileName ) {     
+      var file = $resource ( '/file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
         containerId: containerId,
         applicationName: applicationName,
-        path: path
-      } ).$promise;
-      
+        path: path,
+        fileName: fileName
+      }, {
+        get: {
+          method: 'GET',
+          transformResponse: function ( data, headers ) {
+            var response = {};
+            response.data = data;
+            response.headers = headers ();
+            return response;
+          }
+        }
+      } );
+
+      return file.get ().$promise;
     }
      
-    function getFile ( containerId, applicationName, path, newData ) {
-            
-      var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path',
+    function editFile ( containerId, applicationName, path, fileName, fileContent ) { 
+      var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName',
       {
         containerId: containerId,
         applicationName: applicationName,
-        path: path
-      },
-      { 'update': { method: 'PUT' }
+        path: path,
+        fileName: fileName
       });
       
-      return file.update ( {
-        data: newData
-      } ).$promise;
-      
+      return file.save (JSON.stringify(fileContent) ).$promise;
     }
        
     function deleteFile ( containerId, applicationName, path ) {
