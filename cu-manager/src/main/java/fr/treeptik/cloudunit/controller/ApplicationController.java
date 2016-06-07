@@ -19,6 +19,7 @@ import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.factory.EnvUnitFactory;
 import fr.treeptik.cloudunit.manager.ApplicationManager;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
@@ -519,7 +520,7 @@ public class ApplicationController
     }
 
     /**
-     * Display env variable for a container
+     * Display env variables for a container
      *
      * @param applicationName
      * @param containerId
@@ -530,15 +531,14 @@ public class ApplicationController
     @CloudUnitSecurable
     @ResponseBody
     @RequestMapping(value = "/{applicationName}/container/{containerId}/env", method = RequestMethod.GET)
-    public JsonResponse displayEnv(@PathVariable String applicationName, @PathVariable String containerId)
+    public List<EnvUnit> displayEnv(@PathVariable String applicationName, @PathVariable String containerId)
             throws ServiceException, CheckException {
 
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
 
         String content = dockerService.exec(containerId, "env");
-        System.out.println(content);
-
-        return new HttpOk();
+        List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(content);
+        return envUnits;
     }
 }

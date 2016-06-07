@@ -202,7 +202,7 @@ public class FileControllerTestIT {
         logger.debug(url);
         resultats = this.mockMvc
                 .perform(
-                        put(url)
+                        post(url)
                                 .param("fileContent", "Hello")
                                 .session(session));
         contentAsString = resultats.andReturn().getResponse().getContentAsString();
