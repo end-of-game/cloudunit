@@ -38,3 +38,10 @@
     }
   }
 }
+
+.modal.large {
+  width: 90%;
+  .modal-inner {
+    min-height: 100%;
+  }
+}
