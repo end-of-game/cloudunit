@@ -143,7 +143,7 @@ public class ImageServiceImpl
             return image;
         } catch (Exception e) {
             logger.error("Image Name : " + name);
-            throw new ServiceException(e.getLocalizedMessage(), e);
+            throw new ServiceException(name, e);
         }
     }
 
