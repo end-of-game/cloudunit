@@ -24,6 +24,8 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.GitlabService;
+import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -61,6 +63,12 @@ public class ApplicationController
 
     @Inject
     private ApplicationManager applicationManager;
+
+    @Inject
+    private GitlabService gitlabService;
+
+    @Inject
+    private JenkinsService jenkinsService;
 
     /**
      * To verify if an application exists or not.
@@ -117,6 +125,9 @@ public class ApplicationController
         User user = authentificationUtils.getAuthentificatedUser();
         authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
+        gitlabService.createProject(input.getApplicationName());
+        String repository = gitlabService.getGitRepository(input.getApplicationName());
+        jenkinsService.createProject(input.getApplicationName(), repository);
         applicationManager.create(input.getApplicationName(), input.getLogin(), input.getServerName());
 
         return new HttpOk();
@@ -257,8 +268,11 @@ public class ApplicationController
             applicationService.setStatus(application, Status.PENDING);
 
             logger.info("delete application :" + applicationName);
-            applicationService.remove(application, user);
 
+            applicationService.remove(application, user);
+            jenkinsService.deleteProject(applicationName);
+            gitlabService.listBranches(applicationName);
+            gitlabService.deleteProject(applicationName);
         } catch (ServiceException e) {
             logger.error(application.toString(), e);
             applicationService.setStatus(application, Status.FAIL);
