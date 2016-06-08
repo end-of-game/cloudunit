@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
+
 /**
  * Created by nicolas on 07/06/2016.
  */
@@ -24,6 +26,7 @@ public class EnvUnitFactory {
                 .flatMap(Arrays::stream)
                 .filter(line -> line.contains("CU_"))
                 .map(EnvUnitFactory::fromLine)
+                .sorted((k1, k2) -> k1.getKey().compareTo(k2.getKey()))
                 .collect(Collectors.toList());
         return envUnits;
     }

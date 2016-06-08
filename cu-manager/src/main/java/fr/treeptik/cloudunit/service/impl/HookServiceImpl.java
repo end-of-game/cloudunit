@@ -19,7 +19,7 @@ import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
-import fr.treeptik.cloudunit.hooks.HookAction;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.service.HookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +55,7 @@ public class HookServiceImpl implements HookService {
         }
     }
 
-    public void call(String containerName, HookAction action) {
+    public void call(String containerName, RemoteExecAction action) {
         DockerClient docker = null;
         try {
             if (Boolean.valueOf(isHttpMode)) {
@@ -69,8 +69,8 @@ public class HookServiceImpl implements HookService {
                         .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
             }
 
-            logger.info("Calling Hook script : " + action.getCommand()[1] + " for " + containerName);
-            final String execId = docker.execCreate(containerName, action.getCommand(), DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            logger.info("Calling Hook script : " + action.getCommand() + " for " + containerName);
+            final String execId = docker.execCreate(containerName, action.getCommandBash(), DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             final LogStream output = docker.execStart(execId);
             final String execOutput = output.readFully();
 

@@ -22,7 +22,7 @@ import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.hooks.HookAction;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
@@ -491,7 +491,7 @@ public class ServerServiceImpl
             dockerContainer.setImage(server.getImage().getName());
 
             // Call the hook for pre start
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_START);
             String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
             DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
@@ -510,7 +510,7 @@ public class ServerServiceImpl
                             .getServerManagerPort());
 
             // Call the hook for post start
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_START);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_START);
 
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
@@ -536,7 +536,7 @@ public class ServerServiceImpl
             dockerContainer.setImage(server.getImage().getName());
 
             // Call the hook for pre stop
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_STOP);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
 
             DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
@@ -546,7 +546,7 @@ public class ServerServiceImpl
             server = update(server);
 
             // Call the hook for post stop
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_STOP);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_STOP);
 
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "

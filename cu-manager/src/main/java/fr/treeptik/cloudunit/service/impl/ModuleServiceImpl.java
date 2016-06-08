@@ -24,7 +24,7 @@ import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.hooks.HookAction;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
@@ -664,7 +664,7 @@ public class ModuleServiceImpl
             dockerContainer.setImage(module.getImage().getName());
 
             // Call the hook for pre start
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_START);
 
             DockerContainer
                     .start(dockerContainer, application.getManagerIp(), null);
@@ -679,7 +679,7 @@ public class ModuleServiceImpl
                     .updateModuleManager(hipacheRedisUtils);
 
             // Call the hook for post start
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_START);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_START);
 
         } catch (PersistenceException e) {
             module.setStatus(Status.FAIL);
@@ -709,7 +709,7 @@ public class ModuleServiceImpl
             dockerContainer.setImage(module.getImage().getName());
 
             // Call the hook for pre stop
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_STOP);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
 
             DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
@@ -719,7 +719,7 @@ public class ModuleServiceImpl
             module = this.update(module);
 
             // Call the hook for post stop
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_STOP);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_STOP);
 
         } catch (DataAccessException | DockerJSONException e) {
             module.setStatus(Status.FAIL);

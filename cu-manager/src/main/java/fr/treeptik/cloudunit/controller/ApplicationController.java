@@ -17,6 +17,7 @@ package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.*;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.factory.EnvUnitFactory;
@@ -555,7 +556,7 @@ public class ApplicationController
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
 
-        String content = dockerService.exec(containerId, "/cloudunit/scripts/env.sh johndoe");
+        String content = dockerService.exec(containerId, RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
         logger.debug(content);
         List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(content);
         return envUnits;

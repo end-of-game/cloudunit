@@ -15,19 +15,16 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonInput;
 import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.hooks.HookAction;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Snapshot;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.HookService;
 import fr.treeptik.cloudunit.service.SnapshotService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;

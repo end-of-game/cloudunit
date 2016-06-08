@@ -15,16 +15,10 @@
 
 package fr.treeptik.cloudunit.service;
 
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.hooks.HookAction;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Server;
-
-import java.util.List;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 
 public interface HookService {
 
-    public void call(String containerName, HookAction action);
+    public void call(String containerName, RemoteExecAction action);
 
 }

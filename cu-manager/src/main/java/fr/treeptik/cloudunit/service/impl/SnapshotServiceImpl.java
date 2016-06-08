@@ -26,7 +26,7 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.hooks.HookAction;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
@@ -191,14 +191,14 @@ public class SnapshotServiceImpl
                 dockerContainer.setName(server.getName());
                 dockerContainer.setImage(server.getImage().getName());
 
-                hookService.call(dockerContainer.getName(), HookAction.SNAPSHOT_PRE_ACTION);
+                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
 
                 DockerContainer.commit(dockerContainer,
                         snapshot.getFullTag(),
                         application.getManagerIp(),
                         server.getImage().getPath());
 
-                hookService.call(dockerContainer.getName(), HookAction.SNAPSHOT_POST_ACTION);
+                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_POST_ACTION);
             }
 
             for (Module module : application.getModules()) {
@@ -212,13 +212,13 @@ public class SnapshotServiceImpl
                 dockerContainer.setName(moduleName);
                 dockerContainer.setImage(module.getImage().getName());
 
-                hookService.call(dockerContainer.getName(), HookAction.SNAPSHOT_PRE_ACTION);
+                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
 
                 DockerContainer.commit(dockerContainer,
                         snapshot.getFullTag(),
                         application.getManagerIp(), imageName);
 
-                hookService.call(dockerContainer.getName(), HookAction.SNAPSHOT_PRE_ACTION);
+                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
             }
 
             snapshot.setImages(images);
@@ -315,12 +315,12 @@ public class SnapshotServiceImpl
             application = applicationService.findByNameAndUser(application.getUser(), application.getName());
 
             for (Server server : application.getServers()) {
-                hookService.call(server.getName(), HookAction.CLONE_PRE_ACTION);
+                hookService.call(server.getName(), RemoteExecAction.CLONE_PRE_ACTION);
 
                 serverService.update(server, snapshot.getJvmMemory().toString(), snapshot.getJvmOptions(),
                         snapshot.getJvmRelease(), false);
 
-                hookService.call(server.getName(), HookAction.CLONE_POST_ACTION);
+                hookService.call(server.getName(), RemoteExecAction.CLONE_POST_ACTION);
             }
 
             restoreModules(snapshot, application, tag);
@@ -406,7 +406,7 @@ public class SnapshotServiceImpl
 
         for (String key : snapshot.getAppConfig().keySet()) {
             try {
-                hookService.call(snapshot.getAppConfig().get(key).getName(), HookAction.CLONE_PRE_ACTION);
+                hookService.call(snapshot.getAppConfig().get(key).getName(), RemoteExecAction.CLONE_PRE_ACTION);
                 Module module = ModuleFactory.getModule(snapshot.getAppConfig().get(key).getName());
                 module.setApplication(application);
                 moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());
@@ -424,7 +424,7 @@ public class SnapshotServiceImpl
                 if (tag != null) {
                     restoreDataModule(module);
                 }
-                hookService.call(snapshot.getAppConfig().get(key).getName(), HookAction.CLONE_POST_ACTION);
+                hookService.call(snapshot.getAppConfig().get(key).getName(), RemoteExecAction.CLONE_POST_ACTION);
             } catch (CheckException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }
