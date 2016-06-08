@@ -12,7 +12,6 @@
   ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
   ~     For any questions, contact us : contact@treeptik.fr
   -->
-
 <div class="tab-pane active vertical-spacing">
   <div id="{{overview.app.name}}-server" class="clearfix">
     <div class="card large application {{overview.app.status | lowercase}}">
@@ -38,7 +37,7 @@
             <div class="rect5"></div>
           </div>
         </div>
-        <div class="features">
+        <div class="features col-lg-6">
           <div class="readonly">
             <label for="creation-date">Creation date: </label>
             <input
@@ -89,6 +88,11 @@
             </a>
           </div>
 
+        </div>
+        <div class="col-lg-6">
+          <div ng-repeat="env in overview.app.env">
+            {{ env.key }} = {{ env.value }}
+          </div>
         </div>
       </div>
     </div>

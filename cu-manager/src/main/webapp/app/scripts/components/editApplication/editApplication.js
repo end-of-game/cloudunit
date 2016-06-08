@@ -60,7 +60,9 @@
 
     vm.applicationService.init($stateParams.name).then(function() {
       vm.application = vm.applicationService.state;
-      $rootScope.$broadcast('application:ready');
+      $rootScope.$broadcast('application:ready', {
+          app: vm.application,
+        });
     });
 
     // We must destroy the polling when the scope is destroyed

@@ -19,13 +19,12 @@ import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.factory.EnvUnitFactory;
 import fr.treeptik.cloudunit.manager.ApplicationManager;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.GitlabService;
-import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -57,6 +56,9 @@ public class ApplicationController
 
     @Inject
     private ApplicationService applicationService;
+
+    @Inject
+    private DockerService dockerService;
 
     @Inject
     private AuthentificationUtils authentificationUtils;
@@ -532,4 +534,26 @@ public class ApplicationController
         return new HttpOk();
     }
 
+    /**
+     * Display env variables for a container
+     *
+     * @param applicationName
+     * @param containerId
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @CloudUnitSecurable
+    @ResponseBody
+    @RequestMapping(value = "/{applicationName}/container/{containerId}/env", method = RequestMethod.GET)
+    public List<EnvUnit> displayEnv(@PathVariable String applicationName, @PathVariable String containerId)
+            throws ServiceException, CheckException {
+
+        User user = this.authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        String content = dockerService.exec(containerId, "env");
+        List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(content);
+        return envUnits;
+    }
 }

@@ -44,6 +44,15 @@ textarea:focus {
   max-height: 72px;
 }
 
+.textarea-full {
+  height: auto;
+  min-height: 70vh;
+  padding: 6px 12px;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 10px;
+}
+  
 input[type='text']:disabled, input[type='text'].disabled, input[readonly] {
   border-bottom: 1px dashed #bdbdbd;
   background-color: transparent;

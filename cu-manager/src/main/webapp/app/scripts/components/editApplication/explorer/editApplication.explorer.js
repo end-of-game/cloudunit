@@ -66,6 +66,10 @@
     vm.folderClick = folderClick;
     //vm.downloadFile = downloadFile;
     vm.deleteFile = deleteFile;
+    vm.unzipFile = unzipFile;
+    vm.editFile = editFile;
+    vm.fileContent = "";
+    vm.getFile = getFile;
     vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
 
@@ -141,6 +145,37 @@
         } )
     }
 
+    function unzipFile ( containerId, path, item ) {
+
+      var slug = '__' + path.join ( '__' );
+      
+      ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
+        .then ( function onFileUnzip (data) {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } )
+    }
+    
+    function getFile ( containerId, path, item ) {
+
+      var slug = '__' + path.join ( '__' );
+
+      ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
+        .then ( function onFileUnzip (res) {
+          vm.fileContent = res.data; 
+        } )
+    }
+    
+    function editFile ( containerId, path, item, fileContent) {
+      var slug = '__' + path.join ( '__' );
+      ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name, fileContent )
+        .then ( function onFileEdit (res) {
+          console.log(res);
+          vm.fileContent = res.data;
+        } )
+    }
+    
     function getContainers () {
       var deferred = $q.defer ();
       ApplicationService.listContainers ( $stateParams.name )

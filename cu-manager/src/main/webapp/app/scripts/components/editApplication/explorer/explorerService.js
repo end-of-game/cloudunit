@@ -29,8 +29,12 @@
       buildTree: buildTree,
       //downloadFile: downloadFile,
       deleteFile: deleteFile,
-      addDirectory: addDirectory
+      addDirectory: addDirectory,
+      unzipFile: unzipFile,
+      editFile: editFile,
+      getFile: getFile
     };
+
 
 
     ////////////////////////////////////////////////////////////////////
@@ -43,7 +47,62 @@
         path: path
       } ).$promise;
     }
+       
+   function unzipFile ( containerId, applicationName, path, item) {
+      var file = $resource ( 'file/unzip/container/:containerId/application/:applicationName/path/:path/fileName/:item',
+      {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path, 
+        item: item
+      },
+      { 'update': { method: 'PUT',
+          transformResponse: function ( data, headers ) {
+            var response = {};
+            response.data = data;
+            response.headers = headers ();
+            return response;
+          } }
+      });
 
+      return file.update ().$promise;
+    }
+     
+    function getFile ( containerId, applicationName, path, fileName ) {     
+      var file = $resource ( '/file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path,
+        fileName: fileName
+      }, {
+        get: {
+          method: 'GET',
+          transformResponse: function ( data, headers ) {
+            var response = {};
+            response.data = data;
+            response.headers = headers ();
+            return response;
+          }
+        }
+      } );
+
+      return file.get ().$promise;
+    }
+     
+    function editFile ( containerId, applicationName, path, fileName, fileContent ) { 
+      
+      var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName',
+      {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path,
+        fileName: fileName
+      },{ update: {method:'PUT', params: { fileContent: fileContent}}
+    });
+
+      return file.update ( ).$promise;
+    }
+       
     function deleteFile ( containerId, applicationName, path ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path' );
 

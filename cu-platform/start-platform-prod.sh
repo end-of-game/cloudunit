@@ -13,7 +13,7 @@
 
 #!/bin/bash
 
-/home/admincu/cloudunit/cu-platform/start-platform.sh PROD docker-compose-prod.yml
+/home/admincu/cloudunit/cu-platform/_start-platform.sh PROD docker-compose-prod.yml
 
 
 
