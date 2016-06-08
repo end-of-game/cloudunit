@@ -26,6 +26,7 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.hooks.HookAction;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
@@ -70,6 +71,9 @@ public class SnapshotServiceImpl
 
     @Inject
     private ShellUtils shellUtils;
+
+    @Inject
+    private HookService hookService;
 
     @Inject
     private ServerService serverService;
@@ -177,22 +181,24 @@ public class SnapshotServiceImpl
             }
             snapshot.setAppConfig(config);
 
-            // Export des containers : commit + push
-
             Thread.sleep(5000);
 
             List<String> images = new ArrayList<>();
-
 
             for (Server server : application.getServers()) {
                 images.add(server.getImage().getPath());
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setName(server.getName());
                 dockerContainer.setImage(server.getImage().getName());
+
+                hookService.call(dockerContainer.getName(), HookAction.SNAPSHOT_PRE_ACTION);
+
                 DockerContainer.commit(dockerContainer,
                         snapshot.getFullTag(),
                         application.getManagerIp(),
                         server.getImage().getPath());
+
+                hookService.call(dockerContainer.getName(), HookAction.SNAPSHOT_POST_ACTION);
             }
 
             for (Module module : application.getModules()) {
@@ -205,9 +211,14 @@ public class SnapshotServiceImpl
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setName(moduleName);
                 dockerContainer.setImage(module.getImage().getName());
+
+                hookService.call(dockerContainer.getName(), HookAction.SNAPSHOT_PRE_ACTION);
+
                 DockerContainer.commit(dockerContainer,
                         snapshot.getFullTag(),
                         application.getManagerIp(), imageName);
+
+                hookService.call(dockerContainer.getName(), HookAction.SNAPSHOT_PRE_ACTION);
             }
 
             snapshot.setImages(images);
@@ -286,11 +297,6 @@ public class SnapshotServiceImpl
                 throw new CheckException("Please put an app name");
             }
 
-            if (applicationService.countApp(user) >= Integer.parseInt(numberMaxApplications)) {
-                authentificationUtils.allowUser(user);
-                throw new ServiceException("You have already created your " + numberMaxApplications
-                        + " apps into the Cloud");
-            }
             if (applicationService.checkAppExist(user, applicationName)) {
                 authentificationUtils.allowUser(user);
                 throw new CheckException("This application already exists");
@@ -309,8 +315,12 @@ public class SnapshotServiceImpl
             application = applicationService.findByNameAndUser(application.getUser(), application.getName());
 
             for (Server server : application.getServers()) {
+                hookService.call(server.getName(), HookAction.CLONE_PRE_ACTION);
+
                 serverService.update(server, snapshot.getJvmMemory().toString(), snapshot.getJvmOptions(),
                         snapshot.getJvmRelease(), false);
+
+                hookService.call(server.getName(), HookAction.CLONE_POST_ACTION);
             }
 
             restoreModules(snapshot, application, tag);
@@ -396,6 +406,7 @@ public class SnapshotServiceImpl
 
         for (String key : snapshot.getAppConfig().keySet()) {
             try {
+                hookService.call(snapshot.getAppConfig().get(key).getName(), HookAction.CLONE_PRE_ACTION);
                 Module module = ModuleFactory.getModule(snapshot.getAppConfig().get(key).getName());
                 module.setApplication(application);
                 moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());
@@ -413,7 +424,7 @@ public class SnapshotServiceImpl
                 if (tag != null) {
                     restoreDataModule(module);
                 }
-
+                hookService.call(snapshot.getAppConfig().get(key).getName(), HookAction.CLONE_POST_ACTION);
             } catch (CheckException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }

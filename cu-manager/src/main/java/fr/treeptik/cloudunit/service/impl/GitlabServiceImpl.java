@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,8 @@ public class GitlabServiceImpl implements GitlabService {
     @Value("${gitlab.token}")
     private String gitlabToken;
 
-    private String gitlabAPI = "http://192.168.50.4:480";
+    @Value("${gitlab.api}")
+    private String gitlabAPI;
 
     /**
      * Create an user on Gitlab
@@ -42,12 +42,12 @@ public class GitlabServiceImpl implements GitlabService {
     public HttpStatus createUser(User user) {
         logger.info("GitlabService : createUser " + user.getLogin());
 
-        if (gitlabToken == null) {
+        if (gitlabToken == null || gitlabToken.trim().length() == 0 ) {
             logger.error("Cannot use this feature because no token for GitLab");
             return HttpStatus.BAD_REQUEST;
         }
 
-        if (gitlabAPI == null) {
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
             logger.error("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.BAD_REQUEST;
         }
@@ -58,8 +58,8 @@ public class GitlabServiceImpl implements GitlabService {
                     user.getFirstName() + " " + user.getLastName(),
                     null, null, null, null, null, null, null, null, false, false, false);
             return HttpStatus.OK;
-        } catch(IOException e) {
-            logger.error("GitlabService : Exception createUser : " + user.getLogin() + " " + e.getLocalizedMessage());
+        } catch(Exception e) {
+            logger.error(user.toString(), e);
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -73,12 +73,12 @@ public class GitlabServiceImpl implements GitlabService {
     public HttpStatus deleteUser(String username) {
         logger.info("GitlabService : deleteUser " + username);
 
-        if (gitlabToken == null) {
+        if (gitlabToken == null || gitlabToken.trim().length() == 0) {
             logger.error("Cannot use this feature because no token for GitLab");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
-        if (gitlabAPI == null) {
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
             logger.error("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.NOT_IMPLEMENTED;
         }
@@ -94,8 +94,8 @@ public class GitlabServiceImpl implements GitlabService {
                 }
             }
             return HttpStatus.NOT_FOUND;
-        } catch(IOException e) {
-            logger.error("GitlabService : Exception deleteUser : " + username + " " + e.getLocalizedMessage());
+        } catch(Exception e) {
+            logger.error(username, e);
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -109,12 +109,12 @@ public class GitlabServiceImpl implements GitlabService {
     public HttpStatus createProject(String applicationName) {
         logger.info("GitlabService : createProject " + applicationName);
 
-        if (gitlabToken == null) {
+        if (gitlabToken == null || gitlabToken.trim().length()==0) {
             logger.error("Cannot use this feature because no token for GitLab");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
-        if (gitlabAPI == null) {
+        if (gitlabAPI == null || gitlabAPI.trim().length()==0) {
             logger.error("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.NOT_IMPLEMENTED;
         }
@@ -123,8 +123,8 @@ public class GitlabServiceImpl implements GitlabService {
             GitlabAPI api = GitlabAPI.connect(gitlabAPI, gitlabToken, TokenType.PRIVATE_TOKEN, AuthMethod.URL_PARAMETER);
             api.createProject(applicationName);
             return HttpStatus.OK;
-        } catch (IOException e) {
-            logger.error("GitlabService : Exception createProject : " + applicationName + " " + e.getLocalizedMessage());
+        } catch (Exception e) {
+            logger.error(applicationName, e);
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -138,12 +138,12 @@ public class GitlabServiceImpl implements GitlabService {
     public HttpStatus deleteProject(String applicationName) {
         logger.info("GitlabService : deleteProject " + applicationName);
 
-        if (gitlabToken == null) {
+        if (gitlabToken == null || gitlabToken.trim().length() == 0) {
             logger.error("Cannot use this feature because no token for GitLab");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
-        if (gitlabAPI == null) {
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
             logger.error("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.NOT_IMPLEMENTED;
         }
@@ -159,8 +159,8 @@ public class GitlabServiceImpl implements GitlabService {
                 }
             }
             return HttpStatus.NOT_FOUND;
-        } catch (IOException e) {
-            logger.error("GitlabService : Exception deleteProject : " + applicationName + " " + e.getLocalizedMessage());
+        } catch (Exception e) {
+            logger.error(applicationName, e);
             return HttpStatus.BAD_REQUEST;
         }
     }
@@ -174,12 +174,12 @@ public class GitlabServiceImpl implements GitlabService {
     public List<GitlabBranch> listBranches(String applicationName) {
         logger.info("GitlabService : listBranches " + applicationName);
 
-        if (gitlabToken == null) {
+        if (gitlabToken == null || gitlabToken.trim().length() == 0) {
             logger.error("Cannot use this feature because no token for GitLab");
             return new ArrayList<>();
         }
 
-        if (gitlabAPI == null) {
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
             logger.error("Cannot use this feature because no URL given for GitLab API");
             return new ArrayList<>();
         }
@@ -194,8 +194,8 @@ public class GitlabServiceImpl implements GitlabService {
                 }
             }
             return new ArrayList<>();
-        } catch (IOException e) {
-            logger.error("GitlabService : Exception listBranches : " + applicationName + " " + e.getLocalizedMessage());
+        } catch (Exception e) {
+            logger.error(applicationName, e);
             return new ArrayList<>();
         }
     }
@@ -209,12 +209,12 @@ public class GitlabServiceImpl implements GitlabService {
     public String getGitRepository(String applicationName) {
         logger.info("GitlabService : getGitRepository " + applicationName);
 
-        if (gitlabToken == null) {
+        if (gitlabToken == null || gitlabToken.trim().length() == 0) {
             logger.error("Cannot use this feature because no token for GitLab");
             return "";
         }
 
-        if (gitlabAPI == null) {
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
             logger.error("Cannot use this feature because no URL given for GitLab API");
             return "";
         }
@@ -229,8 +229,8 @@ public class GitlabServiceImpl implements GitlabService {
                 }
             }
             return HttpStatus.NOT_FOUND.toString();
-        } catch (IOException e) {
-            logger.error("GitlabService : Exception getGitRepository : " + applicationName + " " + e.getLocalizedMessage());
+        } catch (Exception e) {
+            logger.error(applicationName, e);
             return HttpStatus.BAD_REQUEST.toString();
         }
     }

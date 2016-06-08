@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export GL_MAJOR=8.7.2-ce.0
+export GL_MAJOR=8.8.3-ce.0
 
 docker images |grep gitlab/gitlab-ce |grep $GL_MAJOR
 if [ "$?" == "1" ]; then

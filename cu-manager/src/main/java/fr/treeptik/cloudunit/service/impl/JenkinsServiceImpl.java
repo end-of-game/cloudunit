@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -46,7 +47,7 @@ public class JenkinsServiceImpl implements JenkinsService {
 
     private boolean jenkinsOpen;
 
-    @Autowired
+    @PostConstruct
     public void init()
     {
         jenkinsOpen = testJenkins();
@@ -61,7 +62,7 @@ public class JenkinsServiceImpl implements JenkinsService {
         try {
             logger.info("JenkinsService : addUser " + user.getLogin());
 
-            if (rootToken == null) {
+            if (rootToken == null || rootToken.trim().length() == 0) {
                 logger.error("Cannot use this feature because no token for Jenkins");
                 return;
             }
@@ -101,7 +102,7 @@ public class JenkinsServiceImpl implements JenkinsService {
         try {
             logger.info("JenkinsService : deleteUser " + username);
 
-            if (rootToken == null) {
+            if (rootToken == null || rootToken.trim().length() == 0) {
                 logger.error("Cannot use this feature because no token for Jenkins");
                 return;
             }
@@ -122,8 +123,8 @@ public class JenkinsServiceImpl implements JenkinsService {
 
                 httpclient.execute(post);
             }
-        } catch (IOException e) {
-            logger.debug("JenkinsService : Exception deleteUser " + username);
+        } catch (Exception e) {
+            logger.error(username, e);
         }
     }
 
@@ -137,7 +138,7 @@ public class JenkinsServiceImpl implements JenkinsService {
         try {
             logger.info("JenkinsService : createProject " + applicationName);
 
-            if (rootToken == null) {
+            if (rootToken == null || rootToken.trim().length() == 0) {
                 logger.error("Cannot use this feature because no token for Jenkins");
                 return;
             }
@@ -167,10 +168,10 @@ public class JenkinsServiceImpl implements JenkinsService {
 
                 config.delete();
                 if(!config.exists())
-                    logger.info("JenkinsService : createProject " + config.getName() + " is deleted!");
+                    logger.info(config.getName() + " is deleted!");
             }
-        } catch (IOException e) {
-            logger.debug("JenkinsService : Exception createProject " + applicationName);
+        } catch (Exception e) {
+            logger.error(applicationName + ", " + repository, applicationName, e);
         }
     }
 
@@ -183,7 +184,7 @@ public class JenkinsServiceImpl implements JenkinsService {
         try {
             logger.info("JenkinsService : deleteProject " + applicationName);
 
-            if (rootToken == null) {
+            if (rootToken == null || rootToken.trim().length() == 0) {
                 logger.error("Cannot use this feature because no token for Jenkins");
                 return;
             }
@@ -199,8 +200,8 @@ public class JenkinsServiceImpl implements JenkinsService {
 
                 httpclient.execute(post);
             }
-        } catch (IOException e) {
-            logger.debug("JenkinsService : Exception deleteProject " + applicationName);
+        } catch (Exception e) {
+            logger.error(applicationName, e);
         }
     }
 
@@ -320,7 +321,7 @@ public class JenkinsServiceImpl implements JenkinsService {
             transformer.transform(source, result);
 
         } catch (Exception e) {
-            logger.error("JenkinsService : createConfigFile " + e.getLocalizedMessage());
+            logger.error(repository + ", " + config, e);
         }
 
     }
