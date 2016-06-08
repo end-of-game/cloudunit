@@ -85,5 +85,14 @@ public class WilfdlyAction
     }
 
     @Override
-    public String getDefaultJavaRelease() { return "jdk1.8.0_25"; }
+    public String getDefaultJavaRelease() {
+        String imageName = parent.getImage().getName();
+        if (imageName.equalsIgnoreCase("wildfly-7") ||
+                imageName.equalsIgnoreCase("wildfly-8")) {
+            return "jdk1.7.0_55";
+        } else  {
+            return "jdk1.8.0_25";
+        }
+    }
+
 }

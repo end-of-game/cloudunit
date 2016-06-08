@@ -137,6 +137,13 @@ public abstract class AbstractJBossDeploymentControllerTestIT
                                                                                                                                                       "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war" ) ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
         resultats.andExpect( status().is2xxSuccessful() );
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String contentPage = getUrlContentPage(urlToCall);
+        int counter = 0;
+        while (!contentPage.contains("CloudUnit PaaS") && counter++ < TestUtils.NB_ITERATION_MAX) {
+            System.out.println(contentPage);
+            contentPage = getUrlContentPage(urlToCall);
+            Thread.sleep(2000);
+        }
         Assert.assertTrue( getUrlContentPage( urlToCall ).contains( "CloudUnit PaaS" ) );
     }
 
@@ -153,8 +160,9 @@ public abstract class AbstractJBossDeploymentControllerTestIT
         String contentPage = getUrlContentPage(urlToCall);
         int counter = 0;
         while (contentPage.contains("404") && counter++ < TestUtils.NB_ITERATION_MAX) {
+            System.out.println(contentPage);
             contentPage = getUrlContentPage(urlToCall);
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         }
         Assert.assertTrue( getUrlContentPage( urlToCall ).contains( "Wicket" ) );
     }
