@@ -25,6 +25,9 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.GitlabService;
+import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -552,7 +555,8 @@ public class ApplicationController
         User user = this.authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
 
-        String content = dockerService.exec(containerId, "env");
+        String content = dockerService.exec(containerId, "/cloudunit/scripts/env.sh johndoe");
+        logger.debug(content);
         List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(content);
         return envUnits;
     }
