@@ -30,7 +30,7 @@
     </div>
   </header>
   <div class="page-content" id="dashboard">
-    <div class="page">
+    <div class="page full">
       <div class="subheader">
         <h3 class="subhead"
             ng-show="!dashboard.search">
@@ -113,7 +113,7 @@
         <!--application list-->
         
         <div id='application-{{application.name}}'
-             class="application card small {{ application.status | lowercase}}"
+             class="application card smaller {{ application.status | lowercase}}"
              data-ng-repeat="application in dashboard.applications | orderBy:sortorder | filter:{status: dashboard.search} | appByServerImage: dashboard.selectedServer track by $index">
           <div class="content">
             <h3 class="title">
@@ -246,8 +246,5 @@
       </div>
     </div>
 
-    <!--message timeline-->
-
-    <feed context="'dashboard'"></feed>
   </div>
 </section>
