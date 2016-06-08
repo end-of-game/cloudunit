@@ -141,6 +141,19 @@ public abstract class AbstractJBossDeploymentControllerTestIT
     }
 
     @Test( timeout = 2400000 )
+    public void test010_DeployEARApplicationTest()
+            throws Exception
+    {
+        logger.info( "Deploy an wicket ear application" );
+        ResultActions resultats =
+                mockMvc.perform( MockMvcRequestBuilders.fileUpload( "/application/" + applicationName + "/deploy" ).file( downloadAndPrepareFileToDeploy( "wildfly-wicket-ear-ear.ear",
+                        "https://github.com/Treeptik/cloudunit/releases/download/1.0/wildfly-wicket-ear-ear.ear" ) ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
+        resultats.andExpect( status().is2xxSuccessful() );
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/wildfly-wicket-ear-war";
+        Assert.assertTrue( getUrlContentPage( urlToCall ).contains( "Wicket" ) );
+    }
+
+    @Test( timeout = 2400000 )
     public void test020_DeployMysqlBasedApplicationTest()
         throws Exception
     {
