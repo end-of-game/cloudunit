@@ -34,7 +34,6 @@ done
 
 docker-compose -f $COMPOSE_FILE up -d mysqldata
 docker-compose -f $COMPOSE_FILE up -d mysql
-docker-compose -f $COMPOSE_FILE up -d tomcat
 
 if [ "$MODE" == "DEV" ]
 then
