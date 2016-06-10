@@ -11,6 +11,8 @@ RUN apt-get update \
                             libapache2-mod-php5 \
                             libapache2-mod-python \
                             libapache2-mod-proxy-html \
+                            php5-mysql -y \
+                            php5-pgsql -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && apt-get update \
     && apt-get install php5-mysql -y \
