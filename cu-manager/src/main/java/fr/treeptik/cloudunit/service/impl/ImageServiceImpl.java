@@ -139,7 +139,7 @@ public class ImageServiceImpl
         try {
             logger.debug("findById : Methods parameters : " + name);
             Image image = imageDAO.findByName(name);
-            logger.info("image with id " + image.getName() + " found!");
+            logger.info("image with id " + name + " found!");
             return image;
         } catch (Exception e) {
             logger.error("Image Name : " + name);
