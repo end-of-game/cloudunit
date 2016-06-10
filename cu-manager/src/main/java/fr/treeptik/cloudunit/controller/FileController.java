@@ -270,7 +270,14 @@ public class FileController {
             logger.debug("fileName:" + fileName);
         }
 
-        String command =  "tar xvf " + convertPathFromUI(path) + "/" + fileName + " -C "  + convertPathFromUI(path);
+        String command =  null;
+        if (FileUnit.tar().test(fileName)) {
+            command = "tar xvf " + convertPathFromUI(path) + "/" + fileName + " -C " + convertPathFromUI(path);
+        } else if (FileUnit.tar().test(fileName)) {
+            command = "unzip " + convertPathFromUI(path) + "/" + fileName + " -C " + convertPathFromUI(path);
+        } else {
+            throw new RuntimeException("Cannot decompress this file. Extension is not right : " + fileName);
+        }
         logger.debug(command);
         String commandExec = dockerService.exec(containerId, command);
         if (commandExec != null) {
@@ -452,6 +459,7 @@ public class FileController {
         try (OutputStream stream = response.getOutputStream()) {
             stream.write(data);
             stream.flush(); // commits response!
+            stream.close();
         } catch (IOException ex) {
             // clean error handling
         }

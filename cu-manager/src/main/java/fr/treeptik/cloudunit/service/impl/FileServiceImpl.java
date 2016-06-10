@@ -413,12 +413,8 @@ public class FileServiceImpl
                                 absolutePath.toString());
 
                         if (filter.isValid(fileUnit)) {
-                            // Add test to know if resource is removable or not
                             filter.isRemovable(fileUnit);
-                            // add test to know if resource is saved or not
-                            // during cloning
                             filter.isSafe(fileUnit);
-                            // we add the file to explorer ui
                             files.add(fileUnit);
                         }
                     }

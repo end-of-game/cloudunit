@@ -49,11 +49,11 @@ import java.util.Locale;
  * Controler for Script execution coming from CLI Syntax
  */
 @Controller
-@RequestMapping("/scripts")
-public class ScriptController
+@RequestMapping("/scripting")
+public class ScriptingController
         implements Serializable {
 
-    private final Logger logger = LoggerFactory.getLogger(ScriptController.class);
+    private final Logger logger = LoggerFactory.getLogger(ScriptingController.class);
 
     @Inject
     private DockerService dockerService;

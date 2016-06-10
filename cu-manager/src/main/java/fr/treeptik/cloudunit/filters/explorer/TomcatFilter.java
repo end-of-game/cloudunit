@@ -50,8 +50,6 @@ public class TomcatFilter
         return false;
     }
 
-
-
     @Override
     public void isRemovable(FileUnit fileUnit) {
 
