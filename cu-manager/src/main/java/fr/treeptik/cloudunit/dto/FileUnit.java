@@ -35,15 +35,21 @@ public class FileUnit {
                 || f.getName().endsWith(".xsd")
                 || f.getName().endsWith(".html")
                 || f.getName().endsWith(".htm")
+                || f.getName().endsWith(".php")
+                || f.getName().endsWith(".json")
+                || f.getName().endsWith(".py")
+                || f.getName().endsWith(".ini")
+                || f.getName().endsWith(".cf")
+                || f.getName().endsWith(".cnf")
                 || f.getName().endsWith(".properties")
                 || f.getName().endsWith(".txt");
     };
 
     private static Predicate<FileUnit> zip() {
-        return f -> f.getName().endsWith("tar.gz")
-                || f.getName().endsWith("tar")
-                || f.getName().endsWith("tgz")
-                || f.getName().endsWith("zip");
+        return f -> f.getName().toLowerCase().endsWith("tar.gz")
+                || f.getName().toLowerCase().endsWith("tar")
+                || f.getName().toLowerCase().endsWith("tgz")
+                || f.getName().toLowerCase().endsWith("zip");
     };
 
     private String name;
