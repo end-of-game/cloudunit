@@ -54,6 +54,7 @@
       'webuiApp.editApplication',
       'webuiApp.snapshots',
       'webuiApp.mainTimeline',
+      'webuiApp.scripting',
       'webuiApp.account',
       'webuiApp.feed',
       'webuiApp.tags',

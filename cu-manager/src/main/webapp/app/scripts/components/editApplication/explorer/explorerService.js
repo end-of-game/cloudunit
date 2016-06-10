@@ -90,17 +90,20 @@
     }
      
     function editFile ( containerId, applicationName, path, fileName, fileContent ) { 
-      
+      console.log(fileContent);
       var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName',
       {
         containerId: containerId,
         applicationName: applicationName,
         path: path,
         fileName: fileName
-      },{ update: {method:'PUT', params: { fileContent: fileContent}}
+      },{ update: {method:'POST'}
     });
 
-      return file.update ( ).$promise;
+      return file.update ( {        containerId: containerId,
+        applicationName: applicationName,
+        path: path,
+        fileName: fileName}, { fileContent: fileContent}).$promise;
     }
        
     function deleteFile ( containerId, applicationName, path ) {
