@@ -11,6 +11,13 @@ public class FileContent {
         return fileContent;
     }
 
+    @Override
+    public String toString() {
+        return "FileContent{" +
+                "fileContent='" + fileContent + '\'' +
+                '}';
+    }
+
     public void setFileContent(String fileContent) {
         this.fileContent = fileContent;
     }
