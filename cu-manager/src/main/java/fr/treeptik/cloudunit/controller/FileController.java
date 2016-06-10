@@ -29,7 +29,6 @@ import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -140,7 +139,7 @@ public class FileController {
 
         // Application is now pending
         applicationService.setStatus(application, Status.PENDING);
-        
+
         if (application != null) {
             File file = File.createTempFile("upload-", FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
             //File file = new File(fileUpload.getOriginalFilename());
@@ -289,8 +288,6 @@ public class FileController {
      *
      * @param containerId
      * @param applicationName
-     * @param path
-     * @param fileName
      * @param request
      * @param response
      * @throws ServiceException
@@ -298,21 +295,20 @@ public class FileController {
      * @throws IOException
      * @returnoriginalName
      */
-    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
-            method = RequestMethod.POST)
+    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}",
+            method = RequestMethod.PUT)
     public void saveContentFileIntoContainer(
             @PathVariable final String containerId,
             @PathVariable final String applicationName,
-            @PathVariable String path, @PathVariable final String fileName,
-            @RequestBody FileContent fileContent,
+            @RequestBody FileMessage fileMessage,
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException {
 
         if (logger.isDebugEnabled()) {
             logger.debug("containerId:" + containerId);
             logger.debug("applicationName:" + applicationName);
-            logger.debug("fileName:" + fileName);
-            logger.debug("fileContent: " + fileContent);
+            logger.debug("fileName:" + fileMessage.getFileName());
+            logger.debug("fileContent: " + fileMessage);
         }
 
         User user = authentificationUtils.getAuthentificatedUser();
@@ -327,10 +323,10 @@ public class FileController {
 
         if (application != null) {
             File file = File.createTempFile("upload", "tmp");
-            FileUtils.write(file, fileContent.getFileContent());
+            FileUtils.write(file, fileMessage.getFileContent());
             try {
                 fileService.sendFileToContainer(applicationName, containerId,
-                        file, fileName, path);
+                        file, fileMessage.getFileName(), fileMessage.getFilePath());
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {

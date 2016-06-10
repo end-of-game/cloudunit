@@ -19,11 +19,12 @@
     .factory ( 'ExplorerService', ExplorerService );
 
   ExplorerService.$inject = [
-    '$resource'
+    '$resource',
+    '$http'
   ];
 
 
-  function ExplorerService ( $resource ) {
+  function ExplorerService ( $resource, $http ) {
 
     return {
       buildTree: buildTree,
@@ -90,20 +91,21 @@
     }
      
     function editFile ( containerId, applicationName, path, fileName, fileContent ) { 
-      console.log(fileContent);
-      var file = $resource ( 'file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName',
+      var file = $resource ( 'file/content/container/:containerId/application/:applicationName',
       {
         containerId: containerId,
-        applicationName: applicationName,
-        path: path,
-        fileName: fileName
-      },{ update: {method:'POST'}
+        applicationName: applicationName
+      },{ update: {method:'PUT'}
     });
-
-      return file.update ( {        containerId: containerId,
-        applicationName: applicationName,
-        path: path,
-        fileName: fileName}, { fileContent: fileContent}).$promise;
+    
+    return file.update ( 
+      { 
+        containerId: containerId,
+        applicationName: applicationName
+      }, { 
+        filePath: path,
+        fileName: fileName,
+        fileContent: fileContent}).$promise;
     }
        
     function deleteFile ( containerId, applicationName, path ) {
