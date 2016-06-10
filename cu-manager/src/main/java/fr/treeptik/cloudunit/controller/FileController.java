@@ -15,10 +15,7 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.HttpErrorServer;
-import fr.treeptik.cloudunit.dto.HttpOk;
-import fr.treeptik.cloudunit.dto.JsonResponse;
+import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
@@ -307,7 +304,7 @@ public class FileController {
             @PathVariable final String containerId,
             @PathVariable final String applicationName,
             @PathVariable String path, @PathVariable final String fileName,
-            @Param("fileContent") String fileContent,
+            @RequestBody FileContent fileContent,
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException {
 
@@ -330,7 +327,7 @@ public class FileController {
 
         if (application != null) {
             File file = File.createTempFile("upload", "tmp");
-            FileUtils.write(file, fileContent);
+            FileUtils.write(file, fileContent.getFileContent());
             try {
                 fileService.sendFileToContainer(applicationName, containerId,
                         file, fileName, path);
