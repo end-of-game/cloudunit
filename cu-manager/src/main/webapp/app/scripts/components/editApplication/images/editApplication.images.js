@@ -27,6 +27,7 @@
         app: '='
       },
       controller: [
+        '$rootScope',
         'ImageService',
         'ModuleService',
         ModulesCtrl
@@ -36,7 +37,7 @@
     };
   }
 
-  function ModulesCtrl ( ImageService, ModuleService) {
+  function ModulesCtrl ( $rootScope, ImageService, ModuleService) {
     var vm = this;
     vm.moduleImages = [];
     vm.addModule = addModule;
@@ -78,7 +79,10 @@
 
     // Ajout d'un module
     function addModule ( applicationName, imageName ) {
-      return ModuleService.addModule ( applicationName, imageName );
+      ModuleService.addModule ( applicationName, imageName ).then ( function (data) {
+        $rootScope.$broadcast('application:addModule');
+        return data;
+      } );
     }
   }
 }) ();

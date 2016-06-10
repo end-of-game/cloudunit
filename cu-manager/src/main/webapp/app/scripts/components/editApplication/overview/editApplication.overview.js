@@ -53,6 +53,13 @@
       } )    
     });
     
+    $scope.$on ( 'application:addModule', function () {
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
+      .then ( function (data) {
+        vm.app.env = data;
+      } )
+    });
+    
     ///////////////////////////////////////////
 
     function toggleServer(application) {

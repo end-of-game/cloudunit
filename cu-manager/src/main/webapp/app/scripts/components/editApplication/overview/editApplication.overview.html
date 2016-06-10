@@ -14,7 +14,7 @@
   -->
 <div class="tab-pane active vertical-spacing">
   <div id="{{overview.app.name}}-server" class="clearfix">
-    <div class="card large application {{overview.app.status | lowercase}}">
+    <div class="card large application overview {{overview.app.status | lowercase}}">
       <div class="content">
         <div class="status">
           <p class="headline">
@@ -89,8 +89,8 @@
           </div>
 
         </div>
-        <div class="col-lg-6">
-          <div ng-repeat="env in overview.app.env">
+        <div class="col-lg-6" >
+          <div  class="label-like" ng-repeat="env in overview.app.env">
             {{ env.key }} = {{ env.value }}
           </div>
         </div>
