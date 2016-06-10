@@ -28,7 +28,7 @@ Now, the application is configured, so restart it for update changes in *Overvie
 ## Deploy WordPress
 
 You can clone the Git repository [here](https://github.com/WordPress/WordPress.git).
-After download, go to WorkPress directory and copy the file *wp-config-sample.php* then rename it to *wp-config*.
+After download, go to WorkPress directory and copy the file *wp-config-sample.php* then rename it to *wp-config.sh*.
 
 Edit this file and add your MySQL configuration (host, database name, username, password) using environment variables which you can find in *Overview* tab.
 
