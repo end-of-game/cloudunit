@@ -105,7 +105,7 @@ public class JsonInput
     }
 
     public String getJvmOptions() {
-        return jvmOptions;
+        return jvmOptions.replace("\\n", " ");
     }
 
     public void setJvmOptions(String jvmOptions) {
