@@ -57,7 +57,7 @@ public class FileUnit {
                 || s.toLowerCase().endsWith(".7z");
     };
 
-    private static Predicate<FileUnit> exec() {
+    public static Predicate<FileUnit> exec() {
         return f -> f.getName().toLowerCase().endsWith(".sh");
     };
 
