@@ -46,11 +46,11 @@
     vm.selectedJvmMemory = vm.jvmMemory;
     vm.selectedJvmRelease = vm.jvmRelease;
 
-    vm.jvmMemorySizes = [512, 1024, 2048, 3072];
+    vm.jvmMemorySizes = [512, 1024, 2048, 3072, 4096];
     vm.jvmReleases = ['jdk1.7.0_55', 'jdk1.8.0_25'];
     vm.saveConfigurationJVM = saveConfigurationJVM;
 
-    // Function to save the JVM parameters
+    // Function to save the JVM parameters  
     function saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease) {
       JVMService.saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease);
       $scope.$emit('workInProgress', { delay: 10000 });
