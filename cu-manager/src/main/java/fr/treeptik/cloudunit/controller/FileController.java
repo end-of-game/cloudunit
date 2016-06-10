@@ -274,7 +274,7 @@ public class FileController {
         if (FileUnit.tar().test(fileName)) {
             command = "tar xvf " + convertPathFromUI(path) + "/" + fileName + " -C " + convertPathFromUI(path);
         } else if (FileUnit.tar().test(fileName)) {
-            command = "unzip " + convertPathFromUI(path) + "/" + fileName + " -C " + convertPathFromUI(path);
+            command = "unzip " + convertPathFromUI(path);
         } else {
             throw new RuntimeException("Cannot decompress this file. Extension is not right : " + fileName);
         }
@@ -302,7 +302,7 @@ public class FileController {
      * @returnoriginalName
      */
     @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
-            method = RequestMethod.PUT)
+            method = RequestMethod.POST)
     public void saveContentFileIntoContainer(
             @PathVariable final String containerId,
             @PathVariable final String applicationName,
@@ -334,6 +334,11 @@ public class FileController {
             try {
                 fileService.sendFileToContainer(applicationName, containerId,
                         file, fileName, path);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } catch (ServiceException e) {
                 StringBuilder msgError = new StringBuilder();
                 msgError.append("Error during file upload : " + file);
