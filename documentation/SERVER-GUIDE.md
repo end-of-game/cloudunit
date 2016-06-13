@@ -56,7 +56,7 @@ To do it, you have to change the
 * /home/admincu/.docker/application.properties
 * /etc/profile
 
-Run `/home/admincu/cloudunit/cu-platform/reset.sh -y`
+Run `/home/admincu/cloudunit/cu-platform/reset-prod.sh -y`
 
 ## Certificats
 
@@ -71,7 +71,7 @@ You have to replace the certificats into `/home/admincu/cloudunit/cu-production/
 ## How to reset Environment Production
 
 ```
-/home/admincu/cloudunit/cu-production/reset-all.sh -y
+/home/admincu/cloudunit/cu-platform/reset-prod.sh -y
 ```
 
 
