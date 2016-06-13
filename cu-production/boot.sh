@@ -4,7 +4,7 @@
 
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
-export CU_INSTALL_DIR=$CU_HOME/cu-production
+export CU_INSTALL_DIR=$CU_HOME/cu-platform
 
 # INIT
 apt-get update &
@@ -59,10 +59,12 @@ su -l $CU_USER -c "cd $CU_HOME/cu-services && ./build-services.sh"
 
 # COMPILE ROOT WAR FOR CLOUDUNIT
 cd $CU_HOME/cu-manager && ./compile-root-war.sh
-mkdir -p $CU_HOME/cu-production/tomcat && cp target/ROOT.war $CU_HOME/cu-production/tomcat
+mkdir -p $CU_HOME/cu-platform/tomcat && cp target/ROOT.war $CU_HOME/cu-platform/tomcat
 chown -R $CU_USER:$CU_USER /home/$CU_USER/.docker
 
 # RESET ALL FOR FIRST START
-su -l $CU_USER -c "cd $CU_HOME/cu-platform && ./reset-all.sh -y"
+su -l $CU_USER -c "cd $CU_HOME/cu-platform && ./reset-prod.sh -y"
+
+
 
 
