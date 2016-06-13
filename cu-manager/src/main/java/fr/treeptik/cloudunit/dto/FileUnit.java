@@ -23,27 +23,46 @@ import java.util.function.Predicate;
  */
 public class FileUnit {
 
-    private static Predicate<FileUnit> edition() {
-        return f -> f.getName().endsWith(".xml")
-                || f.getName().endsWith(".yml")
-                || f.getName().endsWith(".sh")
-                || f.getName().endsWith(".md")
-                || f.getName().endsWith(".conf")
-                || f.getName().endsWith(".policy")
-                || f.getName().endsWith(".jsp")
-                || f.getName().endsWith(".xsl")
-                || f.getName().endsWith(".xsd")
-                || f.getName().endsWith(".html")
-                || f.getName().endsWith(".htm")
-                || f.getName().endsWith(".properties")
-                || f.getName().endsWith(".txt");
+    public static Predicate<FileUnit> edition() {
+        return f -> f.getName().toLowerCase().endsWith(".xml")
+                || f.getName().toLowerCase().endsWith(".yml")
+                || f.getName().toLowerCase().endsWith(".toml")
+                || f.getName().toLowerCase().endsWith(".sh")
+                || f.getName().toLowerCase().endsWith(".md")
+                || f.getName().toLowerCase().endsWith(".conf")
+                || f.getName().toLowerCase().endsWith(".policy")
+                || f.getName().toLowerCase().endsWith(".jsp")
+                || f.getName().toLowerCase().endsWith(".js")
+                || f.getName().toLowerCase().endsWith(".xsl")
+                || f.getName().toLowerCase().endsWith(".xsd")
+                || f.getName().toLowerCase().endsWith(".html")
+                || f.getName().toLowerCase().endsWith(".htm")
+                || f.getName().toLowerCase().endsWith(".php")
+                || f.getName().toLowerCase().endsWith(".json")
+                || f.getName().toLowerCase().endsWith(".py")
+                || f.getName().toLowerCase().endsWith(".ini")
+                || f.getName().toLowerCase().endsWith(".cf")
+                || f.getName().toLowerCase().endsWith(".cnf")
+                || f.getName().toLowerCase().endsWith(".conf")
+                || f.getName().toLowerCase().endsWith(".config")
+                || f.getName().toLowerCase().endsWith(".properties")
+                || f.getName().toLowerCase().endsWith(".txt");
     };
 
-    private static Predicate<FileUnit> zip() {
-        return f -> f.getName().endsWith("tar.gz")
-                || f.getName().endsWith("tar")
-                || f.getName().endsWith("tgz")
-                || f.getName().endsWith("zip");
+    public static Predicate<String> tar() {
+        return s -> s.toLowerCase().endsWith(".tar.gz")
+                || s.toLowerCase().endsWith(".tar")
+                || s.toLowerCase().endsWith(".tgz");
+    };
+
+    public static Predicate<String> zip() {
+        return s -> s.toLowerCase().endsWith(".zip")
+                || s.toLowerCase().endsWith(".gzip")
+                || s.toLowerCase().endsWith(".7z");
+    };
+
+    public static Predicate<FileUnit> exec() {
+        return f -> f.getName().toLowerCase().endsWith(".sh");
     };
 
     private String name;
@@ -88,10 +107,6 @@ public class FileUnit {
         return dir;
     }
 
-    public boolean isExec() {
-        return exec;
-    }
-
     public String getName() {
         return name;
     }
@@ -120,7 +135,9 @@ public class FileUnit {
         this.safe = safe;
     }
 
-    public boolean isZipable() { return zip().test(this); }
+    public boolean isZipable() { return zip().test(name) || tar().test(name); }
+
+    public boolean isExec() { return exec().test(this); }
 
     public boolean isEditable() { return edition().test(this); }
 

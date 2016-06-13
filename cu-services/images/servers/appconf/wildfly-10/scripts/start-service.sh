@@ -15,7 +15,6 @@ source /etc/environment
 
 # Callback bound to the application stop
 terminate_handler() {
-    #$JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command=:shutdown
     /cloudunit/scripts/cu-stop.sh
     CODE=$?
     echo "CODE : " $CODE
@@ -42,7 +41,9 @@ MAX=45
 if [ ! -f /init-service-ok ]; then
    	useradd -m $CU_USER && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
 	usermod -s /bin/bash $CU_USER
+
 	$JBOSS_HOME/bin/add-user.sh --silent=true $CU_USER $CU_PASSWORD
+
 	echo  "CU_USER=$CU_USER" >> /etc/environment
 	echo  "CU_PASSWORD=$CU_PASSWORD" >> /etc/environment
 	echo  "CU_REST_IP=$CU_REST_IP" >> /etc/environment
@@ -50,11 +51,10 @@ if [ ! -f /init-service-ok ]; then
 	echo  "JAVA_HOME=$JAVA_HOME" >> /etc/environment
 	echo  "PATH=$JAVA_HOME/bin:$PATH" >> /etc/environment
 	echo  "JBOSS_HOME=$CU_HOME/wildfly" >> /etc/environment
-	echo  "JAVA_OPTS=-Xms96M -Xmx512M -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true" >> /etc/environment
-
-	touch /init-service-ok
+	echo  "JAVA_OPTS=-Xms96m -Xms512m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true" >> /etc/environment
 fi
 
+cat /etc/environment
 source /etc/environment
 /usr/sbin/sshd
 chown -R $CU_USER:$CU_USER /cloudunit/appconf/wildfly
@@ -66,6 +66,14 @@ if [[ "$RETURN" -eq  "1" ]]; then
     $JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER FAIL $MANAGER_DATABASE_PASSWORD
 else
     $JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER START $MANAGER_DATABASE_PASSWORD
+fi
+
+// Initialize the datasource
+if [ ! -f /init-service-ok ];
+then
+    $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="module add --name=org.mysql --resources=/cloudunit/tmp/mysql-connector-java-5.1.39.jar --dependencies=javax.api,javax.transaction.api"
+    $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="/subsystem=datasources/jdbc-driver=mysql:add(driver-module-name=org.mysql,driver-name=mysql,driver-class-name=com.mysql.jdbc.Driver)"
+    touch /init-service-ok
 fi
 
 # Blocking step

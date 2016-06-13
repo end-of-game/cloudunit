@@ -15,10 +15,7 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.HttpErrorServer;
-import fr.treeptik.cloudunit.dto.HttpOk;
-import fr.treeptik.cloudunit.dto.JsonResponse;
+import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
@@ -32,7 +29,6 @@ import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -122,7 +118,7 @@ public class FileController {
         @RequestPart("file") MultipartFile fileUpload,
         @PathVariable final String containerId,
         @PathVariable final String applicationName,
-        @PathVariable final String path, HttpServletRequest request,
+        @PathVariable String path, HttpServletRequest request,
         HttpServletResponse response)
         throws IOException, ServiceException,
         CheckException {
@@ -143,12 +139,12 @@ public class FileController {
 
         // Application is now pending
         applicationService.setStatus(application, Status.PENDING);
-        
+
         if (application != null) {
             File file = File.createTempFile("upload-", FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
-            //File file = new File(fileUpload.getOriginalFilename());
             fileUpload.transferTo(file);
             try {
+                path = convertPathFromUI(path);
                 fileService.sendFileToContainer(applicationName, containerId,
                     file, fileUpload.getOriginalFilename(), path);
             } catch (ServiceException e) {
@@ -270,8 +266,17 @@ public class FileController {
             logger.debug("fileName:" + fileName);
         }
 
-        String command =  "tar xvf " + convertPathFromUI(path) + "/" + fileName + " -C "  + convertPathFromUI(path);
-        logger.debug(command);
+        String command =  null;
+        String realPath = convertPathFromUI(path) + "/" + fileName;
+        if (FileUnit.tar().test(fileName)) {
+            command = "tar xvf " + realPath + " -C " + convertPathFromUI(path);
+        } else if (FileUnit.zip().test(fileName)) {
+            command = "unzip " + realPath + " -d " + convertPathFromUI(path);
+        } else {
+            throw new RuntimeException("Cannot decompress this file. Extension is not right : " + realPath);
+        }
+
+        logger.info(command);
         String commandExec = dockerService.exec(containerId, command);
         if (commandExec != null) {
             logger.debug(commandExec);
@@ -285,8 +290,6 @@ public class FileController {
      *
      * @param containerId
      * @param applicationName
-     * @param path
-     * @param fileName
      * @param request
      * @param response
      * @throws ServiceException
@@ -294,21 +297,20 @@ public class FileController {
      * @throws IOException
      * @returnoriginalName
      */
-    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
+    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}",
             method = RequestMethod.PUT)
     public void saveContentFileIntoContainer(
             @PathVariable final String containerId,
             @PathVariable final String applicationName,
-            @PathVariable String path, @PathVariable final String fileName,
-            @Param("fileContent") String fileContent,
+            @RequestBody FileRequestBody fileRequestBody,
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException {
 
         if (logger.isDebugEnabled()) {
             logger.debug("containerId:" + containerId);
             logger.debug("applicationName:" + applicationName);
-            logger.debug("fileName:" + fileName);
-            logger.debug("fileContent: " + fileContent);
+            logger.debug("fileName:" + fileRequestBody.getFileName());
+            logger.debug("fileRequestBody: " + fileRequestBody);
         }
 
         User user = authentificationUtils.getAuthentificatedUser();
@@ -323,10 +325,11 @@ public class FileController {
 
         if (application != null) {
             File file = File.createTempFile("upload", "tmp");
-            FileUtils.write(file, fileContent);
+            FileUtils.write(file, fileRequestBody.getFileContent());
             try {
+                String path = convertPathFromUI(fileRequestBody.getFilePath());
                 fileService.sendFileToContainer(applicationName, containerId,
-                        file, fileName, path);
+                        file, fileRequestBody.getFileName(), path);
             } catch (ServiceException e) {
                 StringBuilder msgError = new StringBuilder();
                 msgError.append("Error during file upload : " + file);
@@ -452,6 +455,7 @@ public class FileController {
         try (OutputStream stream = response.getOutputStream()) {
             stream.write(data);
             stream.flush(); // commits response!
+            stream.close();
         } catch (IOException ex) {
             // clean error handling
         }
