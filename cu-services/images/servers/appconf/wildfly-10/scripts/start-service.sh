@@ -15,7 +15,6 @@ source /etc/environment
 
 # Callback bound to the application stop
 terminate_handler() {
-    #$JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command=:shutdown
     /cloudunit/scripts/cu-stop.sh
     CODE=$?
     echo "CODE : " $CODE
@@ -42,7 +41,11 @@ MAX=45
 if [ ! -f /init-service-ok ]; then
    	useradd -m $CU_USER && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
 	usermod -s /bin/bash $CU_USER
+
 	$JBOSS_HOME/bin/add-user.sh --silent=true $CU_USER $CU_PASSWORD
+	$JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="module add --name=org.mysql --resources=/cloudunit/tmp/mysql-connector-java-5.1.39.jar --dependencies=javax.api,javax.transaction.api"
+    $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="/subsystem=datasources/jdbc-driver=mysql:add(driver-module-name=org.mysql,driver-name=mysql,driver-class-name=com.mysql.jdbc.Driver)"
+
 	echo  "CU_USER=$CU_USER" >> /etc/environment
 	echo  "CU_PASSWORD=$CU_PASSWORD" >> /etc/environment
 	echo  "CU_REST_IP=$CU_REST_IP" >> /etc/environment

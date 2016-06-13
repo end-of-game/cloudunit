@@ -118,7 +118,7 @@ public class FileController {
         @RequestPart("file") MultipartFile fileUpload,
         @PathVariable final String containerId,
         @PathVariable final String applicationName,
-        @PathVariable final String path, HttpServletRequest request,
+        @PathVariable String path, HttpServletRequest request,
         HttpServletResponse response)
         throws IOException, ServiceException,
         CheckException {
@@ -142,9 +142,9 @@ public class FileController {
 
         if (application != null) {
             File file = File.createTempFile("upload-", FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
-            //File file = new File(fileUpload.getOriginalFilename());
             fileUpload.transferTo(file);
             try {
+                path = convertPathFromUI(path);
                 fileService.sendFileToContainer(applicationName, containerId,
                     file, fileUpload.getOriginalFilename(), path);
             } catch (ServiceException e) {
@@ -274,6 +274,7 @@ public class FileController {
         } else {
             throw new RuntimeException("Cannot decompress this file. Extension is not right : " + fileName);
         }
+
         logger.debug(command);
         String commandExec = dockerService.exec(containerId, command);
         if (commandExec != null) {
@@ -300,15 +301,15 @@ public class FileController {
     public void saveContentFileIntoContainer(
             @PathVariable final String containerId,
             @PathVariable final String applicationName,
-            @RequestBody FileMessage fileMessage,
+            @RequestBody FileRequestBody fileRequestBody,
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException {
 
         if (logger.isDebugEnabled()) {
             logger.debug("containerId:" + containerId);
             logger.debug("applicationName:" + applicationName);
-            logger.debug("fileName:" + fileMessage.getFileName());
-            logger.debug("fileContent: " + fileMessage);
+            logger.debug("fileName:" + fileRequestBody.getFileName());
+            logger.debug("fileRequestBody: " + fileRequestBody);
         }
 
         User user = authentificationUtils.getAuthentificatedUser();
@@ -323,15 +324,11 @@ public class FileController {
 
         if (application != null) {
             File file = File.createTempFile("upload", "tmp");
-            FileUtils.write(file, fileMessage.getFileContent());
+            FileUtils.write(file, fileRequestBody.getFileContent());
             try {
+                String path = convertPathFromUI(fileRequestBody.getFilePath());
                 fileService.sendFileToContainer(applicationName, containerId,
-                        file, fileMessage.getFileName(), fileMessage.getFilePath());
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                        file, fileRequestBody.getFileName(), path);
             } catch (ServiceException e) {
                 StringBuilder msgError = new StringBuilder();
                 msgError.append("Error during file upload : " + file);
