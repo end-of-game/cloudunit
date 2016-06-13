@@ -546,7 +546,6 @@ public class FileServiceImpl
             msgError.append(", originalName=").append(originalName);
             msgError.append(", destFile=").append(destFile);
             msgError.append(", sshPort=").append(sshPort);
-            msgError.append(", rootPassword=").append(rootPassword);
             throw new ServiceException(msgError.toString(), e);
         }
 

@@ -267,15 +267,16 @@ public class FileController {
         }
 
         String command =  null;
+        String realPath = convertPathFromUI(path) + "/" + fileName;
         if (FileUnit.tar().test(fileName)) {
-            command = "tar xvf " + convertPathFromUI(path) + "/" + fileName + " -C " + convertPathFromUI(path);
-        } else if (FileUnit.tar().test(fileName)) {
-            command = "unzip " + convertPathFromUI(path);
+            command = "tar xvf " + realPath + " -C " + convertPathFromUI(path);
+        } else if (FileUnit.zip().test(fileName)) {
+            command = "unzip " + realPath + " -d " + convertPathFromUI(path);
         } else {
-            throw new RuntimeException("Cannot decompress this file. Extension is not right : " + fileName);
+            throw new RuntimeException("Cannot decompress this file. Extension is not right : " + realPath);
         }
 
-        logger.debug(command);
+        logger.info(command);
         String commandExec = dockerService.exec(containerId, command);
         if (commandExec != null) {
             logger.debug(commandExec);

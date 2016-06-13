@@ -26,11 +26,13 @@ public class FileUnit {
     public static Predicate<FileUnit> edition() {
         return f -> f.getName().toLowerCase().endsWith(".xml")
                 || f.getName().toLowerCase().endsWith(".yml")
+                || f.getName().toLowerCase().endsWith(".toml")
                 || f.getName().toLowerCase().endsWith(".sh")
                 || f.getName().toLowerCase().endsWith(".md")
                 || f.getName().toLowerCase().endsWith(".conf")
                 || f.getName().toLowerCase().endsWith(".policy")
                 || f.getName().toLowerCase().endsWith(".jsp")
+                || f.getName().toLowerCase().endsWith(".js")
                 || f.getName().toLowerCase().endsWith(".xsl")
                 || f.getName().toLowerCase().endsWith(".xsd")
                 || f.getName().toLowerCase().endsWith(".html")
@@ -41,6 +43,8 @@ public class FileUnit {
                 || f.getName().toLowerCase().endsWith(".ini")
                 || f.getName().toLowerCase().endsWith(".cf")
                 || f.getName().toLowerCase().endsWith(".cnf")
+                || f.getName().toLowerCase().endsWith(".conf")
+                || f.getName().toLowerCase().endsWith(".config")
                 || f.getName().toLowerCase().endsWith(".properties")
                 || f.getName().toLowerCase().endsWith(".txt");
     };
