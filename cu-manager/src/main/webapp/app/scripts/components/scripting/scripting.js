@@ -38,7 +38,7 @@
       controller: [
         '$scope',
         '$stateParams',
-        'ErrorService',
+        'ApplicationService',
         ScriptingCtrl
       ],
       controllerAs: 'scripting',
@@ -46,12 +46,15 @@
     };
   }
 
-  function ScriptingCtrl ( $scope, $stateParams, ErrorService) {
+  function ScriptingCtrl ( $scope, $stateParams, ApplicationService) {
         
         var vm = this;
 
         vm.date = 'recent';
         vm.orderByDate = true;
+
+        vm.executeScript = executeScript;
+
 
         init();
 
@@ -61,6 +64,15 @@
           console.log("hello");
         }
 
+        function executeScript ( scriptContent ) {
+          ApplicationService.executeScript ( scriptContent )
+            .then ( function() {
+              console.log("ok");
+            } )
+            .catch ( function() {
+              console.log("nn");
+            } );
+        }
   }
 }) ();
 

@@ -58,13 +58,23 @@
       <div class="input-group stack clearfix">
         <label>Scripts</label>
 
-        <div  text-angular
+        <textarea class="textarea-full" data-ng-model="scripting.content"
+              data-ng-disabled="scripting.application.status === 'PENDING'"
+              placeholder="Enter your script"></textarea>
+        <!--<div  text-angular
               ta-toolbar="[]"
-              id="jvm-param-options"
               data-ng-model="scripting.content"
               data-ng-disabled="scripting.application.status === 'PENDING'"
               placeholder="Enter your script"></div>
       </div>
+      -->
+        <div class="clearfix">
+          <button class="config-snapshot-btn button raised primary pull-right"
+                  ripple=""
+                  data-ng-click="scripting.executeScript(scripting.content)">
+            <span>Execute</span>
+          </button>
+        </div>
       <!--<textarea class="textarea-full"></textarea>-->
       <!--<div id="scripting-task" data-ng-show="scripting.messages.length">
         <table class="table ng-table-responsive terminal">

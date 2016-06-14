@@ -61,5 +61,17 @@ public class ScriptingController
     @Inject
     private AuthentificationUtils authentificationUtils;
 
-
+    @RequestMapping(value = "/execute",
+            method = RequestMethod.POST)
+    public void scriptingExecute(
+            @RequestBody ScriptRequestBody scriptRequestBody,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
+        System.out.println("########################################");
+        System.out.println(scriptRequestBody);
+        System.out.println("#################################");
+        if (logger.isDebugEnabled()) {
+            logger.debug("scriptRequestBody: " + scriptRequestBody);
+        }
+    }
 }
