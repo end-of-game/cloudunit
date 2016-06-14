@@ -31,6 +31,7 @@ import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
@@ -445,7 +446,7 @@ public class FileServiceImpl
      */
     @Override
     public void sendFileToContainer(String applicationName, String containerId,
-                                    File file, String originalName, String destFile)
+                                    File file, String originalName, String destination)
             throws ServiceException {
 
         Application application;
@@ -456,28 +457,33 @@ public class FileServiceImpl
             Map<String, String> configShell = new HashMap<>();
 
             String sshPort = application.getSShPortByContainerId(containerId);
-            //String userLogin = application.getUser().getLogin();
             String userPassword = application.getUser().getPassword();
             configShell.put("port", sshPort);
-            configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
-            //configShell.put("userLogin", userLogin);
+            configShell.put("dockerManagerAddress", application.getManagerIp());
             configShell.put("password", userPassword);
+
+            if (!destination.endsWith("/")) destination = destination + "/";
 
             // send the file on container
             shellUtils
                     .sendFile(file, userPassword, sshPort,
                             application.getManagerIp(),
-                            convertDestPathFile(destFile));
+                            destination);
 
-            shellUtils.executeShell("mv " + convertDestPathFile(destFile)
-                            + file.getName().replaceAll(" ", "\\ ") + " " + convertDestPathFile(destFile)
-                            + originalName.replaceAll(" ", "\\ ") + " && chown "
-                            + authentificationUtils.getAuthentificatedUser().getLogin()
-                            + ":"
-                            + authentificationUtils.getAuthentificatedUser().getLogin()
-                            + " " + convertDestPathFile(destFile) + originalName,
-                    configShell);
+            String commandMove = "mv " + destination
+                    + file.getName().replaceAll(" ", "_") + " " + destination
+                    + originalName.replaceAll(" ", "_");
+
+            String commandChangeOwner = "chown "
+                    + authentificationUtils.getAuthentificatedUser().getLogin()
+                    + ":"
+                    + authentificationUtils.getAuthentificatedUser().getLogin()
+                    + " " + destination + originalName;
+
+            logger.info(commandMove);
+            logger.info(commandChangeOwner);
+
+            shellUtils.executeShell(commandMove + " && " + commandChangeOwner,  configShell);
 
         } catch (ServiceException | CheckException e) {
             e.printStackTrace();
@@ -487,7 +493,7 @@ public class FileServiceImpl
             msgError.append(",").append("containerId=").append(containerId);
             msgError.append(",").append("file=").append(file);
             msgError.append(",").append("originalName=").append(originalName);
-            msgError.append(",").append("destFile=").append(destFile);
+            msgError.append(",").append("destFile=").append(destination);
             throw new ServiceException("error in send file into the container : " + msgError, e);
         }
 
@@ -540,7 +546,6 @@ public class FileServiceImpl
             msgError.append(", originalName=").append(originalName);
             msgError.append(", destFile=").append(destFile);
             msgError.append(", sshPort=").append(sshPort);
-            msgError.append(", rootPassword=").append(rootPassword);
             throw new ServiceException(msgError.toString(), e);
         }
 
