@@ -21,7 +21,7 @@ Today we have many servers :
 
 And for modules : Mysql, Redis, Mongo, PostGreSQL, PostGis. Each module in different major release.
 
-![Jenkins2 Logo](documentation/img/plateforme-trio.png "Devops Plateforme")
+![Jenkins2 Logo](documentation/img/CU-HOME.png "Devops Plateforme")
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
