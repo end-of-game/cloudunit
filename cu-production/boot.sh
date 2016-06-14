@@ -37,6 +37,7 @@ apt-mark hold lxc-docker
 apt-get install -y linux-image-extra-$(uname -r) &
 wait
 usermod -aG docker $CU_USER
+usermod admincu -s /bin/bash
 curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > docker-compose
 chmod +x docker-compose
 mv docker-compose /usr/local/bin
@@ -58,7 +59,7 @@ service docker start
 su -l $CU_USER -c "cd $CU_HOME/cu-services && ./build-services.sh"
 
 # COMPILE ROOT WAR FOR CLOUDUNIT
-cd $CU_HOME/cu-manager && ./compile-root-war.sh
+cd $CU_HOME/cu-manager && su -l $CU_USER -c "$CU_HOME/cu-manager/compile-root-war.sh"
 mkdir -p $CU_HOME/cu-platform/tomcat && cp target/ROOT.war $CU_HOME/cu-platform/tomcat
 chown -R $CU_USER:$CU_USER /home/$CU_USER/.docker
 
