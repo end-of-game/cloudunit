@@ -142,6 +142,7 @@ public class SecurityConfiguration
             .antMatchers("/snapshot/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/monitoring/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/messages/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/scripting/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/gitlab/**").permitAll()
             .antMatchers("/nopublic/**").permitAll().and()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
