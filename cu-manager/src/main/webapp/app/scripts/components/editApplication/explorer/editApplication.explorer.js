@@ -171,7 +171,6 @@
       var slug = '__' + path.join ( '__' );
       ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name, fileContent )
         .then ( function onFileEdit (res) {
-          console.log(res);
           vm.fileContent = res.data;
         } )
     }

@@ -46,7 +46,7 @@ textarea:focus {
 
 .textarea-full {
   height: auto;
-  min-height: 70vh;
+  min-height: 60vh;
   padding: 6px 12px;
   width: 100%;
   max-width: 100%;
@@ -65,6 +65,10 @@ input[type='text'].ng-invalid:not(.ng-pristine) {
 
 input.large {
   min-width: 360px;
+}
+
+label.large  {
+  font-size: 20px;
 }
 
 .label {
@@ -91,6 +95,7 @@ input.large {
     display: block;
   }
 }
+
 
 .input-group.stack.suffix {
   input, textarea {

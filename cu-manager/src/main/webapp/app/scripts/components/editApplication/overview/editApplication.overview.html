@@ -90,9 +90,10 @@
 
         </div>
         <div class="col-lg-6" >
-          <div  class="label-like" ng-repeat="env in overview.app.env">
+          <label class="large">Environment variables :</label>
+          <li class="label-like" ng-repeat="env in overview.app.env">
             {{ env.key }} = {{ env.value }}
-          </div>
+          </li>
         </div>
       </div>
     </div>
