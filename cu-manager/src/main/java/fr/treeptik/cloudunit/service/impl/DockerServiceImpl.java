@@ -83,23 +83,22 @@ public class DockerServiceImpl implements DockerService {
             throws CheckException, ServiceException {
         DockerClient dockerClient = null;
         String execOutput = null;
+        LogStream output = null;
         try {
             dockerClient = getDockerClient();
             final String[] commands = {"bash", "-c", command};
             String execId = dockerClient.execCreate(containerName, commands,
                     DockerClient.ExecParameter.STDOUT,
                     DockerClient.ExecParameter.STDERR);
-            final LogStream output = dockerClient.execStart(execId);
+            output = dockerClient.execStart(execId);
             execOutput = output.readFully();
-            if (output != null) {
-                output.close();
-            }
         } catch (InterruptedException | DockerException e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("containerName:[").append(containerName).append("]");
             msgError.append(", command:[").append(command).append("]");
             logger.error(msgError.toString(), e);
         } finally {
+            if (output != null) { output.close(); }
             if (dockerClient != null) { dockerClient.close(); }
         }
         return execOutput;
