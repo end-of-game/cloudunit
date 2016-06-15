@@ -82,9 +82,6 @@ public class ScriptingController
             // We must be sure there is no running action before starting new one
             this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
 
-            System.out.println("########################################");
-            System.out.println(scriptRequestBody);
-            System.out.println("#################################");
             if (logger.isDebugEnabled()) {
                 logger.debug("scriptRequestBody: " + scriptRequestBody);
             }

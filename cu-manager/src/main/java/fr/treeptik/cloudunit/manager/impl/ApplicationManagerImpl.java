@@ -114,12 +114,12 @@ public class ApplicationManagerImpl
             // Application en cours de démarrage
             applicationService.start(application);
 
+            int counter = 0;
             // Wait for the server has a status START
             for (Server server : application.getServers()) {
                 System.out.println(server.getStatus());
-                int counter = 0;
                 while (server.getStatus() != null && !server.getStatus().equals(Status.START)) {
-                    System.out.println(server.getStatus());
+                    logger.debug(server.getStatus().toString());
                     if (counter == 60) {
                         break;
                     }
@@ -133,10 +133,11 @@ public class ApplicationManagerImpl
             }
 
             // Wait for the module has a status START (set by shell agent)
+
             for (Module module : application.getModules()) {
-                int counter = 0;
+                counter = 0;
                 while (module.getStatus() != null && !module.getStatus().equals(Status.START)) {
-                    System.out.println(module.getStatus());
+                    logger.debug(module.getStatus().toString());
                     if (counter == 60) {
                         break;
                     }
@@ -149,7 +150,11 @@ public class ApplicationManagerImpl
                 }
             }
 
-            applicationService.setStatus(application, Status.START);
+            if (counter == 60) {
+                applicationService.setStatus(application, Status.FAIL);
+            } else {
+                applicationService.setStatus(application, Status.START);
+            }
 
         } catch (ServiceException e) {
             logger.error(application.toString(), e);

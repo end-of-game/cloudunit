@@ -229,10 +229,6 @@ public class FileController {
             logger.debug("applicationName:" + applicationName);
             logger.debug("path:" + path);
         }
-        System.out.println("####################################################################################");
-        System.out.println("/file/container/" + containerId + "/application/" + applicationName + "/path/" + path);
-        System.out.println("####################################################################################");
-
         fileService.createDirectory(applicationName, containerId, path);
         return new HttpOk();
     }
