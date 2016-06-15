@@ -89,9 +89,7 @@ public class SnapshotController {
 
             // if current application is running into local application server,
             // we need to block the user.
-            if (cuInstanceName.equalsIgnoreCase(application.getCuInstanceName())) {
-                authentificationUtils.forbidUser(user);
-            }
+            authentificationUtils.forbidUser(user);
 
             // We must be sure there is no running action before starting new one
             this.authentificationUtils.canStartNewAction(null, application, locale);

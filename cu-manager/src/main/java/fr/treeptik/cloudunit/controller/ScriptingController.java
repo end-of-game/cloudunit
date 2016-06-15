@@ -74,7 +74,7 @@ public class ScriptingController
 
             Random random = new Random();
             int alea = random.nextInt(2);
-            Thread.sleep(50000);
+            Thread.sleep(5000);
             if (alea % 2 ==0) {
                 return new HttpErrorServer("Error !");
             }
