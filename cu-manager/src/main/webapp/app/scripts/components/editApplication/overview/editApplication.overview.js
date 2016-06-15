@@ -60,6 +60,18 @@
       } )
     });
     
+    
+    init();
+
+    function init() {
+      if(vm.app) {
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
+        .then ( function (data) {
+          vm.app.env = data;
+        } ) 
+      }
+    }
+    
     ///////////////////////////////////////////
 
     function toggleServer(application) {

@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * Controler for Script execution coming from CLI Syntax
@@ -61,5 +62,37 @@ public class ScriptingController
     @Inject
     private AuthentificationUtils authentificationUtils;
 
+    @RequestMapping(value = "/execute",
+            method = RequestMethod.POST)
+    public JsonResponse scriptingExecute(
+            @RequestBody ScriptRequestBody scriptRequestBody,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException, InterruptedException {
+        User user = authentificationUtils.getAuthentificatedUser();
+        try {
+            authentificationUtils.forbidUser(user);
 
+            Random random = new Random();
+            int alea = random.nextInt(2);
+            Thread.sleep(5000);
+            if (alea % 2 ==0) {
+                return new HttpErrorServer("Error !");
+            }
+
+            // We must be sure there is no running action before starting new one
+            this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
+
+            System.out.println("########################################");
+            System.out.println(scriptRequestBody);
+            System.out.println("#################################");
+            if (logger.isDebugEnabled()) {
+                logger.debug("scriptRequestBody: " + scriptRequestBody);
+            }
+        } catch (Exception e) {
+            logger.error(scriptRequestBody.toString(), e);
+        } finally {
+            authentificationUtils.allowUser(user);
+        }
+        return new HttpOk();
+    }
 }
