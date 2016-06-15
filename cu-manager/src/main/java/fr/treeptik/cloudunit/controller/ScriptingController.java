@@ -62,32 +62,26 @@ public class ScriptingController
     @Inject
     private AuthentificationUtils authentificationUtils;
 
-
-    @RequestMapping(value = "/execute",
-            method = RequestMethod.GET)
-    public JsonResponse scriptingExecute(
-            HttpServletRequest request, HttpServletResponse response)
-            throws ServiceException, CheckException, IOException, InterruptedException {
-        Random random = new Random();
-        int i = random.nextInt(5);
-        Thread.sleep(100);
-        if((i % 5 )== 0) {
-            return new HttpOk();
-        }
-
-        return new HttpErrorServer("erreur");
-    }
-
     @RequestMapping(value = "/execute",
             method = RequestMethod.POST)
-    public void scriptingExecute(
+    public JsonResponse scriptingExecute(
             @RequestBody ScriptRequestBody scriptRequestBody,
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException, InterruptedException {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            Thread.sleep(5000);
             authentificationUtils.forbidUser(user);
+
+            Random random = new Random();
+            int alea = random.nextInt(2);
+            Thread.sleep(50000);
+            if (alea % 2 ==0) {
+                return new HttpErrorServer("Error !");
+            }
+
+            // We must be sure there is no running action before starting new one
+            this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
+
             System.out.println("########################################");
             System.out.println(scriptRequestBody);
             System.out.println("#################################");
@@ -99,5 +93,6 @@ public class ScriptingController
         } finally {
             authentificationUtils.allowUser(user);
         }
+        return new HttpOk();
     }
 }
