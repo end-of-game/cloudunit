@@ -202,12 +202,14 @@
     
     // Execution d'un script
     function executeScript ( scriptContent ) {
-      var dir = $resource ( 'scripting/execute' );
+      var dir = $resource ( 'scripting/script' );
       return dir.save ( { },
       {
         scriptContent: scriptContent  
       } ).$promise; 
     }
+    
+    
     
   }
 }) ();

@@ -62,7 +62,7 @@ public class ScriptingController
     @Inject
     private AuthentificationUtils authentificationUtils;
 
-    @RequestMapping(value = "/execute",
+    @RequestMapping(value = "/script",
             method = RequestMethod.POST)
     public JsonResponse scriptingExecute(
             @RequestBody ScriptRequestBody scriptRequestBody,
