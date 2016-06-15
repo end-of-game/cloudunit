@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * Controler for Script execution coming from CLI Syntax
@@ -61,12 +62,29 @@ public class ScriptingController
     @Inject
     private AuthentificationUtils authentificationUtils;
 
+
+    @RequestMapping(value = "/execute",
+            method = RequestMethod.GET)
+    public JsonResponse scriptingExecute(
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException, InterruptedException {
+        Random random = new Random();
+        int i = random.nextInt(5);
+        Thread.sleep(2000);
+        if((i % 5 )== 0) {
+            return new HttpOk();
+        }
+
+        return new HttpErrorServer("erreur");
+    }
+
     @RequestMapping(value = "/execute",
             method = RequestMethod.POST)
     public void scriptingExecute(
             @RequestBody ScriptRequestBody scriptRequestBody,
             HttpServletRequest request, HttpServletResponse response)
-            throws ServiceException, CheckException, IOException {
+            throws ServiceException, CheckException, IOException, InterruptedException {
+        Thread.sleep(12000);
         System.out.println("########################################");
         System.out.println(scriptRequestBody);
         System.out.println("#################################");
