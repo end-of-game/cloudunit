@@ -70,7 +70,7 @@ public class ScriptingController
             throws ServiceException, CheckException, IOException, InterruptedException {
         Random random = new Random();
         int i = random.nextInt(5);
-        Thread.sleep(2000);
+        Thread.sleep(100);
         if((i % 5 )== 0) {
             return new HttpOk();
         }
@@ -84,12 +84,20 @@ public class ScriptingController
             @RequestBody ScriptRequestBody scriptRequestBody,
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException, InterruptedException {
-        Thread.sleep(12000);
-        System.out.println("########################################");
-        System.out.println(scriptRequestBody);
-        System.out.println("#################################");
-        if (logger.isDebugEnabled()) {
-            logger.debug("scriptRequestBody: " + scriptRequestBody);
+        User user = authentificationUtils.getAuthentificatedUser();
+        try {
+            Thread.sleep(5000);
+            authentificationUtils.forbidUser(user);
+            System.out.println("########################################");
+            System.out.println(scriptRequestBody);
+            System.out.println("#################################");
+            if (logger.isDebugEnabled()) {
+                logger.debug("scriptRequestBody: " + scriptRequestBody);
+            }
+        } catch (Exception e) {
+            logger.error(scriptRequestBody.toString(), e);
+        } finally {
+            authentificationUtils.allowUser(user);
         }
     }
 }
