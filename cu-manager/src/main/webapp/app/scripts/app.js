@@ -43,6 +43,7 @@
       'angular.filter',
       'ui.bootstrap',
       'angular-chartist',
+      'nvd3',
 
       //shared modules
       'webuiApp.filters',
