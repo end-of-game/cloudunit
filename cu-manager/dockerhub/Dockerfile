@@ -46,7 +46,7 @@ RUN chown -R cloudunit /home/cloudunit/app
 
 WORKDIR /home/cloudunit/app
 
-RUN cd /home/cloudunit/app && git clone https://github.com/Treeptik/CloudUnit.git -b redis-module-feature --depth 1
+RUN cd /home/cloudunit/app && git clone https://github.com/Treeptik/CloudUnit.git -b dev --depth 1
 
 # Add nodesource PPA for specific version of node and install
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
