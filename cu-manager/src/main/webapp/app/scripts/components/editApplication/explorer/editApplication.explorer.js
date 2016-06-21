@@ -51,6 +51,7 @@
       rootPath = '__',
       uploader;
 
+    vm.newDirectoryName = '';
     vm.containers = [];
     vm.myContainer = {};
     vm.rootFolder = [];
@@ -63,8 +64,13 @@
     };
     vm.upDir = upDir;
     vm.folderClick = folderClick;
-    vm.downloadFile = downloadFile;
+    //vm.downloadFile = downloadFile;
     vm.deleteFile = deleteFile;
+    vm.unzipFile = unzipFile;
+    vm.editFile = editFile;
+    vm.fileContent = "";
+    vm.getFile = getFile;
+    vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
 
     init ();
@@ -100,6 +106,27 @@
       vm.currentPath = [];
       init ( index );
     }
+    
+    function addNewDirectory(containerId, path, newDirectoryName) {
+
+      var slug = '__' + path.join ( '__' ) + '__' + newDirectoryName;
+
+       ExplorerService.addDirectory ( containerId, $stateParams.name, slug )
+        .then ( function onDirectoryAdd () {
+          vm.isCreatingDirectory = true;
+          vm.newDirectoryName = "";
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' ).then ( function () {
+              vm.isCreatingDirectory = false;
+            } );
+          }, 1000 );
+        } )
+        .catch ( function onDirectoryAddError ( error ) {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } ) 
+    }
 
     function deleteFile ( containerId, path, item ) {
 
@@ -112,10 +139,42 @@
           }, 1000 );
         } )
         .catch ( function onFileDeleteError ( error ) {
-          console.log ( 'Cannot delete file : ' + error )
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
         } )
     }
 
+    function unzipFile ( containerId, path, item ) {
+
+      var slug = '__' + path.join ( '__' );
+      
+      ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
+        .then ( function onFileUnzip (data) {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } )
+    }
+    
+    function getFile ( containerId, path, item ) {
+
+      var slug = '__' + path.join ( '__' );
+
+      ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
+        .then ( function onFileUnzip (res) {
+          vm.fileContent = res.data; 
+        } )
+    }
+    
+    function editFile ( containerId, path, item, fileContent) {
+      var slug = '__' + path.join ( '__' );
+      ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name, fileContent )
+        .then ( function onFileEdit (res) {
+          vm.fileContent = res.data;
+        } )
+    }
+    
     function getContainers () {
       var deferred = $q.defer ();
       ApplicationService.listContainers ( $stateParams.name )
@@ -170,14 +229,16 @@
     // file upload
     uploader = $scope.uploader = new FileUploader ( {
       autoUpload: false,
-      removeAfterUpload: true,
-      queueLimit: 1
+      removeAfterUpload: true
     } );
 
 
-    uploader.onAfterAddingFile = function ( fileItem ) {
+    uploader.onAfterAddingAll = function ( fileItem ) {
       vm.dropped = false;
-      fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
+      fileItem.forEach(function(element, index) {
+        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
+      });
+      
       uploader.uploadAll ();
       vm.isUploading = true;
       vm.dropped = true;
@@ -187,14 +248,14 @@
     uploader.onCompleteAll = function () {
       vm.dropped = false;
       vm.uploadSuccess = true;
-      vm.isUploading = false;
       buildTree ( vm.currentPath.join ( '__' ), 'subFolder' ).then ( function () {
+        vm.isUploading = false;
         vm.uploadSuccess = false;
       } );
     };
 
 
-    function downloadFile ( containerId, path, file ) {
+    /*function downloadFile ( containerId, path, file ) {
       if ( file.dir ) {
         return;
       }
@@ -202,7 +263,7 @@
         var blob = new Blob ( [result.data], { type: result.headers['content-type'] } );
         saveAs ( blob, file.name );
       } )
-    }
+    }*/
   }
 }) ();
 

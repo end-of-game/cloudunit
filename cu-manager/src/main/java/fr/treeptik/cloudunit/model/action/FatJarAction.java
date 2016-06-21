@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.model.action;
 
+import fr.treeptik.cloudunit.enums.JavaRelease;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Snapshot;
 
@@ -70,4 +71,6 @@ public class FatJarAction extends ServerAction {
     @Override
     public String getDefaultLogFile() { return "system.out"; };
 
+    @Override
+    public String getDefaultJavaRelease() { return JavaRelease.Java7.getVersion(); }
 }

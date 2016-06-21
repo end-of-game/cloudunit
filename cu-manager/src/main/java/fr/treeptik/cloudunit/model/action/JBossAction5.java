@@ -30,6 +30,7 @@
 
 package fr.treeptik.cloudunit.model.action;
 
+import fr.treeptik.cloudunit.enums.JavaRelease;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Snapshot;
 
@@ -84,4 +85,6 @@ public class JBossAction5
         return true;
     }
 
+    @Override
+    public String getDefaultJavaRelease() { return JavaRelease.Java7.getVersion(); }
 }

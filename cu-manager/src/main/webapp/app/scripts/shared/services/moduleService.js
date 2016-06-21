@@ -36,7 +36,7 @@ angular.module('webuiApp')
                 var output = {};
                 output.applicationName = applicationName;
                 output.imageName = imageName;
-                return Module.save(JSON.stringify(output));
+                return Module.save(JSON.stringify(output)).$promise;
             };
 
             // Suppression d'un module

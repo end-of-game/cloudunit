@@ -142,6 +142,7 @@ public class SecurityConfiguration
             .antMatchers("/snapshot/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/monitoring/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/messages/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/scripting/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/gitlab/**").permitAll()
             .antMatchers("/nopublic/**").permitAll().and()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
@@ -153,13 +154,13 @@ public class SecurityConfiguration
     }
 
     /**
-     * Protection CSRF is critical for production env and vagrant usecases
+     * Protection CSRF is critical for production env only
      *
      * @param http
      * @throws Exception
      */
 
-    @Profile({"production", "vagrant"})
+    @Profile({"production"})
     private void activateProtectionCRSF(HttpSecurity http)
         throws Exception {
         // CSRF protection

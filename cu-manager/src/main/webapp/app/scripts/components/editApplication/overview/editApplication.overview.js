@@ -41,15 +41,37 @@
 
     var vm = this;
 
-
     vm.toggleServer = toggleServer;
     vm.getTplUrl = getTplUrl;
     vm.removeModule = removeModule;
-
-    $scope.$on ( 'application:ready', function ( e, app ) {
-      vm.app = app;
+    
+    $scope.$on ( 'application:ready', function ( e, data ) {
+      vm.app = data.app;
+      ApplicationService.getVariableEnvironment(data.app.name, data.app.servers[0].containerID)
+      .then ( function (data) {
+        vm.app.env = data;
+      } )    
     });
+    
+    $scope.$on ( 'application:addModule', function () {
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
+      .then ( function (data) {
+        vm.app.env = data;
+      } )
+    });
+    
+    
+    init();
 
+    function init() {
+      if(vm.app) {
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
+        .then ( function (data) {
+          vm.app.env = data;
+        } ) 
+      }
+    }
+    
     ///////////////////////////////////////////
 
     function toggleServer(application) {

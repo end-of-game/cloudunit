@@ -85,9 +85,6 @@ public class ServerController
                 input.getApplicationName());
 
         authentificationUtils.canStartNewAction(user, application, locale);
-
-        // Check the input for jvm options
-        boolean isApplicatioRunning = application.getStatus().equals(Status.START);
         CheckUtils.checkJavaOpts(input.getJvmOptions(), input.getJvmMemory(), input.getJvmRelease());
 
         applicationService.setStatus(application, Status.PENDING);

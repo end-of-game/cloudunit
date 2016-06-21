@@ -55,12 +55,13 @@
 
     var vm = this;
 
-    vm.hideFeed = false;
     vm.applicationService = ApplicationService;
 
     vm.applicationService.init($stateParams.name).then(function() {
       vm.application = vm.applicationService.state;
-      $rootScope.$broadcast('application:ready');
+      $rootScope.$broadcast('application:ready', {
+          app: vm.application,
+        });
     });
 
     // We must destroy the polling when the scope is destroyed
@@ -68,14 +69,6 @@
       vm.applicationService.stopPolling();
     });
 
-    $scope.$watch(function() {
-      return vm.state;
-    }, function(oldVal, newVal) {
-
-      if (oldVal) {
-        vm.hideFeed = oldVal.name === 'editApplication.logs' || oldVal.name === 'editApplication.monitoring';
-      }
-    });
   }
 })();
 

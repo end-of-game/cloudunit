@@ -7,7 +7,11 @@ import fr.treeptik.cloudunit.model.User;
  */
 public interface JenkinsService {
 
-    public void addUser(User user);
+    void addUser(User user);
 
-    public void deleteUser(String username);
+    void deleteUser(String username);
+
+    void createProject(String applicationName, String repository);
+
+    void deleteProject(String applicationName);
 }

@@ -1,23 +1,24 @@
 package fr.treeptik.cloudunit.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.GitlabService;
+import org.gitlab.api.AuthMethod;
+import org.gitlab.api.GitlabAPI;
+import org.gitlab.api.TokenType;
+import org.gitlab.api.models.GitlabBranch;
+import org.gitlab.api.models.GitlabProject;
+import org.gitlab.api.models.GitlabUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This class is used for all interactions with Gitlab concerning users
+ * This class is used for all interactions with Gitlab
  * Created by angular5 on 29/04/16.
  */
 
@@ -39,50 +40,28 @@ public class GitlabServiceImpl implements GitlabService {
      * @return
      */
     public HttpStatus createUser(User user) {
-        DataOutputStream wr = null;
-        HttpURLConnection connPost = null;
-        HttpStatus code = HttpStatus.EXPECTATION_FAILED;
+        logger.info("GitlabService : createUser " + user.getLogin());
 
-        if (gitlabToken == null) {
+        if (gitlabToken == null || gitlabToken.trim().length() == 0 ) {
             logger.error("Cannot use this feature because no token for GitLab");
-            return HttpStatus.NOT_IMPLEMENTED;
+            return HttpStatus.BAD_REQUEST;
         }
 
-        if (gitlabAPI == null) {
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
             logger.error("Cannot use this feature because no URL given for GitLab API");
-            return HttpStatus.NOT_IMPLEMENTED;
+            return HttpStatus.BAD_REQUEST;
         }
 
         try {
-            URL urlPost = new URL(gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
-            connPost = (HttpURLConnection) urlPost.openConnection();
-            connPost.setDoOutput(true);
-            connPost.setDoInput(true);
-            connPost.setRequestProperty("Content-Type", "application/json");
-            connPost.setRequestMethod("POST");
-            connPost.connect();
-
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.createObjectNode();
-            ((ObjectNode) rootNode).put("username", user.getLogin());
-            ((ObjectNode) rootNode).put("name", user.getFirstName() + " " + user.getLastName());
-            ((ObjectNode) rootNode).put("email", user.getEmail());
-            ((ObjectNode) rootNode).put("password", user.getPassword());
-            String jsonString = mapper.writeValueAsString(rootNode);
-
-            wr = new DataOutputStream(connPost.getOutputStream());
-            wr.writeBytes(jsonString);
-            code = HttpStatus.valueOf(connPost.getResponseCode());
-
-        } catch (IOException e) {
-            logger.debug("IOException createUser : " + user.getLogin());
-        } finally {
-            try {
-                if (wr != null) wr.flush();
-                if (wr != null) wr.close();
-            } catch (Exception ignore) {}
+            GitlabAPI api = GitlabAPI.connect(gitlabAPI, gitlabToken, TokenType.PRIVATE_TOKEN, AuthMethod.URL_PARAMETER);
+            api.createUser(user.getEmail(), user.getPassword(), user.getLogin(),
+                    user.getFirstName() + " " + user.getLastName(),
+                    null, null, null, null, null, null, null, null, false, false, false);
+            return HttpStatus.OK;
+        } catch(Exception e) {
+            logger.error(user.toString(), e);
+            return HttpStatus.BAD_REQUEST;
         }
-        return code;
     }
 
     /**
@@ -92,110 +71,167 @@ public class GitlabServiceImpl implements GitlabService {
      * @return
      */
     public HttpStatus deleteUser(String username) {
+        logger.info("GitlabService : deleteUser " + username);
 
-        if (gitlabToken == null) {
+        if (gitlabToken == null || gitlabToken.trim().length() == 0) {
             logger.error("Cannot use this feature because no token for GitLab");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
-        if (gitlabAPI == null) {
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
             logger.error("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
-
-        HttpURLConnection connPost = null;
-        HttpStatus code = HttpStatus.EXPECTATION_FAILED;
         try {
+            GitlabAPI api = GitlabAPI.connect(gitlabAPI, gitlabToken, TokenType.PRIVATE_TOKEN, AuthMethod.URL_PARAMETER);
+            List<GitlabUser> users = api.getUsers();
 
-            int id = getIdUser(username);
-
-            URL urlPost = new URL(gitlabAPI + "/api/v3/users/" + id + "?private_token=" + gitlabToken);
-            connPost = (HttpURLConnection) urlPost.openConnection();
-            connPost.setDoOutput(true);
-            connPost.setDoInput(true);
-            connPost.setRequestProperty("Content-Type", "application/json");
-            connPost.setRequestProperty("Accept", "application/json");
-            connPost.setRequestMethod("DELETE");
-            connPost.connect();
-
-            code = HttpStatus.valueOf(connPost.getResponseCode());
-
-        } catch (IOException e) {
-            logger.debug("IOException deleteUser : " + username);
+            for(GitlabUser user : users) {
+                if(user.getUsername().equals(username)) {
+                    api.deleteUser(user.getId());
+                    return HttpStatus.OK;
+                }
+            }
+            return HttpStatus.NOT_FOUND;
+        } catch(Exception e) {
+            logger.error(username, e);
+            return HttpStatus.BAD_REQUEST;
         }
-        return code;
     }
 
     /**
-     * Get Gitlab id of an user with his username
+     * Create a project on Gitlab
      *
-     * @param username
+     * @param applicationName
      * @return
      */
-    private int getIdUser(String username) {
-        HttpURLConnection c = null;
-        URL url = null;
-        int status = -1;
+    public HttpStatus createProject(String applicationName) {
+        logger.info("GitlabService : createProject " + applicationName);
+
+        if (gitlabToken == null || gitlabToken.trim().length()==0) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        if (gitlabAPI == null || gitlabAPI.trim().length()==0) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
         try {
-            url = new URL(gitlabAPI + "/api/v3/users?private_token=" + gitlabToken);
-            c = (HttpURLConnection) url.openConnection();
-            c.setRequestMethod("GET");
-            c.setRequestProperty("Content-length", "0");
-            c.setUseCaches(false);
-            c.setAllowUserInteraction(false);
-            c.connect();
-            status = c.getResponseCode();
-        } catch (IOException e) {
-            logger.debug("IOException getIdUser get infos : " + username);
+            GitlabAPI api = GitlabAPI.connect(gitlabAPI, gitlabToken, TokenType.PRIVATE_TOKEN, AuthMethod.URL_PARAMETER);
+            api.createProject(applicationName);
+            return HttpStatus.OK;
+        } catch (Exception e) {
+            logger.error(applicationName, e);
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
+
+    /**
+     * Delete a project on Gitlab
+     *
+     * @param applicationName
+     * @return
+     */
+    public HttpStatus deleteProject(String applicationName) {
+        logger.info("GitlabService : deleteProject " + applicationName);
+
+        if (gitlabToken == null || gitlabToken.trim().length() == 0) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return HttpStatus.NOT_IMPLEMENTED;
         }
 
-        String jsonS;
-        if (status == 200) {
-            StringBuilder sb = new StringBuilder();
-            try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line + "\n");
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
+
+        try {
+            GitlabAPI api = GitlabAPI.connect(gitlabAPI, gitlabToken, TokenType.PRIVATE_TOKEN, AuthMethod.URL_PARAMETER);
+            List<GitlabProject> projects = api.getAllProjects();
+
+            for (GitlabProject project : projects) {
+                if(project.getName().equals(applicationName)) {
+                    api.deleteProject(project.getId());
+                    return HttpStatus.OK;
                 }
-                br.close();
-            } catch (IOException e) {
-                logger.debug("IOException getIdUser read : " + username);
             }
+            return HttpStatus.NOT_FOUND;
+        } catch (Exception e) {
+            logger.error(applicationName, e);
+            return HttpStatus.BAD_REQUEST;
+        }
+    }
 
+    /**
+     * List all branches of a project on Gitlab
+     *
+     * @param applicationName
+     * @return
+     */
+    public List<GitlabBranch> listBranches(String applicationName) {
+        logger.info("GitlabService : listBranches " + applicationName);
 
-            jsonS = sb.toString();
-        } else {
-            return -2;
+        if (gitlabToken == null || gitlabToken.trim().length() == 0) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return new ArrayList<>();
         }
 
-        String[] jsonA = jsonS.split("(?<=\\})");
-        ObjectMapper mapper = new ObjectMapper();
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return new ArrayList<>();
+        }
 
-        for (int i = 0; i < jsonA.length-1; i++) {
-            String s = jsonA[i];
-            if(s != null) {
-                s = s.substring(1);
+        try {
+            GitlabAPI api = GitlabAPI.connect(gitlabAPI, gitlabToken, TokenType.PRIVATE_TOKEN, AuthMethod.URL_PARAMETER);
+            List<GitlabProject> projects = api.getProjects();
 
-                JsonNode node = null;
-                try {
-                    node = mapper.readTree(s);
-                } catch (IOException e) {
-                    logger.debug("IOException getIdUser JSON : " + username);
+            for (GitlabProject project : projects) {
+                if(project.getName().equals(applicationName)) {
+                    return api.getBranches(project);
                 }
-
-                String localUsername = node.get("username").toString();
-                String localId = node.get("id").toString();
-
-                localUsername = localUsername.replace("\"", "");
-                localId = localId.replace("\"", "");
-
-                if (localUsername.equals(username))
-                    return Integer.parseInt(localId);
             }
+            return new ArrayList<>();
+        } catch (Exception e) {
+            logger.error(applicationName, e);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Get Git repository address of a project for Jenkins initialization
+     *
+     * @param applicationName
+     * @return
+     */
+    public String getGitRepository(String applicationName) {
+        logger.info("GitlabService : getGitRepository " + applicationName);
+
+        if (gitlabToken == null || gitlabToken.trim().length() == 0) {
+            logger.error("Cannot use this feature because no token for GitLab");
+            return "";
         }
 
-        return -1;
+        if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
+            logger.error("Cannot use this feature because no URL given for GitLab API");
+            return "";
+        }
+
+        try {
+            GitlabAPI api = GitlabAPI.connect(gitlabAPI, gitlabToken, TokenType.PRIVATE_TOKEN, AuthMethod.URL_PARAMETER);
+            List<GitlabProject> projects = api.getProjects();
+
+            for (GitlabProject project : projects) {
+                if(project.getName().equals(applicationName)) {
+                    return project.getSshUrl();
+                }
+            }
+            return HttpStatus.NOT_FOUND.toString();
+        } catch (Exception e) {
+            logger.error(applicationName, e);
+            return HttpStatus.BAD_REQUEST.toString();
+        }
     }
 }

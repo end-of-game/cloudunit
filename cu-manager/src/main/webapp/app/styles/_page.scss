@@ -28,3 +28,7 @@
 .page-content {
   @include clearfix();
 }
+
+th.mess, td.mess {
+  padding: 15px;
+}

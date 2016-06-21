@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/textAngular/src/textAngular.css" />
   <link rel="stylesheet" href="bower_components/chartist/dist/chartist.min.css" />
+  <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css" />
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css(.tmp) styles/main.css -->
@@ -76,6 +77,8 @@
             </ul>
           </div>
         </li>
+        <li><a ui-sref="mainTimeline">Messages</a></li>
+        <li><a ui-sref="scripting">Scripts</a></li>
       </ul>
     </div>
     <div class="app-bar-icons">
@@ -174,6 +177,9 @@
 <script src="bower_components/chartist/dist/chartist.min.js"></script>
 <script src="bower_components/angular-chartist.js/dist/angular-chartist.js"></script>
 <script src="bower_components/chartist-plugin-legend/chartist-plugin-legend.js"></script>
+<script src="bower_components/sifter/sifter.js"></script>
+<script src="bower_components/microplugin/src/microplugin.js"></script>
+<script src="bower_components/selectize/dist/js/selectize.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 
@@ -206,6 +212,8 @@
 <script src="scripts/shared/directives/closeModalDirective.js"></script>
 <script src="scripts/shared/directives/revealPasswordDirective.js"></script>
 <script src="scripts/shared/directives/reloadChartDirective.js"></script>
+<script src="scripts/shared/directives/protectInputDirective.js"></script>
+<script src="scripts/shared/directives/selectizeDirective.js"></script>
 
 <script src="scripts/shared/filters/filters.module.js"></script>
 <script src="scripts/shared/filters/formatAppStatusFilter.js"></script>
@@ -215,6 +223,7 @@
 <script src="scripts/shared/filters/uniqueFilter.js"></script>
 <script src="scripts/shared/filters/formatUserRolesFilter.js"></script>
 <script src="scripts/shared/filters/cleanPathFilter.js"></script>
+<script src="scripts/shared/filters/appByServerImage.js"></script>
 
 <!--UI-->
 <script src="scripts/shared/tags/tags.js"></script>
@@ -259,6 +268,12 @@
 <!--snapshots-->
 <script src="scripts/components/snapshots/snapshots.config.js"></script>
 <script src="scripts/components/snapshots/snapshots.js"></script>
+<!--timeline-->
+<script src="scripts/components/scripting/scripting.config.js"></script>
+<script src="scripts/components/scripting/scripting.js"></script>
+<!--scripting-->
+<script src="scripts/components/mainTimeline/mainTimeline.config.js"></script>
+<script src="scripts/components/mainTimeline/mainTimeline.js"></script>
 <!--account-->
 <script src="scripts/components/account/account.config.js"></script>
 <script src="scripts/components/account/account.admin.js"></script>

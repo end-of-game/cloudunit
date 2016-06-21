@@ -13,7 +13,7 @@
 
         <h2 class="title">
           Application
-          {{editApp.application.name}}
+          {{editApp.application.displayName}}
           <a id="preview-link"
              class="icon-button"
              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"
@@ -83,8 +83,7 @@
     </div>
   </header>
 
-  <div class="page {{ editApp.application.status | lowercase }}"
-       data-ng-class="{full: editApp.hideFeed}"
+  <div class="page full {{ editApp.application.status | lowercase }}"
        id="application-{{ editApp.application.name }}">
 
     <div class="tab-content">
@@ -92,9 +91,6 @@
     </div>
   </div>
 
-  <div data-ng-hide="editApp.hideFeed">
-    <feed context="'editApp'"></feed>
-  </div>
 </section>
 
 

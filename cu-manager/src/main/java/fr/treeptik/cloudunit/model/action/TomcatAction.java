@@ -30,6 +30,7 @@
 
 package fr.treeptik.cloudunit.model.action;
 
+import fr.treeptik.cloudunit.enums.JavaRelease;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Snapshot;
 
@@ -84,5 +85,13 @@ public class TomcatAction
         return true;
     }
 
-
+    @Override
+    public String getDefaultJavaRelease() {
+        String imageName = parent.getImage().getName();
+        if (imageName.equalsIgnoreCase("tomcat-6")) {
+            return JavaRelease.Java7.getVersion();
+        } else {
+            return JavaRelease.Java8.getVersion();
+        }
+    }
 }

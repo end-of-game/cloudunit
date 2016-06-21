@@ -27,6 +27,7 @@
         app: '='
       },
       controller: [
+        '$rootScope',
         'ImageService',
         'ModuleService',
         ModulesCtrl
@@ -36,7 +37,7 @@
     };
   }
 
-  function ModulesCtrl ( ImageService, ModuleService) {
+  function ModulesCtrl ( $rootScope, ImageService, ModuleService) {
     var vm = this;
     vm.moduleImages = [];
     vm.addModule = addModule;
@@ -50,6 +51,24 @@
 
       function success ( images ) {
         vm.moduleImages = images;
+        vm.moduleImages.push({
+          id: 9999,
+          name: "influxdb",
+          path: "cloudunit/influxdb",
+          displayName: "Influxdb",
+          status: null,
+          isTemp: true
+        });
+        
+        vm.moduleImages.push({
+          id: 9998,
+          name: "mongo-3-2",
+          path: "cloudunit/mongo-3-2",
+          displayName: "Mongo 3.2",
+          status: null,
+          isTemp: true
+        });
+        
         return vm.moduleImages;
       }
 
@@ -60,7 +79,10 @@
 
     // Ajout d'un module
     function addModule ( applicationName, imageName ) {
-      return ModuleService.addModule ( applicationName, imageName );
+      ModuleService.addModule ( applicationName, imageName ).then ( function (data) {
+        $rootScope.$broadcast('application:addModule');
+        return data;
+      } );
     }
   }
 }) ();

@@ -13,9 +13,11 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div id="create-application" class="form"
+<div id="create-application" class="form smaller"
      ng-class="{ngdirty: createApp.createAppForm.$dirty, 'pending': createApp.isPending}">
   <div class="content clearfix">
+
+        
     <form id="create-application-form"
           name="createApp.createAppForm"
           novalidate="">
@@ -24,49 +26,53 @@
         <input id="name"
                name="name"
                type="text"
+               ng-maxlength="25"
                data-ng-model="createApp.applicationName"
-               data-ng-pattern="/^[a-zA-Z0-9]*$/"
                data-ng-change="createApp.isValid(createApp.applicationName, createApp.serverImageChoice.name)"
                data-ng-disabled="createApp.isPending"
+                protectinput=""
                required>
 
-        <p
+        <!-- Display errors -->
+        <!--<p
           data-ng-if="createApp.createAppForm.name.$error.pattern && !createApp.createAppForm.name.$pristine"
           class="hint format error">
           Use alphanumeric character only
+        </p>-->
+
+        <p
+          data-ng-if="createApp.createAppForm.name.$error.maxlength"
+          class="hint format error">
+          Application name must have less than 25 chars (only alphanumerics)
         </p>
 
         <p class="hint error " data-ng-if="!createApp.createAppForm.name.$pristine && createApp.message"
            data-ng-bind="createApp.message"></p>
       </div>
-      <div class="input-group stack">
-        <div class="dropdown" dropdown="">
-          <label for="name">App Server</label>
-          <a class="dropdown-toggle"
-             dropdown-toggle=""
-             data-ng_bind="createApp.serverImageChoice.displayName"
-             data-ng-disabled="createApp.isPending">
-          </a>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-            <li data-ng-repeat="serverImage in createApp.serverImages">
-              <a ng-href=""
-                 data-ng-click="createApp.serverImageChoice = serverImage; createApp.isValid(createApp.applicationName, createApp.serverImageChoice.name)"
-                 data-ng-bind="serverImage.displayName">
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
 
+      <div class="input-group stack">
+        <label for="name">App Server</label>
+        <selectize config="createApp.selectConfig" optgroups="createApp.group" options='createApp.serverImages' ng-model="createApp.serverImageSelect2"></selectize>
+      </div>
       <button id="create-btn"
               type="submit"
               class="button primary pull-right"
               ripple=""
               click-once=""
-              data-ng-disabled="createApp.notValidated || createApp.isPending"
+              data-ng-disabled="createApp.notValidated || createApp.createAppForm.name.$error.maxlength || !createApp.serverImageSelect2 || !createApp.applicationName"
               data-ng-click="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
         <span>Create New App</span>
       </button>
     </form>
+
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+              
   </div>
+  
 </div>

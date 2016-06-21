@@ -89,9 +89,7 @@ public class SnapshotController {
 
             // if current application is running into local application server,
             // we need to block the user.
-            if (cuInstanceName.equalsIgnoreCase(application.getCuInstanceName())) {
-                authentificationUtils.forbidUser(user);
-            }
+            authentificationUtils.forbidUser(user);
 
             // We must be sure there is no running action before starting new one
             this.authentificationUtils.canStartNewAction(null, application, locale);
@@ -106,6 +104,7 @@ public class SnapshotController {
                     input.getDescription(),
                     previousStatus);
             applicationService.setStatus(application, previousStatus);
+
 
         } finally {
             authentificationUtils.allowUser(user);
@@ -178,7 +177,7 @@ public class SnapshotController {
             // Validate input information for clone
             input.validateClone();
 
-            System.out.println(input.getApplicationName() + ", " + input.getTag());
+            logger.info(input.getApplicationName() + ", " + input.getTag());
             snapshotService.cloneFromASnapshot(input.getApplicationName(), input.getTag());
 
             Application application = applicationService.findByNameAndUser(user, input.getApplicationName());

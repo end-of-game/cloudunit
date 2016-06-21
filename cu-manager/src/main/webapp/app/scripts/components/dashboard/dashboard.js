@@ -33,6 +33,7 @@
       templateUrl: 'scripts/components/dashboard/dashboard.html',
       scope: {},
       controller: [
+        '$rootScope',
         '$scope',
         '$interval',
         'ApplicationService',
@@ -47,10 +48,12 @@
 
 
 
-  function DashboardCtrl($scope, $interval, ApplicationService, ErrorService) {
+  function DashboardCtrl($rootScope, $scope, $interval, ApplicationService, ErrorService) {
     var timer, vm = this;
     vm.applications = [];
     vm.selectedItem = 'All';
+    vm.selectedServerSearch = 'All';
+    vm.selectedServer = '';
     vm.search = '';
     vm.deleteApplication = deleteApplication;
     vm.toggleServer = toggleServer;
@@ -75,7 +78,11 @@
     $scope.$on('app:create:fail', function(e, data){
       vm.buffer = '';
     });
-
+    
+    $scope.$on('app:serverImages', function(event, args) {
+      vm.serverImages = args.serverImages;
+    });
+    
     /////////////////////////////////////////////
 
     // Refresh the application list
@@ -87,7 +94,7 @@
       function success(applications) {
 
         var newApp = _.find(applications, function(app){
-          return app.name === vm.buffer.toLowerCase();
+          return app.name === vm.buffer.toLowerCase().replace(/[^a-z0-9]/gi,'');
         });
 
         // display shadow app while new app is being created
@@ -101,8 +108,8 @@
             vm.buffer = '';
           }
         }
-
-        vm.applications = applications;
+        
+        vm.applications = applications;     
         return vm.applications;
       }
 

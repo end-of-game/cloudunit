@@ -56,7 +56,9 @@
       restart: restart,
       init: init,
       state: {},
-      stopPolling: stopPolling
+      stopPolling: stopPolling,
+      getVariableEnvironment: getVariableEnvironment,
+      executeScript: executeScript, 
     };
 
 
@@ -187,7 +189,28 @@
     function removePort ( applicationName, number ) {
       return $http.delete ( 'application/' + applicationName + '/ports/' + number );
     }
-
+    
+    // Gestion des variables environnement
+    
+    function getVariableEnvironment ( applicationName, containerId ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerId/env' );
+      return dir.query ( {
+        applicationName: applicationName,
+        containerId: containerId
+      } ).$promise;      
+    }
+    
+    // Execution d'un script
+    function executeScript ( scriptContent ) {
+      var dir = $resource ( 'scripting/script' );
+      return dir.save ( { },
+      {
+        scriptContent: scriptContent  
+      } ).$promise; 
+    }
+    
+    
+    
   }
 }) ();
 

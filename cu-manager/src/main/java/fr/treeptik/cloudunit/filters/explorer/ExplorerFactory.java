@@ -36,6 +36,7 @@ public class ExplorerFactory {
         ExplorerFactory.filters.put("jboss", new JBossFilter());
         ExplorerFactory.filters.put("fatjar", new FatJarFilter());
         ExplorerFactory.filters.put("redis", new RedisFilter());
+        ExplorerFactory.filters.put("apache", new ApacheFilter());
     }
 
     private ExplorerFactory() {
@@ -46,7 +47,7 @@ public class ExplorerFactory {
     }
 
     /**
-     * Retourne l'implementation sur base du nom.
+     * Return a custom fiter
      *
      * @param name
      * @return
@@ -54,24 +55,22 @@ public class ExplorerFactory {
     public ExplorerFilter getCustomFilter(String name) {
         if (name.contains("tomcat")) {
             name = "tomcat";
-        }
-        if (name.contains("mysql")) {
+        } else if (name.contains("mysql")) {
             name = "mysql";
-        }
-        if (name.contains("mongo")) {
+        } else if (name.contains("mongo")) {
             name = "mongo";
-        }
-        if (name.contains("redis")) {
+        } else if (name.contains("redis")) {
             name = "redis";
-        }
-        if (name.contains("postgres") || name.contains("postgis")) {
+        } else if (name.contains("postgres") || name.contains("postgis")) {
             name = "postgres";
-        }
-        if (name.contains("jboss")) {
+        } else if (name.contains("jboss")) {
             name = "jboss";
-        }
-        if (name.contains("fatjar")) {
+        } else if (name.contains("fatjar")) {
             name = "fatjar";
+        } else if (name.contains("apache")) {
+            name = "apache";
+        } else {
+            return new GenericFilter();
         }
         return filters.get(name);
     }

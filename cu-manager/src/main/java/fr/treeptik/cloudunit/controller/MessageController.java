@@ -68,6 +68,8 @@ public class MessageController {
         }
         // Retourne par défaut le 10 derniers messages
         User user = authentificationUtils.getAuthentificatedUser();
+
+        String applicationNameLocal = applicationName.replaceAll("[^a-z]", "");
         return messageService.listByApp(user, applicationName, 10);
     }
 
@@ -93,7 +95,9 @@ public class MessageController {
             logger.debug("nbRows = " + nbRows);
         }
         User user = authentificationUtils.getAuthentificatedUser();
-        return messageService.listByApp(user, applicationName, nbRows);
+
+        String applicationNameLocal = applicationName.replaceAll("[^a-z]", "");
+        return messageService.listByApp(user, applicationNameLocal, nbRows);
     }
 
     /**
@@ -134,6 +138,27 @@ public class MessageController {
         }
         return messageService.listByUser(
             authentificationUtils.getAuthentificatedUser(), nbRows);
+    }
+
+    /**
+     * Retourne tous les messages pour un utilisateur quelque soit son
+     * application
+     *
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping(value = "/rows", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    List<Message> listMessagesFirstRows()
+            throws ServiceException,
+            CheckException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("nbRows:" + 500);
+        }
+        return messageService.listByUserNoLimitRows(
+                authentificationUtils.getAuthentificatedUser());
     }
 
 }

@@ -16,32 +16,19 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
 import fr.treeptik.cloudunit.dao.ModuleConfigurationDAO;
 import fr.treeptik.cloudunit.dao.SnapshotDAO;
-import fr.treeptik.cloudunit.docker.DockerContainerJSON;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
-import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.ModuleConfiguration;
-import fr.treeptik.cloudunit.model.ModuleFactory;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Snapshot;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.SnapshotService;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 import org.slf4j.Logger;
@@ -51,13 +38,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.nio.file.Paths;
+import java.text.Normalizer;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SnapshotServiceImpl
@@ -85,6 +71,9 @@ public class SnapshotServiceImpl
 
     @Inject
     private ShellUtils shellUtils;
+
+    @Inject
+    private HookService hookService;
 
     @Inject
     private ServerService serverService;
@@ -130,7 +119,22 @@ public class SnapshotServiceImpl
         ObjectMapper objectMapper = new ObjectMapper();
 
         Application application = applicationService.findByNameAndUser(user, applicationName);
-        if (tag != null) { tag = tag.toLowerCase(); }
+
+        String testTag = tag.toLowerCase();
+        testTag = Normalizer.normalize(testTag, Normalizer.Form.NFD);
+        testTag = testTag.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        testTag = testTag.replaceAll("[^a-z0-9]", "");
+
+        if (testTag.length() == 0) {
+            applicationService.setStatus(application, previousStatus);
+            authentificationUtils.allowUser(user);
+            throw new CheckException("This tag has a length equal to zero : " + tag);
+        }
+
+
+        if (tag != null) {
+            tag = tag.toLowerCase();
+        }
 
         if (tagExists(tag, user.getLogin())) {
             applicationService.setStatus(application, previousStatus);
@@ -146,9 +150,11 @@ public class SnapshotServiceImpl
 
         try {
             snapshot.setApplicationName(application.getName());
+            snapshot.setApplicationDisplayName(application.getDisplayName());
             snapshot.setDate(new Date());
             snapshot.setTag(tag);
-            snapshot.setFullTag(user.getLogin()+"-"+tag);
+            snapshot.setDisplayTag(tag);
+            snapshot.setFullTag(user.getLogin() + "-" + tag);
             snapshot.setCuInstanceName(cuInstanceName);
             snapshot.setDescription(description);
             snapshot.setUser(application.getUser());
@@ -175,22 +181,24 @@ public class SnapshotServiceImpl
             }
             snapshot.setAppConfig(config);
 
-            // Export des containers : commit + push
-
             Thread.sleep(5000);
 
             List<String> images = new ArrayList<>();
-
 
             for (Server server : application.getServers()) {
                 images.add(server.getImage().getPath());
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setName(server.getName());
                 dockerContainer.setImage(server.getImage().getName());
+
+                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
+
                 DockerContainer.commit(dockerContainer,
-                                        snapshot.getFullTag(),
-                                        application.getManagerIp(),
-                                        server.getImage().getPath());
+                        snapshot.getFullTag(),
+                        application.getManagerIp(),
+                        server.getImage().getPath());
+
+                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_POST_ACTION);
             }
 
             for (Module module : application.getModules()) {
@@ -203,9 +211,14 @@ public class SnapshotServiceImpl
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setName(moduleName);
                 dockerContainer.setImage(module.getImage().getName());
+
+                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
+
                 DockerContainer.commit(dockerContainer,
-                                        snapshot.getFullTag(),
-                                        application.getManagerIp(), imageName);
+                        snapshot.getFullTag(),
+                        application.getManagerIp(), imageName);
+
+                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
             }
 
             snapshot.setImages(images);
@@ -218,8 +231,10 @@ public class SnapshotServiceImpl
     }
 
     public Snapshot findByTagAndUser(String login, String tag) {
-        if (tag != null) { tag = tag.toLowerCase(); }
-        return snapshotDAO.findByTag(login+"-"+tag);
+        if (tag != null) {
+            tag = tag.toLowerCase();
+        }
+        return snapshotDAO.findByTag(login + "-" + tag);
     }
 
     @Override
@@ -237,7 +252,9 @@ public class SnapshotServiceImpl
     public Snapshot remove(String tag)
             throws ServiceException, CheckException {
         Snapshot snapshot = null;
-        if (tag != null) { tag = tag.toLowerCase(); }
+        if (tag != null) {
+            tag = tag.toLowerCase();
+        }
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -252,7 +269,7 @@ public class SnapshotServiceImpl
             for (String image : images) {
                 DockerContainer dockerContainer = new DockerContainer();
                 dockerContainer.setImage(image);
-                DockerContainer.deleteImage(image+":"+tag, dockerManagerIp);
+                DockerContainer.deleteImage(image + ":" + tag, dockerManagerIp);
             }
 
             snapshotDAO.delete(snapshotDAO.findByTag(tag));
@@ -280,11 +297,6 @@ public class SnapshotServiceImpl
                 throw new CheckException("Please put an app name");
             }
 
-            if (applicationService.countApp(user) >= Integer.parseInt(numberMaxApplications)) {
-                authentificationUtils.allowUser(user);
-                throw new ServiceException("You have already created your " + numberMaxApplications
-                        + " apps into the Cloud");
-            }
             if (applicationService.checkAppExist(user, applicationName)) {
                 authentificationUtils.allowUser(user);
                 throw new CheckException("This application already exists");
@@ -303,8 +315,12 @@ public class SnapshotServiceImpl
             application = applicationService.findByNameAndUser(application.getUser(), application.getName());
 
             for (Server server : application.getServers()) {
+                hookService.call(server.getName(), RemoteExecAction.CLONE_PRE_ACTION);
+
                 serverService.update(server, snapshot.getJvmMemory().toString(), snapshot.getJvmOptions(),
                         snapshot.getJvmRelease(), false);
+
+                hookService.call(server.getName(), RemoteExecAction.CLONE_POST_ACTION);
             }
 
             restoreModules(snapshot, application, tag);
@@ -329,8 +345,8 @@ public class SnapshotServiceImpl
     }
 
     private void backupModule(Module module) {
+        DockerClient docker = null;
         try {
-            DockerClient docker = null;
             if (Boolean.valueOf(isHttpMode)) {
                 docker = DefaultDockerClient
                         .builder()
@@ -349,28 +365,37 @@ public class SnapshotServiceImpl
             String execId = docker.execCreate(module.getName(), commandStop, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             LogStream output = docker.execStart(execId);
             String execOutput = output.readFully();
-            System.out.println(execOutput);
-            if (output != null) { output.close(); }
+            logger.debug(execOutput);
+            if (output != null) {
+                output.close();
+            }
 
             execId = docker.execCreate(module.getName(), commandBackupData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             output = docker.execStart(execId);
             execOutput = output.readFully();
-            System.out.println(execOutput);
-            if (output != null) { output.close(); }
+            logger.debug(execOutput);
+            if (output != null) {
+                output.close();
+            }
 
             execId = docker.execCreate(module.getName(), commandStart, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             output = docker.execStart(execId);
             execOutput = output.readFully();
-            System.out.println(execOutput);
-            if (output != null) { output.close(); }
+            logger.debug(execOutput);
+            if (output != null) {
+                output.close();
+            }
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
+        } finally {
+            if (docker != null) { docker.close(); }
         }
     }
 
     /**
      * Restore all modules
+     *
      * @param snapshot
      * @param application
      * @param tag
@@ -381,6 +406,7 @@ public class SnapshotServiceImpl
 
         for (String key : snapshot.getAppConfig().keySet()) {
             try {
+                hookService.call(snapshot.getAppConfig().get(key).getName(), RemoteExecAction.CLONE_PRE_ACTION);
                 Module module = ModuleFactory.getModule(snapshot.getAppConfig().get(key).getName());
                 module.setApplication(application);
                 moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());
@@ -398,7 +424,7 @@ public class SnapshotServiceImpl
                 if (tag != null) {
                     restoreDataModule(module);
                 }
-
+                hookService.call(snapshot.getAppConfig().get(key).getName(), RemoteExecAction.CLONE_POST_ACTION);
             } catch (CheckException e) {
                 throw new ServiceException(e.getLocalizedMessage(), e);
             }
@@ -406,9 +432,8 @@ public class SnapshotServiceImpl
     }
 
     private void restoreDataModule(Module module) {
-
+        DockerClient docker = null;
         try {
-            DockerClient docker = null;
             if (Boolean.valueOf(isHttpMode)) {
                 docker = DefaultDockerClient
                         .builder()
@@ -424,13 +449,16 @@ public class SnapshotServiceImpl
             String execId = docker.execCreate(module.getName(), commandRestoreData, DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
             LogStream output = docker.execStart(execId);
             String execOutput = output.readFully();
-            System.out.println(execOutput);
-            if (output != null) { output.close(); }
+            logger.debug(execOutput);
+            if (output != null) {
+                output.close();
+            }
 
         } catch (Exception e) {
             logger.error(e.getMessage() + ", " + module);
+        } finally {
+            if (docker != null) { docker.close(); }
         }
-
     }
 
     private boolean tagExists(String tag, String login) {

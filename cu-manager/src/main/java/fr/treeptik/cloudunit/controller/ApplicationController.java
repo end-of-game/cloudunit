@@ -17,14 +17,18 @@ package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.*;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.factory.EnvUnitFactory;
 import fr.treeptik.cloudunit.manager.ApplicationManager;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.GitlabService;
+import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -58,10 +62,19 @@ public class ApplicationController
     private ApplicationService applicationService;
 
     @Inject
+    private DockerService dockerService;
+
+    @Inject
     private AuthentificationUtils authentificationUtils;
 
     @Inject
     private ApplicationManager applicationManager;
+
+    @Inject
+    private GitlabService gitlabService;
+
+    @Inject
+    private JenkinsService jenkinsService;
 
     /**
      * To verify if an application exists or not.
@@ -105,8 +118,12 @@ public class ApplicationController
             throws ServiceException, CheckException, InterruptedException {
 
         // replace accent characters
-        String applicationName = AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
-        input.setApplicationName(applicationName);
+
+        /* **** Check accent in server side **** */
+        //String applicationName = AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
+        //input.setApplicationName(applicationName);
+
+
         // validate the input
         input.validateCreateApp();
 
@@ -114,6 +131,12 @@ public class ApplicationController
         User user = authentificationUtils.getAuthentificatedUser();
         authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
+        // GITLAB + JENKINS
+        gitlabService.createProject(input.getApplicationName());
+        String repository = gitlabService.getGitRepository(input.getApplicationName());
+        jenkinsService.createProject(input.getApplicationName(), repository);
+
+        // CREATE AN APP
         applicationManager.create(input.getApplicationName(), input.getLogin(), input.getServerName());
 
         return new HttpOk();
@@ -254,8 +277,11 @@ public class ApplicationController
             applicationService.setStatus(application, Status.PENDING);
 
             logger.info("delete application :" + applicationName);
-            applicationService.remove(application, user);
 
+            applicationService.remove(application, user);
+            jenkinsService.deleteProject(applicationName);
+            gitlabService.listBranches(applicationName);
+            gitlabService.deleteProject(applicationName);
         } catch (ServiceException e) {
             logger.error(application.toString(), e);
             applicationService.setStatus(application, Status.FAIL);
@@ -512,4 +538,27 @@ public class ApplicationController
         return new HttpOk();
     }
 
+    /**
+     * Display env variables for a container
+     *
+     * @param applicationName
+     * @param containerId
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @CloudUnitSecurable
+    @ResponseBody
+    @RequestMapping(value = "/{applicationName}/container/{containerId}/env", method = RequestMethod.GET)
+    public List<EnvUnit> displayEnv(@PathVariable String applicationName, @PathVariable String containerId)
+            throws ServiceException, CheckException {
+
+        User user = this.authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        String content = dockerService.exec(containerId, RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
+        logger.debug(content);
+        List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(content);
+        return envUnits;
+    }
 }

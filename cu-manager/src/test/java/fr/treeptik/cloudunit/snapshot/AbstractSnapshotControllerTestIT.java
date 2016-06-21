@@ -207,7 +207,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         int counter = 0;
 
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -404,7 +404,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -452,7 +452,7 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-forward-8080.cloudunit.dev";
         contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -577,7 +577,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -639,7 +639,7 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin.cloudunit.dev";
         contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -781,7 +781,7 @@ public abstract class AbstractSnapshotControllerTestIT {
 
 
     @Test()
-    public void test040_CreateSimpleApplicationSnapshotWithWrongSyntaxName()
+    public void test040_CreateSimpleApplicationSnapshotWithNonAlphaNumericSyntaxName()
             throws Exception {
 
         logger.info("**************************************");
@@ -793,19 +793,19 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
-        String wrongTagName = "WRONG-NAME";
+        String nonAlphaNum = "NON-ALPHA-NUM";
 
         logger.info("**************************************");
-        logger.info("Create a snapshot with a wrong syntax : " + wrongTagName );
+        logger.info("Create a snapshot with a non-alpha numeric syntax : " + nonAlphaNum );
         logger.info("**************************************");
 
         jsonString =
-                "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + wrongTagName
+                "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + nonAlphaNum
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
         resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
-        resultats.andExpect(status().is4xxClientError());
+        resultats.andExpect(status().is2xxSuccessful());
 
         logger.info("**************************************");
         logger.info("Delete application : " + applicationName);
@@ -901,7 +901,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(status().is2xxSuccessful());
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildfly")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -962,7 +962,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("**************************************");
 
         urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin.cloudunit.dev";
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             contentPage = getUrlContentPage(urlToCall);
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
@@ -1024,7 +1024,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
         String contentPage = getUrlContentPage(urlToCall);
         int counter = 0;
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildfly")) {
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);

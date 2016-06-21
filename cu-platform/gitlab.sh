@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
-export GL_MAJOR=8.7.2-ce.0
+export GL_MAJOR=8.8.3-ce.0
 
 docker images |grep gitlab/gitlab-ce |grep $GL_MAJOR
 if [ "$?" == "1" ]; then
     docker pull gitlab/gitlab-ce:$GL_MAJOR
 fi
 
-docker ps | grep gitlab
+ETURN=`docker ps | grep gitlab`
 
 # If jenkins is not running
-if [ "$?" == "1" ]; then
+if [ -z "$RETURN" ]; then
 
     docker run --detach \
         --hostname gitlab.cloudunit.serv \

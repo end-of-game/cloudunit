@@ -13,6 +13,7 @@ LABEL upgrade="commit"
 # EXPOSE PORT
 EXPOSE 22
 
+VOLUME /cloudunit/shared
 VOLUME /cloudunit/appconf/logs
 
 ENTRYPOINT ["/cloudunit/scripts/start-service.sh"]

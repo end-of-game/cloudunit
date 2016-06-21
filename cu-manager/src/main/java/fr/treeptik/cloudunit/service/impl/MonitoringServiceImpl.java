@@ -61,13 +61,12 @@ public class MonitoringServiceImpl
 
     @Inject
     private ApplicationService applicationService;
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
 
     public String getFullContainerId(String containerName) {
         return containerIdByName.get(containerName);
     }
-
-    @Value("${cloudunit.instance.name}")
-    private String cuInstanceName;
 
     @Override
     public String getJsonFromCAdvisor(String containerId) {

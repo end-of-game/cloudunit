@@ -19,17 +19,23 @@
     .factory ( 'ExplorerService', ExplorerService );
 
   ExplorerService.$inject = [
-    '$resource'
+    '$resource',
+    '$http'
   ];
 
 
-  function ExplorerService ( $resource ) {
+  function ExplorerService ( $resource, $http ) {
 
     return {
       buildTree: buildTree,
-      downloadFile: downloadFile,
-      deleteFile: deleteFile
+      //downloadFile: downloadFile,
+      deleteFile: deleteFile,
+      addDirectory: addDirectory,
+      unzipFile: unzipFile,
+      editFile: editFile,
+      getFile: getFile
     };
+
 
 
     ////////////////////////////////////////////////////////////////////
@@ -42,7 +48,66 @@
         path: path
       } ).$promise;
     }
+       
+   function unzipFile ( containerId, applicationName, path, item) {
+      var file = $resource ( 'file/unzip/container/:containerId/application/:applicationName/path/:path/fileName/:item',
+      {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path, 
+        item: item
+      },
+      { 'update': { method: 'PUT',
+          transformResponse: function ( data, headers ) {
+            var response = {};
+            response.data = data;
+            response.headers = headers ();
+            return response;
+          } }
+      });
 
+      return file.update ().$promise;
+    }
+     
+    function getFile ( containerId, applicationName, path, fileName ) {     
+      var file = $resource ( '/file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path,
+        fileName: fileName
+      }, {
+        get: {
+          method: 'GET',
+          transformResponse: function ( data, headers ) {
+            var response = {};
+            response.data = data;
+            response.headers = headers ();
+            return response;
+          }
+        }
+      } );
+
+      return file.get ().$promise;
+    }
+     
+    function editFile ( containerId, applicationName, path, fileName, fileContent ) { 
+      var file = $resource ( 'file/content/container/:containerId/application/:applicationName',
+      {
+        containerId: containerId,
+        applicationName: applicationName
+      },{ update: {method:'PUT'}
+    });
+    
+    return file.update ( 
+      { 
+        containerId: containerId,
+        applicationName: applicationName
+      }, { 
+        filePath: path,
+        fileName: fileName,
+        fileContent: fileContent}).$promise;
+    }
+       
     function deleteFile ( containerId, applicationName, path ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path' );
 
@@ -53,7 +118,17 @@
       } ).$promise;
     }
 
-    function downloadFile ( containerId, applicationName, path, fileName ) {
+    function addDirectory ( containerId, applicationName, path ) {
+      var request = $resource ( '/file/container/:containerId/application/:applicationName/path/:path', {
+        containerId: containerId,
+        applicationName: applicationName,
+        path: path
+      } );
+      
+      return request.save ().$promise;
+    }
+    
+    /*function downloadFile ( containerId, applicationName, path, fileName ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
         containerId: containerId,
         applicationName: applicationName,
@@ -73,7 +148,7 @@
 
       return file.get ().$promise;
 
-    }
+    }*/
   }
 }) ();
 

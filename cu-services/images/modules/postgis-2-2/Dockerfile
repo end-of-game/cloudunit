@@ -3,7 +3,7 @@ FROM cloudunit/base-jessie
 ENV DEBIAN_FRONTEND noninteractive
 
 ENV PG_MAJOR 9.4
-ENV PG_VERSION 9.4.7-1.pgdg80+1
+ENV PG_VERSION 9.4.8-1.pgdg80+1
 
 ENV POSTGIS_MAJOR 2.1
 #ENV POSTGIS_VERSION 2.1.8+dfsg-5~97.git43a09cc.pgdg80+1

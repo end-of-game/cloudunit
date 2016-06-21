@@ -68,6 +68,7 @@
       left: 0;
       text-align: center;
       @include v-center();
+      z-index: 1;
     }
     .settings {
       position: absolute;
@@ -107,6 +108,21 @@
 .application.card {
   .content {
     min-height: 256px;
+    .label-like {
+      color: rgba(0, 0, 0, 0.54);       
+      max-width: 100%;
+      margin-bottom: 5px;
+      font-weight: bold;   
+      font-size: 14px;
+      margin-right: 4px;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.card.overview {
+  .content {
+    overflow: overlay;
   }
 }
 
@@ -114,6 +130,10 @@
   .features {
     margin-bottom: 0;
   }
+}
+
+.card.smaller {
+  @include make-lg-column(3, 1rem);
 }
 
 .card.small {
@@ -153,6 +173,11 @@
     }
     & .spinner {
       color: $color-muted;
+    }
+    
+    &.allowed {
+      pointer-events: auto;
+      cursor:  pointer;
     }
   }
 

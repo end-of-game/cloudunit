@@ -17,9 +17,6 @@ package fr.treeptik.cloudunit.service.impl;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerCertificates;
-import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
@@ -27,19 +24,10 @@ import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.hooks.HookAction;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Snapshot;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.ContainerMapper;
-import fr.treeptik.cloudunit.utils.EmailUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.ShellUtils;
+import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,21 +35,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.persistence.PersistenceException;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 @Service
 public class ModuleServiceImpl
@@ -313,7 +293,7 @@ public class ModuleServiceImpl
             // user = userService.findById(user.getId());
 
             module.setImage(imageService
-                  .findByName(module.getImage().getName()));
+                    .findByName(module.getImage().getName()));
 
             // Create container module in docker
             module = this.create(application, module, tagName);
@@ -361,7 +341,9 @@ public class ModuleServiceImpl
         module = initNewModule(module, application.getName(), 1);
 
         String imagePath = module.getImage().getPath();
-        if (tagName != null) { imagePath = imagePath + ":" + tagName; }
+        if (tagName != null) {
+            imagePath = imagePath + ":" + tagName;
+        }
 
         if (logger.isDebugEnabled()) {
             logger.info("imagePath:" + imagePath);
@@ -387,7 +369,7 @@ public class ModuleServiceImpl
                         + module.getInstanceNumber())) {
 
                     dockerContainer = DockerContainerBuilder.dockerContainer()
-                            .withName(module.getName()).withImage(key+":"+tagName).withMemory(0L)
+                            .withName(module.getName()).withImage(key + ":" + tagName).withMemory(0L)
                             .withMemorySwap(0L).build();
 
 
@@ -429,8 +411,9 @@ public class ModuleServiceImpl
                 dockerContainer.setVolumesFrom(volumesFrom);
             }
 
+            String sharedDir = JvmOptionsUtils.extractDirectory(application.getServers().get(0).getJvmOptions());
             dockerContainer = DockerContainer.start(dockerContainer,
-                    application.getManagerIp());
+                    application.getManagerIp(), sharedDir);
 
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
@@ -478,7 +461,9 @@ public class ModuleServiceImpl
         mapConfigEmail.put("emailType", "moduleInformations");
 
         try {
-            emailUtils.sendEmail(mapConfigEmail);
+            if ("apache".equalsIgnoreCase(module.getName()) == false) {
+                emailUtils.sendEmail(mapConfigEmail);
+            }
         } catch (MessagingException e) {
             logger.error("Error while sending email " + e);
             // On ne bloque pas l'appli pour une erreur d'email
@@ -679,10 +664,10 @@ public class ModuleServiceImpl
             dockerContainer.setImage(module.getImage().getName());
 
             // Call the hook for pre start
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_START);
 
             DockerContainer
-                    .start(dockerContainer, application.getManagerIp());
+                    .start(dockerContainer, application.getManagerIp(), null);
             dockerContainer = DockerContainer.findOne(dockerContainer,
                     application.getManagerIp());
 
@@ -694,7 +679,7 @@ public class ModuleServiceImpl
                     .updateModuleManager(hipacheRedisUtils);
 
             // Call the hook for post start
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_START);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_START);
 
         } catch (PersistenceException e) {
             module.setStatus(Status.FAIL);
@@ -724,7 +709,7 @@ public class ModuleServiceImpl
             dockerContainer.setImage(module.getImage().getName());
 
             // Call the hook for pre stop
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_STOP);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
 
             DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
@@ -734,7 +719,7 @@ public class ModuleServiceImpl
             module = this.update(module);
 
             // Call the hook for post stop
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_STOP);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_STOP);
 
         } catch (DataAccessException | DockerJSONException e) {
             module.setStatus(Status.FAIL);
@@ -742,7 +727,7 @@ public class ModuleServiceImpl
             logger.error("[" + dockerContainer.getName() + "] Fail to stop Module : " + module);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
-         return module;
+        return module;
     }
 
     @Override

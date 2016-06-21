@@ -15,9 +15,10 @@
 
 package fr.treeptik.cloudunit.utils;
 
+import fr.treeptik.cloudunit.enums.JavaRelease;
+import fr.treeptik.cloudunit.enums.JvmMemory;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.model.Application;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 
 import java.util.Arrays;
@@ -30,9 +31,14 @@ import java.util.Locale;
 @SuppressWarnings("ALL")
 public class CheckUtils {
 
-    private static final List<String> listJvmMemoriesAllowed = Arrays.asList("512", "1024", "2048", "3072");
+    private static final List<String> listJvmMemoriesAllowed = Arrays.asList(JvmMemory.SIZE_512.getSize(),
+            JvmMemory.SIZE_1024.getSize(),
+            JvmMemory.SIZE_2048.getSize(),
+            JvmMemory.SIZE_3072.getSize(),
+            JvmMemory.SIZE_4096.getSize());
 
-    private static final List<String> listJvmReleaseAllowed = Arrays.asList("jdk1.7.0_55", "jdk1.8.0_25");
+    private static final List<String> listJvmReleaseAllowed = Arrays.asList(
+            JavaRelease.Java7.getVersion(), JavaRelease.Java8.getVersion());
 
     private static MessageSource messageSource = (MessageSource) StaticSpringApplicationContext.getBean("messageSource");
 
@@ -72,7 +78,7 @@ public class CheckUtils {
             throws CheckException {
         if (field == null
                 || field.trim().length() == 0
-                || "undefined".equals(field)
+                /*|| "undefined".equals(field)*/
                 || field.length() > size) {
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated + " : " + field);
@@ -152,9 +158,10 @@ public class CheckUtils {
 
         if (field == null
                 || field.trim().length() == 0
-                || "undefined".equals(field)
-                || field.length() > 25
-                || !StringUtils.isAlphanumeric(field)) {
+                //|| "undefined".equals(field)
+                || field.length() > 25)
+                //|| !StringUtils.isAlphanumeric(field))
+        {
 
             String messageTranslated = messageSource.getMessage(message, null, Locale.ENGLISH);
             throw new CheckException(messageTranslated);

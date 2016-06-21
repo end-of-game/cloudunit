@@ -22,28 +22,9 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.ModuleFactory;
-import fr.treeptik.cloudunit.model.PortToOpen;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.ServerFactory;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.Type;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.DeploymentService;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.ContainerMapper;
-import fr.treeptik.cloudunit.utils.DomainUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.ShellUtils;
+import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,15 +33,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
+import java.io.File;
+import java.util.*;
 
 @Service
 public class ApplicationServiceImpl
@@ -159,6 +135,9 @@ public class ApplicationServiceImpl
                 throw new CheckException(messageSource.getMessage("app.exists",
                         null, locale));
             }
+            if (checkNameLength(application.getName())) {
+                throw new CheckException("This name has length equal to zero : " + application.getName());
+            }
             if (imageService.findByName(serverName) == null)
                 throw new CheckException(messageSource.getMessage(
                         "image.not.found", null, locale));
@@ -189,6 +168,12 @@ public class ApplicationServiceImpl
         } else {
             return true;
         }
+    }
+
+    public boolean checkNameLength(String applicationName) {
+        if (applicationName.length() == 0)
+            return true;
+        return false;
     }
 
     /**
@@ -226,6 +211,7 @@ public class ApplicationServiceImpl
         }
 
         application.setName(applicationName);
+        application.setDisplayName(applicationName);
         application.setUser(user);
         application.setModules(new ArrayList<>());
 
@@ -241,9 +227,6 @@ public class ApplicationServiceImpl
         // if tagname is null, we prefix with a ":"
         if (tagName != null) {
             tagName = ":" + tagName;
-        }
-        if (applicationName != null) {
-            applicationName = applicationName.toLowerCase();
         }
 
         logger.info("--CALL CREATE NEW APP--");
@@ -261,6 +244,7 @@ public class ApplicationServiceImpl
         }
 
         application.setName(applicationName);
+        application.setDisplayName(applicationName);
         application.setUser(user);
         application.setCuInstanceName(cuInstanceName);
         application.setModules(new ArrayList<>());
@@ -573,16 +557,13 @@ public class ApplicationServiceImpl
 
         try {
             // get app with all its components
-
             for (Server server : application.getServers()) {
 
-                // loading server ssh informations
 
-                String rootPassword = server.getApplication().getUser()
-                        .getPassword();
+                // loading server ssh informations
+                String rootPassword = server.getApplication().getUser() .getPassword();
                 configShell.put("port", server.getSshPort());
-                configShell.put("dockerManagerAddress",
-                        application.getManagerIp());
+                configShell.put("dockerManagerAddress", application.getManagerIp());
                 configShell.put("password", rootPassword);
                 String destFile = "/cloudunit/tmp/";
 
@@ -592,7 +573,6 @@ public class ApplicationServiceImpl
                         application.getManagerIp(), destFile);
 
                 // call deployment script
-
                 code = shellUtils.executeShell(
                         "bash /cloudunit/scripts/deploy.sh " + file.getName()
                                 + " " + application.getUser().getLogin(),
@@ -601,11 +581,10 @@ public class ApplicationServiceImpl
             }
 
             // if all is ok, create a new deployment tag and set app to starting
-
             if (code == 0) {
                 deploymentService.create(application, Type.WAR);
             } else {
-                throw new CheckException("No way to deploy application " + file + ", " + application);
+                throw new ServiceException("No way to deploy application " + file + ", " + application);
             }
 
         } catch (Exception e) {
