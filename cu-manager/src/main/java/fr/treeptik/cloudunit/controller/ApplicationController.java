@@ -123,7 +123,6 @@ public class ApplicationController
         //String applicationName = AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
         //input.setApplicationName(applicationName);
 
-
         // validate the input
         input.validateCreateApp();
 

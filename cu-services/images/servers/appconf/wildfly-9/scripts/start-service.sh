@@ -62,10 +62,19 @@ chown -R $CU_USER:$CU_USER /cloudunit/appconf/wildfly
 RETURN=$?
 
 # ########################
-if [[ "$RETURN" -eq  "1" ]]; then
+if [ "$RETURN" -eq  "1" ];
+then
     $JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER FAIL $MANAGER_DATABASE_PASSWORD
 else
     $JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER START $MANAGER_DATABASE_PASSWORD
+fi
+
+// Initialize the datasource
+if [ ! -f /init-service-ok ];
+then
+    $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="module add --name=org.mysql --resources=/cloudunit/tmp/mysql-connector-java-5.1.39.jar --dependencies=javax.api,javax.transaction.api"
+    $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="/subsystem=datasources/jdbc-driver=mysql:add(driver-module-name=org.mysql,driver-name=mysql,driver-class-name=com.mysql.jdbc.Driver)"
+    touch /init-service-ok
 fi
 
 # Blocking step

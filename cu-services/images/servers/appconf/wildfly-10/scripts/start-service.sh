@@ -38,7 +38,8 @@ fi
 
 MAX=45
 
-if [ ! -f /init-service-ok ]; then
+if [ ! -f /init-service-ok ];
+then
    	useradd -m $CU_USER && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
 	usermod -s /bin/bash $CU_USER
 
@@ -62,7 +63,8 @@ chown -R $CU_USER:$CU_USER /cloudunit/appconf/wildfly
 RETURN=$?
 
 # ########################
-if [[ "$RETURN" -eq  "1" ]]; then
+if [ "$RETURN" -eq  "1" ];
+then
     $JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER FAIL $MANAGER_DATABASE_PASSWORD
 else
     $JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER START $MANAGER_DATABASE_PASSWORD
