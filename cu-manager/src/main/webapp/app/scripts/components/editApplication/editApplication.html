@@ -28,51 +28,78 @@
       </div>
       <div class="page-menu">
         <ul class="tabs">
-          <li ui-sref-active="active">
+          <li ng-click="editApp.updateRoute();"
+            ui-sref-active="active">
             <a id="overview-tab" ui-sref="editApplication.overview"
                ripple="">
               <span>Overview</span>
             </a>
           </li>
-          <li ui-sref-active="active"
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
               data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="add-service-tab" ui-sref="editApplication.addModule" ripple="">
               <span>Add module</span>
             </a>
           </li>
-          <li ui-sref-active="active"
+          <li ng-click="editApp.updateRoute();"
+            ui-sref-active="active"
             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="deploy-tab" ui-sref="editApplication.deploy" ripple="">
               <span>Deploy</span>
             </a>
           </li>
-          <li ui-sref-active="active"
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
               data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="explorer-tab" ui-sref="editApplication.explorer" ripple="">
               <span>Explorer</span>
             </a>
           </li>
-          <li ui-sref-active="active"
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
               data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="logs-tab" ui-sref="editApplication.logs" ripple="">
+            <a class="mainLink" id="logs-tab" ui-sref="editApplication.logs" ripple="">
               <span>Logs</span>
             </a>
           </li>
-
-          <li ui-sref-active="active"
+          <!-- ng-class="{ 'active': editApp.state.current.name  == 'editApplication.monitoring' || editApp.state.current.name  == 'editApplication.monitoringApp' }" -->
+          <li ng-click="editApp.updateRoute();"
+            ng-class="{ 'active': editApp.monitoringRoute }"
+            
             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="monitoring-tab" ui-sref="editApplication.monitoring" ripple="">
-              <span>Monitoring</span>
-            </a>
+            <div class="dropdown" dropdown>
+              <a class="dropdown-toggle mainLink" dropdown-toggle>Monitoring</a>
+              <ul class="dropdown-menu" role="menu">
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="monitoring-tab" ui-sref="editApplication.monitoring"><span>Containers</span></a>
+                </li>
+                <li  data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="monitoring-tab" ui-sref="editApplication.monitoringApp"><span>Application</span></a>
+                </li>
+              </ul>
+            </div>
+            
+            <!--<a id="monitoring-tab" ui-sref="editApplication.monitoring" ripple="">
+              <div class="dropdown">
+                <button class="dropbtn">Monitoring</button>
+                <div class="dropdown-content">
+                  <a href="#">Monitoring 1</a>
+                  <a href="#">Monitoring 2</a>
+                </div>
+              </div>
+            </a>-->
           </li>
 
-          <li ui-sref-active="active"
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
               data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="snapshot-tab" ui-sref="editApplication.snapshot" ripple="">
               <span>Create template</span>
             </a>
           </li>
-          <li ui-sref-active="active"
+          <li ng-click="editApp.updateRoute();"
+            ui-sref-active="active"
             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <a id="settings-tab" ui-sref="editApplication.settings" ripple="">
               <span>Settings</span>
