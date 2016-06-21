@@ -64,6 +64,11 @@ angular.module('webuiApp.editApplication', [])
             url: '/monitoring',
             template: '<edit-app-monitoring app="editApp.application"></edit-app-monitoring>',
           })
+        .state('editApplication.monitoringApp',
+          {
+            url: '/monitoringApp',
+            template: '<edit-app-monitoring-app app="editApp.application"></edit-app-monitoring-app>',
+          })
         .state('editApplication.snapshot',
           {
             url: '/snapshot',
