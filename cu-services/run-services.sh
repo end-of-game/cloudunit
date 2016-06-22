@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CONT_NAME=(java tomcat-6 tomcat-7 tomcat-8 jboss-8)
-IMAGE_NAME=(cloudunit/java cloudunit/tomcat-6 cloudunit/tomcat-7 cloudunit/tomcat-8 cloudunit/jboss-8)
+CONT_NAME=(java tomcat-6 tomcat-7 tomcat-8)
+IMAGE_NAME=(cloudunit/java cloudunit/tomcat-6 cloudunit/tomcat-7 cloudunit/tomcat-8)
 GIT_TAG=latest
 
 
