@@ -60,7 +60,7 @@ su -l $CU_USER -c "cd $CU_HOME/cu-services && ./build-services.sh"
 
 # COMPILE ROOT WAR FOR CLOUDUNIT
 mkdir -p $CU_HOME/cu-platform/tomcat
-cd $CU_HOME/cu-manager && echo $PWD && su -l $CU_USER -c "$CU_HOME/cu-manager/compile-root-war.sh"
+cd $CU_HOME/cu-manager && su -l $CU_USER -c "$CU_HOME/cu-manager/compile-root-war.sh"
 cp target/ROOT.war $CU_HOME/cu-platform/tomcat
 chown -R $CU_USER:$CU_USER /home/$CU_USER/
 
