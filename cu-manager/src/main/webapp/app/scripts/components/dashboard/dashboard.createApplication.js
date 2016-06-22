@@ -25,13 +25,12 @@
    */
   angular
     .module('webuiApp')
-    .directive('createApp', CreateApp);
+    .component('createApp', CreateApp());
 
   function CreateApp(){
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/dashboard/dashboard.createApplication.html',
-      scope: {},
+      bindings: {},
       controller: [
         '$rootScope',
         'ApplicationService',
@@ -40,7 +39,6 @@
         CreateAppCtrl
       ],
       controllerAs: 'createApp',
-      bindToController: true
     };
   }
 
@@ -77,10 +75,8 @@
       }
     };
 
-    init();
-
-    function init() {
-      ImageService.findEnabledServer()
+    vm.$onInit = function() {
+       ImageService.findEnabledServer()
         .then(success)
         .catch(error);
 
@@ -104,9 +100,9 @@
 
       function error(response) {
         ErrorService.handle(response);
-      }
+      }  
     }
-
+    
     function createApplication(applicationName, serverName) {
       // emit app:creating event to display a shadow app during creation process
       vm.isPending = true;

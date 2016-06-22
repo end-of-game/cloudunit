@@ -25,13 +25,13 @@
    */
   angular
     .module('webuiApp')
-    .directive('dashboard', Dashboard);
+    .component('dashboard', Dashboard());
 
   function Dashboard(){
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/dashboard/dashboard.html',
-      scope: {},
+      bindings: {},
       controller: [
         '$rootScope',
         '$scope',
@@ -41,7 +41,6 @@
         DashboardCtrl
       ],
       controllerAs: 'dashboard',
-      bindToController: true
     };
   }
 
@@ -67,10 +66,10 @@
     }, 2000);
 
 
-    $scope.$on('$destroy', function () {
+    vm.$onDestroy = function () {
       $interval.cancel(timer);
-    });
-
+    };
+  
     $scope.$on('app:creating', function(e, data){
       vm.buffer = data;
     });
@@ -145,4 +144,3 @@
     }
   }
 })();
-
