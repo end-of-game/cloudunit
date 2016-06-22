@@ -85,8 +85,8 @@ function install_vagrant {
 	ISVAGRANT=$(dpkg -s vagrant | grep -e Status | head -n 1 | awk '{print $4}')
 	if [ "$ISVAGRANT" != "installed" ]
 	then 
-		wget https://releases.hashicorp.com/vagrant/1.8.1/vagrant_1.8.1_x86_64.deb
-		sudo dpkg -i vagrant_1.8.1_x86_64.deb
+		wget https://releases.hashicorp.com/vagrant/1.8.0/vagrant_1.8.0_x86_64.deb
+		sudo dpkg -i vagrant_1.8.0_x86_64.deb
 	else
 		VAGRANTVER=$(dpkg -s vagrant | grep -e Version | head -n 1  | awk '{print $2}' | cut -c3-5)
 		if ( (( "$(echo $VAGRANTVER | cut -c1)" <= 1 )) && (( "$(echo $VAGRANTVER | cut -c3)" < 8 )) )
