@@ -5,7 +5,7 @@ IMAGE_NAME=(cloudunit/java cloudunit/tomcat-6 cloudunit/tomcat-7 cloudunit/tomca
 GIT_TAG=latest
 
 
-for i in 0 1 2 3 4
+for i in 0 1 2 3
 do
 	docker ps -a | grep ${CONT_NAME[$i]} | grep -q ${IMAGE_NAME[$i]}
 	return=$?
