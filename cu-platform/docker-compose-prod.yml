@@ -11,8 +11,6 @@ hipache:
 redis:
     image: redis:3.0.1
     command: redis-server --appendonly yes
-    ports:
-        - 6379:6379
     volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
@@ -47,14 +45,27 @@ dnsdock:
        - "172.17.42.1:53:53/udp"
     command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
 
+tomcat:
+    image: tomcat:7-jre8
+    volumes:
+        - ./tomcat:/usr/local/tomcat/webapps
+        - ./certificats:/usr/local/tomcat/certificats
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+        - /var/log/cloudunit/tomcat/culogin.log:/var/log/culogin.log
+        - /home/admincu/.cloudunit:/root/.cloudunit
+    environment:
+        - CU_SUB_DOMAIN
+        - CU_KVM
+        - CATALINA_OPTS="-Dspring.profiles.active=production"
+        - MYSQL_ROOT_PASSWORD
+
 cadvisor:
     image: google/cadvisor:0.14.0
     environment:
         - DB_USER=root
         - DB_PASS=root
         - DB_NAME=cadvisor
-    ports:
-        - 8081:8080
     volumes:
         - /:/rootfs:ro
         - /var/run:/var/run:rw
@@ -68,10 +79,13 @@ nginx:
     image: nginx:1.9.0
     ports:
         - "443:443"
+    links:
+        - tomcat:tomcat
     volumes:
         - ./nginx/sites-enabled:/etc/nginx/sites-enabled
         - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
         - ./nginx/log:/var/log/nginx
+        - ./nginx/www:/var/www
         - ./nginx/nginx.conf:/etc/nginx/nginx.conf
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
