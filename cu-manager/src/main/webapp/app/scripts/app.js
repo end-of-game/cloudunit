@@ -32,7 +32,6 @@
       'ngCookies',
       'ngSanitize',
       'ngAnimate',
-      'ngRoute',
       'ui.router',
       'angularFileUpload',
       'ngTable',
