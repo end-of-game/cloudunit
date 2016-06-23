@@ -16,7 +16,7 @@
 var EditApplicationPage = (function () {
   function EditApplicationPage() {
     "use strict";
-    this.pageTitle = element(by.binding('editApp.application.name'));
+    this.pageTitle = element(by.binding('editApp.application.displayName'));
     this.goBackLink = element(by.css('.go-back-link'));
     this.menu = element(by.css('.tabs'));
     this.previewLink = element(by.id('preview-link'));

@@ -22,7 +22,7 @@ var DashboardPage = (function () {
 
     this.formContainer = element(by.id('create-application'));
     this.applicationNameInput = element(by.model('createApp.applicationName'));
-    this.dropdownToggle = this.createAppForm.element(by.css('.dropdown-toggle'));
+    this.dropdownToggle = this.createAppForm.element(by.css('.selectize-control input'));
     this.createBtn = element(by.id('create-btn'));
     this.errorMessage = element(by.binding('createApp.message'));
     this.formatErrorMessage = element(by.css('.format'));
@@ -34,14 +34,31 @@ var DashboardPage = (function () {
       var self = this;
       self.setApplicationName(appName);
       self.dropdownToggle.click().then(function () {
-        element(by.repeater('serverImage in createApp.serverImages').row(serverChoice)).click()
-          .then(function () {
-            self.createBtn.click()
-          })
+          //console.log(element(by.repeater('serverImage in createApp.serverImages').row(1));
+          /*
+            element(by.repeater('serverImage in createApp.serverImages').row(serverChoice)).click()
+            .then(function () {
+              self.createBtn.click()
+            })
+          */
+          //self.dropdownToggle.sendKeys(serverChoice);
+         
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          for(var i = 0; i < serverChoice; i++) {
+            self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
+          }
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          self.createBtn.click();
       });
     }
     this.serverChoice = function (serverChoice) {
-      return element(by.repeater('serverImage in createApp.serverImages').row(serverChoice));
+      var self = this;
+      self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+      for(var i = 0; i < serverChoice; i++) {
+        self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
+      }
+      return self.dropdownToggle.getAttribute('value');
+      //return element(by.repeater('serverImage in createApp.serverImages').row(serverChoice));
     }
     this.getAppProperty = function (propertyName, appChoice) {
       return element(by.repeater('application in dashboard.applications').row(appChoice).column('application.' + propertyName));

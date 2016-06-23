@@ -65,7 +65,7 @@ describe('E2E: EditApplication', function () {
       browser.get('/#/editApplication/testApp/overview');
       browser.driver.sleep(2000);
       editApp = new EditApplicationPage();
-      expect(editApp.pageTitle.getText()).toMatch('Application testapp');
+      expect(editApp.pageTitle.getText()).toMatch('Application testApp');
     });
 
     describe('go back link', function () {
@@ -103,7 +103,7 @@ describe('E2E: EditApplication', function () {
       });
 
       describe('Deploy Tab', function () {
-        it('should display deploy section', function () {
+       it('should display deploy section', function () {
           editApp.deployTab.click();
           browser.driver.sleep(1000);
           //expect(editApp.deployContent.isPresent()).toBeTruthy();
@@ -167,7 +167,7 @@ describe('E2E: EditApplication', function () {
         browser.driver.sleep(1000);
         dashboard.deleteApp('testapp');
         browser.driver.sleep(5000);
-        expect(element(by.id('application-testapp')).isPresent()).toBeFalsy();
+        expect(element(by.id('application-testApp')).isPresent()).toBeFalsy();
         logout();
       });
   });
