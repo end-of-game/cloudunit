@@ -63,7 +63,7 @@
               <span>Logs</span>
             </a>
           </li>
-          <!-- ng-class="{ 'active': editApp.state.current.name  == 'editApplication.monitoring' || editApp.state.current.name  == 'editApplication.monitoringApp' }" -->
+          <!-- ng-class="{ 'active': editApp.state.current.name  == 'editApplication.monitoringContainers' || editApp.state.current.name  == 'editApplication.monitoringApplication' }" -->
           <li ng-click="editApp.updateRoute();"
             ng-class="{ 'active': editApp.monitoringRoute }"
             
@@ -72,10 +72,10 @@
               <a class="dropdown-toggle mainLink" dropdown-toggle>Monitoring</a>
               <ul class="dropdown-menu" role="menu">
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
-                  <a id="monitoring-tab" ui-sref="editApplication.monitoring"><span>Containers</span></a>
+                  <a id="monitoring-tab" ui-sref="editApplication.monitoringContainers"><span>Containers</span></a>
                 </li>
                 <li  data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
-                  <a id="monitoring-tab" ui-sref="editApplication.monitoringApp"><span>Application</span></a>
+                  <a id="monitoring-tab" ui-sref="editApplication.monitoringApplication"><span>Application</span></a>
                 </li>
               </ul>
             </div>

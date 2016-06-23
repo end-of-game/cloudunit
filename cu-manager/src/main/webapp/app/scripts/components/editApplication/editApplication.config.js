@@ -59,15 +59,15 @@ angular.module('webuiApp.editApplication', [])
             url: '/logs',
             template: '<edit-app-logs app="editApp.application" state="editApp.state"></edit-app-logs>',
           })
-        .state('editApplication.monitoring',
+        .state('editApplication.monitoringContainers',
           {
-            url: '/monitoring',
-            template: '<edit-app-monitoring app="editApp.application"></edit-app-monitoring>',
+            url: '/monitoringContainers',
+            template: '<edit-app-monitoring-containers app="editApp.application"></edit-app-monitoring-containers>',
           })
-        .state('editApplication.monitoringApp',
+        .state('editApplication.monitoringApplication',
           {
-            url: '/monitoringApp',
-            template: '<edit-app-monitoring-app app="editApp.application"></edit-app-monitoring-app>',
+            url: '/monitoringApplication',
+            template: '<edit-app-monitoring-application app="editApp.application"></edit-app-monitoring-application>',
           })
         .state('editApplication.snapshot',
           {
