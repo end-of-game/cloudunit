@@ -60,8 +60,8 @@
     vm.applicationService = ApplicationService;
     
     function refreshRoute() {
-      if (($state.current.name == "editApplication.monitoring")
-        || ($state.current.name == "editApplication.monitoringApp")) {
+      if (($state.current.name == "editApplication.monitoringContainers")
+        || ($state.current.name == "editApplication.monitoringApplication")) {
         vm.monitoringRoute = true;
       } else {
         vm.monitoringRoute = false;

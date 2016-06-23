@@ -18,12 +18,12 @@
 
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppMonitoringApp', MonitoringApp );
+    .directive ( 'editAppMonitoringApplication', MonitoringApp );
 
   function MonitoringApp () {
     return {
       restrict: 'E',
-      templateUrl: 'scripts/components/editApplication/monitoring/app/editApplication.monitoring.app.html',
+      templateUrl: 'scripts/components/editApplication/monitoring/application/editApplication.monitoring.application.html',
       scope: {
         app: '='
       },
