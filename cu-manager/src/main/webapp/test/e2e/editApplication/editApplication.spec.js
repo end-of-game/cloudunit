@@ -97,7 +97,7 @@ describe('E2E: EditApplication', function () {
         it('should display add module section', function () {
           editApp.addModuleTab.click();
           browser.driver.sleep(1000);
-          //expect(editApp.addModuleContent.isPresent()).toBeTruthy();
+          expect(editApp.addModuleTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/addModule');
         })
       });
@@ -106,7 +106,7 @@ describe('E2E: EditApplication', function () {
        it('should display deploy section', function () {
           editApp.deployTab.click();
           browser.driver.sleep(1000);
-          //expect(editApp.deployContent.isPresent()).toBeTruthy();
+          expect(editApp.deployTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/deploy');
         });
       });
@@ -115,7 +115,7 @@ describe('E2E: EditApplication', function () {
         it('should display explorer section', function () {
           editApp.explorerTab.click();
           browser.driver.sleep(1000);
-          //expect(editApp.explorerContent.isPresent()).toBeTruthy();
+          expect(editApp.explorerTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/explorer');
         });
       });
@@ -124,7 +124,7 @@ describe('E2E: EditApplication', function () {
         it('should display logs section', function () {
           editApp.logsTab.click();
           browser.driver.sleep(1000);
-          //expect(editApp.logsContent.isPresent()).toBeTruthy();
+          expect(editApp.logsTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/logs');
         })
       });
@@ -133,7 +133,7 @@ describe('E2E: EditApplication', function () {
         it('should display monitoring section', function () {
           editApp.monitoringTab.click();
           browser.driver.sleep(1000);
-          //expect(editApp.monitoringContent.isPresent()).toBeTruthy();
+          expect(editApp.monitoringTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/monitoring');
         })
       });
@@ -142,7 +142,7 @@ describe('E2E: EditApplication', function () {
         it('should display snapshot section', function () {
           editApp.snapshotTab.click();
           browser.driver.sleep(1000);
-          //expect(editApp.snapshotContent.isPresent()).toBeTruthy();
+          expect(editApp.snapshotTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/snapshot');
           browser.driver.sleep(1000);
         });
@@ -152,7 +152,7 @@ describe('E2E: EditApplication', function () {
         it('should display settings section', function () {
           editApp.settingsTab.click();
           browser.driver.sleep(1000);
-          //expect(editApp.settingsContent.isPresent()).toBeTruthy();
+          expect(editApp.settingsTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/settings');
           browser.driver.sleep(1000);
         });

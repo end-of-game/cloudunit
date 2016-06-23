@@ -30,18 +30,6 @@ var EditApplicationPage = (function () {
     this.snapshotTab = element(by.id('snapshot-tab'));
     this.settingsTab = element(by.id('settings-tab'));
 
-
-    /* 
-    this.overviewContent = element(by.id('overview'));
-    this.addModuleContent = element(by.id('add-service'));
-    this.deployContent = element(by.id('deploy'));
-    this.explorerContent = element(by.id('explorer'));
-    this.logsContent = element(by.id('logs'));
-    this.monitoringContent = element(by.id('monitoring'));
-    this.snapshotContent = element(by.id('snapshot'));
-    this.settingsContent = element(by.id('settings'));
-    */
-
     this.moduleList = element.all(by.repeater('module in editApp.application.modules'));
   }
 
