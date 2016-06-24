@@ -47,7 +47,6 @@ describe('E2E: Edit Application config JVM', function () {
     it('should display the config JVM card in settings url', function () {
 // set test environment
 dashboard.createApp('testJVM', 1);
-browser.driver.sleep(20000);
 browser.get('/#/editApplication/testJVM/settings');
 expect(element(by.id('config-JVM'))).toBeTruthy();
 });
@@ -63,7 +62,6 @@ expect(element(by.id('config-JVM'))).toBeTruthy();
         configJVM.optionInput.sendKeys('-Dfoo=bar');
         configJVM.lastRelease.click();
         configJVM.submitBtn.click();
-        browser.driver.sleep(20000);
 
         expect(configJVM.selectedMemory.getAttribute('checked')).toBeTruthy();
         expect(configJVM.lastReleaseRadioElement.getAttribute('checked')).toBeTruthy();
@@ -86,9 +84,7 @@ return status === 'Start';
 expect(element(by.binding('overview.app.status')).getText()).toEqual('Start');
 
 browser.get('/#/dashboard');
-browser.driver.sleep(2000);
 dashboard.deleteApp('testjvm');
-browser.driver.sleep(2000);
 logout();
 });
 });
