@@ -32,7 +32,6 @@ describe('E22: Edit Application Add Module', function () {
 
     beforeEach(function () {
         ptor = protractor.getInstance();
-        ptor.ignoreSynchronization = true;
         editApp = new EditApplicationPage();
         dashboard = new DashboardPage();
         module = new Module();
@@ -46,23 +45,20 @@ describe('E22: Edit Application Add Module', function () {
 
 // set test environment
 
+ptor.ignoreSynchronization = true;
 dashboard.createApp('testModule', 1);
 browser.driver.sleep(6000);
 browser.get('/#/editApplication/testModule/addModule');
-browser.driver.sleep(2000);
+ptor.ignoreSynchronization = false;
 
-
-browser.driver.sleep(1000);
 let buttonModule = element(by.repeater('image in modules.moduleImages').row(0));
 buttonModule.$('button').click(function () {
-    browser.driver.sleep(500);
     expect(element(by.css('.spinner')).isPresent()).toBeTruthy();
 })
 });
 
         it('should appear in installed module list on overview section', function () {
             editApp.overviewTab.click();
-            browser.driver.sleep(8000);
             expect(element(by.repeater('module in overview.app.modules').row(0)).isDisplayed()).toBeTruthy();
         });
 
@@ -84,7 +80,6 @@ buttonModule.$('button').click(function () {
                 expect(password.isDisplayed()).toBeTruthy();
             });
 
-            browser.driver.sleep(500);
 
             showPassBtn.click().then(function () {
                 expect(password.isDisplayed()).toBeFalsy();
@@ -118,7 +113,7 @@ browser.switchTo().window(handles[0]);
             var modal = $('.modal[id$="johndoe-testmodule-mysql-5-5-1"]');
 
             toggleModal.click();
-            browser.driver.sleep(1000);
+            browser.driver.wait(protractor.until.elementIsVisible(modal), 8000);
             expect(modal.getCssValue('display')).toBe('block');
         });
 
@@ -128,16 +123,14 @@ browser.switchTo().window(handles[0]);
             var removeBtn = modal.element(by.css('.remove-btn'));
 
             removeBtn.click();
-            browser.driver.sleep(15000).then(function () {
-                expect(element(by.css('.modules-list .no-data')).isDisplayed()).toBeTruthy();
-            });
+            browser.driver.wait(protractor.until.elementIsVisible(element(by.css('.modules-list .no-data'))), 8000);
+            expect(element(by.css('.modules-list .no-data')).isDisplayed()).toBeTruthy();
 
-// reset test environment
-browser.get('/#/dashboard');
-browser.driver.sleep(3000);
-dashboard.deleteApp('testmodule');
-browser.driver.sleep(3000);
-logout();
-});
+
+        // reset test environment
+        browser.get('/#/dashboard');
+        dashboard.deleteApp('testmodule');
+        logout();
+    });
     })
 });
