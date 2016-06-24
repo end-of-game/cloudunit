@@ -87,7 +87,7 @@ describe('E2E Test: Edit Application Deploy War', function () {
         editApp.overviewTab.click();
       });
 
-      xit('should show a preview button after file upload', function () {
+      it('should show a preview button after file upload', function () {
         browser.driver.sleep(15000).then(function () {
           expect(editApp.previewLink.getAttribute('class')).not.toContain('disabled');
         });

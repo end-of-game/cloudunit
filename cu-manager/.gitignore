@@ -107,7 +107,5 @@ release.properties
 src/main/webapp/node_modules
 
 ### Fichiers binaires hors-dépôt
-src/main/webapp/test/uploads/performances.sd.0.1.war
-src/main/webapp/test/uploads/performances.sd.0.1.zip
 src/main/webapp/test/uploads/pizzashop-0.0.1-SNAPSHOT.war
 /target/
