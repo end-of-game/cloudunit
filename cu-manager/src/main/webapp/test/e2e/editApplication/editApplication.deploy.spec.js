@@ -87,7 +87,7 @@ describe('E2E Test: Edit Application Deploy War', function () {
         editApp.overviewTab.click();
       });
 
-      it('should show a preview button after file upload', function () {
+      xit('should show a preview button after file upload', function () {
         browser.driver.sleep(15000).then(function () {
           expect(editApp.previewLink.getAttribute('class')).not.toContain('disabled');
         });
@@ -103,9 +103,11 @@ describe('E2E Test: Edit Application Deploy War', function () {
             expect(browser.driver.getCurrentUrl()).toBe('http://testdeploy-johndoe-admin.cloudunit.dev/');
           });
         });
+        dashboard.deleteApp('testDeploy');
+        
       });
 
-      it('should display content', function () {
+      xit('should display content', function () {
         browser.getAllWindowHandles().then(function (handles) {
           var newWindowHandle = handles[1];
           browser.switchTo().window(newWindowHandle).then(function () {
