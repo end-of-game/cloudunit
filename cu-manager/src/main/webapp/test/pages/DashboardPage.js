@@ -50,6 +50,9 @@ var DashboardPage = (function () {
           self.dropdownToggle.sendKeys(protractor.Key.ENTER);
           self.createBtn.click();
       });
+
+      let selectorAppNameQuery = '#application-' + appName; 
+      browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), 4000);
     }
     this.serverChoice = function (serverChoice) {
       var self = this;

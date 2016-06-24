@@ -13,9 +13,8 @@
 *     For any questions, contact us : contact@treeptik.fr
 */
 
-var DashboardPage = require('../../pages/DashboardPage');
-
-var EditApplicationPage = require('../../pages/EditApplicationPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 var Module = function () {
     "use strict";
@@ -24,16 +23,14 @@ var Module = function () {
     };
 };
 
-
 describe('E22: Edit Application Add Module', function () {
     "use strict";
 
-    var ptor, editApp, dashboard, module;
+    var editApp, dashboard, module;
 
     beforeEach(function () {
-        ptor = protractor.getInstance();
-        editApp = new EditApplicationPage();
-        dashboard = new DashboardPage();
+        editApp = components.EditApplicationPage;
+        dashboard = components.DashboardPage;
         module = new Module();
     });
 
@@ -41,15 +38,12 @@ describe('E22: Edit Application Add Module', function () {
 
     describe('add mysql module', function () {
 
-        it('should display a spinner when being created', function () {
+    it('should display a spinner when being created', function () {
 
 // set test environment
 
-ptor.ignoreSynchronization = true;
 dashboard.createApp('testModule', 1);
-browser.driver.sleep(6000);
 browser.get('/#/editApplication/testModule/addModule');
-ptor.ignoreSynchronization = false;
 
 let buttonModule = element(by.repeater('image in modules.moduleImages').row(0));
 buttonModule.$('button').click(function () {
@@ -80,7 +74,6 @@ buttonModule.$('button').click(function () {
                 expect(password.isDisplayed()).toBeTruthy();
             });
 
-
             showPassBtn.click().then(function () {
                 expect(password.isDisplayed()).toBeFalsy();
             });
@@ -96,12 +89,12 @@ buttonModule.$('button').click(function () {
                 var newWindowHandle = handles[1];
                 browser.switchTo().window(newWindowHandle).then(function () {
                     expect(browser.driver.getCurrentUrl()).toBe("http://phpmyadmin1-testmodule-johndoe-admin.cloudunit.dev/phpmyadmin/");
-//to close the current window
-browser.driver.close().then(function () {
-//to switch to the previous window
-browser.switchTo().window(handles[0]);
-});
-});
+                    //to close the current window
+                    browser.driver.close().then(function () {
+                        //to switch to the previous window
+                        browser.switchTo().window(handles[0]);
+                    });
+                });
             });
         });
     });
@@ -127,10 +120,10 @@ browser.switchTo().window(handles[0]);
             expect(element(by.css('.modules-list .no-data')).isDisplayed()).toBeTruthy();
 
 
-        // reset test environment
-        browser.get('/#/dashboard');
-        dashboard.deleteApp('testmodule');
-        logout();
-    });
+// reset test environment
+browser.get('/#/dashboard');
+dashboard.deleteApp('testmodule');
+logout();
+});
     })
 });
