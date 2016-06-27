@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -47,12 +45,6 @@ public class JenkinsServiceImpl implements JenkinsService {
 
     private boolean jenkinsOpen;
 
-    @PostConstruct
-    public void init()
-    {
-        jenkinsOpen = testJenkins();
-    }
-
     /**
      * Add a user to the Jenkins server
      *
@@ -63,7 +55,7 @@ public class JenkinsServiceImpl implements JenkinsService {
             logger.info("JenkinsService : addUser " + user.getLogin());
 
             if (rootToken == null || rootToken.trim().length() == 0) {
-                logger.error("Cannot use this feature because no token for Jenkins");
+                logger.warn("Cannot use this feature because no token for Jenkins");
                 return;
             }
 
@@ -103,7 +95,7 @@ public class JenkinsServiceImpl implements JenkinsService {
             logger.info("JenkinsService : deleteUser " + username);
 
             if (rootToken == null || rootToken.trim().length() == 0) {
-                logger.error("Cannot use this feature because no token for Jenkins");
+                logger.warn("Cannot use this feature because no token for Jenkins");
                 return;
             }
 
@@ -139,7 +131,7 @@ public class JenkinsServiceImpl implements JenkinsService {
             logger.info("JenkinsService : createProject " + applicationName);
 
             if (rootToken == null || rootToken.trim().length() == 0) {
-                logger.error("Cannot use this feature because no token for Jenkins");
+                logger.warn("Cannot use this feature because no token for Jenkins");
                 return;
             }
 
@@ -185,7 +177,7 @@ public class JenkinsServiceImpl implements JenkinsService {
             logger.info("JenkinsService : deleteProject " + applicationName);
 
             if (rootToken == null || rootToken.trim().length() == 0) {
-                logger.error("Cannot use this feature because no token for Jenkins");
+                logger.warn("Cannot use this feature because no token for Jenkins");
                 return;
             }
 
@@ -340,33 +332,4 @@ public class JenkinsServiceImpl implements JenkinsService {
                 " \"email\": \"" + user.getEmail() + "\"}";
     }
 
-    /**
-     * Test if we can call Jenkins url
-     *
-     * @return
-     */
-    private Boolean testJenkins() {
-        try {
-            logger.info("JenkinsService : testJenkins");
-
-            HttpClient httpclient = HttpClientBuilder.create().build();
-
-            String uri = "http://" + JENKINS_IP + "/api/";
-
-            HttpGet get = new HttpGet(uri);
-
-            HttpResponse response = httpclient.execute(get);
-
-            logger.info("JenkinsService : testJenkins " + response.getStatusLine());
-
-            if(response.getStatusLine().getStatusCode() == 200)
-                return true;
-            else
-                return false;
-
-        } catch (Exception e) {
-            logger.error("JenkinsService : testJenkins " + e.getLocalizedMessage());
-            return false;
-        }
-    }
 }

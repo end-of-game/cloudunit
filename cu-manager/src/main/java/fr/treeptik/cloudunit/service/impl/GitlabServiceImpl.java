@@ -43,12 +43,12 @@ public class GitlabServiceImpl implements GitlabService {
         logger.info("GitlabService : createUser " + user.getLogin());
 
         if (gitlabToken == null || gitlabToken.trim().length() == 0 ) {
-            logger.error("Cannot use this feature because no token for GitLab");
+            logger.warn("Cannot use this feature because no token for GitLab");
             return HttpStatus.BAD_REQUEST;
         }
 
         if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
-            logger.error("Cannot use this feature because no URL given for GitLab API");
+            logger.warn("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.BAD_REQUEST;
         }
 
@@ -74,12 +74,12 @@ public class GitlabServiceImpl implements GitlabService {
         logger.info("GitlabService : deleteUser " + username);
 
         if (gitlabToken == null || gitlabToken.trim().length() == 0) {
-            logger.error("Cannot use this feature because no token for GitLab");
+            logger.warn("Cannot use this feature because no token for GitLab");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
         if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
-            logger.error("Cannot use this feature because no URL given for GitLab API");
+            logger.warn("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
@@ -110,12 +110,12 @@ public class GitlabServiceImpl implements GitlabService {
         logger.info("GitlabService : createProject " + applicationName);
 
         if (gitlabToken == null || gitlabToken.trim().length()==0) {
-            logger.error("Cannot use this feature because no token for GitLab");
+            logger.warn("Cannot use this feature because no token for GitLab");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
         if (gitlabAPI == null || gitlabAPI.trim().length()==0) {
-            logger.error("Cannot use this feature because no URL given for GitLab API");
+            logger.warn("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
@@ -139,12 +139,12 @@ public class GitlabServiceImpl implements GitlabService {
         logger.info("GitlabService : deleteProject " + applicationName);
 
         if (gitlabToken == null || gitlabToken.trim().length() == 0) {
-            logger.error("Cannot use this feature because no token for GitLab");
+            logger.warn("Cannot use this feature because no token for GitLab");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
         if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
-            logger.error("Cannot use this feature because no URL given for GitLab API");
+            logger.warn("Cannot use this feature because no URL given for GitLab API");
             return HttpStatus.NOT_IMPLEMENTED;
         }
 
@@ -175,12 +175,12 @@ public class GitlabServiceImpl implements GitlabService {
         logger.info("GitlabService : listBranches " + applicationName);
 
         if (gitlabToken == null || gitlabToken.trim().length() == 0) {
-            logger.error("Cannot use this feature because no token for GitLab");
+            logger.warn("Cannot use this feature because no token for GitLab");
             return new ArrayList<>();
         }
 
         if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
-            logger.error("Cannot use this feature because no URL given for GitLab API");
+            logger.warn("Cannot use this feature because no URL given for GitLab API");
             return new ArrayList<>();
         }
 
@@ -210,12 +210,12 @@ public class GitlabServiceImpl implements GitlabService {
         logger.info("GitlabService : getGitRepository " + applicationName);
 
         if (gitlabToken == null || gitlabToken.trim().length() == 0) {
-            logger.error("Cannot use this feature because no token for GitLab");
+            logger.warn("Cannot use this feature because no token for GitLab");
             return "";
         }
 
         if (gitlabAPI == null || gitlabAPI.trim().length() == 0) {
-            logger.error("Cannot use this feature because no URL given for GitLab API");
+            logger.warn("Cannot use this feature because no URL given for GitLab API");
             return "";
         }
 
