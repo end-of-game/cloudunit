@@ -17,7 +17,7 @@ su - $CU_USER -c "$JBOSS_HOME/bin/standalone.sh -P=/etc/environment -Djboss.bind
 until [ "$RETURN" -eq "0" ] || [ $count -gt $WAITFOR ]
 do
 	echo -n -e "\nWaiting for WildFly start\n"
-    nc -z localhost 9990
+	$JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="connect"
 	RETURN=$?
 	sleep 1
 	let count=$count+1;

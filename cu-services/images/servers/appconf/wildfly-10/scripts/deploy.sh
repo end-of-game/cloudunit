@@ -23,7 +23,6 @@ if [[ $WAR_NAME == *.war ]]; then
 fi
 
 chown -R $CU_USER:$CU_USER /cloudunit
-echo $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="deploy $FILE"
 $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="deploy $FILE"
 
 sleep 2

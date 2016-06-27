@@ -15,7 +15,6 @@ source /etc/environment
 
 # Callback bound to the application stop
 terminate_handler() {
-    #$JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command=:shutdown
     /cloudunit/scripts/cu-stop.sh
     CODE=$?
     echo "CODE : " $CODE
@@ -39,7 +38,8 @@ fi
 
 MAX=45
 
-if [ ! -f /init-service-ok ]; then
+if [ ! -f /init-service-ok ];
+then
    	useradd -m $CU_USER && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
 	usermod -s /bin/bash $CU_USER
 	$JBOSS_HOME/bin/add-user.sh --silent=true $CU_USER $CU_PASSWORD
@@ -51,8 +51,6 @@ if [ ! -f /init-service-ok ]; then
 	echo  "PATH=$JAVA_HOME/bin:$PATH" >> /etc/environment
 	echo  "JBOSS_HOME=$CU_HOME/wildfly" >> /etc/environment
 	echo  "JAVA_OPTS=-Xms96M -Xmx512M -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true" >> /etc/environment
-
-	touch /init-service-ok
 fi
 
 source /etc/environment
