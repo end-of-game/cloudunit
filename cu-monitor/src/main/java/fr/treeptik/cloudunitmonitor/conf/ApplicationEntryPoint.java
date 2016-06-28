@@ -34,10 +34,10 @@ public class ApplicationEntryPoint {
 		MODE = args[4];
 
 		logger.info("First argument (ip mysql) : " + IP_MYSQL);
-		logger.info("Second argument (password mysql) : " + IP_REDIS);
-		logger.info("Third argument (ip redis) : " + MYSQL_PASSWORD);
+		logger.info("Second argument (password mysql) : " + MYSQL_PASSWORD);
+		logger.info("Third argument (ip redis) : " + IP_REDIS);
 		logger.info("Four argument (instance) : " + INSTANCE);
-		logger.info("Four argument (mode) : " + MODE);
+		logger.info("Five argument (mode) : " + MODE);
 
 		if (args.length < 5) {
 			logger.error("One parameter is missing : ");
