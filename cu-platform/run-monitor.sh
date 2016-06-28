@@ -22,7 +22,21 @@ function verify_java {
 		_java="$JAVA_HOME/bin/java"
 	else
 		echo "no java"
-		exit 0
+		echo "download it :"
+
+		if [ ! -f java.do ]; then
+
+		wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jdk-8u91-linux-x64.tar.gz -O ${HOME}/jdk-8u91-linux-x64.tar.gz
+		tar xvf ${HOME}/jdk-8u91-linux-x64.tar.gz
+        rm jdk-8u91-linux-x64.tar.gz
+
+        echo "export JAVA_HOME=${HOME}/jdk1.8.0_91" >> ${HOME}/.bashrc
+s
+        source ${HOME}/.bashrc
+
+        touch java.do
+
+        fi
 	fi
 
 	if [[ "$_java" ]]; then
@@ -47,8 +61,7 @@ else
 	if [ ! -f ${HOME}/cloudunit/monitoring_scripts/cloudunitmonitor.jar ]; then
 		wget https://github.com/Treeptik/cloudunit/releases/download/1.0/cloudunitmonitor.jar -O ${HOME}/cloudunit/monitoring_scripts/cloudunitmonitor.jar
 	fi
-	java -Xms128m -Xmx128m -jar ${HOME}/cloudunit/monitoring_scripts/cloudunitmonitor.jar $(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) ${MYSQL_ROOT_PASSWORD} $(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_redis_1) prod http
-#> ${HOME}/cloudunit/monitoring_scripts/cloudunitmonitor.log
+	${HOME}/jdk1.8.0_91/bin/java -Xms128m -Xmx128m -jar ${HOME}/cloudunit/monitoring_scripts/cloudunitmonitor.jar $(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_mysql_1) ${MYSQL_ROOT_PASSWORD} $(docker inspect --format {{.NetworkSettings.IPAddress}} cuplatform_redis_1) prod http > ${HOME}/cloudunit/monitoring_scripts/cloudunitmonitor.log
 
 	rm $LOCK_CM
 fi
