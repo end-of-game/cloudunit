@@ -46,6 +46,7 @@ public class DockerContainerJSON {
 		URI uri = null;
 		DockerContainer dockerContainer = new DockerContainer();
 		try {
+			logger.info("TRACE : " + dockerContainer.getName() + " " + hostIp);
 			uri = new URIBuilder().setScheme(ApplicationEntryPoint.MODE).setHost(hostIp)
 					.setPath("/containers/" + name + "/json").build();
 			JsonResponse jsonResponse = null;

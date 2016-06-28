@@ -11,7 +11,7 @@ public class ModuleFactory {
 	/**
 	 * Return new module with ModuleAction initialized
 	 * 
-	 * @param moduleName
+	 * @param
 	 * @return
 	 */
 	public static Module getModule(String imageName) {
