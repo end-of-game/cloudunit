@@ -32,7 +32,7 @@ function verify_java {
 
         echo "export JAVA_HOME=${HOME}/jdk1.8.0_91" >> ${HOME}/.bashrc
         source ${HOME}/.bashrc
-        mkdir  ${HOME}/monitoring_scripts
+        mkdir  ${HOME}/cloudunit/monitoring_scripts
         touch java.do
 
         fi
