@@ -31,9 +31,8 @@ function verify_java {
         rm jdk-8u91-linux-x64.tar.gz
 
         echo "export JAVA_HOME=${HOME}/jdk1.8.0_91" >> ${HOME}/.bashrc
-s
         source ${HOME}/.bashrc
-
+        mkdir  ${HOME}/monitoring_scripts
         touch java.do
 
         fi
