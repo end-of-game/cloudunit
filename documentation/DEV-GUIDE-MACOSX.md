@@ -121,7 +121,7 @@ vagrant plugin install vagrant-vbguest
 $ cd $HOME/cloudUnit 
 $ vagrant up
 $ vagrant ssh 
-cd cloudunit/cu-platform && ./reset-all.sh -y
+cd cloudunit/cu-platform && ./reset.sh -y
 ```
 
 2 - Run the UI for development (http://0.0.0.0:9000) from Mac
@@ -157,7 +157,7 @@ password: abc2015
 ```
 $ cd $HOME/cloudUnit
 $ vagrant ssh dev
-$ cloudunit/cu-platform/reset-all.sh -y
+$ cloudunit/cu-platform/reset.sh -y
 ```
 
 
