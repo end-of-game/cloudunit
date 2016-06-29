@@ -67,6 +67,10 @@ chown -R $CU_USER:$CU_USER /home/$CU_USER/
 # RESET ALL FOR FIRST START
 su -l $CU_USER -c "cd $CU_HOME/cu-platform && ./reset-prod.sh -y"
 
+#active cron for cloudunitmonitor
+
+sh $CU_HOME/cu-platform/update-cron.sh
+
 
 
 
