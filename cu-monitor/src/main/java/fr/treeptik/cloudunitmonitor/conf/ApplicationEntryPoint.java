@@ -36,7 +36,7 @@ public class ApplicationEntryPoint {
 		logger.info("Third argument (ip redis) : " + IP_REDIS);
 		logger.info("Four argument (mode) : " + MODE);
 
-		if (args.length < 5) {
+		if (args.length < 4) {
 			logger.error("One parameter is missing : ");
 			System.exit(1);
 		}
