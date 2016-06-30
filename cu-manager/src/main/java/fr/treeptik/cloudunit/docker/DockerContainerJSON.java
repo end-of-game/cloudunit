@@ -793,7 +793,7 @@ public class DockerContainerJSON {
                     .setParameter("tag", tag.toLowerCase()).build();
             response = client.sendPostWithRegistryHost(uri, "",
                     "application/json");
-            System.out.println(response);
+            //System.out.println(response);
             int statusCode = (int) response.get("code");
 
             switch (statusCode) {

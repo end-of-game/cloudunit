@@ -117,9 +117,8 @@ public class ApplicationManagerImpl
             int counter = 0;
             // Wait for the server has a status START
             for (Server server : application.getServers()) {
-                System.out.println(server.getStatus());
+                //logger.debug(server.getStatus().toString());
                 while (server.getStatus() != null && !server.getStatus().equals(Status.START)) {
-                    logger.debug(server.getStatus().toString());
                     if (counter == 60) {
                         break;
                     }
@@ -137,7 +136,6 @@ public class ApplicationManagerImpl
             for (Module module : application.getModules()) {
                 counter = 0;
                 while (module.getStatus() != null && !module.getStatus().equals(Status.START)) {
-                    logger.debug(module.getStatus().toString());
                     if (counter == 60) {
                         break;
                     }

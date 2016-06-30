@@ -42,10 +42,15 @@ There are many installation guides
 * [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
 
 ## Go further
-
+    
 * [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit-cli/blob/dev/README.md)
 * [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit-maven-plugin/blob/master/README.md)
 * [CloudUnit with Jenkins2/GitLab](documentation/CI-CD.md) [SOON UPDATED]
+
+## Examples
+
+* [MongoDB](documentation/MONGO_GUIDE.md) 
+* [WordPress](documentation/WORDPRESS_GUIDE.md)
 
 # Licensing
 

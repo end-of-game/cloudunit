@@ -24,6 +24,7 @@ MAX=30
 
 # Callback bound to the application stop
 terminate_handler() {
+  /etc/init.d/apache2 stop
   kill -s SIGTERM $(pidof mysqld)
   CODE=$?
   if [[ "$CODE" -eq "0" ]]; then
@@ -50,7 +51,6 @@ fi
 
 /usr/sbin/mysqld &
 /usr/sbin/sshd &
-source /etc/apache2/envvars && /usr/sbin/apache2 -DFOREGROUND &
 
 if [ ! -f /cloudunit/database/init-service-ok ]; then
 	RETURN=1
@@ -78,6 +78,9 @@ do
 	let count=$count+1;
 	sleep 1
 done
+
+# source /etc/apache2/envvars && /usr/sbin/apache2 -DFOREGROUND &
+/etc/init.d/apache2 start
 
 # ####################################
 # If mysql is started we notify it #

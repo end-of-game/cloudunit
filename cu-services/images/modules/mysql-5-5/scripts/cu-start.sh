@@ -15,6 +15,8 @@ do
 	let count=$count+1;
 done
 
+/etc/init.d/apache2 start
+
 echo "Mysql is started"
 
 

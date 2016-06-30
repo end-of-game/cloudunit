@@ -123,7 +123,6 @@ public class ApplicationController
         //String applicationName = AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
         //input.setApplicationName(applicationName);
 
-
         // validate the input
         input.validateCreateApp();
 
@@ -279,9 +278,9 @@ public class ApplicationController
             logger.info("delete application :" + applicationName);
 
             applicationService.remove(application, user);
-            jenkinsService.deleteProject(applicationName);
-            gitlabService.listBranches(applicationName);
-            gitlabService.deleteProject(applicationName);
+            //jenkinsService.deleteProject(applicationName);
+            //gitlabService.listBranches(applicationName);
+            //gitlabService.deleteProject(applicationName);
         } catch (ServiceException e) {
             logger.error(application.toString(), e);
             applicationService.setStatus(application, Status.FAIL);
