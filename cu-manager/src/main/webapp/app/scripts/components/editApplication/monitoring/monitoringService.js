@@ -22,17 +22,19 @@
 
   MonitoringService.$inject = [
     '$http',
-    '$interval'
+    '$interval',
+    '$q'
   ];
 
-  function MonitoringService ( $http, $interval ) {
+  function MonitoringService ( $http, $interval, $q ) {
 
     var oneMegabyte = 1024 * 1024;
 
     return {
       stats: {},
       initStats: initStats,
-      stopPollStats: stopPollStats
+      stopPollStats: stopPollStats,
+      chooseQueue: chooseQueue
     };
 
 
@@ -265,6 +267,26 @@
         data.series[1].push ( (cur.network.rx_errors - prev.network.rx_errors) / intervalInSec );
       }
       return data;
+    }
+    
+    function chooseQueue (queueName) {
+      var deferred = $q.defer ();
+      $http.get ( 'http://192.168.2.117:8081/jolokia/read/jboss.as:subsystem=messaging-activemq,server=default,jms-queue=' + queueName)
+        .then ( function onSuccess ( response ) {
+        if(response.data.status !== 200) {
+          deferred.reject ({
+            data: { 
+              message : "This address is not found!"
+            }
+          });
+        } else {
+          deferred.resolve ( response.data );  
+        }
+      } )
+      .catch ( function onError ( reason ) {
+        deferred.reject ( reason );
+      } );
+      return deferred.promise;
     }
 
 

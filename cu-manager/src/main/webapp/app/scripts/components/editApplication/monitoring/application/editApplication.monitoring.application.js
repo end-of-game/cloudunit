@@ -48,110 +48,72 @@
 
     var vm = this, timer;
 
-    vm.containers = [];
-    vm.myContainer = {};
-    vm.isLoading = true;
-    vm.getContainers = getContainers;
-    vm.stats = {};
-    vm.cpuUsage = [];
-    vm.monitoringService = MonitoringService;
-    vm.data = [];
-   
+    vm.queueName = '';
+    vm.chooseQueue = chooseQueue;
+    vm.queueStats = {};
+    vm.selectedQueueStats = {};
+    vm.loadStats = loadStats;
+    vm.updateGraphs = updateGraphs;
+    vm.displayGraph = [];
     
-    
-    
-    
-    
-     vm.options = {
-            chart: {
-                type: 'stackedAreaChart',
-                height: 450,
-                margin : {
-                    top: 20,
-                    right: 20,
-                    bottom: 30,
-                    left: 40
-                },
-                x: function(d){return d.z;},
-                y: function(d){return d.y;},
-                "xAxis": {
-                  "showMaxMin": false,
-                  tickFormat: function(d) {
-                       
-                        return d3.time.format('%X')(new Date(d))
-                    }
-                },
-                "yAxis": {
-                  "showMaxMin": false
-                },
-                duration: 500,
-                showControls: false,
-  
-            }
-        };    
-    
-    
-    vm.xAxisTickFormatFunction = function(){
-        return function(d){
-          return d3.time.format('%X')(new Date(d));
+    function chooseQueue(queueName) {
+      console.log(queueName);
+      MonitoringService.chooseQueue(queueName)
+        .then(success)
+        .catch(error);
 
-        }
+      function success(response) {
+        console.log(response.value);
+        vm.queueStats = response.value;
+        vm.errorMsg = '';
+        vm.queueName = '';
+        $interval ( function () {
+           MonitoringService.chooseQueue(queueName)
+          .then(function(response) {
+            angular.forEach(vm.displayGraph, function(value, key) {
+              vm.displayGraph[key].data.push(
+                {
+                  "date":new Date(response.timestamp*1000),
+                  "value":response.value[value.title]
+                }
+              );
+            });
+            console.log(vm.displayGraph);
+          })
+        }, 1000 )
+        vm.queueStatsPoll = MonitoringService.queueStats;
+        console.log(vm.queueStatsPoll);
       }
 
-    $scope.$on ( '$destroy', function () {
-      vm.monitoringService.stopPollStats();
-    } );
-    
-    var test = 0;
-    
-    getContainers ();
-
-    function getContainers ( selectedContainer ) {
-      vm.isLoading = true;
-      return ApplicationService.listContainers ( $stateParams.name )
-        .then ( function onGetContainersComplete ( containers ) {
-          vm.containers = containers;
-          vm.myContainer = selectedContainer || containers[0];
-
-          console.log(vm.myContainer);
-          vm.monitoringService.initStats ( vm.myContainer.name ).then ( function () {
-            
-            vm.stats = vm.monitoringService.stats;
-           setTimeout(function() {
-              vm.data[0] = {};
-              vm.data[0].values = [];
-              vm.data[0].key = "Cumulative Return";
-              
-              angular.forEach(vm.stats.cpuTotalUsage.labels, function(value, key) {
-                vm.data[0].values[key] = {};
-                vm.data[0].values[key].x = test;//vm.stats.cpuTotalUsage.labels[key];
-                vm.data[0].values[key].y = vm.stats.cpuTotalUsage.series[0][key];
-                
-                
-                var datetext = vm.stats.cpuTotalUsage.labels[key].split(':');
-                console.log(datetext);
-                var d = new Date(88,09,12,datetext[0],datetext[1],datetext[2]);
-                /*d.setHours(datetext[0]);
-                d.setMinutes(datetext[1]);
-                d.setSeconds(datetext[2]);*/
-                vm.data[0].values[key].z = d.getTime();
-                vm.data[0].values[key].series = 0;
-                test++;
-              });
-               console.log("UPDATE");
-               console.log(vm.data);
-               
-            }, 1000);
-           
-            
-            vm.isLoading = false;
-            
-          } )
-        } )
-        .catch ( function onGetContainersError ( reason ) {
-          console.error ( reason ); //debug
-        } );
+      function error(response) {
+        vm.errorMsg = response.data.message;
+        return vm.errorMsg;
+      }
     }
+    
+    function loadStats(queueStatsName) {
+      vm.displayGraph = [];
+      angular.forEach(queueStatsName, function(value, key) {
+        vm.displayGraph.push({
+          data: [],
+          title: key,
+          description: '',
+          x_accessor:'date',
+          y_accessor:'value',
+        });
+      });
+    }
+   
+   
+   function updateGraphs(queueStatsName) {
+     if(vm.selectedQueueStats[queueStatsName]) {
+       console.log("delete graph");
+     } else {
+       loadStats()
+     }
+   }
+   
+
 
   }
 }) ();

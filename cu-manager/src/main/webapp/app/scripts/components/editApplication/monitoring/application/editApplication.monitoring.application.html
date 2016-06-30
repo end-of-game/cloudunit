@@ -15,172 +15,97 @@
 
 <div class="tab-pane vertical-spacing"
      data-ng-class="{pending: monitoringApp.isLoading}">
-    <div class="card">
+    <div class="card medium">
       <div class="content clearfix">
-        <h3 class="title large">Monitoring</h3>
 
-        <p class="hint">Choose a component</p>
+        <h3 class="title large">Choose queue</h3>
 
-        <div class="dropdown dropdown--small" dropdown>
-          <a class="dropdown-toggle"
-             dropdown-toggle=""
-             selectbox="">
-            {{ monitoringApp.myContainer.name }}
-          </a>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-            <li data-ng-repeat="container in monitoringApp.containers">
-              <a ng-href=""
-                 data-ng-click="monitoringApp.myContainer = container; monitoringApp.getContainers(monitoringApp.myContainer)">
-                {{container.name}}
-              </a>
-            </li>
-          </ul>
-        </div>
+        <form id="choose-queue"
+            name="chooseQueueForm"
+            class="clearfix" novalidate=""
+            data-ng-submit="monitoringApp.chooseQueue(monitoringApp.queueName)">
+
+          <div class="input-group stack">
+            <input id="queue-name"
+                  name="queueName"
+                  type="text"
+                  data-ng-model="monitoringApp.queueName"
+                  ng-required="true"
+                  placeholder="Queue Name"/>
+
+            <p class="hint error" data-ng-show="monitoringApp.errorMsg">{{monitoringApp.errorMsg}}</p>
+          </div>
+          <div class="actions">
+            <div class="secondary-actions pull-right">
+              <button type="submit"
+                      class="queue-btn button primary raised"
+                      ripple="">
+                <span>Send</span>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
-    </div>
-  <div id="monitoring" class="monitoring-container">
-    <!--<iframe data-media="{{monitoringApp.myContainer.name}}" src="scripts/components/editApplication/monitoring/cadvisor.html"
-            id="{{monitoringApp.myContainer.id}}" frameBorder="0" reload-chart=""/>-->
+    </div>    
+    
+    <div class="card medium">
+      <div class="content clearfix">
+        <h3 class="title large">Queue metrics</h3>
+        {{monitoringApp.queueStatsPoll}}
+        
+        <form id="load-stats"
+          name="loadStatsForm"
+          class="clearfix" novalidate=""
+          data-ng-submit="monitoringApp.loadStats(monitoringApp.selectedQueueStats)">
 
-    <!--<nvd3 options="monitoringApp.plop" data="monitoringApp.lol" class="with-3d-shadow with-transitions"></nvd3>
-    -->
-    <div class="monitor-group">
-      <div class="card">
-        <div class="content clearfix">
-          <h3 class="card-title">CPU</h3>
 
-          <div class="chart">
-            <h4>Total Usage (Cores)</h4>
-           <br>
-            <br>
-            <br>
+          <div class="input-group check checkbox inline" ng-repeat="(queueStatsName, value) in monitoringApp.queueStats | displayNumeric: monitoringApp.queueStats">
+            <input id="{{queueStatsName}}" type="checkbox"
+              ng-model="monitoringApp.selectedQueueStats[queueStatsName]"
+              ng-value="queueStatsName"
+              data-ng-disabled="monitoringApp.application.status === 'PENDING'"/>
+            <label for="{{queueStatsName}}">
+              {{queueStatsName}}
+            </label>
+          </div>
           
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoringApp.stats.cpuTotalUsage"
-                      chartist-chart-type="Line"></chartist>
-                      
-                      
-                      
-                      
-                      
-                      
-            <ul class="ct-legend">
-              <li ng-repeat="serie in monitoringApp.stats.cpuTotalUsage.legends" class="ct-series-{{$index}}">{{monitoringApp.stats.cpuTotalUsage.legends[$index]}}</li>
-            </ul>
-
-            <h4>Usage per Core</h4>
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoringApp.stats.cpuPerCoreUsage"
-                      chartist-chart-type="Line"></chartist>
-            <ul class="ct-legend">
-              <li ng-repeat="serie in monitoringApp.stats.cpuPerCoreUsage.legends" class="ct-series-{{$index}}">{{monitoringApp.stats.cpuPerCoreUsage.legends[$index]}}</li>
-            </ul>
-
-            <h4>Usage Breakdown (Cores)</h4>
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoringApp.stats.cpuUsageBreakdown"
-                      chartist-chart-type="Line"></chartist>
-            <ul class="ct-legend">
-              <li ng-repeat="serie in monitoringApp.stats.cpuUsageBreakdown.legends" class="ct-series-{{$index}}">{{monitoringApp.stats.cpuUsageBreakdown.legends[$index]}}</li>
-            </ul>
-            <h4>CPU load (%)</h4>
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoringApp.stats.cpuLoad"
-                      chartist-chart-type="Line"></chartist>
-            <ul class="ct-legend">
-              <li ng-repeat="serie in monitoringApp.stats.cpuLoad.legends" class="ct-series-{{$index}}">{{monitoringApp.stats.cpuLoad.legends[$index]}}</li>
-            </ul>
+          <div class="actions">
+            <div class="secondary-actions pull-right">
+              <button type="submit"
+                      class="queue-btn button primary raised"
+                      ripple="">
+                <span>Load</span>
+              </button>
+            </div>
           </div>
-        </div>
+        </form>
+              
       </div>
     </div>
-
-    <div class="monitor-group">
-      <div class="card">
-        <div class="content clearfix">
-          <h3 class="card-title">Memory</h3>
-
-          <div class="chart clearfix">
-            <h4>Total Usage (Megabytes)</h4>
-
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoringApp.stats.memoryUsage"
-                      chartist-chart-type="Line"></chartist>
-            <ul class="ct-legend">
-              <li ng-repeat="serie in monitoringApp.stats.memoryUsage.legends" class="ct-series-{{$index}}">{{monitoringApp.stats.memoryUsage.legends[$index]}}</li>
-            </ul>
+    
+    <div class="card medium" ng-repeat="graph in monitoringApp.displayGraph track by $index">
+      <div class="content clearfix">
+        <chart data="graph.data"
+                convert-date-field="date"
+                options="graph"
+                ng-if="graph.data">
+        </chart>
+        
+        <div class="action clearfix">
+          <div class="secondary-action">
+            <button class="toggle-modal icon-button secondary pull-left allowed"
+                    data-toggle="modal"
+                    data-target="#delete-{{application.name}}"
+                    data-keyboard="true"
+                    ripple=""
+                    tooltip=""
+                    data-title="Delete"
+                    data-placement="bottom">
+              <i class="icon-whhg trash"></i>
+            </button>
           </div>
         </div>
+       
       </div>
-
-      <div class="card">
-        <div class="content clearfix">
-          <h3 class="card-title">Network</h3>
-
-          <div class="chart">
-            <h4>Throughput (Bytes/sec)</h4>
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoringApp.stats.networkUsage"
-                      chartist-chart-type="Line"></chartist>
-            <ul class="ct-legend">
-              <li ng-repeat="serie in monitoringApp.stats.networkUsage.legends" class="ct-series-{{$index}}">{{monitoringApp.stats.networkUsage.legends[$index]}}</li>
-            </ul>
-
-            <h4>Errors (Errors/sec)</h4>
-
-            <chartist class="ct-chart ct-double-octave" chartist-data="monitoringApp.stats.networkErrors"
-                      chartist-chart-type="Line"></chartist>
-            <ul class="ct-legend">
-              <li ng-repeat="serie in monitoringApp.stats.networkErrors.legends" class="ct-series-{{$index}}">{{monitoringApp.stats.networkErrors.legends[$index]}}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="content clearfix">
-
-         <!-- <h3 class="card-title">Isolation</h3>
-          <div class="chart">
-            <h4>CPU</h4>
-            <ul>
-              <li><span class="stat-label">Shares: </span> 1024 <span class="unit-label">shares</span>
-              </li>
-              <li><span class="stat-label">Allowed Cores: </span> <span class="active-cpu">0</span></li>
-            </ul>
-            <h4>Memory</h4>
-            <ul>
-              <li><span class="stat-label">Limit: </span> unlimited <span class="unit-label"></span>
-              </li>
-              <li><span class="stat-label">Swap Limit: </span> unlimited <span
-                class="unit-label"></span>
-              </li>
-            </ul>
-          </div>-->
-          <!--<nvd3 options="monitoringApp.options" data="monitoringApp.data"></nvd3>
-          <nvd3 options="monitoringApp.options2" data="monitoringApp.data2"></nvd3>-->
-      
-      <!--
-      <div
-area-chart
-area-data='[
-    { y: "09:06:49", a: 100, b: 90 },
-    { y: "09:06:50", a: 75,  b: 65 },
-    { y: "09:06:51", a: 50,  b: 40 },
-    { y: "09:06:52", a: 75,  b: 65 },
-    { y: "09:06:53", a: 50,  b: 40 },
-    { y: "09:06:54", a: 75,  b: 65 },
-    { y: "09:06:55", a: 100, b: 90 }
-  ]'
-area-xkey='y'
-area-ykeys='["a", "b"]'
-area-labels='["Serie A", "Serie B"]'
-line-colors='["#31C0BE", "#c7254e"]'>
-</div>-->
-      
-            <nvd3 xAxisTickFormat="xAxisTickFormatToggle()" options="monitoringApp.options" data="monitoringApp.data" class="with-3d-shadow with-transitions"></nvd3>
+    </div>
    
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-
