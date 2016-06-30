@@ -17,6 +17,8 @@ RUN cd $HOME \
 
 RUN cd /cloudunit/tmp && wget http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.39/mysql-connector-java-5.1.39.jar
 
+RUN cd $JBOSS_HOME/standalone/deployments && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jolokia.war
+
 # Ensure signals are forwarded to the JVM process correctly for graceful shutdown
 ENV LAUNCH_JBOSS_IN_BACKGROUND true
 

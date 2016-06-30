@@ -13,7 +13,8 @@ echo "#################################"
 source /etc/environment
 
 # Delete the current app
-rm $JBOSS_HOME/standalone/deployments/*
+shopt -s extglob
+rm $JBOSS_HOME/standalone/deployments/!(jolokia.war*)
 
 FILE=$WAR_PATH/$WAR_NAME
 # Move the app in deployment
