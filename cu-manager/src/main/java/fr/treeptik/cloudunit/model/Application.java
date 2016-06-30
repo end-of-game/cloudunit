@@ -65,7 +65,7 @@ public class Application
     private User user;
 
     @OrderBy("id asc")
-    @OneToMany(mappedBy = "application", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Set<Module> modules;
 
     @OrderBy("id asc")
