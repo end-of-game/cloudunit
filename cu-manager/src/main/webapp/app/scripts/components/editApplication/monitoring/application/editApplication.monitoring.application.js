@@ -157,7 +157,8 @@
               description: lastQueueNameSelected,
               x_accessor:'date',
               y_accessor:'value',
-              area: false
+              area: false,
+              interpolate: 'basic',
             }); 
           }
         });   
