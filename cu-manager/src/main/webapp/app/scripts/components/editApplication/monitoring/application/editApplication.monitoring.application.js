@@ -54,6 +54,7 @@
     vm.displayGraph = [];
     vm.queueNameTab = [];
     vm.timer = {};
+    var test = 60;
     
     vm.loadStats = loadStats;
     vm.deleteGraph = deleteGraph;
@@ -88,7 +89,7 @@
         referenceQueue(vm.queueName);
         vm.errorMsg = '';
         vm.queueName = '';
-        vm.selectedQueueStats = {};
+        refreshSelectedQueueStats();
         
         vm.timer = $interval ( function () {
           angular.forEach(vm.queueNameTab, function(queueName, key) {
@@ -101,12 +102,17 @@
                   vm.displayGraph[key].data.shift();
                 }
                 if(vm.displayGraph[key].location == queueName) {
+                  
                   vm.displayGraph[key].data.push(
                     {
                       "date":new Date(response.timestamp*1000),
                       "value":response.value[value.id]
                     }
                   );
+                  
+                  if(vm.displayGraph[key].data.length >= test) {
+                    vm.displayGraph[key].data.splice(0, 1);
+                  }
                 }
               });
               vm.cleanFirstValue = false;
@@ -159,12 +165,27 @@
       
     }
    
-   //TODO delete le celui de la bonne queue car l'heure actuelle supprime le premier qu'il trouve
+   function refreshSelectedQueueStats() {
+      vm.selectedQueueStats = {};
+      var res = vm.displayGraph.filter(
+        function(x) {
+          return lastQueueNameSelected == x.location;           
+        }
+      );
+      
+      angular.forEach(res, function(graph, index) {
+        console.log(graph.id);
+        vm.selectedQueueStats[graph.id] = true;
+      });
+   }
+   
    function deleteGraph(queueStatsName, queueLocation) {
-     
-     vm.displayGraph.splice(vm.displayGraph[
-       vm.displayGraph.map(function(x) {return x.id; }).indexOf(queueStatsName)
-     ], 1);
+     angular.forEach(vm.displayGraph, function(graph, index) {
+       if(graph.id == queueStatsName && graph.location == queueLocation) {
+        vm.displayGraph.splice(index, 1);    
+       }
+     });
+     refreshSelectedQueueStats();
    }
    
   }
