@@ -118,7 +118,7 @@
               vm.cleanFirstValue = false;
             })
           });
-        }, 1000 )
+        }, 3000 )
         vm.queueStatsPoll = MonitoringService.queueStats;
       }
 
@@ -132,7 +132,7 @@
       vm.cleanFirstValue = true;
       angular.forEach(vm.displayGraph , function(value, index) {
         //delete all element already selected for the current queue
-        vm.displayGraph[index].data = [{'date': new Date(), 'value': 0}];
+        vm.displayGraph[index].data = [];
       });
       
       vm.displayGraph = vm.displayGraph.filter(
@@ -150,7 +150,7 @@
         angular.forEach(selectedQueueStats, function(isQueueSelected, key) {
           if(isQueueSelected) {
             vm.displayGraph.push({
-              data: [{'date': new Date(), 'value': 0}],
+              data: [],
               title: lastQueueNameSelected + " " + key,
               id: key,
               location: lastQueueNameSelected,
