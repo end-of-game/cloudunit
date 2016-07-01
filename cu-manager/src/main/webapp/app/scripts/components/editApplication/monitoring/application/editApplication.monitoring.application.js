@@ -54,7 +54,7 @@
     vm.displayGraph = [];
     vm.queueNameTab = [];
     vm.timer = {};
-    var test = 60;
+    var test = 120;
     
     vm.loadStats = loadStats;
     vm.deleteGraph = deleteGraph;
@@ -118,7 +118,7 @@
               vm.cleanFirstValue = false;
             })
           });
-        }, 3000 )
+        }, 5000 )
         vm.queueStatsPoll = MonitoringService.queueStats;
       }
 
