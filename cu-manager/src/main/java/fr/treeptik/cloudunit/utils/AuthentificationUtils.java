@@ -87,4 +87,14 @@ public class AuthentificationUtils {
         }
     }
 
+    public void canStartDeleteApplicationAction(User user, Application application,
+                                  Locale locale)
+            throws CheckException {
+
+        if (user != null && user.getStatus().equals(User.STATUS_NOT_ALLOWED)) {
+            throw new CheckException(
+                    "You have launched a backup or a restore operation and it is still performing. Please wait a moment to continue");
+        }
+    }
+
 }

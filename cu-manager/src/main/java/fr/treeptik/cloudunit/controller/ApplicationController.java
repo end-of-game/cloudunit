@@ -269,7 +269,7 @@ public class ApplicationController
         Application application = applicationService.findByNameAndUser(user, applicationName);
 
         // We must be sure there is no running action before starting new one
-        authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+        authentificationUtils.canStartDeleteApplicationAction(user, application, Locale.ENGLISH);
 
         try {
             // Application busy
