@@ -269,9 +269,9 @@
       return data;
     }
     
-    function chooseQueue (queueName) {
+    function chooseQueue (appLocation, queueName) {
       var deferred = $q.defer ();
-      $http.get ( 'http://192.168.2.117:8081/jolokia/read/jboss.as:subsystem=messaging-activemq,server=default,jms-queue=' + queueName)
+      $http.get ( appLocation + '/jolokia/read/' + queueName)
         .then ( function onSuccess ( response ) {
         if(response.data.status !== 200) {
           deferred.reject ({
@@ -288,7 +288,6 @@
       } );
       return deferred.promise;
     }
-
 
   }
 }) ();

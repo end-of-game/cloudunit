@@ -16,10 +16,10 @@
 <div class="tab-pane vertical-spacing"
      data-ng-class="{pending: monitoringApp.isLoading}">
 
-    <div class="card medium">
+    <div class="card large">
       <div class="content clearfix">
 
-        <h3 class="title large">Choose queue</h3>
+        <h3 class="title large">Choose Jolokia JMX path</h3>
 
         <form id="choose-queue"
             name="chooseQueueForm"
@@ -49,10 +49,9 @@
       </div>
     </div>    
     
-    <div class="card medium">
+    <div ng-if="!(monitoringApp.queueStats | isEmpty)" class="card large">
       <div class="content clearfix">
-        <h3 class="title large">Queue metrics</h3>
-        {{monitoringApp.queueStatsPoll}}
+        <h3 class="title large">Metrics</h3>
         
         <form id="load-stats"
           name="loadStatsForm"
@@ -80,32 +79,58 @@
             </div>
           </div>
         </form>
-              
       </div>
     </div>
     
     <div class="card medium" ng-repeat="graph in monitoringApp.displayGraph track by $index">
       <div class="content clearfix">
-        <chart data="graph.data"
-                convert-date-field="date"
-                options="graph"
-                ng-if="graph.data">
+        <chart data-data="graph.data"
+                data-convert-date-field="date"
+                data-options="graph">
         </chart>
         
         <div class="action clearfix">
           <div class="secondary-action">
-            <button class="toggle-modal icon-button secondary pull-left allowed"
-                    data-toggle="modal"
-                    data-target="#delete-{{application.name}}"
-                    data-keyboard="true"
-                    ripple=""
-                    tooltip=""
-                    data-title="Delete"
-                    data-placement="bottom">
+            <button class="icon-button secondary pull-left allowed"
+              data-ng-click="monitoringApp.deleteGraph(graph.id, graph.location)">
               <i class="icon-whhg trash"></i>
             </button>
           </div>
         </div>
        
       </div>
+      
+      <!--
+        data-toggle="modal"
+        data-target="#delete-{{graph.title}}"
+        data-keyboard="true"
+        ripple=""
+        tooltip=""
+        data-title="Delete"
+        data-placement="bottom"
+                    
+        <div class="modal"
+          id="delete-{{graph.title}}"
+          modaldismiss="">
+        <div class="modal-inner">
+          <div class="content">
+            <h3 class="title">Removal confirmation required</h3>
+
+            <div class="action">
+              <button type="button" class="button secondary allowed" data-dismiss="modal">Cancel
+              </button>
+              <button type="button" class="delete-btn button primary allowed"
+                      data-ng-click="monitoringApp.deleteGraph(graph.title)"
+                      data-dismiss="modal">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
+      
     </div>
+
+                    
+    

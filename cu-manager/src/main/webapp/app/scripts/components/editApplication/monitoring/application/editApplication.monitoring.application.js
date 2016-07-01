@@ -46,43 +46,74 @@
     // MONITORING
     // ------------------------------------------------------------------------
 
-    var vm = this, timer;
-
+    var vm = this;
+    vm.cleanFirstValue = true;
     vm.queueName = '';
-    vm.chooseQueue = chooseQueue;
     vm.queueStats = {};
     vm.selectedQueueStats = {};
-    vm.loadStats = loadStats;
-    vm.updateGraphs = updateGraphs;
     vm.displayGraph = [];
+    vm.queueNameTab = [];
+    vm.timer = {};
+    
+    vm.loadStats = loadStats;
+    vm.deleteGraph = deleteGraph;
+    vm.chooseQueue = chooseQueue;
+    
+    var lastQueueNameSelected = '';
+    
+    
+    $scope.$on ( '$destroy', function () {
+      $interval.cancel(vm.timer);
+      vm.timer = null;
+    } );
+    
+    
+    function referenceQueue(queueName) {
+      if(!vm.queueNameTab.includes(queueName)) {
+         vm.queueNameTab.push(queueName);
+      }
+      lastQueueNameSelected = queueName;
+    }
     
     function chooseQueue(queueName) {
-      console.log(queueName);
-      MonitoringService.chooseQueue(queueName)
+      vm.cleanFirstValue = true;
+      MonitoringService.chooseQueue(vm.app.location, queueName)
         .then(success)
         .catch(error);
 
       function success(response) {
-        console.log(response.value);
         vm.queueStats = response.value;
+        
+        // clean
+        referenceQueue(vm.queueName);
         vm.errorMsg = '';
         vm.queueName = '';
-        $interval ( function () {
-           MonitoringService.chooseQueue(queueName)
-          .then(function(response) {
-            angular.forEach(vm.displayGraph, function(value, key) {
-              vm.displayGraph[key].data.push(
-                {
-                  "date":new Date(response.timestamp*1000),
-                  "value":response.value[value.title]
+        vm.selectedQueueStats = {};
+        
+        vm.timer = $interval ( function () {
+          angular.forEach(vm.queueNameTab, function(queueName, key) {
+            MonitoringService.chooseQueue(vm.app.location, queueName)
+            .then(function(response) {
+              angular.forEach(vm.displayGraph, function(value, key) {
+
+                if(value.location == lastQueueNameSelected && vm.cleanFirstValue) {
+                  vm.selectedQueueStats[value.id] = true;
+                  vm.displayGraph[key].data.shift();
                 }
-              );
-            });
-            console.log(vm.displayGraph);
-          })
+                if(vm.displayGraph[key].location == queueName) {
+                  vm.displayGraph[key].data.push(
+                    {
+                      "date":new Date(response.timestamp*1000),
+                      "value":response.value[value.id]
+                    }
+                  );
+                }
+              });
+              vm.cleanFirstValue = false;
+            })
+          });
         }, 1000 )
         vm.queueStatsPoll = MonitoringService.queueStats;
-        console.log(vm.queueStatsPoll);
       }
 
       function error(response) {
@@ -91,26 +122,49 @@
       }
     }
     
-    function loadStats(queueStatsName) {
-      vm.displayGraph = [];
-      angular.forEach(queueStatsName, function(value, key) {
-        vm.displayGraph.push({
-          data: [],
-          title: key,
-          description: '',
-          x_accessor:'date',
-          y_accessor:'value',
-        });
+    function cleanAll() {
+      vm.cleanFirstValue = true;
+      angular.forEach(vm.displayGraph , function(value, index) {
+        //delete all element already selected for the current queue
+        vm.displayGraph[index].data = [{'date': new Date(), 'value': 0}];
       });
+      
+      vm.displayGraph = vm.displayGraph.filter(
+        function(x) {
+          return lastQueueNameSelected != x.location;           
+        }
+      );
+    }
+    
+    function loadStats(selectedQueueStats) {
+      
+      cleanAll();
+
+      setTimeout(function() {
+        angular.forEach(selectedQueueStats, function(isQueueSelected, key) {
+          if(isQueueSelected) {
+            vm.displayGraph.push({
+              data: [{'date': new Date(), 'value': 0}],
+              title: lastQueueNameSelected + " " + key,
+              id: key,
+              location: lastQueueNameSelected,
+              description: lastQueueNameSelected,
+              x_accessor:'date',
+              y_accessor:'value',
+              area: false
+            }); 
+          }
+        });   
+      }, 0);
+      
     }
    
-   
-   function updateGraphs(queueStatsName) {
-     if(vm.selectedQueueStats[queueStatsName]) {
-       console.log("delete graph");
-     } else {
-       loadStats()
-     }
+   //TODO delete le celui de la bonne queue car l'heure actuelle supprime le premier qu'il trouve
+   function deleteGraph(queueStatsName, queueLocation) {
+     
+     vm.displayGraph.splice(vm.displayGraph[
+       vm.displayGraph.map(function(x) {return x.id; }).indexOf(queueStatsName)
+     ], 1);
    }
    
   }
