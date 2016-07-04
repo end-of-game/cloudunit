@@ -34,7 +34,8 @@
       stats: {},
       initStats: initStats,
       stopPollStats: stopPollStats,
-      chooseQueue: chooseQueue
+      chooseQueue: chooseQueue,
+      getUrlMetrics: getUrlMetrics
     };
 
 
@@ -267,6 +268,18 @@
         data.series[1].push ( (cur.network.rx_errors - prev.network.rx_errors) / intervalInSec );
       }
       return data;
+    }
+    
+    function getUrlMetrics (serverImagePrefixEnv) {
+      var deferred = $q.defer ();
+      $http.get ( '/monitoring/metrics/' + serverImagePrefixEnv)
+        .then ( function onSuccess ( response ) {
+          deferred.resolve ( response.data );  
+      } )
+      .catch ( function onError ( reason ) {
+        deferred.reject ( reason );
+      } );
+      return deferred.promise;
     }
     
     function chooseQueue (appLocation, queueName) {

@@ -62,13 +62,74 @@
     
     var lastQueueNameSelected = '';
     
+    $scope.$on('application:ready', function(event, data) {
+      vm.app = data.app;
+      MonitoringService.getUrlMetrics(vm.app.servers[0].image.prefixEnv)
+        .then(function success(data) {
+           angular.forEach(data, function(predefinedGraph, index) {
+              referenceQueue(predefinedGraph.url);
+              
+              vm.displayGraph.push({
+                data: [],
+                title: predefinedGraph.url + " " + predefinedGraph.name,
+                id: predefinedGraph.suffix,
+                location: predefinedGraph.url,
+                description: predefinedGraph.url,
+                x_accessor:'date',
+                y_accessor:'value',
+                area: false,
+                interpolate: 'basic',
+              }); 
+              
+           });
+           pollStats();
+        })
+        .catch(function(err){
+          console.log(err);
+        });    
+    });
     
+         
     $scope.$on ( '$destroy', function () {
       $interval.cancel(vm.timer);
       vm.timer = null;
     } );
     
+    init();
     
+    function init() {
+      vm.timer = $interval(pollStats, 5000);  
+    }
+            
+    function pollStats() {
+          angular.forEach(vm.queueNameTab, function(queueName, key) {
+            MonitoringService.chooseQueue(vm.app.location, queueName)
+            .then(function(response) {
+              angular.forEach(vm.displayGraph, function(value, key) {
+
+                if(value.location == lastQueueNameSelected && vm.cleanFirstValue) {
+                  vm.selectedQueueStats[value.id] = true;
+                  vm.displayGraph[key].data.shift();
+                }
+                if(vm.displayGraph[key].location == queueName) {
+                  
+                  vm.displayGraph[key].data.push(
+                    {
+                      "date":new Date(response.timestamp*1000),
+                      "value":response.value[value.id]
+                    }
+                  );
+                  
+                  if(vm.displayGraph[key].data.length >= test) {
+                    vm.displayGraph[key].data.splice(0, 1);
+                  }
+                }
+              });
+              vm.cleanFirstValue = false;
+            })
+          });
+        }
+        
     function referenceQueue(queueName) {
       if(!vm.queueNameTab.includes(queueName)) {
          vm.queueNameTab.push(queueName);
