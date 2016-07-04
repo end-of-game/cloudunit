@@ -54,7 +54,7 @@
     vm.displayGraph = [];
     vm.queueNameTab = [];
     vm.timer = {};
-    var test = 120;
+    var NumberOfDataByGraph = 120;
     
     vm.loadStats = loadStats;
     vm.deleteGraph = deleteGraph;
@@ -120,7 +120,7 @@
                     }
                   );
                   
-                  if(vm.displayGraph[key].data.length >= test) {
+                  if(vm.displayGraph[key].data.length >= NumberOfDataByGraph) {
                     vm.displayGraph[key].data.splice(0, 1);
                   }
                 }
@@ -152,35 +152,6 @@
         vm.queueName = '';
         refreshSelectedQueueStats();
         
-        vm.timer = $interval ( function () {
-          angular.forEach(vm.queueNameTab, function(queueName, key) {
-            MonitoringService.chooseQueue(vm.app.location, queueName)
-            .then(function(response) {
-              angular.forEach(vm.displayGraph, function(value, key) {
-
-                if(value.location == lastQueueNameSelected && vm.cleanFirstValue) {
-                  vm.selectedQueueStats[value.id] = true;
-                  vm.displayGraph[key].data.shift();
-                }
-                if(vm.displayGraph[key].location == queueName) {
-                  
-                  vm.displayGraph[key].data.push(
-                    {
-                      "date":new Date(response.timestamp*1000),
-                      "value":response.value[value.id]
-                    }
-                  );
-                  
-                  if(vm.displayGraph[key].data.length >= test) {
-                    vm.displayGraph[key].data.splice(0, 1);
-                  }
-                }
-              });
-              vm.cleanFirstValue = false;
-            })
-          });
-        }, 5000 )
-        vm.queueStatsPoll = MonitoringService.queueStats;
       }
 
       function error(response) {
