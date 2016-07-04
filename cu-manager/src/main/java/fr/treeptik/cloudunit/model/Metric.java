@@ -23,6 +23,8 @@ public class Metric implements Serializable {
 
     private String serverName;
 
+    private String suffix;
+
     public Integer getId() {
         return id;
     }
@@ -53,5 +55,13 @@ public class Metric implements Serializable {
 
     public void setServerName(String serverName) {
         this.serverName = serverName;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
     }
 }
