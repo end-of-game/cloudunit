@@ -62,33 +62,7 @@
     
     var lastQueueNameSelected = '';
     
-    $scope.$on('application:ready', function(event, data) {
-      vm.app = data.app;
-      MonitoringService.getUrlMetrics(vm.app.servers[0].image.prefixEnv)
-        .then(function success(data) {
-           angular.forEach(data, function(predefinedGraph, index) {
-              referenceQueue(predefinedGraph.url);
-              
-              vm.displayGraph.push({
-                data: [],
-                title: predefinedGraph.url + " " + predefinedGraph.name,
-                id: predefinedGraph.suffix,
-                location: predefinedGraph.url,
-                description: predefinedGraph.url,
-                x_accessor:'date',
-                y_accessor:'value',
-                area: false,
-                interpolate: 'basic',
-              }); 
-              
-           });
-           pollStats();
-        })
-        .catch(function(err){
-          console.log(err);
-        });    
-    });
-    
+
          
     $scope.$on ( '$destroy', function () {
       $interval.cancel(vm.timer);
@@ -98,6 +72,32 @@
     init();
     
     function init() {
+      setTimeout(function() {
+        MonitoringService.getUrlMetrics(vm.app.servers[0].image.prefixEnv)
+          .then(function success(data) {
+            angular.forEach(data, function(predefinedGraph, index) {
+                referenceQueue(predefinedGraph.url);
+                
+                vm.displayGraph.push({
+                  data: [],
+                  title: predefinedGraph.url + " " + predefinedGraph.name,
+                  id: predefinedGraph.suffix,
+                  location: predefinedGraph.url,
+                  description: predefinedGraph.url,
+                  x_accessor:'date',
+                  y_accessor:'value',
+                  area: false,
+                  interpolate: 'basic',
+                }); 
+                
+            });
+            pollStats();
+          })
+          .catch(function(err){
+            console.log(err);
+          });
+      }, 0);
+      
       vm.timer = $interval(pollStats, 5000);  
     }
             
