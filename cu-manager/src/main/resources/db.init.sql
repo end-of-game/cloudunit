@@ -31,5 +31,6 @@ INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `
 VALUES
   (2, 'scott', 'tiger', 'scott.tiger@gmail.com', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 2, 1, '2014-02-22 09:22:06', 'scott',
    'user');
-   INSERT IGNORE INTO `Metric` (`id`, `name`, `url`, `serverName`, `suffix`) VALUES (1, "memoryHeap", "java.lang:type=Memory/HeapMemoryUsage", "all", "used");
+   INSERT IGNORE INTO `Metric` (`id`, `name`, `url`, `serverName`, `suffix`) VALUES (1, "memoryHeap", "java.lang:type=Memory/HeapMemoryUsage", "all", "used")
+   ,(2, "threadCount", "java.lang:type=Threading", "all", "ThreadCount"), (3, "currentThreadsBusy", 'Catalina:name="http-bio-8080",type=ThreadPool', "tomcat", "currentThreadsBusy") ;
 

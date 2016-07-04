@@ -55,29 +55,25 @@
     vm.queueNameTab = [];
     vm.timer = {};
     var NumberOfDataByGraph = 120;
-    
     vm.loadStats = loadStats;
     vm.deleteGraph = deleteGraph;
     vm.chooseQueue = chooseQueue;
-    
-    var lastQueueNameSelected = '';
-    
 
-         
+    var lastQueueNameSelected = '';
     $scope.$on ( '$destroy', function () {
       $interval.cancel(vm.timer);
       vm.timer = null;
     } );
-    
+
     init();
-    
+
     function init() {
       setTimeout(function() {
         MonitoringService.getUrlMetrics(vm.app.servers[0].image.prefixEnv)
           .then(function success(data) {
             angular.forEach(data, function(predefinedGraph, index) {
                 referenceQueue(predefinedGraph.url);
-                
+
                 vm.displayGraph.push({
                   data: [],
                   title: predefinedGraph.url + " " + predefinedGraph.name,
@@ -88,8 +84,8 @@
                   y_accessor:'value',
                   area: false,
                   interpolate: 'basic',
-                }); 
-                
+                });
+
             });
             pollStats();
           })
@@ -97,10 +93,10 @@
             console.log(err);
           });
       }, 0);
-      
-      vm.timer = $interval(pollStats, 5000);  
+
+      vm.timer = $interval(pollStats, 5000);
     }
-            
+
     function pollStats() {
           angular.forEach(vm.queueNameTab, function(queueName, key) {
             MonitoringService.chooseQueue(vm.app.location, queueName)
@@ -112,14 +108,13 @@
                   vm.displayGraph[key].data.shift();
                 }
                 if(vm.displayGraph[key].location == queueName) {
-                  
+
                   vm.displayGraph[key].data.push(
                     {
                       "date":new Date(response.timestamp*1000),
                       "value":response.value[value.id]
                     }
                   );
-                  
                   if(vm.displayGraph[key].data.length >= NumberOfDataByGraph) {
                     vm.displayGraph[key].data.splice(0, 1);
                   }
@@ -129,14 +124,14 @@
             })
           });
         }
-        
+
     function referenceQueue(queueName) {
       if(!vm.queueNameTab.includes(queueName)) {
          vm.queueNameTab.push(queueName);
       }
       lastQueueNameSelected = queueName;
     }
-    
+
     function chooseQueue(queueName) {
       vm.cleanFirstValue = true;
       MonitoringService.chooseQueue(vm.app.location, queueName)
@@ -145,13 +140,12 @@
 
       function success(response) {
         vm.queueStats = response.value;
-        
+
         // clean
         referenceQueue(vm.queueName);
         vm.errorMsg = '';
         vm.queueName = '';
         refreshSelectedQueueStats();
-        
       }
 
       function error(response) {
@@ -159,23 +153,23 @@
         return vm.errorMsg;
       }
     }
-    
+
     function cleanAll() {
       vm.cleanFirstValue = true;
       angular.forEach(vm.displayGraph , function(value, index) {
         //delete all element already selected for the current queue
         vm.displayGraph[index].data = [];
       });
-      
+
       vm.displayGraph = vm.displayGraph.filter(
         function(x) {
-          return lastQueueNameSelected != x.location;           
+          return lastQueueNameSelected != x.location;
         }
       );
     }
-    
+
     function loadStats(selectedQueueStats) {
-      
+
       cleanAll();
 
       setTimeout(function() {
@@ -191,36 +185,36 @@
               y_accessor:'value',
               area: false,
               interpolate: 'basic',
-            }); 
+            });
           }
-        });   
+        });
       }, 0);
-      
+
     }
-   
+
    function refreshSelectedQueueStats() {
       vm.selectedQueueStats = {};
       var res = vm.displayGraph.filter(
         function(x) {
-          return lastQueueNameSelected == x.location;           
+          return lastQueueNameSelected == x.location;
         }
       );
-      
+
       angular.forEach(res, function(graph, index) {
         console.log(graph.id);
         vm.selectedQueueStats[graph.id] = true;
       });
    }
-   
+
    function deleteGraph(queueStatsName, queueLocation) {
      angular.forEach(vm.displayGraph, function(graph, index) {
        if(graph.id == queueStatsName && graph.location == queueLocation) {
-        vm.displayGraph.splice(index, 1);    
+        vm.displayGraph.splice(index, 1);
        }
      });
      refreshSelectedQueueStats();
    }
-   
+
   }
 }) ();
 
