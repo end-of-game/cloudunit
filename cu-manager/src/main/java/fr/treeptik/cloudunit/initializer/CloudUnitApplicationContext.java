@@ -115,7 +115,12 @@ public class CloudUnitApplicationContext
     @Profile("integration")
     public static PropertySourcesPlaceholderConfigurer propertiesForIntegration()
         throws Exception {
-        String file = "application-integration.properties";
+        String file = "application-integration-local.properties";
+
+        String envIntegration = System.getenv("CLOUDUNIT_JENKINS_CI");
+        if ("true".equalsIgnoreCase(envIntegration)) {
+            file = "application-integration.properties";
+        }
 
         PropertySourcesPlaceholderConfigurer pspc =
             new PropertySourcesPlaceholderConfigurer();
