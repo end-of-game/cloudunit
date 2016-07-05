@@ -46,7 +46,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.security.GeneralSecurityException;

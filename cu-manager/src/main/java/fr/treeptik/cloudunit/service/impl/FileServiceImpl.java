@@ -31,7 +31,6 @@ import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;

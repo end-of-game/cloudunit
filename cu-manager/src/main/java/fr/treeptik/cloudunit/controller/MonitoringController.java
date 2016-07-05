@@ -15,7 +15,6 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import fr.treeptik.cloudunit.dao.MetricDAO;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Metric;
@@ -23,7 +22,6 @@ import fr.treeptik.cloudunit.service.MonitoringService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Path;
 import java.util.List;
 
 /**

@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.config;
 
+import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
