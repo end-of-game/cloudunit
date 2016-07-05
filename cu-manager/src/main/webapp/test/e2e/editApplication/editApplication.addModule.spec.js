@@ -28,10 +28,9 @@ var Module = function () {
 describe('E22: Edit Application Add Module', function () {
     "use strict";
 
-    var ptor, editApp, dashboard, module;
+    var editApp, dashboard, module;
 
     beforeEach(function () {
-        ptor = protractor.getInstance();
         editApp = new EditApplicationPage();
         dashboard = new DashboardPage();
         module = new Module();
@@ -42,20 +41,18 @@ describe('E22: Edit Application Add Module', function () {
     describe('add mysql module', function () {
 
         it('should display a spinner when being created', function () {
+            // set test environment
+            browser.ignoreSynchronization = true;
+            dashboard.createApp('testModule', 1);
+            browser.driver.sleep(browser.params.sleep.medium);
+            browser.get('/#/editApplication/testModule/addModule');
+            browser.ignoreSynchronization = false;
 
-// set test environment
-
-ptor.ignoreSynchronization = true;
-dashboard.createApp('testModule', 1);
-browser.driver.sleep(6000);
-browser.get('/#/editApplication/testModule/addModule');
-ptor.ignoreSynchronization = false;
-
-let buttonModule = element(by.repeater('image in modules.moduleImages').row(0));
-buttonModule.$('button').click(function () {
-    expect(element(by.css('.spinner')).isPresent()).toBeTruthy();
-})
-});
+            let buttonModule = element(by.repeater('image in modules.moduleImages').row(0));
+            buttonModule.$('button').click(function () {
+                expect(element(by.css('.spinner')).isPresent()).toBeTruthy();
+            })
+        });
 
         it('should appear in installed module list on overview section', function () {
             editApp.overviewTab.click();
@@ -84,9 +81,7 @@ buttonModule.$('button').click(function () {
             showPassBtn.click().then(function () {
                 expect(password.isDisplayed()).toBeFalsy();
             });
-
         });
-
     });
 
     describe('phpMyAdmin', function () {
@@ -96,12 +91,12 @@ buttonModule.$('button').click(function () {
                 var newWindowHandle = handles[1];
                 browser.switchTo().window(newWindowHandle).then(function () {
                     expect(browser.driver.getCurrentUrl()).toBe("http://phpmyadmin1-testmodule-johndoe-admin.cloudunit.dev/phpmyadmin/");
-//to close the current window
-browser.driver.close().then(function () {
-//to switch to the previous window
-browser.switchTo().window(handles[0]);
-});
-});
+                    //to close the current window
+                    browser.driver.close().then(function () {
+                        //to switch to the previous window
+                        browser.switchTo().window(handles[0]);
+                    });
+                });
             });
         });
     });
@@ -113,7 +108,7 @@ browser.switchTo().window(handles[0]);
             var modal = $('.modal[id$="johndoe-testmodule-mysql-5-5-1"]');
 
             toggleModal.click();
-            browser.driver.wait(protractor.until.elementIsVisible(modal), 8000);
+            browser.driver.wait(protractor.until.elementIsVisible(modal), browser.params.sleep.medium);
             expect(modal.getCssValue('display')).toBe('block');
         });
 
@@ -123,14 +118,13 @@ browser.switchTo().window(handles[0]);
             var removeBtn = modal.element(by.css('.remove-btn'));
 
             removeBtn.click();
-            browser.driver.wait(protractor.until.elementIsVisible(element(by.css('.modules-list .no-data'))), 8000);
+            browser.driver.wait(protractor.until.elementIsVisible(element(by.css('.modules-list .no-data'))), browser.params.sleep.medium);
             expect(element(by.css('.modules-list .no-data')).isDisplayed()).toBeTruthy();
 
-
-        // reset test environment
-        browser.get('/#/dashboard');
-        dashboard.deleteApp('testmodule');
-        logout();
-    });
+            // reset test environment
+            browser.get('/#/dashboard');
+            dashboard.deleteApp('testmodule');
+            logout();
+        });
     })
 });

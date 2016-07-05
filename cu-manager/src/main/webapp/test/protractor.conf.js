@@ -19,6 +19,7 @@ exports.config = {
     //'../test/e2e/dashboard/tomcat7.spec.js',
     '../test/e2e/login/login.spec.js',
     '../test/e2e/routes/role-admin.spec.js',
+    '../test/e2e/dashboard/dashboard.spec.js',
     '../test/e2e/editApplication/editApplication.spec.js',
     '../test/e2e/editApplication/editApplication.overview.spec.js',
     '../test/e2e/editApplication/editApplication.alias.spec.js',
@@ -41,6 +42,12 @@ exports.config = {
     loginAdmin: {
       login: 'johndoe',
       password: 'abc2015'
+    },
+    sleep: {
+      smallest: 500,
+      small: 2000,
+      medium: 10000,
+      large: 20000
     }
   },
   suites: {

@@ -44,16 +44,12 @@ login(browser.params.loginAdmin);
     dashboard = new DashboardPage();
   });
 
-  afterEach(function () {
-    //logout();
-  });
-
   describe('Application details', function () {
     it('should display application main properties', function () {
       // set test environment
       browser.get('/#/dashboard');
       dashboard.createApp('testOverview', 1);
-      browser.driver.sleep(20000);
+      browser.driver.sleep(browser.params.sleep.large);
       
       browser.get('/#/editApplication/testOverview/overview');
 
@@ -76,7 +72,7 @@ login(browser.params.loginAdmin);
           return status === 'Stop';
         });
       */
-      browser.driver.sleep(20000);
+      browser.driver.sleep(browser.params.sleep.large);
       expect(overview.serverStatus.getText()).toEqual('Stop');
     });
 
@@ -85,7 +81,7 @@ login(browser.params.loginAdmin);
       browser.get('/#/editApplication/testOverview/overview');
       overview.serverBtn.click();
 
-      browser.sleep(20000);
+      browser.sleep(browser.params.sleep.large);
       expect(overview.serverStatus.getText()).toEqual('Start');
       
       /*
@@ -98,7 +94,6 @@ login(browser.params.loginAdmin);
       // reset test environment
       browser.get('/#/dashboard');
       dashboard.deleteApp('testoverview');
-      browser.sleep(2000);
       logout();
 
     })

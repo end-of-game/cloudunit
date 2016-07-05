@@ -45,18 +45,19 @@ describe('E2E: Edit Application config JVM', function () {
     });
 
     it('should display the config JVM card in settings url', function () {
-// set test environment
-dashboard.createApp('testJVM', 1);
-browser.get('/#/editApplication/testJVM/settings');
-expect(element(by.id('config-JVM'))).toBeTruthy();
-});
+        // set test environment
+        dashboard.createApp('testJVM', 1);
+        
+        browser.get('/#/editApplication/testJVM/settings');
+        expect(element(by.id('config-JVM'))).toBeTruthy();
+    });
 
     it('should have a default value : 512 Mo', function () {
         browser.get('/#/editApplication/testJVM/settings');
         expect(element(by.css('input[name="selectedJvmMemory"]:checked')).getAttribute('value')).toBe('512');
     });
 
-    it('should change jvm configuration', function () {
+    xit('should change jvm configuration', function () {
         lastReleaseValue = configJVM.lastReleaseRadioElement.getAttribute('value');
         configJVM.labelMemory.click();
         configJVM.optionInput.sendKeys('-Dfoo=bar');
@@ -69,22 +70,22 @@ expect(element(by.id('config-JVM'))).toBeTruthy();
 
     });
 
-    it('should display change jvm configuration in overview', function () {
+    xit('should display change jvm configuration in overview', function () {
         browser.get('/#/editApplication/testJVM/overview');
         expect(element(by.id('jvm-memory')).getAttribute('value')).toMatch('2048 Mo');
         expect(element(by.id('jvm-options')).getAttribute('value')).toMatch('-Dfoo=bar');
         expect(element(by.id('jvm-release')).getAttribute('value')).toMatch(lastReleaseValue);
 
-/*
-waitForPromise(element(by.binding('overview.app.status')).getText,
-function (status) {
-return status === 'Start';
-});
-*/
-expect(element(by.binding('overview.app.status')).getText()).toEqual('Start');
+        /*
+        waitForPromise(element(by.binding('overview.app.status')).getText,
+        function (status) {
+        return status === 'Start';
+        });
+        */
+        expect(element(by.binding('overview.app.status')).getText()).toEqual('Start');
 
-browser.get('/#/dashboard');
-dashboard.deleteApp('testjvm');
-logout();
-});
+        browser.get('/#/dashboard');
+        dashboard.deleteApp('testjvm');
+        logout();
+    });
 });

@@ -21,7 +21,7 @@ describe('E2E: dashboard', function () {
   login(browser.params.loginAdmin);
 
   beforeEach(function () {
-    browser.ignoreSynchronization = true;
+    //browser.ignoreSynchronization = true;
     dashboard = new DashboardPage();
   });
 
@@ -53,23 +53,23 @@ describe('E2E: dashboard', function () {
           })
       });*/
       dashboard.createApp('testApp', 1);
-      browser.driver.sleep(18000);
+      browser.driver.sleep(browser.params.sleep.large);
       var newApp = dashboard.findApplication('testapp');
       expect(newApp.isPresent()).toBe(true);
     });
 
     it('should display error message if application already exists', function () {
       dashboard.setApplicationName('testApp');
-      browser.driver.sleep(500);
       expect(dashboard.errorMessage.isPresent()).toBe(true);
       dashboard.applicationNameInput.clear();
+      browser.driver.sleep(browser.params.sleep.smallest);
     });
 
     it('should display error message if application contains invalid caracters', function () {
       dashboard.setApplicationName('test@App');
-      browser.driver.sleep(500);
       expect(dashboard.errorMessage.isPresent()).toBe(true);
       dashboard.applicationNameInput.clear();
+      browser.driver.sleep(browser.params.sleep.smallest);
     });
 
     /*xit('should display a spinner when application is being created', function () {
@@ -89,7 +89,10 @@ describe('E2E: dashboard', function () {
   describe('application list', function () {
     it('should have two applications', function () {
       dashboard.createApp('testApp2', 1);
-      browser.driver.sleep(20000);
+      browser.driver.sleep(browser.params.sleep.large);
+      var newApp = dashboard.findApplication('testapp2');
+      expect(newApp.isPresent()).toBe(true);
+      
       expect(dashboard.applications.count()).toBe(2);
     })
   });
@@ -101,19 +104,19 @@ describe('E2E: dashboard', function () {
       toggleModal = appToDelete.element(by.css('.toggle-modal'));
       modal = appToDelete.element(by.css('.modal'));
       deleteBtn = modal.element(by.css('.delete-btn'));
-      browser.driver.sleep(1000);
+      browser.driver.sleep(browser.params.sleep.small);
     });
 
     it('should toggle a modal window', function () {
       toggleModal.click();
-      browser.driver.sleep(1000);
+      browser.driver.sleep(browser.params.sleep.small);
       expect(modal.getCssValue('display')).toBe('block');
     });
 
     it('should delete application', function () {
       deleteBtn.click()
         .then(function () {
-          browser.driver.sleep(10000)
+          browser.driver.sleep(browser.params.sleep.medium)
             .then(function () {
               expect(appToDelete.isPresent()).toBe(false);
               expect(dashboard.applications.count()).toBe(1);
@@ -145,7 +148,7 @@ describe('E2E: dashboard', function () {
       var before, after;
       serverBtn.click();
       browser.driver.sleep(2000).then(function () {
-        browser.driver.sleep(10000);
+        browser.driver.sleep(browser.params.sleep.medium);
         after = appToEdit.element(by.binding('application.status')).getText();
         expect(after).toEqual('Stop');
       })
@@ -155,7 +158,7 @@ describe('E2E: dashboard', function () {
       var before, after;
       serverBtn.click();
       browser.driver.sleep(2000).then(function () {
-        browser.driver.sleep(10000);
+        browser.driver.sleep(browser.params.sleep.medium);
         after = appToEdit.element(by.binding('application.status')).getText();
         expect(after).toEqual('Start');
       });
@@ -163,7 +166,6 @@ describe('E2E: dashboard', function () {
 
       // reset test environment
       dashboard.deleteApp('testapp');
-      browser.driver.sleep(5000);
       logout();
     });
   });

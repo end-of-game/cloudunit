@@ -45,7 +45,7 @@ describe('E2E: EditApplication', function () {
     it('should display the alias card in settings url', function () {
       // set test environment
       dashboard.createApp('testAlias', 1);
-      browser.driver.sleep(20000);
+      browser.driver.sleep(browser.params.sleep.large);
       browser.get('/#/editApplication/testAlias/settings');
 
       expect(alias.domain.getAttribute('value')).not.toEqual('');
@@ -57,7 +57,7 @@ describe('E2E: EditApplication', function () {
         var aliasList;
         alias.setAlias('test');
         alias.addAliasBtn.click();
-        browser.driver.sleep(2000);
+        browser.driver.sleep(browser.params.sleep.small);
         expect(alias.errorMsg.getText()).toContain('This alias must respect a valid domain name pattern');
       });
 
@@ -66,7 +66,7 @@ describe('E2E: EditApplication', function () {
         var aliasList;
         alias.setAlias('treeptik.fr');
         alias.addAliasBtn.click();
-        browser.driver.sleep(2000);
+        browser.driver.sleep(browser.params.sleep.medium);
         aliasList = element.all(by.repeater('aliase in alias.application.aliases'));
         expect(aliasList.count()).toBe(1);
       });
@@ -75,7 +75,7 @@ describe('E2E: EditApplication', function () {
         browser.get('/#/editApplication/testAlias/settings');
         alias.setAlias('treeptik.fr');
         alias.addAliasBtn.click();
-        browser.driver.sleep(2000);
+        browser.driver.sleep(browser.params.sleep.medium);
         expect(alias.errorMsg.getText()).toContain('This alias is already used by another application in CloudUnit instance(s)');
       });
     });
@@ -85,14 +85,13 @@ describe('E2E: EditApplication', function () {
         browser.get('/#/editApplication/testAlias/settings');
         var aliasList;
         alias.removeAliasBtn.click();
-        browser.driver.sleep(2000);
+        browser.driver.sleep(browser.params.sleep.medium);
         expect(alias.noAliasMsg.isPresent()).toBeTruthy();
 
         // reset test environment
         browser.get('/#/dashboard');
-        browser.sleep(2000);
+        browser.sleep(browser.params.sleep.medium);
         dashboard.deleteApp('testalias');
-        browser.sleep(20000);
         logout();
       })
     })

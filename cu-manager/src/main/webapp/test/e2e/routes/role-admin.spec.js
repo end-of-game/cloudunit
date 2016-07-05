@@ -28,8 +28,6 @@ describe('E2E: routes : role admin', function () {
   login(browser.params.loginAdmin);
 
   beforeEach(function () {
-    
-    browser.ignoreSynchronization = true;
     appBar = new AppBar();
   });
 
@@ -38,7 +36,7 @@ describe('E2E: routes : role admin', function () {
       browser.get('/#/dashboard');
       appBar.brand.click().then(function () {
         expect(browser.getLocationAbsUrl()).toMatch('/dashboard');
-        browser.sleep(1000);
+        
       })
     })
   });
@@ -46,7 +44,7 @@ describe('E2E: routes : role admin', function () {
   describe('account link', function () {
     it('should navigate to account', function () {
       appBar.accountLink.click();
-      browser.sleep(1000);
+      
       expect(browser.getLocationAbsUrl()).toMatch('/account/admin');
 
     })
@@ -55,7 +53,7 @@ describe('E2E: routes : role admin', function () {
   describe('logout', function () {
     it('should navigate to login', function () {
       appBar.logoutBtn.click();
-      browser.sleep(1000);
+      
       expect(browser.getLocationAbsUrl()).toMatch('/login');
     })
   });

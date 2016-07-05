@@ -39,13 +39,11 @@ var DeploySection = function () {
 describe('E2E Test: Edit Application Deploy War', function () {
     "use strict";
 
-    var ptor, deploy, editApp, dashboard;
+    var deploy, editApp, dashboard;
 
     login(browser.params.loginAdmin);
 
     beforeEach(function () {
-        ptor = protractor.getInstance();
-        ptor.ignoreSynchronization = true;
         deploy = new DeploySection();
         editApp = new EditApplicationPage();
         dashboard = new DashboardPage();
@@ -53,24 +51,20 @@ describe('E2E Test: Edit Application Deploy War', function () {
 
     describe('on adding file', function () {
         it('should display file infos', function () {
+            // set test environment
+            dashboard.createApp('testDeploy', 1);
+            browser.driver.sleep(browser.params.sleep.large);
+            browser.get('/#/editApplication/testDeploy/deploy');
 
-// set test environment
-
-dashboard.createApp('testDeploy', 1);
-browser.driver.sleep(6000);
-browser.get('/#/editApplication/testDeploy/deploy');
-browser.driver.sleep(2000);
-
-deploy.deployFile('../../uploads/performances.sd.0.1.war');
-expect(deploy.infoName.getText()).not.toBe('');
-expect(deploy.infoSize.getText()).not.toBe('');
-});
+            deploy.deployFile('../../uploads/performances.sd.0.1.war');
+            expect(deploy.infoName.getText()).not.toBe('');
+            expect(deploy.infoSize.getText()).not.toBe('');
+        });
 
         it('remove file on clear button click', function () {
-            deploy.clearBtn.click();
-            browser.driver.sleep(3000);
-            expect(element(by.css('.upload-meta')).getAttribute('class')).toContain('ng-hide');
-            browser.driver.sleep(2000);
+            deploy.clearBtn.click().then( function() {
+                expect(element(by.css('.upload-meta')).getAttribute('class')).toContain('ng-hide');
+            });
         });
 
         it('should show an error message if file type not authorized', function () {
@@ -88,7 +82,7 @@ expect(deploy.infoSize.getText()).not.toBe('');
             });
 
             it('should show a preview button after file upload', function () {
-                browser.driver.sleep(15000).then(function () {
+                browser.driver.sleep(browser.params.sleep.large).then(function () {
                     expect(editApp.previewLink.getAttribute('class')).not.toContain('disabled');
                 });
             })
@@ -106,27 +100,28 @@ expect(deploy.infoSize.getText()).not.toBe('');
             });
 
             it('should display content', function () {
+                browser.ignoreSynchronization = true;
                 browser.getAllWindowHandles().then(function (handles) {
                     var newWindowHandle = handles[1];
                     browser.switchTo().window(newWindowHandle).then(function () {
                         var el = element(by.css('h1'));
-                        browser.sleep(20000)
+                        browser.sleep(browser.params.sleep.large)
                         expect(el.getText()).toMatch('Hello World');
-//to close the current window
-browser.driver.close().then(function () {
-//to switch to the previous window
-browser.switchTo().window(handles[0]);
-});
-});
+                        //to close the current window
+                        browser.driver.close().then(function () {
+                            //to switch to the previous window
+                            browser.switchTo().window(handles[0]);
+                        });
+                    });
                 });
-
-// reset test environment
-browser.get('/#/dashboard');
-browser.driver.sleep(3000);
-dashboard.deleteApp('testdeploy');
-browser.driver.sleep(3000);
-logout();
-});
+                browser.ignoreSynchronization = false;
+                
+                // reset test environment
+                browser.get('/#/dashboard');
+                browser.driver.sleep(browser.params.sleep.small);
+                dashboard.deleteApp('testdeploy');
+                logout();
+            });
         });
     });
 });

@@ -48,7 +48,8 @@ var DashboardPage = (function () {
             self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
           }
           self.dropdownToggle.sendKeys(protractor.Key.ENTER);
-          self.createBtn.click();
+          browser.actions().sendKeys(protractor.Key.ENTER).perform();
+          //self.createBtn.click();
       });
     }
     this.serverChoice = function (serverChoice) {
