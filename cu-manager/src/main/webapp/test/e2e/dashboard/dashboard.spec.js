@@ -13,7 +13,9 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-var DashboardPage = require('../../pages/DashboardPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
+
 
 describe('E2E: dashboard', function () {
   var dashboard;
@@ -21,8 +23,7 @@ describe('E2E: dashboard', function () {
   login(browser.params.loginAdmin);
 
   beforeEach(function () {
-    //browser.ignoreSynchronization = true;
-    dashboard = new DashboardPage();
+    dashboard = components.DashboardPage;
   });
 
   describe('create application', function () {

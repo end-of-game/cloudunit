@@ -13,9 +13,10 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-var EditApplicationPage = require('../../pages/EditApplicationPage');
-var DashboardPage = require('../../pages/DashboardPage');
-var waitForPromise = require('../../pages/waitForPromise');
+//var waitForPromise = require('../../pages/waitForPromise');
+
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 
 var OverviewSection = function () {
@@ -38,10 +39,9 @@ describe('E2E: Edit Application Overview', function () {
   
 login(browser.params.loginAdmin);
   beforeEach(function () {
-    //login(browser.params.loginAdmin);
-    editApp = new EditApplicationPage();
+    editApp = components.EditApplicationPage;
+    dashboard = components.DashboardPage;
     overview = new OverviewSection();
-    dashboard = new DashboardPage();
   });
 
   describe('Application details', function () {

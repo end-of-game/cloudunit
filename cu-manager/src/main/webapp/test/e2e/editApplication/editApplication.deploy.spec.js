@@ -13,8 +13,8 @@
 *     For any questions, contact us : contact@treeptik.fr
 */
 
-var EditApplicationPage = require('../../pages/EditApplicationPage');
-var DashboardPage = require('../../pages/DashboardPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 var DeploySection = function () {
     "use strict";
@@ -45,8 +45,8 @@ describe('E2E Test: Edit Application Deploy War', function () {
 
     beforeEach(function () {
         deploy = new DeploySection();
-        editApp = new EditApplicationPage();
-        dashboard = new DashboardPage();
+        editApp = components.EditApplicationPage;
+        dashboard = components.DashboardPage;
     });
 
     describe('on adding file', function () {

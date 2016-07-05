@@ -13,9 +13,10 @@
 *     For any questions, contact us : contact@treeptik.fr
 */
 
-var EditApplicationPage = require('../../pages/EditApplicationPage');
-var DashboardPage = require('../../pages/DashboardPage');
-var waitForPromise = require('../../pages/waitForPromise');
+//var waitForPromise = require('../../pages/waitForPromise');
+
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 var ConfigJVMSection = function () {
     this.submitBtn = element(by.css('.config-jvm-btn'));
@@ -40,8 +41,8 @@ describe('E2E: Edit Application config JVM', function () {
 
     beforeEach(function () {
         configJVM = new ConfigJVMSection();
-        editApp = new EditApplicationPage();
-        dashboard = new DashboardPage();
+        editApp = components.EditApplicationPage;
+        dashboard = components.DashboardPage;
     });
 
     it('should display the config JVM card in settings url', function () {
@@ -57,7 +58,7 @@ describe('E2E: Edit Application config JVM', function () {
         expect(element(by.css('input[name="selectedJvmMemory"]:checked')).getAttribute('value')).toBe('512');
     });
 
-    xit('should change jvm configuration', function () {
+    it('should change jvm configuration', function () {
         lastReleaseValue = configJVM.lastReleaseRadioElement.getAttribute('value');
         configJVM.labelMemory.click();
         configJVM.optionInput.sendKeys('-Dfoo=bar');
@@ -70,7 +71,7 @@ describe('E2E: Edit Application config JVM', function () {
 
     });
 
-    xit('should display change jvm configuration in overview', function () {
+    it('should display change jvm configuration in overview', function () {
         browser.get('/#/editApplication/testJVM/overview');
         expect(element(by.id('jvm-memory')).getAttribute('value')).toMatch('2048 Mo');
         expect(element(by.id('jvm-options')).getAttribute('value')).toMatch('-Dfoo=bar');

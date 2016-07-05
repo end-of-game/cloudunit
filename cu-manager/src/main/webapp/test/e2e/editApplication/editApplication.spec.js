@@ -13,8 +13,8 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-var EditApplicationPage = require('../../pages/EditApplicationPage');
-var DashboardPage = require('../../pages/DashboardPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 describe('E2E: EditApplication', function () {
   "use strict";
@@ -24,8 +24,8 @@ describe('E2E: EditApplication', function () {
 
   beforeEach(function () {
     browser.ignoreSynchronization=true;
-    editApp = new EditApplicationPage();
-    dashboard = new DashboardPage();
+    editApp = components.EditApplicationPage;
+    dashboard = components.DashboardPage;
   });
 
   describe('create an application', function () {
@@ -33,13 +33,12 @@ describe('E2E: EditApplication', function () {
     it('should display a spinner when being created', function () {
       // set test environment
       dashboard.createApp('testApp', 1);
-      browser.driver.sleep(2000);
-
+      browser.driver.sleep(browser.params.sleep.small);
       expect(element(by.css('.pending')).isPresent()).toBeTruthy();
     });
 
     it('should stop display a spinner after being created', function () {
-      browser.driver.sleep(18000);
+      browser.driver.sleep(browser.params.sleep.large);
       expect(element(by.css('.pending')).isPresent()).toBeFalsy();
     });
 
@@ -63,20 +62,16 @@ describe('E2E: EditApplication', function () {
 
     it('should have application name in page title', function () {
       browser.get('/#/editApplication/testApp/overview');
-      browser.driver.sleep(2000);
-      editApp = new EditApplicationPage();
       expect(editApp.pageTitle.getText()).toMatch('Application testApp');
     });
 
     describe('go back link', function () {
       it('should exist', function () {
-        browser.driver.sleep(2000);
         expect(editApp.goBackLink.isPresent()).toBeTruthy();
       });
 
       it('should navigate to dashboard', function () {
         editApp.goBackLink.click();
-        browser.driver.sleep(2000);
         expect(browser.getLocationAbsUrl()).toMatch('/dashboard');
       })
 
@@ -88,7 +83,6 @@ describe('E2E: EditApplication', function () {
       describe('Overview Tab', function () {
         it('should be displayed by default', function () {
           browser.get('/#/editApplication/testApp/overview');
-          browser.driver.sleep(1000);
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/overview');
         })
       });
@@ -96,7 +90,6 @@ describe('E2E: EditApplication', function () {
       describe('Add Module Tab', function () {
         it('should display add module section', function () {
           editApp.addModuleTab.click();
-          browser.driver.sleep(1000);
           expect(editApp.addModuleTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/addModule');
         })
@@ -105,7 +98,6 @@ describe('E2E: EditApplication', function () {
       describe('Deploy Tab', function () {
        it('should display deploy section', function () {
           editApp.deployTab.click();
-          browser.driver.sleep(1000);
           expect(editApp.deployTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/deploy');
         });
@@ -114,7 +106,6 @@ describe('E2E: EditApplication', function () {
       describe('Explorer Tab', function () {
         it('should display explorer section', function () {
           editApp.explorerTab.click();
-          browser.driver.sleep(1000);
           expect(editApp.explorerTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/explorer');
         });
@@ -123,7 +114,6 @@ describe('E2E: EditApplication', function () {
       describe('Logs Tab', function () {
         it('should display logs section', function () {
           editApp.logsTab.click();
-          browser.driver.sleep(1000);
           expect(editApp.logsTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/logs');
         })
@@ -132,7 +122,6 @@ describe('E2E: EditApplication', function () {
       describe('Monitoring Tab', function () {
         it('should display monitoring section', function () {
           editApp.monitoringTab.click();
-          browser.driver.sleep(1000);
           expect(editApp.monitoringTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/monitoring');
         })
@@ -141,20 +130,17 @@ describe('E2E: EditApplication', function () {
       describe('Snapshot Tab', function () {
         it('should display snapshot section', function () {
           editApp.snapshotTab.click();
-          browser.driver.sleep(1000);
           expect(editApp.snapshotTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/snapshot');
-          browser.driver.sleep(1000);
         });
       });
 
       describe('Settings Tab', function () {
         it('should display settings section', function () {
           editApp.settingsTab.click();
-          browser.driver.sleep(1000);
           expect(editApp.settingsTab.isPresent()).toBeTruthy();
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/settings');
-          browser.driver.sleep(1000);
+          browser.driver.sleep(browser.params.sleep.smallest);
         });
       });
     })
@@ -164,9 +150,7 @@ describe('E2E: EditApplication', function () {
       it('should delete an application', function() {
         // reset test environment
         browser.get('/#/dashboard');
-        browser.driver.sleep(1000);
         dashboard.deleteApp('testapp');
-        browser.driver.sleep(5000);
         expect(element(by.id('application-testApp')).isPresent()).toBeFalsy();
         logout();
       });
