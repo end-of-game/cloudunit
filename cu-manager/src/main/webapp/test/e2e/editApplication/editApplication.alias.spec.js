@@ -13,8 +13,8 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-var EditApplicationPage = require('../../pages/EditApplicationPage');
-var DashboardPage = require('../../pages/DashboardPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 var AliasSection = function () {
   "use strict";
@@ -34,9 +34,9 @@ describe('E2E: EditApplication', function () {
   var editApp, alias, dashboard;
 
   beforeEach(function () {
-    editApp = new EditApplicationPage();
+    editApp = components.EditApplicationPage;
+    dashboard = components.DashboardPage;
     alias = new AliasSection();
-    dashboard = new DashboardPage();
   });
 
   login(browser.params.loginAdmin);
@@ -45,7 +45,6 @@ describe('E2E: EditApplication', function () {
     it('should display the alias card in settings url', function () {
       // set test environment
       dashboard.createApp('testAlias', 1);
-      browser.driver.sleep(browser.params.sleep.large);
       browser.get('/#/editApplication/testAlias/settings');
 
       expect(alias.domain.getAttribute('value')).not.toEqual('');
@@ -57,7 +56,8 @@ describe('E2E: EditApplication', function () {
         var aliasList;
         alias.setAlias('test');
         alias.addAliasBtn.click();
-        browser.driver.sleep(browser.params.sleep.small);
+
+        browser.driver.wait(protractor.until.elementTextContains(alias.errorMsg, 'This alias must respect a valid domain name pattern'), 8000);
         expect(alias.errorMsg.getText()).toContain('This alias must respect a valid domain name pattern');
       });
 

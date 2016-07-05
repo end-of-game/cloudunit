@@ -51,6 +51,9 @@ var DashboardPage = (function () {
           browser.actions().sendKeys(protractor.Key.ENTER).perform();
           //self.createBtn.click();
       });
+
+      let selectorAppNameQuery = '#application-' + appName; 
+      browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), 4000);
     }
     this.serverChoice = function (serverChoice) {
       var self = this;

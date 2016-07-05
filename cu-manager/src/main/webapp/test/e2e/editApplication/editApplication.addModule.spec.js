@@ -13,9 +13,8 @@
 *     For any questions, contact us : contact@treeptik.fr
 */
 
-var DashboardPage = require('../../pages/DashboardPage');
-
-var EditApplicationPage = require('../../pages/EditApplicationPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 var Module = function () {
     "use strict";
@@ -24,29 +23,26 @@ var Module = function () {
     };
 };
 
-
 describe('E22: Edit Application Add Module', function () {
     "use strict";
 
     var editApp, dashboard, module;
 
     beforeEach(function () {
-        editApp = new EditApplicationPage();
-        dashboard = new DashboardPage();
+        editApp = components.EditApplicationPage;
+        dashboard = components.DashboardPage;
         module = new Module();
     });
 
     login(browser.params.loginAdmin);
 
     describe('add mysql module', function () {
-
         it('should display a spinner when being created', function () {
+
             // set test environment
-            browser.ignoreSynchronization = true;
+
             dashboard.createApp('testModule', 1);
-            browser.driver.sleep(browser.params.sleep.medium);
             browser.get('/#/editApplication/testModule/addModule');
-            browser.ignoreSynchronization = false;
 
             let buttonModule = element(by.repeater('image in modules.moduleImages').row(0));
             buttonModule.$('button').click(function () {
@@ -76,7 +72,6 @@ describe('E22: Edit Application Add Module', function () {
             showPassBtn.click().then(function () {
                 expect(password.isDisplayed()).toBeTruthy();
             });
-
 
             showPassBtn.click().then(function () {
                 expect(password.isDisplayed()).toBeFalsy();
@@ -120,7 +115,7 @@ describe('E22: Edit Application Add Module', function () {
             removeBtn.click();
             browser.driver.wait(protractor.until.elementIsVisible(element(by.css('.modules-list .no-data'))), browser.params.sleep.medium);
             expect(element(by.css('.modules-list .no-data')).isDisplayed()).toBeTruthy();
-
+            
             // reset test environment
             browser.get('/#/dashboard');
             dashboard.deleteApp('testmodule');
