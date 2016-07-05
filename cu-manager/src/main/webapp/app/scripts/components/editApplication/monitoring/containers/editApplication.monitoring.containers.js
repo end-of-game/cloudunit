@@ -18,12 +18,12 @@
 
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppMonitoring', Monitoring );
+    .directive ( 'editAppMonitoringContainers', Monitoring );
 
   function Monitoring () {
     return {
       restrict: 'E',
-      templateUrl: 'scripts/components/editApplication/monitoring/editApplication.monitoring.html',
+      templateUrl: 'scripts/components/editApplication/monitoring/containers/editApplication.monitoring.containers.html',
       scope: {
         app: '='
       },
@@ -93,5 +93,3 @@
 
   }
 }) ();
-
-

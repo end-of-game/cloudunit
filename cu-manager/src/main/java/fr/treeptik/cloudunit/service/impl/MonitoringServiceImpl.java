@@ -16,9 +16,11 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import fr.treeptik.cloudunit.dao.MetricDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
 import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Metric;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.service.ApplicationService;
@@ -52,6 +54,9 @@ public class MonitoringServiceImpl
 
     private Logger logger = LoggerFactory
             .getLogger(MonitoringServiceImpl.class);
+
+    @Inject
+    private MetricDAO metricDAO;
 
     @Value("${cadvisor.url}")
     private String cAdvisorURL;
@@ -177,5 +182,8 @@ public class MonitoringServiceImpl
             logger.error("" + e.getMessage());
         }
     }
-
+    @Override
+    public List<Metric> findByServer(String serverName){
+        return metricDAO.findAllByServer(serverName);
+    }
 }

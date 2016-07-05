@@ -13,56 +13,25 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-.page-menu {
-  height: 48px;
-}
+'use strict';
 
-.tabs {
-  list-style: none;
-  font-size: 16px;
-  padding: 0 36px;
-  li {
-    display: inline-block;
-    a {
-      position: relative;
-      overflow: hidden;
-      color: #607d8b;
-      text-decoration: none;
-      line-height: 14px;
-      padding: 17px 24px;
-      display: block;
-      font-size: 14px;
-      font-weight: bold;
-      text-transform: uppercase;
-      transition: border-bottom 0.3s;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-    }
-    .dropdown-toggle {
-      font-size: 14px;
-      top: 10px;
-    }
-  }
-  li.active > a {
-    color: #03a9f4;
-    border-bottom: 2px solid #03a9f4;
-  }
-  li.active div > a {
-    color: #03a9f4;
-    border-bottom: 2px solid #03a9f4;
-  }
-  li.disabled > a {
-    color: #ccc;
-    border-bottom: 2px solid transparent;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-}
-
-.tab-content {
-  @include clearfix();
-}
-
-.tab-pane.vertical-spacing {
-  margin-top: 8px;
-}
+/**
+ * @ngdoc filter
+ * @name webuiApp.filter:truncatestring
+ * @function
+ * @description
+ * # truncatestring
+ * Filter in the webuiApp.
+ */
+angular.module('webuiApp')
+    .filter('displayNumeric', function () {
+        return function (input) {
+            var res = {};
+            angular.forEach(input, function(value, key) {
+                if(angular.isNumber(value)) {
+                    res[key] = value;
+                }
+            });
+            return res;
+        };
+    });

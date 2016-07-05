@@ -40,6 +40,7 @@
         '$scope',
         '$stateParams',
         'ApplicationService',
+        '$state',
         EditApplicationCtrl,
       ],
       controllerAs: 'editApp',
@@ -47,16 +48,32 @@
     };
   }
 
-  function EditApplicationCtrl($rootScope, $scope, $stateParams, ApplicationService) {
+  function EditApplicationCtrl($rootScope, $scope, $stateParams, ApplicationService, $state) {
 
     // ------------------------------------------------------------------------
     // SCOPE
     // ------------------------------------------------------------------------
 
     var vm = this;
+    vm.monitoringRoute = false;
 
     vm.applicationService = ApplicationService;
+    
+    function refreshRoute() {
+      if (($state.current.name == "editApplication.monitoringContainers")
+        || ($state.current.name == "editApplication.monitoringApplication")) {
+        vm.monitoringRoute = true;
+      } else {
+        vm.monitoringRoute = false;
+      }
+    }
+    
+    init();
 
+    function init() {
+      refreshRoute();
+    }
+    
     vm.applicationService.init($stateParams.name).then(function() {
       vm.application = vm.applicationService.state;
       $rootScope.$broadcast('application:ready', {
@@ -68,7 +85,15 @@
     $scope.$on('$destroy', function() {
       vm.applicationService.stopPolling();
     });
+    
 
+    vm.updateRoute = function () { 
+      
+      setTimeout(function() {
+        refreshRoute();
+      }, 0);
+    }
   }
 })();
+
 
