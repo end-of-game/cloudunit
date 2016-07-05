@@ -197,6 +197,15 @@ public abstract class AbstractJBossDeploymentControllerTestIT
             mockMvc.perform( post( "/module" ).session( session ).contentType( MediaType.APPLICATION_JSON ).content( jsonString ) ).andDo( print() );
         resultats.andExpect( status().isOk() );
 
+        logger.info("Stop the application : " + applicationName);
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        logger.info("Start the application : " + applicationName);
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
         // deploy the war
         logger.info( "Deploy an " + module + " based application" );
         resultats =

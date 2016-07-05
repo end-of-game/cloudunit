@@ -269,7 +269,7 @@ public class FileController {
         } else if (FileUnit.zip().test(fileName)) {
             command = "unzip " + realPath + " -d " + convertPathFromUI(path);
         } else {
-            throw new RuntimeException("Cannot decompress this file. Extension is not right : " + realPath);
+            throw new CheckException("Cannot decompress this file. Extension is not right : " + realPath);
         }
 
         logger.info(command);
