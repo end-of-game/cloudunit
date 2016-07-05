@@ -10,6 +10,8 @@ hipache:
 
 redis:
     image: redis:3.0.1
+    ports:
+        - 6379:6379
     command: redis-server --appendonly yes
     volumes:
         - /etc/localtime:/etc/localtime:ro
@@ -20,6 +22,8 @@ mysql:
     environment:
         - MYSQL_ROOT_PASSWORD
         - MYSQL_DATABASE=cloudunit
+    ports:
+        - 3306:3306
     volumes_from:
         - mysqldata
     volumes:
