@@ -13,7 +13,6 @@ package fr.treeptik.cloudunit.model;/*
  * For any questions, contact us : contact@treeptik.fr
  */
 
-import org.apache.commons.lang3.time.FastDateFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,9 +29,6 @@ public class Message
     public static final String ERROR = "ERROR";
 
     private static final long serialVersionUID = 1L;
-
-    private static FastDateFormat DATE_FORMATER = FastDateFormat.getInstance(
-        "dd-MM-yyyy HH:mm:ss", TimeZone.getDefault(), Locale.getDefault());
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -95,10 +91,6 @@ public class Message
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public String getDateAsString() {
-        return DATE_FORMATER.format(date);
     }
 
     public String getEvent() {
