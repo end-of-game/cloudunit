@@ -318,23 +318,4 @@ public abstract class AbstractApplicationControllerTestIT {
         deleteApplication();
     }
 
-    @Test()
-    public void test060_testJolokiaLibTest()
-            throws Exception {
-        createApplication();
-
-        logger.info("Testing jolokia war the application : " + applicationName);
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/jolokia";
-        String contentPage = getUrlContentPage(urlToCall);
-        int counter = 0;
-        while ((contentPage.isEmpty() ||contentPage.contains("Error 502 - Application Not Responding") || (contentPage.contains("404"))  && counter++ < TestUtils.NB_ITERATION_MAX)) {
-            contentPage = getUrlContentPage(urlToCall);
-            Thread.sleep(1000);
-        }
-
-        Assert.assertTrue(contentPage.contains("\"status\":200"));
-
-        deleteApplication();
-    }
-
 }

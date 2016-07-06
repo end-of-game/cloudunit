@@ -38,7 +38,7 @@ import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 public class JBoss8Mysql57ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
     public JBoss8Mysql57ModuleControllerTestIT() {
-        super.server = "jboss-8";
+        super.server = "wildfly-8";
         super.module = "mysql-5-7";
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
