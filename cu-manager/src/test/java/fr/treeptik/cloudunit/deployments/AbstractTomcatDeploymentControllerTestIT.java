@@ -141,17 +141,46 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
     }
 
     @Test( timeout = 2400000 )
-    public void test020_DeployMysqlBasedApplicationTest()
+    public void test020_DeployMysql55_BasedApplicationTest()
         throws Exception
     {
         deployApplicationWithModule( "mysql-5-5", "pizzashop-mysql", "Pizzas" );
     }
 
     @Test( timeout = 2400000 )
-    public void test030_DeployPostGresBasedApplicationTest()
+    public void test020_DeployMysql56_BasedApplicationTest()
+            throws Exception
+    {
+        deployApplicationWithModule( "mysql-5-6", "pizzashop-mysql", "Pizzas" );
+    }
+
+    @Test( timeout = 2400000 )
+    public void test020_DeployMysql57_BasedApplicationTest()
+            throws Exception
+    {
+        deployApplicationWithModule( "mysql-5-7", "pizzashop-mysql", "Pizzas" );
+    }
+
+
+    @Test( timeout = 2400000 )
+    public void test030_DeployPostGres93BasedApplicationTest()
         throws Exception
     {
         deployApplicationWithModule( "postgresql-9-3", "pizzashop-postgres", "Pizzas" );
+    }
+
+    @Test( timeout = 2400000 )
+    public void test030_DeployPostGres94BasedApplicationTest()
+            throws Exception
+    {
+        deployApplicationWithModule( "postgresql-9-4", "pizzashop-postgres", "Pizzas" );
+    }
+
+    @Test( timeout = 2400000 )
+    public void test030_DeployPostGres95BasedApplicationTest()
+            throws Exception
+    {
+        deployApplicationWithModule( "postgresql-9-5", "pizzashop-postgres", "Pizzas" );
     }
 
     @Test( timeout = 2400000 )
