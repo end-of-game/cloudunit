@@ -142,6 +142,8 @@ sudo npm update
 3 - Start the Java Backend from Mac
 
 ```
+$ cd $HOME/cloudUnit
+$ mvn clean install -DskipTests
 $ cd $HOME/cloudUnit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```

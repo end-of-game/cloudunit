@@ -115,6 +115,8 @@ cd cloudunit/cu-platform && ./reset.sh -y
 2 - Start the Java Backend from Linux
 
 ```
+$ cd $HOME/cloudunit
+$ mvn clean install -DskipTests
 $ cd $HOME/cloudunit/cu-manager
 $ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
