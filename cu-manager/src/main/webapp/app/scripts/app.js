@@ -67,7 +67,6 @@
         $urlRouterProvider.otherwise('/login');
       },])
     .constant('moment', moment)
-
     // moment locale config
     .config(function() {
       moment.locale('en', {
@@ -76,6 +75,9 @@
           sameDay: '[Today]',
         },
       });
+    })
+    .constant('CONFIG', {
+     dislayJolokia: true,
     });
 })();
 

@@ -41,6 +41,7 @@
         '$stateParams',
         'ApplicationService',
         '$state',
+        'CONFIG',
         EditApplicationCtrl,
       ],
       controllerAs: 'editApp',
@@ -48,15 +49,15 @@
     };
   }
 
-  function EditApplicationCtrl($rootScope, $scope, $stateParams, ApplicationService, $state) {
+  function EditApplicationCtrl($rootScope, $scope, $stateParams, ApplicationService, $state, CONFIG) {
 
     // ------------------------------------------------------------------------
     // SCOPE
     // ------------------------------------------------------------------------
-
+    
     var vm = this;
     vm.monitoringRoute = false;
-
+    vm.dislayJolokia = CONFIG.dislayJolokia;
     vm.applicationService = ApplicationService;
     
     function refreshRoute() {

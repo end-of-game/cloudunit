@@ -66,7 +66,7 @@
           <!-- ng-class="{ 'active': editApp.state.current.name  == 'editApplication.monitoringContainers' || editApp.state.current.name  == 'editApplication.monitoringApplication' }" -->
           <li ng-click="editApp.updateRoute();"
             ng-class="{ 'active': editApp.monitoringRoute }"
-            
+            ng-if="editApp.dislayJolokia"
             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
             <div class="dropdown" dropdown>
               <a class="dropdown-toggle mainLink" dropdown-toggle>Monitoring</a>
@@ -74,12 +74,18 @@
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
                   <a id="monitoring-tab" ui-sref="editApplication.monitoringContainers"><span>Containers</span></a>
                 </li>
-                <li  data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
                   <a id="monitoring-tab" ui-sref="editApplication.monitoringApplication"><span>Application</span></a>
                 </li>
               </ul>
             </div>
             
+           <li ng-if="!editApp.dislayJolokia" ui-sref-active="active"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="monitoring-tab" ui-sref="editApplication.monitoringContainers" ripple="">
+              <span>Monitoring</span>
+            </a>
+          </li>
             <!--<a id="monitoring-tab" ui-sref="editApplication.monitoring" ripple="">
               <div class="dropdown">
                 <button class="dropbtn">Monitoring</button>
