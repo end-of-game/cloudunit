@@ -62,7 +62,7 @@ RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && npm install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && bower --allow-root install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && grunt build
 
-RUN cd /home/cloudunit/app/CloudUnit/cu-manager/ && mvn clean package -DskipTests -Pdefault -Pproduction
+RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault -Pproduction
 
 ENV CATALINA_HOME /opt/tomcat
 ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/scripts
