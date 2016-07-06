@@ -2,12 +2,13 @@ package fr.treeptik.cloudunitmonitor.utils;
 
 import java.io.Serializable;
 
+import fr.treeptik.cloudunit.model.Container;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Server;
 import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunitmonitor.docker.model.DockerContainer;
-import fr.treeptik.cloudunitmonitor.model.Container;
-import fr.treeptik.cloudunitmonitor.model.Module;
-import fr.treeptik.cloudunitmonitor.model.Server;
+
 
 @Component
 public class ContainerMapper implements Serializable {

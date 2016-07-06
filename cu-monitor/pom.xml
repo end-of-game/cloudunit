@@ -1,9 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.treeptik</groupId>
+	<parent>
+		<groupId>fr.treeptik</groupId>
+		<artifactId>cloudunit</artifactId>
+		<version>1.0</version>
+	</parent>
 	<artifactId>cloudunitmonitor</artifactId>
-	<version>1.0-RELEASE</version>
+	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,6 +34,12 @@
 		<host.ip>192.168.50.4:4243</host.ip>
 	</properties>
 	<dependencies>
+
+		<dependency>
+			<groupId>fr.treeptik</groupId>
+			<artifactId>cu-core</artifactId>
+			<version>1.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>

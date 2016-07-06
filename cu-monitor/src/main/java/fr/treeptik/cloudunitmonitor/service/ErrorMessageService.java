@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import fr.treeptik.cloudunitmonitor.dao.ErrorMessageDAO;
 import fr.treeptik.cloudunitmonitor.exception.ServiceException;
-import fr.treeptik.cloudunitmonitor.model.ErrorMessage;
+import fr.treeptik.cloudunit.model.ErrorMessage;
 
 @Service
 public class ErrorMessageService {

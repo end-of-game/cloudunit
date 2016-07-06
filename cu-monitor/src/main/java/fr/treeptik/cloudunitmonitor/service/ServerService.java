@@ -6,6 +6,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunitmonitor.utils.HipacheRedisUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +18,7 @@ import fr.treeptik.cloudunitmonitor.dao.ServerDAO;
 import fr.treeptik.cloudunitmonitor.docker.model.DockerContainer;
 import fr.treeptik.cloudunitmonitor.exception.DockerJSONException;
 import fr.treeptik.cloudunitmonitor.exception.ServiceException;
-import fr.treeptik.cloudunitmonitor.model.Application;
-import fr.treeptik.cloudunitmonitor.model.Server;
 import fr.treeptik.cloudunitmonitor.utils.ContainerMapper;
-import fr.treeptik.cloudunitmonitor.utils.HipacheRedisUtils;
 
 @Service
 public class ServerService {
@@ -62,7 +62,7 @@ public class ServerService {
 			server = serverDAO.saveAndFlush(server);
 
 			hipacheRedisUtils.updateServerAddress(server.getApplication(), redisIp, server.getContainerIP(),
-					server.getServerAction().getServerPort(), server.getServerAction().getServerManagerPort());
+					server.getServerAction().getServerPort());
 
 		} catch (PersistenceException e) {
 

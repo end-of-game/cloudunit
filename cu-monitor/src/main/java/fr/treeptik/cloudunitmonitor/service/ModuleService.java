@@ -8,6 +8,10 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunitmonitor.utils.HipacheRedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -19,11 +23,7 @@ import fr.treeptik.cloudunitmonitor.dao.ModuleDAO;
 import fr.treeptik.cloudunitmonitor.docker.model.DockerContainer;
 import fr.treeptik.cloudunitmonitor.exception.DockerJSONException;
 import fr.treeptik.cloudunitmonitor.exception.ServiceException;
-import fr.treeptik.cloudunitmonitor.model.Application;
-import fr.treeptik.cloudunitmonitor.model.Module;
-import fr.treeptik.cloudunitmonitor.model.Status;
 import fr.treeptik.cloudunitmonitor.utils.ContainerMapper;
-import fr.treeptik.cloudunitmonitor.utils.HipacheRedisUtils;
 
 @Service
 public class ModuleService
@@ -104,7 +104,7 @@ public class ModuleService
             module = containerMapper.mapDockerContainerToModule( dockerContainer, module );
 
             // Unsubscribe module manager
-            module.getModuleAction().updateModuleManager( hipacheRedisUtils, env );
+            module.getModuleAction().updateModuleManager(hipacheRedisUtils);
 
             module.setStartDate( new Date() );
             module = moduleDAO.saveAndFlush( module );
