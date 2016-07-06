@@ -25,7 +25,7 @@ exports.config = {
     '../test/e2e/editApplication/editApplication.alias.spec.js',
     '../test/e2e/editApplication/editApplication.addModule.spec.js',
     '../test/e2e/editApplication/editApplication.configJVM.spec.js',
-    '../test/e2e/editApplication/editApplication.deploy.spec.js'
+    //'../test/e2e/editApplication/editApplication.deploy.spec.js'
   ],
 
   capabilities: {
@@ -60,7 +60,7 @@ exports.config = {
     editApplicationAlias: '../test/e2e/editApplication/editApplication.alias.spec.js',
     editApplicationAddModule: '../test/e2e/editApplication/editApplication.addModule.spec.js',
     editApplicationConfigJVM: '../test/e2e/editApplication/editApplication.configJVM.spec.js',
-    editApplicationDeploy: ['../test/e2e/editApplication/editApplication.deploy.spec.js'],
+    //editApplicationDeploy: ['../test/e2e/editApplication/editApplication.deploy.spec.js'],
     //deployTomcat6: ['../test/e2e/deployments/tomcat6.spec.js'],
     //deployTomcat7: ['../test/e2e/deployments/tomcat7.spec.js'],
     //deployTomcat8: ['../test/e2e/deployments/tomcat8.spec.js']
