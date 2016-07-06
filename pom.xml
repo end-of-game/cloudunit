@@ -7,10 +7,10 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>cu-core</module>
         <module>cu-manager</module>
         <module>cu-monitor</module>
         <module>cu-maven</module>
-        <module>cu-core</module>
     </modules>
 
 </project>
