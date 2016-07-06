@@ -20,7 +20,7 @@
 .tabs {
   list-style: none;
   font-size: 16px;
-  padding: 0 36px;
+  padding: 7px 36px;
   li {
     display: inline-block;
     a {
@@ -29,7 +29,7 @@
       color: #607d8b;
       text-decoration: none;
       line-height: 14px;
-      padding: 17px 24px;
+      padding: 8px 24px;
       display: block;
       font-size: 14px;
       font-weight: bold;
@@ -40,7 +40,7 @@
     }
     .dropdown-toggle {
       font-size: 14px;
-      top: 10px;
+      top: 8px;
     }
   }
   li.active > a {
@@ -59,6 +59,14 @@
   }
 }
 
+@-moz-document url-prefix() {
+    .tabs {
+      padding: 15px 36px;
+      li .dropdown-toggle {
+        top: 0px;
+      }
+    }
+}
 .tab-content {
   @include clearfix();
 }
