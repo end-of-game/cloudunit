@@ -295,12 +295,12 @@ public class HealthMonitor {
 	}
 
 	private DockerContainer buildContainerName(Server server) {
-		logger.info(ApplicationEntryPoint.INSTANCE+"-"+server.getName());
+		logger.info(server.getName());
 		return new DockerContainerBuilder().withName(server.getName()).build();
 	}
 
 	private DockerContainer buildContainerName(Module module) {
-		logger.info(ApplicationEntryPoint.INSTANCE+"-"+module.getName());
+		logger.info(module.getName());
 		return new DockerContainerBuilder().withName(module.getName()).build();
 	}
 

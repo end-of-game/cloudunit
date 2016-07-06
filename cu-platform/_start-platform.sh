@@ -41,11 +41,6 @@ then
     docker-compose -f $COMPOSE_FILE up -d testmysql
 fi
 
-if [ "$MODE" == "PROD" ]
-then
-    docker-compose -f $COMPOSE_FILE up -d tomcat
-fi
-
 docker-compose -f $COMPOSE_FILE up -d hipache
 
 # DNS DOCK

@@ -21,7 +21,6 @@ public class ApplicationEntryPoint {
 	public static String IP_MYSQL = null;
 	public static String IP_REDIS = null;
 	public static String MYSQL_PASSWORD = null;
-	public static String INSTANCE = null;
 	public static String MODE = null;
 
 	public static void main(String[] args)
@@ -30,16 +29,14 @@ public class ApplicationEntryPoint {
 		IP_MYSQL = args[0];
 		MYSQL_PASSWORD = args[1];
 		IP_REDIS = args[2];
-		INSTANCE = args[3];
-		MODE = args[4];
+		MODE = args[3];
 
 		logger.info("First argument (ip mysql) : " + IP_MYSQL);
-		logger.info("Second argument (password mysql) : " + IP_REDIS);
-		logger.info("Third argument (ip redis) : " + MYSQL_PASSWORD);
-		logger.info("Four argument (instance) : " + INSTANCE);
+		logger.info("Second argument (password mysql) : " + MYSQL_PASSWORD);
+		logger.info("Third argument (ip redis) : " + IP_REDIS);
 		logger.info("Four argument (mode) : " + MODE);
 
-		if (args.length < 5) {
+		if (args.length < 4) {
 			logger.error("One parameter is missing : ");
 			System.exit(1);
 		}

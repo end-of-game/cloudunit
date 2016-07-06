@@ -38,12 +38,11 @@ fi
 
 MAX=45
 
-if [ ! -f /init-service-ok ]; then
-   	useradd -m $CU_USER && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
+if [ ! -f /init-service-ok ];
+then
+    useradd -m $CU_USER && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
 	usermod -s /bin/bash $CU_USER
-
 	$JBOSS_HOME/bin/add-user.sh --silent=true $CU_USER $CU_PASSWORD
-
 	echo  "CU_USER=$CU_USER" >> /etc/environment
 	echo  "CU_PASSWORD=$CU_PASSWORD" >> /etc/environment
 	echo  "CU_REST_IP=$CU_REST_IP" >> /etc/environment
@@ -54,7 +53,6 @@ if [ ! -f /init-service-ok ]; then
 	echo  "JAVA_OPTS=-Xms96m -Xms512m -Xmx512m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true" >> /etc/environment
 fi
 
-cat /etc/environment
 source /etc/environment
 /usr/sbin/sshd
 chown -R $CU_USER:$CU_USER /cloudunit/appconf/wildfly
@@ -62,7 +60,8 @@ chown -R $CU_USER:$CU_USER /cloudunit/appconf/wildfly
 RETURN=$?
 
 # ########################
-if [[ "$RETURN" -eq  "1" ]]; then
+if [ "$RETURN" -eq  "1" ];
+then
     $JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER FAIL $MANAGER_DATABASE_PASSWORD
 else
     $JAVA_HOME/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar SERVER $MYSQL_ENDPOINT $CU_DATABASE_NAME $CU_USER START $MANAGER_DATABASE_PASSWORD

@@ -40,7 +40,7 @@ public class KeyStoreUtils {
 		keyStore.load(null);
 
 		keyStore.setKeyEntry("docker", privKey, "docker".toCharArray(), certs);
-		addCA(keyStore, certPath + "/	ca.pem");
+		addCA(keyStore, certPath + "/ca.pem");
 		return keyStore;
 	}
 

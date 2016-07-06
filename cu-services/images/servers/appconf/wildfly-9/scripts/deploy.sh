@@ -12,24 +12,19 @@ echo "#################################"
 
 source /etc/environment
 
-/cloudunit/scripts/cu-stop.sh
-
 # Delete the current app
-rm $JBOSS_HOME/standalone/deployments/*
+shopt -s extglob
+rm $JBOSS_HOME/standalone/deployments/!(jolokia.war*)
 
+FILE=$WAR_PATH/$WAR_NAME
 # Move the app in deployment
 if [[ $WAR_NAME == *.war ]]; then
-	mv $WAR_PATH/$WAR_NAME $JBOSS_HOME/standalone/deployments/ROOT.war
-	touch $JBOSS_HOME/standalone/deployments/ROOT.war.dodeploy
-fi
-
-if [[ $WAR_NAME == *.ear ]]; then
-	mv $WAR_PATH/$WAR_NAME $JBOSS_HOME/standalone/deployments/$WAR_NAME
-	touch $JBOSS_HOME/standalone/deployments/$WAR_NAME.dodeploy
+	mv $WAR_PATH/$WAR_NAME $WAR_PATH/ROOT.war
+	FILE=$WAR_PATH/ROOT.war
 fi
 
 chown -R $CU_USER:$CU_USER /cloudunit
-/cloudunit/scripts/cu-start.sh
+$JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="deploy $FILE"
 
 sleep 2
 

@@ -68,8 +68,8 @@ ENV CATALINA_HOME /opt/tomcat
 ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/scripts
 
 # Install Tomcat
-RUN wget http://apache.websitebeheerjd.nl/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33.tar.gz && \
-	tar -xvf apache-tomcat-8.0.33.tar.gz && \
+RUN wget http://apache.websitebeheerjd.nl/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz && \
+	tar -xvf apache-tomcat-8.0.36.tar.gz && \
 	rm apache-tomcat*.tar.gz && \
 	mv apache-tomcat* ${CATALINA_HOME}
 

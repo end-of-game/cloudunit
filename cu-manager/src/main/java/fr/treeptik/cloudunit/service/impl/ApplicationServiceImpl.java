@@ -277,7 +277,7 @@ public class ApplicationServiceImpl
             application.setDomainName(subdomain + suffixCloudUnitIO);
             application = applicationDAO.save(application);
             application.setManagerIp(dockerManagerIp);
-            application.setJvmRelease(javaVersionDefault);
+
             application.setRestHost(restHost);
             logger.info(application.getManagerIp());
 
@@ -295,6 +295,7 @@ public class ApplicationServiceImpl
             application.setServers(servers);
 
             // Persistence for Application model
+            application.setJvmRelease(server.getJvmRelease());
             application = applicationDAO.save(application);
 
         } catch (DataAccessException e) {

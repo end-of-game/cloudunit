@@ -265,7 +265,7 @@
 		<profile>
 			<id>production</id>
 			<properties>
-				<host.ip>localhost:4243</host.ip>
+				<host.ip>localhost:2376</host.ip>
 			</properties>
 		</profile>
 	</profiles>

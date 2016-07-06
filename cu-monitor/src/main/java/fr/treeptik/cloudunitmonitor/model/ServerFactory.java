@@ -1,10 +1,6 @@
 package fr.treeptik.cloudunitmonitor.model;
 
-import fr.treeptik.cloudunitmonitor.model.action.FatJarAction;
-import fr.treeptik.cloudunitmonitor.model.action.JBossAction;
-import fr.treeptik.cloudunitmonitor.model.action.JBossAction5;
-import fr.treeptik.cloudunitmonitor.model.action.ServerAction;
-import fr.treeptik.cloudunitmonitor.model.action.TomcatAction;
+import fr.treeptik.cloudunitmonitor.model.action.*;
 
 public class ServerFactory {
 
@@ -49,6 +45,8 @@ public class ServerFactory {
 			result = new FatJarAction(server);
 		} else if (imageName.toLowerCase().contains("apache")) {
 			result = new FatJarAction(server);
+		} else  {
+			result = new WilfdlyAction(server);
 		}
 
 		return result;

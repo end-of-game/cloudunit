@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export JK_MAJOR=2.7
+export JK_MAJOR=2.8
 
 docker images |grep jenkinsci/jenkins |grep $JK_MAJOR
 if [ "$?" == "1" ]; then
@@ -13,7 +13,7 @@ RETURN=`docker ps | grep jenkins2`
 if [ -z "$RETURN" ]; then
 
     mkdir -p /home/vagrant/jenkins_home
-    sudo chown -R vagrant jenkins_home/
+    sudo chown -R vagrant /home/vagrant/jenkins_home/
     docker run  --name jenkins2 \
                 -d -p 9080:8080 -p 50000:50000 \
                 -v /home/vagrant/jenkins_home:/var/jenkins_home \

@@ -38,8 +38,16 @@
       border-bottom: 2px solid transparent;
       cursor: pointer;
     }
+    .dropdown-toggle {
+      font-size: 14px;
+      top: 10px;
+    }
   }
   li.active > a {
+    color: #03a9f4;
+    border-bottom: 2px solid #03a9f4;
+  }
+  li.active div > a {
     color: #03a9f4;
     border-bottom: 2px solid #03a9f4;
   }

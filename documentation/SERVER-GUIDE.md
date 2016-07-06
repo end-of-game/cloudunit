@@ -58,13 +58,39 @@ To do it, you have to change the
 
 Run `/home/admincu/cloudunit/cu-platform/reset-prod.sh -y`
 
-## Certificats
+## Domain Name and SSL Certificates
 
-By default, we cannot know your domain name. 
-So we provide default certificats for HTTPS but without valid CA.
+In order to customize your Cloudunit installation with your own domain name and SSL certificates, please follow these instructions.
 
-NGINX is provided as docker container. The certificats can be modified on filesystem through a volume.
-You have to replace the certificats into `/home/admincu/cloudunit/cu-production/nginx`
+### NGINX config files
+
+NGINX is the entrypoint of the Cloudunit PAAS frontend and is provided as docker conatainer.
+
+SSL certificates directory location:
+
+```
+/home/admincu/cloudunit/cu-production/nginx/DOMAIN_NAME/
+```
+
+NGINX global configuration for domain wildcard:
+
+```
+/home/admincu/cloudunit/cu-production/nginx/nginx.conf
+```
+
+NGINX domain configuration for apps (gitlab, jenkins, admin...):
+Please rename the following file with your domain name and customize it.
+
+```
+/home/admincu/cloudunit/cu-production/nginx/sites-enabled/cloudunit.io.conf
+```
+### SSL Certificates
+
+The number of certificates to list per Nginx server name depends on your SSL Provider.
+Extensions also could be differ from a provider to another.
+
+As an example Globalsign gives, in addition, an intermediate certificate. Some others aggregate and encrypt certificates in PKCS / P7B format. In this case, you have to split the file in multiple standard certificates.
+
 
 # FAQ
 

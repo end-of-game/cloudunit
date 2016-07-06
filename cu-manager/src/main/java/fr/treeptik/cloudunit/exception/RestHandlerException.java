@@ -36,6 +36,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -57,6 +58,20 @@ public class RestHandlerException
             new HttpErrorServer(ex.getLocalizedMessage()), headers,
             HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatus status,
+                                                                  WebRequest request) {
+        ex.printStackTrace();
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return handleExceptionInternal(ex,
+                new HttpErrorServer(ex.getLocalizedMessage()), headers,
+                HttpStatus.BAD_REQUEST, request);
+    }
+
 
     @ExceptionHandler(value = {CheckException.class})
     protected ResponseEntity<Object> handleCheckedeException(Exception ex,

@@ -38,6 +38,7 @@ public class DockerContainer {
 	public static DockerContainer findOne(DockerContainer dockerContainer,
 			String hostIp) throws DockerJSONException {
 
+		logger.info("TRACE : " + dockerContainer.getName() + " " + hostIp);
 		dockerContainer = dockerContainerJSON.findOne(
 				dockerContainer.getName(), hostIp);
 		return dockerContainer;

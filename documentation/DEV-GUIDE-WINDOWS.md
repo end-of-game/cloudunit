@@ -144,7 +144,7 @@ All questions and answers about dev tasks
 
 ```
 vagrant ssh
-cloudunit/cu-platform/reset-all.sh -y
+cloudunit/cu-platform/reset.sh -y
 ```
 
 ## How to rebuild images
@@ -154,5 +154,5 @@ Update your sources, build the images and reninit the database :
 ```
 $ vagrant ssh dev
 $ cloudunit/cu-services/build-services.sh
-$ cloudunit/cu-platform/reset-all.sh -y
+$ cloudunit/cu-platform/reset.sh -y
 ```

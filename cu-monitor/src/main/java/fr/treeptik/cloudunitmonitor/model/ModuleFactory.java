@@ -11,7 +11,7 @@ public class ModuleFactory {
 	/**
 	 * Return new module with ModuleAction initialized
 	 * 
-	 * @param moduleName
+	 * @param
 	 * @return
 	 */
 	public static Module getModule(String imageName) {
@@ -26,7 +26,7 @@ public class ModuleFactory {
 	/**
 	 * Update module with ModuleAction initialized
 	 * 
-	 * @param moduleName
+	 * @param module
 	 * @return
 	 */
 	public static Module updateModule(Module module) {
@@ -42,7 +42,7 @@ public class ModuleFactory {
 
 		if (imageName.toLowerCase().contains("mysql")) {
 			result = new MysqlModuleAction(module);
-		} else if (imageName.toLowerCase().contains("postgresql")) {
+		} else if (imageName.toLowerCase().contains("postgresql") || imageName.toLowerCase().contains("postgis")) {
 			result = new PostgreSQLModuleAction(module);
 		} else if (imageName.toLowerCase().contains("mongo")) {
 			result = new MongoModuleAction(module);

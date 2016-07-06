@@ -1,0 +1,136 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="tab-pane vertical-spacing"
+     data-ng-class="{pending: monitoringApp.isLoading}">
+
+    <div class="card large">
+      <div class="content clearfix">
+
+        <h3 class="title large">Choose Jolokia JMX path</h3>
+
+        <form id="choose-queue"
+            name="chooseQueueForm"
+            class="clearfix" novalidate=""
+            data-ng-submit="monitoringApp.chooseQueue(monitoringApp.queueName)">
+
+          <div class="input-group stack">
+            <input id="queue-name"
+                  name="queueName"
+                  type="text"
+                  data-ng-model="monitoringApp.queueName"
+                  ng-required="true"
+                  placeholder="Queue Name"/>
+
+            <p class="hint error" data-ng-show="monitoringApp.errorMsg">{{monitoringApp.errorMsg}}</p>
+          </div>
+          <div class="actions">
+            <div class="secondary-actions pull-right">
+              <button type="submit"
+                      class="queue-btn button primary raised"
+                      ripple="">
+                <span>Send</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>    
+    
+    <div ng-if="!(monitoringApp.queueStats | isEmpty)" class="card large">
+      <div class="content clearfix">
+        <h3 class="title large">Metrics</h3>
+        
+        <form id="load-stats"
+          name="loadStatsForm"
+          class="clearfix" novalidate=""
+          data-ng-submit="monitoringApp.loadStats(monitoringApp.selectedQueueStats)">
+
+
+          <div class="input-group check checkbox inline" ng-repeat="(queueStatsName, value) in monitoringApp.queueStats | displayNumeric: monitoringApp.queueStats">
+            <input id="{{queueStatsName}}" type="checkbox"
+              ng-model="monitoringApp.selectedQueueStats[queueStatsName]"
+              ng-value="queueStatsName"
+              data-ng-disabled="monitoringApp.application.status === 'PENDING'"/>
+            <label for="{{queueStatsName}}">
+              {{queueStatsName}}
+            </label>
+          </div>
+          
+          <div class="actions">
+            <div class="secondary-actions pull-right">
+              <button type="submit"
+                      class="queue-btn button primary raised"
+                      ripple="">
+                <span>Load</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <div class="card medium" ng-repeat="graph in monitoringApp.displayGraph track by $index">
+      <div class="content clearfix">
+        <chart data-data="graph.data"
+                data-convert-date-field="date"
+                data-options="graph">
+        </chart>
+        
+        <div class="action clearfix">
+          <div class="secondary-action">
+            <button class="icon-button secondary pull-left allowed"
+              data-ng-click="monitoringApp.deleteGraph(graph.id, graph.location)">
+              <i class="icon-whhg trash"></i>
+            </button>
+          </div>
+        </div>
+       
+      </div>
+      
+      <!--
+        data-toggle="modal"
+        data-target="#delete-{{graph.title}}"
+        data-keyboard="true"
+        ripple=""
+        tooltip=""
+        data-title="Delete"
+        data-placement="bottom"
+                    
+        <div class="modal"
+          id="delete-{{graph.title}}"
+          modaldismiss="">
+        <div class="modal-inner">
+          <div class="content">
+            <h3 class="title">Removal confirmation required</h3>
+
+            <div class="action">
+              <button type="button" class="button secondary allowed" data-dismiss="modal">Cancel
+              </button>
+              <button type="button" class="delete-btn button primary allowed"
+                      data-ng-click="monitoringApp.deleteGraph(graph.title)"
+                      data-dismiss="modal">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
+      
+    </div>
+
+                    
+    

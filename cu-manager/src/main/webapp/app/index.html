@@ -25,9 +25,13 @@
   <!-- build:css(.) styles/vendor.css -->
   <!-- bower:css -->
   <link rel="stylesheet" href="bower_components/ng-table/ng-table.css" />
+  <link rel="stylesheet" href="bower_components/textAngular/src/textAngular.css" />
   <link rel="stylesheet" href="bower_components/chartist/dist/chartist.min.css" />
   <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css" />
   <link rel="stylesheet" href="bower_components/textAngular/dist/textAngular.css" />
+  <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.css" />
+  <link rel="stylesheet" href="bower_components/metrics-graphics/dist/metricsgraphics.css" />
+
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css(.tmp) styles/main.css -->
@@ -178,6 +182,12 @@
 <script src="bower_components/textAngular/dist/textAngular.js"></script>
 <script src="bower_components/textAngular/dist/textAngular-sanitize.js"></script>
 <script src="bower_components/textAngular/dist/textAngularSetup.js"></script>
+<script src="bower_components/d3/d3.js"></script>
+<script src="bower_components/nvd3/build/nv.d3.js"></script>
+<script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
+<script src="bower_components/metrics-graphics/dist/metricsgraphics.js"></script>
+<script src="bower_components/angular-metrics-graphics/dist/angular-metrics-graphics.js"></script>
+
 <!-- endbower -->
 <!-- endbuild -->
 
@@ -222,6 +232,8 @@
 <script src="scripts/shared/filters/formatUserRolesFilter.js"></script>
 <script src="scripts/shared/filters/cleanPathFilter.js"></script>
 <script src="scripts/shared/filters/appByServerImage.js"></script>
+<script src="scripts/shared/filters/displayNumeric.js"></script>
+<script src="scripts/shared/filters/isEmpty.js"></script>
 
 <!--UI-->
 <script src="scripts/shared/tags/tags.js"></script>
@@ -253,8 +265,9 @@
 <script src="scripts/components/editApplication/logs/logService.js"></script>
 <script src="scripts/components/editApplication/images/editApplication.images.js"></script>
 <script src="scripts/components/editApplication/images/imageService.js"></script>
-<script src="scripts/components/editApplication/monitoring/editApplication.monitoring.js"></script>
+<script src="scripts/components/editApplication/monitoring/containers/editApplication.monitoring.containers.js"></script>
 <script src="scripts/components/editApplication/monitoring/monitoringService.js"></script>
+<script src="scripts/components/editApplication/monitoring/application/editApplication.monitoring.application.js"></script>
 <script src="scripts/components/editApplication/overview/editApplication.overview.js"></script>
 <script src="scripts/components/editApplication/snapshots/editApplication.snapshot.js"></script>
 <script src="scripts/components/editApplication/settings/editApplication.settings.js"></script>
