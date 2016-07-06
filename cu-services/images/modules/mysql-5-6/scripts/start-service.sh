@@ -24,7 +24,7 @@ MAX=30
 
 # Callback bound to the application stop
 terminate_handler() {
-  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
+  /etc/init.d/apache2 stop
   kill -s SIGTERM $(pidof mysqld)
   CODE=$?
   if [[ "$CODE" -eq "0" ]]; then
@@ -79,6 +79,9 @@ do
 	let count=$count+1;
 	sleep 1
 done
+
+# source /etc/apache2/envvars && /usr/sbin/apache2 -DFOREGROUND &
+/etc/init.d/apache2 start
 
 # ####################################
 # If mysql is started we notify it #
