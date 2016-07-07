@@ -25,33 +25,27 @@
    */
   angular
     .module ( 'webuiApp.mainTimeline' )
-    .directive ( 'mainTimeline', MainTimeline );
+    .component ( 'mainTimeline', MainTimeline() );
 
 
   function MainTimeline () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/mainTimeline/mainTimeline.html',
-      scope: {
+      bindings: {
         context: '='
       },
       controller: [
-        '$scope',
-        '$interval',
         'FeedService',
-        '$stateParams',
         'ErrorService',
         TimelineCtrl
       ],
       controllerAs: 'timeline',
-      bindToController: true
     };
   }
 
-  function TimelineCtrl ( $scope, $interval, FeedService, $stateParams, ErrorService) {
+  function TimelineCtrl (FeedService, ErrorService) {
 
-        var timer, currentApp, vm;
-        currentApp = $stateParams.name;
+        var vm;
         vm = this;
 
         vm.event = '';
@@ -59,25 +53,13 @@
         vm.orderByDate = true;
         vm.applicationName = '';
 
-        init();
-        updateMessages();
-
-        timer = $interval(function () {
-          vm.context === 'dashboard' ? updateMessages() : updateMessagesForCurrentApplication();
-        }, 2000);
-
-
-        $scope.$on('$destroy', function () {
+        vm.$onDestroy = function () {
           $interval.cancel(timer);
-        });
+        };
         
         ////////////////////////////////////////////////////
 
-        function init() {
-          vm.context === 'dashboard' ? updateMessages() : updateMessagesForCurrentApplication();
-        }
-
-        function updateMessages() {
+        vm.$onInit = function() {
           FeedService.listMessagesFirstRows()
             .then(success)
             .catch(error);
@@ -94,30 +76,7 @@
             }
           }
         }
-
-        function updateMessagesForCurrentApplication() {
-          if(!currentApp){
-            return;
-          }
-          
-          FeedService.listMessagesForCurrentApplication(currentApp)
-            .then( function onComplete (messages) {
-                vm.messages = messages;
-                $scope.tableParams.reload ();
-              }
-            )
-            .catch(function onError(response) {
-              FeedService.handle(response);
-              if(timer){
-                $interval.cancel(timer);
-              }
-            });
-        }
-        
-        $scope.orderBy = function () {
-          vm.orderByDate = (vm.date === "Recent") ? true : false;
-        }
-
+      
   }
 }) ();
 

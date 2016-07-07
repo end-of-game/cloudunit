@@ -47,13 +47,13 @@
               <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                 <li>
                   <a ng-href=""
-                     data-ng-click="timeline.date = 'Recent'; orderBy();">
+                     data-ng-click="timeline.orderByDate = true; timeline.date = 'Recent';">
                     Recent
                   </a>
                 </li>
                 <li>
                   <a ng-href=""
-                     data-ng-click="timeline.date = 'Old'; orderBy();">
+                     data-ng-click="timeline.orderByDate = false; timeline.date = 'Old';">
                     Old
                   </a>
                 </li>
