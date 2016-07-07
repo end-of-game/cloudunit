@@ -17,13 +17,12 @@
   'use strict';
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppModules', Modules );
+    .component ( 'editAppModules', Modules() );
 
   function Modules () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/images/editApplication.images.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -33,7 +32,6 @@
         ModulesCtrl
       ],
       controllerAs: 'modules',
-      bindToController: true
     };
   }
 
@@ -41,9 +39,11 @@
     var vm = this;
     vm.moduleImages = [];
     vm.addModule = addModule;
-
-    getModulesImages ();
-
+    
+    vm.$onInit = function() {
+      getModulesImages ();
+    }
+    
     function getModulesImages () {
       return ImageService.findEnabledModule ()
         .then ( success )

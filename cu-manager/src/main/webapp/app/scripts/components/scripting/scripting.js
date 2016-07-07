@@ -25,14 +25,13 @@
    */
   angular
     .module ( 'webuiApp.scripting' )
-    .directive ( 'scripting', Scripting );
+    .component ( 'scripting', Scripting() );
 
 
   function Scripting () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/scripting/scripting.html',
-      scope: {
+      bindings: {
         context: '='
       },
       controller: [
@@ -42,7 +41,6 @@
         ScriptingCtrl
       ],
       controllerAs: 'scripting',
-      bindToController: true
     };
   }
 
@@ -55,14 +53,7 @@
 
         vm.executeScript = executeScript;
 
-
-        init();
-
         ////////////////////////////////////////////////////
-
-        function init() {
-          console.log("hello");
-        }
 
         function executeScript ( scriptContent ) {
           ApplicationService.executeScript ( scriptContent )

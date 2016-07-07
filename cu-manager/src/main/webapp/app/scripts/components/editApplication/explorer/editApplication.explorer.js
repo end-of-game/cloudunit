@@ -18,13 +18,12 @@
 
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppExplorer', Explorer );
+    .component ( 'editAppExplorer', Explorer() );
 
   function Explorer () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/explorer/editApplication.explorer.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -38,7 +37,6 @@
         ExplorerCtrl
       ],
       controllerAs: 'explorer',
-      bindToController: true
     };
   }
 
@@ -72,10 +70,12 @@
     vm.getFile = getFile;
     vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
-
-    init ();
-
-    function init ( containerIndex ) {
+    
+    vm.$onInit = function() {
+      displayContainersAndSelectCurrent(); 
+    }
+     
+    function displayContainersAndSelectCurrent ( containerIndex ) {
       // Display the list of containers
       getContainers ().then ( function onSuccess ( data ) {
         var index = containerIndex || 0;
@@ -101,10 +101,11 @@
 
     // Method to redraw the tree if we change container origin
     function refresh ( index ) {
+      console.log("refresh");
       vm.rootFolder = [];
       vm.subFolder = [];
       vm.currentPath = [];
-      init ( index );
+      displayContainersAndSelectCurrent ( index );
     }
     
     function addNewDirectory(containerId, path, newDirectoryName) {

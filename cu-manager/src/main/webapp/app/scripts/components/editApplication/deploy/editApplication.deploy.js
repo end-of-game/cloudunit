@@ -19,14 +19,13 @@
 
   angular
     .module('webuiApp.editApplication')
-    .directive('editAppDeploy', Deploy);
+    .component('editAppDeploy', Deploy());
 
 
   function Deploy(){
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/deploy/editApplication.deploy.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -36,7 +35,6 @@
         DeployCtrl
       ],
       controllerAs: 'deploy',
-      bindToController: true
     };
   }
 

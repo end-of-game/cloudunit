@@ -26,29 +26,26 @@
    */
   angular
     .module('webuiApp.editApplication')
-    .directive('editApplication', EditApplication);
+    .component('editApplication', EditApplication());
 
   function EditApplication() {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/editApplication.html',
-      scope: {
+      bindings: {
         state: '=',
       },
       controller: [
         '$rootScope',
-        '$scope',
         '$stateParams',
         'ApplicationService',
         '$state',
         EditApplicationCtrl,
       ],
       controllerAs: 'editApp',
-      bindToController: true,
     };
   }
 
-  function EditApplicationCtrl($rootScope, $scope, $stateParams, ApplicationService, $state) {
+  function EditApplicationCtrl($rootScope, $stateParams, ApplicationService, $state) {
 
     // ------------------------------------------------------------------------
     // SCOPE
@@ -67,10 +64,8 @@
         vm.monitoringRoute = false;
       }
     }
-    
-    init();
 
-    function init() {
+    vm.$onInit = function() {
       refreshRoute();
     }
     
@@ -82,9 +77,9 @@
     });
 
     // We must destroy the polling when the scope is destroyed
-    $scope.$on('$destroy', function() {
+     vm.$onDestroy = function () {
       vm.applicationService.stopPolling();
-    });
+    };
     
 
     vm.updateRoute = function () { 

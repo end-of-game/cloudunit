@@ -17,13 +17,12 @@
   'use strict';
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppSnapshot', Snapshot );
+    .component ( 'editAppSnapshot', Snapshot() );
 
   function Snapshot(){
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/snapshots/editApplication.snapshot.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -31,7 +30,6 @@
         SnapshotCtrl
       ],
       controllerAs: 'snapshot',
-      bindToController: true
     };
   }
 

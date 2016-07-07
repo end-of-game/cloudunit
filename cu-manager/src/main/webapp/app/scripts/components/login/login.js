@@ -24,13 +24,12 @@
    */
   angular
     .module('webuiApp.login')
-    .directive('login', Login);
+    .component('login', Login());
 
   function Login() {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/login/login.html',
-      scope: {
+      bindings: {
         cuEnv: '=',
         errorMsg: '=',
       },
@@ -41,7 +40,6 @@
         LoginCtrl,
       ],
       controllerAs: 'login',
-      bindToController: true,
     };
   }
 

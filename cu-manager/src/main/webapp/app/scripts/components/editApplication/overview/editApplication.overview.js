@@ -16,13 +16,12 @@
 (function(){
   "use strict";
   angular.module('webuiApp.editApplication')
-    .directive('editAppOverview', Overview);
+    .component('editAppOverview', Overview());
 
   function Overview () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/overview/editApplication.overview.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -33,7 +32,6 @@
         OverviewCtrl
       ],
       controllerAs: 'overview',
-      bindToController: true
     };
   }
 
@@ -60,10 +58,7 @@
       } )
     });
     
-    
-    init();
-
-    function init() {
+    vm.$onInit = function() {
       if(vm.app) {
       ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
         .then ( function (data) {

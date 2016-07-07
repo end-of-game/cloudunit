@@ -18,28 +18,23 @@
   'use strict';
   angular
     .module('webuiApp.editApplication')
-    .directive('jvmComponent', ConfigJVMComponent);
+    .component('jvmComponent', ConfigJVMComponent());
 
   function ConfigJVMComponent() {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/settings/jvm/editApplication.settings.configureJVM.html',
-      scope: {
+      bindings: {
         application: '=app',
       },
       controller: ['$scope', 'JVMService', ConfigJVMCtrl],
       controllerAs: 'configjvm',
-      bindToController: true,
     };
   }
 
   function ConfigJVMCtrl($scope, JVMService) {
     var vm = this;
 
-    console.log(vm.application);
-
     // Config JVM
-
     vm.jvmOptions = vm.application.servers[0].jvmOptions;
     vm.jvmMemory = vm.application.servers[0].jvmMemory;
     vm.jvmRelease = vm.application.servers[0].jvmRelease;
@@ -55,7 +50,6 @@
       JVMService.saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease);
       $scope.$emit('workInProgress', { delay: 10000 });
     }
-
+  
   }
 })();
-

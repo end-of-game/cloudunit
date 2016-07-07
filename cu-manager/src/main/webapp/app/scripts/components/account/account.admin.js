@@ -17,11 +17,10 @@
   'use strict';
   angular
     .module ( 'webuiApp.account' )
-    .directive ( 'accountAdmin', AccountAdmin );
+    .component ( 'accountAdmin', AccountAdmin() );
 
   function AccountAdmin () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/account/account.admin.html',
       scope: {},
       controller: [
@@ -30,7 +29,6 @@
         AccountAdminCtrl
       ],
       controllerAs: 'accountAdmin',
-      bindToController: true
     };
   }
 
@@ -55,8 +53,10 @@
     vm.createUser = createUser;
     vm.changeRole = changeRole;
     vm.errorMsg = "";
-
-    getUsers ();
+    
+    vm.$onInit = function() {
+      getUsers ();      
+    }
 
     //////////////////////////////////////////
 

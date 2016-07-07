@@ -18,13 +18,12 @@
 
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppMonitoringContainers', Monitoring );
+    .component ( 'editAppMonitoringContainers', Monitoring() );
 
   function Monitoring () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/monitoring/containers/editApplication.monitoring.containers.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -36,7 +35,6 @@
         MonitoringCtrl
       ],
       controllerAs: 'monitoring',
-      bindToController: true
     };
   }
 
@@ -66,12 +64,14 @@
       startAngle: 270,
       total: 100
     };
-
-    $scope.$on ( '$destroy', function () {
+    
+    vm.$onDestroy = function () {
       vm.monitoringService.stopPollStats();
-    } );
-
-    getContainers ();
+    };
+    
+    vm.$onInit = function() {
+      getContainers ();  
+    }
 
     function getContainers ( selectedContainer ) {
       vm.isLoading = true;
@@ -80,7 +80,6 @@
           vm.containers = containers;
           vm.myContainer = selectedContainer || containers[0];
 
-          console.log(vm.myContainer);
           vm.monitoringService.initStats ( vm.myContainer.name ).then ( function () {
             vm.stats = vm.monitoringService.stats;
             vm.isLoading = false;

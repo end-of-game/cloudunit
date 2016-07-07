@@ -18,14 +18,13 @@
 
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppLogs', Logs );
+    .component ( 'editAppLogs', Logs() );
 
 
   function Logs () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/logs/editApplication.logs.html',
-      scope: {
+      bindings: {
         app: '=',
         state: '='
       },
@@ -41,7 +40,6 @@
         LogsCtrl
       ],
       controllerAs: 'logs',
-      bindToController: true
     };
   }
 
@@ -66,8 +64,6 @@
     vm.myRows = vm.rows[0];
     vm.isLoading = true;
 
-    init ();
-
     timer = $interval ( function () {
       updateLogs ();
     }, 2000 );
@@ -77,8 +73,7 @@
       $interval.cancel ( timer );
     } );
 
-
-    function init () {
+    vm.$onInit = function() {
       getContainers ()
         .then ( function onGetContainersComplete () {
           getSources ()
