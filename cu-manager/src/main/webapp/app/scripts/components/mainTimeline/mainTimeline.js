@@ -52,10 +52,6 @@
         vm.date = 'recent';
         vm.orderByDate = true;
         vm.applicationName = '';
-
-        vm.$onDestroy = function () {
-          $interval.cancel(timer);
-        };
         
         ////////////////////////////////////////////////////
 
