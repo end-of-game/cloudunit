@@ -334,8 +334,10 @@ public class Apache2ControllerTestIT {
                         get(urlGet)
                                 .session(session));
         String contentAsString2 = resultats.andReturn().getResponse().getContentAsString();
+        int response = resultats.andReturn().getResponse().getStatus();
         logger.debug(contentAsString);
-        Assert.assertEquals(200, resultats.andReturn().getResponse().getStatus());
+        Assert.assertEquals(200, response);
+        logger.debug(String.valueOf(response));
         Assert.assertEquals(contentAsString, contentAsString2);
         deleteApplication();
     }
