@@ -62,39 +62,28 @@ describe('E2E: dashboard', function () {
     it('should display error message if application already exists', function () {
       dashboard.setApplicationName('testApp');
       expect(dashboard.errorMessage.isPresent()).toBe(true);
-      dashboard.applicationNameInput.clear();
-      browser.driver.sleep(browser.params.sleep.smallest);
     });
 
     it('should display error message if application contains invalid caracters', function () {
-      dashboard.setApplicationName('test@App');
-      expect(dashboard.errorMessage.isPresent()).toBe(true);
-      dashboard.applicationNameInput.clear();
-      browser.driver.sleep(browser.params.sleep.smallest);
+      dashboard.applicationNameInput.clear().then(function () {
+        dashboard.setApplicationName('test@App');
+        expect(dashboard.errorMessage.isPresent()).toBe(true);  
+      })
+      
     });
-
-    /*xit('should display a spinner when application is being created', function () {
-      dashboard.setApplicationName('testApp2');
-      dashboard.dropdownToggle.click().then(function () {
-        element(by.repeater('serverImage in createApplication.serverImages').row(1)).click()
-          .then(function () {
-            dashboard.createBtn.click()
-              .then(function () {
-                expect(dashboard.spinner.getCssValue('display')).toBe('block');
-              })
-          })
-      });
-    })*/
   });
 
   describe('application list', function () {
     it('should have two applications', function () {
-      dashboard.createApp('testApp2', 1);
-      browser.driver.sleep(browser.params.sleep.large);
-      var newApp = dashboard.findApplication('testapp2');
-      expect(newApp.isPresent()).toBe(true);
-      
-      expect(dashboard.applications.count()).toBe(2);
+      dashboard.applicationNameInput.clear().then(function() {
+         browser.driver.sleep(browser.params.sleep.medium);
+        dashboard.createApp('testApp2', 1);
+        browser.driver.sleep(browser.params.sleep.large);
+        var newApp = dashboard.findApplication('testapp2');
+        expect(newApp.isPresent()).toBe(true);
+        
+        expect(dashboard.applications.count()).toBe(2);
+      })
     })
   });
 
