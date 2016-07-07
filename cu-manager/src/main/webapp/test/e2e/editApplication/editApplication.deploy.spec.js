@@ -16,6 +16,9 @@
 var importer = require('../../pages/importerE2EComponents');
 var components = new importer();
 
+var https = require('https');
+var fs = require('fs');
+
 var DeploySection = function () {
     "use strict";
     this.path = require('path');
@@ -32,7 +35,26 @@ var DeploySection = function () {
     this.deployFile = function (filePath) {
         var absolutePath = this.path.resolve(__dirname, filePath);
         return this.uploadFileInput.sendKeys(absolutePath);
-    }
+    };
+    this.download = function(url, dest) {
+        var file = fs.createWriteStream(dest);
+        var request = https.get(url, function(response) {
+            https.get(response.headers.location, function(response) {
+                response.pipe(file);
+                file.on('finish', function() {
+                    file.close();  // close() is async, call cb after close completes.
+                    return true;
+                });
+            }).on('error', function(err) {
+                fs.unlink(dest);
+                console.log(err);
+            });
+
+        }).on('error', function(err) { // Handle errors
+            fs.unlink(dest); // Delete the file async. (But we don't check the result)
+            console.log(err);
+        });
+    };
 };
 
 
@@ -50,15 +72,23 @@ describe('E2E Test: Edit Application Deploy War', function () {
     });
 
     describe('on adding file', function () {
-        it('should display file infos', function () {
-            // set test environment
-            dashboard.createApp('testDeploy', 1);
-            browser.driver.sleep(browser.params.sleep.large);
-            browser.get('/#/editApplication/testDeploy/deploy');
 
-            deploy.deployFile('../../uploads/performances.sd.0.1.war');
-            expect(deploy.infoName.getText()).not.toBe('');
-            expect(deploy.infoSize.getText()).not.toBe('');
+        it('should display file infos', function () {
+            browser.wait(function() {
+                deploy.download('https://github.com/Treeptik/cloudunit/releases/download/1.0/performances.sd.0.1.war',
+                'test/uploads/performances.war');
+                return true;
+            }, browser.params.sleep.medium).then(function () {
+                 // set test environment
+                dashboard.createApp('testDeploy', 1);
+                browser.driver.sleep(browser.params.sleep.large);
+                browser.get('/#/editApplication/testDeploy/deploy');
+
+                deploy.deployFile('../../uploads/performances.war');
+                expect(deploy.infoName.getText()).not.toBe('');
+                expect(deploy.infoSize.getText()).not.toBe('');   
+            });
+               
         });
 
         it('remove file on clear button click', function () {
@@ -68,14 +98,21 @@ describe('E2E Test: Edit Application Deploy War', function () {
         });
 
         it('should show an error message if file type not authorized', function () {
-            deploy.deployFile('../../uploads/performances.sd.0.1.zip').then(function () {
-                expect(deploy.fileTypeError.isPresent()).toBeTruthy();
+            var fs = require('fs');
+            fs.writeFile("./test/uploads/deploy.txt", "Test deploy .txt", function(err) {
+                if(err) {
+                    return console.log(err);
+                }
+
+                deploy.deployFile('../../uploads/deploy.txt').then(function () {
+                    expect(deploy.fileTypeError.isPresent()).toBeTruthy();
+                });
             });
         });
 
         describe('on file upload', function () {
             it('should show a progress bar', function () {
-                deploy.deployFile('../../uploads/performances.sd.0.1.war');
+                deploy.deployFile('../../uploads/performances.war');
                 deploy.uploadBtn.click();
                 expect(deploy.progressBar.isDisplayed()).toBeTruthy();
                 editApp.overviewTab.click();
@@ -104,8 +141,8 @@ describe('E2E Test: Edit Application Deploy War', function () {
                 browser.getAllWindowHandles().then(function (handles) {
                     var newWindowHandle = handles[1];
                     browser.switchTo().window(newWindowHandle).then(function () {
-                        var el = element(by.css('h1'));
-                        browser.sleep(browser.params.sleep.large)
+                        var el = browser.driver.findElement(by.css('h1'));
+                        browser.sleep(browser.params.sleep.small)
                         expect(el.getText()).toMatch('Hello World');
                         //to close the current window
                         browser.driver.close().then(function () {
@@ -115,11 +152,15 @@ describe('E2E Test: Edit Application Deploy War', function () {
                     });
                 });
                 browser.ignoreSynchronization = false;
-                
+
                 // reset test environment
                 browser.get('/#/dashboard');
                 browser.driver.sleep(browser.params.sleep.small);
                 dashboard.deleteApp('testdeploy');
+                 
+                //delete upload/create file
+                fs.unlinkSync('./test/uploads/performances.war');
+                fs.unlinkSync('./test/uploads/deploy.txt');
                 logout();
             });
         });
