@@ -304,7 +304,7 @@ public class Apache2ControllerTestIT {
 
     @Test
     public void test060_DeployPageOnServer() throws Exception {
-        createApplication();
+         createApplication();
         String filePath = "/var/www";
         String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-" +release).substring(0, 12);
 
