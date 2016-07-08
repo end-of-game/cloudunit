@@ -101,7 +101,7 @@ vagrant up
 vagrant provision
 ```
 
-### Step 6 - How to start the application
+### <a name="step6"></a>Step 6 - How to start the application
 
 1 - Start the vagrantbox and run Docker into Vagrant
 
@@ -165,7 +165,6 @@ You can run CloudUnit with a Maven task easily as :
     
 ![Architecture Dev](img/intellij_conf.png "Architecture Development")
 
-
 # FAQ
 
 All questions and answers about dev tasks
@@ -189,7 +188,11 @@ cloudunit/cu-platform/reset.sh -y
 
 ## How to run e2e test (selenium & protractor)
 
+First of all, you have to start the application ([see step 6](#step6)) in parallel.
+
 ```
 cd $HOME/cloudunit/cu-manager
 grunt test
 ```
+
+
