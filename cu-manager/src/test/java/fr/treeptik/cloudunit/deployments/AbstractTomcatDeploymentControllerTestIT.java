@@ -45,8 +45,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Random;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
+import javax.validation.Valid;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
@@ -81,6 +83,20 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
 
     @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
+
+    //String subdomain = System.getenv("CU_SUB_DOMAIN");
+    @Value("#{systemProperties['CU_SUB_DOMAIN']}")
+    private String subDomain;
+
+    private String domain;
+    @PostConstruct
+    public void init () {
+        if (subDomain != null) {
+            domain = subDomain + domainSuffix;
+        } else {
+            domain = domainSuffix;
+        }
+    }
 
     @BeforeClass
     public static void initEnv()
@@ -140,7 +156,7 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
             mockMvc.perform( MockMvcRequestBuilders.fileUpload( "/application/" + applicationName + "/deploy" ).file( downloadAndPrepareFileToDeploy( "helloworld.war",
                                                                                                                                                       "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war" ) ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
         resultats.andExpect( status().is2xxSuccessful() );
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domainSuffix;
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         Assert.assertTrue( getUrlContentPage( urlToCall ).contains( "CloudUnit PaaS" ) );
     }
 
@@ -212,7 +228,7 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
                 .andDo(print());
         // test the application content page
         resultats.andExpect( status().is2xxSuccessful() );
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domainSuffix;
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
