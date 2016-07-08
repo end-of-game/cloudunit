@@ -5,7 +5,7 @@ FROM cloudunit/base-12.04
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/tomcat-appconf8.tar.gz -O /tmp/tomcat-appconf8.tar.gz \
 	&& tar -xvf /tmp/tomcat-appconf8.tar.gz -C /cloudunit && rm /tmp/tomcat-appconf8.tar.gz
 
-RUN cd /cloudunit/appconf/webapps && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jolokia.war
+#RUN cd /cloudunit/appconf/webapps && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jolokia.war
 
 # ajout du dossier lib-ext
 

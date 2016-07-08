@@ -3,8 +3,6 @@ package fr.treeptik.cloudunit.utils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by nicolas on 13/05/2016.
  */

@@ -318,11 +318,9 @@ public abstract class AbstractApplicationControllerTestIT {
         deleteApplication();
     }
 
-    @Test()
-    public void test060_testJolokiaLibTest()
-            throws Exception {
+   /* @Test()
+    public void test060_testJolokiaLibTest() throws Exception {
         createApplication();
-
         logger.info("Testing jolokia war the application : " + applicationName);
         String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/jolokia";
         String contentPage = getUrlContentPage(urlToCall);
@@ -331,10 +329,10 @@ public abstract class AbstractApplicationControllerTestIT {
             contentPage = getUrlContentPage(urlToCall);
             Thread.sleep(1000);
         }
-
         Assert.assertTrue(contentPage.contains("\"status\":200"));
 
         deleteApplication();
-    }
+    }*/
+
 
 }

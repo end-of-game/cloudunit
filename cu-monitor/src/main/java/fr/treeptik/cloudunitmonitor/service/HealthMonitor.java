@@ -10,7 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 
-import fr.treeptik.cloudunitmonitor.conf.ApplicationEntryPoint;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,10 +22,8 @@ import fr.treeptik.cloudunitmonitor.docker.model.DockerContainer;
 import fr.treeptik.cloudunitmonitor.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunitmonitor.exception.DockerJSONException;
 import fr.treeptik.cloudunitmonitor.exception.ServiceException;
-import fr.treeptik.cloudunitmonitor.model.ErrorMessage;
-import fr.treeptik.cloudunitmonitor.model.Module;
-import fr.treeptik.cloudunitmonitor.model.Server;
-import fr.treeptik.cloudunitmonitor.model.Status;
+import fr.treeptik.cloudunit.model.ErrorMessage;
+
 import fr.treeptik.cloudunitmonitor.utils.EmailUtils;
 
 @Service

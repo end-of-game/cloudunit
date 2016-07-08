@@ -15,7 +15,7 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import fr.treeptik.cloudunit.config.CustomPasswordEncoder;
+import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
 import fr.treeptik.cloudunit.dao.MessageDAO;
 import fr.treeptik.cloudunit.dao.RoleDAO;
 import fr.treeptik.cloudunit.dao.UserDAO;

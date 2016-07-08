@@ -17,8 +17,8 @@ cujavabuild:
     - BUILDER_UID
     - BUILDER_GID
   volumes:
-    - .:/home/builder/app
-  command: mvn clean package -DskipTests
+    - ..:/home/builder/app
+  command: mvn clean install -DskipTests
   
 cunodebuild:
   build: images/cu-nodebuild

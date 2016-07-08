@@ -94,7 +94,7 @@ public class EmailUtils {
 	/**
 	 * public method to send mail parameter is map with emailType, user
 	 * 
-	 * @param mapConfigEmail
+	 * @param
 	 * @throws MessagingException
 	 * @throws IOException
 	 */

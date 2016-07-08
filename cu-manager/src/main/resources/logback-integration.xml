@@ -22,14 +22,16 @@
         </encoder>
     </appender>
 
-    <logger name="fr.treeptik" level="debug"/>
-    <logger name="org.springframework" level="error"/>
+    <logger name="fr.treeptik" level="info"/>
+    <logger name="org.springframework" level="warn"/>
     <logger name="net.sf.ehcache" level="error"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="console"/>
     </root>
 
 </included>
+
+
 
 

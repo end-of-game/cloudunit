@@ -16,10 +16,7 @@
 package fr.treeptik.cloudunit.dao;
 
 import fr.treeptik.cloudunit.model.PortToOpen;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 /**
  * Created by guillaume on 23/11/15.
