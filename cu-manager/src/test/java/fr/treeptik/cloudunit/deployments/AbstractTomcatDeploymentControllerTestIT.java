@@ -90,7 +90,7 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
     public void init () {
         String subdomain = System.getenv("CU_SUB_DOMAIN");
         if (subdomain != null) {
-            domain = "." + subdomain + domainSuffix;
+            domain = subdomain + domainSuffix;
         } else {
             domain = domainSuffix;
         }
