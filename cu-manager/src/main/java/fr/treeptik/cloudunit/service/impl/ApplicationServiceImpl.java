@@ -104,6 +104,7 @@ public class ApplicationServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
+    @Deprecated
     @Value("${cloudunit.manager.ip}")
     private String hostName2;
 

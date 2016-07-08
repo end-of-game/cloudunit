@@ -44,6 +44,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Random;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
@@ -80,6 +81,20 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
 
     @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
+
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+    private String subdomain;
+
+    private String domain;
+
+    @PostConstruct
+    public void init () {
+        if (subdomain != null) {
+            domain = subdomain + domainSuffix;
+        } else {
+            domain = domainSuffix;
+        }
+    }
 
     @BeforeClass
     public static void initEnv() {
@@ -144,7 +159,7 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
                         .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
 
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080" + domainSuffix;
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080" + domain;
         logger.debug(urlToCall);
         int i = 0;
         String content = null;
@@ -199,7 +214,7 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
                                 "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary))
                         .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080" + domainSuffix;
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080" + domain;
         logger.debug(urlToCall);
         int i = 0;
         String content = null;
@@ -216,7 +231,7 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
         }
 
         String url2AddAnUser = "http://" + applicationName.toLowerCase()
-                + "-johndoe-forward-8080"+domainSuffix+"/create?email=johndoe@gmail.com&name=johndoe";
+                + "-johndoe-forward-8080"+domain+"/create?email=johndoe@gmail.com&name=johndoe";
 
         // Add a module MYSQL
         resultats = mockMvc.perform(get(url2AddAnUser)
