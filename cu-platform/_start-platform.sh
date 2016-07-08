@@ -35,7 +35,7 @@ done
 docker-compose -f $COMPOSE_FILE up -d mysqldata
 docker-compose -f $COMPOSE_FILE up -d mysql
 
-if [ "$MODE" == "DEV" ]
+if [ "$MODE" == "DEV" ] || [ "$MODE" == "INT" ]
 then
     docker-compose -f $COMPOSE_FILE up -d testmysqldata
     docker-compose -f $COMPOSE_FILE up -d testmysql
