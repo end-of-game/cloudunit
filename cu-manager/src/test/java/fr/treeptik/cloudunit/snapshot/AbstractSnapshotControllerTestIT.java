@@ -105,7 +105,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         applicationName = "app" + new Random().nextInt(10000);
     }
 
-    @Value("suffix.cloudunit.io")
+    @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
 
     @Before

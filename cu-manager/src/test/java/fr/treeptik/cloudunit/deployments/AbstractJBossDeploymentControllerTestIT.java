@@ -79,7 +79,7 @@ public abstract class AbstractJBossDeploymentControllerTestIT
 
     private MockHttpSession session;
 
-    @Value("suffix.cloudunit.io")
+    @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
 
     @BeforeClass

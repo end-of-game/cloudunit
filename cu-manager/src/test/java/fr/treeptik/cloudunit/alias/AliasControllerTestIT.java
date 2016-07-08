@@ -60,6 +60,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.util.Random;
@@ -107,10 +108,13 @@ public class AliasControllerTestIT {
     private static String applicationName2;
     private static boolean isAppCreated = false;
 
-    @Value("suffix.cloudunit.io")
+    @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
-
-    private final String alias = "myAlias" + domainSuffix;
+    private String alias;
+    @PostConstruct
+    private void init() {
+        alias = "myAlias" + domainSuffix;
+    }
 
     @BeforeClass
     public static void initEnv() {

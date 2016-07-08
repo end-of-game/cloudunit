@@ -92,7 +92,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     private static String applicationName;
 
-    @Value("suffix.cloudunit.io")
+    @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
 
     protected String server;

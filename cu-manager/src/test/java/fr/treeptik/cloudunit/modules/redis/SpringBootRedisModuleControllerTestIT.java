@@ -102,7 +102,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
     protected String managerSuffix = "";
     protected String managerPageContent = "Redis";
 
-    @Value("suffix.cloudunit.io")
+    @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
 
     @BeforeClass
