@@ -96,9 +96,9 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
 Warning because this step could need lot of times !
 
 ```
-$ cd $HOME/cloudunit/cu-vagrant 
-$ vagrant up
-$ vagrant provision
+cd $HOME/cloudunit/cu-vagrant 
+vagrant up
+vagrant provision
 ```
 
 ### Step 6 - How to start the application
@@ -106,23 +106,23 @@ $ vagrant provision
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/cloudunit/cu-vagrant 
-$ vagrant up (if not running)
-$ vagrant ssh 
+cd $HOME/cloudunit/cu-vagrant 
+vagrant up (if not running)
+vagrant ssh 
 cd cloudunit/cu-platform && ./reset.sh -y
 ```
 
 2 - Start the Java Backend from Linux
 
 ```
-$ cd $HOME/cloudunit/cu-manager
-$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+cd $HOME/cloudunit/cu-manager
+mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 3 - Run the UI for development (http://0.0.0.0:9000) from Linux
 
 ```
-$ cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
 ```
 You can use default password and login
 ```
@@ -174,13 +174,20 @@ All questions and answers about dev tasks
 vagrant ssh
 cloudunit/cu-platform/reset.sh -y
 ```
-
+    
 ## How to rebuild images
 
 Update your sources, build the images and reninit the database :
 
 ```
-$ vagrant ssh dev
-$ cloudunit/cu-services/build-services.sh
-$ cloudunit/cu-platform/reset.sh -y
+vagrant ssh dev
+cloudunit/cu-services/build-services.sh
+cloudunit/cu-platform/reset.sh -y
+```
+
+## How to run e2e test (selenium & protractor)
+
+```
+cd $HOME/cloudunit/cu-manager
+grunt test
 ```

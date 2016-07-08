@@ -93,9 +93,9 @@ cd %HOMEPATH%/cloudunit/cu-manager/src/main/webapp && bower install
 Warning because this step could need lot of times !
 
 ```
-$ cd %HOMEPATH%/cloudunit/cu-vagrant 
-$ vagrant up
-$ vagrant provision
+cd %HOMEPATH%/cloudunit/cu-vagrant 
+vagrant up
+vagrant provision
 ```
 
 ### Step 7 - How to start the application
@@ -152,7 +152,14 @@ cloudunit/cu-platform/reset.sh -y
 Update your sources, build the images and reninit the database :
 
 ```
-$ vagrant ssh dev
-$ cloudunit/cu-services/build-services.sh
-$ cloudunit/cu-platform/reset.sh -y
+vagrant ssh dev
+cloudunit/cu-services/build-services.sh
+cloudunit/cu-platform/reset.sh -y
+```
+
+## How to run e2e test (selenium & protractor)
+
+```
+cd $HOME/cloudunit/cu-manager
+grunt test
 ```

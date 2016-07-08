@@ -118,9 +118,9 @@ vagrant plugin install vagrant-vbguest
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/cloudUnit 
-$ vagrant up
-$ vagrant ssh 
+cd $HOME/cloudUnit 
+vagrant up
+vagrant ssh 
 cd cloudunit/cu-platform && ./reset.sh -y
 ```
 
@@ -142,8 +142,8 @@ sudo npm update
 3 - Start the Java Backend from Mac
 
 ```
-$ cd $HOME/cloudUnit/cu-manager
-$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+cd $HOME/cloudUnit/cu-manager
+mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 You can use default password and login
@@ -155,9 +155,14 @@ password: abc2015
 ## How to reset Environment Developpment
 
 ```
-$ cd $HOME/cloudUnit
-$ vagrant ssh dev
-$ cloudunit/cu-platform/reset.sh -y
+cd $HOME/cloudUnit
+vagrant ssh dev
+cloudunit/cu-platform/reset.sh -y
 ```
 
+## How to run e2e test (selenium & protractor)
 
+```
+cd $HOME/cloudunit/cu-manager
+grunt test
+```
