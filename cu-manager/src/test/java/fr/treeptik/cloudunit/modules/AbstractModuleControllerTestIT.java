@@ -92,6 +92,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     private static String applicationName;
 
+    @Value("suffix.cloudunit.io")
+    private String domainSuffix;
+
     protected String server;
     protected String module;
     protected String managerPrefix;
@@ -204,7 +207,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domainSuffix+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -266,7 +269,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domainSuffix+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -299,7 +302,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String module2 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-2";
-        String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin"+domainSuffix+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -359,7 +362,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domainSuffix+"/" + managerSuffix;
 
         // Stop the application
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
