@@ -1,8 +1,6 @@
 package fr.treeptik.cloudunit.servers;
 
-import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.explorer.FileControllerTestIT;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
@@ -34,10 +32,6 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -309,14 +303,14 @@ public class Apache2ControllerTestIT {
     }
 
     @Test
-    public void test60_DeployPageOnServer() throws Exception {
+    public void test060_DeployPageOnServer() throws Exception {
         createApplication();
         String filePath = "/var/www";
         String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-" +release).substring(0, 12);
 
-        final String jsonString =
+        String jsonString =
                 "{\"fileContent\":\"<? phpinfo(); ?>\", \"filePath\":\""+filePath+"\", \"fileName\":\"index.php\"}";
-        String url = "/file/content/container/"+containerId+"/application/"+applicationName;
+        String url = "/file/content/container/" + containerId + "/application/"+ applicationName;
         logger.debug(url);
         ResultActions resultats = this.mockMvc
                 .perform(
@@ -327,18 +321,21 @@ public class Apache2ControllerTestIT {
         logger.debug(contentAsString);
         resultats.andExpect(status().isOk());
 
-        String urlGet = "/file/content/container/"+containerId+"/application/"+applicationName + "/path" + filePath + "/index.php";
+        String urlGet = "/file/content/container/"+containerId+"/application/"+ applicationName + "/path" + filePath + "/index.php";
         logger.debug(urlGet);
         resultats = this.mockMvc
                 .perform(
-                        get(urlGet)
-                                .session(session));
+                    get(urlGet)
+                        .session(session));
+
         String contentAsString2 = resultats.andReturn().getResponse().getContentAsString();
         int response = resultats.andReturn().getResponse().getStatus();
-        logger.debug(contentAsString);
-        Assert.assertEquals(200, response);
+        logger.debug(contentAsString2);
+        System.out.println("contentAsString2 = " + contentAsString2);
+        resultats.andExpect(status().isOk());
         logger.debug(String.valueOf(response));
+        System.out.println("response = " + response);
         Assert.assertEquals(contentAsString, contentAsString2);
-        deleteApplication();
+        //deleteApplication();
     }
 }
