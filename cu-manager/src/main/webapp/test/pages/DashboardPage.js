@@ -28,7 +28,8 @@ var DashboardPage = (function () {
     this.formatErrorMessage = element(by.css('.format'));
     this.spinner = this.formContainer.element(by.css('.spinner'));
     this.setApplicationName = function (name) {
-      return this.applicationNameInput.sendKeys(name);
+         browser.driver.sleep(browser.params.sleep.small);
+        return this.applicationNameInput.sendKeys(name);
     };
     this.createApp = function (appName, serverChoice) {
       var self = this;

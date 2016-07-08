@@ -98,9 +98,9 @@ describe('E2E: dashboard', function () {
     });
 
     it('should toggle a modal window', function () {
-      toggleModal.click();
-      browser.driver.sleep(browser.params.sleep.small);
-      expect(modal.getCssValue('display')).toBe('block');
+      toggleModal.click().then(function () {
+        expect(modal.getCssValue('display')).toBe('block');
+      })
     });
 
     it('should delete application', function () {

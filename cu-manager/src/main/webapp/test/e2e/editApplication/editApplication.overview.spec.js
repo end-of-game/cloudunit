@@ -52,7 +52,7 @@ login(browser.params.loginAdmin);
       browser.driver.sleep(browser.params.sleep.large);
       
       browser.get('/#/editApplication/testOverview/overview');
-
+      browser.driver.sleep(browser.params.sleep.smallest);
       expect(overview.creationDate.getAttribute('value')).not.toEqual('');
       expect(overview.serverName.getAttribute('value')).not.toEqual('');
       expect(overview.jvmMemory.getAttribute('value')).not.toEqual('');
