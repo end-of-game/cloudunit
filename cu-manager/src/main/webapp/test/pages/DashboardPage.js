@@ -48,13 +48,23 @@ var DashboardPage = (function () {
           for(var i = 0; i < serverChoice; i++) {
             self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
           }
+
           self.dropdownToggle.sendKeys(protractor.Key.ENTER);
-          browser.actions().sendKeys(protractor.Key.ENTER).perform();
-          //self.createBtn.click();
+          browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
+          // self.createBtn.click();
+
+          var selectorAppNameQuery = '#application-' + appName;
+          var EC = protractor.ExpectedConditions;
+          browser.wait($('.pending', selectorAppNameQuery), browser.params.sleep.large);
+
+          /*
+            button.click();
+            browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), browser.params.sleep.large);
+            console.log("after3");
+          */
       });
 
-      let selectorAppNameQuery = '#application-' + appName; 
-      browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), 4000);
+      
     }
     this.serverChoice = function (serverChoice) {
       var self = this;
