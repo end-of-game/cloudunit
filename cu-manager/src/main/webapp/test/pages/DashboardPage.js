@@ -45,10 +45,35 @@ var DashboardPage = (function () {
       var self = this;
       self.setApplicationName(appName);
       self.dropdownToggle.click().then(function () {
-        element(by.repeater('serverImage in createApplication.serverImages').row(serverChoice)).click()
-          .then(function () {
-            self.createBtn.click()
-          })
+          //console.log(element(by.repeater('serverImage in createApp.serverImages').row(1));
+          /*
+            element(by.repeater('serverImage in createApp.serverImages').row(serverChoice)).click()
+            .then(function () {
+              self.createBtn.click()
+            })
+          */
+          //self.dropdownToggle.sendKeys(serverChoice);
+         
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          for(var i = 0; i < serverChoice; i++) {
+            self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
+          }
+
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
+          // self.createBtn.click();
+
+          var selectorAppNameQuery = '#application-' + appName;
+  
+  browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), browser.params.sleep.large);
+  /*        var EC = protractor.ExpectedConditions;
+          browser.wait($('.pending', selectorAppNameQuery), browser.params.sleep.large);
+*/
+          /*
+            button.click();
+            browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), browser.params.sleep.large);
+            console.log("after3");
+          */
       });
     }
   }
