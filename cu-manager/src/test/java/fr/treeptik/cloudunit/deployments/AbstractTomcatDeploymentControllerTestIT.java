@@ -84,8 +84,7 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
     @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
 
-    //String subdomain = System.getenv("CU_SUB_DOMAIN");
-    @Value("#{systemProperties['CU_SUB_DOMAIN']}")
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
     private String subDomain;
 
     private String domain;
