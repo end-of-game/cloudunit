@@ -905,6 +905,17 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(post("/module").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
+        // Stop the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        // Start the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+
         logger.info("**************************************");
         logger.info("Deploy a helloworld Application");
         logger.info("**************************************");
@@ -1026,6 +1037,16 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(post("/module").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
+        // Stop the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        // Start the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
         logger.info("**************************************");
         logger.info("Deploy a helloworld Application");
         logger.info("**************************************");
@@ -1043,12 +1064,12 @@ public abstract class AbstractSnapshotControllerTestIT {
         String contentPage = getUrlContentPage(urlToCall);
         int counter = 0;
         if (release.contains("jboss")||release.contains("wildfly")) {
-            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
+            while (!contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
         } else {
-            while (contentPage.contains(keywordIntoPage)==false || counter++ < 10) {
+            while (!contentPage.contains(keywordIntoPage) || counter++ < 10) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
