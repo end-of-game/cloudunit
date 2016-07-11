@@ -5,6 +5,12 @@ import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.UserService;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -305,7 +311,7 @@ public class Apache2ControllerTestIT {
     @Test
     public void test060_DeployPageOnServer() throws Exception {
          createApplication();
-        String filePath = "/var/www";
+        String filePath = "__var__www";
         String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-" +release).substring(0, 12);
 
         String jsonString =
@@ -321,21 +327,46 @@ public class Apache2ControllerTestIT {
         logger.debug(contentAsString);
         resultats.andExpect(status().isOk());
 
-        String urlGet = "/file/content/container/"+containerId+"/application/"+ applicationName + "/path" + filePath + "/index.php";
+        String urlGet = "/file/content/container/"+containerId+"/application/"+ applicationName + "/path/" + filePath + "/fileName/index.php";
         logger.debug(urlGet);
         resultats = this.mockMvc
                 .perform(
                     get(urlGet)
                         .session(session));
 
-        String contentAsString2 = resultats.andReturn().getResponse().getContentAsString();
+        contentAsString = resultats.andReturn().getResponse().getContentAsString();
         int response = resultats.andReturn().getResponse().getStatus();
-        logger.debug(contentAsString2);
-        System.out.println("contentAsString2 = " + contentAsString2);
+        logger.debug(contentAsString);
         resultats.andExpect(status().isOk());
         logger.debug(String.valueOf(response));
-        System.out.println("response = " + response);
-        Assert.assertEquals(contentAsString, contentAsString2);
-        //deleteApplication();
+        Assert.assertEquals("<? phpinfo(); ?>", contentAsString);
+        deleteApplication();
+    }
+
+    @Test
+    public void test061_DeployPageOnServerAndTestIt() throws Exception {
+        createApplication();
+        String filePath = "__var__www";
+        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-" +release).substring(0, 12);
+
+        String jsonString =
+                "{\"fileContent\":\"<? phpinfo(); ?>\", \"filePath\":\""+filePath+"\", \"fileName\":\"index.php\"}";
+        String url = "/file/content/container/" + containerId + "/application/"+ applicationName;
+        logger.debug(url);
+        ResultActions resultats = this.mockMvc
+                .perform(
+                        put(url)
+                                .content(jsonString).contentType(MediaType.APPLICATION_JSON)
+                                .session(session));
+        String contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        resultats.andExpect(status().isOk());
+
+        HttpGet request = new HttpGet("http://"+ applicationName +"-johndoe-admin.cloudunit.dev:80/index.php");
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpResponse response = httpClient.execute(request);
+        HttpEntity entity = response.getEntity();
+        Assert.assertTrue(EntityUtils.toString(entity).contains("<td class=\"e\">Apache Version </td><td class=\"v\">Apache/2.2.22 (Ubuntu) </td>"));
+        deleteApplication();
     }
 }
