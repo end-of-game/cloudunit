@@ -18,13 +18,12 @@
 
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppMonitoringApplication', MonitoringApp );
+    .component ( 'editAppMonitoringApplication', MonitoringApp() );
 
   function MonitoringApp () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/monitoring/application/editApplication.monitoring.application.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -36,7 +35,6 @@
         MonitoringAppCtrl
       ],
       controllerAs: 'monitoringApp',
-      bindToController: true
     };
   }
 
@@ -60,14 +58,13 @@
     vm.chooseQueue = chooseQueue;
 
     var lastQueueNameSelected = '';
-    $scope.$on ( '$destroy', function () {
+    
+    vm.$onDestroy = function () {
       $interval.cancel(vm.timer);
       vm.timer = null;
-    } );
+    };
 
-    init();
-
-    function init() {
+    vm.$onInit = function() {
       setTimeout(function() {
         MonitoringService.getUrlMetrics(vm.app.servers[0].image.prefixEnv)
           .then(function success(data) {
