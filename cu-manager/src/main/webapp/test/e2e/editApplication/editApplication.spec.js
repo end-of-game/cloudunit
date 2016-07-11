@@ -23,7 +23,6 @@ describe('E2E: EditApplication', function () {
   login(browser.params.loginAdmin);
 
   beforeEach(function () {
-    browser.ignoreSynchronization=true;
     editApp = components.EditApplicationPage;
     dashboard = components.DashboardPage;
   });
@@ -84,63 +83,71 @@ describe('E2E: EditApplication', function () {
         it('should be displayed by default', function () {
           browser.get('/#/editApplication/testApp/overview');
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/overview');
+           browser.driver.sleep(browser.params.sleep.small);
         })
       });
 
       describe('Add Module Tab', function () {
         it('should display add module section', function () {
-          editApp.addModuleTab.click();
-          expect(editApp.addModuleTab.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/addModule');
+          editApp.addModuleTab.click().then(function() {
+            expect(editApp.addModuleTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/addModule');
+          });
         })
       });
 
       describe('Deploy Tab', function () {
        it('should display deploy section', function () {
-          editApp.deployTab.click();
-          expect(editApp.deployTab.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/deploy');
+          editApp.deployTab.click().then(function() {
+            expect(editApp.deployTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/deploy');
+          });
         });
       });
 
       describe('Explorer Tab', function () {
         it('should display explorer section', function () {
-          editApp.explorerTab.click();
-          expect(editApp.explorerTab.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/explorer');
+          editApp.explorerTab.click().then(function(){
+            expect(editApp.explorerTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/explorer');
+          });
         });
       });
 
       describe('Logs Tab', function () {
         it('should display logs section', function () {
-          editApp.logsTab.click();
-          expect(editApp.logsTab.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/logs');
+          editApp.logsTab.click().then( function(){
+            expect(editApp.logsTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/logs');
+          });
         })
       });
 
       describe('Monitoring Tab', function () {
         it('should display monitoring section', function () {
-          editApp.monitoringTab.click();
-          expect(editApp.monitoringTab.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/monitoring');
+          editApp.monitoringTab.click().then(function() {
+            expect(editApp.monitoringTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/monitoring');
+          });
         })
       });
 
       describe('Snapshot Tab', function () {
         it('should display snapshot section', function () {
-          editApp.snapshotTab.click();
-          expect(editApp.snapshotTab.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/snapshot');
+          editApp.snapshotTab.click().then(function(){
+            expect(editApp.snapshotTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/snapshot');
+          });
         });
       });
 
       describe('Settings Tab', function () {
         it('should display settings section', function () {
-          editApp.settingsTab.click();
-          expect(editApp.settingsTab.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/settings');
-          browser.driver.sleep(browser.params.sleep.smallest);
+          editApp.settingsTab.click().then(function(){
+            expect(editApp.settingsTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/settings');
+            browser.driver.sleep(browser.params.sleep.smallest);
+          });
         });
       });
     })

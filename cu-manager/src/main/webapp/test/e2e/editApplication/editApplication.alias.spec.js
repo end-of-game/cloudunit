@@ -33,18 +33,19 @@ describe('E2E: EditApplication', function () {
   "use strict";
   var editApp, alias, dashboard;
 
+  login(browser.params.loginAdmin);
+
   beforeEach(function () {
     editApp = components.EditApplicationPage;
     dashboard = components.DashboardPage;
     alias = new AliasSection();
   });
 
-  login(browser.params.loginAdmin);
-
   describe('E2E: Edit Application Alias', function () {
     it('should display the alias card in settings url', function () {
       // set test environment
       dashboard.createApp('testAlias', 1);
+      browser.driver.sleep(browser.params.sleep.large);
       browser.get('/#/editApplication/testAlias/settings');
 
       expect(alias.domain.getAttribute('value')).not.toEqual('');
@@ -57,7 +58,8 @@ describe('E2E: EditApplication', function () {
         alias.setAlias('test');
         alias.addAliasBtn.click();
 
-        browser.driver.wait(protractor.until.elementTextContains(alias.errorMsg, 'This alias must respect a valid domain name pattern'), 8000);
+        //browser.driver.wait(protractor.until.elementTextContains(alias.errorMsg, 'This alias must respect a valid domain name pattern'), 8000);
+        browser.driver.sleep(browser.params.sleep.medium);
         expect(alias.errorMsg.getText()).toContain('This alias must respect a valid domain name pattern');
       });
 
@@ -65,18 +67,20 @@ describe('E2E: EditApplication', function () {
         browser.get('/#/editApplication/testAlias/settings');
         var aliasList;
         alias.setAlias('treeptik.fr');
-        alias.addAliasBtn.click();
-        browser.driver.sleep(browser.params.sleep.medium);
-        aliasList = element.all(by.repeater('aliase in alias.application.aliases'));
-        expect(aliasList.count()).toBe(1);
+        alias.addAliasBtn.click().then(function(){
+          browser.driver.sleep(browser.params.sleep.medium);
+          aliasList = element.all(by.repeater('aliase in alias.application.aliases'));
+          expect(aliasList.count()).toBe(1);
+        });
+        
       });
 
       it('should display an error message if alias already exists', function () {
         browser.get('/#/editApplication/testAlias/settings');
         alias.setAlias('treeptik.fr');
-        alias.addAliasBtn.click();
-        browser.driver.sleep(browser.params.sleep.medium);
-        expect(alias.errorMsg.getText()).toContain('This alias is already used by another application in CloudUnit instance(s)');
+        alias.addAliasBtn.click().then(function(){
+          expect(alias.errorMsg.getText()).toContain('This alias is already used by another application in CloudUnit instance(s)');
+        });        
       });
     });
 
@@ -84,15 +88,16 @@ describe('E2E: EditApplication', function () {
       it('should remove alias on click', function () {
         browser.get('/#/editApplication/testAlias/settings');
         var aliasList;
-        alias.removeAliasBtn.click();
-        browser.driver.sleep(browser.params.sleep.medium);
-        expect(alias.noAliasMsg.isPresent()).toBeTruthy();
+        alias.removeAliasBtn.click().then(function(){
+          browser.wait(protractor.ExpectedConditions.presenceOf(alias.noAliasMsg), browser.params.sleep.medium);
+          expect(alias.noAliasMsg.isPresent()).toBeTruthy();
 
-        // reset test environment
-        browser.get('/#/dashboard');
-        browser.sleep(browser.params.sleep.medium);
-        dashboard.deleteApp('testalias');
-        logout();
+          // reset test environment
+          browser.get('/#/dashboard');
+          browser.sleep(browser.params.sleep.medium);
+          dashboard.deleteApp('testalias');
+          logout();
+        });
       })
     })
   });

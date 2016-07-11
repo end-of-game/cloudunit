@@ -38,13 +38,12 @@ describe('E22: Edit Application Add Module', function () {
 
     describe('add mysql module', function () {
         it('should display a spinner when being created', function () {
-
             // set test environment
-
             dashboard.createApp('testModule', 1);
+            browser.driver.sleep(browser.params.sleep.large);
+            
             browser.get('/#/editApplication/testModule/addModule');
-
-            let buttonModule = element(by.repeater('image in modules.moduleImages').row(0));
+            var buttonModule = element(by.repeater('image in modules.moduleImages').row(0));
             buttonModule.$('button').click(function () {
                 expect(element(by.css('.spinner')).isPresent()).toBeTruthy();
             })
@@ -103,7 +102,8 @@ describe('E22: Edit Application Add Module', function () {
             var modal = $('.modal[id$="johndoe-testmodule-mysql-5-5-1"]');
 
             toggleModal.click();
-            browser.driver.wait(protractor.until.elementIsVisible(modal), browser.params.sleep.medium);
+            //browser.driver.wait(protractor.until.elementIsVisible(modal), browser.params.sleep.medium);
+            browser.driver.sleep(browser.params.sleep.medium);
             expect(modal.getCssValue('display')).toBe('block');
         });
 
@@ -113,7 +113,8 @@ describe('E22: Edit Application Add Module', function () {
             var removeBtn = modal.element(by.css('.remove-btn'));
 
             removeBtn.click();
-            browser.driver.wait(protractor.until.elementIsVisible(element(by.css('.modules-list .no-data'))), browser.params.sleep.medium);
+            //browser.driver.wait(protractor.until.elementIsVisible(element(by.css('.modules-list .no-data'))), browser.params.sleep.medium);
+            browser.driver.sleep(browser.params.sleep.medium);
             expect(element(by.css('.modules-list .no-data')).isDisplayed()).toBeTruthy();
             
             // reset test environment
