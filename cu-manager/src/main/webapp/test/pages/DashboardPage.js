@@ -54,14 +54,12 @@ var DashboardPage = (function () {
           // self.createBtn.click();
 
           var selectorAppNameQuery = '#application-' + appName;
+  
+          //browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), browser.params.sleep.large);
           var EC = protractor.ExpectedConditions;
           browser.wait($('.pending', selectorAppNameQuery), browser.params.sleep.large);
-
-          /*
-            button.click();
-            browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), browser.params.sleep.large);
-            console.log("after3");
-          */
+          
+          //button.click();
       });
 
       

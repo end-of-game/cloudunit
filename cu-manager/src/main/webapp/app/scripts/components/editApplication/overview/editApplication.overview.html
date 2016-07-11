@@ -68,7 +68,7 @@
             <input class="large code"
                    id="jvm-options"
                    type="text"
-                   value="{{overview.app.servers[0].jvmOptions}}"
+                   value="{{overview.app.servers[0].jvmOptions | cleanEscapeSlashAndReverse: true}}"
                    readonly="">
           </div>
 

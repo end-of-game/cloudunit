@@ -102,6 +102,9 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
     protected String managerSuffix = "";
     protected String managerPageContent = "Redis";
 
+    @Value("${suffix.cloudunit.io}")
+    private String domainSuffix;
+
     @BeforeClass
     public static void initEnv() {
         applicationName = "app" + new Random().nextInt(100000);
@@ -208,7 +211,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         // Expected values
         String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
         String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
-        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domainSuffix+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -225,7 +228,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         String managerUrlAuth = "http://" + userNameRedis + ":" + passwordRedis + "@"
                 + managerPrefix + "1-"
                 + applicationName.toLowerCase()
-                + "-johndoe-admin.cloudunit.dev/"
+                + "-johndoe-admin" +domainSuffix + "/"
                 + managerSuffix;
 
         String contentPage = getUrlContentPage(managerUrlAuth);
@@ -299,7 +302,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         // Expected values
         String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
         String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
-        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domainSuffix+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -323,7 +326,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
                                 "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary))
                         .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080"+domainSuffix;
         logger.debug(urlToCall);
         int i = 0;
         String content = null;

@@ -60,6 +60,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Random;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
@@ -103,6 +104,23 @@ public abstract class AbstractSnapshotControllerTestIT {
     @BeforeClass
     public static void initEnv() {
         applicationName = "app" + new Random().nextInt(10000);
+    }
+
+    @Value("${suffix.cloudunit.io}")
+    private String domainSuffix;
+
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+    private String subdomain;
+
+    private String domain;
+
+    @PostConstruct
+    public void init () {
+        if (subdomain != null) {
+            domain = subdomain + domainSuffix;
+        } else {
+            domain = domainSuffix;
+        }
     }
 
     @Before
@@ -203,7 +221,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                         "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         Thread.sleep(5000);
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         int counter = 0;
 
@@ -402,7 +420,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
                         "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
@@ -450,7 +468,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(get("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(8080));
 
-        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-forward-8080.cloudunit.dev";
+        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-forward-8080" + domain;
         contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
@@ -575,7 +593,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
                         "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
@@ -637,7 +655,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("Check the keyword of " + applicationName + "cloned");
         logger.info("**************************************");
 
-        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin.cloudunit.dev";
+        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin" + domain;
         contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
@@ -887,6 +905,17 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(post("/module").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
+        // Stop the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        // Start the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+
         logger.info("**************************************");
         logger.info("Deploy a helloworld Application");
         logger.info("**************************************");
@@ -899,7 +928,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                                 + appName + ".war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         // test the application content page
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")||release.contains("wildfly")) {
             int counter = 0;
@@ -961,7 +990,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("Check the contentPage of " + applicationName + "cloned");
         logger.info("**************************************");
 
-        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin.cloudunit.dev";
+        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin" + domain;
         if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             contentPage = getUrlContentPage(urlToCall);
@@ -1008,6 +1037,16 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(post("/module").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
+        // Stop the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        // Start the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
         logger.info("**************************************");
         logger.info("Deploy a helloworld Application");
         logger.info("**************************************");
@@ -1021,16 +1060,16 @@ public abstract class AbstractSnapshotControllerTestIT {
                                 + ".war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         // test the application content page
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         int counter = 0;
         if (release.contains("jboss")||release.contains("wildfly")) {
-            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
+            while (!contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
         } else {
-            while (contentPage.contains(keywordIntoPage)==false || counter++ < 10) {
+            while (!contentPage.contains(keywordIntoPage) || counter++ < 10) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }

@@ -45,6 +45,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.util.Random;
@@ -91,6 +92,23 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     private MockHttpSession session;
 
     private static String applicationName;
+
+    @Value("${suffix.cloudunit.io}")
+    private String domainSuffix;
+
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+    private String subdomain;
+
+    private String domain;
+
+    @PostConstruct
+    public void init () {
+        if (subdomain != null) {
+            domain = subdomain + domainSuffix;
+        } else {
+            domain = domainSuffix;
+        }
+    }
 
     protected String server;
     protected String module;
@@ -204,7 +222,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -266,7 +284,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -299,7 +317,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String module2 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-2";
-        String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -359,7 +377,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // Expected values
         String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
 
         // Stop the application
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";

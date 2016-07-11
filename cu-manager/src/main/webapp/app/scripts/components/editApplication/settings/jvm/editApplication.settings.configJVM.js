@@ -26,16 +26,16 @@
       bindings: {
         application: '=app',
       },
-      controller: ['$scope', 'JVMService', ConfigJVMCtrl],
+      controller: ['$scope', 'JVMService', '$filter', ConfigJVMCtrl],
       controllerAs: 'configjvm',
     };
   }
 
-  function ConfigJVMCtrl($scope, JVMService) {
+  function ConfigJVMCtrl($scope, JVMService, $filter) {
     var vm = this;
 
     // Config JVM
-    vm.jvmOptions = vm.application.servers[0].jvmOptions;
+    vm.jvmOptions = $filter('cleanEscapeSlashAndReverse')(vm.application.servers[0].jvmOptions, true);
     vm.jvmMemory = vm.application.servers[0].jvmMemory;
     vm.jvmRelease = vm.application.servers[0].jvmRelease;
     vm.selectedJvmMemory = vm.jvmMemory;
@@ -47,6 +47,7 @@
 
     // Function to save the JVM parameters  
     function saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease) {
+      jvmOptions = $filter('cleanEscapeSlashAndReverse')(jvmOptions, false);
       JVMService.saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease);
       $scope.$emit('workInProgress', { delay: 10000 });
     }

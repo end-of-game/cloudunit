@@ -81,7 +81,6 @@ public abstract class AbstractApplicationControllerTestIT {
     @Inject
     private UserService userService;
 
-
     private MockHttpSession session;
 
     private static String applicationName;

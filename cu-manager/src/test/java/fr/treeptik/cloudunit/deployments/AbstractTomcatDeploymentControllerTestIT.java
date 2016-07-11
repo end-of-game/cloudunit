@@ -23,6 +23,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
@@ -44,8 +45,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Random;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
+import javax.validation.Valid;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
@@ -77,6 +80,22 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
     private UserService userService;
 
     private MockHttpSession session;
+
+    @Value("${suffix.cloudunit.io}")
+    private String domainSuffix;
+
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+    private String subdomain;
+
+    private String domain;
+    @PostConstruct
+    public void init () {
+        if (subdomain != null) {
+            domain = subdomain + domainSuffix;
+        } else {
+            domain = domainSuffix;
+        }
+    }
 
     @BeforeClass
     public static void initEnv()
@@ -136,7 +155,7 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
             mockMvc.perform( MockMvcRequestBuilders.fileUpload( "/application/" + applicationName + "/deploy" ).file( downloadAndPrepareFileToDeploy( "helloworld.war",
                                                                                                                                                       "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war" ) ).session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
         resultats.andExpect( status().is2xxSuccessful() );
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         Assert.assertTrue( getUrlContentPage( urlToCall ).contains( "CloudUnit PaaS" ) );
     }
 
@@ -208,7 +227,7 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
                 .andDo(print());
         // test the application content page
         resultats.andExpect( status().is2xxSuccessful() );
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         if (release.contains("jboss")) {
             int counter = 0;
