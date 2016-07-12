@@ -31,8 +31,8 @@ describe('E2E: EditApplication', function () {
 
     it('should display a spinner when being created', function () {
       // set test environment
-      dashboard.createApp('testApp', 1);
-      browser.driver.sleep(browser.params.sleep.small);
+      dashboard.createAppWithoutWaiting('testApp', 1);
+      browser.driver.sleep(browser.params.sleep.smallest);
       expect(element(by.css('.pending')).isPresent()).toBeTruthy();
     });
 
@@ -124,7 +124,7 @@ describe('E2E: EditApplication', function () {
       });
 
       describe('Monitoring Tab', function () {
-        it('should display monitoring section', function () {
+        xit('should display monitoring section', function () {
           editApp.monitoringTab.click().then(function() {
             expect(editApp.monitoringTab.isPresent()).toBeTruthy();
             expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/monitoring');

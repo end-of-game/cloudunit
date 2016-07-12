@@ -49,10 +49,9 @@ login(browser.params.loginAdmin);
       // set test environment
       browser.get('/#/dashboard');
       dashboard.createApp('testOverview', 1);
-      browser.driver.sleep(browser.params.sleep.large);
       
       browser.get('/#/editApplication/testOverview/overview');
-      browser.driver.sleep(browser.params.sleep.smallest);
+      browser.driver.sleep(browser.params.sleep.small);
       expect(overview.creationDate.getAttribute('value')).not.toEqual('');
       expect(overview.serverName.getAttribute('value')).not.toEqual('');
       expect(overview.jvmMemory.getAttribute('value')).not.toEqual('');

@@ -56,13 +56,25 @@ var DashboardPage = (function () {
           var selectorAppNameQuery = '#application-' + appName;
   
           //browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), browser.params.sleep.large);
-          var EC = protractor.ExpectedConditions;
-          browser.wait($('.pending', selectorAppNameQuery), browser.params.sleep.large);
+          //var EC = protractor.ExpectedConditions;
+          browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
           
           //button.click();
-      });
 
+      });
       
+    }
+     this.createAppWithoutWaiting = function (appName, serverChoice) {
+      var self = this;
+      self.setApplicationName(appName);
+      self.dropdownToggle.click().then(function () {
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          for(var i = 0; i < serverChoice; i++) {
+            self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
+          }
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
+      });
     }
     this.serverChoice = function (serverChoice) {
       var self = this;
@@ -86,6 +98,7 @@ var DashboardPage = (function () {
       modal = appToDelete.element(by.css('.modal'));
       toggleModal.click();
       modal.element(by.css('.delete-btn')).click();
+      browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
     };
   }
 

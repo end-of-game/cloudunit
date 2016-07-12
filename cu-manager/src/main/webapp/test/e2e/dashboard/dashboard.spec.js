@@ -77,9 +77,9 @@ describe('E2E: dashboard', function () {
     it('should have two applications', function () {
       dashboard.applicationNameInput.clear().then(function() {
          browser.driver.sleep(browser.params.sleep.medium);
-        dashboard.createApp('testApp2', 1);
+        dashboard.createApp('randomApp2', 1);
         browser.driver.sleep(browser.params.sleep.large);
-        var newApp = dashboard.findApplication('testapp2');
+        var newApp = dashboard.findApplication('randomapp2');
         expect(newApp.isPresent()).toBe(true);
         
         expect(dashboard.applications.count()).toBe(2);
@@ -90,7 +90,7 @@ describe('E2E: dashboard', function () {
   describe('delete application', function () {
     var appToDelete, toggleModal, modal, deleteBtn;
     beforeEach(function () {
-      appToDelete = dashboard.findApplication('testapp2');
+      appToDelete = dashboard.findApplication('randomapp2');
       toggleModal = appToDelete.element(by.css('.toggle-modal'));
       modal = appToDelete.element(by.css('.modal'));
       deleteBtn = modal.element(by.css('.delete-btn'));

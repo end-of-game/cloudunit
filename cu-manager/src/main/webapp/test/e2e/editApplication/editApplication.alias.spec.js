@@ -45,7 +45,6 @@ describe('E2E: EditApplication', function () {
     it('should display the alias card in settings url', function () {
       // set test environment
       dashboard.createApp('testAlias', 1);
-      browser.driver.sleep(browser.params.sleep.large);
       browser.get('/#/editApplication/testAlias/settings');
 
       expect(alias.domain.getAttribute('value')).not.toEqual('');

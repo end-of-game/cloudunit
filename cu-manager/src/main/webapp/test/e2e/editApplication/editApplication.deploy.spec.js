@@ -34,7 +34,7 @@ var DeploySection = function () {
     this.progressBar = element(by.css('.upload-progress'));
     this.deployFile = function (filePath) {
         var absolutePath = this.path.resolve(__dirname, filePath);
-        return this.uploadFileInput.sendKeys(absolutePath);
+        return element(by.id('upload-file')).sendKeys(absolutePath);
     };
     this.download = function(url, dest) {
         var file = fs.createWriteStream(dest);
@@ -81,14 +81,12 @@ describe('E2E Test: Edit Application Deploy War', function () {
             }, browser.params.sleep.medium).then(function () {
                  // set test environment
                 dashboard.createApp('testDeploy', 1);
-                browser.driver.sleep(browser.params.sleep.large);
                 browser.get('/#/editApplication/testDeploy/deploy');
 
                 deploy.deployFile('../../uploads/performances.war');
                 expect(deploy.infoName.getText()).not.toBe('');
                 expect(deploy.infoSize.getText()).not.toBe('');   
-            });
-               
+            });    
         });
 
         it('remove file on clear button click', function () {
@@ -97,17 +95,23 @@ describe('E2E Test: Edit Application Deploy War', function () {
             });
         });
 
-        it('should show an error message if file type not authorized', function () {
+        xit('should show an error message if file type not authorized', function () {
             var fs = require('fs');
-            fs.writeFile("./test/uploads/deploy.txt", "Test deploy .txt", function(err) {
+            /*fs.writeFile("./test/uploads/deploy.txt", "Test deploy .txt", function(err) {
                 if(err) {
                     return console.log(err);
-                }
-
-                deploy.deployFile('../../uploads/deploy.txt').then(function () {
-                    expect(deploy.fileTypeError.isPresent()).toBeTruthy();
+                }*/
+                browser.wait(function() {
+                    deploy.download('https://github.com/Treeptik/cloudunit/releases/download/1.0/phpredis.zip',
+                    'test/uploads/test.zip');
+                    return true;
+                }, browser.params.sleep.medium).then(function () {
+                    deploy.deployFile('../../uploads/test.zip').then(function () {
+                        browser.driver.sleep(browser.params.sleep.large);
+                        expect(deploy.fileTypeError.isPresent()).toBeTruthy();
+                    }); 
                 });
-            });
+           // });
         });
 
         describe('on file upload', function () {
@@ -160,7 +164,7 @@ describe('E2E Test: Edit Application Deploy War', function () {
                  
                 //delete upload/create file
                 fs.unlinkSync('./test/uploads/performances.war');
-                fs.unlinkSync('./test/uploads/deploy.txt');
+                //fs.unlinkSync('./test/uploads/test.zip');
                 logout();
             });
         });

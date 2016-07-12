@@ -40,7 +40,6 @@ describe('E22: Edit Application Add Module', function () {
         it('should display a spinner when being created', function () {
             // set test environment
             dashboard.createApp('testModule', 1);
-            browser.driver.sleep(browser.params.sleep.large);
             
             browser.get('/#/editApplication/testModule/addModule');
             var buttonModule = element(by.repeater('image in modules.moduleImages').row(0));
@@ -50,23 +49,23 @@ describe('E22: Edit Application Add Module', function () {
         });
 
         it('should appear in installed module list on overview section', function () {
-            editApp.overviewTab.click();
-            expect(element(by.repeater('module in overview.app.modules').row(0)).isDisplayed()).toBeTruthy();
+            editApp.overviewTab.click().then(function() {
+                expect(element(by.repeater('module in overview.app.modules').row(0)).isDisplayed()).toBeTruthy();
+                  browser.driver.sleep(browser.params.sleep.medium);
+            });
         });
 
         it('should have database info', function () {
-            var theModule = $('[id$="johndoe-testmodule-mysql-5-5-1"]');
+            var theModule = element(by.repeater('module in overview.app.modules').row(0));
             expect(theModule.element(by.id('database')).getAttribute('value')).not.toBe('');
             expect(theModule.element(by.id('host')).getAttribute('value')).not.toBe('');
             expect(theModule.element(by.id('username')).getAttribute('value')).not.toBe('');
         });
 
         it('should show/hide password', function () {
-            var theModule = $('[id$="johndoe-testmodule-mysql-5-5-1"]');
+            var theModule = element(by.repeater('module in overview.app.modules').row(0));
             var showPassBtn = theModule.element(by.css('.showPass-btn'));
             var password = theModule.element(by.id('password-0'));
-
-            expect(password.isDisplayed()).toBeFalsy();
 
             showPassBtn.click().then(function () {
                 expect(password.isDisplayed()).toBeTruthy();
@@ -101,10 +100,11 @@ describe('E22: Edit Application Add Module', function () {
             var toggleModal = theModule.element(by.css('.toggle-modal'));
             var modal = $('.modal[id$="johndoe-testmodule-mysql-5-5-1"]');
 
-            toggleModal.click();
-            //browser.driver.wait(protractor.until.elementIsVisible(modal), browser.params.sleep.medium);
-            browser.driver.sleep(browser.params.sleep.medium);
-            expect(modal.getCssValue('display')).toBe('block');
+            toggleModal.click().then(function() {
+                var EC = protractor.ExpectedConditions;
+                browser.wait(EC.visibilityOf(modal), browser.params.sleep.medium);
+                expect(modal.getCssValue('display')).toBe('block');
+            });
         });
 
         it('should remove module on confirmation', function () {
@@ -112,10 +112,11 @@ describe('E22: Edit Application Add Module', function () {
             var modal = $('.modal[id$="johndoe-testmodule-mysql-5-5-1"]');
             var removeBtn = modal.element(by.css('.remove-btn'));
 
-            removeBtn.click();
-            //browser.driver.wait(protractor.until.elementIsVisible(element(by.css('.modules-list .no-data'))), browser.params.sleep.medium);
-            browser.driver.sleep(browser.params.sleep.medium);
-            expect(element(by.css('.modules-list .no-data')).isDisplayed()).toBeTruthy();
+            removeBtn.click().then(function() {
+                var EC = protractor.ExpectedConditions;
+                browser.wait(EC.visibilityOf(element(by.css('.modules-list .no-data'))), browser.params.sleep.medium);
+                expect(element(by.css('.modules-list .no-data')).isDisplayed()).toBeTruthy();
+            });
             
             // reset test environment
             browser.get('/#/dashboard');

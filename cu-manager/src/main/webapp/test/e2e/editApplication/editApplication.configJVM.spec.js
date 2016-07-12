@@ -48,7 +48,6 @@ describe('E2E: Edit Application config JVM', function () {
     it('should display the config JVM card in settings url', function () {
         // set test environment
         dashboard.createApp('testJVM', 1);
-        browser.driver.sleep(browser.params.sleep.large);
         browser.get('/#/editApplication/testJVM/settings');
         expect(element(by.id('config-JVM'))).toBeTruthy();
     });
