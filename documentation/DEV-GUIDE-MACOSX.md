@@ -164,7 +164,8 @@ cloudunit/cu-platform/reset.sh -y
 
 ## How to run e2e test (selenium & protractor)
 
-First of all, you have to start the application in parallel.
+First of all, you have to you have to install Google Chrome.
+Then, start the application in parallel.
 
 ```
 cd $HOME/cloudunit/cu-manager
