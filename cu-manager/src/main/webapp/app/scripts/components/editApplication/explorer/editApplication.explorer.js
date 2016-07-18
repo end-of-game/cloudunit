@@ -49,6 +49,12 @@
       rootPath = '__',
       uploader;
 
+    vm.editorOptions = {
+      lineWrapping : true,
+      lineNumbers: true,
+      mode: 'properties',
+    };
+
     vm.newDirectoryName = '';
     vm.containers = [];
     vm.myContainer = {};
@@ -101,7 +107,6 @@
 
     // Method to redraw the tree if we change container origin
     function refresh ( index ) {
-      console.log("refresh");
       vm.rootFolder = [];
       vm.subFolder = [];
       vm.currentPath = [];
