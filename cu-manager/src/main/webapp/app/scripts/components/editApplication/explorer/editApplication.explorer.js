@@ -49,6 +49,26 @@
       rootPath = '__',
       uploader;
 
+    vm.codemirrorLoaded = function(_editor){
+      // Editor part
+      var _doc = _editor.getDoc();
+      _editor.focus();
+      // Options
+      _doc.markClean()
+
+      // Events
+      //_editor.on("beforeChange", function(){ console.log('beforeChange'); });
+      //_editor.on("change", function(){ console.log('change');});
+    };
+
+    vm.editorOptions = {
+      lineWrapping : true,
+      lineNumbers: true,
+      //theme: 'monokai',
+      //readOnly: 'nocursor',
+      mode: 'properties',
+    };
+
     vm.newDirectoryName = '';
     vm.containers = [];
     vm.myContainer = {};
@@ -101,7 +121,6 @@
 
     // Method to redraw the tree if we change container origin
     function refresh ( index ) {
-      console.log("refresh");
       vm.rootFolder = [];
       vm.subFolder = [];
       vm.currentPath = [];

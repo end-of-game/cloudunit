@@ -44,6 +44,7 @@
       'angular-chartist',
       'nvd3',
       'metricsgraphics',
+      'ui.codemirror',
 
       //shared modules
       'webuiApp.filters',
