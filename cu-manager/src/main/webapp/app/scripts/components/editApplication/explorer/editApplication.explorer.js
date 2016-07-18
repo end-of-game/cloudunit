@@ -49,23 +49,9 @@
       rootPath = '__',
       uploader;
 
-    vm.codemirrorLoaded = function(_editor){
-      // Editor part
-      var _doc = _editor.getDoc();
-      _editor.focus();
-      // Options
-      _doc.markClean()
-
-      // Events
-      //_editor.on("beforeChange", function(){ console.log('beforeChange'); });
-      //_editor.on("change", function(){ console.log('change');});
-    };
-
     vm.editorOptions = {
       lineWrapping : true,
       lineNumbers: true,
-      //theme: 'monokai',
-      //readOnly: 'nocursor',
       mode: 'properties',
     };
 
