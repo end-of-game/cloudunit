@@ -42,10 +42,9 @@ in_array() {
 }
 
 # Store the "docker images" result inside array
-
 mapfile -t images_list_found < <(docker images | grep cloudunit)
 
-# Intialize an array to store the lost of images not found
+# Intialize an array to store the list of images not found
 images_list_not_found=()
 
 # Loop to test if each entry of images_list_expected array is in the images_list_found array
