@@ -51,7 +51,7 @@ describe('E22: Edit Application Add Module', function () {
         it('should appear in installed module list on overview section', function () {
             editApp.overviewTab.click().then(function() {
                 expect(element(by.repeater('module in overview.app.modules').row(0)).isDisplayed()).toBeTruthy();
-                  browser.driver.sleep(browser.params.sleep.medium);
+                browser.driver.sleep(browser.params.sleep.medium);
             });
         });
 

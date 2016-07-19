@@ -52,15 +52,11 @@ var DashboardPage = (function () {
           self.dropdownToggle.sendKeys(protractor.Key.ENTER);
           browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
           // self.createBtn.click();
-
-          var selectorAppNameQuery = '#application-' + appName;
-  
+          //var selectorAppNameQuery = '#application-' + appName;
           //browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), browser.params.sleep.large);
           //var EC = protractor.ExpectedConditions;
           browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
-          
           //button.click();
-
       });
       
     }
@@ -75,6 +71,17 @@ var DashboardPage = (function () {
           self.dropdownToggle.sendKeys(protractor.Key.ENTER);
           browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
       });
+    }
+    this.createAppByName = function (appName, serverName) {
+      var self = this;
+      self.setApplicationName(appName);
+      self.dropdownToggle.click().then(function () {;
+          self.dropdownToggle.sendKeys(serverName);
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
+          browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
+      });
+      
     }
     this.serverChoice = function (serverChoice) {
       var self = this;

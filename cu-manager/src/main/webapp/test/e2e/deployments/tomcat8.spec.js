@@ -13,9 +13,11 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-var EditApplicationPage = require('../../pages/EditApplicationPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
-var DashboardPage = require('../../pages/DashboardPage');
+var fs = require('fs');
+var path = require('path');
 
 var DeploySection = function () {
   "use strict";
@@ -36,79 +38,79 @@ var DeploySection = function () {
   }
 };
 
-var CreateAppForm = function () {
-  this.formContainer = element(by.id('create-application'));
-  this.createAppForm = element(by.id('create-application-form'));
-  this.applicationNameInput = element(by.model('createApplication.applicationName'));
-  this.dropdownToggle = this.createAppForm.element(by.css('.dropdown-toggle'));
-  this.createBtn = element(by.id('create-btn'));
-  this.errorMessage = element(by.binding('createApplication.message'));
-  this.formatErrorMessage = element(by.css('.format'));
-  this.spinner = this.formContainer.element(by.css('.spinner'));
-  this.setApplicationName = function (name) {
-    return this.applicationNameInput.sendKeys(name);
-  };
-  this.createApp = function (appName, serverChoice) {
-    var self = this;
-    self.setApplicationName(appName);
-    self.dropdownToggle.click().then(function () {
-      element(by.repeater('serverImage in createApplication.serverImages').row(serverChoice)).click()
-        .then(function () {
-          self.createBtn.click()
-        })
-    });
-  }
-};
-
-
 describe('E2E Test: Deploy app with tomcat8 and mysql', function () {
   "use strict";
-  var ptor, deploy, editApp, createAppForm, dashboard;
+  var deploy, editApp, dashboard;
 
   login(browser.params.loginAdmin);
-  createAppForm = new CreateAppForm();
-  createAppForm.createApp('tomcat8', 2);
-  browser.driver.sleep(6000);
-  browser.get('/#/editApplication/tomcat8/addModule');
-  browser.driver.sleep(2000);
-  element(by.repeater('moduleImage in modules.moduleImages').row(0)).click();
-  browser.driver.sleep(15000);
-
+  
   beforeEach(function () {
-    ptor = protractor.getInstance();
-    ptor.ignoreSynchronization = true;
-    deploy = new DeploySection();
-    editApp = new EditApplicationPage();
-    dashboard = new DashboardPage();
+    editApp = components.EditApplicationPage;
+    dashboard = components.DashboardPage;
+    deploy = components.DeployPage;
   });
 
-
-  it('should display web application', function () {
-    browser.get('/#/editApplication/tomcat8/deploy');
-    browser.driver.sleep(6000);
-    deploy.deployFile('../../uploads/pizzashop-0.0.1-SNAPSHOT.war');
-    deploy.uploadBtn.click();
-    browser.driver.sleep(15000);
-    editApp.previewLink.click();
-    browser.getAllWindowHandles().then(function (handles) {
-      var newWindowHandle = handles[1];
-      browser.switchTo().window(newWindowHandle).then(function () {
-        var el = element(by.css('h1'));
-        expect(el.getText()).toMatch('List of All Pizzaaaaaaaaaaaa');
-        //to close the current window
-        browser.driver.close().then(function () {
-          //to switch to the previous window
-          browser.switchTo().window(handles[0]);
-        });
+  it('should create a tomcat8 app with mysql database', function() {
+    dashboard.createAppByName('tomcat8', 'tomcat 8');
+    browser.get('/#/editApplication/tomcat8/addModule');
+    element(by.repeater('image in modules.moduleImages').row(0)).click().then(function() {
+      editApp.overviewTab.click().then(function() {
+        expect(element(by.repeater('module in overview.app.modules').row(0)).isDisplayed()).toBeTruthy();
       });
     });
   });
 
-  afterEach(function(){
-    browser.get('/#/dashboard');
-    browser.driver.sleep(3000);
-    dashboard.deleteApp('tomcat8');
-    browser.driver.sleep(3000);
-    logout();
-  })
+  it('should display web application', function () {
+    browser.get('/#/editApplication/tomcat8/deploy');
+    browser.sleep(browser.params.sleep.smallest);
+    browser.wait(function() {
+        deploy.download('https://github.com/Treeptik/cloudunit/releases/download/1.0/performances.sd.0.1.war',
+        'test/uploads/performances.war');
+        return true;
+    }, browser.params.sleep.medium).then(function () {
+      browser.sleep(browser.params.sleep.small);
+      /*deploy.deployFile('../../uploads/performances.war');
+      deploy.deployFile('../../uploads/performances.war');
+      deploy.deployFile('../../uploads/performances.war');
+*/    
+      browser.driver.sleep(browser.params.sleep.large);
+      var lol = path.resolve(__dirname, 'test/uploads/performances.war');
+      console.log(lol);
+      element(by.id('upload-file')).sendKeys('/home/stagiaire/cloudunit/cu-manager/src/main/webapp/test/uploads/performances.war'); 
+
+      
+      deploy.uploadBtn.click();
+      //expect(deploy.progressBar.isDisplayed()).toBeTruthy();
+      browser.driver.sleep(browser.params.sleep.small);
+      editApp.overviewTab.click().then(function() {
+        browser.driver.sleep(browser.params.sleep.small);
+        editApp.previewLink.click().then(function() {
+          browser.getAllWindowHandles().then(function (handles) {
+            var newWindowHandle = handles[1];
+            browser.switchTo().window(newWindowHandle).then(function () {
+              browser.driver.sleep(browser.params.sleep.large);
+              var el = browser.driver.findElement(by.css('h1'));
+              browser.sleep(browser.params.sleep.small)
+              expect(el.getText()).toMatch('Hello World');
+              //var el = element(by.css('h1'));
+              //expect(el.getText()).toMatch('List of All Pizzaaaaaaaaaaaa');
+              //to close the current window
+              browser.driver.close().then(function () {
+                //to switch to the previous window
+                browser.switchTo().window(handles[0]);
+                  // reset test environment
+                  browser.get('/#/dashboard');
+                  dashboard.deleteApp('tomcat8');
+
+                  //delete upload/create file
+                  fs.unlinkSync('./test/uploads/performances.war');
+                  logout();
+              });
+            });
+          });
+        });
+      })
+    });
+  });
+
 });
