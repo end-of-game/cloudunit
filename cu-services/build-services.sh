@@ -25,3 +25,10 @@ do
 		echo -e "\nPROBLEM: the docker image $image:$GIT_TAG has not been built!\n"
 	fi
 done < cu-images
+
+# Build test of Cloudunit Docker images
+bash check_build_images.sh
+# Exit on child script error
+if [ $? -eq 1 ]
+	exit 1
+fi
