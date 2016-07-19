@@ -8,8 +8,8 @@ ENV CU_DATABASE_HOME /cloudunit/database
 RUN mkdir /cloudunit/database
 RUN echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
 
-RUN curl -sL https://deb.nodesource.com/setup | sudo bash -
-RUN apt-get install -yq apache2 build-essential nodejs
+RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
+RUN apt-get update && apt-get install -yq apache2 build-essential nodejs
 
 # Installation de redis
 RUN wget http://download.redis.io/releases/redis-$REDIS_VERSION.tar.gz -O /tmp/redis-$REDIS_VERSION.tar.gz
