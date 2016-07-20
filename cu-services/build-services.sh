@@ -27,7 +27,7 @@ do
 done < cu-images
 
 # Build test of Cloudunit Docker images
-bash check_build_images.sh
+./check_build_images.sh
 # Exit on child script error
 if [ $? -eq 1 ]; then
 	exit 1
