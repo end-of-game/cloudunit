@@ -4,7 +4,7 @@ ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 
-ENV VERSION 2.2.22-1ubuntu1.10
+ENV VERSION 2.2.22-1ubuntu1.11
 
 RUN apt-get update \
     && apt-get -y install   apache2=$VERSION \
