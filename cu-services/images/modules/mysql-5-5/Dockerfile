@@ -41,7 +41,8 @@ ADD scripts /cloudunit/scripts/
 VOLUME /cloudunit/database
 
 # SSH
-EXPOSE 22	
+EXPOSE 22
+EXPOSE 9999
 
 ENTRYPOINT ["/bin/bash", "/cloudunit/scripts/start-service.sh"]
 
