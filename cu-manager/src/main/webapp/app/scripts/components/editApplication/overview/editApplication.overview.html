@@ -65,20 +65,26 @@
 
           <div class="readonly">
             <label for="jvm-options">JVM options: </label>
-            <input class="large code"
+            <input class="code clipboard"
                    id="jvm-options"
                    type="text"
                    value="{{overview.app.servers[0].jvmOptions | cleanEscapeSlashAndReverse: true}}"
-                   readonly="">
+                   readonly=""
+                   data-title="Copy to clipboard"
+                   tooltip=""
+                   ngclipboard data-clipboard-target="#jvm-options">
           </div>
 
           <div class="readonly">
             <label for="jvm-release">JVM Release: </label>
-            <input class="large code"
+            <input class="code clipboard"
                    id="jvm-release"
                    type="text"
                    value="{{overview.app.servers[0].jvmRelease}}"
-                   readonly="">
+                   readonly=""
+                   data-title="Copy to clipboard"
+                   tooltip=""
+                   ngclipboard data-clipboard-target="#jvm-release">
           </div>
 
           <div class="readonly">
