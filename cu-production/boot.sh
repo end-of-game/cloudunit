@@ -58,8 +58,8 @@ service docker start
 # BUILD SERVICES
 su -l $CU_USER -c "cd $CU_HOME/cu-services && ./build-services.sh"
 # Exit on child script error
-if [ $? -eq 1 ]
-	echo "EXIT DUE TO FATAL ERROR !"; then
+if [ $? -eq 1 ]; then
+	echo "EXIT DUE TO FATAL ERROR !"
         exit 1
 fi
 
