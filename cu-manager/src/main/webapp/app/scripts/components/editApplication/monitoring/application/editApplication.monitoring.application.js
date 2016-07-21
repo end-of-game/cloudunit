@@ -64,6 +64,34 @@
       vm.timer = null;
     };
 
+
+  function includes (array, searchElement) {
+    var self = array;
+    var len = parseInt(self.length, 10) || 0;
+    if (len === 0) {
+      return false;
+    }
+    var n = parseInt(arguments[1], 10) || 0;
+    var k;
+    if (n >= 0) {
+      k = n;
+    } else {
+      k = len + n;
+      if (k < 0) {k = 0;}
+    }
+    var currentElement;
+    while (k < len) {
+      currentElement = self[k];
+      if (searchElement === currentElement ||
+         (searchElement !== searchElement && currentElement !== currentElement)) { // NaN !== NaN
+        return true;
+      }
+      k++;
+    }
+    return false;
+  };
+
+
     vm.$onInit = function() {
       setTimeout(function() {
         MonitoringService.getUrlMetrics(vm.app.servers[0].image.prefixEnv)
@@ -123,7 +151,7 @@
         }
 
     function referenceQueue(queueName) {
-      if(!vm.queueNameTab.includes(queueName)) {
+      if(!includes(vm.queueNameTab, queueName)) {
          vm.queueNameTab.push(queueName);
       }
       lastQueueNameSelected = queueName;
