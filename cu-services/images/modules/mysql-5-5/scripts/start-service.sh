@@ -74,6 +74,11 @@ if [ ! -f /cloudunit/database/init-service-ok ]; then
     echo -e "CU_DATABASE_PASSWORD=$CU_PASSWORD" >> $ENV_FILE
 
 	touch /cloudunit/database/init-service-ok
+	# Create the datadog user
+	mysql -u root --password=root -e "CREATE USER 'datadog'@'docker-dd-agent.cloud.unit' IDENTIFIED BY '5bgbzetJQ6nfPVTnnMcMP7SA';"
+    mysql -u root --password=root -e "GRANT REPLICATION CLIENT ON *.* TO 'datadog'@'docker-dd-agent.cloud.unit' WITH MAX_USER_CONNECTIONS 5;"
+    mysql -u root --password=root -e "GRANT PROCESS ON *.* TO 'datadog'@'docker-dd-agent.cloud.unit';"
+    mysql -u root --password=root -e "GRANT SELECT ON performance_schema.* TO 'datadog'@'docker-dd-agent.cloud.unit';"
 fi
 
 count=0
