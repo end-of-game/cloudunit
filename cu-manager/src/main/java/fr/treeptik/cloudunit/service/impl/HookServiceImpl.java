@@ -57,6 +57,7 @@ public class HookServiceImpl implements HookService {
 
     public void call(String containerName, RemoteExecAction action) {
         DockerClient docker = null;
+        LogStream output = null;
         try {
             if (Boolean.valueOf(isHttpMode)) {
                 docker = DefaultDockerClient
@@ -71,13 +72,15 @@ public class HookServiceImpl implements HookService {
 
             logger.info("Calling Hook script : " + action.getCommand() + " for " + containerName);
             final String execId = docker.execCreate(containerName, action.getCommandBash(), DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            final LogStream output = docker.execStart(execId);
+            output = docker.execStart(execId);
             final String execOutput = output.readFully();
+            System.out.println(execOutput);
 
         } catch (Exception ignore) {
             // dev in progress. No log
             //logger.error(action.toString(), e);
         } finally {
+            if (output != null) { output.close(); }
             if (docker != null) { docker.close(); }
         }
     }

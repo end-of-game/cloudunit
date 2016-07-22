@@ -13,6 +13,8 @@ export MANAGER_DATABASE_PASSWORD=$7
 export ENV_EXEC=$8
 export CU_DATABASE_DNS=$9
 
+export ENV_FILE=/etc/environment
+
 if [ $ENV_EXEC = "integration" ];
 then
     export MYSQL_ENDPOINT=cuplatform_testmysql_1.mysql.cloud.unit
@@ -65,7 +67,12 @@ if [ ! -f /cloudunit/database/init-service-ok ]; then
 	done
 	# Create the admin user
 	mysql -u root --password=root -e 'GRANT ALL PRIVILEGES ON *.* TO '$CU_USER'@"localhost" IDENTIFIED BY "'$CU_PASSWORD'" WITH GRANT OPTION; GRANT ALL PRIVILEGES ON *.* TO '$CU_USER'@"%" IDENTIFIED BY "'$CU_PASSWORD'" WITH GRANT OPTION; FLUSH PRIVILEGES; CREATE DATABASE IF NOT EXISTS `'$CU_DATABASE_NAME'`;ALTER DATABASE `'$CU_DATABASE_NAME'` charset=utf8;'
-	mysql -u $CU_USER --password=$CU_PASSWORD -e 'UPDATE mysql.user SET password=PASSWORD("'$CU_PASSWORD'") WHERE user="root";'
+	# mysql -u $CU_USER --password=$CU_PASSWORD -e 'UPDATE mysql.user SET password=PASSWORD("'$CU_PASSWORD'") WHERE user="root";'
+
+	echo -e "CU_USER=$CU_USER" >> $ENV_FILE
+	echo -e "CU_DATABASE_USER=$CU_USER" >> $ENV_FILE
+    echo -e "CU_DATABASE_PASSWORD=$CU_PASSWORD" >> $ENV_FILE
+
 	touch /cloudunit/database/init-service-ok
 fi
 

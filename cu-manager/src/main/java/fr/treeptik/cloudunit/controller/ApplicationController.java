@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
+import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -25,10 +26,7 @@ import fr.treeptik.cloudunit.manager.ApplicationManager;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.DockerService;
-import fr.treeptik.cloudunit.service.GitlabService;
-import fr.treeptik.cloudunit.service.JenkinsService;
+import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 import org.slf4j.Logger;
@@ -75,6 +73,9 @@ public class ApplicationController
 
     @Inject
     private JenkinsService jenkinsService;
+
+    @Inject
+    private HookService hookService;
 
     /**
      * To verify if an application exists or not.
@@ -349,7 +350,15 @@ public class ApplicationController
         // We must be sure there is no running action before starting new one
         authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
+        DockerContainer dockerContainer = new DockerContainer();
+        dockerContainer.setName(application.getServers().get(0).getName());
+        dockerContainer.setImage((application.getServers().get(0).getImage().getName()));
+
+        hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
+
         applicationManager.deploy(fileUpload, application);
+
+        hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_FIRST_DEPLOY);
 
         logger.info("--DEPLOY APPLICATION WAR ENDED--");
         return new HttpOk();
