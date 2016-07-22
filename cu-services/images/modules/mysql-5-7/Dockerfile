@@ -11,8 +11,9 @@ RUN echo mysql-server-5.7 mysql-server/root_password password 'root' | debconf-s
 RUN echo mysql-server-5.7 mysql-server/root_password_again password 'root' | debconf-set-selections
 
 ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.12-0ubuntu1.1
-RUN apt-get install -y mysql-server-$MYSQL_MAJOR=$MYSQL_VERSION php-gettext
+# ENV MYSQL_VERSION 5.7.12-0ubuntu1.1
+# RUN apt-get install -y mysql-server-$MYSQL_MAJOR=$MYSQL_VERSION php-gettext
+RUN apt-get install -y mysql-server-$MYSQL_MAJOR php-gettext
 RUN service mysql start
 RUN chown -R mysql:mysql /var/run/mysqld
 
