@@ -1,15 +1,8 @@
-docker_images:
-  - tomcat
-  - cloudunit/tomcat-8
-  - cloudunit/tomcat-appconf8
-
 instances:
-    -   host: 172.17.1.235
-        port: 9999
-        name: tomcat_instance
+  - host: 172.17.2.13
+    name: johndoe-xxx
+    port: 9999
 
-# List of metrics to be collected by the integration
-# Visit http://docs.datadoghq.com/integrations/java/ to customize it
 init_config:
   conf:
     - include:
@@ -73,3 +66,18 @@ init_config:
         jspReloadCount:
           alias: tomcat.jsp.reload_count
           metric_type: counter
+    - include:
+        type: DataSource
+        attribute:
+          numIdle:
+            alias: tomcat.datasource.idle
+            metric_type: gauge
+          numActive:
+            alias: tomcat.datasource.active
+            metric_type: gauge
+          maxIdle:
+            alias: tomcat.datasource.maxidle
+            metric_type: gauge
+          maxActive:
+            alias: tomcat.datasource.maxactive
+            metric_type: gauge

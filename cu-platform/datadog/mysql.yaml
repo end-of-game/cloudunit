@@ -1,0 +1,6 @@
+init_config:
+
+instances:
+  - server: 172.17.2.14
+    user: datadog
+    pass: 5bgbzetJQ6nfPVTnnMcMP7SA
