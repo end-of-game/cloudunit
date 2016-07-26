@@ -31,7 +31,7 @@ RUN tar xvzf /tmp/redis-$REDIS_VERSION.tar.gz -C /tmp && \
 RUN groupadd -r redis && useradd -r -g redis redis
 
 # Installation de redis-commander
-RUN npm install -g redis-commander
+RUN npm install -g redis-commander@0.3.2
 
 # Add custom scripts
 ADD scripts /cloudunit/scripts/
