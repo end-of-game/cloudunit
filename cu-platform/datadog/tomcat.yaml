@@ -1,5 +1,5 @@
 instances:
-  - host: 172.17.2.13
+  - host: 172.17.0.82
     name: johndoe-xxx
     port: 9999
 

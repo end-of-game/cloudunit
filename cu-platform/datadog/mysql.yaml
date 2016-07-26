@@ -1,6 +1,13 @@
 init_config:
 
 instances:
-  - server: 172.17.2.14
+  - server: 172.17.0.83
     user: datadog
     pass: 5bgbzetJQ6nfPVTnnMcMP7SA
+    tags:
+      - instance:mysql-tomcat
+  - server: 172.17.0.86
+    user: datadog
+    pass: 5bgbzetJQ6nfPVTnnMcMP7SA
+    tags:
+      - instance:mysql-apache
