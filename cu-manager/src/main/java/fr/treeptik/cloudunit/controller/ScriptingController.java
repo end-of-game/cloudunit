@@ -22,12 +22,15 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.ScriptingService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +50,9 @@ public class ScriptingController
     private final Logger logger = LoggerFactory.getLogger(ScriptingController.class);
 
     @Inject
+    private ScriptingService scriptingService;
+
+    @Inject
     private DockerService dockerService;
 
     @Inject
@@ -62,19 +68,15 @@ public class ScriptingController
         try {
             authentificationUtils.forbidUser(user);
 
-            Random random = new Random();
-            int alea = random.nextInt(2);
-            Thread.sleep(5000);
-            if (alea % 2 ==0) {
-                return new HttpErrorServer("Error !");
-            }
-
             // We must be sure there is no running action before starting new one
             this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("scriptRequestBody: " + scriptRequestBody);
             }
+
+            scriptingService.execute(scriptRequestBody.getFileContent(), user.getLogin(), user.getPassword());
+
         } catch (Exception e) {
             logger.error(scriptRequestBody.toString(), e);
         } finally {
