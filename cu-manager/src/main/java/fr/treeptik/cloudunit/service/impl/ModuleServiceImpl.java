@@ -678,6 +678,8 @@ public class ModuleServiceImpl
             module.getModuleAction()
                     .updateModuleManager(hipacheRedisUtils);
 
+            module = saveInDB(module);
+
             // Call the hook for post start
             hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_START);
 
