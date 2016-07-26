@@ -591,6 +591,8 @@ public class ModuleServiceImpl
                     String command;
                     Integer exitCode1;
                     command = "sh /cloudunit/scripts/rmDBEnvVar.sh "
+                            + module.getImage().getPrefixEnv().toUpperCase()
+                            + "_"
                             + module.getInstanceNumber();
 
                     int counter = 0;
