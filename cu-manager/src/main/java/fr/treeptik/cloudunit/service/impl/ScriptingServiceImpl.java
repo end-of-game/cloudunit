@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.service.ScriptingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +50,13 @@ public class ScriptingServiceImpl implements ScriptingService {
         }
     }
 
-    public void execute(String scriptContent, String login, String password) {
+    public void execute(String scriptContent, String login, String password) throws ServiceException {
         logger.info(scriptContent);
 
         File tmpFile = null;
         FileWriter fileWriter = null;
         BufferedWriter writer = null;
-
+        ProcessBuilder processBuilder = null;
         try {
             tmpFile = File.createTempFile(login, ".cmdFile");
             fileWriter = new FileWriter(tmpFile);
@@ -70,30 +71,33 @@ public class ScriptingServiceImpl implements ScriptingService {
             writer.flush();
             logger.debug(writer.toString());
 
-            ProcessBuilder processBuilder = new ProcessBuilder("java","-jar", pathCLI, "--cmdfile", tmpFile.getAbsolutePath());
+            File fileCLI = new File(pathCLI);
+            if (!fileCLI.exists()) {
+                StringBuilder msgError = new StringBuilder(512);
+                msgError.append("\n***************************************************************");
+                msgError.append("\nMISSING CLOUDUNITCLI.JAR");
+                msgError.append("\nPlease run manually (1) : mkdir -p " + pathCLI.substring(0, pathCLI.lastIndexOf("/")));
+                msgError.append("\nPlease run manually (2) : wget https://github.com/Treeptik/cloudunit/releases/download/1.0/CloudUnitCLI.jar -O " + pathCLI);
+                msgError.append("\n***************************************************************");
+                throw new ServiceException(msgError.toString());
+            }
+
+            processBuilder = new ProcessBuilder("java","-jar", pathCLI, "--cmdfile", tmpFile.getAbsolutePath());
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
 
             // Consommation de la sortie standard de l'application externe dans un Thread separe
-            new Thread() {
-                public void run() {
-                    try {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                        String line = "";
-                        try {
-                            while((line = reader.readLine()) != null) {
-                                logger.info(line);
-                            }
-                        } finally {
-                            reader.close();
-                        }
-                    } catch(IOException ioe) {
-                        ioe.printStackTrace();
-                    }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = "";
+            try {
+                while((line = reader.readLine()) != null) {
+                    logger.info(line);
                 }
-            }.start();
+            } finally {
+                reader.close();
+            }
 
-        } catch(Exception e) {
+        } catch(IOException e) {
             StringBuilder msgError = new StringBuilder(512);
             msgError.append("login=").append(login);
             msgError.append(", password=").append(password);

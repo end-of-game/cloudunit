@@ -16,9 +16,10 @@
 package fr.treeptik.cloudunit.service;
 
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.exception.ServiceException;
 
 public interface ScriptingService {
 
-    public void execute(String scriptContent, String login, String password);
+    public void execute(String scriptContent, String login, String password) throws ServiceException;
 
 }
