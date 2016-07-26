@@ -86,7 +86,7 @@
       var output = {};
       output.applicationName = applicationName;
       var Application = $resource ( 'application/start' );
-      return Application.save ( JSON.stringify ( output ) );
+      return Application.save ( JSON.stringify ( output ) ).$promise;
     }
 
     // Démarrer une application

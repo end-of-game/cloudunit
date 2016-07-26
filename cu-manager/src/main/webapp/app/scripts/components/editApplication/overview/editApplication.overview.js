@@ -45,18 +45,12 @@
     
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
-      ApplicationService.getVariableEnvironment(data.app.name, data.app.servers[0].containerID)
-      .then ( function (data) {
-        vm.app.env = data;
-      } )    
+      if(vm.app.servers[0].status === 'START') {
+        refreshEnvVar();
+      }
     });
     
-    $scope.$on ( 'application:addModule', function () {
-      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
-      .then ( function (data) {
-        vm.app.env = data;
-      } )
-    });
+    $scope.$on ( 'application:addModule', refreshEnvVar);
     
     vm.$onInit = function() {
       if(vm.app) {
@@ -69,6 +63,13 @@
     
     ///////////////////////////////////////////
 
+    function refreshEnvVar () {
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
+      .then ( function (data) {
+        vm.app.env = data;
+      } )
+    }
+
     function toggleServer(application) {
       if (application.status === 'START') {
         stopApplication(application.name)
@@ -79,8 +80,11 @@
 
     // Démarrage de l'application
     function startApplication(applicationName) {
-      ApplicationService.start(applicationName);
-      $scope.$emit('workInProgress', {delay: 3000});
+      ApplicationService.start(applicationName)
+        .then(function() {
+          refreshEnvVar();
+          $scope.$emit('workInProgress', {delay: 3000});
+        });
     }
 
     // Arrêt de l'application
@@ -96,7 +100,10 @@
 
     // Suppression d'un module
     function removeModule ( applicationName, moduleName ) {
-      return ModuleService.removeModule ( applicationName, moduleName );
+      return ModuleService.removeModule ( applicationName, moduleName )
+        .then(function() {
+          refreshEnvVar();
+        });
     }
   }
 })();

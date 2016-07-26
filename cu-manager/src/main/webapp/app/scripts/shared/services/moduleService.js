@@ -41,7 +41,7 @@ angular.module('webuiApp')
 
             // Suppression d'un module
             ModuleService.removeModule = function (applicationName, moduleName) {
-                return Module.delete({applicationName: applicationName, moduleName: moduleName});
+                return Module.delete({applicationName: applicationName, moduleName: moduleName}).$promise;
             };
             return ModuleService;
         }
