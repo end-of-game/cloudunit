@@ -25,28 +25,41 @@
   <div class="features">
     <div class="readonly">
       <label for="database">Database: </label>
-      <input class="blank"
-             id="database"
+      <input class="blank clipboard"
+             id="database database-mysql"
              type="text"
              value="{{module.moduleInfos.database}}"
-             readonly="" oneclickselect="">
+             readonly=""
+             data-title="Copy to clipboard"
+             tooltip=""
+             ngclipboard data-clipboard-target="#database-mysql"
+             oneclickselect="">
     </div>
 
     <div class="readonly">
       <label for="host">Host: </label>
-      <input id="host"
-             class="large"
+      <input class="large clipboard"
+             id="host host-mysql"
              type="text"
              value="{{module.internalDNSName}}"
-             readonly="" oneclickselect="">
+             readonly=""
+             data-title="Copy to clipboard"
+             tooltip=""
+             ngclipboard data-clipboard-target="#host-mysql"            
+             oneclickselect="">
     </div>
 
     <div class="readonly">
       <label for="username">User: </label>
-      <input id="username"
+      <input class="clipboard"
+             id="username username-mysql"
              type="text"
              value="{{module.moduleInfos.username}}"
-             readonly="" oneclickselect="">
+             readonly=""
+             data-title="Copy to clipboard"
+             tooltip=""
+             ngclipboard data-clipboard-target="#username-mysql"             
+             oneclickselect="">
     </div>
 
     <div class="readonly password">

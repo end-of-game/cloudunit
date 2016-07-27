@@ -13,6 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
+/*
 .icon-button:hover .tooltip {
   visibility: visible !important;
 }
@@ -25,10 +26,10 @@
   color: white;
   background-color: rgba(0, 0, 0, 0.8);
   box-sizing: border-box;
-  border-radius: 3px; /* TODO: not in spec. */
+  border-radius: 3px; // TODO: not in spec.
   white-space: nowrap;
   line-height: 6px;
-  z-index: 1002; /* TODO: this is brittle. */
+  z-index: 1002; // TODO: this is brittle.
   @include user-select(none);
   visibility: hidden;
 }
@@ -47,22 +48,22 @@
 }
 
 .top {
-  //margin-bottom: 10px; /* TODO: not specified in spec */
+  //margin-bottom: 10px;  TODO: not specified in spec 
   bottom: 100%;
 }
 
 .right {
-  margin-left: 10px; /* TODO: not specified in spec */
+  margin-left: 10px; // TODO: not specified in spec 
   left: 100%;
 }
 
 .bottom {
   top: 100%;
-  margin-top: 10px; /* TODO: not specified in spec */
+  margin-top: 10px; // TODO: not specified in spec 
 }
 
 .left {
-  margin-right: 10px; /* TODO: not specified in spec */
+  margin-right: 10px; // TODO: not specified in spec 
   right: 100%;
 }
 
@@ -88,4 +89,9 @@
   right: 100%;
   top: calc(50% - 4px);
   border-right-color: rgba(0, 0, 0, 0.8);
+}
+*/
+
+.clipboard {
+  cursor: pointer;
 }

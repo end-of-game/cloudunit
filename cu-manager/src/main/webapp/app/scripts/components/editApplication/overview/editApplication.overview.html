@@ -40,26 +40,35 @@
         <div class="features col-lg-6">
           <div class="readonly">
             <label for="creation-date">Creation date: </label>
-            <input
+            <input class="clipboard"
               id="creation-date"
               type="text"
               value="{{ overview.app.date }}"
+              data-title="Copy to clipboard"
+              tooltip=""
+              ngclipboard data-clipboard-target="#creation-date"
               readonly="">
           </div>
           <div class="readonly">
             <label for="server">Server: </label>
-            <input
+            <input class="clipboard"
               id="server"
               type="text"
               value="{{ overview.app.servers[0].image.displayName}}"
+              data-title="Copy to clipboard"
+              tooltip=""
+              ngclipboard data-clipboard-target="#server"
               readonly="">
           </div>
           <div class="readonly">
             <label for="jvm-memory">JVM memory: </label>
-            <input
+            <input class="clipboard"
               id="jvm-memory"
               type="text"
               value="{{overview.app.servers[0].jvmMemory}} Mo"
+              data-title="Copy to clipboard"
+              tooltip=""
+              ngclipboard data-clipboard-target="#jvm-memory"
               readonly="">
           </div>
 
@@ -97,8 +106,14 @@
         </div>
         <div class="col-lg-6" >
           <label>Environment variables :</label>
-          <li class="label-like" ng-repeat="env in overview.app.env">
-            {{ env.key }} = {{ env.value }}
+          <li class="label-like" ng-repeat="env in overview.app.env track by $index">
+            <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
+              {{ env.key }}
+            </span> 
+            = 
+            <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
+              {{ env.value }}
+            </span>
           </li>
         </div>
       </div>
