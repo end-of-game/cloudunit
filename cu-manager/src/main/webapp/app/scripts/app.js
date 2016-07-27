@@ -45,6 +45,7 @@
       'nvd3',
       'metricsgraphics',
       'ui.codemirror',
+      'ngclipboard',
 
       //shared modules
       'webuiApp.filters',

@@ -63,8 +63,10 @@ input[type='text'].ng-invalid:not(.ng-pristine) {
   border-bottom: 2px solid $color-error;
 }
 
-input.large {
-  min-width: 360px;
+input {
+  &.large {
+    min-width: 360px;
+  }
 }
 
 .label {
