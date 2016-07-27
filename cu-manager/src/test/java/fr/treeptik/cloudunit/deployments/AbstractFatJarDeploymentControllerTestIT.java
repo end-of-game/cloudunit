@@ -102,7 +102,7 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
     }
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         logger.info("setup");
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(springSecurityFilterChain).build();
@@ -123,6 +123,13 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
         securityContext.setAuthentication(result);
         session = new MockHttpSession();
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+
+        String binary = "spring-boot.jar";
+        logger.info("Create " + binary + " application.");
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+        ResultActions resultats =
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
     }
 
     @Test
@@ -132,17 +139,11 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
         String binary = "spring-boot.jar";
 
         try {
-            logger.info("Create " + binary + " application.");
-            String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-            ResultActions resultats =
-                    mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-            resultats.andExpect(status().isOk());
-
             // OPEN THE PORT
-            jsonString =
+            String jsonString =
                     "{\"applicationName\":\"" + applicationName
                             + "\",\"portToOpen\":\"8080\",\"portNature\":\"web\"}";
-            resultats =
+            ResultActions resultats =
                     this.mockMvc.perform(post("/application/ports")
                             .session(session)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -181,18 +182,11 @@ public abstract class AbstractFatJarDeploymentControllerTestIT
         logger.info("Deploy an Mysql SpringBoot application");
         String binary = "spring-boot-mysql.jar";
 
-        // Create an application
-        logger.info("Create " + binary + " application.");
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
         // Open the port 8080
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName
                         + "\",\"portToOpen\":\"8080\",\"portNature\":\"web\"}";
-        resultats =
+        ResultActions resultats =
                 this.mockMvc.perform(post("/application/ports")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
