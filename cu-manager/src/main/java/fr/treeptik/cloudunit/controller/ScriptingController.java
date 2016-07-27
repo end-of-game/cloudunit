@@ -77,8 +77,6 @@ public class ScriptingController
 
             scriptingService.execute(scriptRequestBody.getFileContent(), user.getLogin(), user.getPassword());
 
-        } catch (Exception e) {
-            logger.error(scriptRequestBody.toString(), e);
         } finally {
             authentificationUtils.allowUser(user);
         }

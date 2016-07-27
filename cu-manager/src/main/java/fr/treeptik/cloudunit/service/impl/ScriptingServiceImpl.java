@@ -86,12 +86,14 @@ public class ScriptingServiceImpl implements ScriptingService {
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
 
-            // Consommation de la sortie standard de l'application externe dans un Thread separe
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line = "";
             try {
                 while((line = reader.readLine()) != null) {
                     logger.info(line);
+                    if (line.contains("not found")) {
+                        throw new ServiceException("Syntax error : " + line);
+                    }
                 }
             } finally {
                 reader.close();
