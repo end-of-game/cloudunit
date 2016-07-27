@@ -74,7 +74,7 @@ public class DatabaseConfiguration
 
         lcemfb.setJpaProperties( jpaProperties );
 
-        lcemfb.setPackagesToScan( "fr.treeptik.cloudunitmonitor.model" );
+        lcemfb.setPackagesToScan( "fr.treeptik.cloudunit.model" );
         lcemfb.afterPropertiesSet();
         return lcemfb.getObject();
     }
