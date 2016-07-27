@@ -15,6 +15,12 @@ useradd -m $CU_USER
 usermod $CU_USER -aG sudo
 
 # PROVISION THE ENV
+apt-get install -y nmap &
+wait
+apt-get install -y htop &
+wait
+apt-get install -y ncdu &
+wait
 apt-get install -y git &
 wait
 apt-get install -y mysql-client &
