@@ -83,7 +83,7 @@ public class NameSnapshotTestIT {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         logger.info("setup");
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(springSecurityFilterChain).build();
 
@@ -106,18 +106,6 @@ public class NameSnapshotTestIT {
         session = new MockHttpSession();
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
-    }
-
-    @After
-    public void teardown() {
-        logger.info("teardown");
-        SecurityContextHolder.clearContext();
-        session.invalidate();
-    }
-
-    @Test()
-    public void test010_CreateSimpleApplicationSnapshot()
-            throws Exception {
         logger.info("**************************************");
         logger.info("Create Tomcat server");
         logger.info("**************************************");
@@ -127,15 +115,35 @@ public class NameSnapshotTestIT {
                 mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
+    }
+
+    @After
+    public void teardown() throws Exception {
+        logger.info("teardown");
+
+        logger.info("**************************************");
+        logger.info("Delete application : " + applicationName);
+        logger.info("**************************************");
+        ResultActions resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+        SecurityContextHolder.clearContext();
+        session.invalidate();
+    }
+
+    @Test()
+    public void test010_CreateSimpleApplicationSnapshot()
+            throws Exception {
         logger.info("**************************************");
         logger.info("Create a snapshot");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + tagName
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
@@ -152,77 +160,38 @@ public class NameSnapshotTestIT {
 
         resultats = mockMvc.perform(delete("/snapshot/" + tagName.toLowerCase()).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test
     public void test011_FailCreateEmptyNameSnapshot()
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Create a snapshot");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + ""
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test
     public void test012_FailCreateSpaceNameSnapshot()
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Create a snapshot");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + "         "
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test
@@ -233,23 +202,14 @@ public class NameSnapshotTestIT {
         String deAccentName = "aeeiou";
 
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Create a snapshot with accent name");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + accentName
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
@@ -266,45 +226,22 @@ public class NameSnapshotTestIT {
 
         resultats = mockMvc.perform(delete("/snapshot/" + deAccentName).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test
     public void test014_FailCreateSpecialsCharNameSnapshot()
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Create a snapshot");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + "©доあ"
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().is4xxClientError());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test
@@ -315,23 +252,14 @@ public class NameSnapshotTestIT {
         String lowerCaseName = "aeiou";
 
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Create a snapshot with upper case name");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + upperCaseName
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
@@ -347,13 +275,6 @@ public class NameSnapshotTestIT {
         logger.info("**************************************");
 
         resultats = mockMvc.perform(delete("/snapshot/" + lowerCaseName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
     }
 }

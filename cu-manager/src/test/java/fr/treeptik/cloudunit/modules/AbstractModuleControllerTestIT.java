@@ -122,7 +122,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         logger.info("setup");
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
@@ -145,11 +145,20 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         String secContextAttr = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
         session.setAttribute(secContextAttr,
             securityContext);
+
+        // create an application server
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
+        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
     }
 
     @After
-    public void teardown() {
+    public void teardown() throws Exception {
         logger.info("teardown");
+
+        logger.info("Delete application : " + applicationName);
+        ResultActions resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
 
         SecurityContextHolder.clearContext();
         session.invalidate();
@@ -203,17 +212,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     public void test10_CreateServerThenAddModule() throws Exception {
         logger.info("Create an application, add a " + module + " module and delete it");
 
-        // create an application server
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
         // verify if app exists
-        resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        ResultActions resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
 
         // add a module
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
@@ -235,7 +239,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         String contentPage = getUrlContentPage(managerExpected);
         int counter = 0;
-        while (contentPage.contains(managerPageContent)==false || counter++ < 10) {
+        while (!contentPage.contains(managerPageContent) || counter++ < 10) {
             contentPage = getUrlContentPage(managerExpected);
             Thread.sleep(1000);
         }
@@ -254,28 +258,18 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0]").doesNotExist());
-
-        logger.info("Delete application : " + applicationName);
-        resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test
     public void test20_CreateServerThenAddTwoModule() throws Exception {
         logger.info("Create an application, add two " + module + " modules, stop them then delete all");
 
-        // create an application server
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString));
-        resultats.andExpect(status().isOk());
-
         // verify if app exists
-        resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        ResultActions resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
 
         // add a first module
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
@@ -298,7 +292,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         String contentPage = getUrlContentPage(managerExpected1);
 
         int counter = 0;
-        while (contentPage.contains(managerPageContent)==false || counter++ < 20) {
+        while (!contentPage.contains(managerPageContent) || counter++ < 20) {
             contentPage = getUrlContentPage(managerExpected1);
             Thread.sleep(1000);
         }
@@ -348,27 +342,18 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .andExpect(jsonPath("$.modules[0].name").value(module2))
             .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected2))
             .andExpect(jsonPath("$.modules[1]").doesNotExist());
-
-        logger.info("Delete application : " + applicationName);
-        resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test
     public void test30_AddModuleThenRestart() throws Exception {
         logger.info("Create an application, add a " + module + " modules, restart");
 
-        // create an application server
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
         // verify if app exists
-        resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        ResultActions resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
 
         // add a first module
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
@@ -397,11 +382,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .andExpect(jsonPath("$.modules[0].status").value("START"))
                 .andExpect(jsonPath("$.modules[0].name").value(module1))
                 .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1));
-
-        logger.info("Delete application : " + applicationName);
-        resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
     }
 
 
