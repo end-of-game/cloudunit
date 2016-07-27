@@ -1,6 +1,12 @@
 instances:
-  - host: 172.17.0.82
-    name: johndoe-xxx
+  - host: 172.17.0.17
+    name: johndoe-tomcat-6
+    port: 9999
+  - host: 172.17.0.16
+    name: johndoe-tomcat-7
+    port: 9999
+  - host: 172.17.0.15
+    name: johndoe-tomcat-8
     port: 9999
 
 init_config:
