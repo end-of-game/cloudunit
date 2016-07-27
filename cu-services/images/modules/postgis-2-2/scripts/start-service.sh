@@ -64,6 +64,9 @@ if [ ! -f /init-service-ok ]; then
     psql -U docker --command "CREATE USER $CU_USER WITH SUPERUSER PASSWORD '$CU_PASSWORD'"
 	su - postgres -c "createdb -O $CU_USER $CU_DATABASE_NAME"
 
+	su - postgres -c "psql --command \"CREATE USER datadog WITH SUPERUSER PASSWORD '5bgbzetJQ6nfPVTnnMcMP7SA';\""
+    su - postgres -c "grant SELECT ON pg_stat_database to datadog;"
+
     sed -i -e"s:Require local:# Require local:g" /etc/apache2/conf-enabled/phppgadmin.conf
 	sed -i -e"s:deny from all:# deny from all:g" /etc/apache2/conf-enabled/phppgadmin.conf
 	sed -i -e"s:# allow from all:allow from all:g" /etc/apache2/conf-enabled/phppgadmin.conf
