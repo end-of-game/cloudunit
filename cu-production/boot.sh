@@ -47,6 +47,7 @@ usermod admincu -s /bin/bash
 curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > docker-compose
 chmod +x docker-compose
 mv docker-compose /usr/local/bin
+cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
 # INSTALL CERTIFICATS
 cp $CU_INSTALL_DIR/files/docker.secure /etc/default/docker
