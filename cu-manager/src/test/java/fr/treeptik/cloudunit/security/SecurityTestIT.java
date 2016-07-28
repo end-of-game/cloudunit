@@ -178,6 +178,16 @@ public class SecurityTestIT extends TestCase {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonString));
         resultats.andExpect(status().isOk());
+
+        logger.info("*********************************");
+        logger.info(" Delete the application for User1 ");
+        logger.info("*********************************");
+        resultats = this.mockMvc
+                .perform(
+                        delete("/application/" + applicationName).session(session1)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)).andDo(print());
+        resultats.andExpect(status().isOk());
     }
 
     // ALL TESTS ARE FOR USER 2 NOW
