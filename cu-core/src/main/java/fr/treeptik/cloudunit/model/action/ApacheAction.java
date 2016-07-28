@@ -48,7 +48,7 @@ public class ApacheAction
 
     @Override
     public String getServerManagerPort() {
-        return "";
+        return "80";
     }
 
     @Override

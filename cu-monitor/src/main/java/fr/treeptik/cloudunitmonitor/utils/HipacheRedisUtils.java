@@ -18,15 +18,18 @@ package fr.treeptik.cloudunitmonitor.utils;
 
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.utils.KeyValueStoreUtils;
+import fr.treeptik.cloudunitmonitor.conf.ApplicationEntryPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
+import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -38,14 +41,8 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 
     private Logger logger = LoggerFactory.getLogger(HipacheRedisUtils.class);
 
-    @Value("${redis.ip}")
-    private String redisIp;
-
-    @Value("${redis.port:6379}")
-    private String redisPort;
-
-    @Value("${suffix.cloudunit.io}")
-    private String suffixCloudUnitIO;
+    @Inject
+    private Environment env;
 
     /**
      * Add two keys into redis for application server and management console
@@ -58,13 +55,13 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
     @Override
     public void createRedisAppKey(Application application,
                                   String dockerManagerIP, String serverPort, String serverManagerPort) {
-        String suffixCloudUnit = application.getSuffixCloudUnitIO();
+        String suffixCloudUnit = System.getenv("CU_SUB_DOMAIN") +  env.getProperty("suffix.cloudunit.io");
         JedisPool pool = null;
         Jedis jedis = null;
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp,
-                    Integer.parseInt(redisPort),
+                    ApplicationEntryPoint.IP_REDIS,
+                    Integer.parseInt(env.getProperty("redis.port")),
                     3000);
             jedis = pool.getResource();
 
@@ -116,7 +113,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
         Jedis jedis = null;
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
             logger.info("ALIAS VALUE IN ADD NEW ALIAS : " + alias);
             String frontend = "frontend:" + alias.toLowerCase();
@@ -154,7 +151,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
             String frontend = "frontend:" + alias.toLowerCase();
             jedis.lset(frontend, 1, "http://" + dockerManagerIP + ":"
@@ -184,21 +181,27 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
     public void updateServerAddress(Application application,
                                     String dockerManagerIP, String serverPort, String serverManagerPort) {
 
-        String suffixCloudUnit = application.getSuffixCloudUnitIO();
+        String suffixCloudUnit = System.getenv("CU_SUB_DOMAIN") +  env.getProperty("suffix.cloudunit.io");
 
         JedisPool pool = null;
         Jedis jedis = null;
 
         try {
-            pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
-            jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
             String key = subNameSpace + suffixCloudUnit;
             String frontend = "frontend:" + key.toLowerCase();
+
+
+
+            logger.info("enter in method : " + frontend);
+            pool = new JedisPool(new JedisPoolConfig(),
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
+            jedis = pool.getResource();
+
+
             jedis.lset(frontend, 1, "http://" + dockerManagerIP + ":"
-                    + serverPort);
+                    + serverManagerPort);
 
 			/*
              * UPDATE THE ENTRY FOR SERVER MANAGER
@@ -209,6 +212,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
             jedis.lset(frontendServerManager, 1, "http://" + dockerManagerIP
                     + ":" + serverManagerPort);
         } catch (JedisConnectionException | UnsupportedEncodingException e) {
+            e.printStackTrace();
             logger.error("HipacheRedisUtils Exception", e);
             if (jedis != null) {
                 pool.returnBrokenResource(jedis);
@@ -228,12 +232,12 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
      */
     @Override
     public void removeServerAddress(Application application) {
-        String suffixCloudUnit = application.getSuffixCloudUnitIO();
+        String suffixCloudUnit = env.getProperty("suffix.cloudunit.io");
         JedisPool pool = null;
         Jedis jedis = null;
 
         try {
-            pool = new JedisPool(new JedisPoolConfig(), redisIp, Integer.parseInt(redisPort), 3000);
+            pool = new JedisPool(new JedisPoolConfig(), ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
@@ -273,7 +277,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
 
             String frontend = "frontend:" + portAlias;
@@ -300,7 +304,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
      */
     @Override
     public void removeServerPortAlias(String portAlias) {
-        JedisPool pool = new JedisPool(new JedisPoolConfig(), redisIp, Integer.parseInt(redisPort), 3000);
+        JedisPool pool = new JedisPool(new JedisPoolConfig(),ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
         Jedis jedis = pool.getResource();
         try {
             String frontend = "frontend:" + portAlias;
@@ -327,13 +331,13 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
     @Override
     public void removeRedisAppKey(Application application) {
 
-        String suffixCloudUnit = application.getSuffixCloudUnitIO();
+        String suffixCloudUnit = env.getProperty("suffix.cloudunit.io");
         JedisPool pool = null;
         Jedis jedis = null;
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
@@ -360,7 +364,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
         if (logger.isInfoEnabled()) {
             logger.info("parameters : [ " + application.getName()
                     + " - dockerContainerIP : " + dockerContainerIP
-                    + " - redisIp : " + redisIp
+                    + " - env.getProperty(redisIP) : " + env.getProperty("redis.ip")
                     + " - cloudunitModuleManagerSuffix : "
                     + cloudunitModuleManagerSuffix + " - instanceNumber : "
                     + instanceNumber);
@@ -370,13 +374,14 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
         Jedis jedis = null;
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
 
             String alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
-                    + subNameSpace + application.getSuffixCloudUnitIO();
+                    + subNameSpace + System.getenv("CU_SUB_DOMAIN") + env.getProperty("suffix.cloudunit.io");
+            
             String frontend = "frontend:" + alias;
             String valeur = "http://" + dockerContainerIP + ":" + modulePort;
             if (logger.isInfoEnabled()) {
@@ -405,7 +410,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
         if (logger.isInfoEnabled()) {
             logger.info("parameters : [ " + application.getName()
                     + " - dockerManagerIP : " + dockerManagerIP
-                    + " - redisIp : " + redisIp
+                    + " - env.getProperty(REDISIP) : " + env.getProperty("redis.ip")
                     + " - cloudunitModuleManagerSuffix : "
                     + cloudunitModuleManagerSuffix + " - instanceNumber : "
                     + instanceNumber);
@@ -416,12 +421,12 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
             String alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
-                    + subNameSpace + application.getSuffixCloudUnitIO();
+                    + subNameSpace + env.getProperty("suffix.cloudunit.io");
             String frontend = "frontend:" + alias;
             String valeur = "http://" + dockerManagerIP + ":" + modulePort;
             if (logger.isInfoEnabled()) {
@@ -450,12 +455,12 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
 
             String subNameSpace = concatSubNameSpace(application);
             String alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
-                    + subNameSpace + application.getSuffixCloudUnitIO();
+                    + subNameSpace + env.getProperty("suffix.cloudunit.io");
             String frontend = "frontend:" + alias.toLowerCase();
             jedis.del(frontend);
             if (logger.isInfoEnabled()) {
@@ -486,9 +491,9 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
         Jedis jedis = null;
         try {
             pool = new JedisPool(new JedisPoolConfig(),
-                    redisIp, Integer.parseInt(redisPort), 3000);
+                    ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
-            String frontend = "frontend:" + alias.toLowerCase() + suffixCloudUnitIO;
+            String frontend = "frontend:" + alias.toLowerCase() + env.getProperty("suffix.cloudunit.io");
             jedis.del(frontend);
             if (logger.isInfoEnabled()) {
                 logger.info("Suppression dans Redis de [" + frontend + "]");
