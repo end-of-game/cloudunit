@@ -388,6 +388,7 @@ public abstract class AbstractSnapshotControllerTestIT {
                 Thread.sleep(1000);
             }
         }
+        System.out.println("contentPage = " + contentPage);
         Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
 
         logger.info("**************************************");
@@ -436,8 +437,6 @@ public abstract class AbstractSnapshotControllerTestIT {
                 Thread.sleep(1000);
             }
         }
-        Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
-
         logger.info("***************************************************");
         logger.info("Delete the cloned application before the snapshot");
         logger.info("***************************************************");
@@ -452,6 +451,8 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
+
+        Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
     }
 
     @Test()
@@ -581,8 +582,6 @@ public abstract class AbstractSnapshotControllerTestIT {
                 Thread.sleep(1000);
             }
         }
-        Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
-
         logger.info("**************************************");
         logger.info("Delete the cloned application");
         logger.info("**************************************");
@@ -597,6 +596,8 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
+
+        Assert.assertTrue(contentPage.contains("CloudUnit PaaS"));
     }
 
     @Test
