@@ -34,6 +34,10 @@ public class Script
 
     private String title;
 
+    private Date creationDate;
+
+    private User creationUser;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
@@ -52,4 +56,16 @@ public class Script
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public Date getCreationDate() { return creationDate; }
+
+    public void setCreationDate(Date creationDate) { this.creationDate = creationDate; }
+
+    public User getCreationUser() { return creationUser; }
+
+    public void setCreationUser(User creationUser) { this.creationUser = creationUser; }
+
+    public String getContent() { return content; }
+
+    public void setContent(String content) { this.content = content; }
 }
