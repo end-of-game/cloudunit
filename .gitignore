@@ -25,3 +25,5 @@ hs_err_pid*
 cu-platform/cu-platform.iml
 cu-services/cu-services.iml
 cu-monitor/target*
+
+dependency-reduced-pom.xml

@@ -74,13 +74,14 @@ public class ServerService {
 			server.setStartDate(new Date());
 
 			server = serverDAO.saveAndFlush(server);
+			server = serverDAO.findOne(server.getId());
 
 			hipacheRedisUtils.updateServerAddress(server.getApplication(),
 					server.getContainerIP(),
 					server.getServerAction().getServerPort(),
 					server.getServerAction().getServerManagerPort());
-
-			application.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, application));
+			final Application app = server.getApplication();
+			app.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, app));
 
 		} catch (PersistenceException e) {
 
