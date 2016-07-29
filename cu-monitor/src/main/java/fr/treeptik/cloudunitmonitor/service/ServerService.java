@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
 import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.PortToOpen;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunitmonitor.utils.HipacheRedisUtils;
 import org.slf4j.Logger;
@@ -44,6 +45,15 @@ public class ServerService {
 		}
 	}
 
+	public void updatePortAlias(PortToOpen portToOpen, Application application) {
+		if ("web".equalsIgnoreCase(portToOpen.getNature())) {
+			hipacheRedisUtils.updatePortAlias(
+					application.getServers().get(0).getContainerIP(),
+					portToOpen.getPort(),
+					portToOpen.getAlias().substring(portToOpen.getAlias().lastIndexOf("//") + 2));
+		}
+	}
+
 	@Transactional
 	public Server startServer(Server server) throws ServiceException {
 
@@ -69,6 +79,8 @@ public class ServerService {
 					server.getContainerIP(),
 					server.getServerAction().getServerPort(),
 					server.getServerAction().getServerManagerPort());
+
+			application.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, application));
 
 		} catch (PersistenceException e) {
 

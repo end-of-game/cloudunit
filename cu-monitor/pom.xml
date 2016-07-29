@@ -12,11 +12,11 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<redis.port>6379</redis.port>
-		<version.java>1.7</version.java>
+		<version.java>1.8</version.java>
 		<maven.compiler.plugin>2.5.1</maven.compiler.plugin>
 		<spring.version>4.0.0.RELEASE</spring.version>
 		<spring.security.version>3.2.0.RELEASE</spring.security.version>
-		<hibernate.version>4.2.3.Final</hibernate.version>
+		<hibernate.version>4.3.11.Final</hibernate.version>
 		<codahale.metrics.version>3.0.1</codahale.metrics.version>
 		<mail.apiKey>154644e23e0a831f5d0e87554e5a8e33</mail.apiKey>
 		<mail.secretKey>85f4801030f3296738e232935570fc50</mail.secretKey>
@@ -32,7 +32,7 @@
 		<pathDir>/tmp</pathDir>
 		<log.level>info</log.level>
 		<host.ip>192.168.50.4:4243</host.ip>
-		<suffix.cloudunit.io>.cloudunit.io</suffix.cloudunit.io>
+
 	</properties>
 	<dependencies>
 
@@ -204,8 +204,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -270,6 +270,28 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>java</executable>
+					<mainClass>fr.treeptik.cloudunitmonitor.conf.ApplicationEntryPoint</mainClass>
+					<arguments>
+						<argument>192.168.50.4</argument>
+						<argument>changeit</argument>
+						<argument>192.168.50.4</argument>
+						<argument>http</argument>
+					</arguments>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<profiles>
@@ -277,6 +299,17 @@
 			<id>production</id>
 			<properties>
 				<host.ip>localhost:2376</host.ip>
+				<suffix.cloudunit.io>.cloudunit.io</suffix.cloudunit.io>
+			</properties>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<host.ip>192.168.50.4:4243</host.ip>
+				<suffix.cloudunit.io>.cloudunit.dev</suffix.cloudunit.io>
 			</properties>
 		</profile>
 	</profiles>

@@ -28,6 +28,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisDataException;
 
 import javax.inject.Inject;
 import java.io.UnsupportedEncodingException;
@@ -83,7 +84,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
             jedis.rpush(frontendServerManager, "http://" + dockerManagerIP
                     + ":" + serverManagerPort);
 
-        } catch (JedisConnectionException | UnsupportedEncodingException e) {
+        } catch (Exception e) {
             logger.error("HipacheRedisUtils Exception", e);
             if (jedis != null) {
                 pool.returnBrokenResource(jedis);
@@ -181,24 +182,23 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
     public void updateServerAddress(Application application,
                                     String dockerManagerIP, String serverPort, String serverManagerPort) {
 
-        String suffixCloudUnit = System.getenv("CU_SUB_DOMAIN") +  env.getProperty("suffix.cloudunit.io");
+        String suffixCloudUnit =  env.getProperty("suffix.cloudunit.io");
+        if (System.getenv("CU_SUB_DOMAIN") != null) {
+            suffixCloudUnit = System.getenv("CU_SUB_DOMAIN") + suffixCloudUnit;
+        }
 
         JedisPool pool = null;
         Jedis jedis = null;
-
         try {
 
             String subNameSpace = concatSubNameSpace(application);
             String key = subNameSpace + suffixCloudUnit;
             String frontend = "frontend:" + key.toLowerCase();
 
-
-
             logger.info("enter in method : " + frontend);
             pool = new JedisPool(new JedisPoolConfig(),
                     ApplicationEntryPoint.IP_REDIS, Integer.parseInt(env.getProperty("redis.port")), 3000);
             jedis = pool.getResource();
-
 
             jedis.lset(frontend, 1, "http://" + dockerManagerIP + ":"
                     + serverManagerPort);
@@ -211,12 +211,14 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
                     + key.toLowerCase();
             jedis.lset(frontendServerManager, 1, "http://" + dockerManagerIP
                     + ":" + serverManagerPort);
-        } catch (JedisConnectionException | UnsupportedEncodingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             logger.error("HipacheRedisUtils Exception", e);
             if (jedis != null) {
                 pool.returnBrokenResource(jedis);
             }
+            // Exit for non blocking
+            System.exit(1);
         } finally {
             if (jedis != null) {
                 pool.returnResource(jedis);
@@ -379,8 +381,14 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 
             String subNameSpace = concatSubNameSpace(application);
 
-            String alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
-                    + subNameSpace + System.getenv("CU_SUB_DOMAIN") + env.getProperty("suffix.cloudunit.io");
+            String alias = null;
+            if (System.getenv("CU_SUB_DOMAIN") != null) {
+                alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
+                        + subNameSpace + System.getenv("CU_SUB_DOMAIN") + env.getProperty("suffix.cloudunit.io");
+            } else {
+                alias = cloudunitModuleManagerSuffix + instanceNumber + "-"
+                        + subNameSpace + env.getProperty("suffix.cloudunit.io");
+            }
             
             String frontend = "frontend:" + alias;
             String valeur = "http://" + dockerContainerIP + ":" + modulePort;
@@ -395,6 +403,8 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
             if (jedis != null) {
                 pool.returnBrokenResource(jedis);
             }
+            // Exit for non blocking
+            System.exit(1);
         } finally {
             if (jedis != null) {
                 pool.returnResource(jedis);
