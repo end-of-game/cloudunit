@@ -24,6 +24,7 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
+import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -151,7 +152,7 @@ public class UserController
                         "Your current password is not correct. Please retry!");
             }
 
-            user.setPassword(input.getNewPassword());
+            user.setPassword(new CustomPasswordEncoder().encode(input.getNewPassword()));
 
             userService.update(user);
 
