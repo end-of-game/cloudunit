@@ -13,14 +13,9 @@ package fr.treeptik.cloudunit.model;/*
  * For any questions, contact us : contact@treeptik.fr
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.text.Normalizer;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Entity
 public class Script

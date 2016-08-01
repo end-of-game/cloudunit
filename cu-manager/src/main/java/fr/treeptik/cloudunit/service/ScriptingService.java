@@ -27,7 +27,7 @@ public interface ScriptingService {
 
     public void save(Script script) throws ServiceException;
 
-    public Script load(String name) throws ServiceException;
+    public Script load(Integer id) throws ServiceException;
 
     public List<Script> loadAllScripts() throws ServiceException;
 

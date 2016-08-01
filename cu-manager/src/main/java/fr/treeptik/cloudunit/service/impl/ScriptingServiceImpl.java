@@ -123,8 +123,8 @@ public class ScriptingServiceImpl implements ScriptingService {
         scriptingDAO.save(script);
     }
 
-    public Script load(String name) throws ServiceException {
-        return scriptingDAO.findByTitle(name);
+    public Script load(Integer id) throws ServiceException {
+        return scriptingDAO.findById(id);
     }
 
     @Override
@@ -132,7 +132,6 @@ public class ScriptingServiceImpl implements ScriptingService {
         return scriptingDAO.findAllScripts();
     }
 
-    @Override
     public void delete(Script script) throws ServiceException {
         scriptingDAO.delete(script);
     }

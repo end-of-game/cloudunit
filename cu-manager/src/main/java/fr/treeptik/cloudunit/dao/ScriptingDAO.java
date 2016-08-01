@@ -24,8 +24,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ScriptingDAO extends JpaRepository<Script, Integer> {
-    @Query("Select s from Script s where s.title=:title")
-    Script findByTitle(@Param("title") String title)
+    @Query("Select s from Script s where s.id=:id")
+    Script findById(@Param("id") Integer id)
             throws DataAccessException;
 
     @Query("select s from Script s")
