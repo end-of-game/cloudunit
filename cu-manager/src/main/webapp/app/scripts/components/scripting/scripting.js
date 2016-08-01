@@ -36,19 +36,38 @@
       },
       controller: [
         '$scope',
-        '$stateParams',
-        'ApplicationService',
+        'ScriptingService',
+        'ErrorService',
         ScriptingCtrl
       ],
       controllerAs: 'scripting',
     };
   }
 
-  function ScriptingCtrl ( $scope, $stateParams, ApplicationService) {
+  function ScriptingCtrl ( $scope, ScriptingService, ErrorService) {
         
-        var vm = this;
+    var vm = this;
+    vm.currentPage = 1;
+        vm.pageSize = 10;
 
-        vm.date = 'recent';
+    vm.$onInit = function() {
+        ScriptingService.getListScript()
+        .then(success)
+        .catch(error);
+
+      function success(scripts) {
+        vm.scripts = scripts;
+        console.log(scripts);
+      }
+
+      function error(response) {
+        ErrorService.handle(response);
+      }  
+    }
+
+
+    
+/*      vm.date = 'recent';
         vm.orderByDate = true;
 
         vm.executeScript = executeScript;
@@ -63,7 +82,7 @@
             .catch ( function() {
               console.log("nn");
             } );
-        }
+        }*/
   }
 }) ();
 

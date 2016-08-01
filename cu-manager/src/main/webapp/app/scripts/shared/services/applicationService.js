@@ -57,8 +57,7 @@
       init: init,
       state: {},
       stopPolling: stopPolling,
-      getVariableEnvironment: getVariableEnvironment,
-      executeScript: executeScript, 
+      getVariableEnvironment: getVariableEnvironment
     };
 
 
@@ -213,18 +212,7 @@
         containerId: containerId
       } ).$promise;      
     }
-    
-    // Execution d'un script
-    function executeScript ( scriptContent ) {
-      var dir = $resource ( 'scripting/script' );
-      return dir.save ( { },
-      {
-        scriptContent: scriptContent  
-      } ).$promise; 
-    }
-    
-    
-    
+
   }
 }) ();
 
