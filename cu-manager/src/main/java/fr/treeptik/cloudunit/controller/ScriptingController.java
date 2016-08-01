@@ -181,8 +181,6 @@ public class ScriptingController
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
-            if(!script.getTitle().equals(scriptRequest.getScriptName()))
-                return new HttpErrorServer("Script names differents");
 
             script.setContent(scriptRequest.getScriptContent());
             scriptingService.save(script);
