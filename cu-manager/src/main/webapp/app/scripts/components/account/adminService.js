@@ -36,7 +36,17 @@
       deleteUser: deleteUser,
       changeRole: changeRole,
       getUserLogs: getUserLogs,
+      changePassword: changePassword,
     };
+
+    function changePassword(oldPassword, newPassword) {
+      var data = {
+        password: oldPassword,
+        newPassword: newPassword,
+      };
+
+      return $http.put('/user/change-password', data);
+    }
 
     function getUsers() {
       var _users = [];
