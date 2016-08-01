@@ -32,6 +32,13 @@ angular.module('webuiApp.account', [])
             isFree: false
           }
         })
+        .state('account.profil', {
+          url: '/profil',
+          template: '<account-profil></account-profil>',
+          data: {
+            isFree: false
+          }
+        })
         .state('account.logs', {
           url: '/logs/:login',
           template: '<account-logs></account-logs>',
