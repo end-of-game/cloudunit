@@ -44,13 +44,18 @@ textarea:focus {
   max-height: 72px;
 }
 
-.textarea-full {
+.textarea-custom {
   height: auto;
-  min-height: 60vh;
   padding: 6px 12px;
   width: 100%;
   max-width: 100%;
   margin-top: 10px;
+  &.textarea-full {
+    min-height: 60vh;
+  }
+  &.textarea-mid-full {
+    min-height: 30vh;
+  }
 }
   
 input[type='text']:disabled, input[type='text'].disabled, input[readonly] {

@@ -38,7 +38,7 @@
       getListScript: getListScript,
       getScript: getScript,
       addScript: addScript,
-      changeScript: changeScript,
+      editScript: editScript,
       deleteScript: deleteScript,
       executeScript: executeScript, 
     };
@@ -68,7 +68,7 @@
     }
 
     // update script
-    function changeScript ( id, scriptContent, scriptName) {
+    function editScript ( id, scriptContent, scriptName) {
       var data = {
         scriptContent: scriptContent,
         scriptName: scriptName
