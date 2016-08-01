@@ -94,22 +94,18 @@
 		</dependency>
 
 		<dependency>
+			<groupId>fr.treeptik</groupId>
+			<artifactId>cu-docker-api</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.spotify</groupId>
 			<artifactId>docker-client</artifactId>
 			<version>2.7.7</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>2.6.1</version>
-		</dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.6.1</version>
-		</dependency>
 
 		<!-- Spring all dependencies -->
 

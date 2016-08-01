@@ -17,6 +17,10 @@ package fr.treeptik.cloudunit.initializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import fr.treeptik.cloudunit.docker.core.DockerClient;
+import fr.treeptik.cloudunit.docker.core.SimpleDockerDriver;
+import fr.treeptik.cloudunit.docker.model.DockerContainer;
+import fr.treeptik.cloudunit.exception.DockerJSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,9 +48,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @EnableAspectJAutoProxy
 @Configuration
@@ -78,7 +80,6 @@ public class CloudUnitApplicationContext
     */
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
-
 
     @PostConstruct
     public void getCuINstanceName() {
@@ -204,6 +205,15 @@ public class CloudUnitApplicationContext
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
         multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
         return multipartResolver;
+    }
+
+    @Bean
+    public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
+                                     @Value("${certs.dir.path}") String certPathDirectory) {
+        boolean isTLS = endpoint.equalsIgnoreCase("https");
+        DockerClient dockerClient = new DockerClient();
+        dockerClient.setDriver(new SimpleDockerDriver(certPathDirectory, isTLS));
+        return dockerClient;
     }
 
     /**

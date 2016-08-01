@@ -253,9 +253,7 @@ public class ApplicationServiceImpl
         // verify if application exists already
         this.checkCreate(application, serverName);
 
-        // todo : use a session flag
         application.setStatus(Status.PENDING);
-
         application = this.saveInDB(application);
         serverService.checkMaxNumberReach(application);
 
