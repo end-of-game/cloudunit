@@ -91,7 +91,7 @@ public class ScriptingController
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON)
-    public JsonResponse scriptingSave(@RequestBody ScriptRequest scriptRequest)
+    public @ResponseBody JsonNode scriptingSave(@RequestBody ScriptRequest scriptRequest)
             throws ServiceException, IOException {
         logger.info("Save");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -104,10 +104,20 @@ public class ScriptingController
             script.setCreationDate(Calendar.getInstance().getTime());
 
             scriptingService.save(script);
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.createObjectNode();
+            ((ObjectNode) rootNode).put("id", script.getId());
+            ((ObjectNode) rootNode).put("title", script.getTitle());
+            ((ObjectNode) rootNode).put("content", script.getContent());
+            ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
+            ((ObjectNode) rootNode).put("creation_user", user.getFirstName() + " "
+                    + user.getLastName());
+
+            return rootNode;
         } finally {
             authentificationUtils.allowUser(user);
         }
-        return new HttpOk();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -123,6 +133,7 @@ public class ScriptingController
             JsonNode rootNode = mapper.createObjectNode();
             ((ObjectNode) rootNode).put("id", script.getId());
             ((ObjectNode) rootNode).put("title", script.getTitle());
+            ((ObjectNode) rootNode).put("content", script.getContent());
             ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
             ((ObjectNode) rootNode).put("creation_user", user1.getFirstName() + " "
                     + user1.getLastName());
@@ -164,14 +175,16 @@ public class ScriptingController
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public JsonResponse scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody String scriptContent)
+    public JsonResponse scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequest scriptRequest)
             throws ServiceException {
         logger.info("Edit");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
+            if(!script.getTitle().equals(scriptRequest.getScriptName()))
+                return new HttpErrorServer("Script names differents");
 
-            script.setContent(scriptContent);
+            script.setContent(scriptRequest.getScriptContent());
             scriptingService.save(script);
         } finally {
             authentificationUtils.allowUser(user);
