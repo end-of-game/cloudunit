@@ -14,9 +14,47 @@
   -->
 
 <div class="tab-pane vertical-spacing">
-  <div class="card large" id="scripting">
+
+   <div class="card large" id="add-cripting">
     <div class="content">
-      <h3 id="pp" class="title large">Scripts</h3>
+      <h3 class="title large">Add Scripts</h3>
+
+      <div class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+      </div>
+
+      
+      <div class="input-group stack clearfix">
+        <div class="input-group stack">
+          <label for="domain">Script name</label>
+          <input id="name"
+                 name="name"
+                 type="text"
+                 data-ng-model="scripting.title">
+        </div>
+        <label>Script content</label>
+        <textarea class="textarea-custom textarea-mid-full" data-ng-model="scripting.content"
+              data-ng-disabled="scripting.application.status === 'PENDING'"
+              placeholder="Enter your script"></textarea>
+        <div class="clearfix">
+          <button class="config-snapshot-btn button raised primary pull-right"
+                  ripple=""
+                  data-ng-disabled="!scripting.content || !scripting.title"
+                  data-ng-click="scripting.addScript(scripting.content, scripting.title)">
+            <span>Add script</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card large" id="manage-scripting">
+    <div class="content">
+      <h3 class="title large">Manage Scripts</h3>
 
       <div class="spinner">
         <div class="rect1"></div>
@@ -27,95 +65,128 @@
       </div>
 
 
-<table class="table">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Date</th>
-    <th>Owner</th>
-    <th>Actions</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr
-    dir-paginate="user in scripts  | itemsPerPage: scripting.pageSize track by script.id"
-    data-current-page="scripting.currentPage">
-    <td>{{ script.title}}</td>
-    <td>{{ script.creation_date}}</td>
-    <td>{{ script.creation_user}}</td>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Owner</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr
+          dir-paginate="user in scripts  | itemsPerPage: scripting.pageSize track by script.id"
+          data-current-page="scripting.currentPage">
+          <td>{{ script.title}}</td>
+          <td>{{ script.creation_date}}</td>
+          <td>{{ script.creation_user}}</td>
 
-    <td>
-      <button class="icon-button danger"
-              ripple=""
-              tooltip=""
-              data-title="Delete"
-              data-placement="bottom"
-              data-toggle="modal"
-              data-target="#delete-{{script.id}}">
-        <i class="icon-whhg removeuseralt"></i>
-      </button>
+          <td>
+            <button class="icon-button danger"
+                    ripple=""
+                    tooltip=""
+                    data-title="Delete"
+                    data-placement="bottom"
+                    data-toggle="modal"
+                    data-target="#delete-{{script.id}}">
+              <i class="icon-whhg removeuseralt"></i>
+            </button>
 
-      <div class="modal"
-           id="delete-{{script.id}}"
-           modaldismiss="">
-        <div class="modal-inner">
-          <div class="content clearfix">
-            <h3 class="title">Removal confirmation required for script {{scriot.title}}</h3>
+            <div class="modal"
+                id="delete-{{script.id}}"
+                modaldismiss="">
+              <div class="modal-inner">
+                <div class="content clearfix">
+                  <h3 class="title">Removal confirmation required for script {{script.title}}</h3>
 
-            <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
+                  <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
 
-            <div class="actions pull-right">
-              <button type="button" class="button secondary" data-dismiss="modal">Cancel
-              </button>
-              <button type="button"
-                      class="delete-btn button primary"
-                      data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
-                      data-ng-click="scripting.deleteScript(script)">
-                Delete script
-              </button>
+                  <div class="actions pull-right">
+                    <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                    </button>
+                    <button type="button"
+                            class="delete-btn button primary"
+                            data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
+                            data-ng-click="scripting.deleteScript(script)">
+                      Delete script
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </td>
-  </tr>
-  </tbody>
-</table>
-<dir-pagination-controls></dir-pagination-controls>
 
+            <button class="icon-button"
+                    ripple=""
+                    tooltip=""
+                    data-title="Edit"
+                    data-placement="bottom"
+                    data-toggle="modal"
+                    data-target="#edit-{{script.id}}">
+              <i class="icon-whhg removeuseralt"></i>
+            </button>
 
+            <div class="modal large"
+                  id="edit-{{script.id}}"
+                  modaldismiss="">
+              <div class="modal-inner">
+                <div class="content modal-full-input">
+                  <h3 class="title">Edit Script</h3>
+                  <div ng-model="script.content" ui-codemirror="{ onLoad : explorer.codemirrorLoaded }" ></div>
+                  
+                  <div class="action">
+                    <button type="button" class="button primary raised" data-dismiss="modal">Cancel
+                    </button>
+                    <button type="button" class="button primary raised"
+                            ng-click="script.editScript(script.id, script.content, script.title)"
+                            data-dismiss="modal">
+                      Edit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="icon-button"
+                    ripple=""
+                    tooltip=""
+                    data-title="Execute"
+                    data-placement="bottom"
+                    data-toggle="modal"
+                    data-target="#execute-{{script.id}}">
+              <i class="icon-whhg removeuseralt"></i>
+            </button>
+
+            <div class="modal"
+                id="execute-{{script.id}}"
+                modaldismiss="">
+              <div class="modal-inner">
+                <div class="content clearfix">
+                  <h3 class="title">Execute confirmation required for script {{script.title}}</h3>
+
+                  <div class="actions pull-right">
+                    <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                    </button>
+                    <button type="button"
+                            class="delete-btn button primary"
+                            data-dismiss="{{scripting.error ? '' : 'modal' }}"
+                            data-ng-click="scripting.executeScript(script.id)">
+                      Execute script
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <dir-pagination-controls></dir-pagination-controls>
 
     </div>
   </div>
 </div>
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <!--      <table class="table">
@@ -149,23 +220,6 @@
           </td>
         </tr>
       </table>-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

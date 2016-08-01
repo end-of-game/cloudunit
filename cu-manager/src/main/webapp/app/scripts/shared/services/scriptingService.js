@@ -57,21 +57,21 @@
     }
 
     // create script
-    function addScript ( ) {
+    function addScript ( scriptContent, scriptTitle) {
       var data = {
         scriptContent: scriptContent,
-        scriptName: scriptName
+        scriptName: scriptTitle
       };
 
       var dir = $resource ( 'scripting' );
-      return dir.post ( { }, data ).$promise; 
+      return dir.save ( { }, data ).$promise; 
     }
 
     // update script
-    function editScript ( id, scriptContent, scriptName) {
+    function editScript ( id, scriptContent, scriptTitle) {
       var data = {
         scriptContent: scriptContent,
-        scriptName: scriptName
+        scriptTitle: scriptTitle
       };
       
       var dir = $resource ( 'scripting/:id' );

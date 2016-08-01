@@ -48,7 +48,19 @@
         
     var vm = this;
     vm.currentPage = 1;
-        vm.pageSize = 10;
+    vm.pageSize = 10;
+    vm.title = '';
+    vm.content = '';
+    vm.scripts = [];
+    /*    
+      vm.date = 'recent';
+        vm.orderByDate = true;*/
+    vm.executeScript = executeScript;
+    vm.editScript = editScript;
+    vm.deleteScript = deleteScript;
+    vm.addScript = addScript;
+
+
 
     vm.$onInit = function() {
         ScriptingService.getListScript()
@@ -65,24 +77,53 @@
       }  
     }
 
+    ////////////////////////////////////////////////////
 
-    
-/*      vm.date = 'recent';
-        vm.orderByDate = true;
+    function executeScript ( scriptContent ) {
+      ScriptingService.executeScript ( scriptContent )
+        .then ( function() {
+          console.log("ok");
+        } )
+        .catch ( function() {
+          console.log("nn");
+        } );
+    }
 
-        vm.executeScript = executeScript;
+    function editScript ( scriptId, scriptContent, scriptTitle ) {
+      ScriptingService.deleteScript ( scriptId, scriptContent, scriptTitle )
+        .then ( function() {
+          console.log("ok");
+        } )
+        .catch ( function() {
+          console.log("nn");
+        } );
+    }
 
-        ////////////////////////////////////////////////////
+    function deleteScript ( scriptId ) {
+      ScriptingService.deleteScript ( scriptId )
+        .then ( function() {
+          console.log("ok");
+        } )
+        .catch ( function() {
+          console.log("nn");
+        } );
+    }
 
-        function executeScript ( scriptContent ) {
-          ApplicationService.executeScript ( scriptContent )
-            .then ( function() {
-              console.log("ok");
-            } )
-            .catch ( function() {
-              console.log("nn");
-            } );
-        }*/
+    function addScript ( scriptContent, scriptTitle ) {
+      console.log('Add script');
+      console.log(scriptContent, scriptTitle);
+      ScriptingService.addScript ( scriptContent, scriptTitle )
+        .then ( function() {
+          vm.title = '';
+          vm.content = '';
+
+          console.log("ok");
+        } )
+        .catch ( function() {
+          console.log("nn");
+        } );
+    }
+
   }
 }) ();
 
