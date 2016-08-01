@@ -18,8 +18,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-public class Script
-        implements Serializable {
+public class Script implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,7 +30,7 @@ public class Script
 
     private Date creationDate;
 
-    private User creationUser;
+    private Integer creationUserId;
 
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -56,9 +55,9 @@ public class Script
 
     public void setCreationDate(Date creationDate) { this.creationDate = creationDate; }
 
-    public User getCreationUser() { return creationUser; }
+    public Integer getCreationUserId() { return creationUserId; }
 
-    public void setCreationUser(User creationUser) { this.creationUser = creationUser; }
+    public void setCreationUserId(Integer creationUserId) { this.creationUserId = creationUserId; }
 
     public String getContent() { return content; }
 

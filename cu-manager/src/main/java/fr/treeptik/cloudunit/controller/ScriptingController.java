@@ -27,6 +27,7 @@ import fr.treeptik.cloudunit.model.Script;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ScriptingService;
+import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -60,6 +60,9 @@ public class ScriptingController
 
     @Inject
     private AuthentificationUtils authentificationUtils;
+
+    @Inject
+    private UserService userService;
 
     @RequestMapping(value = "/{id}/exec",
             method = RequestMethod.GET)
@@ -87,17 +90,17 @@ public class ScriptingController
         return new HttpOk();
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public JsonResponse scriptingSave(@RequestBody String scriptContent, @RequestBody String scriptTitle)
-            throws ServiceException {
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON)
+    public JsonResponse scriptingSave(@RequestBody ScriptRequest scriptRequest)
+            throws ServiceException, IOException {
         logger.info("Save");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = new Script();
 
-            script.setCreationUser(user);
-            script.setTitle(scriptTitle);
-            script.setContent(scriptContent);
+            script.setCreationUserId(user.getId());
+            script.setTitle(scriptRequest.getScriptName());
+            script.setContent(scriptRequest.getScriptContent());
             script.setCreationDate(Calendar.getInstance().getTime());
 
             scriptingService.save(script);
@@ -114,14 +117,15 @@ public class ScriptingController
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
+            User user1 = userService.findById(script.getCreationUserId());
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.createObjectNode();
             ((ObjectNode) rootNode).put("id", script.getId());
             ((ObjectNode) rootNode).put("title", script.getTitle());
             ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
-            ((ObjectNode) rootNode).put("creation_user", script.getCreationUser().getFirstName() + " "
-                    + script.getCreationUser().getLastName());
+            ((ObjectNode) rootNode).put("creation_user", user1.getFirstName() + " "
+                    + user1.getLastName());
 
             return rootNode;
         } finally {
@@ -142,12 +146,14 @@ public class ScriptingController
 
             for(Script script : scripts) {
                 JsonNode rootNode = mapper.createObjectNode();
+                User user1 = userService.findById(script.getCreationUserId());
+
                 ((ObjectNode) rootNode).put("id", script.getId());
                 ((ObjectNode) rootNode).put("title", script.getTitle());
                 ((ObjectNode) rootNode).put("content", script.getContent());
                 ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
-                ((ObjectNode) rootNode).put("creation_user", script.getCreationUser().getFirstName() + " "
-                        + script.getCreationUser().getLastName());
+                ((ObjectNode) rootNode).put("creation_user", user1.getFirstName() + " "
+                        + user1.getLastName());
                 array.add(rootNode);
             }
 
@@ -158,14 +164,14 @@ public class ScriptingController
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public JsonResponse scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequestBody scriptContent)
+    public JsonResponse scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody String scriptContent)
             throws ServiceException {
         logger.info("Edit");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
 
-            script.setContent(scriptContent.getFileContent());
+            script.setContent(scriptContent);
             scriptingService.save(script);
         } finally {
             authentificationUtils.allowUser(user);
