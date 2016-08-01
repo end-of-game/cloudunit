@@ -63,10 +63,9 @@ public class ScriptingController
 
     @RequestMapping(value = "/{id}/exec",
             method = RequestMethod.GET)
-    public JsonResponse scriptingExecute(
-            @PathVariable @RequestBody Integer id,
-            HttpServletRequest request, HttpServletResponse response)
+    public JsonResponse scriptingExecute(@PathVariable @RequestBody Integer id)
             throws ServiceException, CheckException, IOException, InterruptedException {
+        logger.info("Execute");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             authentificationUtils.forbidUser(user);
@@ -89,10 +88,9 @@ public class ScriptingController
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public JsonResponse scriptingSave(
-            @RequestBody ScriptRequestBody scriptRequestBody, @RequestBody String title,
-            HttpServletRequest request, HttpServletResponse response)
+    public JsonResponse scriptingSave(@RequestBody ScriptRequestBody scriptRequestBody, @RequestBody String title)
             throws ServiceException {
+        logger.info("Save");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = new Script();
@@ -110,9 +108,9 @@ public class ScriptingController
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String scriptingLoad(@PathVariable @RequestBody Integer id,
-           HttpServletRequest request, HttpServletResponse response)
+    public @ResponseBody JsonNode scriptingLoad(@PathVariable @RequestBody Integer id)
            throws ServiceException, JsonProcessingException {
+        logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
@@ -124,23 +122,24 @@ public class ScriptingController
             ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
             ((ObjectNode) rootNode).put("creation_user", script.getCreationUser().getFirstName() + " "
                     + script.getCreationUser().getLastName());
-            String jsonString = mapper.writeValueAsString(rootNode);
 
-            return jsonString;
+            return rootNode;
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public String scriptingLoadAll(HttpServletRequest request, HttpServletResponse response)
-            throws ServiceException {
+    public @ResponseBody ArrayNode scriptingLoadAll()
+            throws ServiceException, JsonProcessingException {
+        logger.info("Load All");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             List<Script> scripts = scriptingService.loadAllScripts();
 
             ObjectMapper mapper = new ObjectMapper();
             ArrayNode array = mapper.createArrayNode();
+
             for(Script script : scripts) {
                 JsonNode rootNode = mapper.createObjectNode();
                 ((ObjectNode) rootNode).put("id", script.getId());
@@ -152,7 +151,7 @@ public class ScriptingController
                 array.add(rootNode);
             }
 
-            return array.asText();
+            return array;
         } finally {
             authentificationUtils.allowUser(user);
         }
@@ -161,6 +160,7 @@ public class ScriptingController
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public JsonResponse scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequestBody scriptContent)
             throws ServiceException {
+        logger.info("Edit");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
@@ -174,9 +174,9 @@ public class ScriptingController
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public JsonResponse scriptingDelete(@PathVariable @RequestBody Integer id,
-            HttpServletRequest request, HttpServletResponse response)
+    public JsonResponse scriptingDelete(@PathVariable @RequestBody Integer id)
             throws ServiceException {
+        logger.info("Delete");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
