@@ -49,12 +49,13 @@
     var vm = this;
     vm.currentPage = 1;
     vm.pageSize = 10;
+    vm.successMsg = '';
+    vm.errorMsg = '';
+
     vm.title = '';
     vm.content = '';
     vm.scripts = [];
-    /*    
-      vm.date = 'recent';
-        vm.orderByDate = true;*/
+
     vm.executeScript = executeScript;
     vm.editScript = editScript;
     vm.deleteScript = deleteScript;
@@ -69,7 +70,6 @@
 
       function success(scripts) {
         vm.scripts = scripts;
-        console.log(scripts);
       }
 
       function error(response) {
@@ -84,13 +84,16 @@
         .then ( function() {
           console.log("ok");
         } )
-        .catch ( function() {
-          console.log("nn");
+        .catch ( function(response) {
+          ErrorService.handle(response);
+          vm.errorMsg = 'An error has been encountered!'
+          vm.successMsg = '';
         } );
     }
 
     function editScript ( scriptId, scriptContent, scriptTitle ) {
-      ScriptingService.deleteScript ( scriptId, scriptContent, scriptTitle )
+      console.log(scriptId);
+      ScriptingService.editScript ( scriptId, scriptContent, scriptTitle )
         .then ( function() {
           console.log("ok");
         } )
@@ -99,13 +102,14 @@
         } );
     }
 
-    function deleteScript ( scriptId ) {
-      ScriptingService.deleteScript ( scriptId )
+    function deleteScript ( script ) {
+     
+      ScriptingService.deleteScript ( script.id )
         .then ( function() {
-          console.log("ok");
+          vm.scripts.splice(vm.scripts.indexOf(script), 1);
         } )
         .catch ( function() {
-          console.log("nn");
+          ErrorService.handle(response);
         } );
     }
 
@@ -113,17 +117,20 @@
       console.log('Add script');
       console.log(scriptContent, scriptTitle);
       ScriptingService.addScript ( scriptContent, scriptTitle )
-        .then ( function() {
+        .then ( function(script) {
           vm.title = '';
           vm.content = '';
-
-          console.log("ok");
+          vm.scripts.push(script);
+          vm.successMsg = 'Script successfully created!';
+          vm.errorMsg = '';
+          console.log('Script successfully created!');
         } )
-        .catch ( function() {
-          console.log("nn");
+        .catch ( function(response) {
+          ErrorService.handle(response);
+          vm.errorMsg = 'An error has been encountered!';
+          vm.successMsg = '';
         } );
     }
 
   }
 }) ();
-

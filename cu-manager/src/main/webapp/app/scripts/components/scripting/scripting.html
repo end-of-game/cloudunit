@@ -76,7 +76,7 @@
         </thead>
         <tbody>
         <tr
-          dir-paginate="user in scripts  | itemsPerPage: scripting.pageSize track by script.id"
+          dir-paginate="script in scripting.scripts  | itemsPerPage: scripting.pageSize track by script.id"
           data-current-page="scripting.currentPage">
           <td>{{ script.title}}</td>
           <td>{{ script.creation_date}}</td>
@@ -132,13 +132,20 @@
               <div class="modal-inner">
                 <div class="content modal-full-input">
                   <h3 class="title">Edit Script</h3>
-                  <div ng-model="script.content" ui-codemirror="{ onLoad : explorer.codemirrorLoaded }" ></div>
-                  
+                  <div class="input-group stack">
+                    <label for="domain">Script name</label>
+                    <input id="name"
+                          name="name"
+                          type="text"
+                          data-ng-model="script.title">
+                  </div>
+                  <label>Script content</label>
+                  <textarea  data-ng-model="script.content" class="textarea-custom textarea-full" ></textarea>
                   <div class="action">
                     <button type="button" class="button primary raised" data-dismiss="modal">Cancel
                     </button>
                     <button type="button" class="button primary raised"
-                            ng-click="script.editScript(script.id, script.content, script.title)"
+                            ng-click="scripting.editScript(script.id, script.content, script.title)"
                             data-dismiss="modal">
                       Edit
                     </button>

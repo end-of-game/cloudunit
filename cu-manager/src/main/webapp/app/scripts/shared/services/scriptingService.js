@@ -68,27 +68,39 @@
     }
 
     // update script
-    function editScript ( id, scriptContent, scriptTitle) {
+    function editScript ( scriptId, scriptContent, scriptTitle) {
       var data = {
         scriptContent: scriptContent,
-        scriptTitle: scriptTitle
+        scriptName: scriptTitle
       };
       
-      var dir = $resource ( 'scripting/:id' );
-      return dir.put ( { id: scriptId }, data ).$promise; 
+      var dir = $resource ( 'scripting/:id' ,
+        { id: scriptId },
+        { 
+          'update': { 
+            method: 'PUT',
+            transformResponse: function ( data, headers ) {
+              var response = {};
+              response.data = data;
+              response.headers = headers ();
+              return response;
+            }
+          }
+        }
+      );
+      return dir.update( { }, data ).$promise; 
     }
 
     // delete script
-    function deleteScript ( id) {
+    function deleteScript ( scriptId) {
       var dir = $resource ( 'scripting/:id' );
       return dir.delete ( { id: scriptId }, {} ).$promise; 
     }
 
     // Execute script
-    function executeScript ( id ) {
-      var dir = $resource ( 'scripting/:id' );
-
-      return dir.save ( { id: scriptId }, {} ).$promise; 
+    function executeScript ( scriptId ) {
+      var dir = $resource ( 'scripting/:id/exec' );
+      return dir.get ( { id: scriptId }, {} ).$promise; 
     }
 
   }
