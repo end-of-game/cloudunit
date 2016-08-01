@@ -110,7 +110,7 @@ public class ScriptingController
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public JsonResponse scriptingLoad(@PathVariable @RequestBody Integer id,
+    public String scriptingLoad(@PathVariable @RequestBody Integer id,
            HttpServletRequest request, HttpServletResponse response)
            throws ServiceException, JsonProcessingException {
         User user = authentificationUtils.getAuthentificatedUser();
@@ -126,14 +126,14 @@ public class ScriptingController
                     + script.getCreationUser().getLastName());
             String jsonString = mapper.writeValueAsString(rootNode);
 
-            return new JsonResponse(200, jsonString, null);
+            return jsonString;
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public JsonResponse scriptingLoadAll(HttpServletRequest request, HttpServletResponse response)
+    public String scriptingLoadAll(HttpServletRequest request, HttpServletResponse response)
             throws ServiceException {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
@@ -152,7 +152,7 @@ public class ScriptingController
                 array.add(rootNode);
             }
 
-            return new JsonResponse(200, array.asText(), null);
+            return array.asText();
         } finally {
             authentificationUtils.allowUser(user);
         }
