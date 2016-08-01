@@ -14,11 +14,20 @@ if [ -z "$RETURN" ]; then
 
     mkdir -p /home/$USER/jenkins_home
     sudo chown -R $USER /home/$USER/jenkins_home/
-    docker run  --name jenkins2 \
+
+    if [ "$USER" == "vagrant" ];
+    then
+    	docker run -d --name jenkins2 \
                 --restart always \
-                -d -p 9080:8080 -p 50000:50000 \
+                -p 9080:8080 -p 50000:50000 \
                 -v /home/$USER/jenkins_home:/var/jenkins_home \
                 jenkinsci/jenkins:$JK_MAJOR
+    else
+	    docker run -d --name jenkins2 \
+                --restart always \
+                -v /home/$USER/jenkins_home:/var/jenkins_home \
+                jenkinsci/jenkins:$JK_MAJOR
+    fi
 
     # Maybe it could already exist
     if [ "$?" == "1" ]; then

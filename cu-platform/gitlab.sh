@@ -12,15 +12,27 @@ ETURN=`docker ps | grep gitlab`
 # If jenkins is not running
 if [ -z "$RETURN" ]; then
 
-    docker run --detach \
-        --hostname gitabl-g2c.cloudunit.io \
-        --publish 4443:443 --publish 480:80 --publish 422:22 \
-        --name gitlab \
-        --restart always \
-        --volume /home/$USER/gitlab_home/config:/etc/gitlab \
-        --volume /home/$USER/gitlab_home/logs:/var/log/gitlab \
-        --volume /home/$USER/gitlab_home/data:/var/opt/gitlab \
-        gitlab/gitlab-ce:$GL_MAJOR
+    if [ "$USER" == "vagrant" ];
+    then
+	    docker run --detach \
+        	--hostname gitabl-g2c.cloudunit.io \
+        	--publish 4443:443 --publish 480:80 --publish 422:22 \
+        	--name gitlab \
+        	--restart always \
+        	--volume /home/$USER/gitlab_home/config:/etc/gitlab \
+        	--volume /home/$USER/gitlab_home/logs:/var/log/gitlab \
+        	--volume /home/$USER/gitlab_home/data:/var/opt/gitlab \
+        	gitlab/gitlab-ce:$GL_MAJOR
+    else
+        docker run --detach \
+            --hostname ${GITLAB_URL}.cloudunit.io \
+            --name gitlab \
+            --restart always \
+            --volume /home/$USER/gitlab_home/config:/etc/gitlab \
+            --volume /home/$USER/gitlab_home/logs:/var/log/gitlab \
+            --volume /home/$USER/gitlab_home/data:/var/opt/gitlab \
+            gitlab/gitlab-ce:$GL_MAJOR
+     fi
 
     # Maybe it could already exist
     if [ "$?" == "1" ]; then
