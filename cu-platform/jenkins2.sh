@@ -27,6 +27,8 @@ if [ -z "$RETURN" ]; then
                 --restart always \
                 -v /home/$USER/jenkins_home:/var/jenkins_home \
                 jenkinsci/jenkins:$JK_MAJOR
+ 	    docker-compose -f docker-compose-prod.yml rm -f nginx
+            docker-compose -f docker-compose-prod.yml up -d nginx	 
     fi
 
     # Maybe it could already exist
@@ -39,4 +41,5 @@ fi
 echo -e "\nThink about 'docker logs -f jenkins2' to get password\n"
 echo -e "************************************************************"
 echo -e "* ACCESS TO JENKINS AT --> http://192.168.50.4:9080 IF DEV "
+echo -e "* ACCESS TO JENKINS AT --> https://$CU_JENKINS_URL IF PROD "
 echo -e "************************************************************"

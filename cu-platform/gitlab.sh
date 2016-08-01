@@ -25,13 +25,15 @@ if [ -z "$RETURN" ]; then
         	gitlab/gitlab-ce:$GL_MAJOR
     else
         docker run --detach \
-            --hostname ${GITLAB_URL}.cloudunit.io \
+            --hostname ${CU_GITLAB_URL}.cloudunit.io \
             --name gitlab \
             --restart always \
             --volume /home/$USER/gitlab_home/config:/etc/gitlab \
             --volume /home/$USER/gitlab_home/logs:/var/log/gitlab \
             --volume /home/$USER/gitlab_home/data:/var/opt/gitlab \
             gitlab/gitlab-ce:$GL_MAJOR
+            docker-compose -f docker-compose-prod.yml rm -f nginx
+            docker-compose -f docker-compose-prod.yml up -d nginx
      fi
 
     # Maybe it could already exist
@@ -42,5 +44,6 @@ fi
 
 echo -e "**********************************************************"
 echo -e "* ACCESS TO GITLAB AT --> http://192.168.50.4:480 FOR DEV"
+echo -e "* ACCESS TO GITLAB AT --> https://$CU_GITLAB_URL FOR PROD"
 echo -e "**********************************************************"
 
