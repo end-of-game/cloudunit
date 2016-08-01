@@ -95,6 +95,23 @@
   box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.26);
 }
 
+.app-button {
+  float: left;
+  margin-left: 5px;
+  margin-top: 3px;
+  width: 56px;
+  height: 56px;
+  outline: 0;
+  border: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: $color-primary;
+  color: #fff;
+  font-size: 24px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .button:hover, .icon-button:hover {
   background-color: transparent;
   text-decoration: none;
