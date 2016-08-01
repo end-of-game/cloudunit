@@ -88,7 +88,7 @@ public class ScriptingController
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public JsonResponse scriptingSave(@RequestBody ScriptRequestBody scriptRequestBody, @RequestBody String title)
+    public JsonResponse scriptingSave(@RequestBody String scriptContent, @RequestBody String scriptTitle)
             throws ServiceException {
         logger.info("Save");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -96,8 +96,8 @@ public class ScriptingController
             Script script = new Script();
 
             script.setCreationUser(user);
-            script.setTitle(title);
-            script.setContent(scriptRequestBody.getFileContent());
+            script.setTitle(scriptTitle);
+            script.setContent(scriptContent);
             script.setCreationDate(Calendar.getInstance().getTime());
 
             scriptingService.save(script);
