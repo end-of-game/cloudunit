@@ -296,7 +296,7 @@ public class SimpleDockerDriver implements DockerDriver {
                     .setScheme(protocol)
                     .setHost(host)
                     .setPath("/images/create")
-                    .setParameter("fromImage", repository + tag)
+                    .setParameter("fromImage", repository)
                     .setParameter("tag", tag.toLowerCase())
                     .build();
             dockerResponse = client.sendPostToRegistryHost(uri, "",

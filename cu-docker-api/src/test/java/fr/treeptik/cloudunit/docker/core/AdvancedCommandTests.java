@@ -25,21 +25,17 @@ public class AdvancedCommandTests {
 
     private static DockerClient dockerClient;
     private static final String CONTAINER_NAME = "myContainer";
-    private final int RUNNING_CONTAINERS = 7;
-    private final String TAG = "mytag";
-    private final String REPOSITORY = "localhost:5000/";
-    private final String REGISTRY_HOST = "192.168.50.4:5000";
 
-    @BeforeClass
-    public static void setup() {
+    @Before
+    public void setup() {
 
-        String OS = System.getProperty("os.name").toLowerCase();
-        if (OS.indexOf("mac") >= 0) {
-            DOCKER_HOST = "cloudunit.dev:4243";
-            isTLS = false;
-        } else {
+        boolean integration = System.getenv("CLOUDUNIT_JENKINS_CI") != null;
+        if (integration) {
             DOCKER_HOST = "cloudunit.dev:2376";
             isTLS = true;
+        } else {
+            DOCKER_HOST = "cloudunit.dev:4243";
+            isTLS = false;
         }
 
         dockerClient = new DockerClient();
@@ -55,7 +51,7 @@ public class AdvancedCommandTests {
                 .withCmd(Arrays.asList("/bin/bash", "/cloudunit/scripts/start-service.sh", "johndoe", "abc2015",
                         "192.168.2.116", "172.17.0.221", "aaaa",
                         "AezohghooNgaegh8ei2jabib2nuj9yoe", "main"))
-                .withImage("cloudunit/git:latest")
+                .withImage("cloudunit/tomcat-8:latest")
                 .withHostConfig(hostConfig)
                 .withExposedPorts(new HashMap<>())
                 .withMemory(0L)
@@ -83,8 +79,8 @@ public class AdvancedCommandTests {
         }
     }
 
-    @AfterClass
-    public static void tearDown() throws DockerJSONException {
+    @After
+    public void tearDown() throws DockerJSONException {
         DockerContainer container = ContainerBuilder.aContainer()
                 .withName(CONTAINER_NAME)
                 .build();
@@ -97,7 +93,6 @@ public class AdvancedCommandTests {
                 .withName("myContainer")
                 .build();
         container = dockerClient.findContainer(container, DOCKER_HOST);
-        // Change it in 2017 :-)
         Assert.assertTrue(dockerClient.execCommand(container, Arrays.asList("date"), DOCKER_HOST).getBody()
                 .contains("2016"));
     }

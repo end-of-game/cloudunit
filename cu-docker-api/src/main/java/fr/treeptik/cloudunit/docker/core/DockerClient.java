@@ -303,6 +303,26 @@ public class DockerClient {
     }
 
     /**
+     * @param host
+     * @param tag
+     * @param repository
+     * @return
+     * @throws DockerJSONException
+     */
+    public DockerResponse pullImage(String host, String tag, String repository) throws DockerJSONException {
+        DockerResponse dockerResponse = null;
+        try {
+            logger.info("The client attempts to pull an image...");
+            dockerResponse = driver.pull(host, tag, repository);
+            handleDockerAPIError(dockerResponse);
+        } catch (FatalDockerJSONException e) {
+            throw new DockerJSONException(e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
+
+
+    /**
      * @param image
      * @param host
      * @return

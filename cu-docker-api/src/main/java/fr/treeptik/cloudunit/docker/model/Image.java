@@ -13,6 +13,11 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Image implements Serializable {
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Used for requestbody not the response
     @JsonIgnore
     private String name;
 
@@ -58,6 +63,18 @@ public class Image implements Serializable {
     @JsonProperty("RepoTags")
     private List<String> repoTags;
 
+    public List<String> getRepoTags() {
+        return repoTags;
+    }
+
+    public List<String> getRepoDigests() {
+        return repoDigests;
+    }
+
+    public Object getGraphDriver() {
+        return graphDriver;
+    }
+
     @JsonProperty("RepoDigests")
     private List<String> repoDigests;
 
@@ -66,10 +83,6 @@ public class Image implements Serializable {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getCreated() {

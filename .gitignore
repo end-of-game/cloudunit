@@ -29,3 +29,4 @@ cu-monitor/target*
 dependency-reduced-pom.xml
 /cu-manager/errors.log
 /cu-docker-api/target/
+/cloudunit-errors.log

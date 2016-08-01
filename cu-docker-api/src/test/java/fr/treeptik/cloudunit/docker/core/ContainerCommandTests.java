@@ -30,14 +30,15 @@ public class ContainerCommandTests {
     @BeforeClass
     public static void setupClass() {
 
-        String OS = System.getProperty("os.name").toLowerCase();
-        if (OS.indexOf("mac") >= 0) {
-            DOCKER_HOST = "cloudunit.dev:4243";
-            isTLS = false;
-        } else {
+        boolean integration = System.getenv("CLOUDUNIT_JENKINS_CI") != null;
+        if (integration) {
             DOCKER_HOST = "cloudunit.dev:2376";
             isTLS = true;
+        } else {
+            DOCKER_HOST = "cloudunit.dev:4243";
+            isTLS = false;
         }
+
 
         dockerClient = new DockerClient();
         dockerClient.setDriver(new SimpleDockerDriver("../cu-vagrant/certificats", isTLS));

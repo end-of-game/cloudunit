@@ -58,7 +58,7 @@ testmysqldata:
         - /etc/timezone:/etc/timezone:ro
 
 dnsdock:
-    image: tonistiigi/dnsdock:v1.10.0
+    image: tonistiigi/dnsdock:amd64-1.13.1
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - /etc/localtime:/etc/localtime:ro

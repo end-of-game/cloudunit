@@ -9,6 +9,7 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.HostConfig;
 import fr.treeptik.cloudunit.docker.model.Image;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
+import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
@@ -32,13 +33,13 @@ public class ImageCommandTests {
     @Before
     public void setup() {
 
-        String OS = System.getProperty("os.name").toLowerCase();
-        if (OS.indexOf("mac") >= 0) {
-            DOCKER_HOST = "cloudunit.dev:4243";
-            isTLS = false;
-        } else {
+        boolean integration = System.getenv("CLOUDUNIT_JENKINS_CI") != null;
+        if (integration) {
             DOCKER_HOST = "cloudunit.dev:2376";
             isTLS = true;
+        } else {
+            DOCKER_HOST = "cloudunit.dev:4243";
+            isTLS = false;
         }
 
         dockerClient = new DockerClient();
@@ -67,7 +68,7 @@ public class ImageCommandTests {
         }
     }
 
-    //@After
+    @After
     public void tearDown() throws DockerJSONException {
         DockerContainer container = ContainerBuilder.aContainer()
                 .withName(CONTAINER_NAME)
@@ -85,16 +86,21 @@ public class ImageCommandTests {
     }
 
     @Test
-    public void test00_findAnImage() throws DockerJSONException {
-        Image image = ImageBuilder.anImage().withName(TAG + ":" + TAG).build();
-        dockerClient.findAnImage(image, DOCKER_HOST);
+    public void test00_PullAndFindAnImage() throws DockerJSONException {
+        dockerClient.pullImage(DOCKER_HOST, "latest", "busybox");
+        Image image = ImageBuilder.anImage().withName("busybox:latest").build();
+        image = dockerClient.findAnImage(image, DOCKER_HOST);
+        Assert.assertTrue("Busybox found !", image.getRepoTags().get(0).contains("busybox"));
     }
 
-    @Test
+    @Test(expected=ErrorDockerJSONException.class)
     public void test05_removeImage() throws DockerJSONException {
-        Image image = ImageBuilder.anImage().withName(TAG + ":" + TAG).build();
+        dockerClient.pullImage(DOCKER_HOST, "latest", "busybox");
+        Image image = ImageBuilder.anImage().withName("busybox:latest").build();
         image = dockerClient.findAnImage(image, DOCKER_HOST);
+        Assert.assertTrue("Busybox found !", image.getRepoTags().get(0).contains("busybox"));
         dockerClient.removeImage(image, DOCKER_HOST);
+        image = dockerClient.findAnImage(image, DOCKER_HOST);
     }
 
 }
