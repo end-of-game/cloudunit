@@ -25,7 +25,7 @@ if [ -z "$RETURN" ]; then
         	gitlab/gitlab-ce:$GL_MAJOR
     else
         docker run --detach \
-            --hostname ${CU_GITLAB_URL}.cloudunit.io \
+            --hostname ${CU_GITLAB_URL} \
             --name gitlab \
             --restart always \
             --volume /home/$USER/gitlab_home/config:/etc/gitlab \
