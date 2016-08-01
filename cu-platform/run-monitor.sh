@@ -24,7 +24,7 @@ function verify_java {
 		echo "no java"
 		echo "download it :"
 
-		if [ ! -f java.do ]; then
+		if [ ! -f /tmp/java.do ]; then
 
 		wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jdk-8u91-linux-x64.tar.gz -O ${HOME}/jdk-8u91-linux-x64.tar.gz
 		tar xvf ${HOME}/jdk-8u91-linux-x64.tar.gz
@@ -33,7 +33,7 @@ function verify_java {
         echo "export JAVA_HOME=${HOME}/jdk1.8.0_91" >> ${HOME}/.bashrc
         source ${HOME}/.bashrc
         mkdir  ${HOME}/cloudunit/monitoring_scripts
-        touch java.do
+        touch /tmp/java.do
 
         fi
 	fi
