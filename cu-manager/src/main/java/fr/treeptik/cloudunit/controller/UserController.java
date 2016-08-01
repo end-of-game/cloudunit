@@ -147,7 +147,8 @@ public class UserController
                         "This functionnality is not available yet");
             }
 
-            if (!user.getPassword().equalsIgnoreCase(new CustomPasswordEncoder().decode(input.getPassword()))) {
+
+            if (!user.getPassword().equalsIgnoreCase(input.getPassword())) {
                 throw new CheckException(
                         "Your current password is not correct. Please retry!");
             }
