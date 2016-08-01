@@ -27,3 +27,5 @@ cu-services/cu-services.iml
 cu-monitor/target*
 
 dependency-reduced-pom.xml
+/cu-manager/errors.log
+/cu-docker-api/target/
