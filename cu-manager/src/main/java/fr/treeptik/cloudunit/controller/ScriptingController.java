@@ -84,11 +84,18 @@ public class ScriptingController
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON)
     public @ResponseBody JsonNode scriptingSave(@RequestBody ScriptRequest scriptRequest)
-            throws ServiceException, IOException {
+            throws ServiceException, IOException, CheckException {
         logger.info("Save");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = new Script();
+
+            List<Script> scripts = scriptingService.loadAllScripts();
+            for(Script script1 : scripts)
+            {
+                if(script1.getTitle().equals(scriptRequest.getScriptName()))
+                    throw new CheckException("Script name already exists");
+            }
 
             Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
 
@@ -176,6 +183,9 @@ public class ScriptingController
         try {
             Script script = scriptingService.load(id);
 
+            Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
+
+            script.setCreationDate(now);
             script.setContent(scriptRequest.getScriptContent());
             scriptingService.save(script);
         } finally {
