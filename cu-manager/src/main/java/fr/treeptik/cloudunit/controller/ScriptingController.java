@@ -78,7 +78,7 @@ public class ScriptingController
 
             scriptingService.execute(scriptRequest.getScriptContent(), user.getLogin(), user.getPassword());
         } catch (ServiceException e) {
-            throw new CheckException("Error on script execution");
+            throw e;
         }
     }
 
