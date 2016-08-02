@@ -60,7 +60,7 @@
     function executeScript ( scriptContent ) {
       ScriptingService.executeScript ( scriptContent )
         .catch ( function(response) {
-          vm.errorMsg = 'An error has been encountered! Do you have install CLI Jar?'
+          vm.errorMsg = 'An error has been encountered!'
           vm.noticeMsg = '';
         } );
     }

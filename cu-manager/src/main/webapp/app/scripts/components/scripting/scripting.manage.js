@@ -82,10 +82,7 @@
             vm.noticeMsg = 'The script has been executed!'
             vm.errorMsg = '';
         })
-        .catch ( function(response) {
-          vm.errorMsg = 'An error has been encountered! Do you have install CLI jar?'
-          vm.noticeMsg = '';
-        } );
+        .catch ( errorScript );
     }
 
     function editScript ( scriptId, scriptContent, scriptTitle ) {
@@ -94,10 +91,7 @@
           vm.noticeMsg = 'The script has been edited!'
           vm.errorMsg = '';
         })
-        .catch ( function(response) {
-          vm.errorMsg = 'An error has been encountered!'
-          vm.noticeMsg = '';
-        } );
+        .catch ( errorScript );
     }
 
     function deleteScript ( script ) {
@@ -108,11 +102,12 @@
           vm.noticeMsg = 'The script has been removed!'
           vm.errorMsg = '';
         } )
-        .catch ( function() {
-          vm.errorMsg = 'An error has been encountered!'
-          vm.noticeMsg = '';
-        } );
+        .catch ( errorScript );
     }
 
+    function errorScript() {
+      vm.errorMsg = 'An error has been encountered!'
+      vm.noticeMsg = '';
+    }
   }
 }) ();
