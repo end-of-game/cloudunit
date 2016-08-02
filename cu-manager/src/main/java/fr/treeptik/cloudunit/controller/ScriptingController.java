@@ -64,29 +64,19 @@ public class ScriptingController
     @Inject
     private UserService userService;
 
-    @RequestMapping(value = "/{id}/exec",
-            method = RequestMethod.GET)
-    public JsonResponse scriptingExecute(@PathVariable @RequestBody Integer id)
+    @RequestMapping(value = "/exec", method = RequestMethod.GET)
+    public JsonResponse scriptingExecute(@RequestBody ScriptRequest scriptRequest)
             throws ServiceException, CheckException, IOException, InterruptedException {
         logger.info("Execute");
         User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            authentificationUtils.forbidUser(user);
+        // We must be sure there is no running action before starting new one
+        this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
 
-            // We must be sure there is no running action before starting new one
-            this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
-
-            Script script = scriptingService.load(id);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("scriptRequestBody: " + script.getContent());
-            }
-
-            scriptingService.execute(script.getContent(), user.getLogin(), user.getPassword());
-
-        } finally {
-            authentificationUtils.allowUser(user);
+        if (logger.isDebugEnabled()) {
+            logger.debug("scriptRequestBody: " + scriptRequest.getScriptContent());
         }
+
+        scriptingService.execute(scriptRequest.getScriptContent(), user.getLogin(), user.getPassword());
         return new HttpOk();
     }
 
