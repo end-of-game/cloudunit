@@ -1,8 +1,11 @@
 package fr.treeptik.cloudunit.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Created by stagiaire on 10/06/2016.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ScriptRequest {
 
     private String scriptName;
