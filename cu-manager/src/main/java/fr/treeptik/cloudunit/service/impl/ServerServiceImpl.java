@@ -321,12 +321,6 @@ public class ServerServiceImpl
             }
             Application application = server.getApplication();
 
-
-            if (server.getStatus().equals(Status.START)) {
-               dockerService.killServer(server.getName());
-                Thread.sleep(1000);
-            }
-
             dockerService.removeServer(server.getName());
 
             // Remove server on cloudunit :
@@ -340,10 +334,8 @@ public class ServerServiceImpl
             logger.error("Error database :  " + server.getName() + " : " + e);
             throw new ServiceException("Error database :  "
                     + e.getLocalizedMessage(), e);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } catch (DockerJSONException e) {
-            e.printStackTrace();
+            logger.error(serverName, e);
         }
         return server;
     }

@@ -1,10 +1,5 @@
 FROM cloudunit/base-14.04
 
-ENV JAVA_HOME /cloudunit/java/jdk1.8.0_25
-ENV CATALINA_HOME /cloudunit/appconf/tomcat
-ENV PATH $CATALINA_HOME/bin:$PATH
-RUN mkdir -p $CATALINA_HOME
-
 RUN set -ex \
 	&& for key in \
 		05AB33110949707C93A279E3D3EFE6B686867BA6 \
@@ -25,10 +20,29 @@ RUN set -ex \
 		gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	done
 
+# add custom scripts
+ADD scripts /opt/cloudunit/scripts
+RUN chmod +x /opt/cloudunit/scripts/*
+
+# Create directory for CloudUnit
+RUN mkdir -p /opt/cloudunit/tomcat &&  \
+    mkdir -p /opt/cloudunit/tomcat/logs
+
+ENV CATALINA_HOME /opt/cloudunit/tomcat
+ENV CU_SOFTWARE $CATALINA_HOME
+ENV CU_LOGS $CATALINA_HOME/logs
+
+RUN echo "CU_SOFTWARE=$CU_SOFTWARE" >> /etc/environment && \
+    echo "CU_LOGS=$CU_LOGS" >> /etc/environment && \
+    echo "CATALINA_HOME=$CATALINA_HOME" >> /etc/environment
+
+ENV JAVA_HOME /opt/cloudunit/java/jdk1.8.0_25
+ENV PATH $CATALINA_HOME/bin:$PATH
+RUN mkdir -p $CATALINA_HOME
+
 ENV TOMCAT_MAJOR 8
 ENV TOMCAT_VERSION 8.0.36
 ENV TOMCAT_TGZ_URL https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
-
 
 RUN cd $HOME \
     && wget $TOMCAT_TGZ_URL \
@@ -36,16 +50,10 @@ RUN cd $HOME \
     && mv $HOME/apache-tomcat-$TOMCAT_VERSION/* $CATALINA_HOME/ \
     && rm apache-tomcat-$TOMCAT_VERSION.tar.gz
 
-# add custom scripts
-ADD scripts /cloudunit/scripts
-RUN chmod +x /cloudunit/scripts/*
+RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
+RUN chown -R cloudunit:cloudunit /opt/cloudunit
+USER cloudunit
 
-RUN mkdir -p /cloudunit/appconf/logs/
-RUN ln -s /cloudunit/appconf/tomcat/logs/catalina.out /cloudunit/appconf/logs
+VOLUME /opt/cloudunit/tomcat/logs
 
-VOLUME /cloudunit/appconf/logs
-
-EXPOSE 22
-EXPOSE 8080
-
-ENTRYPOINT ["/cloudunit/scripts/start-service.sh"]
+ENTRYPOINT ["/opt/cloudunit/scripts/start-service.sh"]

@@ -2,6 +2,11 @@
 
 set -x
 
+export ENV_FILE="/opt/cloudunit/.profile"
+source $ENV_FILE
+
+touch $USER > /opt/cloudunit/user.txt
+
 $CATALINA_HOME/bin/catalina.sh start
 
 # ON teste l'écoute de tomcat sur le port 8005
@@ -19,13 +24,6 @@ do
 	let count=$count+1;
 done
 
-# BUG ENTROPY (KVM ENV)
-if [ $count -gt $kwait ]; then
-	echo -n -e "\nERROR !!!\n Tomcat didn't start listening on shutdown port 8005 after $SHUTDOWN_WAIT seconds\nEXITING IN ERROR !!!\n"
-	kill $(pidof tailf)
-	exit 1
-fi
-
 echo "Tomcat is listening on port 8005"
 
 echo "Waiting for Tomcat start with log trace"
@@ -34,7 +32,7 @@ RETURN=1
 until [ "$RETURN" -eq "0" ] || [ $count -gt $kwait ]
 do
         echo -e "\nWaiting for tomcat to start"
-        grep 'Server startup in' /cloudunit/appconf/logs/catalina.out
+        grep 'Server startup in' $CU_LOGS/catalina.out
         RETURN=$?
         sleep 1
         let count=$count+1;

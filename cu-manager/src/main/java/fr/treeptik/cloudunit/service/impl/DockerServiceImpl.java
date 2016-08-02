@@ -48,20 +48,14 @@ public class DockerServiceImpl implements DockerService {
 
     @Override
     public void createServer(String name, Server server, String imagePath, User user) throws DockerJSONException {
-        List<String> args = Arrays.asList(user.getLogin(), user.getPassword(), server
-                    .getApplication().getRestHost(), server
-                    .getApplication().getName(), server.getServerAction().getDefaultJavaRelease(),
-                databasePassword, envExec, databaseHostname);
         String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
         List<String> volumes = Arrays.asList("java");
         if (sharedDir != null) {
             sharedDir = sharedDir + ":/cloudunit/shared:rw";
             volumes.add(sharedDir);
         }
-        DockerContainer container = ContainerUtils.newCreateInstance(name, imagePath, volumes, args);
-
+        DockerContainer container = ContainerUtils.newCreateInstance(name, imagePath, volumes, null);
         dockerClient.createContainer(container);
-
     }
 
     @Override

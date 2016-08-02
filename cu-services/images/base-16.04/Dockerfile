@@ -1,8 +1,8 @@
 # Base Dockerfile for all IMAGES
 FROM ubuntu:16.04
+
 # Install default software
 RUN apt-get update && apt-get install -y vim \
-                                         openssh-server \
                                          curl \
                                          wget \
                                          unzip \
@@ -32,7 +32,6 @@ ENV CU_SHARED /cloudunit/shared
 
 RUN echo -n "CU_JAVA=$CU_JAVA\nCU_SCRIPTS=$CU_SCRIPTS\nCU_USER_HOME=$CU_USER_HOME\nCU_LOGS=$CU_LOGS\nCU_HOOKS=$CU_HOOKS\n" >> /etc/environment
 
-COPY sshd_config /etc/ssh/sshd_config
 COPY hooks /cloudunit/appconf/hooks
 RUN chmod a+x /cloudunit/appconf/hooks/*
 
