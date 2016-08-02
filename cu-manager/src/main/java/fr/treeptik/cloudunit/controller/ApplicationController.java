@@ -16,7 +16,6 @@
 package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
-import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -60,7 +59,7 @@ public class ApplicationController
     private ApplicationService applicationService;
 
     @Inject
-    private DockerService dockerService;
+    private SpotifyDockerService dockerService;
 
     @Inject
     private AuthentificationUtils authentificationUtils;
@@ -350,15 +349,15 @@ public class ApplicationController
         // We must be sure there is no running action before starting new one
         authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
-        DockerContainer dockerContainer = new DockerContainer();
-        dockerContainer.setName(application.getServers().get(0).getName());
-        dockerContainer.setImage((application.getServers().get(0).getImage().getName()));
-
-        hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
-
-        applicationManager.deploy(fileUpload, application);
-
-        hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_FIRST_DEPLOY);
+//        DockerContainer dockerContainer = new DockerContainer();
+//        dockerContainer.setName(application.getServers().get(0).getName());
+//        dockerContainer.setImage((application.getServers().get(0).getImage().getName()));
+//
+//        hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
+//
+//        applicationManager.deploy(fileUpload, application);
+//
+//        hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_FIRST_DEPLOY);
 
         logger.info("--DEPLOY APPLICATION WAR ENDED--");
         return new HttpOk();

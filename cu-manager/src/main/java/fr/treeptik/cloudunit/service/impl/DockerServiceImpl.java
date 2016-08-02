@@ -1,130 +1,99 @@
 package fr.treeptik.cloudunit.service.impl;
 
-import com.spotify.docker.client.*;
-import com.spotify.docker.client.messages.*;
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.docker.core.DockerClient;
+import fr.treeptik.cloudunit.docker.model.DockerContainer;
+import fr.treeptik.cloudunit.exception.DockerJSONException;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
+
+import fr.treeptik.cloudunit.utils.ContainerMapper;
+import fr.treeptik.cloudunit.utils.ContainerUtils;
+import fr.treeptik.cloudunit.utils.JvmOptionsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import javax.annotation.PostConstruct;
-import java.nio.file.Paths;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * This class is a wrapper to docker spotify api to purpose main functions for CloudUnit Business
+ * Created by guillaume on 01/08/16.
  */
 @Service
 public class DockerServiceImpl implements DockerService {
 
-    private final Logger logger = LoggerFactory.getLogger(DockerServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(DockerService.class);
 
-    @Value("${docker.manager.ip:192.168.50.4:2376}")
-    private String dockerManagerIp;
+    @Inject
+    private ContainerMapper containerMapper;
 
-    @Value("${certs.dir.path}")
-    private String certsDirPath;
+    @Value("${database.password}")
+    private String databasePassword;
 
-    @Value("${docker.endpoint.mode}")
-    private String dockerEndpointMode;
+    @Value("${env.exec}")
+    private String envExec;
 
-    private boolean isHttpMode;
+    @Value("${database.hostname}")
+    private String databaseHostname;
 
-    @PostConstruct
-    public void initDockerEndPointMode() {
-        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
-            logger.warn("Docker TLS mode is disabled");
-            isHttpMode = true;
-        } else {
-            isHttpMode = false;
+    @Value("${suffix.cloudunit.io}")
+    private String suffixCloudUnitIO;
+
+    @Inject
+    private DockerClient dockerClient;
+
+
+    @Override
+    public void createServer(String name, Server server, String imagePath, User user) throws DockerJSONException {
+        List<String> args = Arrays.asList(user.getLogin(), user.getPassword(), server
+                    .getApplication().getRestHost(), server
+                    .getApplication().getName(), server.getServerAction().getDefaultJavaRelease(),
+                databasePassword, envExec, databaseHostname);
+        String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
+        List<String> volumes = Arrays.asList("java");
+        if (sharedDir != null) {
+            sharedDir = sharedDir + ":/cloudunit/shared:rw";
+            volumes.add(sharedDir);
         }
+        DockerContainer container = ContainerUtils.newCreateInstance(name, imagePath, volumes, args);
+
+        dockerClient.createContainer(container);
+
     }
 
     @Override
-    public Boolean isRunning(String containerName) throws CheckException, ServiceException {
-        DockerClient dockerClient = getDockerClient();
-        try {
-            final ContainerInfo info = dockerClient.inspectContainer("containerID");
-            return info.state().running();
-        } catch (Exception e) {
-            StringBuilder msgError = new StringBuilder();
-            msgError.append("containerName=").append(containerName);
-            throw new ServiceException(msgError.toString(), e);
-        } finally {
-            if (dockerClient != null) { dockerClient.close(); }
-        }
+    public Server startServer(String containerName, Server server) throws DockerJSONException {
+        DockerContainer container = ContainerUtils.newStartInstance(containerName,
+                null, null, null);
+        dockerClient.startContainer(container);
+       container = dockerClient.findContainer(container);
+       server = containerMapper.mapDockerContainerToServer(container, server);
+       return server;
+
+    }
+    @Override
+    public void stopServer(String containerName) throws DockerJSONException {
+        DockerContainer container = ContainerUtils.newStartInstance(containerName,
+                null, null, null);
+        dockerClient.stopContainer(container);
     }
 
     @Override
-    public String getContainerId(String containerName) throws CheckException, ServiceException {
-        DockerClient dockerClient = getDockerClient();
-        try {
-            final ContainerInfo info = dockerClient.inspectContainer(containerName);
-            return info.id();
-        } catch (Exception e) {
-            StringBuilder msgError = new StringBuilder();
-            msgError.append("containerName=").append(containerName);
-            throw new ServiceException(msgError.toString(), e);
-        } finally {
-            if (dockerClient != null) { dockerClient.close(); }
-        }
+    public void killServer(String containerName) throws DockerJSONException {
+        DockerContainer container = ContainerUtils.newStartInstance(containerName,
+                null, null, null);
+        dockerClient.killContainer(container);
     }
 
-    /**
-     * Execute a shell conmmad into a container. Return the output as String
-     *
-     * @param containerName
-     * @param command
-     * @return
-     */
     @Override
-    public String exec(String containerName, String command)
-            throws CheckException, ServiceException {
-        DockerClient dockerClient = null;
-        String execOutput = null;
-        LogStream output = null;
-        try {
-            dockerClient = getDockerClient();
-            final String[] commands = {"bash", "-c", command};
-            String execId = dockerClient.execCreate(containerName, commands,
-                    DockerClient.ExecParameter.STDOUT,
-                    DockerClient.ExecParameter.STDERR);
-            output = dockerClient.execStart(execId);
-            execOutput = output.readFully();
-        } catch (InterruptedException | DockerException e) {
-            StringBuilder msgError = new StringBuilder();
-            msgError.append("containerName:[").append(containerName).append("]");
-            msgError.append(", command:[").append(command).append("]");
-            logger.error(msgError.toString(), e);
-        } finally {
-            if (output != null) { output.close(); }
-            if (dockerClient != null) { dockerClient.close(); }
-        }
-        return execOutput;
+    public void removeServer(String containerName) throws DockerJSONException {
+        DockerContainer container = ContainerUtils.newStartInstance(containerName,
+                null, null, null);
+        dockerClient.removeContainer(container);
     }
 
-    /**
-     * Return an instance of Spotify DockerClient
-     *
-     * @return
-     */
-    private DockerClient getDockerClient() {
-        DockerClient dockerClient = null;
-        try {
-            if (isHttpMode) {
-                dockerClient = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
-                dockerClient = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
-        } catch (Exception e) {
-            logger.error("cannot instance docker client : ", e);
-        }
-        return dockerClient;
-    }
+
 }

@@ -24,6 +24,7 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.FileService;
+import fr.treeptik.cloudunit.service.SpotifyDockerService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.apache.commons.io.FileUtils;
@@ -64,7 +65,7 @@ public class FileController {
     private FileService fileService;
 
     @Inject
-    private DockerService dockerService;
+    private SpotifyDockerService dockerService;
 
     @Inject
     private ApplicationService applicationService;

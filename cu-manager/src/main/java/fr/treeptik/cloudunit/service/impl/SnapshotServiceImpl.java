@@ -22,7 +22,6 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
 import fr.treeptik.cloudunit.dao.ModuleConfigurationDAO;
 import fr.treeptik.cloudunit.dao.SnapshotDAO;
-import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -187,18 +186,18 @@ public class SnapshotServiceImpl
 
             for (Server server : application.getServers()) {
                 images.add(server.getImage().getPath());
-                DockerContainer dockerContainer = new DockerContainer();
-                dockerContainer.setName(server.getName());
-                dockerContainer.setImage(server.getImage().getName());
-
-                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
-
-                DockerContainer.commit(dockerContainer,
-                        snapshot.getFullTag(),
-                        application.getManagerIp(),
-                        server.getImage().getPath());
-
-                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_POST_ACTION);
+//                DockerContainer dockerContainer = new DockerContainer();
+//                dockerContainer.setName(server.getName());
+//                dockerContainer.setImage(server.getImage().getName());
+//
+//                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
+//
+//                DockerContainer.commit(dockerContainer,
+//                        snapshot.getFullTag(),
+//                        application.getManagerIp(),
+//                        server.getImage().getPath());
+//
+//                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_POST_ACTION);
             }
 
             for (Module module : application.getModules()) {
@@ -208,23 +207,23 @@ public class SnapshotServiceImpl
                 imageName = module.getImage().getPath() + "-" + module.getInstanceNumber();
                 this.backupModule(module);
                 images.add(imageName);
-                DockerContainer dockerContainer = new DockerContainer();
-                dockerContainer.setName(moduleName);
-                dockerContainer.setImage(module.getImage().getName());
-
-                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
-
-                DockerContainer.commit(dockerContainer,
-                        snapshot.getFullTag(),
-                        application.getManagerIp(), imageName);
-
-                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
+//                DockerContainer dockerContainer = new DockerContainer();
+//                dockerContainer.setName(moduleName);
+//                dockerContainer.setImage(module.getImage().getName());
+//
+//                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
+//
+//                DockerContainer.commit(dockerContainer,
+//                        snapshot.getFullTag(),
+//                        application.getManagerIp(), imageName);
+//
+//                hookService.call(dockerContainer.getName(), RemoteExecAction.SNAPSHOT_PRE_ACTION);
             }
 
             snapshot.setImages(images);
             snapshot = snapshotDAO.save(snapshot);
 
-        } catch (DockerJSONException | InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
         return snapshot;
@@ -267,14 +266,14 @@ public class SnapshotServiceImpl
             List<String> images = snapshotDAO.findAllImagesFromASnapshot(tag).getImages();
 
             for (String image : images) {
-                DockerContainer dockerContainer = new DockerContainer();
-                dockerContainer.setImage(image);
-                DockerContainer.deleteImage(image + ":" + tag, dockerManagerIp);
+//                DockerContainer dockerContainer = new DockerContainer();
+//                dockerContainer.setImage(image);
+//                DockerContainer.deleteImage(image + ":" + tag, dockerManagerIp);
             }
 
             snapshotDAO.delete(snapshotDAO.findByTag(tag));
 
-        } catch (DockerJSONException | DataAccessException e) {
+        } catch (DataAccessException e) {
             throw new ServiceException("Error : " + e.getLocalizedMessage(), e);
         }
         // we return for aop compliant. todo : change it

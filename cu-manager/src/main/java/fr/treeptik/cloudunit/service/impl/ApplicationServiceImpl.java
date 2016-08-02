@@ -18,7 +18,6 @@ package fr.treeptik.cloudunit.service.impl;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ImageDAO;
 import fr.treeptik.cloudunit.dao.PortToOpenDAO;
-import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -620,55 +619,55 @@ public class ApplicationServiceImpl
                                               boolean withModules)
             throws ServiceException {
         List<ContainerUnit> containers = new ArrayList<>();
-        try {
-            Application application = findByNameAndUser(
-                    authentificationUtils.getAuthentificatedUser(),
-                    applicationName);
-            if (application != null) {
-                try {
-                    // Serveurs
-                    List<Server> servers = application.getServers();
-                    // Ajout des containers de type server
-                    for (Server server : servers) {
-                        DockerContainer dockerContainer = new DockerContainer();
-                        dockerContainer.setName(server.getName());
-                        dockerContainer = DockerContainer.findOne(
-                                dockerContainer, application.getManagerIp());
-                        server = containerMapper.mapDockerContainerToServer(
-                                dockerContainer, server);
-                        ContainerUnit containerUnit = new ContainerUnit(
-                                server.getName(), server.getContainerID(),
-                                "server");
-                        containers.add(containerUnit);
-                    }
-                    if (withModules) {
-                        // Ajout des containers de type module
-                        List<Module> modules = application.getModules();
-                        for (Module module : modules) {
-                            DockerContainer dockerContainer = new DockerContainer();
-                            dockerContainer.setName(module.getName());
-                            dockerContainer = DockerContainer.findOne(
-                                    dockerContainer,
-                                    application.getManagerIp());
-                            module = containerMapper
-                                    .mapDockerContainerToModule(
-                                            dockerContainer, module);
-                            ContainerUnit containerUnit = new ContainerUnit(
-                                    module.getName(), module.getContainerID(),
-                                    "module");
-                            containers.add(containerUnit);
-                        }
-                    }
-                } catch (Exception ex) {
-                    // Si une application sort en erreur, il ne faut pas
-                    // arrêter la suite des traitements
-                    logger.error(application.toString(), ex);
-                }
-            }
-
-        } catch (Exception e) {
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
+//        try {
+//            Application application = findByNameAndUser(
+//                    authentificationUtils.getAuthentificatedUser(),
+//                    applicationName);
+//            if (application != null) {
+//                try {
+//                    // Serveurs
+//                    List<Server> servers = application.getServers();
+//                    // Ajout des containers de type server
+//                    for (Server server : servers) {
+//                        DockerContainer dockerContainer = new DockerContainer();
+//                        dockerContainer.setName(server.getName());
+//                        dockerContainer = DockerContainer.findOne(
+//                                dockerContainer, application.getManagerIp());
+//                        server = containerMapper.mapDockerContainerToServer(
+//                                dockerContainer, server);
+//                        ContainerUnit containerUnit = new ContainerUnit(
+//                                server.getName(), server.getContainerID(),
+//                                "server");
+//                        containers.add(containerUnit);
+//                    }
+//                    if (withModules) {
+//                        // Ajout des containers de type module
+//                        List<Module> modules = application.getModules();
+//                        for (Module module : modules) {
+//                            DockerContainer dockerContainer = new DockerContainer();
+//                            dockerContainer.setName(module.getName());
+//                            dockerContainer = DockerContainer.findOne(
+//                                    dockerContainer,
+//                                    application.getManagerIp());
+//                            module = containerMapper
+//                                    .mapDockerContainerToModule(
+//                                            dockerContainer, module);
+//                            ContainerUnit containerUnit = new ContainerUnit(
+//                                    module.getName(), module.getContainerID(),
+//                                    "module");
+//                            containers.add(containerUnit);
+//                        }
+//                    }
+//                } catch (Exception ex) {
+//                    // Si une application sort en erreur, il ne faut pas
+//                    // arrêter la suite des traitements
+//                    logger.error(application.toString(), ex);
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            throw new ServiceException(e.getLocalizedMessage(), e);
+//        }
         return containers;
     }
 
@@ -688,49 +687,49 @@ public class ApplicationServiceImpl
                                          boolean withModules)
             throws ServiceException {
         List<String> containers = new ArrayList<>();
-        try {
-            Application application = findByNameAndUser(
-                    authentificationUtils.getAuthentificatedUser(),
-                    applicationName);
-            if (application != null) {
-                try {
-                    // Serveurs
-                    List<Server> servers = application.getServers();
-                    // Ajout des containers de type server
-                    for (Server server : servers) {
-                        DockerContainer dockerContainer = new DockerContainer();
-                        dockerContainer.setName(server.getName());
-                        dockerContainer = DockerContainer.findOne(
-                                dockerContainer, application.getManagerIp());
-                        server = containerMapper.mapDockerContainerToServer(
-                                dockerContainer, server);
-                        containers.add(server.getContainerID());
-                    }
-                    // Ajout des containers de type module
-                    if (withModules) {
-                        List<Module> modules = application.getModules();
-                        for (Module module : modules) {
-                            DockerContainer dockerContainer = new DockerContainer();
-                            dockerContainer.setName(module.getName());
-                            dockerContainer = DockerContainer.findOne(
-                                    dockerContainer,
-                                    application.getManagerIp());
-                            module = containerMapper
-                                    .mapDockerContainerToModule(
-                                            dockerContainer, module);
-                            containers.add(module.getContainerID());
-                        }
-                    }
-                } catch (Exception ex) {
-                    // Si une application sort en erreur, il ne faut pas
-                    // arrêter la suite des traitements
-                    logger.error(application.toString(), ex);
-                }
-            }
-
-        } catch (Exception e) {
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
+//        try {
+//            Application application = findByNameAndUser(
+//                    authentificationUtils.getAuthentificatedUser(),
+//                    applicationName);
+//            if (application != null) {
+//                try {
+//                    // Serveurs
+//                    List<Server> servers = application.getServers();
+//                    // Ajout des containers de type server
+//                    for (Server server : servers) {
+//                        DockerContainer dockerContainer = new DockerContainer();
+//                        dockerContainer.setName(server.getName());
+//                        dockerContainer = DockerContainer.findOne(
+//                                dockerContainer, application.getManagerIp());
+//                        server = containerMapper.mapDockerContainerToServer(
+//                                dockerContainer, server);
+//                        containers.add(server.getContainerID());
+//                    }
+//                    // Ajout des containers de type module
+//                    if (withModules) {
+//                        List<Module> modules = application.getModules();
+//                        for (Module module : modules) {
+//                            DockerContainer dockerContainer = new DockerContainer();
+//                            dockerContainer.setName(module.getName());
+//                            dockerContainer = DockerContainer.findOne(
+//                                    dockerContainer,
+//                                    application.getManagerIp());
+//                            module = containerMapper
+//                                    .mapDockerContainerToModule(
+//                                            dockerContainer, module);
+//                            containers.add(module.getContainerID());
+//                        }
+//                    }
+//                } catch (Exception ex) {
+//                    // Si une application sort en erreur, il ne faut pas
+//                    // arrêter la suite des traitements
+//                    logger.error(application.toString(), ex);
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            throw new ServiceException(e.getLocalizedMessage(), e);
+//        }
         return containers;
     }
 

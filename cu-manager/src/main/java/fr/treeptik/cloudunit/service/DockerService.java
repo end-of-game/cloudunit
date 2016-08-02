@@ -16,7 +16,10 @@
 package fr.treeptik.cloudunit.service;
 
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.User;
 
 import java.util.List;
 
@@ -25,11 +28,14 @@ import java.util.List;
  */
 public interface DockerService {
 
-    public String exec(String containerName, String command) throws CheckException, ServiceException;
+    void createServer(String name, Server server, String imagePath, User user) throws DockerJSONException;
 
-    public Boolean isRunning(String containerName) throws CheckException, ServiceException;
+    Server startServer(String containerName, Server server) throws DockerJSONException;
 
-    public String getContainerId(String containerName) throws CheckException, ServiceException;
-    
+    void stopServer(String containerName) throws DockerJSONException;
+
+    void killServer(String containerName) throws DockerJSONException;
+
+    void removeServer(String containerName) throws DockerJSONException;
 }
 

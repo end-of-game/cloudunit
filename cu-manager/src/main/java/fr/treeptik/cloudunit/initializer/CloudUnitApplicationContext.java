@@ -19,8 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import fr.treeptik.cloudunit.docker.core.DockerClient;
 import fr.treeptik.cloudunit.docker.core.SimpleDockerDriver;
-import fr.treeptik.cloudunit.docker.model.DockerContainer;
-import fr.treeptik.cloudunit.exception.DockerJSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -209,9 +207,13 @@ public class CloudUnitApplicationContext
 
     @Bean
     public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
-                                     @Value("${certs.dir.path}") String certPathDirectory) {
+                                     @Value("${certs.dir.path}") String certPathDirectory,
+                                     @Value("${docker.manager.ip}") String dockerManagerIp) {
+
+
         boolean isTLS = endpoint.equalsIgnoreCase("https");
         DockerClient dockerClient = new DockerClient();
+        dockerClient.setDefaultHost(dockerManagerIp);
         dockerClient.setDriver(new SimpleDockerDriver(certPathDirectory, isTLS));
         return dockerClient;
     }

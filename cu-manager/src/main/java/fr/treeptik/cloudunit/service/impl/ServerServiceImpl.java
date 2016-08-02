@@ -17,12 +17,12 @@ package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
+import fr.treeptik.cloudunit.docker.core.DockerClient;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
-import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
@@ -70,6 +70,9 @@ public class ServerServiceImpl
     @Inject
     private ContainerMapper containerMapper;
 
+    @Inject
+    private DockerClient dockerClient;
+
     @Value("${cloudunit.max.servers:1}")
     private String maxServers;
 
@@ -87,6 +90,9 @@ public class ServerServiceImpl
 
     @Value("${database.hostname}")
     private String databaseHostname;
+
+    @Inject
+    private DockerService dockerService;
 
     public ServerDAO getServerDAO() {
         return this.serverDAO;
@@ -120,11 +126,7 @@ public class ServerServiceImpl
     public Server create(Server server, String tagName)
             throws ServiceException, CheckException {
 
-        String registryPrefix = "";
-
-        if (tagName != null) {
-            registryPrefix = "";
-        } else {
+        if (tagName == null) {
             tagName = "";
         }
 
@@ -161,49 +163,18 @@ public class ServerServiceImpl
         String imagePath = server.getImage().getPath() + tagName;
         logger.debug("imagePath:" + imagePath);
 
-        List<String> volumesFrom = new ArrayList<>();
-        if (!server.getImage().getName().contains("fatjar")
-                && !server.getImage().getName().startsWith("apache")
-                && !server.getImage().getName().startsWith("wildfly")) {
-            volumesFrom.add(server.getImage().getName());
+        String subdomain = System.getenv("CU_SUB_DOMAIN");
+        if (subdomain == null) {
+            subdomain = "";
         }
-        volumesFrom.add("java");
-        dockerContainer = new DockerContainerBuilder()
-                .withName(containerName)
-                .withImage(imagePath)
-                .withMemory(0L)
-                .withMemorySwap(0L)
-                .withPorts(ports)
-                .withVolumesFrom(volumesFrom)
-                .withCmd(
-                        Arrays.asList(user.getLogin(), user.getPassword(), server
-                                        .getApplication().getRestHost(), server
-                                        .getApplication().getName(),
-                                server.getServerAction().getDefaultJavaRelease(),
-                                databasePassword, envExec, databaseHostname)).build();
+        logger.info("env.CU_SUB_DOMAIN=" + subdomain);
+
+        server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
+
 
         try {
-            // create a container and get informations
-            DockerContainer.create(dockerContainer,
-                    application.getManagerIp());
-
-            logger.debug("container : " + dockerContainer);
-
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
-
-            String subdomain = System.getenv("CU_SUB_DOMAIN");
-            if (subdomain == null) {
-                subdomain = "";
-            }
-            logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-
-            server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
-            String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
-            DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
-            dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
-
-            server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
+            dockerService.createServer(containerName, server, imagePath,user);
+            server = dockerService.startServer(containerName, server);
             server = serverDAO.saveAndFlush(server);
             server = ServerFactory.updateServer(server);
 
@@ -228,19 +199,14 @@ public class ServerServiceImpl
 
             server = this.update(server);
 
-            Thread.sleep(3000);
 
         } catch (PersistenceException e) {
             logger.error("ServerService Error : Create Server " + e);
-            try {
                 // Removing a creating container if an error has occurred with
                 // the database
-                DockerContainer.remove(dockerContainer,
-                        application.getManagerIp());
-            } catch (DockerJSONException e1) {
-                logger.error("ServerService Error : Create Server " + e1);
-                throw new ServiceException(e.getLocalizedMessage(), e1);
-            }
+//                DockerContainer.remove(dockerContainer,
+//                        application.getManagerIp());
+
             throw new ServiceException(e.getLocalizedMessage(), e);
         } catch (DockerJSONException e) {
             StringBuilder msgError = new StringBuilder(512);
@@ -248,11 +214,6 @@ public class ServerServiceImpl
             msgError.append(", tagName=[").append(tagName).append("]");
             logger.error("" + msgError, e);
             throw new ServiceException(msgError.toString(), e);
-        } catch (InterruptedException e) {
-            StringBuilder msgError = new StringBuilder(512);
-            msgError.append("server=").append(server);
-            msgError.append(", tagName=[").append(tagName).append("]");
-            logger.error("" + msgError, e);
         }
         logger.info("ServerService : Server " + server.getName()
                 + " successfully created.");
@@ -360,36 +321,13 @@ public class ServerServiceImpl
             }
             Application application = server.getApplication();
 
-            // Remove container on docker manager :
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(server.getName());
-            dockerContainer.setImage(server.getImage().getName());
 
             if (server.getStatus().equals(Status.START)) {
-                DockerContainer.stop(dockerContainer,
-                        application.getManagerIp());
+               dockerService.killServer(server.getName());
                 Thread.sleep(1000);
             }
 
-            server.setStatus(Status.PENDING);
-            server = this.saveInDB(server);
-
-            String imageName = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp()).getImage();
-
-            DockerContainer.remove(dockerContainer,
-                    application.getManagerIp());
-
-            /*
-            try {
-                if (application.isAClone()) {
-                    DockerContainer.deleteImage(imageName,
-                            application.getManagerIp());
-                }
-            } catch (DockerJSONException e) {
-                logger.info("Others apps use this docker images");
-            }
-            */
+            dockerService.removeServer(server.getName());
 
             // Remove server on cloudunit :
             hipacheRedisUtils.removeServerAddress(application);
@@ -402,11 +340,9 @@ public class ServerServiceImpl
             logger.error("Error database :  " + server.getName() + " : " + e);
             throw new ServiceException("Error database :  "
                     + e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            logger.error("ServerService Error : fail to remove Server" + e);
-            throw new ServiceException("Error docker :  "
-                    + e.getLocalizedMessage(), e);
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (DockerJSONException e) {
             e.printStackTrace();
         }
         return server;
@@ -478,47 +414,32 @@ public class ServerServiceImpl
     @Override
     @Transactional
     public Server startServer(Server server)
-            throws ServiceException {
+            throws ServiceException{
 
         logger.debug("start : Methods parameters : " + server);
         logger.info("ServerService : Starting Server " + server.getName());
-
         try {
             Application application = server.getApplication();
-
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(server.getName());
-            dockerContainer.setImage(server.getImage().getName());
-
             // Call the hook for pre start
-            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_START);
-            String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
-            DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
-            dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
-            server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
-
-            String dockerManagerIP = server.getApplication().getManagerIp();
+            hookService.call(server.getName(), RemoteExecAction.APPLICATION_PRE_START);
+                dockerService.startServer(server.getName(), server);
             server.setStartDate(new Date());
-            application = applicationDAO.saveAndFlush(application);
-
+            applicationDAO.saveAndFlush(application);
             server = update(server);
-
             hipacheRedisUtils.updateServerAddress(server.getApplication(),
                     server.getContainerIP(), server.getServerAction()
                             .getServerPort(),
                     server.getServerAction()
                             .getServerManagerPort());
-
             // Call the hook for post start
-            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_START);
-
+            hookService.call(server.getName(), RemoteExecAction.APPLICATION_POST_START);
+        } catch (DockerJSONException e) {
+            e.printStackTrace();
+            throw new ServiceException("Error database :  "
+                    + e.getLocalizedMessage(), e);
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
             throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            logger.error("ServerService Error : fail to start Server" + e);
-            throw new ServiceException("Error docker :  "
                     + e.getLocalizedMessage(), e);
         }
         return server;
@@ -529,30 +450,18 @@ public class ServerServiceImpl
     public Server stopServer(Server server)
             throws ServiceException {
         try {
-            Application application = server.getApplication();
-
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(server.getName());
-            dockerContainer.setImage(server.getImage().getName());
-
             // Call the hook for pre stop
-            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
+            hookService.call(server.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
 
-            DockerContainer.stop(dockerContainer, application.getManagerIp());
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
-
-            server.setStatus(Status.STOP);
-            server = update(server);
+            dockerService.stopServer(server.getName());
 
             // Call the hook for post stop
-            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_STOP);
+            hookService.call(server.getName(), RemoteExecAction.APPLICATION_POST_STOP);
 
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
                     + e.getLocalizedMessage(), e);
         } catch (DockerJSONException e) {
-            logger.error("Fail to stop Server : " + e);
             throw new ServiceException("Error docker : "
                     + e.getLocalizedMessage(), e);
         }
