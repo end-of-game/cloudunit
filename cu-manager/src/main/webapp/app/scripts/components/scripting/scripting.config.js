@@ -20,11 +20,18 @@ angular.module('webuiApp.scripting', [])
     '$stateProvider',
     function ($stateProvider) {
       $stateProvider
-        .state('scripting', {
-          url: '/scripting',
-          template: '<scripting></scripting>',
+        .state('scriptingManage', {
+          url: '/scripting-manage',
+          template: '<scripting-manage></scripting-manage>',
           data: {
             isFree: false
           }
         })
+        .state('scriptingPlay', {
+          url: '/scripting-play',
+          template: '<scripting-play></scripting-play>',
+          data: {
+            isFree: false
+          }
+        });
     }]);

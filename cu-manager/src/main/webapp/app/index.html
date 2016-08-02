@@ -55,6 +55,15 @@
 <div data-ng-hide="main.browserOutdated">
   <header id="header" class="app-bar" data-ng-show="main.isLogged()">
     <div class="app-bar-header">
+    <a href="https://github.com/Treeptik/cloudunit/releases/download/1.0/CloudUnitCLI.jar" target="_blank">
+      <button class="app-button"
+              ripple=""
+              tooltip=""
+              data-title="Download CLI Jar"
+              data-placement="bottom">
+        <i class="icon-whhg download-alt"></i>
+      </button>
+    </a>
       <h1 class="app-bar-brand">
         <a class="brand" ui-sref="dashboard">
           <img class="logo" src="styles/images/logo-cloudunit.png"></a>
@@ -80,7 +89,25 @@
           </div>
         </li>
         <li><a ui-sref="mainTimeline">Messages</a></li>
-        <li><a ui-sref="scripting">Scripts</a></li>
+        <li>
+          <div class="dropdown" dropdown>
+            <a class="dropdown-toggle"
+               dropdown-toggle> Scripting
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <a ui-sref="scriptingPlay">
+                  Play Script
+                </a>
+              </li>
+              <li>
+                <a ui-sref="scriptingManage">
+                  Manage Script
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
       </ul>
     </div>
     <div class="app-bar-icons">
@@ -216,6 +243,7 @@
 <script src="scripts/shared/services/applicationService.js"></script>
 <script src="scripts/shared/services/snapshotService.js"></script>
 <script src="scripts/shared/services/moduleService.js"></script>
+<script src="scripts/shared/services/scriptingService.js"></script>
 
 <!--Utils-->
 <script src="scripts/shared/directives/directives.module.js"></script>
@@ -291,10 +319,11 @@
 <!--snapshots-->
 <script src="scripts/components/snapshots/snapshots.config.js"></script>
 <script src="scripts/components/snapshots/snapshots.js"></script>
-<!--timeline-->
-<script src="scripts/components/scripting/scripting.config.js"></script>
-<script src="scripts/components/scripting/scripting.js"></script>
 <!--scripting-->
+<script src="scripts/components/scripting/scripting.config.js"></script>
+<script src="scripts/components/scripting/scripting.manage.js"></script>
+<script src="scripts/components/scripting/scripting.play.js"></script>
+<!--timeline-->
 <script src="scripts/components/mainTimeline/mainTimeline.config.js"></script>
 <script src="scripts/components/mainTimeline/mainTimeline.js"></script>
 <!--account-->

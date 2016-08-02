@@ -25,45 +25,59 @@
    */
   angular
     .module ( 'webuiApp.scripting' )
-    .component ( 'scripting', Scripting() );
+    .component ( 'scriptingPlay', Scripting() );
 
 
   function Scripting () {
     return {
-      templateUrl: 'scripts/components/scripting/scripting.html',
+      templateUrl: 'scripts/components/scripting/scripting.play.html',
       bindings: {
         context: '='
       },
       controller: [
         '$scope',
-        '$stateParams',
-        'ApplicationService',
+        'ScriptingService',
         ScriptingCtrl
       ],
       controllerAs: 'scripting',
     };
   }
 
-  function ScriptingCtrl ( $scope, $stateParams, ApplicationService) {
+  function ScriptingCtrl ( $scope, ScriptingService) {
         
-        var vm = this;
+    var vm = this;
+    vm.noticeMsg = '';
+    vm.errorMsg = '';
 
-        vm.date = 'recent';
-        vm.orderByDate = true;
+    vm.title = '';
+    vm.content = '';
 
-        vm.executeScript = executeScript;
+    vm.executeScript = executeScript;
+    vm.addScript = addScript;
 
-        ////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
 
-        function executeScript ( scriptContent ) {
-          ApplicationService.executeScript ( scriptContent )
-            .then ( function() {
-              console.log("ok");
-            } )
-            .catch ( function() {
-              console.log("nn");
-            } );
-        }
+    function executeScript ( scriptContent ) {
+      ScriptingService.executeScript ( scriptContent )
+        .catch ( function(response) {
+          vm.errorMsg = 'An error has been encountered!'
+          vm.noticeMsg = '';
+        } );
+    }
+
+    function addScript ( scriptContent, scriptTitle ) {
+      ScriptingService.addScript ( scriptContent, scriptTitle )
+        .then ( function(script) {
+          vm.title = '';
+          vm.content = '';
+          vm.scripts.push(script);
+          vm.noticeMsg = 'Script successfully created!';
+          vm.errorMsg = '';
+        } )
+        .catch ( function(response) {
+          vm.errorMsg = 'An error has been encountered!';
+          vm.noticeMsg = '';
+        } );
+    }
   }
 }) ();
-

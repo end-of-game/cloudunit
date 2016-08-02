@@ -17,6 +17,7 @@ RUN chmod +x /cloudunit/appconf/scripts/*
 
 # EXPOSE PORT
 EXPOSE 22
+EXPOSE 9999
 
 VOLUME /cloudunit/appconf/logs
 

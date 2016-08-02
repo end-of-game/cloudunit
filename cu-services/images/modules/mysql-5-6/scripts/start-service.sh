@@ -68,6 +68,11 @@ if [ ! -f /cloudunit/database/init-service-ok ]; then
 	mysql -u root --password=root -e 'GRANT ALL PRIVILEGES ON *.* TO '$CU_USER'@"localhost" IDENTIFIED BY "'$CU_PASSWORD'" WITH GRANT OPTION; GRANT ALL PRIVILEGES ON *.* TO '$CU_USER'@"%" IDENTIFIED BY "'$CU_PASSWORD'" WITH GRANT OPTION; FLUSH PRIVILEGES; CREATE DATABASE IF NOT EXISTS `'$CU_DATABASE_NAME'`;ALTER DATABASE `'$CU_DATABASE_NAME'` charset=utf8;'
 	# mysql -u $CU_USER --password=$CU_PASSWORD -e 'UPDATE mysql.user SET password=PASSWORD("'$CU_PASSWORD'") WHERE user="root";'
 	touch /cloudunit/database/init-service-ok
+	# Create the datadog user
+	mysql -u root --password=root -e "CREATE USER 'datadog'@'datadog.cloud.unit' IDENTIFIED BY '5bgbzetJQ6nfPVTnnMcMP7SA';"
+    mysql -u root --password=root -e "GRANT REPLICATION CLIENT ON *.* TO 'datadog'@'datadog.cloud.unit' WITH MAX_USER_CONNECTIONS 5;"
+    mysql -u root --password=root -e "GRANT PROCESS ON *.* TO 'datadog'@'datadog.cloud.unit';"
+    mysql -u root --password=root -e "GRANT SELECT ON performance_schema.* TO 'datadog'@'datadog.cloud.unit';"
 fi
 
 count=0

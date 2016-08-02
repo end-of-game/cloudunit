@@ -28,6 +28,7 @@ EXPOSE 22
 
 # add custom scripts
 ADD scripts /cloudunit/scripts
+RUN echo "<Location /server-status>\nSetHandler server-status\nAllow from all\n</Location>" >> /etc/apache2/httpd.conf
 RUN chmod +x /cloudunit/scripts/*
 RUN /cloudunit/scripts/envPHP.sh
 

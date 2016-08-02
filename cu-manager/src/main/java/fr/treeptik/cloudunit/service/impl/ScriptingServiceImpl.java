@@ -15,7 +15,9 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import fr.treeptik.cloudunit.dao.ScriptingDAO;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Script;
 import fr.treeptik.cloudunit.service.ScriptingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,13 +25,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.*;
+import java.util.List;
 
 @Service
 public class ScriptingServiceImpl implements ScriptingService {
 
     private static String CONNECT_CMD = "connect --login #USER --password #PASSWORD --host #HOST";
     private static String DISCONNECT_CMD = "disconnect";
+
+    @Inject
+    private ScriptingDAO scriptingDAO;
 
     private final Logger logger = LoggerFactory.getLogger(ScriptingServiceImpl.class);
 
@@ -73,6 +80,7 @@ public class ScriptingServiceImpl implements ScriptingService {
 
             File fileCLI = new File(pathCLI);
             if (!fileCLI.exists()) {
+                System.out.println("Error ! ");
                 StringBuilder msgError = new StringBuilder(512);
                 msgError.append("\n***************************************************************");
                 msgError.append("\nMISSING CLOUDUNITCLI.JAR");
@@ -91,9 +99,10 @@ public class ScriptingServiceImpl implements ScriptingService {
             try {
                 while((line = reader.readLine()) != null) {
                     logger.info(line);
-                    if (line.contains("not found")) {
+                    if (line.contains("not found"))
                         throw new ServiceException("Syntax error : " + line);
-                    }
+                    if(line.contains("Invalid or corrupt jarfile"))
+                        throw new ServiceException("Invalid or corrupt jarfile");
                 }
             } finally {
                 reader.close();
@@ -109,6 +118,24 @@ public class ScriptingServiceImpl implements ScriptingService {
             try { fileWriter.close(); } catch (Exception ignore) {}
             try { writer.close(); } catch (Exception ignore) {}
         }
+    }
+
+    @Override
+    public void save(Script script) throws ServiceException {
+        scriptingDAO.save(script);
+    }
+
+    public Script load(Integer id) throws ServiceException {
+        return scriptingDAO.findById(id);
+    }
+
+    @Override
+    public List<Script> loadAllScripts() throws ServiceException {
+        return scriptingDAO.findAllScripts();
+    }
+
+    public void delete(Script script) throws ServiceException {
+        scriptingDAO.delete(script);
     }
 
 }

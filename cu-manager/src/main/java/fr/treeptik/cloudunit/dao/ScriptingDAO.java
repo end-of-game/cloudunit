@@ -13,24 +13,22 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.service;
+package fr.treeptik.cloudunit.dao;
 
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
-import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Script;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ScriptingService {
+public interface ScriptingDAO extends JpaRepository<Script, Integer> {
+    @Query("Select s from Script s where s.id=:id")
+    Script findById(@Param("id") Integer id)
+            throws DataAccessException;
 
-    public void execute(String scriptContent, String login, String password) throws ServiceException;
-
-    public void save(Script script) throws ServiceException;
-
-    public Script load(Integer id) throws ServiceException;
-
-    public List<Script> loadAllScripts() throws ServiceException;
-
-    public void delete(Script script) throws ServiceException;
-
+    @Query("select s from Script s")
+    List<Script> findAllScripts()
+            throws DataAccessException;
 }

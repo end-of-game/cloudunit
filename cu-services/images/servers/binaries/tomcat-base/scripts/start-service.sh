@@ -59,7 +59,7 @@ if [ ! -f /init-service-ok ]; then
 	echo  "JAVA_HOME=$JAVA_HOME" >> $ENV_FILE
 	echo  "CATALINA_HOME=$TOMCAT_HOME" >> $ENV_FILE
 
-	export CATALINA_OPTS="-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
+	export CATALINA_OPTS="-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 	echo  "CATALINA_OPTS=$CATALINA_OPTS" >> $ENV_FILE
 
 	# Ajout de l'utilisateur et modif du home directory
