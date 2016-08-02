@@ -84,11 +84,18 @@ public class ScriptingController
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON)
     public @ResponseBody JsonNode scriptingSave(@RequestBody ScriptRequest scriptRequest)
-            throws ServiceException, IOException {
+            throws ServiceException, IOException, CheckException {
         logger.info("Save");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = new Script();
+
+            List<Script> scripts = scriptingService.loadAllScripts();
+            for(Script script1 : scripts)
+            {
+                if(script1.getTitle().equals(scriptRequest.getScriptName()))
+                    throw new CheckException("Script name already exists");
+            }
 
             Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
 
@@ -122,7 +129,6 @@ public class ScriptingController
         try {
             Script script = scriptingService.load(id);
             User user1 = userService.findById(script.getCreationUserId());
-
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.createObjectNode();
             ((ObjectNode) rootNode).put("id", script.getId());
@@ -169,19 +175,33 @@ public class ScriptingController
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public JsonResponse scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequest scriptRequest)
+    public @ResponseBody JsonNode scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequest scriptRequest)
             throws ServiceException {
         logger.info("Edit");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
 
+            Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
+
+            script.setCreationDate(now);
             script.setContent(scriptRequest.getScriptContent());
+            
             scriptingService.save(script);
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.createObjectNode();
+            ((ObjectNode) rootNode).put("id", script.getId());
+            ((ObjectNode) rootNode).put("title", script.getTitle());
+            ((ObjectNode) rootNode).put("content", script.getContent());
+            ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
+            ((ObjectNode) rootNode).put("creation_user", user.getFirstName() + " "
+                    + user.getLastName());
+
+            return rootNode;
         } finally {
             authentificationUtils.allowUser(user);
         }
-        return new HttpOk();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

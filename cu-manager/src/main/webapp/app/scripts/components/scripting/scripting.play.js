@@ -36,6 +36,7 @@
       },
       controller: [
         '$scope',
+        '$state',
         'ScriptingService',
         ScriptingCtrl
       ],
@@ -43,7 +44,7 @@
     };
   }
 
-  function ScriptingCtrl ( $scope, ScriptingService) {
+  function ScriptingCtrl ( $scope, $state, ScriptingService) {
         
     var vm = this;
     vm.noticeMsg = '';
@@ -70,11 +71,12 @@
         .then ( function(script) {
           vm.title = '';
           vm.content = '';
+          $state.go('scriptingManage');
           vm.noticeMsg = 'Script successfully created!';
           vm.errorMsg = '';
         } )
         .catch ( function(response) {
-          vm.errorMsg = 'An error has been encountered!';
+          vm.errorMsg = 'An error has been encountered! Maybe script there is a duplicate name script!';
           vm.noticeMsg = '';
         } );
     }

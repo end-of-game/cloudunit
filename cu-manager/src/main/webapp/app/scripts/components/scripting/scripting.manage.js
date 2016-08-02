@@ -51,7 +51,8 @@
     vm.pageSize = 10;
     vm.noticeMsg = '';
     vm.errorMsg = '';
-
+    vm.predicate = 'creation_date';
+    vm.reverse = true;
     vm.title = '';
     vm.content = '';
     vm.scripts = [];
@@ -59,6 +60,7 @@
     vm.executeScript = executeScript;
     vm.editScript = editScript;
     vm.deleteScript = deleteScript;
+    vm.order = order;
 
     vm.$onInit = function() {
         ScriptingService.getListScript()
@@ -87,7 +89,9 @@
 
     function editScript ( scriptId, scriptContent, scriptTitle ) {
       ScriptingService.editScript ( scriptId, scriptContent, scriptTitle )
-        .then(function() {
+        .then(function(script) {
+          vm.scripts.splice(vm.scripts.indexOf(script.data), 1);
+          vm.scripts.push(script.data);
           vm.noticeMsg = 'The script has been edited!'
           vm.errorMsg = '';
         })
@@ -109,5 +113,11 @@
       vm.errorMsg = 'An error has been encountered!'
       vm.noticeMsg = '';
     }
+
+    function order ( predicate ) {
+      vm.reverse = (vm.predicate === predicate) ? !vm.reverse : false;
+      vm.predicate = predicate;
+    }
+
   }
 }) ();

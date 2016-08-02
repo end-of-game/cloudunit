@@ -16,7 +16,6 @@
 <div class="tab-pane vertical-spacing">
   <div class="card large" id="manage-scripting">
     <div class="content">
-      <h3 class="title large">Manage Scripts</h3>
 
       <div class="spinner">
         <div class="rect1"></div>
@@ -25,6 +24,12 @@
         <div class="rect4"></div>
         <div class="rect5"></div>
       </div>
+
+      <header class="title large">
+        <h3>manage Scripts</h3>
+        <small class="help-block">Manage a script. <a ui-sref="scriptingPlay">Create a script</a>
+        </small>
+      </header>
 
       <div class="no-data" ng-if="!scripting.scripts.length">
         <h3 class="title">No script created</h3>
@@ -51,18 +56,18 @@
       <table class="table" ng-if="scripting.scripts.length">
         <thead>
         <tr>
-          <th>Name</th>
-          <th>Date</th>
-          <th>Owner</th>
+          <th ng-click="scripting.order('title')"><i class="icon-whhg"  ng-show="scripting.predicate == 'title'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Name</th>
+          <th ng-click="scripting.order('creation_date')"><i class="icon-whhg"  ng-show="scripting.predicate == 'creation_date'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Date</th>
+          <th  ng-click="scripting.order('creation_user')"><i class="icon-whhg"  ng-show="scripting.predicate == 'creation_user'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Owner</th>
           <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr
-          dir-paginate="script in scripting.scripts  | orderBy:'title' | itemsPerPage: scripting.pageSize track by script.id"
+          dir-paginate="script in scripting.scripts  | orderBy:scripting.predicate:scripting.reverse | itemsPerPage: scripting.pageSize track by script.id"
           data-current-page="scripting.currentPage">
           <td>{{ script.title}}</td>
-          <td>{{ script.creation_date | formatdatecalendar }}</td>
+          <td>{{ script.creation_date }}</td>
           <td>{{ script.creation_user}}</td>
 
           <td>
