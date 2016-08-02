@@ -70,7 +70,6 @@
         .then ( function(script) {
           vm.title = '';
           vm.content = '';
-          vm.scripts.push(script);
           vm.noticeMsg = 'Script successfully created!';
           vm.errorMsg = '';
         } )
