@@ -71,15 +71,19 @@ public class ScriptingController
             throws ServiceException, CheckException, IOException, InterruptedException {
         logger.info("Execute");
         User user = authentificationUtils.getAuthentificatedUser();
-        // We must be sure there is no running action before starting new one
-        this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
+        try{
+            // We must be sure there is no running action before starting new one
+            this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("scriptRequestBody: " + scriptRequest.getScriptContent());
+            if (logger.isDebugEnabled()) {
+                logger.debug("scriptRequestBody: " + scriptRequest.getScriptContent());
+            }
+
+            scriptingService.execute(scriptRequest.getScriptContent(), user.getLogin(), user.getPassword());
+            return new HttpOk();
+        } catch (ServiceException e) {
+            return new HttpErrorServer(e.toString());
         }
-
-        scriptingService.execute(scriptRequest.getScriptContent(), user.getLogin(), user.getPassword());
-        return new HttpOk();
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON)
