@@ -31,6 +31,23 @@
         <p>Create a script before <a ui-sref="scriptingPlay">Play a script</a></p>
       </div>
 
+      <div class="alert alert-danger" data-ng-show="scripting.errorMsg">
+        <button type="button"
+                class="close"
+                ng-click="scripting.errorMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{scripting.errorMsg}}</p>
+      </div>
+      <div class="alert alert-info" data-ng-show="scripting.noticeMsg">
+        <button type="button"
+                class="close"
+                ng-click="scripting.noticeMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{scripting.noticeMsg}}</p>
+      </div>
+      
       <table class="table" ng-if="scripting.scripts.length">
         <thead>
         <tr>

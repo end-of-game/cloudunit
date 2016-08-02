@@ -37,70 +37,31 @@
       controller: [
         '$scope',
         'ScriptingService',
-        'ErrorService',
         ScriptingCtrl
       ],
       controllerAs: 'scripting',
     };
   }
 
-  function ScriptingCtrl ( $scope, ScriptingService, ErrorService) {
+  function ScriptingCtrl ( $scope, ScriptingService) {
         
     var vm = this;
-    vm.currentPage = 1;
-    vm.pageSize = 10;
     vm.noticeMsg = '';
     vm.errorMsg = '';
 
     vm.title = '';
     vm.content = '';
-    vm.scripts = [];
 
     vm.executeScript = executeScript;
-    vm.editScript = editScript;
-    vm.deleteScript = deleteScript;
     vm.addScript = addScript;
-
-    vm.$onInit = function() {
-        ScriptingService.getListScript()
-        .then(success)
-        .catch(error);
-
-      function success(scripts) {
-        vm.scripts = scripts;
-      }
-
-      function error(response) {
-        ErrorService.handle(response);
-      }  
-    }
 
     ////////////////////////////////////////////////////
 
     function executeScript ( scriptContent ) {
       ScriptingService.executeScript ( scriptContent )
         .catch ( function(response) {
-          ErrorService.handle(response);
-          vm.errorMsg = 'An error has been encountered!'
+          vm.errorMsg = 'An error has been encountered! Do you have install CLI Jar?'
           vm.noticeMsg = '';
-        } );
-    }
-
-    function editScript ( scriptId, scriptContent, scriptTitle ) {
-      ScriptingService.editScript ( scriptId, scriptContent, scriptTitle )
-        .catch ( function(response) {
-          ErrorService.handle(response);
-        } );
-    }
-
-    function deleteScript ( script ) {
-     
-      ScriptingService.deleteScript ( script.id )
-        .then ( function() {
-          vm.scripts.splice(vm.scripts.indexOf(script), 1);
-        } )
-        .catch ( function() {
-          ErrorService.handle(response);
         } );
     }
 
@@ -114,7 +75,6 @@
           vm.errorMsg = '';
         } )
         .catch ( function(response) {
-          ErrorService.handle(response);
           vm.errorMsg = 'An error has been encountered!';
           vm.noticeMsg = '';
         } );

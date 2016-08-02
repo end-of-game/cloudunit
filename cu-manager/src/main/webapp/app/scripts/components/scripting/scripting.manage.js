@@ -59,7 +59,6 @@
     vm.executeScript = executeScript;
     vm.editScript = editScript;
     vm.deleteScript = deleteScript;
-    vm.addScript = addScript;
 
     vm.$onInit = function() {
         ScriptingService.getListScript()
@@ -79,17 +78,25 @@
 
     function executeScript ( scriptContent ) {
       ScriptingService.executeScript ( scriptContent )
+        .then(function() {
+            vm.noticeMsg = 'The script has been executed!'
+            vm.errorMsg = '';
+        })
         .catch ( function(response) {
-          ErrorService.handle(response);
-          vm.errorMsg = 'An error has been encountered!'
+          vm.errorMsg = 'An error has been encountered! Do you have install CLI jar?'
           vm.noticeMsg = '';
         } );
     }
 
     function editScript ( scriptId, scriptContent, scriptTitle ) {
       ScriptingService.editScript ( scriptId, scriptContent, scriptTitle )
+        .then(function() {
+          vm.noticeMsg = 'The script has been edited!'
+          vm.errorMsg = '';
+        })
         .catch ( function(response) {
-          ErrorService.handle(response);
+          vm.errorMsg = 'An error has been encountered!'
+          vm.noticeMsg = '';
         } );
     }
 
@@ -98,26 +105,14 @@
       ScriptingService.deleteScript ( script.id )
         .then ( function() {
           vm.scripts.splice(vm.scripts.indexOf(script), 1);
-        } )
-        .catch ( function() {
-          ErrorService.handle(response);
-        } );
-    }
-
-    function addScript ( scriptContent, scriptTitle ) {
-      ScriptingService.addScript ( scriptContent, scriptTitle )
-        .then ( function(script) {
-          vm.title = '';
-          vm.content = '';
-          vm.scripts.push(script);
-          vm.noticeMsg = 'Script successfully created!';
+          vm.noticeMsg = 'The script has been removed!'
           vm.errorMsg = '';
         } )
-        .catch ( function(response) {
-          ErrorService.handle(response);
-          vm.errorMsg = 'An error has been encountered!';
+        .catch ( function() {
+          vm.errorMsg = 'An error has been encountered!'
           vm.noticeMsg = '';
         } );
     }
+
   }
 }) ();
