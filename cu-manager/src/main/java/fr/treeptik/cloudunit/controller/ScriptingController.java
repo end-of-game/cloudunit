@@ -38,7 +38,9 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -88,10 +90,12 @@ public class ScriptingController
         try {
             Script script = new Script();
 
+            Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
+
             script.setCreationUserId(user.getId());
             script.setTitle(scriptRequest.getScriptName());
             script.setContent(scriptRequest.getScriptContent());
-            script.setCreationDate(Calendar.getInstance().getTime());
+            script.setCreationDate(now);
 
             scriptingService.save(script);
 
