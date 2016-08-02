@@ -2,9 +2,6 @@
 
 set -x
 
-export CATALINA_HOME="/cloudunit/binaries"
-export CATALINA_BASE="/cloudunit/appconf"
-
 $CATALINA_HOME/bin/catalina.sh start
 
 # ON teste l'écoute de tomcat sur le port 8005

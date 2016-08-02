@@ -2,7 +2,6 @@
 
 set -x
 
-export TOMCAT_HOME=/cloudunit/appconf
 export WAR_NAME=$1
 # We need it for git
 export RUNNER=$2
@@ -19,15 +18,15 @@ export WAR_PATH=/cloudunit/tmp
 rm -rf /cloudunit/appconf/logs/*
 
 #delete the current app
-rm -rf $TOMCAT_HOME/webapps/ROOT
-rm -rf $TOMCAT_HOME/webapps/${WAR_NAME%.*ar}
-rm -rf $TOMCAT_HOME/work/Catalina/localhost/_
+rm -rf $CATALINA_HOME/webapps/ROOT
+rm -rf $CATALINA_HOME/webapps/${WAR_NAME%.*ar}
+rm -rf $CATALINA_HOME/work/Catalina/localhost/_
 
 #move the war in webapps
-mv $WAR_PATH/$WAR_NAME $TOMCAT_HOME/webapps/ROOT.war
+mv $WAR_PATH/$WAR_NAME $CATALINA_HOME/webapps/ROOT.war
 
 #restart the server
 su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'
 
 sleep 2
-chown -R $RUNNER:$RUNNER $TOMCAT_HOME/webapps
+chown -R $RUNNER:$RUNNER $CATALINA_HOME/webapps

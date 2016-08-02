@@ -8,7 +8,7 @@ export CU_USER=$1
 export CU_PASSWORD=$2
 export CU_REST_IP=$3	
 export CU_DATABASE_NAME=$4
-export TOMCAT_HOME=/cloudunit/appconf
+export TOMCAT_HOME=/cloudunit/appconf/tomcat
 export JAVA_HOME=/cloudunit/java/$5
 # Database password for Manager
 export MANAGER_DATABASE_PASSWORD=$6

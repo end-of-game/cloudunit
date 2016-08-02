@@ -25,7 +25,9 @@ ENV LAUNCH_JBOSS_IN_BACKGROUND true
 
 # Expose the ports we're interested in
 EXPOSE 8080
-EXPOSE 22
+
+#user jboss execute app server and scripts
+USER jboss
 
 # add custom scripts
 ADD scripts /cloudunit/scripts
@@ -36,6 +38,8 @@ RUN ln -s /cloudunit/appconf/wildfly/standalone/log/server.log /cloudunit/appcon
 
 VOLUME /cloudunit/appconf/logs
 VOLUME /cloudunit/appconf/wildfly/standalone/log
+
+
 
 ENTRYPOINT ["/cloudunit/scripts/start-service.sh"]
 

@@ -40,8 +40,6 @@ MAX=45
 
 if [ ! -f /init-service-ok ];
 then
-    useradd -m $CU_USER && echo "$CU_USER:$CU_PASSWORD" | chpasswd && echo "root:$CU_PASSWORD" | chpasswd
-	usermod -s /bin/bash $CU_USER
 	$JBOSS_HOME/bin/add-user.sh --silent=true $CU_USER $CU_PASSWORD
 	echo  "CU_USER=$CU_USER" >> /etc/environment
 	echo  "CU_PASSWORD=$CU_PASSWORD" >> /etc/environment
@@ -54,8 +52,6 @@ then
 fi
 
 source /etc/environment
-/usr/sbin/sshd
-chown -R $CU_USER:$CU_USER /cloudunit/appconf/wildfly
 /cloudunit/scripts/cu-start.sh
 RETURN=$?
 

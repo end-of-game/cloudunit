@@ -25,6 +25,7 @@ public class EnvUnitFactory {
                 .map(line -> line.split("\\n"))
                 .flatMap(Arrays::stream)
                 .filter(line -> line.contains("CU_"))
+                .filter(line -> !line.contains("PASSWORD"))
                 .map(EnvUnitFactory::fromLine)
                 .sorted((k1, k2) -> k1.getKey().compareTo(k2.getKey()))
                 .collect(Collectors.toList());

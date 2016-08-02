@@ -1,11 +1,11 @@
 #!/bin/bash
 
-CONT_NAME=(java tomcat-6 tomcat-7 tomcat-8)
-IMAGE_NAME=(cloudunit/java cloudunit/tomcat-6 cloudunit/tomcat-7 cloudunit/tomcat-8)
+CONT_NAME=(java)
+IMAGE_NAME=(cloudunit/java)
 GIT_TAG=latest
 
 
-for i in 0 1 2 3
+for i in 0
 do
 	docker ps -a | grep ${CONT_NAME[$i]} | grep -q ${IMAGE_NAME[$i]}
 	return=$?

@@ -12,7 +12,7 @@ echo "################################"
 
 source /etc/environment
 
-su - $CU_USER -c "$JBOSS_HOME/bin/standalone.sh -P=/etc/environment -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0 0<&- &>/dev/null &"
+$JBOSS_HOME/bin/standalone.sh -P=/etc/environment -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address=0.0.0.0 0<&- &>/dev/null &
 
 until [ "$RETURN" -eq "0" ] || [ $count -gt $WAITFOR ]
 do
