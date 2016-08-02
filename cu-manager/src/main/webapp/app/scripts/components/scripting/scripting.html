@@ -27,7 +27,6 @@
         <div class="rect5"></div>
       </div>
 
-      
       <div class="input-group stack clearfix">
         <div class="input-group stack">
           <label for="domain">Script name</label>
@@ -41,11 +40,17 @@
               data-ng-disabled="scripting.application.status === 'PENDING'"
               placeholder="Enter your script"></textarea>
         <div class="clearfix">
-          <button class="config-snapshot-btn button raised primary pull-right"
+          <button class="button raised primary pull-right"
                   ripple=""
                   data-ng-disabled="!scripting.content || !scripting.title"
                   data-ng-click="scripting.addScript(scripting.content, scripting.title)">
-            <span>Add script</span>
+            <span>Save script</span>
+          </button>
+          <button class="button raised primary pull-right"
+                  ripple=""
+                  data-ng-disabled="!scripting.content"
+                  data-ng-click="scripting.executeScript(scripting.content)">
+            <span>Execute script</span>
           </button>
         </div>
       </div>
@@ -64,7 +69,6 @@
         <div class="rect5"></div>
       </div>
 
-
       <table class="table">
         <thead>
         <tr>
@@ -76,10 +80,10 @@
         </thead>
         <tbody>
         <tr
-          dir-paginate="script in scripting.scripts  | itemsPerPage: scripting.pageSize track by script.id"
+          dir-paginate="script in scripting.scripts  | orderBy:'title' | itemsPerPage: scripting.pageSize track by script.id"
           data-current-page="scripting.currentPage">
           <td>{{ script.title}}</td>
-          <td>{{ script.creation_date}}</td>
+          <td>{{ script.creation_date  | formatdatecalendar}}</td>
           <td>{{ script.creation_user}}</td>
 
           <td>
@@ -90,7 +94,7 @@
                     data-placement="bottom"
                     data-toggle="modal"
                     data-target="#delete-{{script.id}}">
-              <i class="icon-whhg removeuseralt"></i>
+              <i class="icon-whhg trash"></i>
             </button>
 
             <div class="modal"
@@ -123,7 +127,7 @@
                     data-placement="bottom"
                     data-toggle="modal"
                     data-target="#edit-{{script.id}}">
-              <i class="icon-whhg removeuseralt"></i>
+              <i class="icon-whhg edit"></i>
             </button>
 
             <div class="modal large"
@@ -161,7 +165,7 @@
                     data-placement="bottom"
                     data-toggle="modal"
                     data-target="#execute-{{script.id}}">
-              <i class="icon-whhg removeuseralt"></i>
+              <i class="icon-whhg fatredo"></i>
             </button>
 
             <div class="modal"
@@ -177,7 +181,7 @@
                     <button type="button"
                             class="delete-btn button primary"
                             data-dismiss="{{scripting.error ? '' : 'modal' }}"
-                            data-ng-click="scripting.executeScript(script.id)">
+                            data-ng-click="scripting.executeScript(script.content)">
                       Execute script
                     </button>
                   </div>
@@ -189,116 +193,6 @@
         </tbody>
       </table>
       <dir-pagination-controls></dir-pagination-controls>
-
     </div>
   </div>
 </div>
-  
-
-
-<!--      <table class="table">
-        <tr>
-          <td>Name</td>
-          <td>Date</td>
-          <td>Owner</td>
-          <td>Actions</td>
-        </tr>
-        <tr >
-          <td>{ script.title }}</td>
-          <td>{ script.creation_date }}</td>
-          <td>{ script.creation_user }}</td>
-          <td>
-            <div class="app-bar-icons">
-              <ul class="icon-bar">
-                <li class="button-container">
-                  <a id="account-link" href="#account/admin" class="icon-button secondary" ripple=""
-                    tooltip="" data-title="Account" data-placement="bottom">
-                    <i class="icon-whhg useralt"></i>
-                  </a>
-                </li>
-                <li>
-                  <button id="logout-btn" class="icon-button secondary" data-ng-click="main.logout()" ripple="" tooltip=""
-                          data-title="Logout" data-placement="bottom">
-                    <i class="icon-whhg exit"></i>
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-      </table>-->
-
-
-
-
-
-
-
-
-
-
-
-
-<!--      <div class="subheader">
-        <div class="subheader-form">
-
-          <div class="input-group inline">
-            <span class="label">Load script: </span>
-            
-            <div class="dropdown" dropdown="">
-              <a class="dropdown-toggle"
-                 dropdown-toggle=""
-                 selectbox="">
-              </a>
-              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                <li>
-                  <a ng-href=""
-                     data-ng-click="scripting.date = 'Recent'; orderBy();">
-                    Recent
-                  </a>
-                </li>
-                <li>
-                  <a ng-href=""
-                     data-ng-click="scripting.date = 'Old'; orderBy();">
-                    Old
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="input-group stack clearfix">
-        <label>Scripts</label>
-
-        <textarea class="textarea-full" data-ng-model="scripting.content"
-              data-ng-disabled="scripting.application.status === 'PENDING'"
-              placeholder="Enter your script"></textarea>
-        /***<div  text-angular
-              ta-toolbar="[]"
-              data-ng-model="scripting.content"
-              data-ng-disabled="scripting.application.status === 'PENDING'"
-              placeholder="Enter your script"></div>
-      </div>
-      ***/
-        <div class="clearfix">
-          <button class="config-snapshot-btn button raised primary pull-right"
-                  ripple=""
-                  data-ng-click="scripting.executeScript(scripting.content)">
-            <span>Execute</span>
-          </button>
-        </div>
-      /***<textarea class="textarea-full"></textarea>
-      <div id="scripting-task" data-ng-show="scripting.messages.length">
-        <table class="table ng-table-responsive terminal">
-          <tr data-ng-repeat="message in scripting.messages | filter:{event:scripting.event, applicationName:scripting.applicationName} | orderBy:'date':scripting.orderByDate">
-            <td>
-              {{ message.applicationName }} {{ message.dateAsString }} {{ message.event }}
-            </td>
-          </tr>
-        </table>
-      </div>***/
-    </div>
-  </div>
-</div>-->

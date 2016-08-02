@@ -61,8 +61,6 @@
     vm.deleteScript = deleteScript;
     vm.addScript = addScript;
 
-
-
     vm.$onInit = function() {
         ScriptingService.getListScript()
         .then(success)
@@ -131,6 +129,5 @@
           vm.successMsg = '';
         } );
     }
-
   }
 }) ();

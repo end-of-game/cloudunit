@@ -57,7 +57,7 @@
     }
 
     // create script
-    function addScript ( scriptContent, scriptTitle) {
+    function addScript ( scriptContent, scriptTitle ) {
       var data = {
         scriptContent: scriptContent,
         scriptName: scriptTitle
@@ -68,7 +68,7 @@
     }
 
     // update script
-    function editScript ( scriptId, scriptContent, scriptTitle) {
+    function editScript ( scriptId, scriptContent, scriptTitle ) {
       var data = {
         scriptContent: scriptContent,
         scriptName: scriptTitle
@@ -92,17 +92,20 @@
     }
 
     // delete script
-    function deleteScript ( scriptId) {
+    function deleteScript ( scriptId ) {
       var dir = $resource ( 'scripting/:id' );
       return dir.delete ( { id: scriptId }, {} ).$promise; 
     }
 
     // Execute script
-    function executeScript ( scriptId ) {
-      var dir = $resource ( 'scripting/:id/exec' );
-      return dir.get ( { id: scriptId }, {} ).$promise; 
+    function executeScript ( scriptContent ) {
+      var data = {
+        scriptContent: scriptContent
+      };
+
+      var dir = $resource ( 'scripting/exec' );
+      return dir.save ( {}, data ).$promise; 
     }
 
   }
 }) ();
-
