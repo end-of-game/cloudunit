@@ -13,11 +13,18 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-.user-list > .table, #scripting > .table {
+.user-list > .table, #manage-scripting .table {
   thead > tr > th {
     vertical-align: top;
   }
   thead > tr > th.has-input {
     vertical-align: middle;
+  }
+}
+
+#manage-scripting .table {
+  text-align: center;
+  thead > tr > th {
+    text-align: center;
   }
 }
