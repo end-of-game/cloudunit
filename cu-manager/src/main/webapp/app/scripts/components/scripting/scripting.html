@@ -53,6 +53,15 @@
             <span>Execute script</span>
           </button>
         </div>
+
+        <div class="alert alert-info" data-ng-show="scripting.noticeMsg">
+          <button type="button"
+                  class="close"
+                  ng-click="scripting.noticeMsg = ''">
+            <span>&times;</span>
+          </button>
+          <p>{{scripting.noticeMsg}}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -83,7 +92,7 @@
           dir-paginate="script in scripting.scripts  | orderBy:'title' | itemsPerPage: scripting.pageSize track by script.id"
           data-current-page="scripting.currentPage">
           <td>{{ script.title}}</td>
-          <td>{{ script.creation_date  | formatdatecalendar}}</td>
+          <td>{{ script.creation_date | formatdatecalendar }}</td>
           <td>{{ script.creation_user}}</td>
 
           <td>

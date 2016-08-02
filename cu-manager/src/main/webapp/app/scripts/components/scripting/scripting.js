@@ -49,7 +49,7 @@
     var vm = this;
     vm.currentPage = 1;
     vm.pageSize = 10;
-    vm.successMsg = '';
+    vm.noticeMsg = '';
     vm.errorMsg = '';
 
     vm.title = '';
@@ -68,6 +68,7 @@
 
       function success(scripts) {
         vm.scripts = scripts;
+        console.log(scripts[0].creation_date);
       }
 
       function error(response) {
@@ -79,24 +80,17 @@
 
     function executeScript ( scriptContent ) {
       ScriptingService.executeScript ( scriptContent )
-        .then ( function() {
-          console.log("ok");
-        } )
         .catch ( function(response) {
           ErrorService.handle(response);
           vm.errorMsg = 'An error has been encountered!'
-          vm.successMsg = '';
+          vm.noticeMsg = '';
         } );
     }
 
     function editScript ( scriptId, scriptContent, scriptTitle ) {
-      console.log(scriptId);
       ScriptingService.editScript ( scriptId, scriptContent, scriptTitle )
-        .then ( function() {
-          console.log("ok");
-        } )
-        .catch ( function() {
-          console.log("nn");
+        .catch ( function(response) {
+          ErrorService.handle(response);
         } );
     }
 
@@ -112,21 +106,18 @@
     }
 
     function addScript ( scriptContent, scriptTitle ) {
-      console.log('Add script');
-      console.log(scriptContent, scriptTitle);
       ScriptingService.addScript ( scriptContent, scriptTitle )
         .then ( function(script) {
           vm.title = '';
           vm.content = '';
           vm.scripts.push(script);
-          vm.successMsg = 'Script successfully created!';
+          vm.noticeMsg = 'Script successfully created!';
           vm.errorMsg = '';
-          console.log('Script successfully created!');
         } )
         .catch ( function(response) {
           ErrorService.handle(response);
           vm.errorMsg = 'An error has been encountered!';
-          vm.successMsg = '';
+          vm.noticeMsg = '';
         } );
     }
   }
