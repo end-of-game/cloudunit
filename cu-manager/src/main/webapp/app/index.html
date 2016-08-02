@@ -89,7 +89,26 @@
           </div>
         </li>
         <li><a ui-sref="mainTimeline">Messages</a></li>
-        <li><a ui-sref="scripting">Scripts</a></li>
+        <!--<li><a ui-sref="scriptingManage">Scripts</a></li>-->
+        <li>
+          <div class="dropdown" dropdown>
+            <a class="dropdown-toggle"
+               dropdown-toggle> Scripting
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <a ui-sref="scriptingPlay">
+                  Play Script
+                </a>
+              </li>
+              <li>
+                <a ui-sref="scriptingManage">
+                  Manage Script
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
       </ul>
     </div>
     <div class="app-bar-icons">
@@ -295,10 +314,11 @@
 <!--snapshots-->
 <script src="scripts/components/snapshots/snapshots.config.js"></script>
 <script src="scripts/components/snapshots/snapshots.js"></script>
-<!--timeline-->
-<script src="scripts/components/scripting/scripting.config.js"></script>
-<script src="scripts/components/scripting/scripting.js"></script>
 <!--scripting-->
+<script src="scripts/components/scripting/scripting.config.js"></script>
+<script src="scripts/components/scripting/scripting.manage.js"></script>
+<script src="scripts/components/scripting/scripting.play.js"></script>
+<!--timeline-->
 <script src="scripts/components/mainTimeline/mainTimeline.config.js"></script>
 <script src="scripts/components/mainTimeline/mainTimeline.js"></script>
 <!--account-->

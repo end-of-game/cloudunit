@@ -45,7 +45,6 @@
 
     // list script
     function getListScript ( ) {
-      console.log('getListScript');
       var dir = $resource ( 'scripting' );
       return dir.query ( { } ).$promise; 
     }

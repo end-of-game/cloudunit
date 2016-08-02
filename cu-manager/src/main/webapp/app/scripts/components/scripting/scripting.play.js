@@ -25,12 +25,12 @@
    */
   angular
     .module ( 'webuiApp.scripting' )
-    .component ( 'scripting', Scripting() );
+    .component ( 'scriptingPlay', Scripting() );
 
 
   function Scripting () {
     return {
-      templateUrl: 'scripts/components/scripting/scripting.html',
+      templateUrl: 'scripts/components/scripting/scripting.play.html',
       bindings: {
         context: '='
       },
@@ -68,7 +68,6 @@
 
       function success(scripts) {
         vm.scripts = scripts;
-        console.log(scripts[0].creation_date);
       }
 
       function error(response) {

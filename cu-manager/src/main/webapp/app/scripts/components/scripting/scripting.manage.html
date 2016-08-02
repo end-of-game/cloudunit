@@ -14,58 +14,6 @@
   -->
 
 <div class="tab-pane vertical-spacing">
-
-   <div class="card large" id="add-cripting">
-    <div class="content">
-      <h3 class="title large">Add Scripts</h3>
-
-      <div class="spinner">
-        <div class="rect1"></div>
-        <div class="rect2"></div>
-        <div class="rect3"></div>
-        <div class="rect4"></div>
-        <div class="rect5"></div>
-      </div>
-
-      <div class="input-group stack clearfix">
-        <div class="input-group stack">
-          <label for="domain">Script name</label>
-          <input id="name"
-                 name="name"
-                 type="text"
-                 data-ng-model="scripting.title">
-        </div>
-        <label>Script content</label>
-        <textarea class="textarea-custom textarea-mid-full" data-ng-model="scripting.content"
-              data-ng-disabled="scripting.application.status === 'PENDING'"
-              placeholder="Enter your script"></textarea>
-        <div class="clearfix">
-          <button class="button raised primary pull-right"
-                  ripple=""
-                  data-ng-disabled="!scripting.content || !scripting.title"
-                  data-ng-click="scripting.addScript(scripting.content, scripting.title)">
-            <span>Save script</span>
-          </button>
-          <button class="button raised primary pull-right"
-                  ripple=""
-                  data-ng-disabled="!scripting.content"
-                  data-ng-click="scripting.executeScript(scripting.content)">
-            <span>Execute script</span>
-          </button>
-        </div>
-
-        <div class="alert alert-info" data-ng-show="scripting.noticeMsg">
-          <button type="button"
-                  class="close"
-                  ng-click="scripting.noticeMsg = ''">
-            <span>&times;</span>
-          </button>
-          <p>{{scripting.noticeMsg}}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="card large" id="manage-scripting">
     <div class="content">
       <h3 class="title large">Manage Scripts</h3>
@@ -78,7 +26,12 @@
         <div class="rect5"></div>
       </div>
 
-      <table class="table">
+      <div class="no-data" ng-if="!scripting.scripts.length">
+        <h3 class="title">No script created</h3>
+        <p>Create a script before <a ui-sref="scriptingPlay">Play a script</a></p>
+      </div>
+
+      <table class="table" ng-if="scripting.scripts.length">
         <thead>
         <tr>
           <th>Name</th>
@@ -146,13 +99,13 @@
                 <div class="content modal-full-input">
                   <h3 class="title">Edit Script</h3>
                   <div class="input-group stack">
-                    <label for="domain">Script name</label>
+                    <label class="pull-left" for="domain">Script name</label>
                     <input id="name"
                           name="name"
                           type="text"
                           data-ng-model="script.title">
                   </div>
-                  <label>Script content</label>
+                  <label class="pull-left">Script content</label>
                   <textarea  data-ng-model="script.content" class="textarea-custom textarea-full" ></textarea>
                   <div class="action">
                     <button type="button" class="button primary raised" data-dismiss="modal">Cancel
@@ -177,7 +130,7 @@
               <i class="icon-whhg fatredo"></i>
             </button>
 
-            <div class="modal"
+            <!--<div class="modal"
                 id="execute-{{script.id}}"
                 modaldismiss="">
               <div class="modal-inner">
@@ -196,12 +149,33 @@
                   </div>
                 </div>
               </div>
+            </div>-->
+
+           <div class="modal large"
+                  id="execute-{{script.id}}"
+                  modaldismiss="">
+              <div class="modal-inner">
+                <div class="content modal-full-input">
+                  <h3 class="title">Execute Script</h3>
+                  <label class="pull-left">Script content</label>
+                  <textarea  data-ng-model="script.content" class="textarea-custom textarea-full" ></textarea>
+                  <div class="action">
+                    <button type="button" class="button primary raised" data-dismiss="modal">Cancel
+                    </button>
+                    <button type="button" class="button primary raised"
+                            ng-click="scripting.executeScript(script.content)"
+                            data-dismiss="modal">
+                      Execute
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </td>
         </tr>
         </tbody>
       </table>
-      <dir-pagination-controls></dir-pagination-controls>
+      <dir-pagination-controls ng-if="scripting.scripts.length"></dir-pagination-controls>
     </div>
   </div>
 </div>
