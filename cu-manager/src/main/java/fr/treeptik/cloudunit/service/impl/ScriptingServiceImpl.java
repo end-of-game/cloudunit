@@ -80,6 +80,7 @@ public class ScriptingServiceImpl implements ScriptingService {
 
             File fileCLI = new File(pathCLI);
             if (!fileCLI.exists()) {
+                System.out.println("Error ! ");
                 StringBuilder msgError = new StringBuilder(512);
                 msgError.append("\n***************************************************************");
                 msgError.append("\nMISSING CLOUDUNITCLI.JAR");
@@ -98,9 +99,10 @@ public class ScriptingServiceImpl implements ScriptingService {
             try {
                 while((line = reader.readLine()) != null) {
                     logger.info(line);
-                    if (line.contains("not found")) {
+                    if (line.contains("not found"))
                         throw new ServiceException("Syntax error : " + line);
-                    }
+                    if(line.contains("Invalid or corrupt jarfile"))
+                        throw new ServiceException("Invalid or corrupt jarfile");
                 }
             } finally {
                 reader.close();

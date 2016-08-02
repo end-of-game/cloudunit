@@ -25,7 +25,6 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Script;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ScriptingService;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
@@ -35,6 +34,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.Serializable;
@@ -58,16 +58,13 @@ public class ScriptingController
     private ScriptingService scriptingService;
 
     @Inject
-    private DockerService dockerService;
-
-    @Inject
     private AuthentificationUtils authentificationUtils;
 
     @Inject
     private UserService userService;
 
     @RequestMapping(value = "/exec", method = RequestMethod.POST)
-    public JsonResponse scriptingExecute(@RequestBody ScriptRequest scriptRequest)
+    public void scriptingExecute(@RequestBody ScriptRequest scriptRequest, HttpServletResponse response)
             throws ServiceException, CheckException, IOException, InterruptedException {
         logger.info("Execute");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -80,9 +77,10 @@ public class ScriptingController
             }
 
             scriptingService.execute(scriptRequest.getScriptContent(), user.getLogin(), user.getPassword());
-            return new HttpOk();
+
+            response.setStatus(200);
         } catch (ServiceException e) {
-            return new HttpErrorServer(e.toString());
+            response.setStatus(500);
         }
     }
 
