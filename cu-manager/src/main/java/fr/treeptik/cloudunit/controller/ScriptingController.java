@@ -129,7 +129,6 @@ public class ScriptingController
         try {
             Script script = scriptingService.load(id);
             User user1 = userService.findById(script.getCreationUserId());
-
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.createObjectNode();
             ((ObjectNode) rootNode).put("id", script.getId());
