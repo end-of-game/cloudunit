@@ -175,7 +175,7 @@ public class ScriptingController
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public JsonResponse scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequest scriptRequest)
+    public @ResponseBody JsonNode scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequest scriptRequest)
             throws ServiceException {
         logger.info("Edit");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -186,11 +186,22 @@ public class ScriptingController
 
             script.setCreationDate(now);
             script.setContent(scriptRequest.getScriptContent());
+            
             scriptingService.save(script);
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.createObjectNode();
+            ((ObjectNode) rootNode).put("id", script.getId());
+            ((ObjectNode) rootNode).put("title", script.getTitle());
+            ((ObjectNode) rootNode).put("content", script.getContent());
+            ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
+            ((ObjectNode) rootNode).put("creation_user", user.getFirstName() + " "
+                    + user.getLastName());
+
+            return rootNode;
         } finally {
             authentificationUtils.allowUser(user);
         }
-        return new HttpOk();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
