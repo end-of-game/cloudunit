@@ -64,7 +64,7 @@ public class ScriptingController
     @Inject
     private UserService userService;
 
-    @RequestMapping(value = "/exec", method = RequestMethod.GET)
+    @RequestMapping(value = "/exec", method = RequestMethod.POST)
     public JsonResponse scriptingExecute(@RequestBody ScriptRequest scriptRequest)
             throws ServiceException, CheckException, IOException, InterruptedException {
         logger.info("Execute");
