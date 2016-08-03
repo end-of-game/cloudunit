@@ -344,6 +344,7 @@ public class SnapshotServiceImpl
     }
 
     private void backupModule(Module module) {
+        /*
         DockerClient docker = null;
         try {
             if (Boolean.valueOf(isHttpMode)) {
@@ -390,6 +391,7 @@ public class SnapshotServiceImpl
         } finally {
             if (docker != null) { docker.close(); }
         }
+        */
     }
 
     /**
@@ -431,6 +433,7 @@ public class SnapshotServiceImpl
     }
 
     private void restoreDataModule(Module module) {
+        /*
         DockerClient docker = null;
         try {
             if (Boolean.valueOf(isHttpMode)) {
@@ -458,6 +461,7 @@ public class SnapshotServiceImpl
         } finally {
             if (docker != null) { docker.close(); }
         }
+        */
     }
 
     private boolean tagExists(String tag, String login) {

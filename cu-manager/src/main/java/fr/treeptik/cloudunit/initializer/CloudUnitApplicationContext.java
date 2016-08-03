@@ -17,7 +17,10 @@ package fr.treeptik.cloudunit.initializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
-import fr.treeptik.cloudunit.docker.core.DockerClient;
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificates;
+import com.spotify.docker.client.DockerClient;
+import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
 import fr.treeptik.cloudunit.docker.core.SimpleDockerDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +49,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.*;
 
 @EnableAspectJAutoProxy
@@ -206,17 +210,38 @@ public class CloudUnitApplicationContext
     }
 
     @Bean
+    public DockerCloudUnitClient dockerCloudUnitClient(@Value("${docker.endpoint.mode}") String endpoint,
+                                              @Value("${certs.dir.path}") String certPathDirectory,
+                                              @Value("${docker.manager.ip}") String dockerManagerIp) {
+        boolean isTLS = endpoint.equalsIgnoreCase("https");
+        DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
+        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(dockerManagerIp, certPathDirectory, isTLS));
+        return dockerCloudUnitClient;
+    }
+
+    @Bean
     public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
                                      @Value("${certs.dir.path}") String certPathDirectory,
                                      @Value("${docker.manager.ip}") String dockerManagerIp) {
-
-
+        com.spotify.docker.client.DockerClient dockerClient = null;
         boolean isTLS = endpoint.equalsIgnoreCase("https");
-        DockerClient dockerClient = new DockerClient();
-        dockerClient.setDefaultHost(dockerManagerIp);
-        dockerClient.setDriver(new SimpleDockerDriver(certPathDirectory, isTLS));
+        try {
+            if (!isTLS) {
+                dockerClient = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerManagerIp).build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certPathDirectory));
+                dockerClient = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
+        } catch (Exception e) {
+            logger.error("cannot instance docker client : ", e);
+        }
         return dockerClient;
     }
+
 
     /**
      * Get Resources to load for CloudUnit Context.

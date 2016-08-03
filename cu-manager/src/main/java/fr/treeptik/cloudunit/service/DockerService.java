@@ -17,6 +17,7 @@ package fr.treeptik.cloudunit.service;
 
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
@@ -37,5 +38,17 @@ public interface DockerService {
     void killServer(String containerName) throws DockerJSONException;
 
     void removeServer(String containerName) throws DockerJSONException;
+
+    String execCommand(String containerName, String command) throws FatalDockerJSONException;
+
+    String execCommand(String containerName, String[] command) throws FatalDockerJSONException;
+
+    String getContainerId(String containerName) throws FatalDockerJSONException;
+
+    Boolean isRunning(String containerName) throws FatalDockerJSONException;
+
+    List<String> listContainers() throws FatalDockerJSONException;
+
+    String getContainerNameFromId(String id) throws FatalDockerJSONException;
 }
 

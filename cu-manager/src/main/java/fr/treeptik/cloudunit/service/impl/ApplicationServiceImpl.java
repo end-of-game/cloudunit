@@ -886,4 +886,12 @@ public class ApplicationServiceImpl
         return applicationDAO.countAppForTagLike(cuInstanceName, user.getLogin(), tag);
     }
 
+    @Override
+    public boolean isStarted(Integer applicationId) {
+        int serversNotStarted = applicationDAO.countServersNotStarted(applicationId);
+        int modulesNotStarted = applicationDAO.countModulesNotStarted(applicationId);
+        logger.debug("serversNotStarted="+serversNotStarted);
+        logger.debug("modulesNotStarted="+modulesNotStarted);
+        return (serversNotStarted + modulesNotStarted) != 0;
+    }
 }

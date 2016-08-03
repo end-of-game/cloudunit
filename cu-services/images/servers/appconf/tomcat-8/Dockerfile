@@ -57,3 +57,4 @@ USER cloudunit
 VOLUME /opt/cloudunit/tomcat/logs
 
 ENTRYPOINT ["/opt/cloudunit/scripts/start-service.sh"]
+

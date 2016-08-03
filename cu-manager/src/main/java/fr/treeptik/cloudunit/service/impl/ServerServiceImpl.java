@@ -15,9 +15,9 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
-import fr.treeptik.cloudunit.docker.core.DockerClient;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -29,6 +29,7 @@ import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,9 +71,6 @@ public class ServerServiceImpl
     @Inject
     private ContainerMapper containerMapper;
 
-    @Inject
-    private DockerClient dockerClient;
-
     @Value("${cloudunit.max.servers:1}")
     private String maxServers;
 
@@ -93,6 +91,9 @@ public class ServerServiceImpl
 
     @Inject
     private DockerService dockerService;
+
+    @Inject
+    private ApplicationEventPublisher applicationEventPublisher;
 
     public ServerDAO getServerDAO() {
         return this.serverDAO;
@@ -171,7 +172,6 @@ public class ServerServiceImpl
 
         server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
-
         try {
             dockerService.createServer(containerName, server, imagePath,user);
             server = dockerService.startServer(containerName, server);
@@ -199,6 +199,7 @@ public class ServerServiceImpl
 
             server = this.update(server);
 
+            applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 
         } catch (PersistenceException e) {
             logger.error("ServerService Error : Create Server " + e);
@@ -412,9 +413,8 @@ public class ServerServiceImpl
         logger.info("ServerService : Starting Server " + server.getName());
         try {
             Application application = server.getApplication();
+
             // Call the hook for pre start
-            hookService.call(server.getName(), RemoteExecAction.APPLICATION_PRE_START);
-                dockerService.startServer(server.getName(), server);
             server.setStartDate(new Date());
             applicationDAO.saveAndFlush(application);
             server = update(server);
@@ -423,8 +423,9 @@ public class ServerServiceImpl
                             .getServerPort(),
                     server.getServerAction()
                             .getServerManagerPort());
-            // Call the hook for post start
-            hookService.call(server.getName(), RemoteExecAction.APPLICATION_POST_START);
+
+            applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+
         } catch (DockerJSONException e) {
             e.printStackTrace();
             throw new ServiceException("Error database :  "

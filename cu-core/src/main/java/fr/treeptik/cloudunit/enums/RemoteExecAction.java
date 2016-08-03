@@ -5,6 +5,8 @@ package fr.treeptik.cloudunit.enums;
  */
 public enum RemoteExecAction {
 
+    CHECK_RUNNING("Check running", "/opt/cloudunit/scripts/check-running.sh"),
+
     MODULE_PRE_CREATION("Module pre creation", "/cloudunit/appconf/hooks/module-pre-creation.sh"),
     MODULE_POST_CREATION("Module pre creation", "/cloudunit/appconf/hooks/module-post-creation.sh"),
 

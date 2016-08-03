@@ -38,7 +38,7 @@
 
 		<!-- Dependencies properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>4.1.7.RELEASE</spring.version>
+		<spring.version>4.3.0.RELEASE</spring.version>
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
 		<hibernate.version>4.2.3.Final</hibernate.version>
 		<codahale.metrics.version>3.0.1</codahale.metrics.version>
@@ -98,14 +98,6 @@
 			<artifactId>cu-docker-api</artifactId>
 			<version>1.0</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.spotify</groupId>
-			<artifactId>docker-client</artifactId>
-			<version>2.7.7</version>
-		</dependency>
-
-
 
 		<!-- Spring all dependencies -->
 
@@ -282,15 +274,14 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.3.1</version>
+			<version>4.5.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
-			<version>4.3.1</version>
+			<version>4.5.1</version>
 		</dependency>
-
 
 		<!-- Hibernate Validator -->
 		<dependency>

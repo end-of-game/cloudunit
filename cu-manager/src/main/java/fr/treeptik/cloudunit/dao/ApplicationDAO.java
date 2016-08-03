@@ -81,4 +81,9 @@ public interface ApplicationDAO
             @Param("imageTag") String imageTag)
             throws DataAccessException;
 
+    @Query("select count(s) from Application a join a.servers s where a.id=:applicationId and s.status != 'START'")
+    Integer countServersNotStarted(Integer applicationId) throws DataAccessException;
+
+    @Query("select count(m) from Application a left join a.modules m where a.id=:applicationId and m.status != 'START'")
+    Integer countModulesNotStarted(Integer applicationId) throws DataAccessException;
 }

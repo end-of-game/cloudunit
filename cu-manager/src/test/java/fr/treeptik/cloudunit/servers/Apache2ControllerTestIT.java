@@ -4,7 +4,6 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
-import fr.treeptik.cloudunit.service.SpotifyDockerService;
 import fr.treeptik.cloudunit.service.UserService;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -69,7 +68,7 @@ public class Apache2ControllerTestIT {
     private UserService userService;
 
     @Inject
-    private SpotifyDockerService dockerService;
+    private DockerService dockerService;
 
     private MockHttpSession session;
 

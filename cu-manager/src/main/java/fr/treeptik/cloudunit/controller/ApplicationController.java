@@ -15,7 +15,9 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
+import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -59,9 +61,6 @@ public class ApplicationController
     private ApplicationService applicationService;
 
     @Inject
-    private SpotifyDockerService dockerService;
-
-    @Inject
     private AuthentificationUtils authentificationUtils;
 
     @Inject
@@ -74,7 +73,7 @@ public class ApplicationController
     private JenkinsService jenkinsService;
 
     @Inject
-    private HookService hookService;
+    private DockerService dockerService;
 
     /**
      * To verify if an application exists or not.
@@ -561,9 +560,7 @@ public class ApplicationController
             throws ServiceException, CheckException {
 
         User user = this.authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user, applicationName);
-
-        String content = dockerService.exec(containerId, RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
+        String content = dockerService.execCommand(containerId, RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
         logger.debug(content);
         List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(content);
         return envUnits;

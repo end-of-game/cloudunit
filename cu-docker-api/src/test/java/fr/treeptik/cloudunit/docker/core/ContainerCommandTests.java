@@ -23,7 +23,7 @@ public class ContainerCommandTests {
     public static String DOCKER_HOST;
     public static Boolean isTLS;
 
-    private static DockerClient dockerClient;
+    private static DockerCloudUnitClient dockerCloudUnitClient;
     private static final String CONTAINER_NAME = "myContainer";
     private static DockerContainer container;
 
@@ -40,8 +40,8 @@ public class ContainerCommandTests {
         }
 
 
-        dockerClient = new DockerClient();
-        dockerClient.setDriver(new SimpleDockerDriver("../cu-vagrant/certificats", isTLS));
+        dockerCloudUnitClient = new DockerCloudUnitClient();
+        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS));
     }
 
     @Before
@@ -66,7 +66,7 @@ public class ContainerCommandTests {
                 .withName(CONTAINER_NAME)
                 .withConfig(config)
                 .build();
-        dockerClient.createContainer(container, DOCKER_HOST);
+        dockerCloudUnitClient.createContainer(container);
     }
 
     @After
@@ -74,51 +74,37 @@ public class ContainerCommandTests {
         DockerContainer container = ContainerBuilder.aContainer()
                 .withName(CONTAINER_NAME)
                 .build();
-        dockerClient.removeContainer(container, DOCKER_HOST);
+        dockerCloudUnitClient.removeContainer(container);
     }
 
     @Test
     public void test01_lifecycle() throws DockerJSONException {
 
-        Assert.assertNotNull(dockerClient.findContainer(container, DOCKER_HOST).getId());
+        Assert.assertNotNull(dockerCloudUnitClient.findContainer(container).getId());
 
-        dockerClient.findContainer(container, DOCKER_HOST);
+        dockerCloudUnitClient.findContainer(container);
 
         container = ContainerUtils.newStartInstance(container.getName(), null, null, null);
 
-        dockerClient.startContainer(container, DOCKER_HOST);
+        dockerCloudUnitClient.startContainer(container);
 
-        Assert.assertTrue(dockerClient.findContainer(container, DOCKER_HOST).getState().getRunning());
+        Assert.assertTrue(dockerCloudUnitClient.findContainer(container).getState().getRunning());
 
-        dockerClient.stopContainer(container, DOCKER_HOST);
-        Assert.assertFalse(dockerClient.findContainer(container, DOCKER_HOST).getState().getRunning());
+        dockerCloudUnitClient.stopContainer(container);
+        Assert.assertFalse(dockerCloudUnitClient.findContainer(container).getState().getRunning());
 
-        dockerClient.startContainer(container, DOCKER_HOST);
-        dockerClient.killContainer(container, DOCKER_HOST);
-        dockerClient.startContainer(container, DOCKER_HOST);
+        dockerCloudUnitClient.startContainer(container);
+        dockerCloudUnitClient.killContainer(container);
+        dockerCloudUnitClient.startContainer(container);
 
-    }
-
-    @Test
-    public void test20_createContainerWithVolumeFrom() throws DockerJSONException, InterruptedException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy");
-        container = ContainerUtils.newStartInstance(container.getName(), null, Arrays.asList("tomcat-8"), null);
-        dockerClient.startContainer(container, DOCKER_HOST);
-        container = dockerClient.findContainer(container, DOCKER_HOST);
-        Assert.assertTrue(dockerClient.execCommand(container, Arrays.asList("bash", "-c", "ls /cloudunit/binaries"), DOCKER_HOST).getBody()
-               .contains("bin"));
-        Assert.assertTrue(dockerClient.execCommand(container, Arrays.asList("date"), DOCKER_HOST).getBody()
-                .contains(format.format(new Date(System.currentTimeMillis()))));
-        container = ContainerUtils.newStartInstance(container.getName(), null, null, null);
-        dockerClient.killContainer(container, DOCKER_HOST);
     }
 
     @Test
     public void test30_createContainerWithVolumes() throws DockerJSONException {
         container = ContainerUtils.newStartInstance(container.getName(),
                 null, null, null);
-        dockerClient.startContainer(container, DOCKER_HOST);
-        List mounts = dockerClient.findContainer(container, DOCKER_HOST).getMounts();
+        dockerCloudUnitClient.startContainer(container);
+        List mounts = dockerCloudUnitClient.findContainer(container).getMounts();
         Assert.assertTrue(mounts.toString().contains("localtime"));
     }
 
@@ -129,8 +115,8 @@ public class ContainerCommandTests {
                     put("22/tcp", "22");
                 }}, null,
                 null);
-        dockerClient.startContainer(container, DOCKER_HOST);
-        Assert.assertTrue((dockerClient.findContainer(container, DOCKER_HOST)
+        dockerCloudUnitClient.startContainer(container);
+        Assert.assertTrue((dockerCloudUnitClient.findContainer(container)
                 .getNetworkSettings().getPorts().toString().contains("22")));
 
     }

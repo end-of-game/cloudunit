@@ -26,7 +26,7 @@ public class ImageCommandTests {
     static String DOCKER_HOST;
     static Boolean isTLS;
 
-    private static DockerClient dockerClient;
+    private static DockerCloudUnitClient dockerCloudUnitClient;
     private static final String CONTAINER_NAME = "myContainer" + System.currentTimeMillis();
     private final String TAG = "mytag";
 
@@ -42,7 +42,7 @@ public class ImageCommandTests {
             isTLS = false;
         }
 
-        dockerClient = new DockerClient();
+        dockerCloudUnitClient = new DockerCloudUnitClient();
         HostConfig hostConfig = HostConfigBuilder.aHostConfig()
                 .withVolumesFrom(new ArrayList<>())
                 .build();
@@ -61,8 +61,8 @@ public class ImageCommandTests {
                 .build();
         DockerContainer container = ContainerBuilder.aContainer().withName(CONTAINER_NAME).withConfig(config).build();
         try {
-            dockerClient.setDriver(new SimpleDockerDriver("../cu-vagrant/certificats", isTLS));
-            dockerClient.createContainer(container, DOCKER_HOST);
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS));
+            dockerCloudUnitClient.createContainer(container, DOCKER_HOST);
         } catch (DockerJSONException e) {
             Assert.fail();
         }
@@ -73,7 +73,7 @@ public class ImageCommandTests {
         DockerContainer container = ContainerBuilder.aContainer()
                 .withName(CONTAINER_NAME)
                 .build();
-        dockerClient.removeContainer(container, DOCKER_HOST);
+        dockerCloudUnitClient.removeContainer(container);
     }
 
     @Test
@@ -81,26 +81,26 @@ public class ImageCommandTests {
         DockerContainer container = ContainerBuilder.aContainer()
                 .withName(CONTAINER_NAME)
                 .build();
-        container = dockerClient.findContainer(container, DOCKER_HOST);
-        dockerClient.commitImage(container, DOCKER_HOST, TAG, container.getConfig().getImage());
+        container = dockerCloudUnitClient.findContainer(container, DOCKER_HOST);
+        dockerCloudUnitClient.commitImage(container, TAG, container.getConfig().getImage());
     }
 
     @Test
     public void test00_PullAndFindAnImage() throws DockerJSONException {
-        dockerClient.pullImage(DOCKER_HOST, "latest", "busybox");
+        dockerCloudUnitClient.pullImage("latest", "busybox");
         Image image = ImageBuilder.anImage().withName("busybox:latest").build();
-        image = dockerClient.findAnImage(image, DOCKER_HOST);
+        image = dockerCloudUnitClient.findAnImage(image);
         Assert.assertTrue("Busybox found !", image.getRepoTags().get(0).contains("busybox"));
     }
 
     @Test(expected=ErrorDockerJSONException.class)
     public void test05_removeImage() throws DockerJSONException {
-        dockerClient.pullImage(DOCKER_HOST, "latest", "busybox");
+        dockerCloudUnitClient.pullImage("latest", "busybox");
         Image image = ImageBuilder.anImage().withName("busybox:latest").build();
-        image = dockerClient.findAnImage(image, DOCKER_HOST);
+        image = dockerCloudUnitClient.findAnImage(image);
         Assert.assertTrue("Busybox found !", image.getRepoTags().get(0).contains("busybox"));
-        dockerClient.removeImage(image, DOCKER_HOST);
-        image = dockerClient.findAnImage(image, DOCKER_HOST);
+        dockerCloudUnitClient.removeImage(image);
+        image = dockerCloudUnitClient.findAnImage(image);
     }
 
 }

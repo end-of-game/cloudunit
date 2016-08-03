@@ -56,6 +56,7 @@ public class HookServiceImpl implements HookService {
     }
 
     public void call(String containerName, RemoteExecAction action) {
+        /*
         DockerClient docker = null;
         LogStream output = null;
         try {
@@ -83,6 +84,7 @@ public class HookServiceImpl implements HookService {
             if (output != null) { output.close(); }
             if (docker != null) { docker.close(); }
         }
+        */
     }
 
 }

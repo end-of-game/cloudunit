@@ -15,6 +15,8 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.LogStream;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -24,7 +26,6 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.FileService;
-import fr.treeptik.cloudunit.service.SpotifyDockerService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.apache.commons.io.FileUtils;
@@ -65,13 +66,13 @@ public class FileController {
     private FileService fileService;
 
     @Inject
-    private SpotifyDockerService dockerService;
-
-    @Inject
     private ApplicationService applicationService;
 
     @Inject
     private AuthentificationUtils authentificationUtils;
+
+    @Inject
+    private DockerService dockerService;
 
     private Locale locale = Locale.ENGLISH;
 
@@ -274,7 +275,7 @@ public class FileController {
         }
 
         logger.info(command);
-        String commandExec = dockerService.exec(containerId, command);
+        String commandExec = dockerService.execCommand(containerId, command);
         if (commandExec != null) {
             logger.debug(commandExec);
         } else {
@@ -373,7 +374,7 @@ public class FileController {
 
         String command =  "cat " + convertPathFromUI(path) + "/" + fileName;
         logger.debug(command);
-        String contentFile = dockerService.exec(containerId, command);
+        String contentFile = dockerService.execCommand(containerId, command);
         if (contentFile != null) {
             logger.debug(contentFile);
             response.setContentType("text/plain");

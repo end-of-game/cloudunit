@@ -5,8 +5,6 @@ set -x
 export ENV_FILE="/opt/cloudunit/.profile"
 source $ENV_FILE
 
-touch $USER > /opt/cloudunit/user.txt
-
 $CATALINA_HOME/bin/catalina.sh start
 
 # ON teste l'écoute de tomcat sur le port 8005

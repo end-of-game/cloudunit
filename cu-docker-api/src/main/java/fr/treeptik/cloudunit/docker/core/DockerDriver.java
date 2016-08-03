@@ -8,50 +8,32 @@ import fr.treeptik.cloudunit.dto.DockerResponse;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 
 /**
- * Created by guillaume on 21/10/15.
+ * Created by nicolas on 03/08/2016.
  */
 public interface DockerDriver {
-    /*
-    Usual methods to manipulate containers
-     */
 
-    DockerResponse find(DockerContainer container, String host) throws FatalDockerJSONException;
+    DockerResponse find(DockerContainer container) throws FatalDockerJSONException;
 
-    DockerResponse findAll(String host) throws FatalDockerJSONException;
+    DockerResponse findAll() throws FatalDockerJSONException;
 
-    DockerResponse create(DockerContainer container, String host) throws FatalDockerJSONException;
+    DockerResponse create(DockerContainer container) throws FatalDockerJSONException;
 
-    DockerResponse start(DockerContainer container, String host) throws FatalDockerJSONException;
+    DockerResponse start(DockerContainer container) throws FatalDockerJSONException;
 
-    DockerResponse stop(DockerContainer container, String host) throws FatalDockerJSONException;
+    DockerResponse stop(DockerContainer container) throws FatalDockerJSONException;
 
-    DockerResponse kill(DockerContainer container, String host) throws FatalDockerJSONException;
+    DockerResponse kill(DockerContainer container) throws FatalDockerJSONException;
 
-    DockerResponse remove(DockerContainer container, String host) throws FatalDockerJSONException;
+    DockerResponse remove(DockerContainer container) throws FatalDockerJSONException;
 
-    /*
-    Usual methods to manipulate images and registry
-     */
+    DockerResponse findAnImage(Image image) throws FatalDockerJSONException;
 
-    DockerResponse findAnImage(Image image, String host) throws FatalDockerJSONException;
+    DockerResponse commit(DockerContainer container, String tag, String repository) throws FatalDockerJSONException;
 
-    DockerResponse commit(DockerContainer container, String host, String tag, String repository)
+    DockerResponse pull(String tag, String repository) throws FatalDockerJSONException;
+
+    DockerResponse removeImage(Image image)
             throws FatalDockerJSONException;
 
-    DockerResponse pull(String host, String tag, String repository)
-            throws FatalDockerJSONException;
-
-    DockerResponse removeImage(Image image, String host)
-            throws FatalDockerJSONException;
-
-    /*
-    Advanced methods
-     */
-
-    DockerResponse execCreate(DockerContainer container, ExecBody execBody, String host)
-            throws FatalDockerJSONException;
-
-    DockerResponse execStart(String execId, ExecStartBody execStartBody, String host)
-            throws FatalDockerJSONException;
 
 }

@@ -21,16 +21,14 @@ import fr.treeptik.cloudunit.dto.FileUnit;
 import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.filters.explorer.ExplorerFactory;
 import fr.treeptik.cloudunit.filters.explorer.ExplorerFilter;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.FileService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
@@ -73,6 +71,9 @@ public class FileServiceImpl
     @Inject
     private ServerService serverService;
 
+    @Inject
+    private DockerService dockerService;
+
     @Value("${docker.manager.ip:192.168.50.4:2376}")
     private String dockerManagerIp;
 
@@ -108,71 +109,28 @@ public class FileServiceImpl
     public void deleteFilesFromContainer(String applicationName,
                                          String containerId, String path)
             throws ServiceException {
-        DockerClient docker = null;
         try {
-            docker = getDockerClient();
-            List<Container> containers = docker.listContainers();
-            for (Container container : containers) {
-                if (container.id().substring(0, 12).equals(containerId) == false) {
-                    continue;
-                }
-                final String[] command = {"bash", "-c", "rm -rf " + path};
-                String containerName = container.names().get(0);
-                String execId = docker.execCreate(containerName, command,
-                        DockerClient.ExecParameter.STDOUT,
-                        DockerClient.ExecParameter.STDERR);
-                final LogStream output = docker.execStart(execId);
-                if (output != null) {
-                    output.close();
-                }
-            }
-        } catch (DockerException | InterruptedException | DockerCertificateException e) {
+            final String[] command = {"bash", "-c", "rm -rf " + path};
+            dockerService.execCommand(containerId, command);
+        } catch (FatalDockerJSONException e) {
             throw new ServiceException("Cannot delete files " + path + " for " + containerId, e);
-        } finally {
-             if (docker != null) { docker.close(); }
         }
     }
 
     @Override
     public void createDirectory(String applicationName, String containerId, String path) throws ServiceException {
-        DockerClient docker = null;
         try {
-            docker = getDockerClient();
-            List<Container> containers = docker.listContainers();
-            for (Container container : containers) {
-                if (container.id().substring(0, 12).equals(containerId) == false) {
+            List<String> containersId = dockerService.listContainers();
+            for (String id : containersId) {
+                if (id.startsWith(containerId) == false) {
                     continue;
                 }
                 final String[] command = {"bash", "-c", "mkdir -p " + convertDestPathFile(path)};
-                String containerName = container.names().get(0);
-                String execId = docker.execCreate(containerName, command,
-                        DockerClient.ExecParameter.STDOUT,
-                        DockerClient.ExecParameter.STDERR);
-                final LogStream output = docker.execStart(execId);
-                if (output != null) {
-                    output.close();
-                }
+                dockerService.execCommand(id, command);
             }
-        } catch (DockerException | InterruptedException | DockerCertificateException e) {
+        } catch (FatalDockerJSONException e) {
             throw new ServiceException("Cannot create directory " + path + " for " + containerId, e);
-        } finally {
-            if (docker != null) { docker.close(); }
         }
-    }
-
-    private DockerClient getDockerClient() throws DockerCertificateException {
-        DockerClient docker = null;
-        if (isHttpMode) {
-            docker = DefaultDockerClient
-                    .builder()
-                    .uri("http://" + dockerManagerIp).build();
-        } else {
-            final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
-            docker = DefaultDockerClient
-                    .builder()
-                    .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-        }
-        return docker;
     }
 
     /**
@@ -186,67 +144,31 @@ public class FileServiceImpl
      */
     public List<SourceUnit> listLogsFilesByContainer(String containerId)
             throws ServiceException {
-
         DockerClient docker = null;
         List<SourceUnit> files = new ArrayList<>();
         try {
-            if (Boolean.valueOf(isHttpMode)) {
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
-            List<Container> containers = docker.listContainers();
-            for (Container container : containers) {
-                if (container.id().substring(0, 12).equals(containerId) == false) {
-                    continue;
+            String logDirectory = getLogDirectory(containerId);
+            String containerName = dockerService.getContainerNameFromId(containerId);
+            final String[] command = {"bash", "-c", "find " + logDirectory + " -type f ! -size 0 "};
+            ExplorerFilter filter = ExplorerFactory.getInstance().getCustomFilter(containerName);
+            String execOutput = dockerService.execCommand(containerName, command);
+            if (execOutput != null && execOutput.contains("cannot access") == false) {
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug(execOutput);
                 }
-                String logDirectory = getLogDirectory(containerId);
-                // Exec command inside running container with attached STDOUT
-                // and STDERR
-                final String[] command = {"bash", "-c",
-                        "find " + logDirectory + " -type f ! -size 0 "};
-                String execId;
 
-                String containerName = container.names().get(0);
-                if (containerName.startsWith("/")) containerName = containerName.substring(1);
-                execId = docker.execCreate(containerName, command,
-                        DockerClient.ExecParameter.STDOUT,
-                        DockerClient.ExecParameter.STDERR);
-                ExplorerFilter filter = ExplorerFactory.getInstance()
-                        .getCustomFilter(containerName);
-                final LogStream output = docker.execStart(execId);
-                final String execOutput = output.readFully();
-                if (execOutput != null
-                        && execOutput.contains("cannot access") == false) {
-
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(execOutput);
-                    }
-
-                    StringTokenizer lignes = new StringTokenizer(execOutput,
-                            "\n");
-
-                    while (lignes.hasMoreTokens()) {
-                        String name = lignes.nextToken();
-                        name = name.substring(name.lastIndexOf("/") + 1);
-                        SourceUnit sourceUnit = new SourceUnit(name);
-                        files.add(sourceUnit);
-                    }
-
+                StringTokenizer lignes = new StringTokenizer(execOutput, "\n");
+                while (lignes.hasMoreTokens()) {
+                    String name = lignes.nextToken();
+                    name = name.substring(name.lastIndexOf("/") + 1);
+                    SourceUnit sourceUnit = new SourceUnit(name);
+                    files.add(sourceUnit);
                 }
-                if (output != null) { output.close(); }
             }
-        } catch (DockerException | InterruptedException | DockerCertificateException e) {
+        } catch (FatalDockerJSONException e) {
             throw new ServiceException("Error in listByContainerIdAndPath", e);
-        } finally {
-            if (docker != null) { docker.close(); }
         }
-
         return files;
     }
 
@@ -261,8 +183,9 @@ public class FileServiceImpl
      */
     public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
             throws ServiceException {
-
         List<LogLine> files = new ArrayList<>();
+        /*
+
         try {
             DockerClient docker = null;
             if (Boolean.valueOf(isHttpMode)) {
@@ -306,7 +229,7 @@ public class FileServiceImpl
         } catch (DockerException | InterruptedException | DockerCertificateException e) {
             throw new ServiceException("Error in listByContainerIdAndPath", e);
         }
-
+*/
         return files;
     }
 
@@ -323,7 +246,9 @@ public class FileServiceImpl
     public List<FileUnit> listByContainerIdAndPath(String containerId,
                                                    String path)
             throws ServiceException {
+        List<FileUnit> files = new ArrayList<>();
 
+        /*
         List<FileUnit> files = new ArrayList<>();
         try {
 
@@ -427,7 +352,7 @@ public class FileServiceImpl
         } catch (DockerException | InterruptedException | DockerCertificateException e) {
             throw new ServiceException("Error in listByContainerIdAndPath", e);
         }
-
+*/
         return files;
     }
 
@@ -440,7 +365,6 @@ public class FileServiceImpl
      * @param containerId
      * @param file
      * @param originalName
-     * @param destFile
      * @throws ServiceException
      */
     @Override

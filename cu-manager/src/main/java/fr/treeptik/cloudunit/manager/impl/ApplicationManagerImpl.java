@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.manager.impl;
 
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.manager.ApplicationManager;
@@ -29,6 +30,7 @@ import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,6 +63,9 @@ public class ApplicationManagerImpl
     @Inject
     private MessageSource messageSource;
 
+    @Inject
+    private ApplicationEventPublisher applicationEventPublisher;
+
     /**
      * Create an application
      *
@@ -72,29 +77,8 @@ public class ApplicationManagerImpl
      */
     public void create(final String applicationName, final String userLogin, final String serverName)
             throws ServiceException, CheckException {
-
-        Application application = applicationService.create(
-                applicationName, userLogin, serverName, null, null);
-
-        // Wait for the server has a status START (set by shell agent)
-        for (Server server : application.getServers()) {
-            int counter = 0;
-            while (!server.getStatus().equals(Status.START)) {
-                if (counter == 60) {
-                    break;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-                server = serverService.findById(server.getId());
-                counter++;
-            }
-        }
-
-        // Application is now started
-        applicationService.setStatus(application, Status.START);
+        Application application = applicationService.create(applicationName, userLogin, serverName, null, null);
+        applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
     }
 
     /**

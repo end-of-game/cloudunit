@@ -23,7 +23,7 @@ public class AdvancedCommandTests {
     static String DOCKER_HOST;
     static Boolean isTLS;
 
-    private static DockerClient dockerClient;
+    private static DockerCloudUnitClient dockerCloudUnitClient;
     private static final String CONTAINER_NAME = "myContainer";
 
     @Before
@@ -38,8 +38,8 @@ public class AdvancedCommandTests {
             isTLS = false;
         }
 
-        dockerClient = new DockerClient();
-        dockerClient.setDriver(new SimpleDockerDriver("../cu-vagrant/certificats", isTLS));
+        dockerCloudUnitClient = new DockerCloudUnitClient();
+        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS));
 
         HostConfig hostConfig = HostConfigBuilder.aHostConfig()
                 .withVolumesFrom(new ArrayList<>())
@@ -59,7 +59,7 @@ public class AdvancedCommandTests {
                 .build();
         DockerContainer container = ContainerBuilder.aContainer().withName(CONTAINER_NAME).withConfig(config).build();
         try {
-            dockerClient.createContainer(container, DOCKER_HOST);
+            dockerCloudUnitClient.createContainer(container, DOCKER_HOST);
             hostConfig = HostConfigBuilder.aHostConfig()
                     .withLinks(new ArrayList<>())
                     .withBinds(new ArrayList<>())
@@ -73,7 +73,7 @@ public class AdvancedCommandTests {
             container = ContainerBuilder.aContainer()
                     .withName(CONTAINER_NAME)
                     .withConfig(config).build();
-            dockerClient.startContainer(container, DOCKER_HOST);
+            dockerCloudUnitClient.startContainer(container);
         } catch (DockerJSONException e) {
             Assert.fail();
         }
@@ -84,17 +84,7 @@ public class AdvancedCommandTests {
         DockerContainer container = ContainerBuilder.aContainer()
                 .withName(CONTAINER_NAME)
                 .build();
-        dockerClient.removeContainer(container, DOCKER_HOST);
-    }
-
-    @Test
-    public void test00_execCommand() throws DockerJSONException {
-        DockerContainer container = ContainerBuilder.aContainer()
-                .withName("myContainer")
-                .build();
-        container = dockerClient.findContainer(container, DOCKER_HOST);
-        Assert.assertTrue(dockerClient.execCommand(container, Arrays.asList("date"), DOCKER_HOST).getBody()
-                .contains("2016"));
+        dockerCloudUnitClient.removeContainer(container);
     }
 
 
