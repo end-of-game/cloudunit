@@ -109,3 +109,8 @@ src/main/webapp/node_modules
 ### Fichiers binaires hors-dépôt
 src/main/webapp/test/uploads/pizzashop-0.0.1-SNAPSHOT.war
 /target/
+
+# Logs
+logs
+errors.log
+

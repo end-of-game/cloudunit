@@ -27,6 +27,13 @@ angular.module('webuiApp.scripting', [])
             isFree: false
           }
         })
+        .state('scriptingCreate', {
+          url: '/scripting-create',
+          template: '<scripting-create></scripting-create>',
+          data: {
+            isFree: false
+          }
+        })
         .state('scriptingPlay', {
           url: '/scripting-play',
           template: '<scripting-play></scripting-play>',

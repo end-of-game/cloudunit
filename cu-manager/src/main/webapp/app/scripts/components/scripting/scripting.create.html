@@ -1,0 +1,74 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="tab-pane vertical-spacing">
+
+   <div class="card large" id="add-cripting">
+    <div class="content">
+
+      <div class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+      </div>
+
+      <header class="title large">
+        <h3>Create Script</h3>
+        <small class="help-block">Create a script. <a ui-sref="scriptingManage">Manage your scripts</a>
+        </small>
+      </header>
+      
+      <div class="input-group stack clearfix">
+        <div class="input-group stack">
+          <label for="domain">Script name</label>
+          <input id="name"
+                 name="name"
+                 type="text"
+                 data-ng-model="scripting.title">
+        </div>
+        <label>Script content</label>
+        <textarea class="textarea-custom textarea-mid-full" data-ng-model="scripting.content"
+              data-ng-disabled="scripting.application.status === 'PENDING'"
+              placeholder="Enter your script"></textarea>
+        <div class="clearfix">
+          <button class="button raised primary pull-right"
+                  ripple=""
+                  data-ng-disabled="!scripting.content || !scripting.title"
+                  data-ng-click="scripting.addScript(scripting.content, scripting.title)">
+            <span>Save script</span>
+          </button>
+        </div>
+        <div class="alert alert-danger" data-ng-show="scripting.errorMsg">
+          <button type="button"
+                  class="close"
+                  ng-click="scripting.errorMsg = ''">
+            <span>&times;</span>
+          </button>
+          <p>{{scripting.errorMsg}}</p>
+        </div>
+        <div class="alert alert-info" data-ng-show="scripting.noticeMsg">
+          <button type="button"
+                  class="close"
+                  ng-click="scripting.noticeMsg = ''">
+            <span>&times;</span>
+          </button>
+          <p>{{scripting.noticeMsg}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

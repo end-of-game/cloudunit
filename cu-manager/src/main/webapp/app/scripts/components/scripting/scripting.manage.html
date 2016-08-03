@@ -26,14 +26,14 @@
       </div>
 
       <header class="title large">
-        <h3>manage Scripts</h3>
-        <small class="help-block">Manage a script. <a ui-sref="scriptingPlay">Create a script</a>
+        <h3>Manage Scripts</h3>
+        <small class="help-block">Manage a script. <a ui-sref="scriptingCreate">Create a script</a>
         </small>
       </header>
 
       <div class="no-data" ng-if="!scripting.scripts.length">
         <h3 class="title">No script created</h3>
-        <p>Create a script before <a ui-sref="scriptingPlay">Play a script</a></p>
+        <p>Create a script before <a ui-sref="scriptingCreate">Create a script</a></p>
       </div>
 
       <div class="alert alert-danger" data-ng-show="scripting.errorMsg">
