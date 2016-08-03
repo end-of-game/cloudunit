@@ -64,6 +64,27 @@
   }
 }
 
+.app-bar-cli {
+  @media (min-width: $grid-float-breakpoint) {
+    float: right;
+    & > a:last-child {
+      font-size: 14px;
+    }
+  }
+  float: left;
+  height: 100%;
+  /*background-color: #cfd8dc;*/
+  & > a:last-child {
+    display: inline-block;
+    height: 100%;
+    padding: 10px;
+    /*background-color: #cfd8dc;*/
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.54);
+    line-height: 3em;
+  }
+}
+
 .app-bar-header .primary-links {
   float: left;
   width: auto;

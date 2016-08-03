@@ -55,15 +55,6 @@
 <div data-ng-hide="main.browserOutdated">
   <header id="header" class="app-bar" data-ng-show="main.isLogged()">
     <div class="app-bar-header">
-    <a href="https://github.com/Treeptik/cloudunit/releases/download/1.0/CloudUnitCLI.jar" target="_blank">
-      <button class="app-button"
-              ripple=""
-              tooltip=""
-              data-title="Download CLI Jar"
-              data-placement="bottom">
-        <i class="icon-whhg download-alt"></i>
-      </button>
-    </a>
       <h1 class="app-bar-brand">
         <a class="brand" ui-sref="dashboard">
           <img class="logo" src="styles/images/logo-cloudunit.png"></a>
@@ -110,6 +101,18 @@
         </li>
       </ul>
     </div>
+    <nav class="app-bar-cli">
+      <a href="https://github.com/Treeptik/cloudunit/releases/download/1.0/CloudUnitCLI.jar" target="_blank">
+        <button class="app-button"
+                ripple=""
+                tooltip=""
+                data-title="Download CLI Jar"
+                data-placement="bottom">
+          <i class="icon-whhg download-alt"></i>
+        </button>
+      </a>
+      <a href="https://github.com/Treeptik/cloudunit-cli"> Documentation on GitHub </a>
+    </nav>
     <div class="app-bar-icons">
       <ul class="icon-bar">
         <li class="button-container">
@@ -132,6 +135,7 @@
         </li>
       </ul>
     </div>
+
   </header>
 
   <div class="main">

@@ -13,169 +13,168 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="tab-pane vertical-spacing">
-  <div class="card large" id="manage-scripting">
-    <div class="content">
+<div class="card large clear" id="manage-scripting">
+  <div class="content">
 
-      <div class="spinner">
-        <div class="rect1"></div>
-        <div class="rect2"></div>
-        <div class="rect3"></div>
-        <div class="rect4"></div>
-        <div class="rect5"></div>
-      </div>
-
-      <header class="title large">
-        <h3>Manage Scripts</h3>
-        <small class="help-block">Manage a script. <a ui-sref="scriptingCreate">Create a script</a>
-        </small>
-      </header>
-
-      <div class="no-data" ng-if="!scripting.scripts.length">
-        <h3 class="title">No script created</h3>
-        <p>Create a script before <a ui-sref="scriptingCreate">Create a script</a></p>
-      </div>
-
-      <div class="alert alert-danger" data-ng-show="scripting.errorMsg">
-        <button type="button"
-                class="close"
-                ng-click="scripting.errorMsg = ''">
-          <span>&times;</span>
-        </button>
-        <p>{{scripting.errorMsg}}</p>
-      </div>
-      <div class="alert alert-info" data-ng-show="scripting.noticeMsg">
-        <button type="button"
-                class="close"
-                ng-click="scripting.noticeMsg = ''">
-          <span>&times;</span>
-        </button>
-        <p>{{scripting.noticeMsg}}</p>
-      </div>
-      
-      <table class="table" ng-if="scripting.scripts.length">
-        <thead>
-        <tr>
-          <th ng-click="scripting.order('title')"><i class="icon-whhg"  ng-show="scripting.predicate == 'title'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Name</th>
-          <th ng-click="scripting.order('creation_date')"><i class="icon-whhg"  ng-show="scripting.predicate == 'creation_date'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Date</th>
-          <th  ng-click="scripting.order('creation_user')"><i class="icon-whhg"  ng-show="scripting.predicate == 'creation_user'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Owner</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr
-          dir-paginate="script in scripting.scripts  | orderBy:scripting.predicate:scripting.reverse | itemsPerPage: scripting.pageSize track by script.id"
-          data-current-page="scripting.currentPage">
-          <td>{{ script.title}}</td>
-          <td>{{ script.creation_date }}</td>
-          <td>{{ script.creation_user}}</td>
-
-          <td>
-            <button class="icon-button danger"
-                    ripple=""
-                    tooltip=""
-                    data-title="Delete"
-                    data-placement="bottom"
-                    data-toggle="modal"
-                    data-target="#delete-{{script.id}}">
-              <i class="icon-whhg trash"></i>
-            </button>
-
-            <div class="modal"
-                id="delete-{{script.id}}"
-                modaldismiss="">
-              <div class="modal-inner">
-                <div class="content clearfix">
-                  <h3 class="title">Removal confirmation required for script {{script.title}}</h3>
-
-                  <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
-
-                  <div class="actions pull-right">
-                    <button type="button" class="button secondary" data-dismiss="modal">Cancel
-                    </button>
-                    <button type="button"
-                            class="delete-btn button primary"
-                            data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
-                            data-ng-click="scripting.deleteScript(script)">
-                      Delete script
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button class="icon-button"
-                    ripple=""
-                    tooltip=""
-                    data-title="Edit"
-                    data-placement="bottom"
-                    data-toggle="modal"
-                    data-target="#edit-{{script.id}}">
-              <i class="icon-whhg edit"></i>
-            </button>
-
-            <div class="modal large"
-                  id="edit-{{script.id}}"
-                  modaldismiss="">
-              <div class="modal-inner">
-                <div class="content modal-full-input">
-                  <h3 class="title">Edit Script</h3>
-                  <div class="input-group stack">
-                    <label class="pull-left" for="domain">Script name</label>
-                    <input id="name"
-                          name="name"
-                          type="text"
-                          data-ng-model="script.title">
-                  </div>
-                  <label class="pull-left">Script content</label>
-                  <textarea  data-ng-model="script.content" class="textarea-custom textarea-full" ></textarea>
-                  <div class="action">
-                    <button type="button" class="button primary raised" data-dismiss="modal">Cancel
-                    </button>
-                    <button type="button" class="button primary raised"
-                            ng-click="scripting.editScript(script.id, script.content, script.title)"
-                            data-dismiss="modal">
-                      Edit
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button class="icon-button"
-                    ripple=""
-                    tooltip=""
-                    data-title="Execute"
-                    data-placement="bottom"
-                    data-toggle="modal"
-                    data-target="#execute-{{script.id}}">
-              <i class="icon-whhg fatredo"></i>
-            </button>
-           <div class="modal large"
-                  id="execute-{{script.id}}"
-                  modaldismiss="">
-              <div class="modal-inner">
-                <div class="content modal-full-input">
-                  <h3 class="title">Execute Script</h3>
-                  <label class="pull-left">Script content</label>
-                  <textarea  data-ng-model="script.content" class="textarea-custom textarea-full" ></textarea>
-                  <div class="action">
-                    <button type="button" class="button primary raised" data-dismiss="modal">Cancel
-                    </button>
-                    <button type="button" class="button primary raised"
-                            ng-click="scripting.executeScript(script.content)"
-                            data-dismiss="modal">
-                      Execute
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <dir-pagination-controls ng-if="scripting.scripts.length"></dir-pagination-controls>
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
     </div>
+
+    <header class="title large">
+      <h3>Manage Scripts</h3>
+      <small class="help-block">Manage a script. <a ui-sref="scriptingCreate">Create a script</a>
+      </small>
+    </header>
+
+    <div class="no-data" ng-if="!scripting.scripts.length">
+      <h3 class="title">No script created</h3>
+      <p>Create a script before <a ui-sref="scriptingCreate">Create a script</a></p>
+    </div>
+
+    <div class="alert alert-danger" data-ng-show="scripting.errorMsg">
+      <button type="button"
+              class="close"
+              ng-click="scripting.errorMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{scripting.errorMsg}}</p>
+    </div>
+    <div class="alert alert-info" data-ng-show="scripting.noticeMsg">
+      <button type="button"
+              class="close"
+              ng-click="scripting.noticeMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{scripting.noticeMsg}}</p>
+    </div>
+    
+    <table class="table" ng-if="scripting.scripts.length">
+      <thead>
+      <tr>
+        <th ng-click="scripting.order('title')"><i class="icon-whhg"  ng-show="scripting.predicate == 'title'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Name</th>
+        <th ng-click="scripting.order('creation_date')"><i class="icon-whhg"  ng-show="scripting.predicate == 'creation_date'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Date</th>
+        <th  ng-click="scripting.order('creation_user')"><i class="icon-whhg"  ng-show="scripting.predicate == 'creation_user'" ng-class="{ 'arrow-down': !scripting.reverse, 'arrow-up': scripting.reverse }"></i> Owner</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr
+        dir-paginate="script in scripting.scripts  | orderBy:scripting.predicate:scripting.reverse | itemsPerPage: scripting.pageSize track by script.id"
+        data-current-page="scripting.currentPage">
+        <td>{{ script.title}}</td>
+        <td>{{ script.creation_date }}</td>
+        <td>{{ script.creation_user}}</td>
+
+        <td>
+          <button class="icon-button danger"
+                  ripple=""
+                  tooltip=""
+                  data-title="Delete"
+                  data-placement="bottom"
+                  data-toggle="modal"
+                  data-target="#delete-{{script.id}}">
+            <i class="icon-whhg trash"></i>
+          </button>
+
+          <div class="modal"
+              id="delete-{{script.id}}"
+              modaldismiss="">
+            <div class="modal-inner">
+              <div class="content clearfix">
+                <h3 class="title">Removal confirmation required for script {{script.title}}</h3>
+
+                <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
+
+                <div class="actions pull-right">
+                  <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                  </button>
+                  <button type="button"
+                          class="delete-btn button primary"
+                          data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
+                          data-ng-click="scripting.deleteScript(script)">
+                    Delete script
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="icon-button"
+                  ripple=""
+                  tooltip=""
+                  data-title="Edit"
+                  data-placement="bottom"
+                  data-toggle="modal"
+                  data-target="#edit-{{script.id}}">
+            <i class="icon-whhg edit"></i>
+          </button>
+
+          <div class="modal large"
+                id="edit-{{script.id}}"
+                modaldismiss="">
+            <div class="modal-inner">
+              <div class="content modal-full-input">
+                <h3 class="title">Edit Script</h3>
+                <div class="input-group stack">
+                  <label class="pull-left" for="domain">Script name</label>
+                  <input id="name"
+                        name="name"
+                        type="text"
+                        data-ng-model="script.title">
+                </div>
+                <label class="pull-left">Script content</label>
+                <textarea  data-ng-model="script.content" class="textarea-custom textarea-full" ></textarea>
+                <div class="action">
+                  <button type="button" class="button primary raised" data-dismiss="modal">Cancel
+                  </button>
+                  <button type="button" class="button primary raised"
+                          ng-click="scripting.editScript(script.id, script.content, script.title)"
+                          data-dismiss="modal">
+                    Edit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="icon-button"
+                  ripple=""
+                  tooltip=""
+                  data-title="Execute"
+                  data-placement="bottom"
+                  data-toggle="modal"
+                  data-target="#execute-{{script.id}}">
+            <i class="icon-whhg fatredo"></i>
+          </button>
+          <div class="modal large"
+                id="execute-{{script.id}}"
+                modaldismiss="">
+            <div class="modal-inner">
+              <div class="content modal-full-input">
+                <h3 class="title">Execute Script</h3>
+                <label class="pull-left">Script content</label>
+                <textarea  data-ng-model="script.content" class="textarea-custom textarea-full" ></textarea>
+                <div class="action">
+                  <button type="button" class="button primary raised" data-dismiss="modal">Cancel
+                  </button>
+                  <button type="button" class="button primary raised"
+                          ng-click="scripting.executeScript(script.content)"
+                          data-dismiss="modal">
+                    Execute
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <dir-pagination-controls ng-if="scripting.scripts.length"></dir-pagination-controls>
   </div>
 </div>
+

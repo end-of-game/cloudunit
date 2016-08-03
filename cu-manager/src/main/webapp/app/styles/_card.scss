@@ -101,6 +101,9 @@
       font-size : 1em;
     }
   }
+  &.clear {
+    clear: both;
+  }
 }
 
 .card.blank {
