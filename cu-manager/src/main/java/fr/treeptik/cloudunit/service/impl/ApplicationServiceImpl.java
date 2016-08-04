@@ -403,7 +403,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Transactional
 	public Application start(Application application) throws ServiceException {
 		try {
-			User user = authentificationUtils.getAuthentificatedUser();
 			logger.debug("start : Methods parameters : " + application);
 
 			List<Module> modules = application.getModules();

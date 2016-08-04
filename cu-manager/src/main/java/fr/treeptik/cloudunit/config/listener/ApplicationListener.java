@@ -40,6 +40,7 @@ public class ApplicationListener {
 			} else {
 				application.setStatus(Status.FAIL);
 			}
+			logger.info("Application status : " + application.getStatus());
 			applicationService.saveInDB(application);
 		} catch (Exception e) {
 			e.printStackTrace();
