@@ -14,11 +14,17 @@ package fr.treeptik.cloudunit.model;/*
  */
 
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 public class Message

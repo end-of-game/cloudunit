@@ -2,8 +2,6 @@ package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.model.Application;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Created by guillaume on 05/07/16.
  */
