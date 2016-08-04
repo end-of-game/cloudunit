@@ -13,328 +13,330 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DockerContainer implements Serializable {
 
-    @JsonProperty("Config")
-    private Config config;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("AppArmorProfile")
-    private String appArmorProfile;
+	@JsonProperty("Config")
+	private Config config;
 
-    @JsonProperty("Args")
-    private List<String> args;
+	@JsonProperty("AppArmorProfile")
+	private String appArmorProfile;
 
-    @JsonProperty("Created")
-    private String created;
+	@JsonProperty("Args")
+	private List<String> args;
 
-    @JsonProperty("Driver")
-    private String driver;
+	@JsonProperty("Created")
+	private String created;
 
-    @JsonProperty("ExecDriver")
-    private String execDriver;
+	@JsonProperty("Driver")
+	private String driver;
 
-    @JsonProperty("ExecIDs")
-    private List<String> execIDs;
+	@JsonProperty("ExecDriver")
+	private String execDriver;
 
-    @JsonProperty("HostConfig")
-    private HostConfig hostConfig;
+	@JsonProperty("ExecIDs")
+	private List<String> execIDs;
 
-    @JsonProperty("HostnamePath")
-    private String hostnamePath;
+	@JsonProperty("HostConfig")
+	private HostConfig hostConfig;
 
-    @JsonProperty("HostsPath")
-    private String hostsPath;
+	@JsonProperty("HostnamePath")
+	private String hostnamePath;
 
-    @JsonProperty("LogPath")
-    private String logPath;
+	@JsonProperty("HostsPath")
+	private String hostsPath;
 
-    @JsonProperty("Id")
-    private String id;
+	@JsonProperty("LogPath")
+	private String logPath;
 
-    @JsonProperty("Image")
-    private String image;
+	@JsonProperty("Id")
+	private String id;
 
-    @JsonProperty("MountLabel")
-    private String mountLabel;
+	@JsonProperty("Image")
+	private String image;
 
-    @JsonProperty("Name")
-    private String name;
+	@JsonProperty("MountLabel")
+	private String mountLabel;
 
-    @JsonProperty("Path")
-    private String path;
+	@JsonProperty("Name")
+	private String name;
 
-    @JsonProperty("ProcessLabel")
-    private String processLabel;
+	@JsonProperty("Path")
+	private String path;
 
-    @JsonProperty("ResolvConfPath")
-    private String resolvConfPath;
+	@JsonProperty("ProcessLabel")
+	private String processLabel;
 
-    @JsonProperty("RestartCount")
-    private Long restartCount;
+	@JsonProperty("ResolvConfPath")
+	private String resolvConfPath;
 
-    @JsonProperty("Volumes")
-    private Map<String, String> volumes;
+	@JsonProperty("RestartCount")
+	private Long restartCount;
 
-    @JsonProperty("VolumesRW")
-    private Map<String, String> volumesRW;
+	@JsonProperty("Volumes")
+	private Map<String, String> volumes;
 
-    @JsonProperty("State")
-    private State state;
+	@JsonProperty("VolumesRW")
+	private Map<String, String> volumesRW;
 
-    @JsonProperty("NetworkSettings")
-    private NetworkSettings networkSettings;
+	@JsonProperty("State")
+	private State state;
 
-    @JsonProperty("Command")
-    private String command;
+	@JsonProperty("NetworkSettings")
+	private NetworkSettings networkSettings;
 
-    @JsonProperty("Labels")
-    private Map<String, String> labels;
+	@JsonProperty("Command")
+	private String command;
 
-    @JsonProperty("Names")
-    private List<String> names;
+	@JsonProperty("Labels")
+	private Map<String, String> labels;
 
-    @JsonProperty("Ports")
-    private List<Object> ports;
+	@JsonProperty("Names")
+	private List<String> names;
 
-    @JsonProperty("Status")
-    private String status;
+	@JsonProperty("Ports")
+	private List<Object> ports;
 
-    @JsonProperty("GraphDriver")
-    private Object graphDriver;
+	@JsonProperty("Status")
+	private String status;
 
-    @JsonProperty("Mounts")
-    private List<Mounts> mounts;
+	@JsonProperty("GraphDriver")
+	private Object graphDriver;
 
-    public List<Mounts> getMounts() {
-        return mounts;
-    }
+	@JsonProperty("Mounts")
+	private List<Mounts> mounts;
 
-    public void setMounts(List<Mounts> mounts) {
-        this.mounts = mounts;
-    }
+	public List<Mounts> getMounts() {
+		return mounts;
+	}
 
-    @JsonProperty("ImageID")
-    private String ImageID;
+	public void setMounts(List<Mounts> mounts) {
+		this.mounts = mounts;
+	}
 
-    public Config getConfig() {
-        return config;
-    }
-
-    public void setConfig(Config config) {
-        this.config = config;
-    }
-
-    public String getAppArmorProfile() {
-        return appArmorProfile;
-    }
-
-    public void setAppArmorProfile(String appArmorProfile) {
-        this.appArmorProfile = appArmorProfile;
-    }
-
-    public List<String> getArgs() {
-        return args;
-    }
-
-    public void setArgs(List<String> args) {
-        this.args = args;
-    }
-
-    public String getCreated() {
-        return created;
-    }
-
-    public void setCreated(String created) {
-        this.created = created;
-    }
-
-    public String getDriver() {
-        return driver;
-    }
-
-    public void setDriver(String driver) {
-        this.driver = driver;
-    }
-
-    public String getExecDriver() {
-        return execDriver;
-    }
-
-    public void setExecDriver(String execDriver) {
-        this.execDriver = execDriver;
-    }
-
-    public List<String> getExecIDs() {
-        return execIDs;
-    }
-
-    public void setExecIDs(List<String> execIDs) {
-        this.execIDs = execIDs;
-    }
-
-    public HostConfig getHostConfig() {
-        return hostConfig;
-    }
-
-    public void setHostConfig(HostConfig hostConfig) {
-        this.hostConfig = hostConfig;
-    }
-
-    public String getHostnamePath() {
-        return hostnamePath;
-    }
-
-    public void setHostnamePath(String hostnamePath) {
-        this.hostnamePath = hostnamePath;
-    }
-
-    public String getHostsPath() {
-        return hostsPath;
-    }
-
-    public void setHostsPath(String hostsPath) {
-        this.hostsPath = hostsPath;
-    }
-
-    public String getLogPath() {
-        return logPath;
-    }
-
-    public void setLogPath(String logPath) {
-        this.logPath = logPath;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getMountLabel() {
-        return mountLabel;
-    }
-
-    public void setMountLabel(String mountLabel) {
-        this.mountLabel = mountLabel;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getProcessLabel() {
-        return processLabel;
-    }
-
-    public void setProcessLabel(String processLabel) {
-        this.processLabel = processLabel;
-    }
-
-    public String getResolvConfPath() {
-        return resolvConfPath;
-    }
-
-    public void setResolvConfPath(String resolvConfPath) {
-        this.resolvConfPath = resolvConfPath;
-    }
-
-    public Long getRestartCount() {
-        return restartCount;
-    }
-
-    public void setRestartCount(Long restartCount) {
-        this.restartCount = restartCount;
-    }
-
-    public Map<String, String> getVolumes() {
-        return volumes;
-    }
-
-    public void setVolumes(Map<String, String> volumes) {
-        this.volumes = volumes;
-    }
-
-    public Map<String, String> getVolumesRW() {
-        return volumesRW;
-    }
-
-    public void setVolumesRW(Map<String, String> volumesRW) {
-        this.volumesRW = volumesRW;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    public NetworkSettings getNetworkSettings() {
-        return networkSettings;
-    }
-
-    public void setNetworkSettings(NetworkSettings networkSettings) {
-        this.networkSettings = networkSettings;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
-    public List<String> getNames() {
-        return names;
-    }
-
-    public void setNames(List<String> names) {
-        this.names = names;
-    }
-
-    public List<Object> getPorts() {
-        return ports;
-    }
-
-    public void setPorts(List<Object> ports) {
-        this.ports = ports;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	@JsonProperty("ImageID")
+	private String ImageID;
+
+	public Config getConfig() {
+		return config;
+	}
+
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+
+	public String getAppArmorProfile() {
+		return appArmorProfile;
+	}
+
+	public void setAppArmorProfile(String appArmorProfile) {
+		this.appArmorProfile = appArmorProfile;
+	}
+
+	public List<String> getArgs() {
+		return args;
+	}
+
+	public void setArgs(List<String> args) {
+		this.args = args;
+	}
+
+	public String getCreated() {
+		return created;
+	}
+
+	public void setCreated(String created) {
+		this.created = created;
+	}
+
+	public String getDriver() {
+		return driver;
+	}
+
+	public void setDriver(String driver) {
+		this.driver = driver;
+	}
+
+	public String getExecDriver() {
+		return execDriver;
+	}
+
+	public void setExecDriver(String execDriver) {
+		this.execDriver = execDriver;
+	}
+
+	public List<String> getExecIDs() {
+		return execIDs;
+	}
+
+	public void setExecIDs(List<String> execIDs) {
+		this.execIDs = execIDs;
+	}
+
+	public HostConfig getHostConfig() {
+		return hostConfig;
+	}
+
+	public void setHostConfig(HostConfig hostConfig) {
+		this.hostConfig = hostConfig;
+	}
+
+	public String getHostnamePath() {
+		return hostnamePath;
+	}
+
+	public void setHostnamePath(String hostnamePath) {
+		this.hostnamePath = hostnamePath;
+	}
+
+	public String getHostsPath() {
+		return hostsPath;
+	}
+
+	public void setHostsPath(String hostsPath) {
+		this.hostsPath = hostsPath;
+	}
+
+	public String getLogPath() {
+		return logPath;
+	}
+
+	public void setLogPath(String logPath) {
+		this.logPath = logPath;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public String getMountLabel() {
+		return mountLabel;
+	}
+
+	public void setMountLabel(String mountLabel) {
+		this.mountLabel = mountLabel;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getProcessLabel() {
+		return processLabel;
+	}
+
+	public void setProcessLabel(String processLabel) {
+		this.processLabel = processLabel;
+	}
+
+	public String getResolvConfPath() {
+		return resolvConfPath;
+	}
+
+	public void setResolvConfPath(String resolvConfPath) {
+		this.resolvConfPath = resolvConfPath;
+	}
+
+	public Long getRestartCount() {
+		return restartCount;
+	}
+
+	public void setRestartCount(Long restartCount) {
+		this.restartCount = restartCount;
+	}
+
+	public Map<String, String> getVolumes() {
+		return volumes;
+	}
+
+	public void setVolumes(Map<String, String> volumes) {
+		this.volumes = volumes;
+	}
+
+	public Map<String, String> getVolumesRW() {
+		return volumesRW;
+	}
+
+	public void setVolumesRW(Map<String, String> volumesRW) {
+		this.volumesRW = volumesRW;
+	}
+
+	public State getState() {
+		return state;
+	}
+
+	public void setState(State state) {
+		this.state = state;
+	}
+
+	public NetworkSettings getNetworkSettings() {
+		return networkSettings;
+	}
+
+	public void setNetworkSettings(NetworkSettings networkSettings) {
+		this.networkSettings = networkSettings;
+	}
+
+	public String getCommand() {
+		return command;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
+	}
+
+	public Map<String, String> getLabels() {
+		return labels;
+	}
+
+	public void setLabels(Map<String, String> labels) {
+		this.labels = labels;
+	}
+
+	public List<String> getNames() {
+		return names;
+	}
+
+	public void setNames(List<String> names) {
+		this.names = names;
+	}
+
+	public List<Object> getPorts() {
+		return ports;
+	}
+
+	public void setPorts(List<Object> ports) {
+		this.ports = ports;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }

@@ -12,80 +12,82 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExecBody implements Serializable {
 
-    @JsonProperty("AttachStdin")
-    private Boolean attachStdin;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("AttachStdout")
-    private Boolean attachStdout;
+	@JsonProperty("AttachStdin")
+	private Boolean attachStdin;
 
-    @JsonProperty("AttachStderr")
-    private Boolean attachStderr;
+	@JsonProperty("AttachStdout")
+	private Boolean attachStdout;
 
-    @JsonProperty("Tty")
-    private Boolean tty;
+	@JsonProperty("AttachStderr")
+	private Boolean attachStderr;
 
-    @JsonProperty("Cmd")
-    private List<String> cmd;
+	@JsonProperty("Tty")
+	private Boolean tty;
 
-    @JsonProperty("Id")
-    private String Id;
+	@JsonProperty("Cmd")
+	private List<String> cmd;
 
-    @JsonProperty("Warning")
-    private List<String> warnings;
+	@JsonProperty("Id")
+	private String Id;
 
-    public Boolean getAttachStdin() {
-        return attachStdin;
-    }
+	@JsonProperty("Warning")
+	private List<String> warnings;
 
-    public void setAttachStdin(Boolean attachStdin) {
-        this.attachStdin = attachStdin;
-    }
+	public Boolean getAttachStdin() {
+		return attachStdin;
+	}
 
-    public Boolean getAttachStdout() {
-        return attachStdout;
-    }
+	public void setAttachStdin(Boolean attachStdin) {
+		this.attachStdin = attachStdin;
+	}
 
-    public void setAttachStdout(Boolean attachStdout) {
-        this.attachStdout = attachStdout;
-    }
+	public Boolean getAttachStdout() {
+		return attachStdout;
+	}
 
-    public Boolean getAttachStderr() {
-        return attachStderr;
-    }
+	public void setAttachStdout(Boolean attachStdout) {
+		this.attachStdout = attachStdout;
+	}
 
-    public void setAttachStderr(Boolean attachStderr) {
-        this.attachStderr = attachStderr;
-    }
+	public Boolean getAttachStderr() {
+		return attachStderr;
+	}
 
-    public Boolean getTty() {
-        return tty;
-    }
+	public void setAttachStderr(Boolean attachStderr) {
+		this.attachStderr = attachStderr;
+	}
 
-    public void setTty(Boolean tty) {
-        this.tty = tty;
-    }
+	public Boolean getTty() {
+		return tty;
+	}
 
-    public List<String> getCmd() {
-        return cmd;
-    }
+	public void setTty(Boolean tty) {
+		this.tty = tty;
+	}
 
-    public void setCmd(List<String> cmd) {
-        this.cmd = cmd;
-    }
+	public List<String> getCmd() {
+		return cmd;
+	}
 
-    public String getId() {
-        return Id;
-    }
+	public void setCmd(List<String> cmd) {
+		this.cmd = cmd;
+	}
 
-    public void setId(String id) {
-        Id = id;
-    }
+	public String getId() {
+		return Id;
+	}
 
-    public List<String> getWarnings() {
-        return warnings;
-    }
+	public void setId(String id) {
+		Id = id;
+	}
 
-    public void setWarnings(List<String> warnings) {
-        this.warnings = warnings;
-    }
+	public List<String> getWarnings() {
+		return warnings;
+	}
+
+	public void setWarnings(List<String> warnings) {
+		this.warnings = warnings;
+	}
 }

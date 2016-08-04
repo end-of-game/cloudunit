@@ -11,116 +11,118 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class State implements Serializable {
 
-    @JsonProperty("Error")
-    private String error;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("ExitCode")
-    private Long exitCode;
+	@JsonProperty("Error")
+	private String error;
 
-    @JsonProperty("FinishedAt")
-    private String finishedAt;
+	@JsonProperty("ExitCode")
+	private Long exitCode;
 
-    @JsonProperty("OOMKilled")
-    private Boolean oOMKilled;
+	@JsonProperty("FinishedAt")
+	private String finishedAt;
 
-    @JsonProperty("Paused")
-    private Boolean paused;
+	@JsonProperty("OOMKilled")
+	private Boolean oOMKilled;
 
-    @JsonProperty("Pid")
-    private Long pid;
+	@JsonProperty("Paused")
+	private Boolean paused;
 
-    @JsonProperty("Restarting")
-    private Boolean restarting;
+	@JsonProperty("Pid")
+	private Long pid;
 
-    @JsonProperty("Running")
-    private Boolean running;
+	@JsonProperty("Restarting")
+	private Boolean restarting;
 
-    @JsonProperty("StartedAt")
-    private String startedAt;
+	@JsonProperty("Running")
+	private Boolean running;
 
-    @JsonProperty("Dead")
-    private Boolean dead;
+	@JsonProperty("StartedAt")
+	private String startedAt;
 
-    @JsonProperty("Status")
-    private String status;
+	@JsonProperty("Dead")
+	private Boolean dead;
 
-    public String getError() {
-        return error;
-    }
+	@JsonProperty("Status")
+	private String status;
 
-    public void setError(String error) {
-        this.error = error;
-    }
+	public String getError() {
+		return error;
+	}
 
-    public Long getExitCode() {
-        return exitCode;
-    }
+	public void setError(String error) {
+		this.error = error;
+	}
 
-    public void setExitCode(Long exitCode) {
-        this.exitCode = exitCode;
-    }
+	public Long getExitCode() {
+		return exitCode;
+	}
 
-    public String getFinishedAt() {
-        return finishedAt;
-    }
+	public void setExitCode(Long exitCode) {
+		this.exitCode = exitCode;
+	}
 
-    public void setFinishedAt(String finishedAt) {
-        this.finishedAt = finishedAt;
-    }
+	public String getFinishedAt() {
+		return finishedAt;
+	}
 
-    public Boolean getoOMKilled() {
-        return oOMKilled;
-    }
+	public void setFinishedAt(String finishedAt) {
+		this.finishedAt = finishedAt;
+	}
 
-    public void setoOMKilled(Boolean oOMKilled) {
-        this.oOMKilled = oOMKilled;
-    }
+	public Boolean getoOMKilled() {
+		return oOMKilled;
+	}
 
-    public Boolean getPaused() {
-        return paused;
-    }
+	public void setoOMKilled(Boolean oOMKilled) {
+		this.oOMKilled = oOMKilled;
+	}
 
-    public void setPaused(Boolean paused) {
-        this.paused = paused;
-    }
+	public Boolean getPaused() {
+		return paused;
+	}
 
-    public Long getPid() {
-        return pid;
-    }
+	public void setPaused(Boolean paused) {
+		this.paused = paused;
+	}
 
-    public void setPid(Long pid) {
-        this.pid = pid;
-    }
+	public Long getPid() {
+		return pid;
+	}
 
-    public Boolean getRestarting() {
-        return restarting;
-    }
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
 
-    public void setRestarting(Boolean restarting) {
-        this.restarting = restarting;
-    }
+	public Boolean getRestarting() {
+		return restarting;
+	}
 
-    public Boolean getRunning() {
-        return running;
-    }
+	public void setRestarting(Boolean restarting) {
+		this.restarting = restarting;
+	}
 
-    public void setRunning(Boolean running) {
-        this.running = running;
-    }
+	public Boolean getRunning() {
+		return running;
+	}
 
-    public String getStartedAt() {
-        return startedAt;
-    }
+	public void setRunning(Boolean running) {
+		this.running = running;
+	}
 
-    public void setStartedAt(String startedAt) {
-        this.startedAt = startedAt;
-    }
+	public String getStartedAt() {
+		return startedAt;
+	}
 
-    public Boolean getDead() {
-        return dead;
-    }
+	public void setStartedAt(String startedAt) {
+		this.startedAt = startedAt;
+	}
 
-    public void setDead(Boolean dead) {
-        this.dead = dead;
-    }
+	public Boolean getDead() {
+		return dead;
+	}
+
+	public void setDead(Boolean dead) {
+		this.dead = dead;
+	}
 }

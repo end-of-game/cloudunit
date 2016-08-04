@@ -11,25 +11,27 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RestartPolicy implements Serializable {
 
-    @JsonProperty("MaximumRetryCount")
-    private Long maximumRetryCount;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Name")
-    private String name;
+	@JsonProperty("MaximumRetryCount")
+	private Long maximumRetryCount;
 
-    public String getName() {
-        return name;
-    }
+	@JsonProperty("Name")
+	private String name;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Long getMaximumRetryCount() {
-        return maximumRetryCount;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setMaximumRetryCount(Long maximumRetryCount) {
-        this.maximumRetryCount = maximumRetryCount;
-    }
+	public Long getMaximumRetryCount() {
+		return maximumRetryCount;
+	}
+
+	public void setMaximumRetryCount(Long maximumRetryCount) {
+		this.maximumRetryCount = maximumRetryCount;
+	}
 }

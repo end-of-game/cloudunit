@@ -11,74 +11,72 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Mounts implements Serializable {
 
-    @JsonProperty("Name")
-    private String name;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Driver")
-    private String driver;
+	@JsonProperty("Name")
+	private String name;
 
-    @JsonProperty("Source")
-    private String source;
+	@JsonProperty("Driver")
+	private String driver;
 
-    @JsonProperty("Destination")
-    private String destination;
+	@JsonProperty("Source")
+	private String source;
 
-    @JsonProperty("Mode")
-    private String mode;
+	@JsonProperty("Destination")
+	private String destination;
 
-    public String getPropagation() {
-        return propagation;
-    }
+	@JsonProperty("Mode")
+	private String mode;
 
-    public void setPropagation(String propagation) {
-        this.propagation = propagation;
-    }
+	public String getPropagation() {
+		return propagation;
+	}
 
-    @JsonProperty("Propagation")
-    private String propagation;
+	public void setPropagation(String propagation) {
+		this.propagation = propagation;
+	}
 
-    @JsonProperty("RW")
-    private Boolean readWrite;
+	@JsonProperty("Propagation")
+	private String propagation;
 
-    @Override
-    public String toString() {
-        return "Mounts{" +
-                "source='" + source + '\'' +
-                ", destination='" + destination + '\'' +
-                ", mode='" + mode + '\'' +
-                ", readWrite=" + readWrite +
-                '}';
-    }
+	@JsonProperty("RW")
+	private Boolean readWrite;
 
-    public String getSource() {
-        return source;
-    }
+	@Override
+	public String toString() {
+		return "Mounts{" + "source='" + source + '\'' + ", destination='" + destination + '\'' + ", mode='" + mode
+				+ '\'' + ", readWrite=" + readWrite + '}';
+	}
 
-    public void setSource(String source) {
-        this.source = source;
-    }
+	public String getSource() {
+		return source;
+	}
 
-    public String getDestination() {
-        return destination;
-    }
+	public void setSource(String source) {
+		this.source = source;
+	}
 
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
+	public String getDestination() {
+		return destination;
+	}
 
-    public String getMode() {
-        return mode;
-    }
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
 
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
+	public String getMode() {
+		return mode;
+	}
 
-    public Boolean getReadWrite() {
-        return readWrite;
-    }
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
 
-    public void setReadWrite(Boolean readWrite) {
-        this.readWrite = readWrite;
-    }
+	public Boolean getReadWrite() {
+		return readWrite;
+	}
+
+	public void setReadWrite(Boolean readWrite) {
+		this.readWrite = readWrite;
+	}
 }

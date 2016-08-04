@@ -13,539 +13,541 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HostConfig implements Serializable {
 
-    @JsonProperty("Privileged")
-    private Boolean privileged;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("PublishAllPorts")
-    private Boolean publishAllPorts;
+	@JsonProperty("Privileged")
+	private Boolean privileged;
 
-    @JsonProperty("Links")
-    private List<String> links;
+	@JsonProperty("PublishAllPorts")
+	private Boolean publishAllPorts;
 
-    @JsonProperty("Binds")
-    private List<String> binds;
+	@JsonProperty("Links")
+	private List<String> links;
 
-    @JsonProperty("PortBindings")
-    private Map<String, List<Object>> portBindings;
+	@JsonProperty("Binds")
+	private List<String> binds;
 
-    @JsonProperty("VolumesFrom")
-    private List<String> volumesFrom;
+	@JsonProperty("PortBindings")
+	private Map<String, List<Object>> portBindings;
 
-    @JsonProperty("BlkioWeight")
-    private Long blkioWeight;
+	@JsonProperty("VolumesFrom")
+	private List<String> volumesFrom;
 
-    @JsonProperty("CapAdd")
-    private String capAdd;
+	@JsonProperty("BlkioWeight")
+	private Long blkioWeight;
 
-    @JsonProperty("CapDrop")
-    private String capDrop;
+	@JsonProperty("CapAdd")
+	private String capAdd;
 
-    @JsonProperty("ContainerIDFile")
-    private String containerIDFile;
+	@JsonProperty("CapDrop")
+	private String capDrop;
 
-    @JsonProperty("CpusetCpus")
-    private String cpusetCpus;
+	@JsonProperty("ContainerIDFile")
+	private String containerIDFile;
 
-    @JsonProperty("CpusetMems")
-    private String cpusetMems;
+	@JsonProperty("CpusetCpus")
+	private String cpusetCpus;
 
-    @JsonProperty("CpuShares")
-    private Long cpuShares;
+	@JsonProperty("CpusetMems")
+	private String cpusetMems;
 
-    @JsonProperty("CpuPeriod")
-    private Long cpuPeriod;
+	@JsonProperty("CpuShares")
+	private Long cpuShares;
 
-    @JsonProperty("Devices")
-    private List<String> devices;
+	@JsonProperty("CpuPeriod")
+	private Long cpuPeriod;
 
-    public void setDns(List<String> dns) {
-        this.dns = dns;
-    }
+	@JsonProperty("Devices")
+	private List<String> devices;
 
-    public List<String> getDns() {
-        return dns;
-    }
+	public void setDns(List<String> dns) {
+		this.dns = dns;
+	}
 
-    public Long getKernelMemory() {
-        return kernelMemory;
-    }
+	public List<String> getDns() {
+		return dns;
+	}
 
-    public void setKernelMemory(Long kernelMemory) {
-        this.kernelMemory = kernelMemory;
-    }
+	public Long getKernelMemory() {
+		return kernelMemory;
+	}
 
-    public Long getCpuQuota() {
-        return cpuQuota;
-    }
+	public void setKernelMemory(Long kernelMemory) {
+		this.kernelMemory = kernelMemory;
+	}
 
-    public void setCpuQuota(Long cpuQuota) {
-        this.cpuQuota = cpuQuota;
-    }
+	public Long getCpuQuota() {
+		return cpuQuota;
+	}
 
-    public Boolean getMemorySwappiness() {
-        return memorySwappiness;
-    }
+	public void setCpuQuota(Long cpuQuota) {
+		this.cpuQuota = cpuQuota;
+	}
 
-    public void setMemorySwappiness(Boolean memorySwappiness) {
-        this.memorySwappiness = memorySwappiness;
-    }
+	public Boolean getMemorySwappiness() {
+		return memorySwappiness;
+	}
 
-    public Boolean getGroupAdd() {
-        return groupAdd;
-    }
+	public void setMemorySwappiness(Boolean memorySwappiness) {
+		this.memorySwappiness = memorySwappiness;
+	}
 
-    public void setGroupAdd(Boolean groupAdd) {
-        this.groupAdd = groupAdd;
-    }
+	public Boolean getGroupAdd() {
+		return groupAdd;
+	}
 
-    public String getuTSMode() {
-        return uTSMode;
-    }
+	public void setGroupAdd(Boolean groupAdd) {
+		this.groupAdd = groupAdd;
+	}
 
-    public void setuTSMode(String uTSMode) {
-        this.uTSMode = uTSMode;
-    }
+	public String getuTSMode() {
+		return uTSMode;
+	}
 
-    public List<Long> getConsoleSize() {
-        return consoleSize;
-    }
+	public void setuTSMode(String uTSMode) {
+		this.uTSMode = uTSMode;
+	}
 
-    public void setConsoleSize(List<Long> consoleSize) {
-        this.consoleSize = consoleSize;
-    }
+	public List<Long> getConsoleSize() {
+		return consoleSize;
+	}
 
-    public String getVolumeDriver() {
-        return volumeDriver;
-    }
+	public void setConsoleSize(List<Long> consoleSize) {
+		this.consoleSize = consoleSize;
+	}
 
-    public void setVolumeDriver(String volumeDriver) {
-        this.volumeDriver = volumeDriver;
-    }
+	public String getVolumeDriver() {
+		return volumeDriver;
+	}
 
-    @JsonProperty("Dns")
-    private List<String> dns;
+	public void setVolumeDriver(String volumeDriver) {
+		this.volumeDriver = volumeDriver;
+	}
 
-    @JsonProperty("DnsSearch")
-    private List<String> dnsSearch;
+	@JsonProperty("Dns")
+	private List<String> dns;
 
-    public List<String> getDnsOptions() {
-        return dnsOptions;
-    }
+	@JsonProperty("DnsSearch")
+	private List<String> dnsSearch;
 
-    public void setDnsOptions(List<String> dnsOptions) {
-        this.dnsOptions = dnsOptions;
-    }
+	public List<String> getDnsOptions() {
+		return dnsOptions;
+	}
 
-    @JsonProperty("DnsOptions")
-    private List<String> dnsOptions;
+	public void setDnsOptions(List<String> dnsOptions) {
+		this.dnsOptions = dnsOptions;
+	}
 
-    public void setDnsSearch(List<String> dnsSearch) {
-        this.dnsSearch = dnsSearch;
-    }
+	@JsonProperty("DnsOptions")
+	private List<String> dnsOptions;
 
-    @JsonProperty("ExtraHosts")
-    private String extraHosts;
+	public void setDnsSearch(List<String> dnsSearch) {
+		this.dnsSearch = dnsSearch;
+	}
 
-    @JsonProperty("IpcMode")
-    private String ipcMode;
+	@JsonProperty("ExtraHosts")
+	private String extraHosts;
 
-    @JsonProperty("LxcConf")
-    private List<String> lxcConf;
+	@JsonProperty("IpcMode")
+	private String ipcMode;
 
-    @JsonProperty("Memory")
-    private Long memory;
+	@JsonProperty("LxcConf")
+	private List<String> lxcConf;
 
-    @JsonProperty("MemorySwap")
-    private Long memorySwap;
+	@JsonProperty("Memory")
+	private Long memory;
 
-    @JsonProperty("OomKillDisable")
-    private Boolean oomKillDisable;
+	@JsonProperty("MemorySwap")
+	private Long memorySwap;
 
-    @JsonProperty("NetworkMode")
-    private String networkMode;
+	@JsonProperty("OomKillDisable")
+	private Boolean oomKillDisable;
 
-    @JsonProperty("ReadonlyRootfs")
-    private Boolean readonlyRootfs;
+	@JsonProperty("NetworkMode")
+	private String networkMode;
 
-    @JsonProperty("SecurityOpt")
-    private String securityOpt;
+	@JsonProperty("ReadonlyRootfs")
+	private Boolean readonlyRootfs;
 
-    @JsonProperty("Ulimits")
-    private List<Object> ulimits;
+	@JsonProperty("SecurityOpt")
+	private String securityOpt;
 
-    @JsonProperty("CgroupParent")
-    private String cgroupParent;
+	@JsonProperty("Ulimits")
+	private List<Object> ulimits;
 
-    @JsonProperty("PidMode")
-    private String pidMode;
+	@JsonProperty("CgroupParent")
+	private String cgroupParent;
 
-    @JsonProperty("RestartPolicy")
-    private RestartPolicy restartPolicy;
+	@JsonProperty("PidMode")
+	private String pidMode;
 
-    @JsonProperty("LogConfig")
-    private LogConfig logConfig;
+	@JsonProperty("RestartPolicy")
+	private RestartPolicy restartPolicy;
 
-    @JsonProperty("MemoryReservation")
-    private Long memoryReservation;
+	@JsonProperty("LogConfig")
+	private LogConfig logConfig;
 
-    @JsonProperty("KernelMemory")
-    private Long kernelMemory;
+	@JsonProperty("MemoryReservation")
+	private Long memoryReservation;
 
-    @JsonProperty("CpuQuota")
-    private Long cpuQuota;
+	@JsonProperty("KernelMemory")
+	private Long kernelMemory;
 
-    @JsonProperty("MemorySwappiness")
-    private Boolean memorySwappiness;
+	@JsonProperty("CpuQuota")
+	private Long cpuQuota;
 
-    @JsonProperty("GroupAdd")
-    private Boolean groupAdd;
+	@JsonProperty("MemorySwappiness")
+	private Boolean memorySwappiness;
 
-    @JsonProperty("UTSMode")
-    private String uTSMode;
+	@JsonProperty("GroupAdd")
+	private Boolean groupAdd;
 
-    @JsonProperty("ConsoleSize")
-    private List<Long> consoleSize;
+	@JsonProperty("UTSMode")
+	private String uTSMode;
 
-    @JsonProperty("VolumeDriver")
-    private String volumeDriver;
+	@JsonProperty("ConsoleSize")
+	private List<Long> consoleSize;
 
-    @JsonProperty("ShmSize")
-    private String ShmSize;
+	@JsonProperty("VolumeDriver")
+	private String volumeDriver;
 
-    public String getShmSize() {
-        return ShmSize;
-    }
+	@JsonProperty("ShmSize")
+	private String ShmSize;
 
-    public void setShmSize(String shmSize) {
-        ShmSize = shmSize;
-    }
+	public String getShmSize() {
+		return ShmSize;
+	}
 
-    public String getOomScoreAdj() {
-        return oomScoreAdj;
-    }
+	public void setShmSize(String shmSize) {
+		ShmSize = shmSize;
+	}
 
-    public void setOomScoreAdj(String oomScoreAdj) {
-        oomScoreAdj = oomScoreAdj;
-    }
+	public String getOomScoreAdj() {
+		return oomScoreAdj;
+	}
 
-    @JsonProperty("Isolation")
-    private String isolation;
+	public void setOomScoreAdj(String oomScoreAdj) {
+		this.oomScoreAdj = oomScoreAdj;
+	}
 
-    @JsonProperty("OomScoreAdj")
-    private String oomScoreAdj;
+	@JsonProperty("Isolation")
+	private String isolation;
 
-    public String getBlkioDeviceReadBps() {
-        return BlkioDeviceReadBps;
-    }
+	@JsonProperty("OomScoreAdj")
+	private String oomScoreAdj;
 
-    public void setBlkioDeviceReadBps(String blkioDeviceReadBps) {
-        BlkioDeviceReadBps = blkioDeviceReadBps;
-    }
+	public String getBlkioDeviceReadBps() {
+		return BlkioDeviceReadBps;
+	}
 
-    public String getBlkioDeviceWriteBps() {
-        return BlkioDeviceWriteBps;
-    }
+	public void setBlkioDeviceReadBps(String blkioDeviceReadBps) {
+		BlkioDeviceReadBps = blkioDeviceReadBps;
+	}
 
-    public void setBlkioDeviceWriteBps(String blkioDeviceWriteBps) {
-        BlkioDeviceWriteBps = blkioDeviceWriteBps;
-    }
+	public String getBlkioDeviceWriteBps() {
+		return BlkioDeviceWriteBps;
+	}
 
-    public String getBlkioDeviceReadIOps() {
-        return BlkioDeviceReadIOps;
-    }
+	public void setBlkioDeviceWriteBps(String blkioDeviceWriteBps) {
+		BlkioDeviceWriteBps = blkioDeviceWriteBps;
+	}
 
-    public void setBlkioDeviceReadIOps(String blkioDeviceReadIOps) {
-        BlkioDeviceReadIOps = blkioDeviceReadIOps;
-    }
+	public String getBlkioDeviceReadIOps() {
+		return BlkioDeviceReadIOps;
+	}
 
-    public String getBlkioDeviceWriteIOps() {
-        return BlkioDeviceWriteIOps;
-    }
+	public void setBlkioDeviceReadIOps(String blkioDeviceReadIOps) {
+		BlkioDeviceReadIOps = blkioDeviceReadIOps;
+	}
 
-    public void setBlkioDeviceWriteIOps(String blkioDeviceWriteIOps) {
-        BlkioDeviceWriteIOps = blkioDeviceWriteIOps;
-    }
+	public String getBlkioDeviceWriteIOps() {
+		return BlkioDeviceWriteIOps;
+	}
 
-    @JsonProperty("BlkioDeviceWriteIOps")
-    private String BlkioDeviceWriteIOps;
+	public void setBlkioDeviceWriteIOps(String blkioDeviceWriteIOps) {
+		BlkioDeviceWriteIOps = blkioDeviceWriteIOps;
+	}
 
-    @JsonProperty("BlkioDeviceReadIOps")
-    private String BlkioDeviceReadIOps;
+	@JsonProperty("BlkioDeviceWriteIOps")
+	private String BlkioDeviceWriteIOps;
 
-    @JsonProperty("BlkioDeviceWriteBps")
-    private String BlkioDeviceWriteBps;
+	@JsonProperty("BlkioDeviceReadIOps")
+	private String BlkioDeviceReadIOps;
 
-    @JsonProperty("BlkioDeviceReadBps")
-    private String BlkioDeviceReadBps;
+	@JsonProperty("BlkioDeviceWriteBps")
+	private String BlkioDeviceWriteBps;
 
-    @JsonProperty("BlkioWeightDevice")
-    private String BlkioWeightDevice;
+	@JsonProperty("BlkioDeviceReadBps")
+	private String BlkioDeviceReadBps;
 
-    public String getPidsLimit() {
-        return PidsLimit;
-    }
+	@JsonProperty("BlkioWeightDevice")
+	private String BlkioWeightDevice;
 
-    public void setPidsLimit(String pidsLimit) {
-        PidsLimit = pidsLimit;
-    }
+	public String getPidsLimit() {
+		return PidsLimit;
+	}
 
-    @JsonProperty("PidsLimit")
+	public void setPidsLimit(String pidsLimit) {
+		PidsLimit = pidsLimit;
+	}
 
-    private String PidsLimit;
+	@JsonProperty("PidsLimit")
 
-    public String getBlkioWeightDevice() {
-        return BlkioWeightDevice;
-    }
+	private String PidsLimit;
 
-    public void setBlkioWeightDevice(String blkioWeightDevice) {
-        BlkioWeightDevice = blkioWeightDevice;
-    }
+	public String getBlkioWeightDevice() {
+		return BlkioWeightDevice;
+	}
 
-    public String getIsolation() {
-        return isolation;
-    }
+	public void setBlkioWeightDevice(String blkioWeightDevice) {
+		BlkioWeightDevice = blkioWeightDevice;
+	}
 
-    public void setIsolation(String isolation) {
-        this.isolation = isolation;
-    }
+	public String getIsolation() {
+		return isolation;
+	}
 
-    public Boolean getPrivileged() {
-        return privileged;
-    }
+	public void setIsolation(String isolation) {
+		this.isolation = isolation;
+	}
 
-    public void setPrivileged(Boolean privileged) {
-        this.privileged = privileged;
-    }
+	public Boolean getPrivileged() {
+		return privileged;
+	}
 
-    public Boolean getPublishAllPorts() {
-        return publishAllPorts;
-    }
+	public void setPrivileged(Boolean privileged) {
+		this.privileged = privileged;
+	}
 
-    public void setPublishAllPorts(Boolean publishAllPorts) {
-        this.publishAllPorts = publishAllPorts;
-    }
+	public Boolean getPublishAllPorts() {
+		return publishAllPorts;
+	}
 
-    public List<String> getLinks() {
-        return links;
-    }
+	public void setPublishAllPorts(Boolean publishAllPorts) {
+		this.publishAllPorts = publishAllPorts;
+	}
 
-    public void setLinks(List<String> links) {
-        this.links = links;
-    }
+	public List<String> getLinks() {
+		return links;
+	}
 
-    public List<String> getBinds() {
-        return binds;
-    }
+	public void setLinks(List<String> links) {
+		this.links = links;
+	}
 
-    public void setBinds(List<String> binds) {
-        this.binds = binds;
-    }
+	public List<String> getBinds() {
+		return binds;
+	}
 
-    public Map<String, List<Object>> getPortBindings() {
-        return portBindings;
-    }
+	public void setBinds(List<String> binds) {
+		this.binds = binds;
+	}
 
-    public void setPortBindings(Map<String, List<Object>> portBindings) {
-        this.portBindings = portBindings;
-    }
+	public Map<String, List<Object>> getPortBindings() {
+		return portBindings;
+	}
 
-    public List<String> getVolumesFrom() {
-        return volumesFrom;
-    }
+	public void setPortBindings(Map<String, List<Object>> portBindings) {
+		this.portBindings = portBindings;
+	}
 
-    public void setVolumesFrom(List<String> volumesFrom) {
-        this.volumesFrom = volumesFrom;
-    }
+	public List<String> getVolumesFrom() {
+		return volumesFrom;
+	}
 
-    public Long getBlkioWeight() {
-        return blkioWeight;
-    }
+	public void setVolumesFrom(List<String> volumesFrom) {
+		this.volumesFrom = volumesFrom;
+	}
 
-    public void setBlkioWeight(Long blkioWeight) {
-        this.blkioWeight = blkioWeight;
-    }
+	public Long getBlkioWeight() {
+		return blkioWeight;
+	}
 
-    public String getCapAdd() {
-        return capAdd;
-    }
+	public void setBlkioWeight(Long blkioWeight) {
+		this.blkioWeight = blkioWeight;
+	}
 
-    public void setCapAdd(String capAdd) {
-        this.capAdd = capAdd;
-    }
+	public String getCapAdd() {
+		return capAdd;
+	}
 
-    public String getCapDrop() {
-        return capDrop;
-    }
+	public void setCapAdd(String capAdd) {
+		this.capAdd = capAdd;
+	}
 
-    public void setCapDrop(String capDrop) {
-        this.capDrop = capDrop;
-    }
+	public String getCapDrop() {
+		return capDrop;
+	}
 
-    public String getContainerIDFile() {
-        return containerIDFile;
-    }
+	public void setCapDrop(String capDrop) {
+		this.capDrop = capDrop;
+	}
 
-    public void setContainerIDFile(String containerIDFile) {
-        this.containerIDFile = containerIDFile;
-    }
+	public String getContainerIDFile() {
+		return containerIDFile;
+	}
 
-    public String getCpusetCpus() {
-        return cpusetCpus;
-    }
+	public void setContainerIDFile(String containerIDFile) {
+		this.containerIDFile = containerIDFile;
+	}
 
-    public void setCpusetCpus(String cpusetCpus) {
-        this.cpusetCpus = cpusetCpus;
-    }
+	public String getCpusetCpus() {
+		return cpusetCpus;
+	}
 
-    public String getCpusetMems() {
-        return cpusetMems;
-    }
+	public void setCpusetCpus(String cpusetCpus) {
+		this.cpusetCpus = cpusetCpus;
+	}
 
-    public void setCpusetMems(String cpusetMems) {
-        this.cpusetMems = cpusetMems;
-    }
+	public String getCpusetMems() {
+		return cpusetMems;
+	}
 
-    public Long getCpuShares() {
-        return cpuShares;
-    }
+	public void setCpusetMems(String cpusetMems) {
+		this.cpusetMems = cpusetMems;
+	}
 
-    public void setCpuShares(Long cpuShares) {
-        this.cpuShares = cpuShares;
-    }
+	public Long getCpuShares() {
+		return cpuShares;
+	}
 
-    public Long getCpuPeriod() {
-        return cpuPeriod;
-    }
+	public void setCpuShares(Long cpuShares) {
+		this.cpuShares = cpuShares;
+	}
 
-    public void setCpuPeriod(Long cpuPeriod) {
-        this.cpuPeriod = cpuPeriod;
-    }
+	public Long getCpuPeriod() {
+		return cpuPeriod;
+	}
 
-    public List<String> getDevices() {
-        return devices;
-    }
+	public void setCpuPeriod(Long cpuPeriod) {
+		this.cpuPeriod = cpuPeriod;
+	}
 
-    public void setDevices(List<String> devices) {
-        this.devices = devices;
-    }
+	public List<String> getDevices() {
+		return devices;
+	}
 
-    public String getExtraHosts() {
-        return extraHosts;
-    }
+	public void setDevices(List<String> devices) {
+		this.devices = devices;
+	}
 
-    public void setExtraHosts(String extraHosts) {
-        this.extraHosts = extraHosts;
-    }
+	public String getExtraHosts() {
+		return extraHosts;
+	}
 
-    public String getIpcMode() {
-        return ipcMode;
-    }
+	public void setExtraHosts(String extraHosts) {
+		this.extraHosts = extraHosts;
+	}
 
-    public void setIpcMode(String ipcMode) {
-        this.ipcMode = ipcMode;
-    }
+	public String getIpcMode() {
+		return ipcMode;
+	}
 
-    public List<String> getLxcConf() {
-        return lxcConf;
-    }
+	public void setIpcMode(String ipcMode) {
+		this.ipcMode = ipcMode;
+	}
 
-    public void setLxcConf(List<String> lxcConf) {
-        this.lxcConf = lxcConf;
-    }
+	public List<String> getLxcConf() {
+		return lxcConf;
+	}
 
-    public Long getMemory() {
-        return memory;
-    }
+	public void setLxcConf(List<String> lxcConf) {
+		this.lxcConf = lxcConf;
+	}
 
-    public void setMemory(Long memory) {
-        this.memory = memory;
-    }
+	public Long getMemory() {
+		return memory;
+	}
 
-    public Long getMemorySwap() {
-        return memorySwap;
-    }
+	public void setMemory(Long memory) {
+		this.memory = memory;
+	}
 
-    public void setMemorySwap(Long memorySwap) {
-        this.memorySwap = memorySwap;
-    }
+	public Long getMemorySwap() {
+		return memorySwap;
+	}
 
-    public Boolean getOomKillDisable() {
-        return oomKillDisable;
-    }
+	public void setMemorySwap(Long memorySwap) {
+		this.memorySwap = memorySwap;
+	}
 
-    public void setOomKillDisable(Boolean oomKillDisable) {
-        this.oomKillDisable = oomKillDisable;
-    }
+	public Boolean getOomKillDisable() {
+		return oomKillDisable;
+	}
 
-    public String getNetworkMode() {
-        return networkMode;
-    }
+	public void setOomKillDisable(Boolean oomKillDisable) {
+		this.oomKillDisable = oomKillDisable;
+	}
 
-    public void setNetworkMode(String networkMode) {
-        this.networkMode = networkMode;
-    }
+	public String getNetworkMode() {
+		return networkMode;
+	}
 
-    public Boolean getReadonlyRootfs() {
-        return readonlyRootfs;
-    }
+	public void setNetworkMode(String networkMode) {
+		this.networkMode = networkMode;
+	}
 
-    public void setReadonlyRootfs(Boolean readonlyRootfs) {
-        this.readonlyRootfs = readonlyRootfs;
-    }
+	public Boolean getReadonlyRootfs() {
+		return readonlyRootfs;
+	}
 
-    public String getSecurityOpt() {
-        return securityOpt;
-    }
+	public void setReadonlyRootfs(Boolean readonlyRootfs) {
+		this.readonlyRootfs = readonlyRootfs;
+	}
 
-    public void setSecurityOpt(String securityOpt) {
-        this.securityOpt = securityOpt;
-    }
+	public String getSecurityOpt() {
+		return securityOpt;
+	}
 
-    public List<Object> getUlimits() {
-        return ulimits;
-    }
+	public void setSecurityOpt(String securityOpt) {
+		this.securityOpt = securityOpt;
+	}
 
-    public void setUlimits(List<Object> ulimits) {
-        this.ulimits = ulimits;
-    }
+	public List<Object> getUlimits() {
+		return ulimits;
+	}
 
-    public String getCgroupParent() {
-        return cgroupParent;
-    }
+	public void setUlimits(List<Object> ulimits) {
+		this.ulimits = ulimits;
+	}
 
-    public void setCgroupParent(String cgroupParent) {
-        this.cgroupParent = cgroupParent;
-    }
+	public String getCgroupParent() {
+		return cgroupParent;
+	}
 
-    public String getPidMode() {
-        return pidMode;
-    }
+	public void setCgroupParent(String cgroupParent) {
+		this.cgroupParent = cgroupParent;
+	}
 
-    public void setPidMode(String pidMode) {
-        this.pidMode = pidMode;
-    }
+	public String getPidMode() {
+		return pidMode;
+	}
 
-    public RestartPolicy getRestartPolicy() {
-        return restartPolicy;
-    }
+	public void setPidMode(String pidMode) {
+		this.pidMode = pidMode;
+	}
 
-    public void setRestartPolicy(RestartPolicy restartPolicy) {
-        this.restartPolicy = restartPolicy;
-    }
+	public RestartPolicy getRestartPolicy() {
+		return restartPolicy;
+	}
 
-    public LogConfig getLogConfig() {
-        return logConfig;
-    }
+	public void setRestartPolicy(RestartPolicy restartPolicy) {
+		this.restartPolicy = restartPolicy;
+	}
 
-    public void setLogConfig(LogConfig logConfig) {
-        this.logConfig = logConfig;
-    }
+	public LogConfig getLogConfig() {
+		return logConfig;
+	}
 
-    public Long getMemoryReservation() {
-        return memoryReservation;
-    }
+	public void setLogConfig(LogConfig logConfig) {
+		this.logConfig = logConfig;
+	}
 
-    public void setMemoryReservation(Long memoryReservation) {
-        this.memoryReservation = memoryReservation;
-    }
+	public Long getMemoryReservation() {
+		return memoryReservation;
+	}
+
+	public void setMemoryReservation(Long memoryReservation) {
+		this.memoryReservation = memoryReservation;
+	}
 }

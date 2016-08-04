@@ -16,11 +16,17 @@
 
 package fr.treeptik.cloudunitmonitor.utils;
 
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
-
-import java.io.*;
-import java.security.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -28,6 +34,9 @@ import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
 
 public class KeyStoreUtils {
 
@@ -50,9 +59,9 @@ public class KeyStoreUtils {
 		return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
 	}
 
-	private static <T> T loadPEM(String keyPath) throws IOException {
+	private static PEMKeyPair loadPEM(String keyPath) throws IOException {
 		PEMParser parser = new PEMParser(new BufferedReader(new FileReader(keyPath)));
-		return (T) parser.readObject();
+		return (PEMKeyPair) parser.readObject();
 	}
 
 	private static void addCA(KeyStore keyStore, String caPath)

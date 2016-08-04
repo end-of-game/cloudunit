@@ -12,156 +12,158 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NetworkSettings implements Serializable {
 
-    @JsonProperty("Bridge")
-    private String bridge;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Gateway")
-    private String gateway;
+	@JsonProperty("Bridge")
+	private String bridge;
 
-    @JsonProperty("IPAddress")
-    private String IPAddress;
+	@JsonProperty("Gateway")
+	private String gateway;
 
-    @JsonProperty("IPPrefixLen")
-    private Long IPPrefixLen;
+	@JsonProperty("IPAddress")
+	private String IPAddress;
 
-    @JsonProperty("GlobalIPv6Address")
-    private String globalIPv6Address;
+	@JsonProperty("IPPrefixLen")
+	private Long IPPrefixLen;
 
-    @JsonProperty("GlobalIPv6PrefixLen")
-    private Long globalIPv6PrefixLen;
+	@JsonProperty("GlobalIPv6Address")
+	private String globalIPv6Address;
 
-    @JsonProperty("IPv6Gateway")
-    private String IPv6Gateway;
+	@JsonProperty("GlobalIPv6PrefixLen")
+	private Long globalIPv6PrefixLen;
 
-    @JsonProperty("LinkLocalIPv6Address")
-    private String linkLocalIPv6Address;
+	@JsonProperty("IPv6Gateway")
+	private String IPv6Gateway;
 
-    @JsonProperty("LinkLocalIPv6PrefixLen")
-    private Long linkLocalIPv6PrefixLen;
+	@JsonProperty("LinkLocalIPv6Address")
+	private String linkLocalIPv6Address;
 
-    @JsonProperty("MacAddress")
-    private String macAddress;
+	@JsonProperty("LinkLocalIPv6PrefixLen")
+	private Long linkLocalIPv6PrefixLen;
 
-    @JsonProperty("PortMapping")
-    private Map<String, Object> portMapping;
+	@JsonProperty("MacAddress")
+	private String macAddress;
 
-    @JsonProperty("Ports")
-    Map<String, Object> ports;
+	@JsonProperty("PortMapping")
+	private Map<String, Object> portMapping;
 
-    @JsonProperty("SandboxKey")
-    private String sandboxKey;
+	@JsonProperty("Ports")
+	Map<String, Object> ports;
 
-    @JsonProperty("HairpinMode")
-    private Boolean hairpinMode;
+	@JsonProperty("SandboxKey")
+	private String sandboxKey;
 
-    @JsonProperty("SandboxID")
-    private String sandboxID;
+	@JsonProperty("HairpinMode")
+	private Boolean hairpinMode;
 
-    @JsonProperty("SecondaryIPAddresses")
-    private String secondaryIPAddresses;
+	@JsonProperty("SandboxID")
+	private String sandboxID;
 
-    @JsonProperty("SecondaryIPv6Addresses")
-    private String secondaryIPv6Addresses;
+	@JsonProperty("SecondaryIPAddresses")
+	private String secondaryIPAddresses;
 
-    @JsonProperty("EndpointID")
-    private String endpointID;
+	@JsonProperty("SecondaryIPv6Addresses")
+	private String secondaryIPv6Addresses;
 
-    @JsonProperty("Networks")
-    private Object networks;
+	@JsonProperty("EndpointID")
+	private String endpointID;
 
-    public String getBridge() {
-        return bridge;
-    }
+	@JsonProperty("Networks")
+	private Object networks;
 
-    public void setBridge(String bridge) {
-        this.bridge = bridge;
-    }
+	public String getBridge() {
+		return bridge;
+	}
 
-    public String getGateway() {
-        return gateway;
-    }
+	public void setBridge(String bridge) {
+		this.bridge = bridge;
+	}
 
-    public void setGateway(String gateway) {
-        this.gateway = gateway;
-    }
+	public String getGateway() {
+		return gateway;
+	}
 
-    public String getIPAddress() {
-        return IPAddress;
-    }
+	public void setGateway(String gateway) {
+		this.gateway = gateway;
+	}
 
-    public void setIPAddress(String IPAddress) {
-        this.IPAddress = IPAddress;
-    }
+	public String getIPAddress() {
+		return IPAddress;
+	}
 
-    public Long getIPPrefixLen() {
-        return IPPrefixLen;
-    }
+	public void setIPAddress(String IPAddress) {
+		this.IPAddress = IPAddress;
+	}
 
-    public void setIPPrefixLen(Long IPPrefixLen) {
-        this.IPPrefixLen = IPPrefixLen;
-    }
+	public Long getIPPrefixLen() {
+		return IPPrefixLen;
+	}
 
-    public String getGlobalIPv6Address() {
-        return globalIPv6Address;
-    }
+	public void setIPPrefixLen(Long IPPrefixLen) {
+		this.IPPrefixLen = IPPrefixLen;
+	}
 
-    public void setGlobalIPv6Address(String globalIPv6Address) {
-        this.globalIPv6Address = globalIPv6Address;
-    }
+	public String getGlobalIPv6Address() {
+		return globalIPv6Address;
+	}
 
-    public Long getGlobalIPv6PrefixLen() {
-        return globalIPv6PrefixLen;
-    }
+	public void setGlobalIPv6Address(String globalIPv6Address) {
+		this.globalIPv6Address = globalIPv6Address;
+	}
 
-    public void setGlobalIPv6PrefixLen(Long globalIPv6PrefixLen) {
-        this.globalIPv6PrefixLen = globalIPv6PrefixLen;
-    }
+	public Long getGlobalIPv6PrefixLen() {
+		return globalIPv6PrefixLen;
+	}
 
-    public String getIPv6Gateway() {
-        return IPv6Gateway;
-    }
+	public void setGlobalIPv6PrefixLen(Long globalIPv6PrefixLen) {
+		this.globalIPv6PrefixLen = globalIPv6PrefixLen;
+	}
 
-    public void setIPv6Gateway(String IPv6Gateway) {
-        this.IPv6Gateway = IPv6Gateway;
-    }
+	public String getIPv6Gateway() {
+		return IPv6Gateway;
+	}
 
-    public String getLinkLocalIPv6Address() {
-        return linkLocalIPv6Address;
-    }
+	public void setIPv6Gateway(String IPv6Gateway) {
+		this.IPv6Gateway = IPv6Gateway;
+	}
 
-    public void setLinkLocalIPv6Address(String linkLocalIPv6Address) {
-        this.linkLocalIPv6Address = linkLocalIPv6Address;
-    }
+	public String getLinkLocalIPv6Address() {
+		return linkLocalIPv6Address;
+	}
 
-    public Long getLinkLocalIPv6PrefixLen() {
-        return linkLocalIPv6PrefixLen;
-    }
+	public void setLinkLocalIPv6Address(String linkLocalIPv6Address) {
+		this.linkLocalIPv6Address = linkLocalIPv6Address;
+	}
 
-    public void setLinkLocalIPv6PrefixLen(Long linkLocalIPv6PrefixLen) {
-        this.linkLocalIPv6PrefixLen = linkLocalIPv6PrefixLen;
-    }
+	public Long getLinkLocalIPv6PrefixLen() {
+		return linkLocalIPv6PrefixLen;
+	}
 
-    public String getMacAddress() {
-        return macAddress;
-    }
+	public void setLinkLocalIPv6PrefixLen(Long linkLocalIPv6PrefixLen) {
+		this.linkLocalIPv6PrefixLen = linkLocalIPv6PrefixLen;
+	}
 
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
+	public String getMacAddress() {
+		return macAddress;
+	}
 
-    public Map<String, Object> getPortMapping() {
-        return portMapping;
-    }
+	public void setMacAddress(String macAddress) {
+		this.macAddress = macAddress;
+	}
 
-    public void setPortMapping(Map<String, Object> portMapping) {
-        this.portMapping = portMapping;
-    }
+	public Map<String, Object> getPortMapping() {
+		return portMapping;
+	}
 
-    public Map<String, Object> getPorts() {
-        return ports;
-    }
+	public void setPortMapping(Map<String, Object> portMapping) {
+		this.portMapping = portMapping;
+	}
 
-    public void setPorts(Map<String, Object> ports) {
-        this.ports = ports;
-    }
+	public Map<String, Object> getPorts() {
+		return ports;
+	}
+
+	public void setPorts(Map<String, Object> ports) {
+		this.ports = ports;
+	}
 }

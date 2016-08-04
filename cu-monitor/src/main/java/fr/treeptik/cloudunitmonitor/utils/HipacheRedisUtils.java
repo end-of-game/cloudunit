@@ -16,22 +16,22 @@
 
 package fr.treeptik.cloudunitmonitor.utils;
 
+import java.io.UnsupportedEncodingException;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.utils.KeyValueStoreUtils;
 import fr.treeptik.cloudunitmonitor.conf.ApplicationEntryPoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import redis.clients.jedis.exceptions.JedisDataException;
-
-import javax.inject.Inject;
-import java.io.UnsupportedEncodingException;
 
 /**
  * Management for Redis.

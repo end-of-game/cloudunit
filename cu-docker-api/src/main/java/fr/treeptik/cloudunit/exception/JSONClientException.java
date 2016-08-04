@@ -5,7 +5,9 @@ package fr.treeptik.cloudunit.exception;
  */
 public class JSONClientException extends Exception {
 
-    public JSONClientException(String message, Throwable e) {
-        super(message, e);
-    }
+	private static final long serialVersionUID = 1L;
+
+	public JSONClientException(String message, Throwable e) {
+		super(message, e);
+	}
 }

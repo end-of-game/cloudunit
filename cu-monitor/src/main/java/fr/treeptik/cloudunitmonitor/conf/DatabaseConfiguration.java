@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -27,79 +27,73 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
-@PropertySource( { "classpath:/config.properties" } )
-@EnableJpaRepositories( "fr.treeptik.cloudunitmonitor.dao" )
+@PropertySource({ "classpath:/config.properties" })
+@EnableJpaRepositories("fr.treeptik.cloudunitmonitor.dao")
 @EnableTransactionManagement
-public class DatabaseConfiguration
-{
+public class DatabaseConfiguration {
 
-    @Inject
-    private Environment env;
+	@Inject
+	private Environment env;
 
-    private Logger logger = LoggerFactory.getLogger( DatabaseConfiguration.class );
+	private Logger logger = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
-    @Bean
-    public DataSource dataSource()
-    {
-        String mysqlURLPrefix = env.getProperty( "mysql.url.prefix" );
-        String mysqlIP = ApplicationEntryPoint.IP_MYSQL;
-        String mysqlURLSuffix = env.getProperty( "mysql.url.suffix" );
-        String dbURL = mysqlURLPrefix + mysqlIP + mysqlURLSuffix;
+	@Bean
+	public DataSource dataSource() {
+		String mysqlURLPrefix = env.getProperty("mysql.url.prefix");
+		String mysqlIP = ApplicationEntryPoint.IP_MYSQL;
+		String mysqlURLSuffix = env.getProperty("mysql.url.suffix");
+		String dbURL = mysqlURLPrefix + mysqlIP + mysqlURLSuffix;
 
-        logger.debug( "Configuring Datasource" );
-        HikariConfig config = new HikariConfig();
-        config.setDataSourceClassName( "com.mysql.jdbc.jdbc2.optional.MysqlDataSource" );
-        config.addDataSourceProperty( "databaseName", "cloudunit" );
-        config.addDataSourceProperty( "url", dbURL );
-        config.addDataSourceProperty( "user", env.getProperty( "db.user" ) );
-        config.addDataSourceProperty( "password", ApplicationEntryPoint.MYSQL_PASSWORD );
-        return new HikariDataSource( config );
-    }
+		logger.debug("Configuring Datasource");
+		HikariConfig config = new HikariConfig();
+		config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+		config.addDataSourceProperty("databaseName", "cloudunit");
+		config.addDataSourceProperty("url", dbURL);
+		config.addDataSourceProperty("user", env.getProperty("db.user"));
+		config.addDataSourceProperty("password", ApplicationEntryPoint.MYSQL_PASSWORD);
+		return new HikariDataSource(config);
+	}
 
-    @Bean
-    public EntityManagerFactory entityManagerFactory()
-    {
-        logger.debug( "Configuring EntityManager" );
-        LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
-        lcemfb.setPersistenceProvider( new HibernatePersistence() );
-        lcemfb.setPersistenceUnitName( "persistenceUnit" );
-        lcemfb.setDataSource( dataSource() );
-        lcemfb.setJpaDialect( new HibernateJpaDialect() );
-        lcemfb.setJpaVendorAdapter( jpaVendorAdapter() );
+	@Bean
+	public EntityManagerFactory entityManagerFactory() {
+		logger.debug("Configuring EntityManager");
+		LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
+		lcemfb.setPersistenceProvider(new HibernatePersistenceProvider());
+		lcemfb.setPersistenceUnitName("persistenceUnit");
+		lcemfb.setDataSource(dataSource());
+		lcemfb.setJpaDialect(new HibernateJpaDialect());
+		lcemfb.setJpaVendorAdapter(jpaVendorAdapter());
 
-        Properties jpaProperties = new Properties();
-        jpaProperties.put( "hibernate.cache.use_second_level_cache", true );
-        jpaProperties.put( "hibernate.cache.use_query_cache", false );
-        jpaProperties.put( "hibernate.generate_statistics", false );
+		Properties jpaProperties = new Properties();
+		jpaProperties.put("hibernate.cache.use_second_level_cache", true);
+		jpaProperties.put("hibernate.cache.use_query_cache", false);
+		jpaProperties.put("hibernate.generate_statistics", false);
 
-        lcemfb.setJpaProperties( jpaProperties );
+		lcemfb.setJpaProperties(jpaProperties);
 
-        lcemfb.setPackagesToScan( "fr.treeptik.cloudunit.model" );
-        lcemfb.afterPropertiesSet();
-        return lcemfb.getObject();
-    }
+		lcemfb.setPackagesToScan("fr.treeptik.cloudunit.model");
+		lcemfb.afterPropertiesSet();
+		return lcemfb.getObject();
+	}
 
-    @Bean
-    public JpaVendorAdapter jpaVendorAdapter()
-    {
-        HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-        jpaVendorAdapter.setShowSql( false );
-        jpaVendorAdapter.setGenerateDdl( true );
-        jpaVendorAdapter.setDatabasePlatform( "org.hibernate.dialect.MySQLDialect" );
-        return jpaVendorAdapter;
-    }
+	@Bean
+	public JpaVendorAdapter jpaVendorAdapter() {
+		HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
+		jpaVendorAdapter.setShowSql(false);
+		jpaVendorAdapter.setGenerateDdl(true);
+		jpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
+		return jpaVendorAdapter;
+	}
 
-    @Bean
-    public HibernateExceptionTranslator hibernateExceptionTranslator()
-    {
-        return new HibernateExceptionTranslator();
-    }
+	@Bean
+	public HibernateExceptionTranslator hibernateExceptionTranslator() {
+		return new HibernateExceptionTranslator();
+	}
 
-    @Bean( name = "transactionManager" )
-    public PlatformTransactionManager annotationDrivenTransactionManager()
-    {
-        JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
-        jpaTransactionManager.setEntityManagerFactory( entityManagerFactory() );
-        return jpaTransactionManager;
-    }
+	@Bean(name = "transactionManager")
+	public PlatformTransactionManager annotationDrivenTransactionManager() {
+		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+		jpaTransactionManager.setEntityManagerFactory(entityManagerFactory());
+		return jpaTransactionManager;
+	}
 }

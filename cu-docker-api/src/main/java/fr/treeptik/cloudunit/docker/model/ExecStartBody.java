@@ -11,25 +11,27 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ExecStartBody implements Serializable {
 
-    @JsonProperty("Detach")
-    private Boolean detach;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Tty")
-    private Boolean tty;
+	@JsonProperty("Detach")
+	private Boolean detach;
 
-    public Boolean getDetach() {
-        return detach;
-    }
+	@JsonProperty("Tty")
+	private Boolean tty;
 
-    public void setDetach(Boolean detach) {
-        this.detach = detach;
-    }
+	public Boolean getDetach() {
+		return detach;
+	}
 
-    public Boolean getTty() {
-        return tty;
-    }
+	public void setDetach(Boolean detach) {
+		this.detach = detach;
+	}
 
-    public void setTty(Boolean tty) {
-        this.tty = tty;
-    }
+	public Boolean getTty() {
+		return tty;
+	}
+
+	public void setTty(Boolean tty) {
+		this.tty = tty;
+	}
 }

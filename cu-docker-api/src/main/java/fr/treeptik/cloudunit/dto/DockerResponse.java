@@ -19,34 +19,34 @@ package fr.treeptik.cloudunit.dto;
 
 import java.io.Serializable;
 
-public class DockerResponse
-        implements Serializable {
+public class DockerResponse implements Serializable {
 
-    private int status;
+	private static final long serialVersionUID = 1L;
 
+	private int status;
 
-    private String body;
+	private String body;
 
-    public DockerResponse(int status, String body) {
-        this.status = status;
-        this.body = body;
+	public DockerResponse(int status, String body) {
+		this.status = status;
+		this.body = body;
 
-    }
+	}
 
-    public int getStatus() {
-        return status;
-    }
+	public int getStatus() {
+		return status;
+	}
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
-    public String getBody() {
-        return body;
-    }
+	public String getBody() {
+		return body;
+	}
 
-    public void setBody(String body) {
-        this.body = body;
-    }
+	public void setBody(String body) {
+		this.body = body;
+	}
 
 }

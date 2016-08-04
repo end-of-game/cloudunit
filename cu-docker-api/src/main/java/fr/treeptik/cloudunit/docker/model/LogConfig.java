@@ -11,25 +11,27 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LogConfig implements Serializable {
 
-    @JsonProperty("Config")
-    private Object config;
+	private static final long serialVersionUID = 1L;
 
-    @JsonProperty("Type")
-    private String type;
+	@JsonProperty("Config")
+	private Object config;
 
-    public Object getConfig() {
-        return config;
-    }
+	@JsonProperty("Type")
+	private String type;
 
-    public void setConfig(Object config) {
-        this.config = config;
-    }
+	public Object getConfig() {
+		return config;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public void setConfig(Object config) {
+		this.config = config;
+	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

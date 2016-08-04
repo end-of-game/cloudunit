@@ -13,179 +13,181 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Image implements Serializable {
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	private static final long serialVersionUID = 1L;
 
-    // Used for requestbody not the response
-    @JsonIgnore
-    private String name;
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @JsonProperty("Created")
-    private String created;
+	// Used for requestbody not the response
+	@JsonIgnore
+	private String name;
 
-    @JsonProperty("Container")
-    private String container;
+	@JsonProperty("Created")
+	private String created;
 
-    @JsonProperty("Id")
-    private String Id;
+	@JsonProperty("Container")
+	private String container;
 
-    @JsonProperty("Parent")
-    private String sarent;
+	@JsonProperty("Id")
+	private String Id;
 
-    @JsonProperty("Size")
-    private String size;
+	@JsonProperty("Parent")
+	private String sarent;
 
-    @JsonProperty("ContainerConfig")
-    private Config containerConfig;
+	@JsonProperty("Size")
+	private String size;
 
-    @JsonProperty("Architecture")
-    private String architecture;
+	@JsonProperty("ContainerConfig")
+	private Config containerConfig;
 
-    @JsonProperty("Author")
-    private String author;
+	@JsonProperty("Architecture")
+	private String architecture;
 
-    @JsonProperty("Comment")
-    private String comment;
+	@JsonProperty("Author")
+	private String author;
 
-    @JsonProperty("Config")
-    private Config config;
+	@JsonProperty("Comment")
+	private String comment;
 
-    @JsonProperty("DockerVersion")
-    private String dockerVersion;
+	@JsonProperty("Config")
+	private Config config;
 
-    @JsonProperty("Os")
-    private String os;
+	@JsonProperty("DockerVersion")
+	private String dockerVersion;
 
-    @JsonProperty("VirtualSize")
-    private Long virtualSize;
+	@JsonProperty("Os")
+	private String os;
 
-    @JsonProperty("RepoTags")
-    private List<String> repoTags;
+	@JsonProperty("VirtualSize")
+	private Long virtualSize;
 
-    public List<String> getRepoTags() {
-        return repoTags;
-    }
+	@JsonProperty("RepoTags")
+	private List<String> repoTags;
 
-    public List<String> getRepoDigests() {
-        return repoDigests;
-    }
+	public List<String> getRepoTags() {
+		return repoTags;
+	}
 
-    public Object getGraphDriver() {
-        return graphDriver;
-    }
+	public List<String> getRepoDigests() {
+		return repoDigests;
+	}
 
-    @JsonProperty("RepoDigests")
-    private List<String> repoDigests;
+	public Object getGraphDriver() {
+		return graphDriver;
+	}
 
-    @JsonProperty("GraphDriver")
-    private Object graphDriver;
+	@JsonProperty("RepoDigests")
+	private List<String> repoDigests;
 
-    public String getName() {
-        return name;
-    }
+	@JsonProperty("GraphDriver")
+	private Object graphDriver;
 
-    public String getCreated() {
-        return created;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setCreated(String created) {
-        this.created = created;
-    }
+	public String getCreated() {
+		return created;
+	}
 
-    public String getContainer() {
-        return container;
-    }
+	public void setCreated(String created) {
+		this.created = created;
+	}
 
-    public void setContainer(String container) {
-        this.container = container;
-    }
+	public String getContainer() {
+		return container;
+	}
 
-    public String getId() {
-        return Id;
-    }
+	public void setContainer(String container) {
+		this.container = container;
+	}
 
-    public void setId(String id) {
-        Id = id;
-    }
+	public String getId() {
+		return Id;
+	}
 
-    public String getSarent() {
-        return sarent;
-    }
+	public void setId(String id) {
+		Id = id;
+	}
 
-    public void setSarent(String sarent) {
-        this.sarent = sarent;
-    }
+	public String getSarent() {
+		return sarent;
+	}
 
-    public String getSize() {
-        return size;
-    }
+	public void setSarent(String sarent) {
+		this.sarent = sarent;
+	}
 
-    public void setSize(String size) {
-        this.size = size;
-    }
+	public String getSize() {
+		return size;
+	}
 
-    public Config getContainerConfig() {
-        return containerConfig;
-    }
+	public void setSize(String size) {
+		this.size = size;
+	}
 
-    public void setContainerConfig(Config containerConfig) {
-        this.containerConfig = containerConfig;
-    }
+	public Config getContainerConfig() {
+		return containerConfig;
+	}
 
-    public String getArchitecture() {
-        return architecture;
-    }
+	public void setContainerConfig(Config containerConfig) {
+		this.containerConfig = containerConfig;
+	}
 
-    public void setArchitecture(String architecture) {
-        this.architecture = architecture;
-    }
+	public String getArchitecture() {
+		return architecture;
+	}
 
-    public String getAuthor() {
-        return author;
-    }
+	public void setArchitecture(String architecture) {
+		this.architecture = architecture;
+	}
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+	public String getAuthor() {
+		return author;
+	}
 
-    public String getComment() {
-        return comment;
-    }
+	public void setAuthor(String author) {
+		this.author = author;
+	}
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+	public String getComment() {
+		return comment;
+	}
 
-    public Config getConfig() {
-        return config;
-    }
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
-    public void setConfig(Config config) {
-        this.config = config;
-    }
+	public Config getConfig() {
+		return config;
+	}
 
-    public String getDockerVersion() {
-        return dockerVersion;
-    }
+	public void setConfig(Config config) {
+		this.config = config;
+	}
 
-    public void setDockerVersion(String dockerVersion) {
-        this.dockerVersion = dockerVersion;
-    }
+	public String getDockerVersion() {
+		return dockerVersion;
+	}
 
-    public String getOs() {
-        return os;
-    }
+	public void setDockerVersion(String dockerVersion) {
+		this.dockerVersion = dockerVersion;
+	}
 
-    public void setOs(String os) {
-        this.os = os;
-    }
+	public String getOs() {
+		return os;
+	}
 
-    public Long getVirtualSize() {
-        return virtualSize;
-    }
+	public void setOs(String os) {
+		this.os = os;
+	}
 
-    public void setVirtualSize(Long virtualSize) {
-        this.virtualSize = virtualSize;
-    }
+	public Long getVirtualSize() {
+		return virtualSize;
+	}
+
+	public void setVirtualSize(Long virtualSize) {
+		this.virtualSize = virtualSize;
+	}
 }
