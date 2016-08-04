@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-CU_USER=$1
+source /opt/cloudunit/.profile
 
-su -l $CU_USER -c env
+env

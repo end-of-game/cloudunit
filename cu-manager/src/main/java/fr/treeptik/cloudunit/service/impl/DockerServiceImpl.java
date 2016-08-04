@@ -3,10 +3,12 @@ package fr.treeptik.cloudunit.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -190,10 +192,6 @@ public class DockerServiceImpl implements DockerService {
             StringBuilder msgError = new StringBuilder();
             msgError.append("containerName=").append(containerName);
             throw new FatalDockerJSONException(msgError.toString(), e);
-        } finally {
-            if (dockerClient != null) {
-                dockerClient.close();
-            }
         }
     }
 
@@ -206,10 +204,23 @@ public class DockerServiceImpl implements DockerService {
             StringBuilder msgError = new StringBuilder();
             msgError.append("id=").append(id);
             throw new FatalDockerJSONException(msgError.toString(), e);
-        } finally {
-            if (dockerClient != null) {
-                dockerClient.close();
+        }
+    }
+
+    @Override
+    public String getEnv(String containerId, String variable) throws FatalDockerJSONException {
+        try {
+            Optional<String> value = dockerClient.inspectContainer(containerId).config()
+                    .env().stream().filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=")+1)).findFirst();
+            if (value.isPresent()) {
+                return value.get();
             }
+            throw new ServiceException("CU_LOG is missing into DOCKERFILE. Needed to set the dir log path");
+        } catch (Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append("containerId=").append(containerId);
+            msgError.append("variable=").append(variable);
+            throw new FatalDockerJSONException(msgError.toString(), e);
         }
     }
 

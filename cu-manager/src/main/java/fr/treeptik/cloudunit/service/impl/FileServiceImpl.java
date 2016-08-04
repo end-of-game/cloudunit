@@ -144,7 +144,6 @@ public class FileServiceImpl
      */
     public List<SourceUnit> listLogsFilesByContainer(String containerId)
             throws ServiceException {
-        DockerClient docker = null;
         List<SourceUnit> files = new ArrayList<>();
         try {
             String logDirectory = getLogDirectory(containerId);
@@ -184,52 +183,22 @@ public class FileServiceImpl
     public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
             throws ServiceException {
         List<LogLine> files = new ArrayList<>();
-        /*
-
         try {
-            DockerClient docker = null;
-            if (Boolean.valueOf(isHttpMode)) {
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
-            List<Container> containers = docker.listContainers();
-            containers = containers.stream().filter(container1 -> container1.id().substring(0, 12).equalsIgnoreCase(containerId))
-                    .collect(Collectors.toList());
-            for (Container container : containers) {
-                String logDirectory = getLogDirectory(containerId);
-                // Exec command inside running container with attached STDOUT
-                // and STDERR
-                final String[] command = {"bash", "-c",
-                        "tail -n " + nbRows + " /cloudunit/appconf/logs/" + file};
-                String execId;
-                String containerName = container.names().get(0);
-                execId = docker.execCreate(containerName, command,
-                        DockerClient.ExecParameter.STDOUT,
-                        DockerClient.ExecParameter.STDERR);
-                final LogStream output = docker.execStart(execId);
-                final String execOutput = output.readFully();
-                if (execOutput != null
-                        && execOutput.contains("cannot access") == false) {
-                    StringTokenizer lignes = new StringTokenizer(execOutput, "\n");
-                    while (lignes.hasMoreTokens()) {
-                        String line = lignes.nextToken();
-                        LogLine logLine = new LogLine(file, line);
-                        files.add(logLine);
-                    }
-                    Collections.reverse(files);
+            final String command = "tail -n " + nbRows + " /opt/cloudunit/tomcat/logs/" + file;
+            String execOutput = dockerService.execCommand(containerId, command);
+            if (execOutput != null
+                    && execOutput.contains("cannot access") == false) {
+                StringTokenizer lignes = new StringTokenizer(execOutput, "\n");
+                while (lignes.hasMoreTokens()) {
+                    String line = lignes.nextToken();
+                    LogLine logLine = new LogLine(file, line);
+                    files.add(logLine);
                 }
-                if (output != null) { output.close(); }
+                Collections.reverse(files);
             }
-        } catch (DockerException | InterruptedException | DockerCertificateException e) {
+        } catch (FatalDockerJSONException e) {
             throw new ServiceException("Error in listByContainerIdAndPath", e);
         }
-*/
         return files;
     }
 
@@ -483,25 +452,12 @@ public class FileServiceImpl
 
     private String getLogDirectory(String containerId)
             throws ServiceException {
-
-        Module module = null;
-        Server server = null;
         String location = null;
         try {
-            module = moduleService.findByContainerID(containerId);
-            server = serverService.findByContainerID(containerId);
-            if (module != null) {
-                location = module.getModuleAction().getLogLocation();
-            }
-            if (server != null) {
-                location = server.getServerAction().getLogLocation();
-            }
-
-        } catch (ServiceException e) {
-            throw new ServiceException("error in send file into the container",
-                    e);
+            location = dockerService.getEnv(containerId, "CU_LOGS");
+        } catch(Exception e) {
+            logger.error(containerId, e);
         }
-
         return location;
     }
 

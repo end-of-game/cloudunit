@@ -50,5 +50,7 @@ public interface DockerService {
     List<String> listContainers() throws FatalDockerJSONException;
 
     String getContainerNameFromId(String id) throws FatalDockerJSONException;
+
+    String getEnv(String containerId, String variable) throws FatalDockerJSONException;
 }
 

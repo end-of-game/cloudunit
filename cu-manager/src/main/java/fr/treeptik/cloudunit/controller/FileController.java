@@ -19,6 +19,7 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
@@ -275,11 +276,15 @@ public class FileController {
         }
 
         logger.info(command);
-        String commandExec = dockerService.execCommand(containerId, command);
-        if (commandExec != null) {
-            logger.debug(commandExec);
-        } else {
-            logger.error("No content for : " + command);
+        try {
+            String commandExec = dockerService.execCommand(containerId, command);
+            if (commandExec != null) {
+                logger.debug(commandExec);
+            } else {
+                logger.error("No content for : " + command);
+            }
+        } catch (FatalDockerJSONException e) {
+            logger.error(e.getMessage());
         }
     }
 
@@ -374,15 +379,19 @@ public class FileController {
 
         String command =  "cat " + convertPathFromUI(path) + "/" + fileName;
         logger.debug(command);
-        String contentFile = dockerService.execCommand(containerId, command);
-        if (contentFile != null) {
-            logger.debug(contentFile);
-            response.setContentType("text/plain");
-            Writer writer = response.getWriter();
-            writer.write(contentFile);
-            writer.close();
-        } else {
-            logger.error("No content for : " + command);
+        try {
+            String contentFile = dockerService.execCommand(containerId, command);
+            if (contentFile != null) {
+                logger.debug(contentFile);
+                response.setContentType("text/plain");
+                Writer writer = response.getWriter();
+                writer.write(contentFile);
+                writer.close();
+            } else {
+                logger.error("No content for : " + command);
+            }
+        } catch(FatalDockerJSONException e) {
+            logger.error(e.getMessage());
         }
     }
 
