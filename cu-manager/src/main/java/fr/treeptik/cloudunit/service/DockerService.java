@@ -15,14 +15,12 @@
 
 package fr.treeptik.cloudunit.service;
 
-import fr.treeptik.cloudunit.exception.CheckException;
+import java.util.List;
+
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
-import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
-
-import java.util.List;
 
 /**
  * Created by Nicolas MULLER on 03/05/16.

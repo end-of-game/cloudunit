@@ -21,7 +21,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="fr.treeptik.cloudunit.service" level="debug" />
+	<logger name="fr.treeptik.cloudunit.service" level="info" />
 
 	<logger name="org.springframework" level="warn" />
 
