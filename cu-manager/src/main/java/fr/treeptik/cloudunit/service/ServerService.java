@@ -24,67 +24,39 @@ import java.util.List;
 
 public interface ServerService {
 
-    List<Server> findAll()
-        throws ServiceException;
+	List<Server> findAll() throws ServiceException;
 
-    Server findById(Integer id)
-        throws ServiceException;
+	Server findById(Integer id) throws ServiceException;
 
-    Server remove(String serverName)
-        throws ServiceException;
+	Server remove(String serverName) throws ServiceException;
 
-    Server update(Server server)
-        throws ServiceException;
+	Server update(Server server) throws ServiceException;
 
-    Server startServer(Server server)
-        throws ServiceException;
+	Server startServer(Server server) throws ServiceException;
 
-    Server stopServer(Server server)
-        throws ServiceException;
+	Server stopServer(Server server) throws ServiceException;
 
-    Server restartServer(Server server)
-        throws ServiceException;
+	Server restartServer(Server server) throws ServiceException;
 
-    List<Server> findByApp(Application application)
-        throws ServiceException;
+	List<Server> findByApp(Application application) throws ServiceException;
 
-    Server findByName(String serverName)
-        throws ServiceException;
+	Server findByName(String serverName) throws ServiceException;
 
-    void checkMaxNumberReach(Application application)
-        throws ServiceException,
-        CheckException;
+	void checkMaxNumberReach(Application application) throws ServiceException, CheckException;
 
-    Server saveInDB(Server server)
-        throws ServiceException;
+	Server saveInDB(Server server) throws ServiceException;
 
-    List<Server> findAllStatusStopServers()
-        throws ServiceException;
+	void checkStatus(Server server, String status) throws CheckException;
 
-    List<Server> findAllStatusStartServers()
-        throws ServiceException;
+	boolean checkStatusPENDING(Server server) throws ServiceException;
 
-    void checkStatus(Server server, String status)
-        throws CheckException;
+	Server update(Server server, String memory, String options, String release, boolean restorePreviousEnv)
+			throws ServiceException;
 
-    boolean checkStatusPENDING(Server server)
-        throws ServiceException;
+	Server findByContainerID(String id) throws ServiceException;
 
-    Server update(Server server, String memory, String options, String release, boolean restorePreviousEnv)
-        throws ServiceException;
+	void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException;
 
-    Server findByContainerID(String id)
-        throws ServiceException;
-
-    Server confirmSSHDStart(String applicationName, String userLogin)
-        throws ServiceException;
-
-    void changeJavaVersion(Application application, String javaVersion)
-        throws CheckException, ServiceException;
-
-    Server create(Server server, String tag)
-        throws ServiceException,
-        CheckException;
-
+	Server create(Server server, String tag) throws ServiceException, CheckException;
 
 }

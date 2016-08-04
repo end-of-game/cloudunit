@@ -16,7 +16,6 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,6 @@ import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
-import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -45,14 +43,9 @@ import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.ServerFactory;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
-import fr.treeptik.cloudunit.service.HookService;
-import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.ContainerMapper;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 
@@ -68,25 +61,10 @@ public class ServerServiceImpl implements ServerService {
 	private ApplicationDAO applicationDAO;
 
 	@Inject
-	private UserService userService;
-
-	@Inject
-	private ModuleService moduleService;
-
-	@Inject
-	private ApplicationService applicationService;
-
-	@Inject
-	private HookService hookService;
-
-	@Inject
 	private ShellUtils shellUtils;
 
 	@Inject
 	private HipacheRedisUtils hipacheRedisUtils;
-
-	@Inject
-	private ContainerMapper containerMapper;
 
 	@Value("${cloudunit.max.servers:1}")
 	private String maxServers;
@@ -148,10 +126,6 @@ public class ServerServiceImpl implements ServerService {
 
 		logger.debug("create : Methods parameters : " + server);
 		logger.info("ServerService : Starting creating Server " + server.getName());
-
-		// Initialize container informations :
-		DockerContainer dockerContainer = new DockerContainer();
-		Map<String, String> ports = new HashMap<String, String>();
 
 		// General informations
 		server.setStatus(Status.PENDING);
@@ -290,7 +264,6 @@ public class ServerServiceImpl implements ServerService {
 			server = serverDAO.save(server);
 
 			Application application = server.getApplication();
-			String dockerManagerIP = application.getManagerIp();
 
 			hipacheRedisUtils.updateServerAddress(application, server.getContainerIP(),
 					server.getServerAction().getServerPort(), server.getServerAction().getServerManagerPort());
@@ -365,32 +338,6 @@ public class ServerServiceImpl implements ServerService {
 			throw new ServiceException("Error database :  " + e.getLocalizedMessage(), e);
 
 		}
-	}
-
-	@Override
-	public List<Server> findAllStatusStartServers() throws ServiceException {
-		List<Server> listServers = this.findAll();
-		List<Server> listStatusStopServers = new ArrayList<>();
-
-		for (Server server : listServers) {
-			if (Status.START == server.getStatus()) {
-				listStatusStopServers.add(server);
-			}
-		}
-		return listStatusStopServers;
-	}
-
-	@Override
-	public List<Server> findAllStatusStopServers() throws ServiceException {
-		List<Server> listServers = this.findAll();
-		List<Server> listStatusStopServers = new ArrayList<>();
-
-		for (Server server : listServers) {
-			if (Status.STOP == server.getStatus()) {
-				listStatusStopServers.add(server);
-			}
-		}
-		return listStatusStopServers;
 	}
 
 	@Override
@@ -505,7 +452,7 @@ public class ServerServiceImpl implements ServerService {
 							+ "\"";
 				}
 				logger.info("command shell to execute [" + command + "]");
-				int status = shellUtils.executeShell(command, configShell);
+				shellUtils.executeShell(command, configShell);
 			}
 
 			// If jvm release changes...
@@ -578,38 +525,6 @@ public class ServerServiceImpl implements ServerService {
 				throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
 			}
 		}
-	}
-
-	/**
-	 * Méthode permettant de mettre le server dans un état particulier pour se
-	 * prémunir d'éventuel problème de concurrence au niveau métier
-	 */
-	@Override
-	public Server confirmSSHDStart(String applicationName, String userLogin) throws ServiceException {
-
-		logger.debug("Start confirmSSHDStart - applicationName : " + applicationName + " - userLogin :" + userLogin);
-
-		Application application = null;
-		Server server = null;
-		try {
-			User user = userService.findByLogin(userLogin);
-			while (application == null) {
-				try {
-					application = applicationService.findByNameAndUser(user, applicationName);
-				} catch (Exception e) {
-					continue;
-				}
-			}
-
-			server = this.findByApp(application).get(0);
-			server.setStatus(Status.START);
-			server = this.saveInDB(server);
-		} catch (PersistenceException e) {
-			e.printStackTrace();
-			logger.error("Error ServerService : error set server on sshdStatus " + Status.START + " : " + e);
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-		return server;
 	}
 
 }
