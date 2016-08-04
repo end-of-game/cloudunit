@@ -23,67 +23,45 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ApplicationDAO
-        extends JpaRepository<Application, Integer> {
+public interface ApplicationDAO extends JpaRepository<Application, Integer> {
 
-    @Query("Select distinct a from Application a " +
-            "join fetch a.servers s " +
-            "left join fetch a.modules m " +
-            "left join fetch a.deployments " +
-            "left join fetch a.aliases " +
-            "left join fetch m.moduleInfos " +
-            "left join fetch m.listPorts " +
-            "left join fetch s.listPorts " +
-            "left join fetch a.portsToOpen " +
-            "where a.user.id=:userId and a.name=:name and a.cuInstanceName=:cuInstanceName")
-    Application findByNameAndUser(@Param("userId") Integer userId,
-                                  @Param("name") String name,
-                                  @Param("cuInstanceName") String cuInstanceName)
-            throws DataAccessException;
+	@Query("Select distinct a from Application a " + "join fetch a.servers s " + "left join fetch a.modules m "
+			+ "left join fetch a.deployments " + "left join fetch a.aliases " + "left join fetch m.moduleInfos "
+			+ "left join fetch m.listPorts " + "left join fetch s.listPorts " + "left join fetch a.portsToOpen "
+			+ "where a.user.id=:userId and a.name=:name and a.cuInstanceName=:cuInstanceName")
+	Application findByNameAndUser(@Param("userId") Integer userId, @Param("name") String name,
+			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
 
-    @Query("Select distinct a from Application a " +
-            "join fetch a.servers " +
-            "left join fetch a.modules " +
-            "left join fetch a.deployments " +
-            "left join fetch a.aliases " +
-            "left join fetch a.portsToOpen " +
-            "where a.user.id=:userId and a.cuInstanceName=:cuInstanceName")
-    public List<Application> findAllByUser(@Param("userId") Integer userId,
-                                           @Param("cuInstanceName") String cuInstanceName)
-            throws DataAccessException;
+	@Query("Select distinct a from Application a " + "join fetch a.servers " + "left join fetch a.modules "
+			+ "left join fetch a.deployments " + "left join fetch a.aliases " + "left join fetch a.portsToOpen "
+			+ "where a.user.id=:userId and a.cuInstanceName=:cuInstanceName")
+	public List<Application> findAllByUser(@Param("userId") Integer userId,
+			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
 
-    @Query("select al from Application a left join a.aliases al where a.name=:name " +
-            "and a.cuInstanceName=:cuInstanceName")
-    public List<String> findAllAliases(@Param("name") String applicationName,
-                                       @Param("cuInstanceName") String cuInstanceName)
-            throws DataAccessException;
+	@Query("select al from Application a left join a.aliases al where a.name=:name "
+			+ "and a.cuInstanceName=:cuInstanceName")
+	public List<String> findAllAliases(@Param("name") String applicationName,
+			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
 
-    @Query("select al from Application a left join a.aliases al")
-    public List<String> findAliasesForAllApps()
-            throws DataAccessException;
+	@Query("select al from Application a left join a.aliases al")
+	public List<String> findAliasesForAllApps() throws DataAccessException;
 
-    @Query("Select a from Application a where a.name=:name and a.user.login=:login  " +
-            "and a.cuInstanceName=:cuInstanceName")
-    Application findByUserLoginAndName(@Param("login") String userLogin,
-                                       @Param("name") String applicationName,
-                                       @Param("cuInstanceName") String cuInstanceName)
-            throws DataAccessException;
+	@Query("Select a from Application a where a.name=:name and a.user.login=:login  "
+			+ "and a.cuInstanceName=:cuInstanceName")
+	Application findByUserLoginAndName(@Param("login") String userLogin, @Param("name") String applicationName,
+			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
 
-    @Query("Select count(a) from Application a where a.user.id=:userId and a.cuInstanceName=:cuInstanceName")
-    Long countApp(@Param("userId") Integer userId,
-                  @Param("cuInstanceName") String cuInstanceName)
-            throws DataAccessException;
+	@Query("Select count(a) from Application a where a.user.id=:userId and a.cuInstanceName=:cuInstanceName")
+	Long countApp(@Param("userId") Integer userId, @Param("cuInstanceName") String cuInstanceName)
+			throws DataAccessException;
 
-    @Query("select count(a) from Application a where a.user.login=:userLogin and a.cuInstanceName=:cuInstanceName and a.origin=:imageTag")
-    Integer countAppForTagLike(
-            @Param("cuInstanceName") String cuInstanceName,
-            @Param("userLogin") String userLogin,
-            @Param("imageTag") String imageTag)
-            throws DataAccessException;
+	@Query("select count(a) from Application a where a.user.login=:userLogin and a.cuInstanceName=:cuInstanceName and a.origin=:imageTag")
+	Integer countAppForTagLike(@Param("cuInstanceName") String cuInstanceName, @Param("userLogin") String userLogin,
+			@Param("imageTag") String imageTag) throws DataAccessException;
 
-    @Query("select count(s) from Application a join a.servers s where a.id=:applicationId and s.status != 'START'")
-    Integer countServersNotStarted(Integer applicationId) throws DataAccessException;
+	@Query("select count(s) from Application a join a.servers s where a.name=:name and s.status != 'START'")
+	Integer countServersNotStarted(@Param("name") String name) throws DataAccessException;
 
-    @Query("select count(m) from Application a left join a.modules m where a.id=:applicationId and m.status != 'START'")
-    Integer countModulesNotStarted(Integer applicationId) throws DataAccessException;
+	@Query("select count(m) from Application a left join a.modules m where a.name=:name and m.status != 'START'")
+	Integer countModulesNotStarted(@Param("name") String name) throws DataAccessException;
 }
