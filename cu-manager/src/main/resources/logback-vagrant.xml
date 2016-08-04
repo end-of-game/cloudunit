@@ -21,9 +21,12 @@
 		</encoder>
 	</appender>
 
-	<logger name="fr.treeptik.cloudunit" level="info" />
+	<logger name="fr.treeptik.cloudunit.service" level="debug" />
 
 	<logger name="org.springframework" level="warn" />
+
+	<!-- <logger name="org.hibernate.SQL" level="debug" /> -->
+	
 
 	<root level="warn">
 		<appender-ref ref="console" />

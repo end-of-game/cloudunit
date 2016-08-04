@@ -59,9 +59,9 @@ public interface ApplicationDAO extends JpaRepository<Application, Integer> {
 	Integer countAppForTagLike(@Param("cuInstanceName") String cuInstanceName, @Param("userLogin") String userLogin,
 			@Param("imageTag") String imageTag) throws DataAccessException;
 
-	@Query("select count(s) from Application a join a.servers s where a.name=:name and s.status != 'START'")
+	@Query("select count(s) from Application a join a.servers s where a.name=:name and s.status <> 'START'")
 	Integer countServersNotStarted(@Param("name") String name) throws DataAccessException;
 
-	@Query("select count(m) from Application a left join a.modules m where a.name=:name and m.status != 'START'")
+	@Query("select count(m) from Application a left join a.modules m where a.name=:name and m.status <> 'START'")
 	Integer countModulesNotStarted(@Param("name") String name) throws DataAccessException;
 }

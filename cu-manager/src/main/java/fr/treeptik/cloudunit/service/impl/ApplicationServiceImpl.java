@@ -847,6 +847,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		int modulesNotStarted = applicationDAO.countModulesNotStarted(name);
 		logger.debug("serversNotStarted=" + serversNotStarted);
 		logger.debug("modulesNotStarted=" + modulesNotStarted);
-		return (serversNotStarted + modulesNotStarted) != 0;
+		return (serversNotStarted + modulesNotStarted) == 0;
 	}
 }

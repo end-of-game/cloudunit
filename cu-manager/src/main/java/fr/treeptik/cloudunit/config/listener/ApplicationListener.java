@@ -2,6 +2,8 @@ package fr.treeptik.cloudunit.config.listener;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -17,8 +19,10 @@ import fr.treeptik.cloudunit.service.ApplicationService;
 @Component
 public class ApplicationListener {
 
+	private Logger logger = LoggerFactory.getLogger(ApplicationListener.class);
+
 	@Inject
-	ApplicationService applicationService;
+	private ApplicationService applicationService;
 
 	@EventListener
 	@Async
