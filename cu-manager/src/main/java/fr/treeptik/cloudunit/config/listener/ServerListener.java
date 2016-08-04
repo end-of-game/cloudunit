@@ -33,8 +33,8 @@ public class ServerListener {
 	@EventListener
 	@Async
 	public void onServerStart(ServerStartEvent serverStartEvent) {
+		Server server = (Server) serverStartEvent.getSource();
 		try {
-			Server server = (Server) serverStartEvent.getSource();
 			String containerId = server.getContainerID();
 			int counter = 0;
 			boolean notStarted = true;
@@ -55,7 +55,7 @@ public class ServerListener {
 			logger.info("Server status : " + server.getStatus());
 			serverService.update(server);
 		} catch (Exception e) {
-			logger.error("Exception on server start status : " + e.getMessage());
+			logger.error(server.toString(), e);
 			e.printStackTrace();
 		}
 	}
@@ -64,8 +64,24 @@ public class ServerListener {
 	@Async
 	public void onServerStop(ServerStopEvent serverStopEvent) {
 		Server server = (Server) serverStopEvent.getSource();
-		logger.info("Server status : " + server.getStatus());
-
+		try {
+			int counter = 0;
+			boolean isStopped = false;
+			do {
+				isStopped = dockerService.isStoppedGracefully(server.getContainerID());
+				Thread.sleep(1000);
+			} while (counter++ < 30 && !isStopped);
+			if (counter <= 30) {
+				server.setStatus(Status.STOP);
+			} else {
+				server.setStatus(Status.FAIL);
+			}
+			logger.info("Server status : " + server.getStatus());
+			serverService.update(server);
+		} catch (Exception e) {
+			logger.error(server.toString(), e);
+			e.printStackTrace();
+		}
 	}
 
 }

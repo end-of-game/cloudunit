@@ -25,6 +25,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -405,6 +407,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 		try {
 			logger.debug("start : Methods parameters : " + application);
 
+			// set the application in pending mode
+			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
 			List<Module> modules = application.getModules();
 			for (Module module : modules) {
 				try {
@@ -425,6 +430,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 			application.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, application));
 
+			// wait for modules and servers starting
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+
 			logger.info("ApplicationService : Application successfully started ");
 		} catch (PersistenceException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
@@ -437,6 +445,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public Application stop(Application application) throws ServiceException {
 
 		try {
+
+			// set the application in pending mode
+			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
 			List<Server> servers = application.getServers();
 			for (Server server : servers) {
 				server = serverService.stopServer(server);
@@ -449,6 +461,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					logger.error("ApplicationService Error : failed to stop " + application.getName() + " : " + e);
 				}
 			}
+			applicationEventPublisher.publishEvent(new ApplicationStopEvent(application));
 			logger.info("ApplicationService : Application successfully stopped ");
 		} catch (PersistenceException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
@@ -555,7 +568,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 				code = shellUtils.executeShell(
 						"bash /cloudunit/scripts/deploy.sh " + file.getName() + " " + application.getUser().getLogin(),
 						configShell);
-
 			}
 
 			// if all is ok, create a new deployment tag and set app to starting
@@ -842,10 +854,19 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public boolean isStarted(String name) {
-		int serversNotStarted = applicationDAO.countServersNotStarted(name);
-		int modulesNotStarted = applicationDAO.countModulesNotStarted(name);
+		int serversNotStarted = applicationDAO.countServersNotStatus(name, Status.START);
+		int modulesNotStarted = applicationDAO.countServersNotStatus(name, Status.START);
 		logger.debug("serversNotStarted=" + serversNotStarted);
 		logger.debug("modulesNotStarted=" + modulesNotStarted);
 		return (serversNotStarted + modulesNotStarted) == 0;
+	}
+
+	@Override
+	public boolean isStopped(String name) {
+		int serversNotStopped = applicationDAO.countServersNotStatus(name, Status.STOP);
+		int modulesNotStopped = applicationDAO.countServersNotStatus(name, Status.STOP);
+		logger.debug("serversNotStarted=" + serversNotStopped);
+		logger.debug("modulesNotStarted=" + modulesNotStopped);
+		return (serversNotStopped + modulesNotStopped) == 0;
 	}
 }

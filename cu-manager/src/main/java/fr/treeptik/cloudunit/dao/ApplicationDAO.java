@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.dao;
 
 import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Status;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -59,9 +60,9 @@ public interface ApplicationDAO extends JpaRepository<Application, Integer> {
 	Integer countAppForTagLike(@Param("cuInstanceName") String cuInstanceName, @Param("userLogin") String userLogin,
 			@Param("imageTag") String imageTag) throws DataAccessException;
 
-	@Query("select count(s) from Application a join a.servers s where a.name=:name and s.status <> 'START'")
-	Integer countServersNotStarted(@Param("name") String name) throws DataAccessException;
+	@Query("select count(s) from Application a join a.servers s where a.name=:name and s.status <> :status")
+	Integer countServersNotStatus(@Param("name") String name, @Param("status") Status status) throws DataAccessException;
 
-	@Query("select count(m) from Application a left join a.modules m where a.name=:name and m.status <> 'START'")
-	Integer countModulesNotStarted(@Param("name") String name) throws DataAccessException;
+	@Query("select count(m) from Application a left join a.modules m where a.name=:name and m.status <> :status")
+	Integer countModulesNotStatus(@Param("name") String name, @Param("status") Status status) throws DataAccessException;
 }

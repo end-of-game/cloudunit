@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.config.events.ServerStartEvent;
+import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
@@ -428,12 +429,9 @@ public class ServerServiceImpl
 
         } catch (DockerJSONException e) {
             e.printStackTrace();
-            throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
+            throw new ServiceException(server.toString(), e);
         } catch (PersistenceException e) {
-            logger.error("ServerService Error : fail to start Server" + e);
-            throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
+            throw new ServiceException(server.toString(), e);
         }
         return server;
     }
@@ -443,20 +441,12 @@ public class ServerServiceImpl
     public Server stopServer(Server server)
             throws ServiceException {
         try {
-            // Call the hook for pre stop
-            hookService.call(server.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
-
             dockerService.stopServer(server.getName());
-
-            // Call the hook for post stop
-            hookService.call(server.getName(), RemoteExecAction.APPLICATION_POST_STOP);
-
+            applicationEventPublisher.publishEvent(new ServerStopEvent(server));
         } catch (PersistenceException e) {
-            throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
+            throw new ServiceException(server.toString(), e);
         } catch (DockerJSONException e) {
-            throw new ServiceException("Error docker : "
-                    + e.getLocalizedMessage(), e);
+            throw new ServiceException(server.toString(), e);
         }
         return server;
     }

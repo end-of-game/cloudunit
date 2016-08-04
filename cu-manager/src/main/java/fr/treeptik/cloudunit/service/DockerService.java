@@ -47,6 +47,8 @@ public interface DockerService {
 
     Boolean isRunning(String containerName) throws FatalDockerJSONException;
 
+    Boolean isStoppedGracefully(String containerName) throws FatalDockerJSONException;
+
     List<String> listContainers() throws FatalDockerJSONException;
 
     String getContainerNameFromId(String id) throws FatalDockerJSONException;

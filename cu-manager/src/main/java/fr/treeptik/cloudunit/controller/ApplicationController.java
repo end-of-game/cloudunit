@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -569,12 +570,16 @@ public class ApplicationController implements Serializable {
 	@RequestMapping(value = "/{applicationName}/container/{containerId}/env", method = RequestMethod.GET)
 	public List<EnvUnit> displayEnv(@PathVariable String applicationName, @PathVariable String containerId)
 			throws ServiceException, CheckException {
-
-		User user = this.authentificationUtils.getAuthentificatedUser();
-		String content = dockerService.execCommand(containerId,
-				RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
-		logger.debug(content);
-		List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(content);
+		List<EnvUnit> envUnits = null;
+		try {
+			User user = this.authentificationUtils.getAuthentificatedUser();
+			String content = dockerService.execCommand(containerId,
+					RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
+			logger.debug(content);
+			envUnits = EnvUnitFactory.fromOutput(content);
+		} catch (FatalDockerJSONException e) {
+			throw new ServiceException(applicationName + ", " + containerId, e);
+		}
 		return envUnits;
 	}
 }

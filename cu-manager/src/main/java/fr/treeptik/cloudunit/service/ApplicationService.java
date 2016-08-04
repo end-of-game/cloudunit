@@ -75,4 +75,6 @@ public interface ApplicationService {
 
 	boolean isStarted(String name);
 
+	public boolean isStopped(String name);
+
 }

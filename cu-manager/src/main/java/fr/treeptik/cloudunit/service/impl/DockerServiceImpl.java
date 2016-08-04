@@ -149,10 +149,22 @@ public class DockerServiceImpl implements DockerService {
             StringBuilder msgError = new StringBuilder();
             msgError.append("containerName=").append(containerName);
             throw new FatalDockerJSONException(msgError.toString(), e);
-        } finally {
-            if (dockerClient != null) {
-                dockerClient.close();
+        }
+    }
+
+    @Override
+    public Boolean isStoppedGracefully(String containerName) throws FatalDockerJSONException {
+        try {
+            final ContainerInfo info = dockerClient.inspectContainer(containerName);
+            boolean exited =  info.state().status().equalsIgnoreCase("Exited");
+            if (info.state().exitCode() != 0) {
+                logger.warn("The container may be brutally stopped. Its exit code is : " + info.state().exitCode());
             }
+            return exited;
+        } catch (Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append("containerName=").append(containerName);
+            throw new FatalDockerJSONException(msgError.toString(), e);
         }
     }
 

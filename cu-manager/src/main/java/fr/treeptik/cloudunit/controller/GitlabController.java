@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.gitlab.GitlabPushEvents;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.manager.ApplicationManager;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import org.slf4j.Logger;
@@ -43,9 +42,6 @@ public class GitlabController {
     private Logger logger = LoggerFactory.getLogger(GitlabController.class);
     @Inject
     private AuthenticationManager authenticationManager;
-
-    @Inject
-    private ApplicationManager applicationManager;
 
     @Inject
     private UserService userService;
