@@ -377,3 +377,12 @@ nbactions.xml
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+
+# Created by https://www.gitignore.io/api/s,sass
+
+#!! ERROR: s is undefined. Use list command to see defined gitignore types !!#
+
+### Sass ###
+.sass-cache/
+*.css.map
