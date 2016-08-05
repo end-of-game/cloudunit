@@ -19,6 +19,7 @@ import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
@@ -47,6 +48,9 @@ public class LogController {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private DockerService dockerService;
 
     /**
      * Retourne les n-dernières lignes de logs d'une application
@@ -103,7 +107,7 @@ public class LogController {
         List<SourceUnit> sources = fileService.listLogsFilesByContainer(containerId);
         // needed by UI to call the next url
         if (sources.size()==0) {
-            String defaultFile = fileService.getDefaultLogFile(containerId);
+            String defaultFile = fileService.getLogDirectory(containerId);
             sources.add(new SourceUnit(defaultFile));
         }
         logger.debug("" + sources);
