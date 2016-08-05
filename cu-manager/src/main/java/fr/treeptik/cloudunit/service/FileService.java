@@ -21,6 +21,7 @@ import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.ServiceException;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -38,8 +39,8 @@ public interface FileService {
                              File file, String originalName, String destFile)
         throws ServiceException;
 
-    File getFileFromContainer(String applicationName, String containerId,
-                                        File file, String originalName, String destFile)
+    void getFileFromContainer(String applicationName, String containerId,
+                              String pathFile, OutputStream outputStream)
         throws ServiceException;
 
     void deleteFilesFromContainer(String applicationName, String containerId, String path)
@@ -51,5 +52,6 @@ public interface FileService {
     List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
             throws ServiceException;
 
-    String getLogDirectory(String containerId) throws ServiceException;
+    String getLogDirectory(String containerId)
+            throws ServiceException;
 }

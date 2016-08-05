@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
+import java.io.OutputStream;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,8 +52,6 @@ import java.util.stream.Collectors;
 @Service
 public class FileServiceImpl
         implements FileService {
-
-
 
     private Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
@@ -98,7 +97,7 @@ public class FileServiceImpl
                                          String containerId, String path)
             throws ServiceException {
         try {
-            final String[] command = {"bash", "-c", "rm -rf " + path};
+            final String command = "rm -rf " + path;
             dockerService.execCommand(containerId, command);
         } catch (FatalDockerJSONException e) {
             throw new ServiceException("Cannot delete files " + path + " for " + containerId, e);
@@ -345,25 +344,19 @@ public class FileServiceImpl
      *
      * @param applicationName
      * @param containerId
-     * @param file
-     * @param originalName
-     * @param destFile
      * @return
      * @throws ServiceException
      */
     @Override
-    public File getFileFromContainer(String applicationName,
-                                     String containerId, File file, String originalName, String destFile)
+    public void getFileFromContainer(String applicationName, String containerId,
+                                     String pathFile, OutputStream outputStream)
             throws ServiceException {
         try {
-            return dockerService.getFileFromContainer(containerId, "/" + destFile + "/" + originalName);
+            dockerService.getFileFromContainer(containerId, pathFile, outputStream);
         } catch (FatalDockerJSONException e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("applicationName=").append("=").append(applicationName);
             msgError.append(", containerId=").append("=").append(containerId);
-            msgError.append(", file.toPath()=").append(file.toPath());
-            msgError.append(", originalName=").append(originalName);
-            msgError.append(", destFile=").append(destFile);
             throw new ServiceException(msgError.toString(), e);
         }
     }

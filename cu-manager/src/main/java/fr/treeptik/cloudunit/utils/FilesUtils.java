@@ -17,12 +17,21 @@ package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.model.Server;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class FilesUtils {
+
+    private static Logger logger = LoggerFactory.getLogger(FilesUtils.class);
 
     public static String[] suffixesDeployment = {".war", ".ear", ".jar"};
 
@@ -124,4 +133,25 @@ public class FilesUtils {
         }
         return fileName.substring(fileName.lastIndexOf("."), fileName.length());
     }
+
+    /** Untar
+
+     * @throws IOException
+     * @throws FileNotFoundException
+     *
+     * @return  The {@link List} of {@link File}s with the untared content.
+     * @throws ArchiveException
+     */
+    public static void unTar(final InputStream is, final OutputStream outputFileStream ) throws FileNotFoundException, IOException, ArchiveException {
+        try {
+            final TarArchiveInputStream debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);
+            TarArchiveEntry entry = null;
+            while ((entry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
+                IOUtils.copy(debInputStream, outputFileStream);
+            }
+        } finally {
+            is.close();
+        }
+    }
+
 }

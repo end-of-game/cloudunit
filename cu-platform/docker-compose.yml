@@ -68,7 +68,7 @@ dnsdock:
     command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
 
 cadvisor:
-    image: google/cadvisor:0.14.0
+    image: google/cadvisor:0.23.0
     environment:
         - DB_USER=root
         - DB_PASS=root

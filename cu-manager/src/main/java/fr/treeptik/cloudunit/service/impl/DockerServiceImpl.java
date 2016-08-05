@@ -2,6 +2,8 @@ package fr.treeptik.cloudunit.service.impl;
 
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +13,7 @@ import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableSet;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.utils.FilesUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.slf4j.Logger;
@@ -108,20 +111,22 @@ public class DockerServiceImpl implements DockerService {
         dockerCloudUnitClient.removeContainer(container);
     }
 
-    /**
-     * Execute a shell conmmad into a container. Return the output as String
-     *
-     * @param containerName
-     * @param command
-     * @return
-     */
     @Override
-    public String execCommand(String containerName, String[] command)
+    public String execCommand(String containerName, String command, boolean privileged)
             throws FatalDockerJSONException {
+        final String[] commands = {"bash", "-c", command};
+        String execId = null;
         try {
-            String execId = dockerClient.execCreate(containerName, command,
-                    com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
-                    com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+            if (privileged) {
+                execId = dockerClient.execCreate(containerName, commands,
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr(),
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.user("root"));
+            } else {
+                execId = dockerClient.execCreate(containerName, commands,
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+            }
             try (final LogStream stream = dockerClient.execStart(execId)) {
                 final String output = stream.readFully();
                 return output;
@@ -143,8 +148,12 @@ public class DockerServiceImpl implements DockerService {
      */
     @Override
     public String execCommand(String containerName, String command) throws FatalDockerJSONException {
-        final String[] commands = {"bash", "-c", command};
-        return execCommand(containerName, commands);
+        String output = execCommand(containerName, command, false);
+        if (output.contains("Permission denied")) {
+            logger.warn("["+containerName+"] exec command in privileged mode : " + command);
+            output = execCommand(containerName, command, true);
+        }
+        return output;
     }
 
     @Override
@@ -214,12 +223,11 @@ public class DockerServiceImpl implements DockerService {
     @Override
     public String getEnv(String containerId, String variable) throws FatalDockerJSONException {
         try {
-            Optional<String> value = dockerClient.inspectContainer(containerId).config()
-                    .env().stream().filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=")+1)).findFirst();
-            if (value.isPresent()) {
-                return value.get();
-            }
-            throw new ServiceException("CU_LOG is missing into DOCKERFILE. Needed to set the dir log path");
+            Optional<String> value = dockerClient.inspectContainer(containerId)
+                    .config().env().stream()
+                    .filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=")+1))
+                    .findFirst();
+            return (value.orElseThrow(() -> new ServiceException("$CU_LOG is missing into DOCKERFILE. Needed to set the dir log path")));
         } catch (Exception e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("containerId=").append(containerId);
@@ -229,15 +237,10 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public File getFileFromContainer(String containerId, String path) throws FatalDockerJSONException {
+    public File getFileFromContainer(String containerId, String path, OutputStream outputStream) throws FatalDockerJSONException {
         try {
-            try (TarArchiveInputStream tarStream =
-                         new TarArchiveInputStream(dockerClient.copyContainer(containerId, path))) {
-                TarArchiveEntry entry;
-                while ((entry = tarStream.getNextTarEntry()) != null) {
-                    return entry.getFile();
-                }
-            }
+            InputStream inputStream = dockerClient.archiveContainer(containerId, path);
+            FilesUtils.unTar(inputStream, outputStream);
         } catch(Exception e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("containerId=").append(containerId);

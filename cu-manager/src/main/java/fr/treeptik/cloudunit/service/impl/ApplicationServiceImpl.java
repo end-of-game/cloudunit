@@ -495,36 +495,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     public Application findByNameAndUser(User user, String name) throws ServiceException {
         try {
             Application application = applicationDAO.findByNameAndUser(user.getId(), name, cuInstanceName);
-
             return application;
-
         } catch (PersistenceException e) {
             logger.error(user.toString(), e);
             throw new ServiceException(user.toString(), e);
-        }
-    }
-
-    @Transactional
-    public void deployToContainerId(String applicationName, String containerId, File file, String destFile)
-            throws ServiceException {
-
-        try {
-            Application application = this.findByNameAndUser(authentificationUtils.getAuthentificatedUser(),
-                    applicationName);
-
-            Map<String, String> configShell = new HashMap<>();
-
-            String sshPort = application.getSShPortByContainerId(containerId);
-            String rootPassword = application.getUser().getPassword();
-            configShell.put("port", sshPort);
-            configShell.put("dockerManagerAddress", application.getManagerIp());
-            configShell.put("password", rootPassword);
-
-            // send the file on container
-            shellUtils.sendFile(file, rootPassword, sshPort, application.getManagerIp(), destFile);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -581,50 +555,24 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     /**
-     * Liste des containers pour une application
+     * Return the list of containers for an application
      *
      * @param applicationName
      * @return
      * @throws ServiceException
      */
-    public List<ContainerUnit> listContainers(String applicationName) throws ServiceException {
-        return listContainers(applicationName, true);
-    }
-
+    public List<ContainerUnit> listContainers(String applicationName) throws ServiceException { return listContainers(applicationName, true); }
     public List<ContainerUnit> listContainers(String applicationName, boolean withModules) throws ServiceException {
         List<ContainerUnit> containers = new ArrayList<>();
         try {
-            Application application = findByNameAndUser(
-                    authentificationUtils.getAuthentificatedUser(),
-                    applicationName);
+            User user = authentificationUtils.getAuthentificatedUser();
+            Application application = findByNameAndUser(user, applicationName);
             if (application != null) {
-                try {
-                    // Serveurs
-                    List<Server> servers = application.getServers();
-                    // Ajout des containers de type server
-                    for (Server server : servers) {
-                        ContainerUnit containerUnit = new ContainerUnit(
-                                server.getName(), server.getContainerID(),
-                                "server");
-                        containers.add(containerUnit);
-                    }
-                    if (withModules) {
-                        // Ajout des containers de type module
-                        List<Module> modules = application.getModules();
-                        for (Module module : modules) {
-                            ContainerUnit containerUnit = new ContainerUnit(
-                                    module.getName(), module.getContainerID(),
-                                    "module");
-                            containers.add(containerUnit);
-                        }
-                    }
-                } catch (Exception ex) {
-                    // Si une application sort en erreur, il ne faut pas
-                    // arrêter la suite des traitements
-                    logger.error(application.toString(), ex);
+                application.getServers().stream().forEach(s -> containers.add(new ContainerUnit(s.getName(), s.getContainerID(), "server")));
+                if (withModules) {
+                    application.getModules().stream().forEach(m -> containers.add(new ContainerUnit(m.getName(), m.getContainerID(), "module")));
                 }
             }
-
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }

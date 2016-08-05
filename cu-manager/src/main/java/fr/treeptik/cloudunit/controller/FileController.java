@@ -371,28 +371,7 @@ public class FileController {
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("containerId:" + containerId);
-            logger.debug("applicationName:" + applicationName);
-            logger.debug("fileName:" + fileName);
-        }
-
-        String command =  "cat " + convertPathFromUI(path) + "/" + fileName;
-        logger.debug(command);
-        try {
-            String contentFile = dockerService.execCommand(containerId, command);
-            if (contentFile != null) {
-                logger.debug(contentFile);
-                response.setContentType("text/plain");
-                Writer writer = response.getWriter();
-                writer.write(contentFile);
-                writer.close();
-            } else {
-                logger.error("No content for : " + command);
-            }
-        } catch(FatalDockerJSONException e) {
-            logger.error(e.getMessage());
-        }
+        downloadFileFromContainer(containerId, applicationName, path, fileName, request, response, false);
     }
 
 
@@ -416,7 +395,7 @@ public class FileController {
         @PathVariable final String containerId,
         @PathVariable final String applicationName,
         @PathVariable String path, @PathVariable final String fileName,
-        HttpServletRequest request, HttpServletResponse response)
+        HttpServletRequest request, HttpServletResponse response, Boolean downloadable)
         throws ServiceException, CheckException, IOException {
 
         if (logger.isDebugEnabled()) {
@@ -426,48 +405,26 @@ public class FileController {
         }
 
         User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user,
-            applicationName);
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        String mimeType = URLConnection.guessContentTypeFromName(fileName);
+        String contentDisposition = String.format("attachment; filename=%s", fileName);
+        response.setContentType(mimeType);
+        response.setHeader("Content-Disposition", contentDisposition);
+        if (downloadable != null) {
+            response.setHeader("Content-Description", "File Transfer");
+        }
 
         // We must be sure there is no running action before starting new one
         this.authentificationUtils.canStartNewAction(user, application, locale);
-
-        File file = File.createTempFile("previousDownload", FilesUtils.setSuffix(fileName));
-
         path = convertPathFromUI(path);
-        File fileFromContainer =
-            fileService.getFileFromContainer(applicationName, containerId, file, fileName, path);
-
-        BufferedReader br = new BufferedReader(new FileReader(fileFromContainer));
-        if (br.readLine() == null) {
-            file = File.createTempFile(fileName, "");
-            // put an empty space for empty file
-            FileUtils.write(file, " ");
-        }
-
-        response.reset();
-        String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-        String contentDisposition = String.format("attachment; filename=%s", fileName);
-        int fileSize = Long.valueOf(file.length()).intValue();
-
-        response.setContentType(mimeType);
-        response.setHeader("Content-Disposition", contentDisposition);
-        response.setContentLength(fileSize);
-        response.setHeader("Content-Description", "File Transfer");
-        response.setCharacterEncoding("binary");
-
-        Path path2 = Paths.get(file.getAbsolutePath());
-        byte[] data = Files.readAllBytes(path2);
-
         try (OutputStream stream = response.getOutputStream()) {
-            stream.write(data);
+            fileService.getFileFromContainer(applicationName, containerId, "/" +path + "/" + fileName, stream);
             stream.flush(); // commits response!
             stream.close();
         } catch (IOException ex) {
-            // clean error handling
+            ex.printStackTrace();
         }
-
-        file.delete();
     }
 
     private String convertPathFromUI(String path) {
