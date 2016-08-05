@@ -1,6 +1,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +9,10 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.google.common.collect.ImmutableSet;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -222,6 +226,25 @@ public class DockerServiceImpl implements DockerService {
             msgError.append("variable=").append(variable);
             throw new FatalDockerJSONException(msgError.toString(), e);
         }
+    }
+
+    @Override
+    public File getFileFromContainer(String containerId, String path) throws FatalDockerJSONException {
+        try {
+            try (TarArchiveInputStream tarStream =
+                         new TarArchiveInputStream(dockerClient.copyContainer(containerId, path))) {
+                TarArchiveEntry entry;
+                while ((entry = tarStream.getNextTarEntry()) != null) {
+                    return entry.getFile();
+                }
+            }
+        } catch(Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append("containerId=").append(containerId);
+            msgError.append("path=").append(path);
+            throw new FatalDockerJSONException(msgError.toString(), e);
+        }
+        return null;
     }
 
 }

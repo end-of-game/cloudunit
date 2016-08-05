@@ -48,9 +48,8 @@ public interface FileService {
     void createDirectory(String applicationName, String containerId, String path)
             throws ServiceException;
 
-    public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
+    List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
             throws ServiceException;
 
-    public String getDefaultLogFile(String containerId)
-            throws ServiceException;
+    String getLogDirectory(String containerId) throws ServiceException;
 }

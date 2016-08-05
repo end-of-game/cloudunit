@@ -83,18 +83,6 @@ public class FileServiceImpl
     @Value("${docker.endpoint.mode}")
     private String dockerEndpointMode;
 
-    private boolean isHttpMode;
-
-    @PostConstruct
-    public void initDockerEndPointMode() {
-        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
-            logger.warn("Docker TLS mode is disabled");
-            isHttpMode = true;
-        } else {
-            isHttpMode = false;
-        }
-    }
-
     /**
      * File Explorer Feature
      * <p>
@@ -120,14 +108,8 @@ public class FileServiceImpl
     @Override
     public void createDirectory(String applicationName, String containerId, String path) throws ServiceException {
         try {
-            List<String> containersId = dockerService.listContainers();
-            for (String id : containersId) {
-                if (id.startsWith(containerId) == false) {
-                    continue;
-                }
-                final String[] command = {"bash", "-c", "mkdir -p " + convertDestPathFile(path)};
-                dockerService.execCommand(id, command);
-            }
+            final String command = "mkdir -p " + convertDestPathFile(path);
+            dockerService.execCommand(containerId, command);
         } catch (FatalDockerJSONException e) {
             throw new ServiceException("Cannot create directory " + path + " for " + containerId, e);
         }
@@ -148,15 +130,12 @@ public class FileServiceImpl
         try {
             String logDirectory = getLogDirectory(containerId);
             String containerName = dockerService.getContainerNameFromId(containerId);
-            final String[] command = {"bash", "-c", "find " + logDirectory + " -type f ! -size 0 "};
-            ExplorerFilter filter = ExplorerFactory.getInstance().getCustomFilter(containerName);
+            final String command = "find " + logDirectory + " -type f ! -size 0 ";
             String execOutput = dockerService.execCommand(containerName, command);
             if (execOutput != null && execOutput.contains("cannot access") == false) {
-
                 if (logger.isDebugEnabled()) {
                     logger.debug(execOutput);
                 }
-
                 StringTokenizer lignes = new StringTokenizer(execOutput, "\n");
                 while (lignes.hasMoreTokens()) {
                     String name = lignes.nextToken();
@@ -184,7 +163,8 @@ public class FileServiceImpl
             throws ServiceException {
         List<LogLine> files = new ArrayList<>();
         try {
-            final String command = "tail -n " + nbRows + " /opt/cloudunit/tomcat/logs/" + file;
+            final String logDir = getLogDirectory(containerId);
+            final String command = "tail -n " + nbRows + " " + logDir + " " + file;
             String execOutput = dockerService.execCommand(containerId, command);
             if (execOutput != null
                     && execOutput.contains("cannot access") == false) {
@@ -215,41 +195,13 @@ public class FileServiceImpl
     public List<FileUnit> listByContainerIdAndPath(String containerId,
                                                    String path)
             throws ServiceException {
-        List<FileUnit> files = new ArrayList<>();
 
-        /*
         List<FileUnit> files = new ArrayList<>();
         try {
-
-            DockerClient docker = null;
-            if (Boolean.valueOf(isHttpMode)) {
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certsDirPath));
-                docker = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
-            List<Container> containers = docker.listContainers();
-            for (Container container : containers) {
-                if (container.id().substring(0, 12).equals(containerId) == false) {
-                    continue;
-                }
-
-                // Exec command inside running container with attached STDOUT
-                // and STDERR
-                final String[] command = {"bash", "-c", "ls -laF " + path};
-                String execId;
-
-                String containerName = container.names().get(0);
-                execId = docker.execCreate(containerName, command,
-                        DockerClient.ExecParameter.STDOUT,
-                        DockerClient.ExecParameter.STDERR);
+                final String command = "ls -laF " + path;
+                String execOutput = dockerService.execCommand(containerId, command);
+                String containerName = dockerService.getContainerNameFromId(containerId);
                 ExplorerFilter filter = ExplorerFactory.getInstance().getCustomFilter(containerName);
-                final LogStream output = docker.execStart(execId);
-                final String execOutput = output.readFully();
                 if (execOutput != null
                         && execOutput.contains("cannot access") == false) {
 
@@ -312,16 +264,11 @@ public class FileServiceImpl
                             files.add(fileUnit);
                         }
                     }
-                    if (output != null) {
-                        output.close();
-                    }
                 }
-
-            }
-        } catch (DockerException | InterruptedException | DockerCertificateException e) {
-            throw new ServiceException("Error in listByContainerIdAndPath", e);
+        } catch (FatalDockerJSONException e) {
+            throw new ServiceException(containerId, e);
         }
-*/
+
         return files;
     }
 
@@ -408,40 +355,17 @@ public class FileServiceImpl
     public File getFileFromContainer(String applicationName,
                                      String containerId, File file, String originalName, String destFile)
             throws ServiceException {
-
-        String sshPort = null;
-        String rootPassword = null;
-        Application application;
         try {
-            application = applicationService.findByNameAndUser(
-                    authentificationUtils.getAuthentificatedUser(),
-                    applicationName);
-
-            Map<String, String> configShell = new HashMap<>();
-
-            sshPort = application.getSShPortByContainerId(containerId);
-            rootPassword = application.getUser().getPassword();
-            configShell.put("port", sshPort);
-            configShell.put("dockerManagerAddress",
-                    application.getManagerIp());
-            configShell.put("password", rootPassword);
-
-            String convertedDestPathFile = convertDestPathFile(destFile);
-            shellUtils.downloadFile(file, rootPassword, sshPort,
-                    application.getManagerIp(), convertedDestPathFile + originalName);
-
-        } catch (ServiceException | CheckException e) {
+            return dockerService.getFileFromContainer(containerId, "/" + destFile + "/" + originalName);
+        } catch (FatalDockerJSONException e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("applicationName=").append("=").append(applicationName);
             msgError.append(", containerId=").append("=").append(containerId);
             msgError.append(", file.toPath()=").append(file.toPath());
             msgError.append(", originalName=").append(originalName);
             msgError.append(", destFile=").append(destFile);
-            msgError.append(", sshPort=").append(sshPort);
             throw new ServiceException(msgError.toString(), e);
         }
-
-        return file;
     }
 
     private String convertDestPathFile(String pathFile) {
@@ -450,7 +374,7 @@ public class FileServiceImpl
         return pathFile;
     }
 
-    private String getLogDirectory(String containerId)
+    public String getLogDirectory(String containerId)
             throws ServiceException {
         String location = null;
         try {
@@ -460,23 +384,5 @@ public class FileServiceImpl
         }
         return location;
     }
-
-    public String getDefaultLogFile(String containerId)
-            throws ServiceException {
-        Module module = null;
-        Server server = null;
-        String file = null;
-        try {
-            server = serverService.findByContainerID(containerId);
-            if (server != null) {
-                file = server.getServerAction().getDefaultLogFile();
-            }
-        } catch (ServiceException e) {
-            throw new ServiceException("error in send file into the container",
-                    e);
-        }
-        return file;
-    }
-
 
 }
