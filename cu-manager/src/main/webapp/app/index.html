@@ -63,22 +63,6 @@
       <ul class="primary-links">
         <li><a ui-sref="dashboard">Dashboard</a></li>
         <li><a ui-sref="snapshots">App Templates</a></li>
-        <li>
-          <div class="dropdown" dropdown ng-controller="QuickEditCtrl as quickEdit">
-            <a class="dropdown-toggle"
-               dropdown-toggle
-               data-ng-click="quickEdit.getApplications()"> Quick Edit
-            </a>
-            <ul class="dropdown-menu" role="menu">
-              <li data-ng-hide="quickEdit.list.length" class="no-data">No application found</li>
-              <li data-ng-repeat="item in quickEdit.list">
-                <a ng-href="#editApplication/{{item.name}}/overview"
-                   data-ng-bind="item.name">
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li>
         <li><a ui-sref="mainTimeline">Messages</a></li>
         <li>
           <div class="dropdown" dropdown>
@@ -283,7 +267,6 @@
 <script src="scripts/shared/tags/tags.js"></script>
 <script src="scripts/shared/tags/tag.js"></script>
 <script src="scripts/shared/tags/tagsInput.js"></script>
-<script src="scripts/shared/quickEdit/quickEdit.js"></script>
 
 <!--Components-->
 
