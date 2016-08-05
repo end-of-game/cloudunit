@@ -22,7 +22,7 @@
   function AccountAdmin () {
     return {
       templateUrl: 'scripts/components/account/account.admin.html',
-      scope: {},
+      bindings: {},
       controller: [
         '$scope',
         'AdminService',

@@ -109,8 +109,12 @@
         .catch ( errorScript );
     }
 
-    function errorScript() {
-      vm.errorMsg = 'An error has been encountered!'
+    function errorScript(res) {
+      if(res.data.message) {
+        vm.errorMsg = res.data.message;
+      } else {
+        vm.errorMsg = 'An error has been encountered!';
+      }
       vm.noticeMsg = '';
     }
 
