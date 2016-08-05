@@ -1,0 +1,65 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="card large">
+  <div class="content clearfix" id="settings-environment">
+    <h3 class="title large">Environment variables</h3>
+   <table class="table">
+      <thead>
+      <tr>
+        <th>Key</th>
+        <th>Value</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr 
+          dir-paginate="env in environment.env  | itemsPerPage: environment.pageSize track by $index"
+          data-current-page="environment.currentPage">
+          <td>
+            {{ env.key }}
+          </td>
+          <td>
+            {{ env.value }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <dir-pagination-controls ng-if="environment.env.length"></dir-pagination-controls>
+
+<!--      <div id="timeline-task" >
+        <table class="table ng-table-responsive terminal">
+          <tr data-ng-repeat="message in environment.env track by $index">
+            <td>
+              <p>
+                <span id="key-{{$index}}"
+                  data-title="Copy to clipboard"
+                  tooltip=""
+                  ngclipboard data-clipboard-target="#key-{{$index}}">
+                  {{ message.key }}
+                </span>
+                <span id="value-{{$index}}"
+                  data-title="Copy to clipboard" 
+                  tooltip=""
+                  ngclipboard data-clipboard-target="#value-{{$index}}">
+                  {{ message.value }}
+                </span>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </div>-->
+
+  </div>
+</div>

@@ -54,6 +54,7 @@
     
     var vm = this;
     vm.monitoringRoute = false;
+    vm.settingsRoute = false;
     vm.dislayJolokia = CONFIG.dislayJolokia;
     vm.applicationService = ApplicationService;
     
@@ -63,6 +64,14 @@
         vm.monitoringRoute = true;
       } else {
         vm.monitoringRoute = false;
+      }
+      if (($state.current.name == "editApplication.settingsEnvironment")
+        || ($state.current.name == "editApplication.settingsPort")
+        || ($state.current.name == "editApplication.settingsJVM")
+        || ($state.current.name == "editApplication.settingsAlias")) {
+        vm.settingsRoute = true;
+      } else {
+        vm.settingsRoute = false;
       }
     }
 

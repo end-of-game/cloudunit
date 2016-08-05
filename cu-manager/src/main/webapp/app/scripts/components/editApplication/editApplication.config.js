@@ -78,6 +78,26 @@ angular.module('webuiApp.editApplication', [])
           {
             url: '/settings',
             template: '<edit-app-settings app="editApp.application"></edit-app-settings>',
+          })  
+        .state('editApplication.settingsJVM',
+          {
+            url: '/settingsJVM',
+            template: '<jvm-component app="editApp.application"></jvm-component>',
+          })
+        .state('editApplication.settingsAlias',
+          {
+            url: '/settingsAlias',
+            template: '<alias-component app="editApp.application"></alias-component>',
+          })
+        .state('editApplication.settingsPort',
+          {
+            url: '/settingsPort',
+            template: '<ports-component app="editApp.application"></ports-component>',
+          })
+        .state('editApplication.settingsEnvironment',
+          {
+            url: '/settingsEnvironment',
+            template: '<environment-component app="editApp.application"></environment-component>',
           });
 
     }, ]);

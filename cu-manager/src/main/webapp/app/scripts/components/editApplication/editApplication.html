@@ -105,11 +105,25 @@
             </a>
           </li>
           <li ng-click="editApp.updateRoute();"
-            ui-sref-active="active"
+            ng-class="{ 'active': editApp.settingsRoute }"
             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="settings-tab" ui-sref="editApplication.settings" ripple="">
-              <span>Settings</span>
-            </a>
+            <div class="dropdown" dropdown>
+              <a class="dropdown-toggle mainLink" dropdown-toggle>Settings</a>
+              <ul class="dropdown-menu" role="menu">
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsJVM"><span>JVM Configuration</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsAlias"><span>DNS Alias</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsPort"><span>Port to expose</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsEnvironment"><span>Variables Environment</span></a>
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
       </div>
@@ -125,5 +139,3 @@
   </div>
 
 </section>
-
-

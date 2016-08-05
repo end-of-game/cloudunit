@@ -57,7 +57,8 @@
       init: init,
       state: {},
       stopPolling: stopPolling,
-      getVariableEnvironment: getVariableEnvironment
+      getVariableEnvironment: getVariableEnvironment,
+      getSettingsVariableEnvironment: getSettingsVariableEnvironment
     };
 
 
@@ -205,6 +206,13 @@
     
     // Gestion des variables environnement
     
+    function getSettingsVariableEnvironment ( applicationName ) {
+      var dir = $resource ( 'application/:applicationName/listVarEnv' );
+      return dir.query ( {
+        applicationName: applicationName
+      } ).$promise;      
+    }
+
     function getVariableEnvironment ( applicationName, containerId ) {
       var dir = $resource ( 'application/:applicationName/container/:containerId/env' );
       return dir.query ( {
