@@ -3,13 +3,9 @@ cloudunit/base-12.04 images/base-12.04
 cloudunit/base-14.04 images/base-14.04
 cloudunit/base-16.04 images/base-16.04
 cloudunit/java images/tools/java
-cloudunit/tomcat-base images/servers/binaries/tomcat-base
-cloudunit/tomcat-appconf6 images/servers/appconf/tomcat-appconf6
-cloudunit/tomcat-appconf7 images/servers/appconf/tomcat-appconf7
-cloudunit/tomcat-appconf8 images/servers/appconf/tomcat-appconf8
-cloudunit/tomcat-6 images/servers/binaries/tomcat-6
-cloudunit/tomcat-7 images/servers/binaries/tomcat-7
-cloudunit/tomcat-8 images/servers/binaries/tomcat-8
+cloudunit/tomcat-6 images/servers/appconf/tomcat-6
+cloudunit/tomcat-7 images/servers/appconf/tomcat-7
+cloudunit/tomcat-8 images/servers/appconf/tomcat-8
 cloudunit/fatjar images/servers/appconf/fatjar
 cloudunit/apache-2-2 images/servers/appconf/apache-2-2
 cloudunit/postgresql-9-3 images/modules/postgresql-9-3
