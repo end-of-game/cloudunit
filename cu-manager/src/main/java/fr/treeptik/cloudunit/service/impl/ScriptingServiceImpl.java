@@ -82,11 +82,8 @@ public class ScriptingServiceImpl implements ScriptingService {
             if (!fileCLI.exists()) {
                 System.out.println("Error ! ");
                 StringBuilder msgError = new StringBuilder(512);
-                msgError.append("\n***************************************************************");
-                msgError.append("\nMISSING CLOUDUNITCLI.JAR");
                 msgError.append("\nPlease run manually (1) : mkdir -p " + pathCLI.substring(0, pathCLI.lastIndexOf("/")));
                 msgError.append("\nPlease run manually (2) : wget https://github.com/Treeptik/cloudunit/releases/download/1.0/CloudUnitCLI.jar -O " + pathCLI);
-                msgError.append("\n***************************************************************");
                 throw new ServiceException(msgError.toString());
             }
 
