@@ -63,8 +63,17 @@
     font-size: 16px;
   }
 }
-
 .app-bar-cli {
+  margin: 0px !important;
+  padding-top: 23px;
+  padding-bottom: 3px;
+  padding-left: 15px;
+  padding-right: 15px;
+  @media (min-width: $grid-float-breakpoint) {
+    background-color: $color-primary;
+  }
+}
+/*.app-bar-cli {
   @media (min-width: $grid-float-breakpoint) {
     float: right;
     & > a:last-child {
@@ -73,18 +82,18 @@
   }
   float: left;
   height: 100%;
-  /*background-color: #cfd8dc;*/
+  //background-color: #cfd8dc;
   & > a:last-child {
     display: inline-block;
     height: 100%;
     padding: 10px;
-    /*background-color: #cfd8dc;*/
+    //background-color: #cfd8dc;
     font-size: 14px;
     color: rgba(0, 0, 0, 0.54);
     line-height: 3em;
   }
 }
-
+*/
 .app-bar-header .primary-links {
   float: left;
   width: auto;
@@ -119,10 +128,7 @@
 
 .app-bar-icons {
   @include clearfix();
-
-  @media (min-width: $grid-float-breakpoint) {
-    float: right;
-  }
+  float: right;
 }
 
 .icon-bar {
