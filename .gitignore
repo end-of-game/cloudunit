@@ -386,3 +386,5 @@ hs_err_pid*
 ### Sass ###
 .sass-cache/
 *.css.map
+
+docker-client
