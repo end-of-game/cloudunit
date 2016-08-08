@@ -18,9 +18,12 @@ package fr.treeptik.cloudunit.service;
 import fr.treeptik.cloudunit.dto.FileUnit;
 import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
+import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -35,11 +38,10 @@ public interface FileService {
     List<SourceUnit> listLogsFilesByContainer(String containerId)
         throws ServiceException;
 
-    void sendFileToContainer(String applicationName, String containerId,
-                             File file, String originalName, String destFile)
-        throws ServiceException;
+    void sendFileToContainer(String containerId, String destination, MultipartFile fileUpload, String contentFileName, String contentFileData)
+            throws ServiceException, CheckException;
 
-    void getFileFromContainer(String applicationName, String containerId,
+    int getFileFromContainer(String containerId,
                               String pathFile, OutputStream outputStream)
         throws ServiceException;
 

@@ -2,8 +2,11 @@ package fr.treeptik.cloudunit.service.impl;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -237,17 +240,31 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public File getFileFromContainer(String containerId, String path, OutputStream outputStream) throws FatalDockerJSONException {
+    public int getFileFromContainer(String containerId, String path, OutputStream outputStream) throws FatalDockerJSONException {
         try {
             InputStream inputStream = dockerClient.archiveContainer(containerId, path);
             FilesUtils.unTar(inputStream, outputStream);
+            int size = inputStream.available();
+            return size;
         } catch(Exception e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("containerId=").append(containerId);
             msgError.append("path=").append(path);
             throw new FatalDockerJSONException(msgError.toString(), e);
         }
-        return null;
+    }
+
+    @Override
+    public void sendFileToContainer(String containerId, String localPathFile, String originalName, String filePath) throws FatalDockerJSONException {
+        try {
+            Path path = Paths.get(localPathFile);
+            dockerClient.copyToContainer(path, containerId, filePath);
+        } catch(Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append("containerId=").append(containerId);
+            msgError.append("localPathFile=").append(localPathFile);
+            throw new FatalDockerJSONException(msgError.toString(), e);
+        }
     }
 
 }

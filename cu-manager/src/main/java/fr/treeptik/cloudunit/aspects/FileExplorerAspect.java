@@ -56,14 +56,8 @@ public class FileExplorerAspect
 
         switch (joinPoint.getSignature().getName().toUpperCase()) {
             case "DELETEFILESFROMCONTAINER":
-
                 message.setEvent(user.getLogin() + " has removed this file : "
                     + joinPoint.getArgs()[2]);
-                break;
-            case "SENDFILETOCONTAINER":
-                message.setEvent(user.getLogin() + " has send this file : "
-                    + joinPoint.getArgs()[3] + " at "
-                    + joinPoint.getArgs()[4].toString().replaceAll("__", "/"));
                 break;
         }
         this.messageService.create(message);

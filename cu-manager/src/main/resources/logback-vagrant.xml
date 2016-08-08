@@ -22,10 +22,10 @@
 	</appender>
 
 	<logger name="fr.treeptik.cloudunit.controller" level="debug" />
-	<logger name="fr.treeptik.cloudunit.service.ApplicationService" level="debug" />
-    <logger name="fr.treeptik.cloudunit.service.ServerService" level="debug" />
-    <logger name="fr.treeptik.cloudunit.service.ModuleService" level="debug" />
-    <logger name="fr.treeptik.cloudunit.service.FileService" level="debug" />
+	<logger name="fr.treeptik.cloudunit.service.impl.ApplicationServiceImpl" level="debug" />
+    <logger name="fr.treeptik.cloudunit.service.impl.ServerServiceImpl" level="debug" />
+    <logger name="fr.treeptik.cloudunit.service.impl.ModuleServiceImpl" level="debug" />
+	<logger name="fr.treeptik.cloudunit.service.impl.FileServiceImpl" level="debug" />
 
 	<logger name="org.springframework" level="warn" />
 

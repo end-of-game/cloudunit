@@ -49,8 +49,8 @@ public class SecurityAnnotationAspect {
     @Inject
     private ApplicationService applicationService;
 
-    @Before("@annotation(fr.treeptik.cloudunit.aspects.CloudUnitSecurable)")
-    public void verifyRelationBetweenUserAndApplication(JoinPoint joinPoint) {
+    @Before("@annotation(fr.treeptik.cloudunit.aspects.CloudUnitSecurable) && args(applicationName)")
+    public void verifyRelationBetweenUserAndApplication(JoinPoint joinPoint, String applicationName) {
 
         UserDetails principal = null;
         JsonInput jsonInput = null;
@@ -61,13 +61,9 @@ public class SecurityAnnotationAspect {
             if (joinPoint.getArgs() == null) {
                 logger.error("Error on annotation aspect : " + joinPoint.getStaticPart().getSignature());
             } else {
-                String applicationName = null;
                 if (joinPoint.getArgs()[0] instanceof JsonInput) {
                     jsonInput = (JsonInput) joinPoint.getArgs()[0];
                     applicationName = jsonInput.getApplicationName();
-                } else {
-                    // The first parameter must be always be the applicationName
-                    applicationName = (String) joinPoint.getArgs()[0];
                 }
                 Application application = applicationService.findByNameAndUser(user, applicationName);
                 if (application == null) {

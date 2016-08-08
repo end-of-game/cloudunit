@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -55,6 +56,9 @@ public interface DockerService {
 
     String getEnv(String containerId, String variable) throws FatalDockerJSONException;
 
-    File getFileFromContainer(String containerId, String path, OutputStream outputStream) throws FatalDockerJSONException;
+    int getFileFromContainer(String containerId, String path, OutputStream outputStream) throws FatalDockerJSONException;
+
+    void sendFileToContainer(String containerId, String localPathFile, String originalName, String destination) throws FatalDockerJSONException;
+
 }
 

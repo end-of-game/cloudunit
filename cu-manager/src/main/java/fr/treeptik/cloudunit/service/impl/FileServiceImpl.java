@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.service.impl;
 import com.spotify.docker.client.*;
 import com.spotify.docker.client.messages.Container;
 import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.HttpErrorServer;
 import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -28,18 +29,25 @@ import fr.treeptik.cloudunit.filters.explorer.ExplorerFilter;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
+import org.apache.commons.fileupload.FileUpload;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Paths;
 import java.util.*;
@@ -276,65 +284,65 @@ public class FileServiceImpl
      * <p>
      * Send a file into a container
      *
-     * @param applicationName
      * @param containerId
-     * @param file
-     * @param originalName
+     * @Param destination
      * @throws ServiceException
      */
     @Override
-    public void sendFileToContainer(String applicationName, String containerId,
-                                    File file, String originalName, String destination)
-            throws ServiceException {
+    public void sendFileToContainer(String containerId, String destination, MultipartFile fileUpload, String contentFileName, String contentFileData)
+            throws ServiceException, CheckException {
 
-        Application application;
+        if (fileUpload != null && contentFileData != null) {
+            throw new CheckException("Cannot use together fileUpload and contentFile");
+        }
+
         try {
-            application = applicationService.findByNameAndUser(
-                    authentificationUtils.getAuthentificatedUser(),
-                    applicationName);
-            Map<String, String> configShell = new HashMap<>();
-
-            String sshPort = application.getSShPortByContainerId(containerId);
-            String userPassword = application.getUser().getPassword();
-            configShell.put("port", sshPort);
-            configShell.put("dockerManagerAddress", application.getManagerIp());
-            configShell.put("password", userPassword);
-
-            if (!destination.endsWith("/")) destination = destination + "/";
-
-            // send the file on container
-            shellUtils
-                    .sendFile(file, userPassword, sshPort,
-                            application.getManagerIp(),
-                            destination);
-
-            String commandMove = "mv " + destination
-                    + file.getName().replaceAll(" ", "_") + " " + destination
-                    + originalName.replaceAll(" ", "_");
-
-            String commandChangeOwner = "chown "
-                    + authentificationUtils.getAuthentificatedUser().getLogin()
-                    + ":"
-                    + authentificationUtils.getAuthentificatedUser().getLogin()
-                    + " " + destination + originalName;
-
-            logger.info(commandMove);
-            logger.info(commandChangeOwner);
-
-            shellUtils.executeShell(commandMove + " && " + commandChangeOwner,  configShell);
-
-        } catch (ServiceException | CheckException e) {
-            e.printStackTrace();
-            logger.error(e.getMessage());
+            File file = null;
+            File createTempHomeDirPerUsage = null;
+            File homeDirectory = null;
+                try {
+                    homeDirectory = org.apache.commons.io.FileUtils.getUserDirectory();
+                    createTempHomeDirPerUsage = new File(homeDirectory.getAbsolutePath() + "/tmp" + System.currentTimeMillis());
+                    if (createTempHomeDirPerUsage.mkdirs()) {
+                        String fileName = null;
+                        // usecase : upload a file
+                        if (fileUpload !=null) {
+                            fileName = fileUpload.getOriginalFilename();
+                            fileName = AlphaNumericsCharactersCheckUtils.deAccent(fileName);
+                            fileName = fileName.replace(" ", "_");
+                            file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + fileName);
+                            fileUpload.transferTo(file);
+                            destination = convertPathFromUI(destination);
+                        }
+                        // usecase : save the content file
+                        else {
+                            fileName = contentFileName;
+                            file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + contentFileName);
+                            FileUtils.write(file, contentFileData);
+                        }
+                        dockerService.sendFileToContainer(containerId, file.getParent(), fileName, destination);
+                    } else {
+                        throw new ServiceException("Cannot create : " + createTempHomeDirPerUsage.getAbsolutePath());
+                    }
+                } finally {
+                    if (createTempHomeDirPerUsage != null) createTempHomeDirPerUsage.delete();
+                }
+        } catch (FatalDockerJSONException | IOException e) {
             StringBuilder msgError = new StringBuilder(512);
-            msgError.append("applicationName=").append(applicationName);
             msgError.append(",").append("containerId=").append(containerId);
-            msgError.append(",").append("file=").append(file);
-            msgError.append(",").append("originalName=").append(originalName);
+            msgError.append(",").append("fileUpload=").append(fileUpload);
             msgError.append(",").append("destFile=").append(destination);
             throw new ServiceException("error in send file into the container : " + msgError, e);
         }
 
+    }
+
+    private String convertPathFromUI(String path) {
+        if (path != null) {
+            path = path.replaceAll("____", "/");
+            path = path.replaceAll("__", "/");
+        }
+        return path;
     }
 
     /**
@@ -342,20 +350,18 @@ public class FileServiceImpl
      * <p>
      * Gather a file from a container
      *
-     * @param applicationName
      * @param containerId
      * @return
      * @throws ServiceException
      */
     @Override
-    public void getFileFromContainer(String applicationName, String containerId,
+    public int getFileFromContainer(String containerId,
                                      String pathFile, OutputStream outputStream)
             throws ServiceException {
         try {
-            dockerService.getFileFromContainer(containerId, pathFile, outputStream);
+            return dockerService.getFileFromContainer(containerId, pathFile, outputStream);
         } catch (FatalDockerJSONException e) {
             StringBuilder msgError = new StringBuilder();
-            msgError.append("applicationName=").append("=").append(applicationName);
             msgError.append(", containerId=").append("=").append(containerId);
             throw new ServiceException(msgError.toString(), e);
         }

@@ -17,6 +17,7 @@ package fr.treeptik.cloudunit.controller;
 
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
+import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
@@ -27,8 +28,10 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.FileService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +48,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
 import java.util.List;
 import java.util.Locale;
 
@@ -105,6 +109,62 @@ public class FileController {
     }
 
     /**
+     * Display content file from a container
+     *
+     * @param containerId
+     * @param applicationName
+     * @param request
+     * @param response
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     * @returnoriginalName
+     */
+    @CloudUnitSecurable
+    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}",
+            method = RequestMethod.PUT)
+    public void saveContentFileIntoContainer(
+            @PathVariable final String applicationName,
+            @PathVariable final String containerId,
+            @RequestBody FileRequestBody fileRequestBody,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("applicationName:" + applicationName);
+            logger.debug("fileName:" + fileRequestBody.getFileName());
+            logger.debug("fileRequestBody: " + fileRequestBody);
+        }
+
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user,
+                applicationName);
+
+        // We must be sure there is no running action before starting new one
+        this.authentificationUtils.canStartNewAction(user, application, locale);
+
+        // Application is now pending
+        applicationService.setStatus(application, Status.PENDING);
+
+        if (application != null) {
+            try {
+                String path = convertPathFromUI(fileRequestBody.getFilePath());
+                fileService.sendFileToContainer(containerId, path, null, fileRequestBody.getFileName(), fileRequestBody.getFileContent());
+            } catch (ServiceException e) {
+                StringBuilder msgError = new StringBuilder();
+                msgError.append("containerId : " + containerId);
+                msgError.append("applicationName : " + applicationName);
+                msgError.append(e.getMessage());
+            } finally {
+                // in all case, the error during file upload cannot be critical.
+                // We prefer to set the application in started mode
+                applicationService.setStatus(application, Status.START);
+            }
+        }
+    }
+
+    /**
      * Upload a file into a container
      *
      * @return
@@ -117,10 +177,9 @@ public class FileController {
             consumes = {"multipart/form-data"})
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public JsonResponse uploadFileToContainer(
+    public JsonResponse uploadFileToContainer(@PathVariable final String applicationName,
         @RequestPart("file") MultipartFile fileUpload,
         @PathVariable final String containerId,
-        @PathVariable final String applicationName,
         @PathVariable String path, HttpServletRequest request,
         HttpServletResponse response)
         throws IOException, ServiceException,
@@ -140,30 +199,16 @@ public class FileController {
         // We must be sure there is no running action before starting new one
         this.authentificationUtils.canStartNewAction(user, application, locale);
 
-        // Application is now pending
-        applicationService.setStatus(application, Status.PENDING);
+        try {
+            // Application is now pending
+            applicationService.setStatus(application, Status.PENDING);
 
-        if (application != null) {
-            File file = File.createTempFile("upload-", FilesUtils.setSuffix(fileUpload.getOriginalFilename()));
-            fileUpload.transferTo(file);
-            try {
-                path = convertPathFromUI(path);
-                fileService.sendFileToContainer(applicationName, containerId,
-                    file, fileUpload.getOriginalFilename(), path);
-            } catch (ServiceException e) {
-                StringBuilder msgError = new StringBuilder();
-                msgError.append("Error during file upload : " + file);
-                msgError.append("containerId : " + containerId);
-                msgError.append("applicationName : " + applicationName);
-                msgError.append(e.getMessage());
-                return new HttpErrorServer(msgError.toString());
-            } finally {
-                // in all case, the error during file upload cannot be critical.
-                // We prefer to set the application in started mode
-                applicationService.setStatus(application, Status.START);
-                if (file != null) { file.delete(); }
-            }
+            fileService.sendFileToContainer(containerId, path, fileUpload, null, null);
+        } finally {
+            // Application is always set to start
+            applicationService.setStatus(application, Status.START);
         }
+
         return new HttpOk();
     }
 
@@ -288,65 +333,7 @@ public class FileController {
         }
     }
 
-    /**
-     * Display content file from a container
-     *
-     * @param containerId
-     * @param applicationName
-     * @param request
-     * @param response
-     * @throws ServiceException
-     * @throws CheckException
-     * @throws IOException
-     * @returnoriginalName
-     */
-    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}",
-            method = RequestMethod.PUT)
-    public void saveContentFileIntoContainer(
-            @PathVariable final String containerId,
-            @PathVariable final String applicationName,
-            @RequestBody FileRequestBody fileRequestBody,
-            HttpServletRequest request, HttpServletResponse response)
-            throws ServiceException, CheckException, IOException {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("containerId:" + containerId);
-            logger.debug("applicationName:" + applicationName);
-            logger.debug("fileName:" + fileRequestBody.getFileName());
-            logger.debug("fileRequestBody: " + fileRequestBody);
-        }
-
-        User user = authentificationUtils.getAuthentificatedUser();
-        Application application = applicationService.findByNameAndUser(user,
-                applicationName);
-
-        // We must be sure there is no running action before starting new one
-        this.authentificationUtils.canStartNewAction(user, application, locale);
-
-        // Application is now pending
-        applicationService.setStatus(application, Status.PENDING);
-
-        if (application != null) {
-            File file = File.createTempFile("upload", "tmp");
-            FileUtils.write(file, fileRequestBody.getFileContent());
-            try {
-                String path = convertPathFromUI(fileRequestBody.getFilePath());
-                fileService.sendFileToContainer(applicationName, containerId,
-                        file, fileRequestBody.getFileName(), path);
-            } catch (ServiceException e) {
-                StringBuilder msgError = new StringBuilder();
-                msgError.append("Error during file upload : " + file);
-                msgError.append("containerId : " + containerId);
-                msgError.append("applicationName : " + applicationName);
-                msgError.append(e.getMessage());
-            } finally {
-                // in all case, the error during file upload cannot be critical.
-                // We prefer to set the application in started mode
-                applicationService.setStatus(application, Status.START);
-                if (file != null) { file.delete(); }
-            }
-        }
-    }
 
     /**
      * Display content file from a container
@@ -371,7 +358,7 @@ public class FileController {
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException {
 
-        downloadFileFromContainer(containerId, applicationName, path, fileName, request, response, false);
+        downloadOrEditFile(applicationName, containerId, path, fileName, request, response, true);
     }
 
 
@@ -391,11 +378,35 @@ public class FileController {
      */
     @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
         method = RequestMethod.GET)
+    @CloudUnitSecurable
     public void downloadFileFromContainer(
-        @PathVariable final String containerId,
-        @PathVariable final String applicationName,
-        @PathVariable String path, @PathVariable final String fileName,
-        HttpServletRequest request, HttpServletResponse response, Boolean downloadable)
+            @PathVariable final String applicationName,
+            @PathVariable final String containerId,
+            @PathVariable String path, @PathVariable final String fileName,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
+        downloadOrEditFile(applicationName, containerId, path, fileName, request, response, false);
+    }
+
+    /**
+     *  Edit or Download for FileExplorer feature
+     *
+     * @param applicationName
+     * @param containerId
+     * @param path
+     * @param fileName
+     * @param request
+     * @param response
+     * @param editionMode
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     */
+    private void downloadOrEditFile(
+            final String applicationName,
+            final String containerId,
+            String path, final String fileName,
+            HttpServletRequest request, HttpServletResponse response, Boolean editionMode)
         throws ServiceException, CheckException, IOException {
 
         if (logger.isDebugEnabled()) {
@@ -411,15 +422,16 @@ public class FileController {
         String contentDisposition = String.format("attachment; filename=%s", fileName);
         response.setContentType(mimeType);
         response.setHeader("Content-Disposition", contentDisposition);
-        if (downloadable != null) {
+        if (!editionMode) {
             response.setHeader("Content-Description", "File Transfer");
+            response.setContentType("utf-8");
         }
 
         // We must be sure there is no running action before starting new one
         this.authentificationUtils.canStartNewAction(user, application, locale);
         path = convertPathFromUI(path);
         try (OutputStream stream = response.getOutputStream()) {
-            fileService.getFileFromContainer(applicationName, containerId, "/" +path + "/" + fileName, stream);
+            fileService.getFileFromContainer(containerId, "/" + path + "/" + fileName, stream);
             stream.flush(); // commits response!
             stream.close();
         } catch (IOException ex) {
