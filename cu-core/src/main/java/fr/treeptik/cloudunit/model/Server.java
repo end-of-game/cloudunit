@@ -1,17 +1,17 @@
 package fr.treeptik.cloudunit.model;/*
- * LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
- * but CloudUnit is licensed too under a standard commercial license.
- * Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
- * If you are not sure whether the AGPL is right for you,
- * you can always test our software under the AGPL and inspect the source code before you contact us
- * about purchasing a commercial license.
- *
- * LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
- * or promote products derived from this project without prior written permission from Treeptik.
- * Products or services derived from this software may not be called "CloudUnit"
- * nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
- * For any questions, contact us : contact@treeptik.fr
- */
+									* LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
+									* but CloudUnit is licensed too under a standard commercial license.
+									* Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+									* If you are not sure whether the AGPL is right for you,
+									* you can always test our software under the AGPL and inspect the source code before you contact us
+									* about purchasing a commercial license.
+									*
+									* LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+									* or promote products derived from this project without prior written permission from Treeptik.
+									* Products or services derived from this software may not be called "CloudUnit"
+									* nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+									* For any questions, contact us : contact@treeptik.fr
+									*/
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.treeptik.cloudunit.model.action.ServerAction;
@@ -24,105 +24,110 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
 import javax.persistence.Transient;
 
 @Entity
-public class Server
-    extends Container
-    implements Serializable {
+public class Server extends Container implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private Long jvmMemory;
+	private Long jvmMemory;
 
-    @Column(columnDefinition = "TEXT")
-    private String jvmOptions;
+	@Column(columnDefinition = "TEXT")
+	private String jvmOptions;
 
-    private String jvmRelease;
+	private String jvmRelease;
 
-    private String managerLocation;
+	private String managerLocation;
 
-    @JsonIgnore
-    @ElementCollection
-    private List<String> links;
+	@OneToOne(mappedBy = "server", fetch = FetchType.LAZY)
+	private Application application;
 
-    @Transient
-    @JsonIgnore
-    private ServerAction serverAction;
+	@JsonIgnore
+	@ElementCollection
+	private List<String> links;
 
-    public Server(Integer id, Date startDate, String name, String containerID,
-                  Long memorySize, String containerIP,
-                  Status status, Image image, Map<String, String> listPorts) {
-        super();
-        this.id = id;
-        this.startDate = startDate;
-        this.name = name;
-        this.containerID = containerID;
-        this.memorySize = memorySize;
-        this.containerIP = containerIP;
-        this.status = status;
-        this.image = image;
-    }
+	@Transient
+	@JsonIgnore
+	private ServerAction serverAction;
 
-    public Server() {
-    }
+	public Server(Integer id, Date startDate, String name, String containerID, Long memorySize, String containerIP,
+			Status status, Image image, Map<String, String> listPorts) {
+		super();
+		this.id = id;
+		this.startDate = startDate;
+		this.name = name;
+		this.containerID = containerID;
+		this.memorySize = memorySize;
+		this.containerIP = containerIP;
+		this.status = status;
+		this.image = image;
+	}
 
-    @PostLoad
-    public void initServerActionFromJPA() {
-        ServerFactory.updateServer(this);
-    }
+	public Server() {
+	}
 
-    public Long getJvmMemory() {
-        return jvmMemory;
-    }
+	@PostLoad
+	public void initServerActionFromJPA() {
+		ServerFactory.updateServer(this);
+	}
 
-    public void setJvmMemory(Long jvmMemory) {
-        this.jvmMemory = jvmMemory;
-    }
+	public Long getJvmMemory() {
+		return jvmMemory;
+	}
 
-    public String getJvmOptions() {
-        return jvmOptions;
-    }
+	public void setJvmMemory(Long jvmMemory) {
+		this.jvmMemory = jvmMemory;
+	}
 
-    public void setJvmOptions(String opts) {
-        this.jvmOptions = opts;
-    }
+	public String getJvmOptions() {
+		return jvmOptions;
+	}
 
-    public String getManagerLocation() {
-        return managerLocation;
-    }
+	public void setJvmOptions(String opts) {
+		this.jvmOptions = opts;
+	}
 
-    public void setManagerLocation(String managerLocation) {
-        this.managerLocation = managerLocation;
-    }
+	public String getManagerLocation() {
+		return managerLocation;
+	}
 
-    public ServerAction getServerAction() {
-        return serverAction;
-    }
+	public void setManagerLocation(String managerLocation) {
+		this.managerLocation = managerLocation;
+	}
 
-    public void setServerAction(ServerAction serverAction) {
-        this.serverAction = serverAction;
-    }
+	public ServerAction getServerAction() {
+		return serverAction;
+	}
 
-    public String getJvmRelease() {
-        return jvmRelease;
-    }
+	public void setServerAction(ServerAction serverAction) {
+		this.serverAction = serverAction;
+	}
 
-    public void setJvmRelease(String jvmRelease) {
-        this.jvmRelease = jvmRelease;
-    }
+	public String getJvmRelease() {
+		return jvmRelease;
+	}
 
-    @Override
-    public String toString() {
-        return "Server [id=" + id +
-                ", startDate=" + startDate +
-                ", name=" + name +
-                ", cloudId=" + containerID +
-                ", memorySize=" + memorySize +
-                ", containerIP=" + containerIP +
-                ", image=" + image +
-                ", status=" + status + "]";
-    }
+	public void setJvmRelease(String jvmRelease) {
+		this.jvmRelease = jvmRelease;
+	}
+
+	@Override
+	public String toString() {
+		return "Server [id=" + id + ", startDate=" + startDate + ", name=" + name + ", cloudId=" + containerID
+				+ ", memorySize=" + memorySize + ", containerIP=" + containerIP + ", image=" + image + ", status="
+				+ status + "]";
+	}
+
+	public Application getApplication() {
+		return application;
+	}
+
+	public void setApplication(Application application) {
+		this.application = application;
+	}
 
 }

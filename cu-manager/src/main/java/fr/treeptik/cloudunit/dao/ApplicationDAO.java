@@ -26,9 +26,9 @@ import java.util.List;
 
 public interface ApplicationDAO extends JpaRepository<Application, Integer> {
 
-	@Query("Select distinct a from Application a " + "join fetch a.server s " + "left join fetch a.modules m "
-			+ "left join fetch a.deployments " + "left join fetch a.aliases " + "left join fetch m.moduleInfos "
-			+ "left join fetch m.listPorts " + "left join fetch s.listPorts " + "left join fetch a.portsToOpen "
+	@Query("Select distinct a from Application a " + "left join fetch a.server s"
+			+ "left join fetch a.modules m left join fetch a.deployments " + "left join fetch a.aliases "
+			+ "left join fetch m.moduleInfos " + "left join fetch m.listPorts " + "left join fetch a.portsToOpen "
 			+ "where a.user.id=:userId and a.name=:name and a.cuInstanceName=:cuInstanceName")
 	Application findByNameAndUser(@Param("userId") Integer userId, @Param("name") String name,
 			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
@@ -61,8 +61,10 @@ public interface ApplicationDAO extends JpaRepository<Application, Integer> {
 			@Param("imageTag") String imageTag) throws DataAccessException;
 
 	@Query("select count(s) from Application a join a.server s where a.name=:name and s.status <> :status")
-	Integer countServersNotStatus(@Param("name") String name, @Param("status") Status status) throws DataAccessException;
+	Integer countServersNotStatus(@Param("name") String name, @Param("status") Status status)
+			throws DataAccessException;
 
 	@Query("select count(m) from Application a left join a.modules m where a.name=:name and m.status <> :status")
-	Integer countModulesNotStatus(@Param("name") String name, @Param("status") Status status) throws DataAccessException;
+	Integer countModulesNotStatus(@Param("name") String name, @Param("status") Status status)
+			throws DataAccessException;
 }

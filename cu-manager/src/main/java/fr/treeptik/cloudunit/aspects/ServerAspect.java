@@ -15,13 +15,10 @@
 
 package fr.treeptik.cloudunit.aspects;
 
-import fr.treeptik.cloudunit.exception.MonitorException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Message;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.MessageService;
-import fr.treeptik.cloudunit.utils.MessageUtils;
+import java.io.Serializable;
+
+import javax.inject.Inject;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.JoinPoint.StaticPart;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -31,8 +28,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 
-import javax.inject.Inject;
-import java.io.Serializable;
+import fr.treeptik.cloudunit.exception.MonitorException;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Message;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.MessageService;
+import fr.treeptik.cloudunit.utils.MessageUtils;
 
 public class ServerAspect
     extends CloudUnitAbstractAspect
