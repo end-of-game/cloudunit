@@ -30,12 +30,12 @@ angular.module('webuiApp')
                 var res = [];
                 input.forEach(function(element, index) {
                     if(element.servers) {
-                        if(element.servers[0].image.prefixEnv === serverImageName) {
+                        if(element.server.image.prefixEnv === serverImageName) {
                             res.push(element);
-                        }    
+                        }
                     }
                 });
-                return res;    
+                return res;
             }
             return input;
         };

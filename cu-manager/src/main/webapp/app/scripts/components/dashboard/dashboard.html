@@ -80,7 +80,7 @@
               </ul>
             </div>
           </div>
-          <div class="input-group inline"> 
+          <div class="input-group inline">
             <span class="label">Filter by server:</span>
             <div class="dropdown" dropdown="">
               <a class="dropdown-toggle"
@@ -101,7 +101,7 @@
                   </a>
                 </li>
               </ul>
-            </div>   
+            </div>
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@
         <create-app></create-app>
 
         <!--application list-->
-        
+
         <div id='application-{{application.name}}'
              class="application card smaller {{ application.status | lowercase}}"
              data-ng-repeat="application in dashboard.applications | orderBy:sortorder | filter:{status: dashboard.search} | appByServerImage: dashboard.selectedServer track by $index">
@@ -156,7 +156,7 @@
             <div class="features">
               <p class="subhead">Services</p>
 
-              <p>{{ application.servers[0].image.displayName}}<span class="image icon-tech {{ application.servers[0].image.prefixEnv | lowercase }}"></span></p>
+              <p>{{ application.server.image.displayName}}<span class="image icon-tech {{ application.server.image.prefixEnv | lowercase }}"></span></p>
 
               <p ng-hide="application.modules.length > 0">No modules</p>
               <ul class="modules" ng-show="application.modules.length > 0">

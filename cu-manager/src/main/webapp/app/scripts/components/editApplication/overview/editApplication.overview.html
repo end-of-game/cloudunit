@@ -54,7 +54,7 @@
             <input class="clipboard"
               id="server"
               type="text"
-              value="{{ overview.app.servers[0].image.displayName}}"
+              value="{{ overview.app.server.image.displayName}}"
               data-title="Copy to clipboard"
               tooltip=""
               ngclipboard data-clipboard-target="#server"
@@ -65,7 +65,7 @@
             <input class="clipboard"
               id="jvm-memory"
               type="text"
-              value="{{overview.app.servers[0].jvmMemory}} Mo"
+              value="{{overview.app.server.jvmMemory}} Mo"
               data-title="Copy to clipboard"
               tooltip=""
               ngclipboard data-clipboard-target="#jvm-memory"
@@ -77,7 +77,7 @@
             <input class="code clipboard"
                    id="jvm-options"
                    type="text"
-                   value="{{overview.app.servers[0].jvmOptions | cleanEscapeSlashAndReverse: true}}"
+                   value="{{overview.app.server.jvmOptions | cleanEscapeSlashAndReverse: true}}"
                    readonly=""
                    data-title="Copy to clipboard"
                    tooltip=""
@@ -89,7 +89,7 @@
             <input class="code clipboard"
                    id="jvm-release"
                    type="text"
-                   value="{{overview.app.servers[0].jvmRelease}}"
+                   value="{{overview.app.server.jvmRelease}}"
                    readonly=""
                    data-title="Copy to clipboard"
                    tooltip=""
@@ -98,8 +98,8 @@
 
           <div class="readonly">
             <label>Server admin console: </label>
-            <a href="{{overview.app.servers[0].managerLocation}}" target="_blank" id="server-admin-link">
-              {{overview.app.servers[0].managerLocation}}
+            <a href="{{overview.app.server.managerLocation}}" target="_blank" id="server-admin-link">
+              {{overview.app.server.managerLocation}}
             </a>
           </div>
 
@@ -109,8 +109,8 @@
           <li class="label-like" ng-repeat="env in overview.app.env track by $index">
             <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
               {{ env.key }}
-            </span> 
-            = 
+            </span>
+            =
             <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
               {{ env.value }}
             </span>

@@ -58,7 +58,7 @@
     vm.chooseQueue = chooseQueue;
 
     var lastQueueNameSelected = '';
-    
+
     vm.$onDestroy = function () {
       $interval.cancel(vm.timer);
       vm.timer = null;
@@ -94,7 +94,7 @@
 
     vm.$onInit = function() {
       setTimeout(function() {
-        MonitoringService.getUrlMetrics(vm.app.servers[0].image.prefixEnv)
+        MonitoringService.getUrlMetrics(vm.app.server.image.prefixEnv)
           .then(function success(data) {
             angular.forEach(data, function(predefinedGraph, index) {
                 referenceQueue(predefinedGraph.url);
