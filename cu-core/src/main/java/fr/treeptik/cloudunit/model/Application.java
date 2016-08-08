@@ -105,6 +105,9 @@ public class Application
     @OrderBy(value = "port")
     private Set<PortToOpen> portsToOpen;
 
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
+    private Set<Environment> environments;
+
     public Application() {
         super();
         date = new Date();
@@ -380,5 +383,7 @@ public class Application
         this.portsToOpen = portsToOpen;
     }
 
+    public Set<Environment> getEnvironments() { return environments;  }
 
+    public void setEnvironments(Set<Environment> environments) { this.environments = environments; }
 }
