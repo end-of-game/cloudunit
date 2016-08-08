@@ -48,13 +48,13 @@
         path: path
       } ).$promise;
     }
-       
+
    function unzipFile ( containerId, applicationName, path, item) {
       var file = $resource ( 'file/unzip/container/:containerId/application/:applicationName/path/:path/fileName/:item',
       {
         containerId: containerId,
         applicationName: applicationName,
-        path: path, 
+        path: path,
         item: item
       },
       { 'update': { method: 'PUT',
@@ -68,8 +68,8 @@
 
       return file.update ().$promise;
     }
-     
-    function getFile ( containerId, applicationName, path, fileName ) {     
+
+    function getFile ( containerId, applicationName, path, fileName ) {
       var file = $resource ( '/file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
         containerId: containerId,
         applicationName: applicationName,
@@ -89,25 +89,25 @@
 
       return file.get ().$promise;
     }
-     
-    function editFile ( containerId, applicationName, path, fileName, fileContent ) { 
+
+    function editFile ( containerId, applicationName, path, fileName, fileContent ) {
       var file = $resource ( 'file/content/container/:containerId/application/:applicationName',
       {
         containerId: containerId,
         applicationName: applicationName
       },{ update: {method:'PUT'}
     });
-    
-    return file.update ( 
-      { 
+
+    return file.update (
+      {
         containerId: containerId,
         applicationName: applicationName
-      }, { 
+      }, {
         filePath: path,
         fileName: fileName,
         fileContent: fileContent}).$promise;
     }
-       
+
     function deleteFile ( containerId, applicationName, path ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path' );
 
@@ -119,15 +119,15 @@
     }
 
     function addDirectory ( containerId, applicationName, path ) {
-      var request = $resource ( '/file/container/:containerId/application/:applicationName/path/:path', {
+      var request = $resource ( '/file/container/:containerId/application/:applicationName?path=:path');
+
+      return request.save ({
         containerId: containerId,
         applicationName: applicationName,
         path: path
-      } );
-      
-      return request.save ().$promise;
+        }).$promise;
     }
-    
+
     /*function downloadFile ( containerId, applicationName, path, fileName ) {
       var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
         containerId: containerId,

@@ -38,11 +38,9 @@ public interface ServerService {
 
 	Server restartServer(Server server) throws ServiceException;
 
-	List<Server> findByApp(Application application) throws ServiceException;
+	Server findByApp(Application application) throws ServiceException;
 
 	Server findByName(String serverName) throws ServiceException;
-
-	void checkMaxNumberReach(Application application) throws ServiceException, CheckException;
 
 	Server saveInDB(Server server) throws ServiceException;
 

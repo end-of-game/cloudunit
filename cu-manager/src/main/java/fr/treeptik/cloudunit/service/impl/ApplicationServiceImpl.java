@@ -252,7 +252,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         application.setStatus(Status.PENDING);
         application = this.saveInDB(application);
-        serverService.checkMaxNumberReach(application);
 
         String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
 
@@ -286,7 +285,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
             List<Server> servers = new ArrayList<>();
             servers.add(server);
-            application.setServers(servers);
+            application.setServer(server);
 
             // Persistence for Application model
             application.setJvmRelease(server.getJvmRelease());
@@ -343,14 +342,10 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
 
             // Delete all servers
-            List<Server> listServers = application.getServers();
-            for (Server server : listServers) {
-                serverService.remove(server.getName());
-                if (listServers.indexOf(server) == listServers.size() - 1) {
-                    hipacheRedisUtils.removeRedisAppKey(application);
-                    applicationDAO.delete(server.getApplication());
-                }
-            }
+            Server server = application.getServer();
+            serverService.remove(server.getName());
+            hipacheRedisUtils.removeRedisAppKey(application);
+            applicationDAO.delete(server.getApplication());
 
             logger.info("ApplicationService : Application successfully removed ");
 
@@ -404,11 +399,9 @@ public class ApplicationServiceImpl implements ApplicationService {
                     logger.error("failed to start " + application.toString(), e);
                 }
             }
-            List<Server> servers = application.getServers();
-            for (Server server : servers) {
-                logger.info("old server ip : " + server.getContainerIP());
-                server = serverService.startServer(server);
-            }
+            Server server = application.getServer();
+            logger.info("old server ip : " + server.getContainerIP());
+            server = serverService.startServer(server);
 
             if (application.getAliases() != null && !application.getAliases().isEmpty()) {
                 updateAliases(application);
@@ -435,10 +428,8 @@ public class ApplicationServiceImpl implements ApplicationService {
             // set the application in pending mode
             applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 
-            List<Server> servers = application.getServers();
-            for (Server server : servers) {
-                server = serverService.stopServer(server);
-            }
+            Server server = application.getServer();
+            server = serverService.stopServer(server);
             List<Module> modules = application.getModules();
             for (Module module : modules) {
                 try {
@@ -468,7 +459,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             logger.debug("start findAll");
             List<Application> listApplications = applicationDAO.findAll();
             for (Application application : listApplications) {
-                application.setServers(serverService.findByApp(application));
+                application.setServer(serverService.findByApp(application));
                 application.setModules(moduleService.findByAppAndUser(application.getUser(), application.getName()));
             }
             logger.debug("ApplicationService : All Applications found ");
@@ -505,39 +496,16 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     @Transactional
     public Application deploy(File file, Application application) throws ServiceException, CheckException {
-
         int code = -1;
-        Map<String, String> configShell = new HashMap<>();
-
         try {
             // get app with all its components
-            for (Server server : application.getServers()) {
-
-                // loading server ssh informations
-                String rootPassword = server.getApplication().getUser().getPassword();
-                configShell.put("port", server.getSshPort());
-                configShell.put("dockerManagerAddress", application.getManagerIp());
-                configShell.put("password", rootPassword);
-                String destFile = "/cloudunit/tmp/";
-
-                // send the file on container
-
-                shellUtils.sendFile(file, rootPassword, server.getSshPort(), application.getManagerIp(), destFile);
-
-                // call deployment script
-                code = shellUtils.executeShell(
-                        "bash /cloudunit/scripts/deploy.sh " + file.getName() + " " + application.getUser().getLogin(),
-                        configShell);
-
-            }
-
+            Server server = application.getServer();
             // if all is ok, create a new deployment tag and set app to starting
             if (code == 0) {
                 deploymentService.create(application, Type.WAR);
             } else {
                 throw new ServiceException("No way to deploy application " + file + ", " + application);
             }
-
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
@@ -568,7 +536,8 @@ public class ApplicationServiceImpl implements ApplicationService {
             User user = authentificationUtils.getAuthentificatedUser();
             Application application = findByNameAndUser(user, applicationName);
             if (application != null) {
-                application.getServers().stream().forEach(s -> containers.add(new ContainerUnit(s.getName(), s.getContainerID(), "server")));
+                Server server = application.getServer();
+                containers.add(new ContainerUnit(server.getName(), server.getContainerID(), "server"));
                 if (withModules) {
                     application.getModules().stream().forEach(m -> containers.add(new ContainerUnit(m.getName(), m.getContainerID(), "module")));
                 }
@@ -609,7 +578,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         try {
-            Server server = application.getServers().get(0);
+            Server server = application.getServer();
             application.getAliases().add(alias);
             hipacheRedisUtils.writeNewAlias(alias, application, server.getServerAction().getServerPort());
             applicationDAO.save(application);
@@ -623,7 +592,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Transactional
     public void updateAliases(Application application) throws ServiceException {
         try {
-            Server server = application.getServers().get(0);
+            Server server = application.getServer();
             List<String> aliases = applicationDAO.findAllAliases(application.getName(), cuInstanceName);
             for (String alias : aliases) {
                 hipacheRedisUtils.updateAlias(alias, application, server.getServerAction().getServerPort());
@@ -667,8 +636,8 @@ public class ApplicationServiceImpl implements ApplicationService {
                 alias = "http://" + application.getName() + "-" + application.getUser().getLogin() + "-" + "forward-"
                         + portToOpen.getPort() + application.getDomainName();
             } else if ("other".equalsIgnoreCase(portToOpen.getNature())) {
-                alias = application.getServers().iterator().next().getName() + "."
-                        + application.getServers().iterator().next().getImage().getPath().substring(10) + ".cloud.unit";
+                alias = application.getServer().getName() + "."
+                        + application.getServer().getImage().getPath().substring(10) + ".cloud.unit";
             }
             portToOpen.setAlias(alias);
             portToOpenDAO.save(portToOpen);
@@ -679,7 +648,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     public void updatePortAlias(PortToOpen portToOpen, Application application) {
         if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-            hipacheRedisUtils.updatePortAlias(application.getServers().get(0).getContainerIP(), portToOpen.getPort(),
+            hipacheRedisUtils.updatePortAlias(application.getServer().getContainerIP(), portToOpen.getPort(),
                     portToOpen.getAlias().substring(portToOpen.getAlias().lastIndexOf("//") + 2));
         }
     }

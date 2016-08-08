@@ -158,7 +158,7 @@ public class ModuleServiceImpl
 
         if (module.getImage().getImageType().equals("module")) {
             Map<String, String> configShell = new HashMap<>();
-            for (Server server : application.getServers()) {
+            Server server = application.getServer();
 
                 String command = null;
                 try {
@@ -274,7 +274,7 @@ public class ModuleServiceImpl
 
                     throw new ServiceException(e1.getLocalizedMessage(), e1);
                 }
-            }
+
             this.update(module);
             this.sendEmail(module);
         }
@@ -555,15 +555,11 @@ public class ModuleServiceImpl
             DockerContainer dataContainer = new DockerContainer();
             dataContainer.setName(dockerContainer.getName());
 
-//            if (module.getStatus().equals(Status.START)) {
-//                DockerContainer.stop(dockerContainer, application.getManagerIp());
-//            }
-//            DockerContainer.remove(dockerContainer, application.getManagerIp());
 
             // Delete in database
             if (isModuleRemoving) {
 
-                for (Server server : application.getServers()) {
+                Server server = application.getServer();
                     Map<String, String> configShell = new HashMap<>();
 
                     // On redémarre temporairement les containers Server et
@@ -618,7 +614,7 @@ public class ModuleServiceImpl
                         serverService.stopServer(server);
                         application.setStatus(Status.STOP);
                     }
-                }
+
             }
 
             moduleDAO.delete(module);

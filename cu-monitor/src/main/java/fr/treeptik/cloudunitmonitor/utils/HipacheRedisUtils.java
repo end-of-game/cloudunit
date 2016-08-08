@@ -107,8 +107,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
     @Override
     public void writeNewAlias(String alias, Application application, String serverPort) {
 
-        String dockerManagerIP = application.getServers().get(0)
-                .getContainerIP();
+        String dockerManagerIP = application.getServer().getContainerIP();
 
         JedisPool pool = null;
         Jedis jedis = null;

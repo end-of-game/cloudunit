@@ -66,9 +66,16 @@ public class Application
     @OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Set<Module> modules;
 
-    @OrderBy("id asc")
-    @OneToMany(mappedBy = "application", fetch = FetchType.LAZY)
-    private Set<Server> servers;
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
+    }
+
+    @ManyToOne
+    private Server server;
 
     @OneToMany(mappedBy = "application", fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
@@ -189,18 +196,6 @@ public class Application
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public List<Server> getServers() {
-        if (servers != null) {
-            return new ArrayList<>(servers);
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    public void setServers(List<Server> servers) {
-        this.servers = new HashSet<>(servers);
     }
 
     public List<Deployment> getDeployments() {
@@ -344,31 +339,6 @@ public class Application
         this.deploymentStatus = deploymentStatus;
     }
 
-    /**
-     * One application is composed by many containers
-     * These containers containers can be servers, modules or tools
-     * These methods return the SSH Port associated for the container Id
-     *
-     * @return
-     */
-    public String getSShPortByContainerId(String id) {
-        if (id == null) {
-            return null;
-        }
-        String sshPort = null;
-        for (Server server : servers) {
-            if (id.equals(server.getContainerID().substring(0, 12))) {
-                sshPort = server.getSshPort();
-            }
-        }
-        // real modules + tools
-        for (Module module : modules) {
-            if (id.equals(module.getContainerID().substring(0, 12))) {
-                sshPort = module.getSshPort();
-            }
-        }
-        return sshPort;
-    }
 
     public Set<PortToOpen> getPortsToOpen() {
 

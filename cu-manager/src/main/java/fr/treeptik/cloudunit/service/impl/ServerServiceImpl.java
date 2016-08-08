@@ -201,27 +201,6 @@ public class ServerServiceImpl implements ServerService {
 		return server;
 	}
 
-	/**
-	 * Test if the user can create new server associated to this application
-	 *
-	 * @param application
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	public void checkMaxNumberReach(Application application) throws ServiceException, CheckException {
-		logger.info("check number of server of " + application.getName());
-		if (application.getServers() != null) {
-			try {
-				if (application.getServers().size() >= Integer.parseInt(maxServers)) {
-					throw new CheckException(
-							"You have already created your " + maxServers + " server for your application");
-				}
-			} catch (PersistenceException e) {
-				logger.error("ServerService Error : check number of server" + e);
-				throw new ServiceException(e.getLocalizedMessage(), e);
-			}
-		}
-	}
 
 	/**
 	 * check if the status passed in parameter is the same as in db if it's case
@@ -400,7 +379,7 @@ public class ServerServiceImpl implements ServerService {
 	}
 
 	@Override
-	public List<Server> findByApp(Application application) throws ServiceException {
+	public Server findByApp(Application application) throws ServiceException {
 		try {
 			return serverDAO.findByApp(application.getId());
 		} catch (PersistenceException e) {
@@ -503,28 +482,28 @@ public class ServerServiceImpl implements ServerService {
 		String command = null;
 
 		// Servers
-		List<Server> listServers = application.getServers();
-		for (Server server : listServers) {
-			try {
-				configShell.put("password", server.getApplication().getUser().getPassword());
-				configShell.put("port", server.getSshPort());
-				configShell.put("dockerManagerAddress", application.getManagerIp());
+		Server server = application.getServer();
 
-				// Need to be root for shell call because we modify
-				// /etc/environme,t
-				command = "bash /cloudunit/scripts/change-java-version.sh " + javaVersion;
-				logger.info("command shell to execute [" + command + "]");
-				shellUtils.executeShell(command, configShell);
+		try {
+			configShell.put("password", server.getApplication().getUser().getPassword());
+			configShell.put("port", server.getSshPort());
+			configShell.put("dockerManagerAddress", application.getManagerIp());
 
-			} catch (Exception e) {
-				server.setStatus(Status.FAIL);
-				saveInDB(server);
-				logger.error(
-						"java version = " + javaVersion + " - " + application.toString() + " - " + server.toString(),
-						e);
-				throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
-			}
+			// Need to be root for shell call because we modify
+			// /etc/environme,t
+			command = "bash /cloudunit/scripts/change-java-version.sh " + javaVersion;
+			logger.info("command shell to execute [" + command + "]");
+			shellUtils.executeShell(command, configShell);
+
+		} catch (Exception e) {
+			server.setStatus(Status.FAIL);
+			saveInDB(server);
+			logger.error(
+					"java version = " + javaVersion + " - " + application.toString() + " - " + server.toString(),
+					e);
+			throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
 		}
+
 	}
 
 }

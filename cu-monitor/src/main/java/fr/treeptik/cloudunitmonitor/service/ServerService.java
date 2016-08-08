@@ -42,7 +42,7 @@ public class ServerService {
 
 	public void updatePortAlias(PortToOpen portToOpen, Application application) {
 		if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-			hipacheRedisUtils.updatePortAlias(application.getServers().get(0).getContainerIP(), portToOpen.getPort(),
+			hipacheRedisUtils.updatePortAlias(application.getServer().getContainerIP(), portToOpen.getPort(),
 					portToOpen.getAlias().substring(portToOpen.getAlias().lastIndexOf("//") + 2));
 		}
 	}

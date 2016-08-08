@@ -90,11 +90,11 @@ public class ServerController
         applicationService.setStatus(application, Status.PENDING);
 
         try {
-            for (Server server : application.getServers()) {
-                serverService.update(server, input.getJvmMemory(),
+            Server server = application.getServer();
+            serverService.update(server, input.getJvmMemory(),
                         input.getJvmOptions(), input.getJvmRelease(),
                         false);
-            }
+
         } catch (Exception e) {
             applicationService.setStatus(application, Status.FAIL);
         }

@@ -166,68 +166,20 @@ public class SnapshotServiceImpl implements SnapshotService {
 					.collect(Collectors.toList()));
 
 			Map<String, ModuleConfiguration> config = new HashMap<>();
-			for (Server server : application.getServers()) {
-				snapshot = server.getServerAction().cloneProperties(snapshot);
-			}
+			Server server = application.getServer();
+			snapshot = server.getServerAction().cloneProperties(snapshot);
+
 			for (Module module : application.getModules()) {
-
-				if (!module.getImage().getPath().contains("git")) {
-
 					ModuleConfiguration moduleConfiguration = moduleConfigurationDAO
 							.saveAndFlush(module.getModuleAction().cloneProperties());
 					config.put(moduleConfiguration.getPath(), moduleConfiguration);
-				}
 			}
+
 			snapshot.setAppConfig(config);
 
-			Thread.sleep(5000);
-
-			List<String> images = new ArrayList<>();
-
-			for (Server server : application.getServers()) {
-				images.add(server.getImage().getPath());
-				// DockerContainer dockerContainer = new DockerContainer();
-				// dockerContainer.setName(server.getName());
-				// dockerContainer.setImage(server.getImage().getName());
-				//
-				// hookService.call(dockerContainer.getName(),
-				// RemoteExecAction.SNAPSHOT_PRE_ACTION);
-				//
-				// DockerContainer.commit(dockerContainer,
-				// snapshot.getFullTag(),
-				// application.getManagerIp(),
-				// server.getImage().getPath());
-				//
-				// hookService.call(dockerContainer.getName(),
-				// RemoteExecAction.SNAPSHOT_POST_ACTION);
-			}
-
-			for (Module module : application.getModules()) {
-				String imageName = "";
-				String moduleName = "";
-				moduleName = module.getName();
-				imageName = module.getImage().getPath() + "-" + module.getInstanceNumber();
-				this.backupModule(module);
-				images.add(imageName);
-				// DockerContainer dockerContainer = new DockerContainer();
-				// dockerContainer.setName(moduleName);
-				// dockerContainer.setImage(module.getImage().getName());
-				//
-				// hookService.call(dockerContainer.getName(),
-				// RemoteExecAction.SNAPSHOT_PRE_ACTION);
-				//
-				// DockerContainer.commit(dockerContainer,
-				// snapshot.getFullTag(),
-				// application.getManagerIp(), imageName);
-				//
-				// hookService.call(dockerContainer.getName(),
-				// RemoteExecAction.SNAPSHOT_PRE_ACTION);
-			}
-
-			snapshot.setImages(images);
 			snapshot = snapshotDAO.save(snapshot);
 
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 		return snapshot;
@@ -315,14 +267,9 @@ public class SnapshotServiceImpl implements SnapshotService {
 			// We need it to get lazy modules relationships
 			application = applicationService.findByNameAndUser(application.getUser(), application.getName());
 
-			for (Server server : application.getServers()) {
-				hookService.call(server.getName(), RemoteExecAction.CLONE_PRE_ACTION);
-
-				serverService.update(server, snapshot.getJvmMemory().toString(), snapshot.getJvmOptions(),
+			Server server = application.getServer();
+			serverService.update(server, snapshot.getJvmMemory().toString(), snapshot.getJvmOptions(),
 						snapshot.getJvmRelease(), false);
-
-				hookService.call(server.getName(), RemoteExecAction.CLONE_POST_ACTION);
-			}
 
 			restoreModules(snapshot, application, tag);
 
