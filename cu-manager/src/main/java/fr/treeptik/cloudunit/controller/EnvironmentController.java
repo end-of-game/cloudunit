@@ -74,6 +74,8 @@ public class EnvironmentController implements Serializable {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Environment environment = environmentService.loadEnvironnment(id);
+            if(environment.equals(null))
+                throw new CheckException("Environment variable doesn't exist");
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.createObjectNode();
@@ -115,17 +117,17 @@ public class EnvironmentController implements Serializable {
         }
     }
 
-    @RequestMapping(value = "/{applicationName}/environmentVariables", method = RequestMethod.PUT)
-    public @ResponseBody JsonNode updateEnvironmentVariable (@PathVariable String applicationName,
+    @RequestMapping(value = "/{applicationName}/environmentVariables/{id}", method = RequestMethod.PUT)
+    public @ResponseBody JsonNode updateEnvironmentVariable (@PathVariable String applicationName, @PathVariable int id,
                   @RequestBody EnvironmentVariableRequest environmentVariableRequest)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Application application = applicationService.findByNameAndUser(user, applicationName);
-            Environment environment = new Environment();
+            Environment environment = environmentService.loadEnvironnment(id);
+            if(environment.equals(null))
+                throw new CheckException("Environment variable doesn't exist");
 
-            environment.setApplication(application);
-            environment.setKeyEnv(environmentVariableRequest.getKey());
             environment.setValueEnv(environmentVariableRequest.getValue());
 
             environmentService.save(environment);
@@ -152,7 +154,7 @@ public class EnvironmentController implements Serializable {
             Environment environment = environmentService.loadEnvironnment(id);
 
             if(environment.equals(null)) {
-                return ;
+                throw new CheckException("Environment variable doesn't exist");
             }
 
             environmentService.delete(id);
