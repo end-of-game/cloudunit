@@ -88,10 +88,11 @@ public class FileController {
      * @throws ServiceException
      * @throws CheckException
      */
+    @Deprecated
     @RequestMapping(value = "/container/{containerId}/path/{path}", method = RequestMethod.GET)
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public List<FileUnit> listByContainerIdAndPath(
+    public List<FileUnit> list(
         @PathVariable String containerId, @PathVariable String path)
         throws ServiceException, CheckException {
 
@@ -103,8 +104,28 @@ public class FileController {
         path = convertPathFromUI(path);
         List<FileUnit> fichiers = fileService.listByContainerIdAndPath(
             containerId, path);
+        return fichiers;
+    }
 
-
+    /**
+     * @param containerId
+     * @param path
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping(value = "/container/{containerId}", method = RequestMethod.GET)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public List<FileUnit> listByContainerIdAndPath(
+            @PathVariable String containerId, @RequestParam("path") String path)
+            throws ServiceException, CheckException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("path:" + path);
+        }
+        path = convertPathFromUI(path);
+        List<FileUnit> fichiers = fileService.listByContainerIdAndPath(containerId, path);
         return fichiers;
     }
 
@@ -172,6 +193,7 @@ public class FileController {
      * @throws ServiceException
      * @throws CheckException
      */
+    @Deprecated
     @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path}",
             method = RequestMethod.POST,
             consumes = {"multipart/form-data"})
@@ -213,6 +235,54 @@ public class FileController {
     }
 
     /**
+     * Upload a file into a container
+     *
+     * @return
+     * @throws IOException
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @RequestMapping(value = "/container/{containerId}/application/{applicationName}",
+            method = RequestMethod.POST,
+            consumes = {"multipart/form-data"})
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public JsonResponse uploadFile(@PathVariable final String applicationName,
+                                              @RequestPart("file") MultipartFile fileUpload,
+                                              @PathVariable final String containerId,
+                                              @RequestParam("path") String path, HttpServletRequest request,
+                                              HttpServletResponse response)
+            throws IOException, ServiceException,
+            CheckException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("-- CALL UPLOAD FILE TO CONTAINER FS --");
+            logger.debug("applicationName = " + applicationName);
+            logger.debug("containerId = " + containerId);
+            logger.debug("pathFile = " + path);
+        }
+
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user,
+                applicationName);
+
+        // We must be sure there is no running action before starting new one
+        this.authentificationUtils.canStartNewAction(user, application, locale);
+
+        try {
+            // Application is now pending
+            applicationService.setStatus(application, Status.PENDING);
+
+            fileService.sendFileToContainer(containerId, path, fileUpload, null, null);
+        } finally {
+            // Application is always set to start
+            applicationService.setStatus(application, Status.START);
+        }
+
+        return new HttpOk();
+    }
+
+    /**
      * Delete resources (files and folders) into a container for a path
      *
      * @param containerId
@@ -223,6 +293,7 @@ public class FileController {
      * @throws CheckException
      * @throws IOException
      */
+    @Deprecated
     @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path:.*}",
         method = RequestMethod.DELETE)
     @ResponseBody
@@ -251,7 +322,7 @@ public class FileController {
     }
 
     /**
-     * Delete resources (files and folders) into a container for a path
+     * Create resources (files and folders) into a container for a path
      *
      * @param containerId
      * @param applicationName
@@ -261,11 +332,11 @@ public class FileController {
      * @throws CheckException
      * @throws IOException
      */
+    @Deprecated
     @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path:.*}",
             method = RequestMethod.POST)
-    public
     @ResponseBody
-    JsonResponse createDirectory(
+    public JsonResponse createDir(
             @PathVariable final String containerId,
             @PathVariable final String applicationName,
             @PathVariable String path)
@@ -281,6 +352,79 @@ public class FileController {
         return new HttpOk();
     }
 
+
+    /**
+     * Create resources (files and folders) into a container for a path
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     */
+    @RequestMapping(value = "/container/{containerId}/application/{applicationName}",
+            method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse createDirectory(
+            @PathVariable final String containerId,
+            @PathVariable final String applicationName,
+            @RequestParam("path") String path)
+            throws ServiceException, CheckException,
+            IOException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("applicationName:" + applicationName);
+            logger.debug("path:" + path);
+        }
+        fileService.createDirectory(applicationName, containerId, path);
+        return new HttpOk();
+    }
+
+
+    /**
+     * Delete resources (files and folders) into a container for a path
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     */
+    @RequestMapping(value = "/container/{containerId}/application/{applicationName}",
+            method = RequestMethod.DELETE)
+    @ResponseBody
+    public JsonResponse deleteResources(
+            @PathVariable final String containerId,
+            @PathVariable final String applicationName,
+            @RequestParam("path") String path)
+            throws ServiceException, CheckException,
+            IOException {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("applicationName:" + applicationName);
+            logger.debug("path:" + path);
+        }
+
+        path = convertPathFromUI(path);
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user,
+                applicationName);
+
+        fileService
+                .deleteFilesFromContainer(applicationName, containerId, path);
+
+        return new HttpOk();
+    }
+
+
+
+
     /**
      * Unzip content file into Container
      *
@@ -295,6 +439,7 @@ public class FileController {
      * @throws IOException
      * @returnoriginalName
      */
+    @Deprecated
     @RequestMapping(value = "/unzip/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
             method = RequestMethod.PUT)
     public void unzipFileIntoContainer(
@@ -333,7 +478,57 @@ public class FileController {
         }
     }
 
+    /**
+     * Unzip content file into Container
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @param fileName
+     * @param request
+     * @param response
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     * @returnoriginalName
+     */
+    @RequestMapping(value = "/unzip/container/{containerId}/application/{applicationName}",
+            method = RequestMethod.PUT)
+    public void unzipFile(
+            @PathVariable final String containerId,
+            @PathVariable final String applicationName,
+            @RequestParam("path") final String path, @RequestParam("fileName") final String fileName,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("containerId:" + containerId);
+            logger.debug("applicationName:" + applicationName);
+            logger.debug("fileName:" + fileName);
+        }
+
+        String command =  null;
+        String realPath = convertPathFromUI(path) + "/" + fileName;
+        if (FileUnit.tar().test(fileName)) {
+            command = "tar xvf " + realPath + " -C " + convertPathFromUI(path);
+        } else if (FileUnit.zip().test(fileName)) {
+            command = "unzip " + realPath + " -d " + convertPathFromUI(path);
+        } else {
+            throw new CheckException("Cannot decompress this file. Extension is not right : " + realPath);
+        }
+
+        logger.info(command);
+        try {
+            String commandExec = dockerService.execCommand(containerId, command);
+            if (commandExec != null) {
+                logger.debug(commandExec);
+            } else {
+                logger.error("No content for : " + command);
+            }
+        } catch (FatalDockerJSONException e) {
+            logger.error(e.getMessage());
+        }
+    }
 
     /**
      * Display content file from a container
@@ -349,11 +544,12 @@ public class FileController {
      * @throws IOException
      * @returnoriginalName
      */
+    @Deprecated
     @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
             method = RequestMethod.GET)
     public void displayContentFileFromContainer(
-            @PathVariable final String containerId,
             @PathVariable final String applicationName,
+            @PathVariable final String containerId,
             @PathVariable String path, @PathVariable final String fileName,
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException {
@@ -361,9 +557,8 @@ public class FileController {
         downloadOrEditFile(applicationName, containerId, path, fileName, request, response, true);
     }
 
-
     /**
-     * Download a file into a container
+     * Display content file from a container
      *
      * @param containerId
      * @param applicationName
@@ -376,6 +571,33 @@ public class FileController {
      * @throws IOException
      * @returnoriginalName
      */
+    @RequestMapping(value = "/content/container/{containerId}/application/{applicationName}",
+            method = RequestMethod.GET)
+    public void displayContentFile(
+            @PathVariable final String applicationName,
+            @PathVariable final String containerId,
+            @RequestParam("path") String path, @RequestParam("fileName") final String fileName,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
+
+        downloadOrEditFile(applicationName, containerId, path, fileName, request, response, true);
+    }
+
+    /**
+     * Download a file from a container
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @param fileName
+     * @param request
+     * @param response
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     * @returnoriginalName
+     */
+    @Deprecated
     @RequestMapping(value = "/container/{containerId}/application/{applicationName}/path/{path}/fileName/{fileName:.*}",
         method = RequestMethod.GET)
     @CloudUnitSecurable
@@ -383,6 +605,32 @@ public class FileController {
             @PathVariable final String applicationName,
             @PathVariable final String containerId,
             @PathVariable String path, @PathVariable final String fileName,
+            HttpServletRequest request, HttpServletResponse response)
+            throws ServiceException, CheckException, IOException {
+        downloadOrEditFile(applicationName, containerId, path, fileName, request, response, false);
+    }
+
+    /**
+     * Download a file from a container
+     *
+     * @param containerId
+     * @param applicationName
+     * @param path
+     * @param fileName
+     * @param request
+     * @param response
+     * @throws ServiceException
+     * @throws CheckException
+     * @throws IOException
+     * @returnoriginalName
+     */
+    @RequestMapping(value = "/container/{containerId}/application/{applicationName}",
+            method = RequestMethod.GET)
+    @CloudUnitSecurable
+    public void downloadFile(
+            @PathVariable final String applicationName,
+            @PathVariable final String containerId,
+            @RequestParam("path") String path, @RequestParam("fileName") final String fileName,
             HttpServletRequest request, HttpServletResponse response)
             throws ServiceException, CheckException, IOException {
         downloadOrEditFile(applicationName, containerId, path, fileName, request, response, false);
