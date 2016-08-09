@@ -88,6 +88,9 @@ public class ScriptingController
         logger.info("Save");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
+            if(scriptRequest.getScriptName().isEmpty() || scriptRequest.getScriptContent().isEmpty())
+                throw new CheckException("Name or content cannot be empty");
+
             Script script = new Script();
 
             List<Script> scripts = scriptingService.loadAllScripts();
@@ -180,6 +183,9 @@ public class ScriptingController
         logger.info("Edit");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
+            if(scriptRequest.getScriptName().isEmpty() || scriptRequest.getScriptContent().isEmpty())
+                throw new CheckException("Name or content cannot be empty");
+
             Script script = scriptingService.load(id);
 
             List<Script> scripts = scriptingService.loadAllScripts();
