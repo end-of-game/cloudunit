@@ -12,10 +12,10 @@
 
 	<properties>
 
-        <!-- dynamic property via groovy script maven plugin -->
-        <cloudunit.manager.ip/>
-        <emailForceRedirect/>
-        <email.force.redirect>n.muller@treeptik.fr</email.force.redirect>
+		<!-- dynamic property via groovy script maven plugin -->
+		<cloudunit.manager.ip />
+		<emailForceRedirect />
+		<email.force.redirect>n.muller@treeptik.fr</email.force.redirect>
 
 		<!-- Compiler plugin -->
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -34,7 +34,7 @@
 		<maven.surefire.plugin.version>2.18</maven.surefire.plugin.version>
 		<maven.surefire.report.plugin.version>2.18</maven.surefire.report.plugin.version>
 		<maven.enforcer.plugin.version>1.3.1</maven.enforcer.plugin.version>
-        <powermock.version>1.4.12</powermock.version>
+		<powermock.version>1.4.12</powermock.version>
 
 		<!-- Dependencies properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,33 +57,33 @@
 		</repository>
 	</repositories>
 
-    <licenses>
-        <license>
-            <name>The Affero GPL, Version 3.0</name>
-            <url>https://gnu.org/licenses/agpl.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+	<licenses>
+		<license>
+			<name>The Affero GPL, Version 3.0</name>
+			<url>https://gnu.org/licenses/agpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-    <scm>
-        <connection>scm:git:https://github.com/Treeptik/CloudUnit</connection>
-        <developerConnection>scm:git:git@github.com:Treeptik/CloudUnit</developerConnection>
-        <url>https://github.com/Treeptik/CloudUnit</url>
-        <tag>HEAD</tag>
-    </scm>
+	<scm>
+		<connection>scm:git:https://github.com/Treeptik/CloudUnit</connection>
+		<developerConnection>scm:git:git@github.com:Treeptik/CloudUnit</developerConnection>
+		<url>https://github.com/Treeptik/CloudUnit</url>
+		<tag>HEAD</tag>
+	</scm>
 
-    <developers>
-        <developer>
-            <id>Nicolas</id>
-            <name>Nicolas MULLER</name>
-            <email>n.muller@treeptik.fr</email>
-        </developer>
-        <developer>
-            <id>Guillaume</id>
-            <name>Guillaume Martial</name>
-            <email>g.martial@treeptik.fr</email>
-        </developer>
-    </developers>
+	<developers>
+		<developer>
+			<id>Nicolas</id>
+			<name>Nicolas MULLER</name>
+			<email>n.muller@treeptik.fr</email>
+		</developer>
+		<developer>
+			<id>Guillaume</id>
+			<name>Guillaume Martial</name>
+			<email>g.martial@treeptik.fr</email>
+		</developer>
+	</developers>
 
 	<dependencies>
 
@@ -175,43 +175,43 @@
 			</exclusions>
 		</dependency>
 
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-core</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.objenesis</groupId>
-                    <artifactId>objenesis</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-core</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.objenesis</groupId>
+					<artifactId>objenesis</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
 
 
-        <!-- Mysql -->
+		<!-- Mysql -->
 
 		<dependency>
 			<groupId>mysql</groupId>
@@ -367,9 +367,14 @@
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-			<version>2.2.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<version>2.9.0</version>
+
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<version>1.7.2.RELEASE</version>
 		</dependency>
 
 		<!-- Metrics -->
@@ -433,12 +438,6 @@
 			<version>2.3</version>
 		</dependency>
 
-		<!-- ehcache -->
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
-			<version>2.6.9</version>
-		</dependency>
 
 		<!-- GitLab API -->
 		<dependency>
@@ -462,7 +461,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-                        <version>${maven.surefire.plugin.version}</version>
+						<version>${maven.surefire.plugin.version}</version>
 						<configuration>
 							<argLine>-Dspring.profiles.active=integration</argLine>
 							<includes>
@@ -502,7 +501,7 @@
 			</properties>
 		</profile>
 
-        <profile>
+		<profile>
 			<id>default</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -515,10 +514,12 @@
 						<version>2.5</version>
 						<configuration>
 							<failOnMissingWebXml>false</failOnMissingWebXml>
-							<packagingExcludes>Gruntfile.js,app/**,bower.json, protractor.conf.js,
+							<packagingExcludes>Gruntfile.js,app/**,bower.json,
+								protractor.conf.js,
 								bower_components/**, node_modules/**,dist/**
 							</packagingExcludes>
-							<warSourceExcludes>build.sh, Gruntfile.js, protractor.conf.js, *.json,
+							<warSourceExcludes>build.sh, Gruntfile.js, protractor.conf.js,
+								*.json,
 								bower_components/**,node_modules/**,test/**,.*,npm-debug.log,
 								.htaccess,.tmp/**,.sass-cache/**
 							</warSourceExcludes>
@@ -566,29 +567,30 @@
 
 		<plugins>
 
-            <plugin>
-                <groupId>org.codehaus.groovy.maven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <source>
-                                project.properties["cloudunit.manager.ip"] = InetAddress.getLocalHost().getHostAddress()
-                            </source>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.groovy.maven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								project.properties["cloudunit.manager.ip"] =
+								InetAddress.getLocalHost().getHostAddress()
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<!-- Used for unit tests and IT tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven.surefire.plugin.version}</version>
+				<version>${maven.surefire.plugin.version}</version>
 				<configuration>
 					<includes>
 						<include>**/*Test.java</include>
@@ -654,39 +656,15 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>2.5</version>
-            </plugin>
-            <!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.13</version>
-				<executions>
-					<execution>
-						<id>validate</id>
-						<phase>validate</phase>
-						<configuration>
-							<configLocation>checkstyle.xml</configLocation>
-							<encoding>UTF-8</encoding>
-							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
-						</configuration>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<linkXRef>false</linkXRef>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>com.puppycrawl.tools</groupId>
-						<artifactId>checkstyle</artifactId>
-						<version>6.1.1</version>
-					</dependency>
-				</dependencies>
 			</plugin>
-            -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-checkstyle-plugin</artifactId> 
+				<version>2.13</version> <executions> <execution> <id>validate</id> <phase>validate</phase> 
+				<configuration> <configLocation>checkstyle.xml</configLocation> <encoding>UTF-8</encoding> 
+				<consoleOutput>true</consoleOutput> <failsOnError>true</failsOnError> </configuration> 
+				<goals> <goal>check</goal> </goals> </execution> </executions> <configuration> 
+				<linkXRef>false</linkXRef> </configuration> <dependencies> <dependency> <groupId>com.puppycrawl.tools</groupId> 
+				<artifactId>checkstyle</artifactId> <version>6.1.1</version> </dependency> 
+				</dependencies> </plugin> -->
 		</plugins>
 	</build>
 

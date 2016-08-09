@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.spotify.docker.client.DockerClient;
@@ -214,8 +215,10 @@ public class DockerServiceImpl implements DockerService {
 	}
 
 	@Override
+	//	@Cacheable(value = "env", key = "{#containerId,#variable}")
 	public String getEnv(String containerId, String variable) throws FatalDockerJSONException {
 		try {
+			System.out.println("enter first");
 			Optional<String> value = dockerClient.inspectContainer(containerId).config().env().stream()
 					.filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=") + 1)).findFirst();
 			return (value.orElseThrow(

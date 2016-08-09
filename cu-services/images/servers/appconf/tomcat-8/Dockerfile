@@ -28,7 +28,7 @@ RUN chmod +x /opt/cloudunit/scripts/*
 RUN mkdir -p /opt/cloudunit/tomcat &&  \
     mkdir -p /opt/cloudunit/tomcat/logs
 
-# Set server environment variables (mandatory)
+#set server environment variables (mandatory)
 
 ENV CATALINA_HOME /opt/cloudunit/tomcat
 ENV CU_SOFTWARE $CATALINA_HOME
@@ -37,6 +37,7 @@ ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
 ENV CU_DEFAULT_LOG_FILE catalina.out
 ENV CU_DEFAULT_JAVA_RELEASE jdk1.8.0_25
+ENV CU_LOGS $CATALINA_HOME/log
 
 
 RUN echo "CU_SOFTWARE=$CU_SOFTWARE" >> /etc/environment && \
