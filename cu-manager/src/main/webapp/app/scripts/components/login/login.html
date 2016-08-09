@@ -12,7 +12,8 @@
   ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
   ~     For any questions, contact us : contact@treeptik.fr
   -->
-
+  <!--rgba(51,204,255, 0.1);-->
+<div id="login-container">
 <div id="login" class="login">
   <div class="tile tile-login">
     <div class="tile-content">
@@ -24,6 +25,7 @@
       </div>
       <form role="form" id="login-form" novalidate=""
             data-ng-submit="login.check(login.user.username,  login.user.password)" autofill-fix>
+         
         <div class="alert alert-danger" data-ng-show="login.errorMsg">
           <button type="button"
                   class="close"
@@ -32,26 +34,51 @@
           </button>
           <p>{{login.errorMsg}}</p>
         </div>
-        <div class="input-group stack">
-          <label for="username">Username</label>
+
+        <div class="group">      
           <input type="text"
-                 id="username"
-                 data-ng-model="login.user.username"
-                 required="">
+            class="input-effect" 
+            id="username"
+            data-ng-model="login.user.username"
+            required="">
+          <span class="highlight"></span>
+          <span class="bar"></span>
+          <label class="label-effect">Username</label>
         </div>
-        <div class="input-group stack">
-          <label for="password">Password</label>
+
+        <div class="group">      
           <input type="password"
-                 id="password"
-                 data-ng-model="login.user.password" required>
+            class="input-effect"
+            id="password"
+            data-ng-model="login.user.password"
+            required>
+          <span class="highlight"></span>
+          <span class="bar"></span>
+          <label class="label-effect">Password</label>
         </div>
+        <!--
+          <div class="input-group stack">
+            <label for="username">Username</label>
+            <input type="text"
+                  id="username"
+                  data-ng-model="login.user.username"
+                  required="">
+          </div>
+          <div class="input-group stack">
+            <label for="password">Password</label>
+            <input type="password"
+                  id="password"
+                  data-ng-model="login.user.password" required>
+          </div>
+        -->
         <button id="login-btn"
                 type="submit"
-                class="button primary raised pull-right"
+                class="button-effect primary raised pull-right"
                 data-ng-disabled="form.$invalid">
           Login
         </button>
       </form>
     </div>
   </div>
+</div>
 </div>

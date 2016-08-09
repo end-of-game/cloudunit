@@ -142,6 +142,74 @@ input {
   }
 }
 
+
+/* form starting stylings */
+.group { 
+  position:relative; 
+  margin-bottom:45px; 
+}
+input.input-effect {
+  font-size:18px;
+  padding:10px 10px 10px 5px;
+  display:block;
+  width:300px;
+  border:none;
+  border-bottom:1px solid #757575;
+}
+input.input-effect:focus 		{ outline:none; }
+
+label.label-effect {
+  color:#999; 
+  font-size:18px;
+  font-weight:normal;
+  position:absolute;
+  pointer-events:none;
+  left:5px;
+  top:10px;
+  transition:0.2s ease all; 
+  -moz-transition:0.2s ease all; 
+  -webkit-transition:0.2s ease all;
+}
+
+input.input-effect:focus ~ label, input.input-effect:valid ~ label 		{
+  top:-20px;
+  font-size:14px;
+  color:$color-primary;
+}
+
+input.input-effect:focus ~ .bar:before, input.input-effect:focus ~ .bar:after {
+  width:50%;
+}
+
+.highlight {
+  position:absolute;
+  height:60%; 
+  width:100px; 
+  top:25%; 
+  left:0;
+  pointer-events:none;
+  opacity:0.5;
+}
+
+input.input-effect:focus ~ .highlight {
+  -webkit-animation:inputHighlighter 0.3s ease;
+  -moz-animation:inputHighlighter 0.3s ease;
+  animation:inputHighlighter 0.3s ease;
+}
+
+@-webkit-keyframes inputHighlighter {
+	from { background:$color-primary; }
+  to 	{ width:0; background:transparent; }
+}
+@-moz-keyframes inputHighlighter {
+	from { background:$color-primary; }
+  to 	{ width:0; background:transparent; }
+}
+@keyframes inputHighlighter {
+	from { background:$color-primary; }
+  to 	{ width:0; background:transparent; }
+}
+
 .CodeMirror{
     min-height: 80vh;
 }

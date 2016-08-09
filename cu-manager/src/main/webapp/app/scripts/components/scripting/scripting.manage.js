@@ -90,8 +90,8 @@
     function editScript ( scriptId, scriptContent, scriptTitle ) {
       ScriptingService.editScript ( scriptId, scriptContent, scriptTitle )
         .then(function(script) {
-          vm.scripts.splice(vm.scripts.indexOf(script.data), 1);
-          vm.scripts.push(script.data);
+          var elementPos = vm.scripts.map(function(x) {return x.id; }).indexOf(scriptId);
+          vm.scripts[elementPos] = script.data;
           vm.noticeMsg = 'The script has been edited!'
           vm.errorMsg = '';
         })

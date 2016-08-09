@@ -25,12 +25,16 @@
       bindings: {
         application: '<app'
       },
-      controller: ['$scope', 'ApplicationService', EnvironmentCtrl],
+      controller: [
+        'ApplicationService',
+        'ErrorService',
+        EnvironmentCtrl
+      ],
       controllerAs: 'environment',
     }
   }
 
-  function EnvironmentCtrl($scope, ApplicationService) {
+  function EnvironmentCtrl(ApplicationService, ErrorService) {
 
     var vm = this;
     vm.currentApplication = '';
@@ -39,6 +43,7 @@
     vm.currentPage = 1;
     vm.environmentVariableKey = '';
     vm.environmentVariableValue = '';
+    vm.verify = verify;
 
     vm.predicate = 'value';
     vm.reverse = false;
@@ -49,49 +54,40 @@
     vm.addEnv = addEnv;
 
     vm.$onChanges = function (changesObj) {
+      
       if(changesObj.application) {
-        if(changesObj.application.previousValue === undefined) {
+        if((changesObj.application.previousValue === undefined)
+          || vm.application !== undefined
+        ) {
          vm.currentApplication = changesObj.application.currentValue.name;
-
           ApplicationService.getListSettingsEnvironmentVariable(vm.currentApplication)
             .then(success)
             .catch(error);
 
           function success(response) {
-            console.log(response[0]);
             vm.env = response;
           }
 
           function error(response) {
-            vm.env = [
-              {id: 1, key: 'key1', value : 'value1'},
-              {id: 2, key: 'key2', value : 'value2'},
-              {id: 3, key: 'key3', value : 'value3'},
-              {id: 4, key: 'key4', value : 'value4'},
-              {id: 5, key: 'key5', value : 'value5'},
-              {id: 6, key: 'key6', value : 'value6'},
-              {id: 7, key: 'key7', value : 'value7'},
-              {id: 8, key: 'key8', value : 'value8'}
-            ];
-            console.log(vm.env[0]);
+            ErrorService.handle(response);
           }
-
         }
       }
     };
 
     function verify (test, id) {
-      console.log(test);
       var regexp = /^[a-zA-Z0-9-_]+$/;
-      var check = "checkme";
-      if (check.search(regexp) == -1)
-          { alert('invalid'); }
-      else
-          { alert('valid'); }
+      if (!test) {
+        alert('invalid');
+      } else {
+        if (test.search(regexp) == -1)
+            { alert('invalid'); }
+        else
+            { alert('valid'); }
+      }
     }
 
     function deleteEnv(environmentVariable) {
-      console.log(environmentVariable);
       ApplicationService.deleteEnvironmentVariable (  vm.currentApplication, environmentVariable.id )
         .then ( function() {
           vm.env.splice(vm.env.indexOf(environmentVariable), 1);
@@ -102,11 +98,10 @@
     }
     
     function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
-      console.log(environmentVariableID  + '  ' + environmentVariableKey + '  ' + environmentVariableValue );
       ApplicationService.editEnvironmentVariable ( vm.currentApplication, environmentVariableID, environmentVariableKey, environmentVariableValue )
         .then(function(env) {
-          vm.env.splice(vm.scripts.indexOf(env.data), 1);
-          vm.env.push(env.data);
+          var elementPos = vm.env.map(function(x) {return x.id; }).indexOf(environmentVariableID);
+          vm.env[elementPos] = env.data;
           vm.noticeMsg = 'The variable has been edited!'
           vm.errorMsg = '';
         })
@@ -123,10 +118,8 @@
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
-      console.log(environmentVariableKey + '  ' + environmentVariableValue);
       ApplicationService.addEnvironmentVariable (  vm.currentApplication, environmentVariableKey, environmentVariableValue )
         .then ( function(env) {
-          console.log(env);
           vm.env.push(env);
           vm.environmentVariableKey = '';
           vm.environmentVariableValue = '';
@@ -134,7 +127,6 @@
           vm.errorMsg = '';
         } )
         .catch ( function(response) {
-          console.log(response);
           vm.errorMsg = 'An error has been encountered!';
           vm.noticeMsg = '';
         } );

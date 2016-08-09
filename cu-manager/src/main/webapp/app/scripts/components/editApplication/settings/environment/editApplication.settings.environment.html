@@ -50,12 +50,12 @@
             dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by $index"
             data-current-page="environment.currentPage">
             <td>
-              <span editable-text="env.key" e-name="key" e-form="rowform" onbeforesave="environment.verify($data, env.id)" e-required>
+              <span editable-text="env.key" e-name="key" e-form="rowform"  e-required>
                 {{ env.key }}
               </span>
             </td>
             <td>
-              <span editable-text="env.value" e-name="value" e-form="rowform" onbeforesave="environment.verify($data, env.id)" e-required>
+              <span editable-text="env.value" e-name="value" e-form="rowform" e-required>
                 {{ env.value }}
               </span>
             </td>
