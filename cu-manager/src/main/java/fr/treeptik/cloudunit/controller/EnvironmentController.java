@@ -128,12 +128,13 @@ public class EnvironmentController implements Serializable {
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
+            Environment environment = environmentService.loadEnvironnment(id);
             List<Environment> environmentList = environmentService.loadAllEnvironnments();
-            for(Environment environment : environmentList)
-                if (environment.getKeyEnv().equals(environmentVariableRequest.getKey()))
+            for(Environment environment1 : environmentList)
+                if (environment1.getKeyEnv().equals(environmentVariableRequest.getKey()) && !environment1.getKeyEnv().equals(environment.getKeyEnv()))
                     throw new CheckException("This key already exists");
 
-            Environment environment = environmentService.loadEnvironnment(id);
+
             if(environment.equals(null))
                 throw new CheckException("Environment variable doesn't exist");
 

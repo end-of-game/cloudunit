@@ -184,6 +184,7 @@ public class ScriptingController
 
             Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
 
+            script.setTitle(scriptRequest.getScriptName());
             script.setCreationDate(now);
             script.setContent(scriptRequest.getScriptContent());
             
