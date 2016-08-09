@@ -512,9 +512,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			String containerId = application.getServer().getContainerID();
 			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
 			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
-			dockerService.execCommand(containerId, RemoteExecAction.CHANGE_CU_RIGHTS.getCommand());
 			Map<String, String> kvStore = new HashMap<String, String>() {
-
 				private static final long serialVersionUID = 1L;
 				{
 					put("CU_USER", application.getUser().getLogin());
