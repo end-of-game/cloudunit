@@ -28,7 +28,7 @@
     .component ( 'scriptingCreate', Scripting() );
 
 
-  function Scripting () {
+  function Scripting() {
     return {
       templateUrl: 'scripts/components/scripting/scripting.create.html',
       bindings: {
@@ -44,7 +44,7 @@
     };
   }
 
-  function ScriptingCtrl ( $scope, $state, ScriptingService) {
+  function ScriptingCtrl ($scope, $state, ScriptingService) {
         
     var vm = this;
     vm.noticeMsg = '';
@@ -57,17 +57,21 @@
 
     ////////////////////////////////////////////////////
 
-    function addScript ( scriptContent, scriptTitle ) {
+    function addScript (scriptContent, scriptTitle) {
       ScriptingService.addScript ( scriptContent, scriptTitle )
-        .then ( function(script) {
+        .then ( function (script) {
           vm.title = '';
           vm.content = '';
           $state.go('scriptingManage');
           vm.noticeMsg = 'Script successfully created!';
           vm.errorMsg = '';
         } )
-        .catch ( function(response) {
-          vm.errorMsg = 'An error has been encountered! Maybe script there is a duplicate name script!';
+        .catch ( function (response) {
+          if(response.data.message) {
+            vm.errorMsg = response.data.message;
+          } else {
+            vm.errorMsg = 'An error has been encountered!';
+          }
           vm.noticeMsg = '';
         } );
     }

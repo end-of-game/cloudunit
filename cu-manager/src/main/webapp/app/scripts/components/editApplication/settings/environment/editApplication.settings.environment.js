@@ -43,7 +43,6 @@
     vm.currentPage = 1;
     vm.environmentVariableKey = '';
     vm.environmentVariableValue = '';
-    vm.verify = verify;
 
     vm.predicate = 'value';
     vm.reverse = false;
@@ -54,7 +53,6 @@
     vm.addEnv = addEnv;
 
     vm.$onChanges = function (changesObj) {
-      
       if(changesObj.application) {
         if((changesObj.application.previousValue === undefined)
           || vm.application !== undefined
@@ -64,37 +62,25 @@
             .then(success)
             .catch(error);
 
-          function success(response) {
+          function success (response) {
             vm.env = response;
           }
 
-          function error(response) {
+          function error (response) {
             ErrorService.handle(response);
           }
         }
       }
     };
 
-    function verify (test, id) {
-      var regexp = /^[a-zA-Z0-9-_]+$/;
-      if (!test) {
-        alert('invalid');
-      } else {
-        if (test.search(regexp) == -1)
-            { alert('invalid'); }
-        else
-            { alert('valid'); }
-      }
-    }
-
-    function deleteEnv(environmentVariable) {
+    function deleteEnv (environmentVariable) {
       ApplicationService.deleteEnvironmentVariable (  vm.currentApplication, environmentVariable.id )
         .then ( function() {
           vm.env.splice(vm.env.indexOf(environmentVariable), 1);
           vm.noticeMsg = 'The variable has been removed!'
           vm.errorMsg = '';
         } )
-        .catch ( errorScript );
+        .catch (errorScript);
     }
     
     function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
@@ -105,16 +91,7 @@
           vm.noticeMsg = 'The variable has been edited!'
           vm.errorMsg = '';
         })
-        .catch ( errorScript );
-    }
-
-    function errorScript(res) {
-      if(res.data.message) {
-        vm.errorMsg = res.data.message;
-      } else {
-        vm.errorMsg = 'An error has been encountered!';
-      }
-      vm.noticeMsg = '';
+        .catch (errorScript);
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
@@ -126,13 +103,19 @@
           vm.noticeMsg = 'Variable successfully created!';
           vm.errorMsg = '';
         } )
-        .catch ( function(response) {
-          vm.errorMsg = 'An error has been encountered!';
-          vm.noticeMsg = '';
-        } );
+        .catch (errorScript);
     }
 
-    function order ( predicate ) {
+    function errorScript (res) {
+      if(res.data.message) {
+        vm.errorMsg = res.data.message;
+      } else {
+        vm.errorMsg = 'An error has been encountered!';
+      }
+      vm.noticeMsg = '';
+    }
+
+    function order (predicate) {
       vm.reverse = (vm.predicate === predicate) ? !vm.reverse : false;
       vm.predicate = predicate;
     }
