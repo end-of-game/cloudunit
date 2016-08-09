@@ -67,8 +67,18 @@ public class ServerService {
 			server = serverDAO.saveAndFlush(server);
 			server = serverDAO.findOne(server.getId());
 
-			hipacheRedisUtils.updateServerAddress(server.getApplication(), server.getContainerIP(),
-					server.getServerAction().getServerPort(), server.getServerAction().getServerManagerPort());
+			// TODO
+
+			//
+			//
+			// MIGRER DOCKER API OR EXPECT FOR HIPACHE REMOVING
+			//
+			//
+
+			// hipacheRedisUtils.updateServerAddress(server.getApplication(),
+			// server.getContainerIP(),
+			// server.getServerAction().getServerPort(),
+			// server.getServerAction().getServerManagerPort());
 			final Application app = server.getApplication();
 			app.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, app));
 
