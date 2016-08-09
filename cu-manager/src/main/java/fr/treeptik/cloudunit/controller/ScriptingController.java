@@ -176,16 +176,23 @@ public class ScriptingController
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public @ResponseBody JsonNode scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequest scriptRequest)
-            throws ServiceException {
+            throws ServiceException, CheckException {
         logger.info("Edit");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             Script script = scriptingService.load(id);
 
+            List<Script> scripts = scriptingService.loadAllScripts();
+            for(Script script1 : scripts)
+            {
+                if(script1.getTitle().equals(scriptRequest.getScriptName()) && !script1.getTitle().equals(script.getTitle()))
+                    throw new CheckException("Script name already exists");
+            }
+
             Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
 
-            script.setTitle(scriptRequest.getScriptName());
             script.setCreationDate(now);
+            script.setTitle(scriptRequest.getScriptName());
             script.setContent(scriptRequest.getScriptContent());
             
             scriptingService.save(script);

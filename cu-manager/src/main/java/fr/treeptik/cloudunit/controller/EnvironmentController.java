@@ -95,6 +95,9 @@ public class EnvironmentController implements Serializable {
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
+            if(!environmentVariableRequest.getKey().matches("[a-zA-Z0-9-_]"))
+                throw new CheckException("This key is not consistent");
+
             List<Environment> environmentList = environmentService.loadAllEnvironnments();
             for(Environment environment : environmentList)
                 if (environment.getKeyEnv().equals(environmentVariableRequest.getKey()))
@@ -128,6 +131,9 @@ public class EnvironmentController implements Serializable {
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
+            if(!environmentVariableRequest.getKey().matches("[a-zA-Z0-9-_]"))
+                throw new CheckException("This key is not consistent");
+
             Environment environment = environmentService.loadEnvironnment(id);
             List<Environment> environmentList = environmentService.loadAllEnvironnments();
             for(Environment environment1 : environmentList)
