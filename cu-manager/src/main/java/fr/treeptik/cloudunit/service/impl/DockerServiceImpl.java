@@ -215,10 +215,9 @@ public class DockerServiceImpl implements DockerService {
 	}
 
 	@Override
-	//	@Cacheable(value = "env", key = "{#containerId,#variable}")
+	@Cacheable(value = "env", key = "{#containerId,#variable}")
 	public String getEnv(String containerId, String variable) throws FatalDockerJSONException {
 		try {
-			System.out.println("enter first");
 			Optional<String> value = dockerClient.inspectContainer(containerId).config().env().stream()
 					.filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=") + 1)).findFirst();
 			return (value.orElseThrow(

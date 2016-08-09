@@ -15,10 +15,24 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import com.spotify.docker.client.*;
-import com.spotify.docker.client.messages.Container;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import javax.inject.Inject;
+
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.HttpErrorServer;
 import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
@@ -27,32 +41,15 @@ import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.filters.explorer.ExplorerFactory;
 import fr.treeptik.cloudunit.filters.explorer.ExplorerFilter;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.FileService;
+import fr.treeptik.cloudunit.service.ModuleService;
+import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
-import org.apache.commons.fileupload.FileUpload;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Service for file management into container
