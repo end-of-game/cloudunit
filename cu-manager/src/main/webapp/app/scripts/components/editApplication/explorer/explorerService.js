@@ -42,20 +42,22 @@
 
     // Liste l'arborescence de fichier d'un container
     function buildTree ( containerId, path ) {
-      var dir = $resource ( '/file/container/:containerId/path/:path' );
-      return dir.query ( {
-        containerId: containerId,
-        path: path
-      } ).$promise;
+      var dir = $resource ( '/file/container/:containerId',
+        {
+          containerId: containerId,
+          path: path
+        }
+      );
+      return dir.query().$promise;
     }
 
    function unzipFile ( containerId, applicationName, path, item) {
-      var file = $resource ( 'file/unzip/container/:containerId/application/:applicationName/path/:path/fileName/:item',
+      var file = $resource ( 'file/unzip/container/:containerId/application/:applicationName',
       {
         containerId: containerId,
         applicationName: applicationName,
         path: path,
-        item: item
+        fileName: item
       },
       { 'update': { method: 'PUT',
           transformResponse: function ( data, headers ) {
@@ -70,11 +72,11 @@
     }
 
     function getFile ( containerId, applicationName, path, fileName ) {
-      var file = $resource ( '/file/content/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
+      var file = $resource ( '/file/content/container/:containerId/application/:applicationName', {
         containerId: containerId,
         applicationName: applicationName,
-        path: path,
-        fileName: fileName
+        fileName: fileName,
+        path: path
       }, {
         get: {
           method: 'GET',
@@ -109,23 +111,27 @@
     }
 
     function deleteFile ( containerId, applicationName, path ) {
-      var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path' );
+      var file = $resource ( '/file/container/:containerId/application/:applicationName',
+        {
+          containerId: containerId,
+          applicationName: applicationName,
+          path: path
+        }
+      );
 
-      return file.delete ( {
-        containerId: containerId,
-        applicationName: applicationName,
-        path: path
-      } ).$promise;
+      return file.delete().$promise;
     }
 
     function addDirectory ( containerId, applicationName, path ) {
-      var request = $resource ( '/file/container/:containerId/application/:applicationName?path=:path');
+      var request = $resource ('/file/container/:containerId/application/:applicationName',
+        {
+          containerId: containerId,
+          applicationName: applicationName,
+          path: path
+        }
+      );
 
-      return request.save ({
-        containerId: containerId,
-        applicationName: applicationName,
-        path: path
-        }).$promise;
+      return request.save().$promise;
     }
 
     /*function downloadFile ( containerId, applicationName, path, fileName ) {
@@ -151,9 +157,3 @@
     }*/
   }
 }) ();
-
-
-
-
-
-

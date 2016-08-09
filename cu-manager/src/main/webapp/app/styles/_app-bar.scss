@@ -65,12 +65,14 @@
 }
 .app-bar-cli {
   margin: 0px !important;
-  padding-top: 23px;
-  padding-bottom: 3px;
+  padding-top: 7px;
   padding-left: 15px;
   padding-right: 15px;
   @media (min-width: $grid-float-breakpoint) {
     background-color: $color-primary;
+  }
+  & a {
+    margin-bottom: 0px;
   }
 }
 /*.app-bar-cli {

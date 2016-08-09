@@ -30,6 +30,23 @@
       </small>
     </header>
     
+    <div class="alert alert-danger" data-ng-show="scripting.errorMsg">
+      <button type="button"
+              class="close"
+              ng-click="scripting.errorMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{scripting.errorMsg}}</p>
+    </div>
+    <div class="alert alert-info" data-ng-show="scripting.noticeMsg">
+      <button type="button"
+              class="close"
+              ng-click="scripting.noticeMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{scripting.noticeMsg}}</p>
+    </div>
+
     <div class="input-group stack clearfix">
       <div class="input-group stack">
         <label for="domain">Script name</label>
@@ -49,22 +66,6 @@
                 data-ng-click="scripting.addScript(scripting.content, scripting.title)">
           <span>Save script</span>
         </button>
-      </div>
-      <div class="alert alert-danger" data-ng-show="scripting.errorMsg">
-        <button type="button"
-                class="close"
-                ng-click="scripting.errorMsg = ''">
-          <span>&times;</span>
-        </button>
-        <p>{{scripting.errorMsg}}</p>
-      </div>
-      <div class="alert alert-info" data-ng-show="scripting.noticeMsg">
-        <button type="button"
-                class="close"
-                ng-click="scripting.noticeMsg = ''">
-          <span>&times;</span>
-        </button>
-        <p>{{scripting.noticeMsg}}</p>
       </div>
     </div>
   </div>

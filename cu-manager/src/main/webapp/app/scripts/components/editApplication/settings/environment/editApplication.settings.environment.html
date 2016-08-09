@@ -37,7 +37,12 @@
       </button>
       <p>{{environment.noticeMsg}}</p>
     </div>
-    <table class="table">
+
+    <div class="no-data" ng-if="!environment.env.length">
+      <p>No environment variables created yet!</p>
+    </div>
+
+    <table class="table" ng-if="environment.env.length">
         <thead>
         <tr>
           <th ng-click="environment.order('key')"><i class="icon-whhg"  ng-show="environment.predicate == 'key'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i> Key</th>
@@ -51,7 +56,7 @@
             data-current-page="environment.currentPage">
             <td>
               <span editable-text="env.key" e-name="key" e-form="rowform"  e-required>
-                <span id="key-{{env.id}}"
+                <span class="clipboard" id="key-{{env.id}}"
                   data-title="Copy to clipboard"
                   tooltip=""
                   ngclipboard data-clipboard-target="#key-{{env.id}}">{{ env.key }}</span>
@@ -59,7 +64,7 @@
             </td>
             <td>
               <span editable-text="env.value" e-name="value" e-form="rowform" e-required>
-                <span id="value-{{env.id}}"
+                <span class="clipboard" id="value-{{env.id}}"
                   data-title="Copy to clipboard"
                   tooltip=""
                   ngclipboard data-clipboard-target="#value-{{env.id}}">{{ env.value }}</span>
