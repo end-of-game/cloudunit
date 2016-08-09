@@ -14,8 +14,6 @@
 */
 
 package fr.treeptik.cloudunit.model;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import fr.treeptik.cloudunit.model.action.ServerAction;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -27,8 +25,8 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Server extends Container implements Serializable {
@@ -52,10 +50,6 @@ public class Server extends Container implements Serializable {
 	@ElementCollection
 	private List<String> links;
 
-	@Transient
-	@JsonIgnore
-	private ServerAction serverAction;
-
 	public Server(Integer id, Date startDate, String name, String containerID, Long memorySize, String containerIP,
 			Status status, Image image, Map<String, String> listPorts) {
 		super();
@@ -70,11 +64,6 @@ public class Server extends Container implements Serializable {
 	}
 
 	public Server() {
-	}
-
-	@PostLoad
-	public void initServerActionFromJPA() {
-		ServerFactory.updateServer(this);
 	}
 
 	public Long getJvmMemory() {
@@ -99,14 +88,6 @@ public class Server extends Container implements Serializable {
 
 	public void setManagerLocation(String managerLocation) {
 		this.managerLocation = managerLocation;
-	}
-
-	public ServerAction getServerAction() {
-		return serverAction;
-	}
-
-	public void setServerAction(ServerAction serverAction) {
-		this.serverAction = serverAction;
 	}
 
 	public String getJvmRelease() {

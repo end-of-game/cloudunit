@@ -48,7 +48,6 @@ import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.PortToOpen;
 import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.ServerFactory;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.Type;
 import fr.treeptik.cloudunit.model.User;
@@ -284,7 +283,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			logger.info(application.getManagerIp());
 
 			// BLOC SERVER
-			Server server = ServerFactory.getServer(serverName);
+			Server server = new Server();
 			// We get image associated to server
 			Image image = imageService.findByName(serverName);
 			server.setImage(image);
@@ -599,7 +598,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 		try {
 			Server server = application.getServer();
 			application.getAliases().add(alias);
-			hipacheRedisUtils.writeNewAlias(alias, application, server.getServerAction().getServerPort());
+			hipacheRedisUtils.writeNewAlias(alias, application,
+					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
 			applicationDAO.save(application);
 
 		} catch (DataAccessException e) {
@@ -614,7 +614,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 			Server server = application.getServer();
 			List<String> aliases = applicationDAO.findAllAliases(application.getName(), cuInstanceName);
 			for (String alias : aliases) {
-				hipacheRedisUtils.updateAlias(alias, application, server.getServerAction().getServerPort());
+				hipacheRedisUtils.updateAlias(alias, application,
+						dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
 			}
 
 		} catch (DataAccessException e) {

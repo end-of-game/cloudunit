@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,12 +35,12 @@ import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.ServerFactory;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
@@ -162,22 +161,21 @@ public class ServerServiceImpl implements ServerService {
 			dockerService.createServer(containerName, server, imagePath, user);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
-			server = ServerFactory.updateServer(server);
 
-			logger.info(server.getServerAction().getServerManagerPath());
-			logger.info("" + server.getListPorts());
-			logger.info(server.getServerAction().getServerManagerPort());
+			logger.info(dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
+			logger.info(dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
 			logger.info(application.getLocation());
 
 			hipacheRedisUtils.createRedisAppKey(server.getApplication(), server.getContainerIP(),
-					server.getServerAction().getServerPort(), server.getServerAction().getServerManagerPort());
+					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
 
 			// Update server with all its informations
 			server.setManagerLocation("http://manager-" + application.getLocation().substring(7)
-					+ server.getServerAction().getServerManagerPath());
+					+ dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PATH"));
 			server.setStatus(Status.START);
 			server.setJvmMemory(512L);
-			server.setJvmRelease(server.getServerAction().getDefaultJavaRelease());
+			server.setJvmRelease(dockerService.getEnv(server.getContainerID(), "CU_DEFAULT_JAVA_RELEASE"));
 
 			server = this.update(server);
 
@@ -253,7 +251,8 @@ public class ServerServiceImpl implements ServerService {
 			Application application = server.getApplication();
 
 			hipacheRedisUtils.updateServerAddress(application, server.getContainerIP(),
-					server.getServerAction().getServerPort(), server.getServerAction().getServerManagerPort());
+					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
 
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : update Server" + e);
@@ -342,7 +341,8 @@ public class ServerServiceImpl implements ServerService {
 			server = update(server);
 			server = dockerService.startServer(server.getContainerID(), server);
 			hipacheRedisUtils.updateServerAddress(server.getApplication(), server.getContainerIP(),
-					server.getServerAction().getServerPort(), server.getServerAction().getServerManagerPort());
+					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
 
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 

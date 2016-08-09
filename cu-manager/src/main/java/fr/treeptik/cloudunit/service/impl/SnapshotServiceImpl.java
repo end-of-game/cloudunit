@@ -167,7 +167,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 
 			Map<String, ModuleConfiguration> config = new HashMap<>();
 			Server server = application.getServer();
-			snapshot = server.getServerAction().cloneProperties(snapshot);
+			// snapshot = server.getServerAction().cloneProperties(snapshot);
 
 			for (Module module : application.getModules()) {
 					ModuleConfiguration moduleConfiguration = moduleConfigurationDAO

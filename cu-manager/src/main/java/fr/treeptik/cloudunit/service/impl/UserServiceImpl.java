@@ -15,7 +15,23 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.persistence.PersistenceException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import fr.treeptik.cloudunit.dao.MessageDAO;
 import fr.treeptik.cloudunit.dao.RoleDAO;
 import fr.treeptik.cloudunit.dao.UserDAO;
@@ -27,23 +43,9 @@ import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
 import fr.treeptik.cloudunit.utils.EmailUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-import javax.mail.MessagingException;
-import javax.persistence.PersistenceException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 @Service
 @Lazy(true)
