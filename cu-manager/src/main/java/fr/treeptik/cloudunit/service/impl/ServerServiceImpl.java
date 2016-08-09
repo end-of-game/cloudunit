@@ -181,10 +181,13 @@ public class ServerServiceImpl implements ServerService {
 
 			server = this.update(server);
 
-			Map<String, String> kvStore = new HashMap<String, String>() {{
-				put("CU_USER", user.getLogin());
-				put("CU_PASSWORD", user.getClearedPassword());
-			}};
+			Map<String, String> kvStore = new HashMap<String, String>() {
+				private static final long serialVersionUID = 1L;
+				{
+					put("CU_USER", user.getLogin());
+					put("CU_PASSWORD", user.getPassword());
+				}
+			};
 			dockerService.execCommand(server.getContainerID(), RemoteExecAction.ADD_USER.getCommand(kvStore));
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 
@@ -206,7 +209,6 @@ public class ServerServiceImpl implements ServerService {
 		logger.info("ServerService : Server " + server.getName() + " successfully created.");
 		return server;
 	}
-
 
 	/**
 	 * check if the status passed in parameter is the same as in db if it's case
@@ -504,8 +506,7 @@ public class ServerServiceImpl implements ServerService {
 		} catch (Exception e) {
 			server.setStatus(Status.FAIL);
 			saveInDB(server);
-			logger.error(
-					"java version = " + javaVersion + " - " + application.toString() + " - " + server.toString(),
+			logger.error("java version = " + javaVersion + " - " + application.toString() + " - " + server.toString(),
 					e);
 			throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
 		}
