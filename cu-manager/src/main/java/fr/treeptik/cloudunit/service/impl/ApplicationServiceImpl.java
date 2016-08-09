@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -602,7 +603,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
 			applicationDAO.save(application);
 
-		} catch (DataAccessException e) {
+		} catch (DataAccessException | FatalDockerJSONException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 	}
@@ -618,7 +619,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 						dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
 			}
 
-		} catch (DataAccessException e) {
+		} catch (DataAccessException | FatalDockerJSONException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 	}

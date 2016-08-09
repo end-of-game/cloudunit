@@ -24,8 +24,6 @@ import java.util.List;
  */
 public interface MonitoringService {
 
-    String getFullContainerId(String containerName);
-
     String getJsonFromCAdvisor(String containerId);
 
     String getJsonMachineFromCAdvisor();
