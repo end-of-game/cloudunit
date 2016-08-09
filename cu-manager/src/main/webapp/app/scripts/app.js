@@ -46,6 +46,7 @@
       'metricsgraphics',
       'ui.codemirror',
       'ngclipboard',
+      'xeditable',
 
       //shared modules
       'webuiApp.filters',

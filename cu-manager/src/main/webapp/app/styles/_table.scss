@@ -28,5 +28,16 @@
     text-align: center;
     cursor: pointer;
   }
+  thead > tr > th:last-child {
+    cursor: default;
+  }
 }
 
+#settings-environment .table {
+  thead > tr > th { 
+    cursor: pointer;
+  }
+  thead > tr > th:last-child { 
+    cursor: default;
+  }
+}

@@ -16,27 +16,109 @@
 <div class="card large">
   <div class="content clearfix" id="settings-environment">
     <h3 class="title large">Environment variables</h3>
-   <table class="table">
-      <thead>
-      <tr>
-        <th>Key</th>
-        <th>Value</th>
-      </tr>
-      </thead>
-      <tbody>
-        <tr 
-          dir-paginate="env in environment.env  | itemsPerPage: environment.pageSize track by $index"
-          data-current-page="environment.currentPage">
-          <td>
-            {{ env.key }}
-          </td>
-          <td>
-            {{ env.value }}
-          </td>
+
+    <div class="subheader">
+      <h3 class="subhead">Manage Variable</h3>
+    </div>
+
+    <div class="alert alert-danger" data-ng-show="environment.errorMsg">
+      <button type="button"
+              class="close"
+              ng-click="environment.errorMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{environment.errorMsg}}</p>
+    </div>
+    <div class="alert alert-info" data-ng-show="environment.noticeMsg">
+      <button type="button"
+              class="close"
+              ng-click="environment.noticeMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{environment.noticeMsg}}</p>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+          <th ng-click="environment.order('key')"><i class="icon-whhg"  ng-show="environment.predicate == 'key'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i> Key</th>
+          <th ng-click="environment.order('value')"><i class="icon-whhg"  ng-show="environment.predicate == 'value'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i>  Value</th>
+          <th>Actions</th>
         </tr>
-      </tbody>
-    </table>
-    <dir-pagination-controls ng-if="environment.env.length"></dir-pagination-controls>
+        </thead>
+        <tbody>
+          <tr 
+            dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by $index"
+            data-current-page="environment.currentPage">
+            <td>
+              <span editable-text="env.key" e-name="key" e-form="rowform" onbeforesave="environment.verify($data, env.id)" e-required>
+                {{ env.key }}
+              </span>
+            </td>
+            <td>
+              <span editable-text="env.value" e-name="value" e-form="rowform" onbeforesave="environment.verify($data, env.id)" e-required>
+                {{ env.value }}
+              </span>
+            </td>
+            <td>
+              <form editable-form name="rowform" onbeforesave="environment.editEnv(env.id, $data.key, $data.value)" ng-show="rowform.$visible">
+                <div class="action">
+                  <button type="submit" class="button primary raised"
+                  ng-disabled="rowform.$waiting">
+                  Edit
+                  </button>
+                  <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="button secondary">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+
+              <div class="buttons" ng-show="!rowform.$visible">
+                <button class="icon-button danger"
+                  ripple=""
+                  tooltip=""
+                  data-title="Delete"
+                  data-placement="bottom"
+                  data-toggle="modal"
+                  data-target="#delete-{{env.id}}">
+                <i class="icon-whhg trash"></i>
+                </button>
+                <div class="modal"
+                    id="delete-{{env.id}}"
+                    modaldismiss="">
+                  <div class="modal-inner">
+                    <div class="content clearfix">
+                      <h3 class="title">Removal confirmation required for env {{env.key}}</h3>
+
+                      <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
+
+                      <div class="actions pull-right">
+                        <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                        </button>
+                        <button type="button"
+                                class="delete-btn button primary"
+                                data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
+                                data-ng-click="environment.deleteEnv(env)">
+                          Delete variable
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="icon-button"
+                  ripple=""
+                  tooltip=""
+                  data-title="Edit"
+                  data-placement="bottom"
+                  ng-click="rowform.$show()">
+                <i class="icon-whhg edit"></i>
+                </button>
+              </div>  
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <dir-pagination-controls ng-if="environment.env.length"></dir-pagination-controls>
 
 <!--      <div id="timeline-task" >
         <table class="table ng-table-responsive terminal">
@@ -61,5 +143,38 @@
         </table>
       </div>-->
 
+    <div class="subheader">
+      <h3 class="subhead">Add Variable</h3>
+    </div>
+
+    <form id="add-env"
+            name="addEnvironmentVariable"
+            class="clearfix" novalidate=""
+            data-ng-submit="environment.addEnv(environment.environmentVariableKey, environment.environmentVariableValue)">
+        <div class="input-group stack">
+          <label for="key">Key</label>
+          <input id="key"
+                 name="key"
+                 type="text"
+                 data-ng-model="environment.environmentVariableKey">
+        </div>
+        <div class="input-group stack">
+          <label for="value">Value</label>
+          <input id="value"
+                 name="value"
+                 type="text"
+                 data-ng-model="environment.environmentVariableValue"
+                 ng-required="">
+          
+        <div class="actions">
+          <div class="secondary-actions pull-right">
+            <button type="submit"
+                    class="alias-btn button primary raised"
+                    ripple="">
+              <span>Add variable</span>
+            </button>
+          </div>
+        </div>
+      </form>
   </div>
 </div>

@@ -58,7 +58,11 @@
       state: {},
       stopPolling: stopPolling,
       getVariableEnvironment: getVariableEnvironment,
-      getSettingsVariableEnvironment: getSettingsVariableEnvironment
+      getListSettingsEnvironmentVariable: getListSettingsEnvironmentVariable,
+      getSettingsEnvironmentVariable: getSettingsEnvironmentVariable,
+      addEnvironmentVariable: addEnvironmentVariable,
+      editEnvironmentVariable: editEnvironmentVariable,
+      deleteEnvironmentVariable: deleteEnvironmentVariable
     };
 
 
@@ -206,11 +210,65 @@
     
     // Gestion des variables environnement
     
-    function getSettingsVariableEnvironment ( applicationName ) {
-      var dir = $resource ( 'application/:applicationName/listVarEnv' );
+    function getListSettingsEnvironmentVariable ( applicationName ) {
+      var dir = $resource ( 'application/:applicationName/environmentVariables' );
       return dir.query ( {
         applicationName: applicationName
       } ).$promise;      
+    }
+
+    function getSettingsEnvironmentVariable ( applicationName, environmentVariableID ) {
+      var dir = $resource ( 'application/:applicationName/environmentVariables/:id' );
+      return dir.get ( {
+        applicationName: applicationName,
+        id: environmentVariableID
+      } ).$promise;
+    }
+
+    function addEnvironmentVariable ( applicationName, environmentVariableKey, environmentVariableValue ) {
+      var data = {
+        key: environmentVariableKey,
+        value: environmentVariableValue
+      };
+
+      var dir = $resource ( 'application/:applicationName/environmentVariables' );
+      return dir.save ( {
+        applicationName: applicationName
+      }, data ).$promise;
+    }
+
+    function editEnvironmentVariable ( applicationName, environmentVariableID, environmentVariableKey, environmentVariableValue ) {
+      var data = {
+        key: environmentVariableKey,
+        value: environmentVariableValue
+      };
+      
+      var dir = $resource ( 'application/:applicationName/environmentVariables/:id' ,
+        { 
+          applicationName: applicationName,
+          id: environmentVariableID
+        },
+        { 
+          'update': { 
+            method: 'PUT',
+            transformResponse: function ( data, headers ) {
+              var response = {};
+              response.data = JSON.parse(data);
+              response.headers = headers ();
+              return response;
+            }
+          }
+        }
+      );
+      return dir.update( { }, data ).$promise; 
+    }
+
+    function deleteEnvironmentVariable ( applicationName, environmentVariableID ) {
+      var dir = $resource ( 'application/:applicationName/environmentVariables/:id' );
+      return dir.delete ( { 
+        applicationName: applicationName,
+        id: environmentVariableID
+      }, {} ).$promise; 
     }
 
     function getVariableEnvironment ( applicationName, containerId ) {
@@ -223,4 +281,3 @@
 
   }
 }) ();
-
