@@ -35,7 +35,6 @@
         context: '='
       },
       controller: [
-        '$scope',
         'ScriptingService',
         'ErrorService',
         ScriptingCtrl
@@ -44,8 +43,8 @@
     };
   }
 
-  function ScriptingCtrl ( $scope, ScriptingService, ErrorService) {
-        
+  function ScriptingCtrl (ScriptingService, ErrorService) {
+    
     var vm = this;
     vm.currentPage = 1;
     vm.pageSize = 10;
@@ -63,22 +62,26 @@
     vm.order = order;
 
     vm.$onInit = function() {
+      getListScript();
+    }
+
+    ////////////////////////////////////////////////////
+    
+    function getListScript() {
         ScriptingService.getListScript()
         .then(success)
         .catch(error);
 
-      function success(scripts) {
+      function success (scripts) {
         vm.scripts = scripts;
       }
 
-      function error(response) {
+      function error (response) {
         ErrorService.handle(response);
       }  
     }
 
-    ////////////////////////////////////////////////////
-
-    function executeScript ( scriptContent ) {
+    function executeScript (scriptContent) {
       ScriptingService.executeScript ( scriptContent )
         .then(function() {
             vm.noticeMsg = 'The script has been executed!'
@@ -87,19 +90,21 @@
         .catch ( errorScript );
     }
 
-    function editScript ( scriptId, scriptContent, scriptTitle ) {
+    function editScript (scriptId, scriptContent, scriptTitle ) {
       ScriptingService.editScript ( scriptId, scriptContent, scriptTitle )
-        .then(function(script) {
-          var elementPos = vm.scripts.map(function(x) {return x.id; }).indexOf(scriptId);
-          vm.scripts[elementPos] = script.data;
+        .then(function(script) { 
+          vm.scripts.splice(vm.scripts.map(function(x) {return x.id; }).indexOf(scriptId), 1);
+          vm.scripts.push(script);
           vm.noticeMsg = 'The script has been edited!'
           vm.errorMsg = '';
         })
-        .catch ( errorScript );
+        .catch ( function(response) {
+          getListScript();
+          errorScript(response);
+        } );
     }
 
-    function deleteScript ( script ) {
-     
+    function deleteScript (script) {
       ScriptingService.deleteScript ( script.id )
         .then ( function() {
           vm.scripts.splice(vm.scripts.indexOf(script), 1);
@@ -109,7 +114,7 @@
         .catch ( errorScript );
     }
 
-    function errorScript(res) {
+    function errorScript (res) {
       if(res.data.message) {
         vm.errorMsg = res.data.message;
       } else {
@@ -118,7 +123,7 @@
       vm.noticeMsg = '';
     }
 
-    function order ( predicate ) {
+    function order (predicate) {
       vm.reverse = (vm.predicate === predicate) ? !vm.reverse : false;
       vm.predicate = predicate;
     }

@@ -80,8 +80,7 @@
             method: 'PUT',
             transformResponse: function ( data, headers ) {
               var response = {};
-              response.data = JSON.parse(data);
-              response.headers = headers ();
+              response = JSON.parse(data);
               return response;
             }
           }

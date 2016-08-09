@@ -47,16 +47,22 @@
         </thead>
         <tbody>
           <tr 
-            dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by $index"
+            dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by env.id"
             data-current-page="environment.currentPage">
             <td>
               <span editable-text="env.key" e-name="key" e-form="rowform"  e-required>
-                {{ env.key }}
+                <span id="key-{{env.id}}"
+                  data-title="Copy to clipboard"
+                  tooltip=""
+                  ngclipboard data-clipboard-target="#key-{{env.id}}">{{ env.key }}</span>
               </span>
             </td>
             <td>
               <span editable-text="env.value" e-name="value" e-form="rowform" e-required>
-                {{ env.value }}
+                <span id="value-{{env.id}}"
+                  data-title="Copy to clipboard"
+                  tooltip=""
+                  ngclipboard data-clipboard-target="#value-{{env.id}}">{{ env.value }}</span>
               </span>
             </td>
             <td>
