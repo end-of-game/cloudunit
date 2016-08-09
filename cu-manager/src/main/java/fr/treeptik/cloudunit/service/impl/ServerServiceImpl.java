@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -180,6 +181,11 @@ public class ServerServiceImpl implements ServerService {
 
 			server = this.update(server);
 
+			Map<String, String> kvStore = new HashMap<String, String>() {{
+				put("CU_USER", user.getLogin());
+				put("CU_PASSWORD", user.getClearedPassword());
+			}};
+			dockerService.execCommand(server.getContainerID(), RemoteExecAction.ADD_USER.getCommand(kvStore));
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 
 		} catch (PersistenceException e) {

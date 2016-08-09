@@ -21,6 +21,7 @@ import fr.treeptik.cloudunit.dto.FileUnit;
 import fr.treeptik.cloudunit.dto.HttpErrorServer;
 import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -279,6 +280,7 @@ public class FileServiceImpl
         return files;
     }
 
+
     /**
      * File Explorer feature
      * <p>
@@ -291,42 +293,40 @@ public class FileServiceImpl
     @Override
     public void sendFileToContainer(String containerId, String destination, MultipartFile fileUpload, String contentFileName, String contentFileData)
             throws ServiceException, CheckException {
-
-        if (fileUpload != null && contentFileData != null) {
-            throw new CheckException("Cannot use together fileUpload and contentFile");
-        }
-
         try {
             File file = null;
             File createTempHomeDirPerUsage = null;
             File homeDirectory = null;
-                try {
-                    homeDirectory = org.apache.commons.io.FileUtils.getUserDirectory();
-                    createTempHomeDirPerUsage = new File(homeDirectory.getAbsolutePath() + "/tmp" + System.currentTimeMillis());
-                    if (createTempHomeDirPerUsage.mkdirs()) {
-                        String fileName = null;
-                        // usecase : upload a file
-                        if (fileUpload !=null) {
-                            fileName = fileUpload.getOriginalFilename();
-                            fileName = AlphaNumericsCharactersCheckUtils.deAccent(fileName);
-                            fileName = fileName.replace(" ", "_");
-                            file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + fileName);
-                            fileUpload.transferTo(file);
-                            destination = convertPathFromUI(destination);
-                        }
-                        // usecase : save the content file
-                        else {
-                            fileName = contentFileName;
-                            file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + contentFileName);
-                            FileUtils.write(file, contentFileData);
-                        }
-                        dockerService.sendFileToContainer(containerId, file.getParent(), fileName, destination);
-                    } else {
-                        throw new ServiceException("Cannot create : " + createTempHomeDirPerUsage.getAbsolutePath());
+            try {
+                homeDirectory = org.apache.commons.io.FileUtils.getUserDirectory();
+                createTempHomeDirPerUsage = new File(homeDirectory.getAbsolutePath() + "/tmp" + System.currentTimeMillis());
+                if (createTempHomeDirPerUsage.mkdirs()) {
+                    String fileName = null;
+                    // usecase : upload a file
+                    if (fileUpload !=null) {
+                        fileName = fileUpload.getOriginalFilename();
+                        fileName = AlphaNumericsCharactersCheckUtils.deAccent(fileName);
+                        fileName = fileName.replace(" ", "_");
+                        file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + fileName);
+                        fileUpload.transferTo(file);
+                        destination = convertPathFromUI(destination);
                     }
-                } finally {
-                    if (createTempHomeDirPerUsage != null) createTempHomeDirPerUsage.delete();
+                    // usecase : save the content file
+                    else {
+                        fileName = contentFileName;
+                        file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + contentFileName);
+                        FileUtils.write(file, contentFileData);
+                    }
+                    dockerService.sendFileToContainer(containerId, file.getParent(), fileName, destination);
+                } else {
+                    throw new ServiceException("Cannot create : " + createTempHomeDirPerUsage.getAbsolutePath());
                 }
+            } finally {
+                if (createTempHomeDirPerUsage != null) createTempHomeDirPerUsage.delete();
+            }
+            if (destination.contains("/opt/cloudunit")) {
+                dockerService.execCommand(containerId, RemoteExecAction.CHANGE_CU_RIGHTS.getCommand(), true);
+            }
         } catch (FatalDockerJSONException | IOException e) {
             StringBuilder msgError = new StringBuilder(512);
             msgError.append(",").append("containerId=").append(containerId);

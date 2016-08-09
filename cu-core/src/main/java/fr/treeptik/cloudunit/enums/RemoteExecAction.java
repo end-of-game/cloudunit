@@ -1,11 +1,16 @@
 package fr.treeptik.cloudunit.enums;
 
+import java.util.Map;
+
 /**
  * Created by nicolas on 19/04/2016.
  */
 public enum RemoteExecAction {
 
+    ADD_USER("Add user for admin console", "/opt/cloudunit/scripts/add-user.sh CU_USER CU_PASSWORD"),
+    CHANGE_CU_RIGHTS("Change rights for user CloudUnit", "chown -R cloudunit:cloudunit /opt/cloudunit"),
     CHECK_RUNNING("Check running", "/opt/cloudunit/scripts/check-running.sh"),
+    DEPLOY("Deploy application", "/opt/cloudunit/scripts/deploy.sh CU_USER CU_PASSWORD"),
 
     MODULE_PRE_CREATION("Module pre creation", "/opt/cloudunit/hooks/module-pre-creation.sh"),
     MODULE_POST_CREATION("Module pre creation", "/opt/cloudunit/hooks/module-post-creation.sh"),
@@ -28,7 +33,7 @@ public enum RemoteExecAction {
     GATHER_CU_ENV("Gather CU env variables", "/opt/cloudunit/scripts/env.sh");
 
     private final String label;
-    private final String command;
+    private String command;
 
     RemoteExecAction(String label, String command) {
         this.label = label;
@@ -40,6 +45,11 @@ public enum RemoteExecAction {
     }
 
     public String getCommand() {
+        return command;
+    }
+
+    public String getCommand(Map<String, String> kvStore) {
+        kvStore.entrySet().stream().forEach(e -> command = command.replaceAll(e.getKey(), e.getValue()));
         return command;
     }
 

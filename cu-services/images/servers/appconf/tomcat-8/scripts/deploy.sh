@@ -2,31 +2,16 @@
 
 set -x
 
-export WAR_NAME=$1
-# We need it for git
-export RUNNER=$2
-export WAR_PATH=/cloudunit/tmp
+export ENV_FILE="/opt/cloudunit/.profile"
+source $ENV_FILE
 
-# stop the server
-/cloudunit/scripts/cu-stop.sh
+CU_USER=$1
+CU_PASSWORD=$2
 
-# wait for its downtime
-/cloudunit/scripts/waiting-for-shutdown.sh java 30
+FILETODEPLOY=`ls $CU_TMP`
+$CU_TMP/$FILETODEPLOY $CU_TMP/ROOT.war
 
-# The server is down. We clean the logs
-# because they are stored into ElasticSearch
-rm -rf /cloudunit/appconf/logs/*
+curl --upload-file $CU_TMP/ROOT.war http://$CU_USER:$CU_PASSWORD@localhost:8080/manager/text/deploy?path=/
 
-#delete the current app
-rm -rf $CATALINA_HOME/webapps/ROOT
-rm -rf $CATALINA_HOME/webapps/${WAR_NAME%.*ar}
-rm -rf $CATALINA_HOME/work/Catalina/localhost/_
+rm -f $CU_TMP/$FILETODEPLOY
 
-#move the war in webapps
-mv $WAR_PATH/$WAR_NAME $CATALINA_HOME/webapps/ROOT.war
-
-#restart the server
-su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'
-
-sleep 2
-chown -R $RUNNER:$RUNNER $CATALINA_HOME/webapps

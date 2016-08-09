@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
+import fr.treeptik.cloudunit.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -50,10 +51,6 @@ import fr.treeptik.cloudunit.factory.EnvUnitFactory;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.DockerService;
-import fr.treeptik.cloudunit.service.GitlabService;
-import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 
@@ -83,6 +80,9 @@ public class ApplicationController implements Serializable {
 
 	@Inject
 	private DockerService dockerService;
+
+	@Inject
+	private FileService fileService;
 
 	/**
 	 * To verify if an application exists or not.
@@ -356,17 +356,7 @@ public class ApplicationController implements Serializable {
 		// We must be sure there is no running action before starting new one
 		authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
-		// DockerContainer dockerContainer = new DockerContainer();
-		// dockerContainer.setName(application.getServers().get(0).getName());
-		// dockerContainer.setImage((application.getServers().get(0).getImage().getName()));
-		//
-		// hookService.call(dockerContainer.getName(),
-		// RemoteExecAction.APPLICATION_PRE_STOP);
-		//
-		// applicationManager.deploy(fileUpload, application);
-		//
-		// hookService.call(dockerContainer.getName(),
-		// RemoteExecAction.APPLICATION_POST_FIRST_DEPLOY);
+		applicationService.deploy(fileUpload, application);
 
 		logger.info("--DEPLOY APPLICATION WAR ENDED--");
 		return new HttpOk();

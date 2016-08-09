@@ -50,6 +50,8 @@ RUN cd $HOME \
     && mv $HOME/apache-tomcat-$TOMCAT_VERSION/* $CATALINA_HOME/ \
     && rm apache-tomcat-$TOMCAT_VERSION.tar.gz
 
+COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
+
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
 USER cloudunit

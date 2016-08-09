@@ -21,6 +21,7 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
@@ -45,7 +46,7 @@ public interface ApplicationService {
 
 	void setStatus(Application application, Status status) throws ServiceException;
 
-	Application deploy(File file, Application application) throws ServiceException, CheckException;
+	Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException;
 
 	Application start(Application application) throws ServiceException;
 

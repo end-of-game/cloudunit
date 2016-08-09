@@ -22,6 +22,7 @@ import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.*;
@@ -38,6 +39,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
@@ -70,6 +73,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     private ImageService imageService;
 
     @Inject
+    private FileService fileService;
+
+    @Inject
     private ShellUtils shellUtils;
 
     @Inject
@@ -86,9 +92,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Inject
     private MessageSource messageSource;
-
-    @Value("${cloudunit.max.apps:100}")
-    private String numberMaxApplications;
 
     @Value("${docker.manager.ip:192.168.50.4:2376}")
     private String dockerManagerIp;
@@ -124,13 +127,6 @@ public class ApplicationServiceImpl implements ApplicationService {
      */
     @Override
     public void checkCreate(Application application, String serverName) throws CheckException, ServiceException {
-
-        logger.debug("--CHECK APP COUNT--");
-
-        if (this.countApp(application.getUser()) >= Integer.parseInt(numberMaxApplications)) {
-            throw new ServiceException(
-                    "You have already created your " + numberMaxApplications + " apps into the Cloud");
-        }
 
         try {
             if (checkAppExist(application.getUser(), application.getName())) {
@@ -292,6 +288,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
             application = applicationDAO.save(application);
             applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+
         } catch (DataAccessException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
@@ -495,17 +492,19 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @Transactional
-    public Application deploy(File file, Application application) throws ServiceException, CheckException {
+    public Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException {
         int code = -1;
         try {
             // get app with all its components
-            Server server = application.getServer();
-            // if all is ok, create a new deployment tag and set app to starting
-            if (code == 0) {
-                deploymentService.create(application, Type.WAR);
-            } else {
-                throw new ServiceException("No way to deploy application " + file + ", " + application);
-            }
+            String containerId = application.getServer().getContainerID();
+            String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
+            fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
+            Map<String, String> kvStore = new HashMap<String, String>() {{
+                put("CU_USER", application.getUser().getLogin());
+                put("CU_PASSWORD", application.getUser().getClearedPassword());
+            }};
+            dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
+            deploymentService.create(application, Type.WAR);
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
