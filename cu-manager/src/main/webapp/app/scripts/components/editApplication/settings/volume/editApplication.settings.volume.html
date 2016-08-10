@@ -14,51 +14,51 @@
   -->
 
 <div class="card large">
-  <div class="content clearfix" id="settings-environment">
+  <div class="content clearfix" id="settings-volume">
 
-    <div class="alert alert-danger" data-ng-show="environment.errorMsg">
+    <div class="alert alert-danger" data-ng-show="volume.errorMsg">
       <button type="button"
               class="close"
-              ng-click="environment.errorMsg = ''">
+              ng-click="volume.errorMsg = ''">
         <span>&times;</span>
       </button>
-      <p>{{environment.errorMsg}}</p>
+      <p>{{volume.errorMsg}}</p>
     </div>
-    <div class="alert alert-info" data-ng-show="environment.noticeMsg">
+    <div class="alert alert-info" data-ng-show="volume.noticeMsg">
       <button type="button"
               class="close"
-              ng-click="environment.noticeMsg = ''">
+              ng-click="volume.noticeMsg = ''">
         <span>&times;</span>
       </button>
-      <p>{{environment.noticeMsg}}</p>
+      <p>{{volume.noticeMsg}}</p>
     </div>
 
-    <h3 class="title large">Add Variable</h3>
+    <h3 class="title large">Add Volume</h3>
 
-    <form id="add-env"
-            name="addEnvironmentVariable"
+    <form id="add-volume"
+            name="addvolumeVariable"
             class="clearfix" novalidate=""
-            data-ng-submit="environment.addEnv(environment.environmentVariableKey, environment.environmentVariableValue)">
+            data-ng-submit="volume.addVolume(volume.volumeName, volume.volumePath)">
         <div class="input-group-inline col-lg-5">
-          <label for="key">Key</label>
-          <input id="key"
-                 name="key"
+          <label for="name">Name</label>
+          <input id="name"
+                 name="name"
                  type="text"
-                 data-ng-model="environment.environmentVariableKey">
+                 data-ng-model="volume.volumeName">
         </div>
         <div class="input-group-inline col-lg-5">
-          <label for="value">Value</label>
-          <input id="value"
-                 name="value"
+          <label for="path">Path</label>
+          <input id="path"
+                 name="path"
                  type="text"
-                 data-ng-model="environment.environmentVariableValue"
+                 data-ng-model="volume.volumePath"
                  ng-required="">
           </div>
         <div class="actions">
           <div class="secondary-actions pull-right">
             <button type="submit"
                     class="alias-btn button primary raised"
-                    data-ng-disabled="!environment.environmentVariableKey || !environment.environmentVariableValue"
+                    data-ng-disabled="!volume.volumeName || !volume.volumePath"
                     ripple="">
               <span>Add variable</span>
             </button>
@@ -66,42 +66,42 @@
         </div>
       </form>
 
-    <h3 class="title large">Manage Variable</h3>
+    <h3 class="title large">Manage Volume</h3>
 
-    <div class="no-data" ng-if="!environment.env.length">
-      <p>No environment variables has been created yet !</p>
+    <div class="no-data" ng-if="!volume.volume.length">
+      <p>No volume has been created yet !</p>
     </div>
 
-    <table class="table" ng-if="environment.env.length">
+    <table class="table" ng-if="volume.volume.length">
         <thead>
         <tr>
-          <th ng-click="environment.order('key')"><i class="icon-whhg"  ng-show="environment.predicate == 'key'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i> Key</th>
-          <th ng-click="environment.order('value')"><i class="icon-whhg"  ng-show="environment.predicate == 'value'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i>  Value</th>
+          <th ng-click="volume.order('name')"><i class="icon-whhg"  ng-show="volume.predicate == 'name'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> name</th>
+          <th ng-click="volume.order('path')"><i class="icon-whhg"  ng-show="volume.predicate == 'path'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i>  path</th>
           <th>Actions</th>
         </tr>
         </thead>
         <tbody>
           <tr 
-            dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by env.id"
-            data-current-page="environment.currentPage">
+            dir-paginate="volume in volume.volume | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by volume.id"
+            data-current-page="volume.currentPage">
             <td>
-              <span editable-text="env.key" e-name="key" e-form="rowform"  e-required>
-                <span class="clipboard" id="key-{{env.id}}"
+              <span editable-text="volume.name" e-name="name" e-form="rowform"  e-required>
+                <span class="clipboard" id="name-{{volume.id}}"
                   data-title="Copy to clipboard"
                   tooltip=""
-                  ngclipboard data-clipboard-target="#key-{{env.id}}">{{ env.key }}</span>
+                  ngclipboard data-clipboard-target="#name-{{volume.id}}">{{ volume.name }}</span>
               </span>
             </td>
             <td>
-              <span editable-text="env.value" e-name="value" e-form="rowform" e-required>
-                <span class="clipboard" id="value-{{env.id}}"
+              <span editable-text="volume.path" e-name="path" e-form="rowform" e-required>
+                <span class="clipboard" id="path-{{volume.id}}"
                   data-title="Copy to clipboard"
                   tooltip=""
-                  ngclipboard data-clipboard-target="#value-{{env.id}}">{{ env.value }}</span>
+                  ngclipboard data-clipboard-target="#path-{{volume.id}}">{{ volume.path }}</span>
               </span>
             </td>
             <td>
-              <form editable-form name="rowform" onbeforesave="environment.editEnv(env.id, $data.key, $data.value)" ng-show="rowform.$visible">
+              <form editable-form name="rowform" onbeforesave="volume.editVolume(volume.id, $data.name, $data.path)" ng-show="rowform.$visible">
                 <div class="action">
                   <button type="submit" class="button primary raised"
                   ng-disabled="rowform.$waiting">
@@ -120,15 +120,15 @@
                   data-title="Delete"
                   data-placement="bottom"
                   data-toggle="modal"
-                  data-target="#delete-{{env.id}}">
+                  data-target="#delete-{{volume.id}}">
                 <i class="icon-whhg trash"></i>
                 </button>
                 <div class="modal"
-                    id="delete-{{env.id}}"
+                    id="delete-{{volume.id}}"
                     modaldismiss="">
                   <div class="modal-inner">
                     <div class="content clearfix">
-                      <h3 class="title">Removal confirmation required for env {{env.key}}</h3>
+                      <h3 class="title">Removal confirmation required for volume {{volume.name}}</h3>
 
                       <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
 
@@ -138,7 +138,7 @@
                         <button type="button"
                                 class="delete-btn button primary"
                                 data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
-                                data-ng-click="environment.deleteEnv(env)">
+                                data-ng-click="volume.deleteVolume(volume)">
                           Delete variable
                         </button>
                       </div>
@@ -159,6 +159,6 @@
           </tr>
         </tbody>
       </table>
-      <dir-pagination-controls ng-if="environment.env.length"></dir-pagination-controls>
+      <dir-pagination-controls ng-if="volume.volume.length"></dir-pagination-controls>
   </div>
 </div>

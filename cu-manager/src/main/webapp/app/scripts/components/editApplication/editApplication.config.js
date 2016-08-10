@@ -98,6 +98,11 @@ angular.module('webuiApp.editApplication', [])
           {
             url: '/settingsEnvironment',
             template: '<environment-component app="editApp.application"></environment-component>',
+          })
+        .state('editApplication.settingsVolume',
+          {
+            url: '/settingsVolume',
+            template: '<volume-component app="editApp.application"></volume-component>',
           });
 
     }, ]);
