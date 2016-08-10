@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.List;
 
-/**
- * Created by stagiaire on 08/08/16.
- */
 @Service
 public class EnvironmentServiceImpl implements EnvironmentService {
 

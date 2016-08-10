@@ -103,6 +103,9 @@ public class Application implements Serializable {
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
 	private Set<Environment> environments;
 
+	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
+	private Set<Volume> volumes;
+
 	public Application() {
 		super();
 		date = new Date();
