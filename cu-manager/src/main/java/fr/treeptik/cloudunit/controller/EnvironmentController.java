@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,32 +44,30 @@ public class EnvironmentController implements Serializable {
     private ApplicationService applicationService;
 
     @RequestMapping(value = "/{applicationName}/environmentVariables", method = RequestMethod.GET)
-    public @ResponseBody ArrayNode loadAllEnvironmentVariables(@PathVariable String applicationName)
+    public @ResponseBody List<EnvironmentVariableRequest> loadAllEnvironmentVariables(@PathVariable String applicationName)
             throws ServiceException, JsonProcessingException, CheckException {
         logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             List<Environment> environmentList = environmentService.loadAllEnvironnments();
-
-            ObjectMapper mapper = new ObjectMapper();
-            ArrayNode array = mapper.createArrayNode();
+            List<EnvironmentVariableRequest> environmentVariableRequestList = new ArrayList<>();
 
             for (Environment environment : environmentList) {
-                JsonNode rootNode = mapper.createObjectNode();
-                ((ObjectNode) rootNode).put("id", environment.getId());
-                ((ObjectNode) rootNode).put("key", environment.getKeyEnv());
-                ((ObjectNode) rootNode).put("value", environment.getValueEnv());
-                array.add(rootNode);
+                EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
+                environmentVariableRequest.setId(environment.getId());
+                environmentVariableRequest.setKey(environment.getKeyEnv());
+                environmentVariableRequest.setValue(environment.getValueEnv());
+                environmentVariableRequestList.add(environmentVariableRequest);
             }
 
-            return array;
+            return environmentVariableRequestList;
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
     @RequestMapping(value = "/{applicationName}/environmentVariables/{id}", method = RequestMethod.GET)
-    public @ResponseBody JsonNode loadEnvironmentVariable(@PathVariable String applicationName, @PathVariable int id)
+    public @ResponseBody EnvironmentVariableRequest loadEnvironmentVariable(@PathVariable String applicationName, @PathVariable int id)
             throws ServiceException, CheckException {
         logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -77,13 +76,12 @@ public class EnvironmentController implements Serializable {
             if(environment.equals(null))
                 throw new CheckException("Environment variable doesn't exist");
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.createObjectNode();
-            ((ObjectNode) rootNode).put("id", environment.getId());
-            ((ObjectNode) rootNode).put("key", environment.getKeyEnv());
-            ((ObjectNode) rootNode).put("value", environment.getValueEnv());
+            EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
+            environmentVariableRequest.setId(environment.getId());
+            environmentVariableRequest.setKey(environment.getKeyEnv());
+            environmentVariableRequest.setValue(environment.getValueEnv());
 
-            return rootNode;
+            return environmentVariableRequest;
         } finally {
             authentificationUtils.allowUser(user);
         }
