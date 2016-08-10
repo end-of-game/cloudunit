@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +38,7 @@ import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
@@ -48,7 +48,6 @@ import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
-import fr.treeptik.cloudunit.utils.ShellUtils;
 
 @Service
 public class ServerServiceImpl implements ServerService {
@@ -60,9 +59,6 @@ public class ServerServiceImpl implements ServerService {
 
 	@Inject
 	private ApplicationDAO applicationDAO;
-
-	@Inject
-	private ShellUtils shellUtils;
 
 	@Inject
 	private HipacheRedisUtils hipacheRedisUtils;
@@ -244,7 +240,6 @@ public class ServerServiceImpl implements ServerService {
 	@Transactional
 	public Server update(Server server) throws ServiceException {
 
-		logger.debug("update : Methods parameters : " + server.toString());
 		logger.info("ServerService : Starting updating Server " + server.getName());
 		try {
 			server = serverDAO.save(server);
@@ -331,7 +326,6 @@ public class ServerServiceImpl implements ServerService {
 	@Transactional
 	public Server startServer(Server server) throws ServiceException {
 
-		logger.debug("start : Methods parameters : " + server);
 		logger.info("ServerService : Starting Server " + server.getName());
 		try {
 			Application application = server.getApplication();
@@ -407,8 +401,8 @@ public class ServerServiceImpl implements ServerService {
 
 	@Override
 	@Transactional
-	public Server update(Server server, String jvmMemory, String options, String jvmRelease,
-			boolean restorePreviousEnv) throws ServiceException {
+	public Server update(Server server, String jvmMemory, String options, String jvmRelease, boolean restorePreviousEnv)
+			throws ServiceException {
 
 		String previousJvmMemory = server.getJvmMemory().toString();
 		String previousJvmRelease = server.getJvmRelease();
@@ -427,7 +421,8 @@ public class ServerServiceImpl implements ServerService {
 						put("JVM_OPTIONS", jvmOptions);
 					}
 				};
-				dockerService.execCommand(server.getContainerID(), RemoteExecAction.CHANGE_SERVER_CONFIG.getCommand(kvStore));
+				dockerService.execCommand(server.getContainerID(),
+						RemoteExecAction.CHANGE_SERVER_CONFIG.getCommand(kvStore));
 			}
 
 			// If jvm release changes...

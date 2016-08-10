@@ -79,7 +79,7 @@ public class ServerListener {
 			logger.info("Server status : " + server.getStatus());
 			serverService.update(server);
 		} catch (Exception e) {
-			logger.error(server.toString(), e);
+			logger.error(server.getContainerID(), e);
 			e.printStackTrace();
 		}
 	}
