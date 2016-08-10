@@ -90,7 +90,7 @@ public class EnvironmentController implements Serializable {
     }
 
     @RequestMapping(value = "/{applicationName}/environmentVariables", method = RequestMethod.POST)
-    public @ResponseBody JsonNode addEnvironmentVariable (@PathVariable String applicationName,
+    public @ResponseBody EnvironmentVariableRequest addEnvironmentVariable (@PathVariable String applicationName,
             @RequestBody EnvironmentVariableRequest environmentVariableRequest)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
@@ -112,21 +112,23 @@ public class EnvironmentController implements Serializable {
 
             environmentService.save(environment);
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.createObjectNode();
-            ((ObjectNode) rootNode).put("id", environment.getId());
-            ((ObjectNode) rootNode).put("key", environment.getKeyEnv());
-            ((ObjectNode) rootNode).put("value", environment.getValueEnv());
-
-            return rootNode;
-
+            EnvironmentVariableRequest environmentVariableRequest1 = new EnvironmentVariableRequest();
+            List<Environment> environmentList1 = environmentService.loadEnvironnmentsByApplication(applicationName);
+            for(Environment environment1 : environmentList1)
+                if(environment1.getKeyEnv().equals(environment.getKeyEnv())) {
+                    environmentVariableRequest1.setId(environment1.getId());
+                    environmentVariableRequest1.setKey(environment1.getKeyEnv());
+                    environmentVariableRequest1.setValue(environment1.getValueEnv());
+                }
+                
+            return environmentVariableRequest1;
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
     @RequestMapping(value = "/{applicationName}/environmentVariables/{id}", method = RequestMethod.PUT)
-    public @ResponseBody JsonNode updateEnvironmentVariable (@PathVariable String applicationName, @PathVariable int id,
+    public @ResponseBody EnvironmentVariableRequest updateEnvironmentVariable (@PathVariable String applicationName, @PathVariable int id,
                   @RequestBody EnvironmentVariableRequest environmentVariableRequest)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
@@ -149,13 +151,12 @@ public class EnvironmentController implements Serializable {
 
             environmentService.save(environment);
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.createObjectNode();
-            ((ObjectNode) rootNode).put("id", environment.getId());
-            ((ObjectNode) rootNode).put("key", environment.getKeyEnv());
-            ((ObjectNode) rootNode).put("value", environment.getValueEnv());
+            EnvironmentVariableRequest returnEnv = new EnvironmentVariableRequest();
+            returnEnv.setId(environment.getId());
+            returnEnv.setKey(environment.getKeyEnv());
+            returnEnv.setValue(environment.getValueEnv());
 
-            return rootNode;
+            return returnEnv;
 
         } finally {
             authentificationUtils.allowUser(user);
