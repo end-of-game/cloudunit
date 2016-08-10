@@ -98,9 +98,6 @@ public class VolumeController implements Serializable {
             if(!volumeRequest.getName().matches("^[-a-zA-Z0-9_]*$"))
                 throw new CheckException("This name is not consistent : " + volumeRequest.getName());
 
-            if(!volumeRequest.getPath().matches("^[a-zA-Z0-9\\-\\/_]*$"))
-                throw new CheckException("This path is not consistent : " + volumeRequest.getPath());
-
             List<Volume> volumeList = volumeService.loadAllVolumes();
             for(Volume volume : volumeList)
                 if (volume.getName().equals(volumeRequest.getName()))
@@ -146,9 +143,6 @@ public class VolumeController implements Serializable {
 
             if(!volumeRequest.getName().matches("^[-a-zA-Z0-9_]*$"))
                 throw new CheckException("This name is not consistent : " + volumeRequest.getName());
-
-            if(!volumeRequest.getPath().matches("^[a-zA-Z0-9\\-\\/_]*$"))
-                throw new CheckException("This path is not consistent : " + volumeRequest.getPath());
 
             Volume volume = volumeService.loadVolume(id);
             List<Volume> volumeList = volumeService.loadAllVolumes();
