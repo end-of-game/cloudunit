@@ -58,13 +58,7 @@
     vm.$onInit = function() {  
       getContainers()
       .then(function() {
-        ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.id)
-          .then(function(response) {
-            vm.env = response;
-          })
-          .catch(function(response) {
-            ErrorService.handle(response);
-          });
+        getListEnvironmentVariable();
       })
       .catch(function(response) {
          ErrorService.handle(response);
@@ -72,6 +66,16 @@
     }
     
     ////////////////////////////////////////////////
+
+    function getListEnvironmentVariable() {
+      ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.id)
+        .then(function(response) {
+          vm.env = response;
+        })
+        .catch(function(response) {
+          ErrorService.handle(response);
+        });
+    }
 
     function getContainers ( selectedContainer ) {
       var deferred = $q.defer ();
@@ -107,7 +111,10 @@
           vm.noticeMsg = 'The variable has been edited!'
           vm.errorMsg = '';
         })
-        .catch (errorScript);
+        .catch (function(response) {
+          getListEnvironmentVariable();
+          errorScript(response);
+        });
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {

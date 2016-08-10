@@ -39,7 +39,7 @@
   function volumeCtrl($stateParams, $q, ApplicationService, ErrorService) {
 
     var vm = this;
-    vm.volume = [];
+    vm.volumes = [];
     vm.containers = [];
     vm.myContainer = {};
     vm.isLoading = true;
@@ -51,35 +51,15 @@
     vm.predicate = 'name';
     vm.reverse = false;
     vm.order = order;
-
+    
+    vm.addVolume = addVolume;
     vm.editVolume = editVolume;
     vm.deleteVolume = deleteVolume;
-    vm.addVolume = addVolume;
-
-    vm.$onInit = function() {
-      ApplicationService.getListSettingsVolume($stateParams.name)
-        .then(function(response) {
-          vm.volume = response;
-          getContainers();
-          setTimeout(function() {
-            console.log(vm.containers);  
-          }, 1000);
-        })
-        .catch(function(response) {
-          //ErrorService.handle(response);
-        });
-    }
 
     vm.$onInit = function() {  
       getContainers()
       .then(function() {
-        ApplicationService.getListSettingsVolume($stateParams.name, vm.myContainer.id)
-          .then(function(response) {
-            vm.volume = response;
-          })
-          .catch(function(response) {
-            ErrorService.handle(response);
-          });
+       getListVolume();
       })
       .catch(function(response) {
          ErrorService.handle(response);
@@ -87,6 +67,16 @@
     }
 
     ////////////////////////////////////////////////
+
+    function getListVolume() {
+      ApplicationService.getListSettingsVolume($stateParams.name, vm.myContainer.id)
+        .then(function(response) {
+          vm.volumes = response;
+        })
+        .catch(function(response) {
+          ErrorService.handle(response);
+        });
+    }
 
     function getContainers ( selectedContainer ) {
       var deferred = $q.defer ();
@@ -105,9 +95,10 @@
     }
 
     function deleteVolume (volume) {
-      ApplicationService.deleteVolume (  $stateParams.name, volume.id )
+      console.log('deleteVolume');
+      ApplicationService.deleteVolume (  $stateParams.name, vm.myContainer.id, volume.id )
         .then ( function() {
-          vm.volume.splice(vm.volume.indexOf(volume), 1);
+          vm.volumes.splice(vm.volumes.indexOf(volume), 1);
           vm.noticeMsg = 'The volume has been removed!'
           vm.errorMsg = '';
         } )
@@ -115,20 +106,25 @@
     }
     
     function editVolume (volumeID, volumeName, volumePath) {
-      ApplicationService.editVolume ( $stateParams.name, volumeID, volumeName, volumePath )
+      console.log('editVolume');
+      ApplicationService.editVolume ( $stateParams.name, vm.myContainer.id, volumeID, volumeName, volumePath )
         .then(function(volume) {
-          var elementPos = vm.volume.map(function(x) {return x.id; }).indexOf(volumeID);
-          vm.volume[elementPos] = volume.data;
+          var elementPos = vm.volumes.map(function(x) {return x.id; }).indexOf(volumeID);
+          vm.volumes[elementPos] = volume;
           vm.noticeMsg = 'The volume has been edited!'
           vm.errorMsg = '';
         })
-        .catch (errorScript);
+        .catch ( function(response) {
+          getListVolume();
+          errorScript(response);
+        } );
     }
 
     function addVolume (volumeName, volumePath) {
-      ApplicationService.addVolume (  $stateParams.name, volumeName, volumePath )
+      console.log(volumePath);
+      ApplicationService.addVolume (  $stateParams.name, vm.myContainer.id, volumeName, volumePath )
         .then ( function(volume) {
-          vm.volume.push(volume);
+          vm.volumes.push(volume);
           vm.volumeName = '';
           vm.volumePath = '';
           vm.noticeMsg = 'volume successfully created!';

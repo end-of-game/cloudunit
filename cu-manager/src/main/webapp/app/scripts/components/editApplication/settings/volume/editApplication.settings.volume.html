@@ -92,11 +92,11 @@
 
     <h3 class="title large">Manage Volume</h3>
 
-    <div class="no-data" ng-if="!volume.volume.length">
+    <div class="no-data" ng-if="!volume.volumes.length">
       <p>No volume has been created yet !</p>
     </div>
 
-    <table class="table" ng-if="volume.volume.length">
+    <table class="table" ng-if="volume.volumes.length">
         <thead>
         <tr>
           <th ng-click="volume.order('name')"><i class="icon-whhg"  ng-show="volume.predicate == 'name'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> name</th>
@@ -106,26 +106,26 @@
         </thead>
         <tbody>
           <tr 
-            dir-paginate="volume in volume.volume | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by volume.id"
+            dir-paginate="vol in volume.volumes | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by vol.id"
             data-current-page="volume.currentPage">
             <td>
-              <span editable-text="volume.name" e-name="name" e-form="rowform"  e-required>
-                <span class="clipboard" id="name-{{volume.id}}"
+              <span editable-text="vol.name" e-name="name" e-form="rowform"  e-required>
+                <span class="clipboard" id="name-{{vol.id}}"
                   data-title="Copy to clipboard"
                   tooltip=""
-                  ngclipboard data-clipboard-target="#name-{{volume.id}}">{{ volume.name }}</span>
+                  ngclipboard data-clipboard-target="#name-{{vol.id}}">{{ vol.name }}</span>
               </span>
             </td>
             <td>
-              <span editable-text="volume.path" e-name="path" e-form="rowform" e-required>
-                <span class="clipboard" id="path-{{volume.id}}"
+              <span editable-text="vol.path" e-name="path" e-form="rowform" e-required>
+                <span class="clipboard" id="path-{{vol.id}}"
                   data-title="Copy to clipboard"
                   tooltip=""
-                  ngclipboard data-clipboard-target="#path-{{volume.id}}">{{ volume.path }}</span>
+                  ngclipboard data-clipboard-target="#path-{{vol.id}}">{{ vol.path }}</span>
               </span>
             </td>
             <td>
-              <form editable-form name="rowform" onbeforesave="volume.editVolume(volume.id, $data.name, $data.path)" ng-show="rowform.$visible">
+              <form editable-form name="rowform" onbeforesave="volume.editVolume(vol.id, $data.name, $data.path)" ng-show="rowform.$visible">
                 <div class="action">
                   <button type="submit" class="button primary raised"
                   ng-disabled="rowform.$waiting">
@@ -144,11 +144,11 @@
                   data-title="Delete"
                   data-placement="bottom"
                   data-toggle="modal"
-                  data-target="#delete-{{volume.id}}">
+                  data-target="#delete-{{vol.id}}">
                 <i class="icon-whhg trash"></i>
                 </button>
                 <div class="modal"
-                    id="delete-{{volume.id}}"
+                    id="delete-{{vol.id}}"
                     modaldismiss="">
                   <div class="modal-inner">
                     <div class="content clearfix">
@@ -162,7 +162,7 @@
                         <button type="button"
                                 class="delete-btn button primary"
                                 data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
-                                data-ng-click="volume.deleteVolume(volume)">
+                                data-ng-click="volume.deleteVolume(vol);">
                           Delete variable
                         </button>
                       </div>
@@ -183,6 +183,6 @@
           </tr>
         </tbody>
       </table>
-      <dir-pagination-controls ng-if="volume.volume.length"></dir-pagination-controls>
+      <dir-pagination-controls ng-if="volume.volumes.length"></dir-pagination-controls>
   </div>
 </div>
