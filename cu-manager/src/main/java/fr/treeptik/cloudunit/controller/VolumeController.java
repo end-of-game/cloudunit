@@ -39,7 +39,7 @@ public class VolumeController implements Serializable {
     @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes", method = RequestMethod.GET)
     public @ResponseBody
     List<VolumeRequest> loadAllVolumes(@PathVariable String applicationName,
-            @PathVariable Integer containerId)
+            @PathVariable String containerId)
             throws ServiceException, JsonProcessingException, CheckException {
         logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -63,7 +63,7 @@ public class VolumeController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.GET)
     public @ResponseBody VolumeRequest loadVolume(@PathVariable String applicationName,
-            @PathVariable Integer containerId, @PathVariable int id)
+            @PathVariable String containerId, @PathVariable int id)
             throws ServiceException, CheckException {
         logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -85,7 +85,7 @@ public class VolumeController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes", method = RequestMethod.POST)
     public @ResponseBody VolumeRequest addVolume (@PathVariable String applicationName,
-            @PathVariable Integer containerId, @RequestBody VolumeRequest volumeRequest)
+            @PathVariable String containerId, @RequestBody VolumeRequest volumeRequest)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
@@ -133,7 +133,7 @@ public class VolumeController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.PUT)
     public @ResponseBody VolumeRequest updateVolume (@PathVariable String applicationName,
-           @PathVariable Integer containerId, @PathVariable int id, @RequestBody VolumeRequest volumeRequest)
+           @PathVariable String containerId, @PathVariable int id, @RequestBody VolumeRequest volumeRequest)
            throws ServiceException, CheckException {
 
         User user = authentificationUtils.getAuthentificatedUser();
@@ -178,7 +178,7 @@ public class VolumeController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.DELETE)
     public void deleteEnvironmentVariable(@PathVariable String applicationName,
-            @PathVariable Integer containerId, @PathVariable int id)
+            @PathVariable String containerId, @PathVariable int id)
             throws ServiceException, CheckException {
         logger.info("Delete");
         User user = authentificationUtils.getAuthentificatedUser();

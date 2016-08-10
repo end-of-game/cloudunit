@@ -37,7 +37,7 @@ public class EnvironmentController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.GET)
     public @ResponseBody List<EnvironmentVariableRequest> loadAllEnvironmentVariables(@PathVariable String applicationName,
-            @PathVariable Integer containerId)
+            @PathVariable String containerId)
             throws ServiceException, JsonProcessingException, CheckException {
         logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -61,7 +61,7 @@ public class EnvironmentController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.GET)
     public @ResponseBody EnvironmentVariableRequest loadEnvironmentVariable(@PathVariable String applicationName,
-            @PathVariable Integer containerId, @PathVariable int id)
+            @PathVariable String containerId, @PathVariable int id)
             throws ServiceException, CheckException {
         logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -83,7 +83,7 @@ public class EnvironmentController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.POST)
     public @ResponseBody EnvironmentVariableRequest addEnvironmentVariable (@PathVariable String applicationName,
-            @PathVariable Integer containerId, @RequestBody EnvironmentVariableRequest environmentVariableRequest)
+            @PathVariable String containerId, @RequestBody EnvironmentVariableRequest environmentVariableRequest)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
         try {
@@ -125,7 +125,7 @@ public class EnvironmentController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.PUT)
     public @ResponseBody EnvironmentVariableRequest updateEnvironmentVariable (@PathVariable String applicationName,
-                @PathVariable Integer containerId, @PathVariable int id,
+                @PathVariable String containerId, @PathVariable int id,
                 @RequestBody EnvironmentVariableRequest environmentVariableRequest)
             throws ServiceException, CheckException {
         User user = authentificationUtils.getAuthentificatedUser();
@@ -165,7 +165,7 @@ public class EnvironmentController implements Serializable {
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.DELETE)
     public void deleteEnvironmentVariable(@PathVariable String applicationName,
-            @PathVariable Integer containerId, @PathVariable int id)
+            @PathVariable String containerId, @PathVariable int id)
             throws ServiceException, CheckException {
         logger.info("Delete");
         User user = authentificationUtils.getAuthentificatedUser();
