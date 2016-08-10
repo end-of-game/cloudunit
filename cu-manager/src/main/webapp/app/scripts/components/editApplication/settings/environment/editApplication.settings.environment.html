@@ -15,11 +15,6 @@
 
 <div class="card large">
   <div class="content clearfix" id="settings-environment">
-    <h3 class="title large">Environment variables</h3>
-
-    <div class="subheader">
-      <h3 class="subhead">Manage Variable</h3>
-    </div>
 
     <div class="alert alert-danger" data-ng-show="environment.errorMsg">
       <button type="button"
@@ -37,6 +32,41 @@
       </button>
       <p>{{environment.noticeMsg}}</p>
     </div>
+
+    <h3 class="title large">Add Variable</h3>
+
+    <form id="add-env"
+            name="addEnvironmentVariable"
+            class="clearfix" novalidate=""
+            data-ng-submit="environment.addEnv(environment.environmentVariableKey, environment.environmentVariableValue)">
+        <div class="input-group-inline col-lg-5">
+          <label for="key">Key</label>
+          <input id="key"
+                 name="key"
+                 type="text"
+                 data-ng-model="environment.environmentVariableKey">
+        </div>
+        <div class="input-group-inline col-lg-5">
+          <label for="value">Value</label>
+          <input id="value"
+                 name="value"
+                 type="text"
+                 data-ng-model="environment.environmentVariableValue"
+                 ng-required="">
+          </div>
+        <div class="actions">
+          <div class="secondary-actions pull-right">
+            <button type="submit"
+                    class="alias-btn button primary raised"
+                    data-ng-disabled="!environment.environmentVariableKey || !environment.environmentVariableValue"
+                    ripple="">
+              <span>Add variable</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+    <h3 class="title large">Manage Variable</h3>
 
     <div class="no-data" ng-if="!environment.env.length">
       <p>No environment variables created yet!</p>
@@ -130,62 +160,5 @@
         </tbody>
       </table>
       <dir-pagination-controls ng-if="environment.env.length"></dir-pagination-controls>
-
-<!--      <div id="timeline-task" >
-        <table class="table ng-table-responsive terminal">
-          <tr data-ng-repeat="message in environment.env track by $index">
-            <td>
-              <p>
-                <span id="key-{{$index}}"
-                  data-title="Copy to clipboard"
-                  tooltip=""
-                  ngclipboard data-clipboard-target="#key-{{$index}}">
-                  {{ message.key }}
-                </span>
-                <span id="value-{{$index}}"
-                  data-title="Copy to clipboard" 
-                  tooltip=""
-                  ngclipboard data-clipboard-target="#value-{{$index}}">
-                  {{ message.value }}
-                </span>
-              </p>
-            </td>
-          </tr>
-        </table>
-      </div>-->
-
-    <div class="subheader">
-      <h3 class="subhead">Add Variable</h3>
-    </div>
-
-    <form id="add-env"
-            name="addEnvironmentVariable"
-            class="clearfix" novalidate=""
-            data-ng-submit="environment.addEnv(environment.environmentVariableKey, environment.environmentVariableValue)">
-        <div class="input-group stack">
-          <label for="key">Key</label>
-          <input id="key"
-                 name="key"
-                 type="text"
-                 data-ng-model="environment.environmentVariableKey">
-        </div>
-        <div class="input-group stack">
-          <label for="value">Value</label>
-          <input id="value"
-                 name="value"
-                 type="text"
-                 data-ng-model="environment.environmentVariableValue"
-                 ng-required="">
-          
-        <div class="actions">
-          <div class="secondary-actions pull-right">
-            <button type="submit"
-                    class="alias-btn button primary raised"
-                    ripple="">
-              <span>Add variable</span>
-            </button>
-          </div>
-        </div>
-      </form>
   </div>
 </div>

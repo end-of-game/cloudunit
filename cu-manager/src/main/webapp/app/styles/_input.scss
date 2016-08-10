@@ -99,7 +99,6 @@ input {
   }
 }
 
-
 .input-group.stack.suffix {
   input, textarea {
     width: 75%;
@@ -110,6 +109,10 @@ input {
     position: absolute;
     right: 0;
   }
+}
+
+.input-group-inline input{
+  min-width: 100%
 }
 
 .readonly {

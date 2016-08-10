@@ -17,6 +17,16 @@
 <div class="card large">
   <div class="content clearfix">
     <div class="ports-form">
+
+      <div class="alert alert-danger" data-ng-show="ports.errorMsg">
+        <button type="button"
+                class="close"
+                ng-click="ports.errorMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{ports.errorMsg}}</p>
+      </div>
+
       <h3 class="title large">Add new port</h3>
 
       <form id="add-ports"
@@ -24,14 +34,16 @@
             class="clearfix" novalidate=""
             data-ng-submit="ports.createPort(ports.application.name, ports.number, ports.myNature.value)">
 
-        <div class="input-group stack">
+        <div class="input-group-inline col-lg-5">
           <input id="new-port"
                  name="port"
                  type="text"
                  data-ng-model="ports.number"
                  ng-required=""
                  placeholder="Port number"/>
-
+          <p class="hint">Enter your port number</p>
+        </div>
+        <div class="input-group-inline col-lg-5">
           <div class="dropdown" dropdown="">
             <a class="dropdown-toggle"
                dropdown-toggle=""
@@ -46,16 +58,13 @@
                 </a>
               </li>
             </ul>
-          </div>
-
-          <p class="hint">Enter your port number</p>
-
-          <p class="hint error" data-ng-show="ports.errorMsg">{{ports.errorMsg}}</p>
+          </div> 
         </div>
         <div class="actions">
           <div class="secondary-actions pull-right">
             <button type="submit"
                     class="ports-btn button primary raised"
+                    data-ng-disabled="!ports.number"
                     ripple="">
               <span>Add a port</span>
             </button>
@@ -95,11 +104,8 @@
                     data-ng-click="ports.removePort(ports.application.name, ports.application.portsToOpen[$index].port)">
               <span class="icon-whhg circledelete"></span>
             </button>
-
           </p>
-
         </li>
       </ul>
-
     </div>
 </div>

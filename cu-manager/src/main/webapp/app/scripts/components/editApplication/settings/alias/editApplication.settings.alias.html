@@ -16,13 +16,23 @@
 <div class="card large">
   <div class="content clearfix">
     <div class="alias-form">
+
+    <div class="alert alert-danger" data-ng-show="alias.errorMsg">
+      <button type="button"
+              class="close"
+              ng-click="alias.errorMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{alias.errorMsg}}</p>
+    </div>
+
       <h3 class="title large">Add new alias</h3>
 
       <form id="add-alias"
             name="addAliasForm"
             class="clearfix" novalidate=""
             data-ng-submit="alias.createAlias(alias.application.name, alias.domain)">
-        <div class="input-group stack">
+        <div class="input-group-inline col-lg-5">
           <label for="domain">Application URL</label>
           <input id="domain"
                  name="domain"
@@ -30,7 +40,7 @@
                  data-ng-model="alias.application.location"
                  readonly>
         </div>
-        <div class="input-group stack">
+        <div class="input-group-inline col-lg-5">
           <label for="new-alias">Domain name</label>
           <input id="new-alias"
                  name="alias"
@@ -39,15 +49,13 @@
                  ng-required=""
                  placeholder="mydomain.com">
           <span class="suffix-text"></span>
-
           <p class="hint">Enter your custom domain name</p>
-
-          <p class="hint error" data-ng-show="alias.errorMsg">{{alias.errorMsg}}</p>
         </div>
         <div class="actions">
           <div class="secondary-actions pull-right">
             <button type="submit"
                     class="alias-btn button primary raised"
+                    data-ng-disabled="!alias.domain"
                     ripple="">
               <span>Add an alias</span>
             </button>
