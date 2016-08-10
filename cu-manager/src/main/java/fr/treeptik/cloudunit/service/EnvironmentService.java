@@ -5,9 +5,6 @@ import fr.treeptik.cloudunit.model.Environment;
 
 import java.util.List;
 
-/**
- * Created by stagiaire on 08/08/16.
- */
 public interface EnvironmentService {
     void save(Environment environment) throws ServiceException;
 

@@ -59,7 +59,7 @@ public class EnvironmentController implements Serializable {
         }
     }
 
-    @RequestMapping(value = "/{applicationName}container/{containerId}/environmentVariables/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.GET)
     public @ResponseBody EnvironmentVariableRequest loadEnvironmentVariable(@PathVariable String applicationName,
             @PathVariable Integer containerId, @PathVariable int id)
             throws ServiceException, CheckException {
