@@ -26,6 +26,8 @@
         application: '<app'
       },
       controller: [
+        '$stateParams',
+        '$q',
         'ApplicationService',
         'ErrorService',
         EnvironmentCtrl
@@ -34,11 +36,12 @@
     }
   }
 
-  function EnvironmentCtrl(ApplicationService, ErrorService) {
+  function EnvironmentCtrl($stateParams, $q, ApplicationService, ErrorService) {
 
     var vm = this;
-    vm.currentApplication = '';
     vm.env = [];
+    vm.containers = [];
+    vm.myContainer = {};
     vm.pageSize = 5;
     vm.currentPage = 1;
     vm.environmentVariableKey = '';
@@ -52,29 +55,44 @@
     vm.deleteEnv = deleteEnv;
     vm.addEnv = addEnv;
 
-    vm.$onChanges = function (changesObj) {
-      if(changesObj.application) {
-        if((changesObj.application.previousValue === undefined)
-          || vm.application !== undefined
-        ) {
-         vm.currentApplication = changesObj.application.currentValue.name;
-          ApplicationService.getListSettingsEnvironmentVariable(vm.currentApplication)
-            .then(success)
-            .catch(error);
-
-          function success (response) {
+    vm.$onInit = function() {
+          
+      getContainers()
+      .then(function() {
+        ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.id)
+          .then(function(response) {
             vm.env = response;
-          }
-
-          function error (response) {
+            
+          })
+          .catch(function(response) {
             ErrorService.handle(response);
-          }
-        }
-      }
-    };
+          });
+      })
+      .catch(function(response) {
+         ErrorService.handle(response);
+      });
+    }
+    
+    ////////////////////////////////////////////////
+
+    function getContainers ( selectedContainer ) {
+      var deferred = $q.defer ();
+      vm.isLoading = true;
+      ApplicationService.listContainers ( $stateParams.name )
+        .then ( function ( containers ) {
+          vm.containers = containers;
+          vm.myContainer = selectedContainer || containers[0];
+          vm.isLoading = false;
+          deferred.resolve ( containers );
+        } )
+        .catch ( function ( response ) {
+          deferred.reject ( response );
+        } );
+        return deferred.promise;
+    }
 
     function deleteEnv (environmentVariable) {
-      ApplicationService.deleteEnvironmentVariable (  vm.currentApplication, environmentVariable.id )
+      ApplicationService.deleteEnvironmentVariable (  $stateParams.name, vm.myContainer.id, environmentVariable.id )
         .then ( function() {
           vm.env.splice(vm.env.indexOf(environmentVariable), 1);
           vm.noticeMsg = 'The variable has been removed!'
@@ -84,10 +102,10 @@
     }
     
     function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
-      ApplicationService.editEnvironmentVariable ( vm.currentApplication, environmentVariableID, environmentVariableKey, environmentVariableValue )
+      ApplicationService.editEnvironmentVariable ( $stateParams.name, vm.myContainer.id, environmentVariableID, environmentVariableKey, environmentVariableValue )
         .then(function(env) {
-          var elementPos = vm.env.map(function(x) {return x.id; }).indexOf(environmentVariableID);
-          vm.env[elementPos] = env.data;
+          var elementPos = vm.env.map(function(x) {return x.id; }).indexOf(environmentVariableID);         
+          vm.env[elementPos] = env;
           vm.noticeMsg = 'The variable has been edited!'
           vm.errorMsg = '';
         })
@@ -95,7 +113,7 @@
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
-      ApplicationService.addEnvironmentVariable (  vm.currentApplication, environmentVariableKey, environmentVariableValue )
+      ApplicationService.addEnvironmentVariable (  $stateParams.name, vm.myContainer.id, environmentVariableKey, environmentVariableValue )
         .then ( function(env) {
           vm.env.push(env);
           vm.environmentVariableKey = '';

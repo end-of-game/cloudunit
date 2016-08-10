@@ -13,7 +13,31 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="card large">
+<div class="card">
+  <div class="content clearfix">
+    <h3 class="title large">Environment variables</h3>
+    
+    <p class="hint">Choose a container</p>
+
+    <div class="dropdown dropdown--small" dropdown>
+      <a class="dropdown-toggle"
+          dropdown-toggle=""
+          selectbox="">
+        {{ environment.myContainer.name }}
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+        <li data-ng-repeat="container in environment.containers">
+          <a ng-href=""
+              data-ng-click="environment.myContainer = container; environment.getContainers(environment.myContainer)">
+            {{container.name}}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card">
   <div class="content clearfix" id="settings-environment">
 
     <div class="alert alert-danger" data-ng-show="environment.errorMsg">

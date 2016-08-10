@@ -178,10 +178,10 @@
       }
     }
 
-    // Liste de toutes les containers d'une application en fonction du type server/module
+    // Liste de toutes les container d'une application en fonction du type server/module
     function listContainers ( applicationName ) {
-      var containers = $resource ( 'application/:applicationName/containers' );
-      return containers.query ( { applicationName: applicationName } ).$promise;
+      var container = $resource ( 'application/:applicationName/containers' );
+      return container.query ( { applicationName: applicationName } ).$promise;
     }
 
     // Gestion des alias
@@ -216,42 +216,46 @@
     
     // Gestion des variables environnement
     
-    function getListSettingsEnvironmentVariable ( applicationName ) {
-      var dir = $resource ( 'application/:applicationName/environmentVariables' );
+    function getListSettingsEnvironmentVariable ( applicationName, containerId ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables' );
       return dir.query ( {
-        applicationName: applicationName
+        applicationName: applicationName,
+        containerId: containerId
       } ).$promise;      
     }
 
-    function getSettingsEnvironmentVariable ( applicationName, environmentVariableID ) {
-      var dir = $resource ( 'application/:applicationName/environmentVariables/:id' );
+    function getSettingsEnvironmentVariable ( applicationName, containerId, environmentVariableID ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables/:id' );
       return dir.get ( {
         applicationName: applicationName,
+        containerId: containerId,
         id: environmentVariableID
       } ).$promise;
     }
 
-    function addEnvironmentVariable ( applicationName, environmentVariableKey, environmentVariableValue ) {
+    function addEnvironmentVariable ( applicationName, containerId, environmentVariableKey, environmentVariableValue ) {
       var data = {
         key: environmentVariableKey,
         value: environmentVariableValue
       };
 
-      var dir = $resource ( 'application/:applicationName/environmentVariables' );
+      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables' );
       return dir.save ( {
-        applicationName: applicationName
+        applicationName: applicationName,
+        containerId: containerId
       }, data ).$promise;
     }
 
-    function editEnvironmentVariable ( applicationName, environmentVariableID, environmentVariableKey, environmentVariableValue ) {
+    function editEnvironmentVariable ( applicationName, containerId, environmentVariableID, environmentVariableKey, environmentVariableValue ) {
       var data = {
         key: environmentVariableKey,
         value: environmentVariableValue
       };
       
-      var dir = $resource ( 'application/:applicationName/environmentVariables/:id' ,
+      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables/:id' ,
         { 
           applicationName: applicationName,
+          containerId: containerId,
           id: environmentVariableID
         },
         { 
@@ -268,10 +272,11 @@
       return dir.update( { }, data ).$promise; 
     }
 
-    function deleteEnvironmentVariable ( applicationName, environmentVariableID ) {
-      var dir = $resource ( 'application/:applicationName/environmentVariables/:id' );
+    function deleteEnvironmentVariable ( applicationName, containerId, environmentVariableID ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables/:id' );
       return dir.delete ( { 
         applicationName: applicationName,
+        containerId: containerId,
         id: environmentVariableID
       }, {} ).$promise; 
     }
@@ -286,42 +291,46 @@
 
     // Gestion des volumes
     
-    function getListSettingsVolume ( applicationName ) {
-      var dir = $resource ( 'application/:applicationName/volumes' );
+    function getListSettingsVolume ( applicationName, containerId ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerId/volumes' );
       return dir.query ( {
-        applicationName: applicationName
+        applicationName: applicationName,
+        containerId: containerId
       } ).$promise;      
     }
 
-    function getSettingsVolume ( applicationName, volumeID ) {
-      var dir = $resource ( 'application/:applicationName/volumes/:id' );
+    function getSettingsVolume ( applicationName, containerId, volumeID ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerId/volumes/:id' );
       return dir.get ( {
         applicationName: applicationName,
+        containerId: containerId,
         id: volumeID
       } ).$promise;
     }
 
-    function addVolume ( applicationName, volumeName, volumePath ) {
+    function addVolume ( applicationName, containerId, volumeName, volumePath ) {
       var data = {
         name: volumeName,
         path: volumePath
       };
 
-      var dir = $resource ( 'application/:applicationName/volumes' );
+      var dir = $resource ( 'application/:applicationName/container/:containerId/volumes' );
       return dir.save ( {
-        applicationName: applicationName
+        applicationName: applicationName,
+        containerId: containerId
       }, data ).$promise;
     }
 
-    function editVolume ( applicationName, volumeID, volumeName, volumePath ) {
+    function editVolume ( applicationName, containerId, volumeID, volumeName, volumePath ) {
       var data = {
         name: volumeName,
         path: volumePath
       };
       
-      var dir = $resource ( 'application/:applicationName/volumes/:id' ,
+      var dir = $resource ( 'application/:applicationName/container/:containerId/volumes/:id' ,
         { 
           applicationName: applicationName,
+          containerId: containerId,
           id: volumeID
         },
         { 
@@ -338,10 +347,11 @@
       return dir.update( { }, data ).$promise; 
     }
 
-    function deleteVolume ( applicationName, volumeID ) {
-      var dir = $resource ( 'application/:applicationName/volumes/:id' );
+    function deleteVolume ( applicationName, containerId, volumeID ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerId/volumes/:id' );
       return dir.delete ( { 
         applicationName: applicationName,
+        containerId: containerId,
         id: volumeID
       }, {} ).$promise; 
     }
