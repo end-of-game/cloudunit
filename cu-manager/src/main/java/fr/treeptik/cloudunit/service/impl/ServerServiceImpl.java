@@ -414,6 +414,7 @@ public class ServerServiceImpl implements ServerService {
 
 		try {
 			// If jvm memory or options changes...
+			/*
 			if (!jvmMemory.equalsIgnoreCase(server.getJvmMemory().toString())
 					|| !jvmOptions.equalsIgnoreCase(server.getJvmOptions())) {
 				Map<String, String> kvStore = new HashMap<String, String>() {
@@ -424,9 +425,9 @@ public class ServerServiceImpl implements ServerService {
 					}
 				};
 				dockerService.execCommand(server.getContainerID(),
-						RemoteExecAction.CHANGE_SERVER_CONFIG.getCommand(kvStore));
+						RemoteExecAction..getCommand(kvStore));
 			}
-
+			*/
 			// If jvm release changes...
 			if (!jvmRelease.equalsIgnoreCase(server.getJvmRelease())) {
 				changeJavaVersion(server.getApplication(), jvmRelease);

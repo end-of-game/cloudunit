@@ -36,24 +36,15 @@ ENV CU_SERVER_MANAGER_PATH /manager/html?
 ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
 ENV CU_DEFAULT_LOG_FILE catalina.out
-ENV CU_DEFAULT_JAVA_RELEASE jdk1.8.0_25
+ENV CU_DEFAULT_JAVA_RELEASE "/opt/cloudunit/java/jdk1.8.0_25"
 ENV CU_LOGS $CATALINA_HOME/logs
-
-RUN echo "CU_SOFTWARE=$CU_SOFTWARE" >> /etc/environment && \
-    echo "CU_LOGS=$CU_LOGS" >> /etc/environment && \
-    echo "CU_SERVER_MANAGER_PATH=$CU_SERVER_MANAGER_PATH" >> /etc/environment && \
-    echo "CU_SERVER_MANAGER_PORT=$CU_SERVER_MANAGER_PORT" >> /etc/environment && \
-    echo "CU_SERVER_PORT=$CU_SERVER_PORT" >> /etc/environment && \
-    echo "CU_DEFAULT_LOG_FILE=$CU_DEFAULT_LOG_FILE" >> /etc/environment && \
-    echo "CU_DEFAULT_JAVA_RELEASE=$CU_DEFAULT_JAVA_RELEASE" >> /etc/environment
-
-ENV JAVA_HOME /opt/cloudunit/java/jdk1.8.0_25
-ENV PATH $CATALINA_HOME/bin:$PATH
-RUN mkdir -p $CATALINA_HOME
-
+ENV CU_JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
 ENV TOMCAT_MAJOR 8
 ENV TOMCAT_VERSION 8.0.36
 ENV TOMCAT_TGZ_URL https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
+ENV PATH $CATALINA_HOME/bin:$PATH
+
+RUN mkdir -p $CATALINA_HOME
 
 RUN cd $HOME \
     && wget $TOMCAT_TGZ_URL \
@@ -67,7 +58,7 @@ RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudun
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
 USER cloudunit
 
-VOLUME /opt/cloudunit/tomcat/logs
+VOLUME /opt/cloudunit
 
 ENTRYPOINT ["/opt/cloudunit/scripts/start-service.sh"]
 

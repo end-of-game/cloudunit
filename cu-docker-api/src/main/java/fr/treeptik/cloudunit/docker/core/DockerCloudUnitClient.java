@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.Image;
+import fr.treeptik.cloudunit.docker.model.Volume;
 import fr.treeptik.cloudunit.dto.DockerResponse;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
@@ -260,6 +261,19 @@ public class DockerCloudUnitClient {
         return dockerResponse;
     }
 
+    public DockerResponse createVolume(String name) throws DockerJSONException {
+        DockerResponse dockerResponse = null;
+        try {
+            logger.info("The client attempts to create a volume...");
+            Volume volume = new Volume();
+            volume.setName(name);
+            dockerResponse = driver.createVolume(volume);
+            handleDockerAPIError(dockerResponse);
+        } catch (FatalDockerJSONException e) {
+            throw new DockerJSONException(e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
     /**
      * @param dockerResponse

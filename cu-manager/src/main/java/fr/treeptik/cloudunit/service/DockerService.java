@@ -30,6 +30,8 @@ import fr.treeptik.cloudunit.model.User;
  */
 public interface DockerService {
 
+    void addEnv(String containerId, String key, String value) throws FatalDockerJSONException;
+
     void createServer(String name, Server server, String imagePath, User user) throws DockerJSONException;
 
     Server startServer(String containerName, Server server) throws DockerJSONException;

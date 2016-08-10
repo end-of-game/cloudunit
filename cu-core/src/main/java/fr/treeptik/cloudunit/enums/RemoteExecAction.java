@@ -11,7 +11,7 @@ public enum RemoteExecAction {
     CHANGE_CU_RIGHTS("Change rights for user CloudUnit", "chown -R cloudunit:cloudunit /opt/cloudunit"),
     CHECK_RUNNING("Check running", "/opt/cloudunit/scripts/check-running.sh"),
     DEPLOY("Deploy application", "/opt/cloudunit/scripts/deploy.sh CU_USER CU_PASSWORD"),
-    CHANGE_SERVER_CONFIG("Change Server Configuration", "/opt/cloudunit/scripts/change-server-config.sh MEMORY_VALUE JVM_OPTIONS"),
+    ADD_ENV("Add env variable", "/opt/cloudunit/scripts/add-env.sh CU_KEY CU_VALUE"),
     CHANGE_JAVA_VERSION("Change Server Configuration", "/opt/cloudunit/scripts/change-java-version.sh MEMORY_VALUE JVM_OPTIONS"),
     MODULE_PRE_CREATION("Module pre creation", "/opt/cloudunit/hooks/module-pre-creation.sh"),
     MODULE_POST_CREATION("Module pre creation", "/opt/cloudunit/hooks/module-post-creation.sh"),

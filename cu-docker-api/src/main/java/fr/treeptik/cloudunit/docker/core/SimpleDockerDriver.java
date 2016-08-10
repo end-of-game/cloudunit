@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import fr.treeptik.cloudunit.docker.model.Volume;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,6 +125,7 @@ public class SimpleDockerDriver implements DockerDriver {
 		}
 		return dockerResponse;
 	}
+
 
 	@Override
 	public DockerResponse start(DockerContainer container) throws FatalDockerJSONException {
@@ -298,6 +300,29 @@ public class SimpleDockerDriver implements DockerDriver {
 		}
 		return dockerResponse;
 	}
+
+	@Override
+	public DockerResponse createVolume(Volume volume) throws FatalDockerJSONException {
+		URI uri = null;
+		String body = new String();
+		DockerResponse dockerResponse = null;
+		try {
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/create")
+					.setParameter("name", volume.getName()).build();
+			body = objectMapper.writeValueAsString(volume);
+			dockerResponse = client.sendPost(uri, body, "application/json");
+		} catch (URISyntaxException | IOException | JSONClientException e) {
+			StringBuilder contextError = new StringBuilder(256);
+			contextError.append("uri : " + uri + " - ");
+			contextError.append("request body : " + body + " - ");
+			contextError.append("server response : " + dockerResponse);
+			logger.error(contextError.toString());
+			throw new FatalDockerJSONException(
+					"An error has occurred for create container request due to " + e.getMessage(), e);
+		}
+		return dockerResponse;
+	}
+
 
 	public JSONClient getClient() {
 		return client;

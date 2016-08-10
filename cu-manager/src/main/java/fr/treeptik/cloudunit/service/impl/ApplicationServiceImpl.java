@@ -264,7 +264,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		application = this.saveInDB(application);
 
 		String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-
 		List<Image> imagesEnabled = imageService.findEnabledImages();
 		List<String> imageNames = new ArrayList<>();
 		for (Image image : imagesEnabled) {

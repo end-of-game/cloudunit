@@ -4,13 +4,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.spotify.docker.client.messages.ContainerConfig;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,6 +73,7 @@ public class DockerServiceImpl implements DockerService {
 			sharedDir = sharedDir + ":/cloudunit/shared:rw";
 			volumes.add(sharedDir);
 		}
+		dockerCloudUnitClient.createVolume(name);
 		DockerContainer container = ContainerUtils.newCreateInstance(name, imagePath, volumes, null);
 		dockerCloudUnitClient.createContainer(container);
 	}
@@ -84,7 +85,6 @@ public class DockerServiceImpl implements DockerService {
 		container = dockerCloudUnitClient.findContainer(container);
 		server = containerMapper.mapDockerContainerToServer(container, server);
 		return server;
-
 	}
 
 	@Override
@@ -227,6 +227,26 @@ public class DockerServiceImpl implements DockerService {
 			StringBuilder msgError = new StringBuilder();
 			msgError.append("containerId=").append(containerId);
 			msgError.append("variable=").append(variable);
+			throw new FatalDockerJSONException(msgError.toString(), e);
+		}
+	}
+
+	@Override
+	public void addEnv(String containerId, String key, String value) throws FatalDockerJSONException {
+		try {
+			Map<String, String> kvStore = new HashMap<String, String>() {
+				private static final long serialVersionUID = 1L;
+				{
+					put("CU_KEY", key);
+					put("CU_VALUE", value);
+				}
+			};
+			execCommand(containerId, RemoteExecAction.ADD_ENV.getCommand(kvStore), true);
+		} catch (Exception e) {
+			StringBuilder msgError = new StringBuilder();
+			msgError.append("containerId=").append(containerId);
+			msgError.append(",key=").append(key);
+			msgError.append(",value=").append(value);
 			throw new FatalDockerJSONException(msgError.toString(), e);
 		}
 	}

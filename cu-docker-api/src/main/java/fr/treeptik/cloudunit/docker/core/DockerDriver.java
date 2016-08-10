@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.docker.core;
 
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.Image;
+import fr.treeptik.cloudunit.docker.model.Volume;
 import fr.treeptik.cloudunit.dto.DockerResponse;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 
@@ -33,5 +34,5 @@ public interface DockerDriver {
     DockerResponse removeImage(Image image)
             throws FatalDockerJSONException;
 
-
+    DockerResponse createVolume(Volume volume) throws FatalDockerJSONException;
 }
