@@ -2,9 +2,6 @@ package fr.treeptik.cloudunit.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * Created by stagiaire on 08/08/16.
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EnvironmentVariableRequest {
 
