@@ -15,20 +15,20 @@
 
 package fr.treeptik.cloudunit.utils;
 
-import fr.treeptik.cloudunit.enums.JavaRelease;
-import fr.treeptik.cloudunit.enums.JvmMemory;
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.model.Application;
-import org.springframework.context.MessageSource;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.context.MessageSource;
+
+import fr.treeptik.cloudunit.enums.JavaRelease;
+import fr.treeptik.cloudunit.enums.JvmMemory;
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.model.Application;
+
 /**
  * Created by nicolas on 18/08/2014.
  */
-@SuppressWarnings("ALL")
 public class CheckUtils {
 
 	private static final List<String> listJvmMemoriesAllowed = Arrays.asList(JvmMemory.SIZE_512.getSize(),
@@ -167,11 +167,11 @@ public class CheckUtils {
 	 * @throws CheckException
 	 */
 	public static void checkJavaOpts(String jvmOpts, String jvmMemory, String jvmRelease) throws CheckException {
-
-		if (jvmOpts != null && jvmOpts.toLowerCase().contains("xms") || jvmOpts.toLowerCase().contains("xmx")) {
-			throw new CheckException("You are not allowed to change memory with java opts");
+		if (jvmOpts != null) {
+			if (jvmOpts.toLowerCase().contains("xms") || jvmOpts.toLowerCase().contains("xmx")) {
+				throw new CheckException("You are not allowed to change memory with java opts");
+			}
 		}
-
 		if (!listJvmMemoriesAllowed.contains(jvmMemory)) {
 			throw new CheckException("You are not allowed to set this jvm memory size : [" + jvmMemory + "]");
 		}

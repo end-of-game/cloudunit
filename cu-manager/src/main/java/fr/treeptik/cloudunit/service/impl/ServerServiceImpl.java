@@ -407,7 +407,9 @@ public class ServerServiceImpl implements ServerService {
 		String previousJvmMemory = server.getJvmMemory().toString();
 		String previousJvmRelease = server.getJvmRelease();
 		String previousJvmOptions = server.getJvmOptions();
-
+		
+		options = options == null ? "" : options;
+		
 		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
 
 		try {

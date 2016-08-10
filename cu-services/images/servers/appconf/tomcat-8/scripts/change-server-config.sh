@@ -12,9 +12,11 @@ $CU_SCRIPTS/cu-stop.sh
 #Wait for server shutdown
 $CU_SCRIPTS/waiting-for-shutdown.sh java 30
 
-sed -i 's/^CATALINA_OPTS=.*$/CATALINA_OPTS="-Dfile.encoding=UTF-8 -Xms'$MEMORY_VALUE'm -Xmx'$MEMORY_VALUE'm -XX:MaxPermSize=256m '"$JVM_OPTIONS"'"/g' /etc/environment
+echo "sed -i 's/^CATALINA_OPTS=.*$/CATALINA_OPTS="-Dfile.encoding=UTF-8 -Xms'$MEMORY_VALUE'm -Xmx'$MEMORY_VALUE'm -XX:MaxPermSize=256m '"$JVM_OPTIONS"'"/g' $ENV_FILE" >> /opt/cloudunit/command.txt
 
-source /etc/environment
+sed -i 's/^CATALINA_OPTS=.*$/CATALINA_OPTS="-Dfile.encoding=UTF-8 -Xms'$MEMORY_VALUE'm -Xmx'$MEMORY_VALUE'm -XX:MaxPermSize=256m '"$JVM_OPTIONS"'"/g' $ENV_FILE
+
+source $ENV_FILE
 
 #restart the server
 $CU_SCRIPTS/cu-start.sh
