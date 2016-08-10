@@ -22,23 +22,22 @@ public class VolumeServiceImpl implements VolumeService {
 
     @Override
     public Volume loadVolume(int id) throws ServiceException {
-        Volume volume = volumeDAO.findById(id);
-
-        return volume;
+        return volumeDAO.findById(id);
     }
 
     @Override
     public List<Volume> loadVolumeByApplication(String applicationName) throws ServiceException {
-        List<Volume> volumeList = volumeDAO.findByApplicationName(applicationName);
+        return volumeDAO.findByApplicationName(applicationName);
+    }
 
-        return volumeList;
+    @Override
+    public List<Volume> loadVolumeByContainer(String containerId) throws ServiceException {
+        return volumeDAO.findByContainer(containerId);
     }
 
     @Override
     public List<Volume> loadAllVolumes() throws ServiceException {
-        List<Volume> volumeList = volumeDAO.findAllVolumes();
-
-        return volumeList;
+        return volumeDAO.findAllVolumes();
     }
 
     @Override

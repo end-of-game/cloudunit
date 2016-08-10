@@ -44,7 +44,7 @@ public class VolumeController implements Serializable {
         logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            List<Volume> volumeList = volumeService.loadAllVolumes();
+            List<Volume> volumeList = volumeService.loadVolumeByContainer(containerId);
             List<VolumeRequest> volumeRequests = new ArrayList<>();
 
             for (Volume volume : volumeList) {

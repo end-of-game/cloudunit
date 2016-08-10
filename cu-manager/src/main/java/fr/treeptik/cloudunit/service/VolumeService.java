@@ -12,6 +12,8 @@ public interface VolumeService {
 
     List<Volume> loadVolumeByApplication(String applicationName) throws ServiceException;
 
+    List<Volume> loadVolumeByContainer(String containerId) throws ServiceException;
+
     List<Volume> loadAllVolumes() throws ServiceException;
 
     void delete(int id) throws ServiceException;

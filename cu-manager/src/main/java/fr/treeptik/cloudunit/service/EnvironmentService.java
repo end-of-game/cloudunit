@@ -12,6 +12,8 @@ public interface EnvironmentService {
 
     List<Environment> loadEnvironnmentsByApplication(String applicationName) throws ServiceException;
 
+    List<Environment> loadEnvironnmentsByContainer(String containerId) throws ServiceException;
+
     List<Environment> loadAllEnvironnments() throws ServiceException;
 
     void delete(int id) throws ServiceException;

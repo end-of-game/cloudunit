@@ -42,7 +42,7 @@ public class EnvironmentController implements Serializable {
         logger.info("Load");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            List<Environment> environmentList = environmentService.loadAllEnvironnments();
+            List<Environment> environmentList = environmentService.loadEnvironnmentsByContainer(containerId);
             List<EnvironmentVariableRequest> environmentVariableRequestList = new ArrayList<>();
 
             for (Environment environment : environmentList) {
