@@ -39,9 +39,6 @@
     outline: none;
     z-index: 12;
     width: auto;
-    min-height: 300px;
-    left: 0;
-    bottom: 0;
     box-sizing: border-box;
     max-height: 471px;
     max-width: 1462.96875px;
@@ -51,6 +48,13 @@
     padding: 0;
     padding-top: 8px;
     overflow-y: auto;
+
+    /* animation */
+    display: block;
+    transition: all 0.3s ease;
+    transform: scale(0);
+    transform-origin: 0 0;
+
     .input-group.stack & {
       top: 24px;
     }
@@ -83,7 +87,9 @@
     color: #262626;
     background-color: #E6EDEF;
   }
-
+  &.open .dropdown-menu {
+    transform: scale(1);
+  }
 }
 
 .has-input .dropdown.open .dropdown-menu {
