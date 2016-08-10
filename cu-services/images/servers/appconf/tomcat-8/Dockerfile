@@ -39,7 +39,6 @@ ENV CU_DEFAULT_LOG_FILE catalina.out
 ENV CU_DEFAULT_JAVA_RELEASE jdk1.8.0_25
 ENV CU_LOGS $CATALINA_HOME/logs
 
-
 RUN echo "CU_SOFTWARE=$CU_SOFTWARE" >> /etc/environment && \
     echo "CU_LOGS=$CU_LOGS" >> /etc/environment && \
     echo "CU_SERVER_MANAGER_PATH=$CU_SERVER_MANAGER_PATH" >> /etc/environment && \

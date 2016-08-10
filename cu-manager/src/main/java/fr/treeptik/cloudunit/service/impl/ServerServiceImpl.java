@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -254,7 +255,7 @@ public class ServerServiceImpl implements ServerService {
 					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
 					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
 
-		} catch (PersistenceException e) {
+		} catch (PersistenceException | FatalDockerJSONException e) {
 			logger.error("ServerService Error : update Server" + e);
 			throw new ServiceException("Error database : " + e.getLocalizedMessage(), e);
 		}
@@ -406,40 +407,27 @@ public class ServerServiceImpl implements ServerService {
 
 	@Override
 	@Transactional
-	public Server update(Server server, String jvmMemory, String jvmOptions, String jvmRelease,
+	public Server update(Server server, String jvmMemory, String options, String jvmRelease,
 			boolean restorePreviousEnv) throws ServiceException {
 
-		Map<String, String> configShell = new HashMap<>();
-		configShell.put("port", server.getSshPort());
-		configShell.put("dockerManagerAddress", server.getApplication().getManagerIp());
-		// We don't need to set userLogin because shell script caller must be
-		// root.
-		configShell.put("password", server.getApplication().getUser().getPassword());
-		// Protection without double slashes into jvm options
-
-		jvmOptions = jvmOptions.replaceAll("//", "\\\\/\\\\/");
-
-		String previousJvmOptions = server.getJvmOptions();
 		String previousJvmMemory = server.getJvmMemory().toString();
 		String previousJvmRelease = server.getJvmRelease();
+		String previousJvmOptions = server.getJvmOptions();
+
+		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
 
 		try {
-
 			// If jvm memory or options changes...
 			if (!jvmMemory.equalsIgnoreCase(server.getJvmMemory().toString())
 					|| !jvmOptions.equalsIgnoreCase(server.getJvmOptions())) {
-				// Changement configuration MEMOIRE + OPTIONS
-
-				String command = "bash /cloudunit/appconf/scripts/change-server-config.sh " + jvmMemory + " " + "\""
-						+ jvmOptions + "\"";
-
-				if (server.getImage().getName().contains("jar") || server.getImage().getName().contains("wildfly")
-						|| server.getImage().getName().contains("apache")) {
-					command = "bash /cloudunit/scripts/change-server-config.sh " + jvmMemory + " " + "\"" + jvmOptions
-							+ "\"";
-				}
-				logger.info("command shell to execute [" + command + "]");
-				shellUtils.executeShell(command, configShell);
+				Map<String, String> kvStore = new HashMap<String, String>() {
+					private static final long serialVersionUID = 1L;
+					{
+						put("MEMORY_VALUE", jvmMemory);
+						put("JVM_OPTIONS", jvmOptions);
+					}
+				};
+				dockerService.execCommand(server.getContainerID(), RemoteExecAction.CHANGE_SERVER_CONFIG.getCommand(kvStore));
 			}
 
 			// If jvm release changes...
@@ -453,9 +441,6 @@ public class ServerServiceImpl implements ServerService {
 			server = saveInDB(server);
 
 		} catch (Exception e) {
-			// Exception would be one RuntimeException coming from shell error
-			// If second call and no way to start gracefully tomcat, we need to
-			// stop application
 			if (!restorePreviousEnv) {
 				StringBuilder msgError = new StringBuilder();
 				msgError.append("jvmMemory:").append(jvmMemory).append(",");
@@ -483,31 +468,10 @@ public class ServerServiceImpl implements ServerService {
 	 */
 	@Override
 	public void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException {
-
 		logger.info("Starting changing to java version " + javaVersion + ", the application " + application.getName());
-
-		Map<String, String> configShell = new HashMap<>();
-		String command = null;
-
-		// Servers
-		Server server = application.getServer();
-
 		try {
-			configShell.put("password", server.getApplication().getUser().getPassword());
-			configShell.put("port", server.getSshPort());
-			configShell.put("dockerManagerAddress", application.getManagerIp());
-
-			// Need to be root for shell call because we modify
-			// /etc/environme,t
-			command = "bash /cloudunit/scripts/change-java-version.sh " + javaVersion;
-			logger.info("command shell to execute [" + command + "]");
-			shellUtils.executeShell(command, configShell);
-
+			// todo
 		} catch (Exception e) {
-			server.setStatus(Status.FAIL);
-			saveInDB(server);
-			logger.error("java version = " + javaVersion + " - " + application.toString() + " - " + server.toString(),
-					e);
 			throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
 		}
 

@@ -143,8 +143,9 @@ public class FileServiceImpl implements FileService {
 	public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows) throws ServiceException {
 		List<LogLine> files = new ArrayList<>();
 		try {
-			final String logDir = getLogDirectory(containerId);
-			final String command = "tail -n " + nbRows + " " + logDir + " " + file;
+			String logDir = getLogDirectory(containerId);
+			if (!logDir.endsWith("/")) { logDir = logDir + "/"; }
+			final String command = "tail -n " + nbRows + " " + logDir + file;
 			String execOutput = dockerService.execCommand(containerId, command);
 			if (execOutput != null && execOutput.contains("cannot access") == false) {
 				StringTokenizer lignes = new StringTokenizer(execOutput, "\n");
@@ -156,7 +157,11 @@ public class FileServiceImpl implements FileService {
 				Collections.reverse(files);
 			}
 		} catch (FatalDockerJSONException e) {
-			throw new ServiceException("Error in listByContainerIdAndPath", e);
+			StringBuilder builder = new StringBuilder(256);
+			builder.append("containerId=").append(containerId);
+			builder.append(",file=").append(file);
+			builder.append(",nbRows=").append(nbRows);
+			throw new ServiceException(builder.toString(), e);
 		}
 		return files;
 	}

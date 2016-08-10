@@ -17,6 +17,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import fr.treeptik.cloudunit.dao.MetricDAO;
+import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Metric;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.MonitoringService;
@@ -43,10 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MonitoringServiceImpl
         implements MonitoringService {
 
-    // Dictionnaire pour mettre en relation une application avec un ou plusieurs
-    // volumes
-    private static ConcurrentHashMap<String, String> containerIdByName = new ConcurrentHashMap<>();
-
     private Logger logger = LoggerFactory
             .getLogger(MonitoringServiceImpl.class);
 
@@ -64,17 +61,13 @@ public class MonitoringServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
-    public String getFullContainerId(String containerName) {
-        return containerIdByName.get(containerName);
-    }
-
     @Override
     public String getJsonFromCAdvisor(String containerId) {
         String result = "";
         try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpGet httpget = new HttpGet(cAdvisorURL
-                    + "/api/v1.0/containers/docker/" + containerId);
+                    + "/api/v1.3/containers/docker/" + containerId);
             CloseableHttpResponse response = httpclient.execute(httpget);
             try {
                 result = EntityUtils.toString(response.getEntity());
@@ -95,7 +88,7 @@ public class MonitoringServiceImpl
         String result = "";
         try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpGet httpget = new HttpGet(cAdvisorURL + "/api/v1.0/machine");
+            HttpGet httpget = new HttpGet(cAdvisorURL + "/api/v1.3/machine");
             CloseableHttpResponse response = httpclient.execute(httpget);
             try {
                 result = EntityUtils.toString(response.getEntity());
@@ -111,72 +104,6 @@ public class MonitoringServiceImpl
         return result;
     }
 
-    /**
-     * Methode qui permet de mettre en relation les containers Id et leur nom
-     */
-    @Scheduled(fixedDelay = 10000)
-    public void generateRelationBetweenContainersNameAndFullId() {
-//        try {
-//            logger.debug("generateRelationBetweenContainersNameAndFullId");
-//            if ("true".equals(System.getenv("CU_MAINTENANCE"))) {
-//                return;
-//            }
-//            List<Application> applications = applicationService.findAll();
-//            if (applications != null) {
-//                for (Application application : applications) {
-//                    if (!application.getCuInstanceName().equalsIgnoreCase(cuInstanceName)) {
-//                        continue;
-//                    }
-//                    try {
-//                        // Serveurs
-//                        List<Server> servers = application.getServers();
-//                        for (Server server : servers) {
-//                            DockerContainer dockerContainer = new DockerContainer();
-//                            dockerContainer.setName(server.getName());
-//                            dockerContainer.setImage(server.getImage()
-//                                    .getName());
-//                            dockerContainer = DockerContainer.findOne(
-//                                    dockerContainer,
-//                                    application.getManagerIp());
-//                            server = containerMapper
-//                                    .mapDockerContainerToServer(
-//                                            dockerContainer, server);
-//                            containerIdByName.put(server.getName(),
-//                                    server.getContainerFullID());
-//                        }
-//                        // Modules
-//                        List<Module> modules = application.getModules();
-//                        for (Module module : modules) {
-//                            DockerContainer dockerContainer = new DockerContainer();
-//                            dockerContainer.setName(module.getName());
-//                            dockerContainer.setImage(module.getImage()
-//                                    .getName());
-//                            dockerContainer = DockerContainer.findOne(
-//                                    dockerContainer,
-//                                    application.getManagerIp());
-//                            module = containerMapper
-//                                    .mapDockerContainerToModule(
-//                                            dockerContainer, module);
-//                            containerIdByName.put(module.getName(),
-//                                    module.getContainerFullID());
-//                        }
-//
-//                    } catch (ErrorDockerJSONException ex) {
-//                        if (!"docker : no such container".equalsIgnoreCase(ex.getMessage())) {
-//                            logger.error(application.toString(), ex);
-//                        }
-//                    } catch (Exception ex) {
-//                        // Si une application sort en erreur, il ne faut pas
-//                        // arrêter la suite des traitements
-//                        logger.error(application.toString(), ex);
-//                    }
-//                }
-//            }
-//        } catch (Exception e) {
-//            // On catch l'exception car traitement en background.
-//            logger.error("" + e.getMessage());
-//        }
-    }
     @Override
     public List<Metric> findByServer(String serverName){
         return metricDAO.findAllByServer(serverName);

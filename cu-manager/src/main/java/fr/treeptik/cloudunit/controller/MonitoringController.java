@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.controller;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Metric;
+import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.MonitoringService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
@@ -46,6 +47,9 @@ public class MonitoringController {
 
     @Inject
     private MonitoringService monitoringService;
+
+    @Inject
+    private DockerService dockerService;
 
 
     /**
@@ -80,17 +84,15 @@ public class MonitoringController {
     public void infoContainer(HttpServletRequest request, HttpServletResponse response,
                               @PathVariable String containerName)
         throws ServiceException, CheckException {
-        String containerId = monitoringService
-            .getFullContainerId(containerName);
-
-        String responseFromCAdvisor = monitoringService.getJsonFromCAdvisor(containerId);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("containerId=" + containerId);
-            logger.debug("responseFromCAdvisor=" + responseFromCAdvisor);
-        }
-
         try {
+            String containerId = dockerService.getContainerId(containerName);
+            String responseFromCAdvisor = monitoringService.getJsonFromCAdvisor(containerId);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("containerId=" + containerId);
+                logger.debug("responseFromCAdvisor=" + responseFromCAdvisor);
+            }
+
             response.getWriter().write(responseFromCAdvisor);
             response.flushBuffer();
         } catch (Exception e) {

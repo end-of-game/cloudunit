@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -512,9 +513,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			String containerId = application.getServer().getContainerID();
 			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
 			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
-			dockerService.execCommand(containerId, RemoteExecAction.CHANGE_CU_RIGHTS.getCommand());
 			Map<String, String> kvStore = new HashMap<String, String>() {
-
 				private static final long serialVersionUID = 1L;
 				{
 					put("CU_USER", application.getUser().getLogin());
@@ -604,7 +603,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
 			applicationDAO.save(application);
 
-		} catch (DataAccessException e) {
+		} catch (DataAccessException | FatalDockerJSONException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 	}
@@ -620,7 +619,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 						dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
 			}
 
-		} catch (DataAccessException e) {
+		} catch (DataAccessException | FatalDockerJSONException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 	}

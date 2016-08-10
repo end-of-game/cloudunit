@@ -6,8 +6,6 @@ source $ENV_FILE
 CU_USER=$1
 CU_PASSWORD=$2
 
-echo $1 $2 >> /opt/cloudunit/users.txt
-
 # Stop the server to update the new user configuration
 $CU_SCRIPTS/cu_stop.sh
 

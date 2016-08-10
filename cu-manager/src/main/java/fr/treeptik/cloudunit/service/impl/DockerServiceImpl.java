@@ -191,6 +191,7 @@ public class DockerServiceImpl implements DockerService {
 	}
 
 	@Override
+	@Cacheable(value = "monitoring", key = "#containerName")
 	public String getContainerId(String containerName) throws FatalDockerJSONException {
 		try {
 			final ContainerInfo info = dockerClient.inspectContainer(containerName);
