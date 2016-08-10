@@ -27,8 +27,12 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
     @Override
     public List<Environment> loadEnvironnmentsByApplication(String applicationName) throws ServiceException {
-        List<Environment> environments = environmentDAO.findByApplicationName(applicationName);
-        return environments;
+        return environmentDAO.findByApplicationName(applicationName);
+    }
+
+    @Override
+    public List<Environment> loadEnvironnmentsByContainer(String containerId) throws ServiceException {
+        return environmentDAO.findByContainer(containerId);
     }
 
     @Override
