@@ -13,7 +13,31 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="card large">
+<div class="card">
+  <div class="content clearfix">
+    <h3 class="title large">Volume</h3>
+    
+    <p class="hint">Choose a container</p>
+
+    <div class="dropdown dropdown--small" dropdown>
+      <a class="dropdown-toggle"
+          dropdown-toggle=""
+          selectbox="">
+        {{ volume.myContainer.name }}
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+        <li data-ng-repeat="container in volume.containers">
+          <a ng-href=""
+              data-ng-click="volume.myContainer = container; volume.getContainers(volume.myContainer)">
+            {{container.name}}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card">
   <div class="content clearfix" id="settings-volume">
 
     <div class="alert alert-danger" data-ng-show="volume.errorMsg">

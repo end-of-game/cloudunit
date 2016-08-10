@@ -55,14 +55,12 @@
     vm.deleteEnv = deleteEnv;
     vm.addEnv = addEnv;
 
-    vm.$onInit = function() {
-          
+    vm.$onInit = function() {  
       getContainers()
       .then(function() {
         ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.id)
           .then(function(response) {
             vm.env = response;
-            
           })
           .catch(function(response) {
             ErrorService.handle(response);

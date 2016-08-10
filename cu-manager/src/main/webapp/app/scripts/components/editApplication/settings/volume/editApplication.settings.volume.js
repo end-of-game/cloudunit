@@ -26,6 +26,8 @@
         application: '<app'
       },
       controller: [
+        '$stateParams',
+        '$q',
         'ApplicationService',
         'ErrorService',
         volumeCtrl
@@ -34,47 +36,76 @@
     }
   }
 
-  function volumeCtrl(ApplicationService, ErrorService) {
+  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService) {
 
     var vm = this;
-    vm.currentApplication = '';
     vm.volume = [];
+    vm.containers = [];
+    vm.myContainer = {};
+    vm.isLoading = true;
     vm.pageSize = 5;
     vm.currentPage = 1;
     vm.volumeName = '';
     vm.volumePath = '';
-
+    
     vm.predicate = 'name';
     vm.reverse = false;
     vm.order = order;
 
-    vm.editvolume = editvolume;
-    vm.deletevolume = deletevolume;
-    vm.addvolume = addvolume;
+    vm.editVolume = editVolume;
+    vm.deleteVolume = deleteVolume;
+    vm.addVolume = addVolume;
 
-    vm.$onChanges = function (changesObj) {
-      if(changesObj.application) {
-        if((changesObj.application.previousValue === undefined)
-          || vm.application !== undefined
-        ) {
-         vm.currentApplication = changesObj.application.currentValue.name;
-          ApplicationService.getListSettingsVolume(vm.currentApplication)
-            .then(success)
-            .catch(error);
+    vm.$onInit = function() {
+      ApplicationService.getListSettingsVolume($stateParams.name)
+        .then(function(response) {
+          vm.volume = response;
+          getContainers();
+          setTimeout(function() {
+            console.log(vm.containers);  
+          }, 1000);
+        })
+        .catch(function(response) {
+          //ErrorService.handle(response);
+        });
+    }
 
-          function success (response) {
+    vm.$onInit = function() {  
+      getContainers()
+      .then(function() {
+        ApplicationService.getListSettingsVolume($stateParams.name, vm.myContainer.id)
+          .then(function(response) {
             vm.volume = response;
-          }
-
-          function error (response) {
+          })
+          .catch(function(response) {
             ErrorService.handle(response);
-          }
-        }
-      }
-    };
+          });
+      })
+      .catch(function(response) {
+         ErrorService.handle(response);
+      });
+    }
+
+    ////////////////////////////////////////////////
+
+    function getContainers ( selectedContainer ) {
+      var deferred = $q.defer ();
+      vm.isLoading = true;
+      ApplicationService.listContainers ( $stateParams.name )
+        .then ( function ( containers ) {
+          vm.containers = containers;
+          vm.myContainer = selectedContainer || containers[0];
+          vm.isLoading = false;
+          deferred.resolve ( containers );
+        } )
+        .catch ( function ( response ) {
+          deferred.reject ( response );
+        } );
+        return deferred.promise;
+    }
 
     function deleteVolume (volume) {
-      ApplicationService.deleteVolume (  vm.currentApplication, volume.id )
+      ApplicationService.deleteVolume (  $stateParams.name, volume.id )
         .then ( function() {
           vm.volume.splice(vm.volume.indexOf(volume), 1);
           vm.noticeMsg = 'The volume has been removed!'
@@ -84,7 +115,7 @@
     }
     
     function editVolume (volumeID, volumeName, volumePath) {
-      ApplicationService.editVolume ( vm.currentApplication, volumeID, volumeName, volumePath )
+      ApplicationService.editVolume ( $stateParams.name, volumeID, volumeName, volumePath )
         .then(function(volume) {
           var elementPos = vm.volume.map(function(x) {return x.id; }).indexOf(volumeID);
           vm.volume[elementPos] = volume.data;
@@ -95,7 +126,7 @@
     }
 
     function addVolume (volumeName, volumePath) {
-      ApplicationService.addVolume (  vm.currentApplication, volumeName, volumePath )
+      ApplicationService.addVolume (  $stateParams.name, volumeName, volumePath )
         .then ( function(volume) {
           vm.volume.push(volume);
           vm.volumeName = '';
