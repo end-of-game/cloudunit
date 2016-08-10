@@ -17,7 +17,7 @@ public class Volume implements Serializable {
     @ManyToOne
     private Application application;
 
-    private Integer containerId;
+    private String containerId;
 
     public Integer getId() {
         return id;
@@ -51,7 +51,7 @@ public class Volume implements Serializable {
         this.application = application;
     }
 
-    public Integer getContainerId() { return containerId; }
+    public String getContainerId() { return containerId; }
 
-    public void setContainerId(Integer containerId) { this.containerId = containerId; }
+    public void setContainerId(String containerId) { this.containerId = containerId; }
 }

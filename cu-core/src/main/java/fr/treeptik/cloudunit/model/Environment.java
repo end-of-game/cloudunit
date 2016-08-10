@@ -24,7 +24,7 @@ public class Environment implements Serializable {
     @ManyToOne
     private Application application;
 
-    private Integer containerId;
+    private String containerId;
 
     public Environment() {
     }
@@ -61,9 +61,9 @@ public class Environment implements Serializable {
         this.application = application;
     }
 
-    public Integer getContainerId() { return containerId; }
+    public String getContainerId() { return containerId; }
 
-    public void setContainerId(Integer containerId) { this.containerId = containerId; }
+    public void setContainerId(String containerId) { this.containerId = containerId; }
 
     @Override
     public String toString() {
