@@ -24,7 +24,7 @@
     return {
       templateUrl: 'scripts/components/editApplication/settings/jvm/editApplication.settings.configureJVM.html',
       bindings: {
-        application: '=app',
+        application: '<app',
       },
       controller: ['$scope', 'JVMService', '$filter', ConfigJVMCtrl],
       controllerAs: 'configjvm',
@@ -35,15 +35,31 @@
     var vm = this;
 
     // Config JVM
-    vm.jvmOptions = $filter('cleanEscapeSlashAndReverse')(vm.application.server.jvmOptions, true);
-    vm.jvmMemory = vm.application.server.jvmMemory;
-    vm.jvmRelease = vm.application.server.jvmRelease;
-    vm.selectedJvmMemory = vm.jvmMemory;
-    vm.selectedJvmRelease = vm.jvmRelease;
+    vm.jvmOptions = '';
+    vm.jvmMemory = '';
+    vm.jvmRelease = '';
+    vm.selectedJvmMemory = '';
+    vm.selectedJvmRelease = '';
+
 
     vm.jvmMemorySizes = [512, 1024, 2048, 3072, 4096];
     vm.jvmReleases = ['jdk1.7.0_55', 'jdk1.8.0_25'];
     vm.saveConfigurationJVM = saveConfigurationJVM;
+
+
+    vm.$onChanges = function (changesObj) {
+      if(changesObj.application) {
+        if((changesObj.application.previousValue === undefined)
+          || vm.application !== undefined
+        ) {
+          vm.jvmOptions = $filter('cleanEscapeSlashAndReverse')(vm.application.server.jvmOptions, true);
+          vm.jvmMemory = vm.application.server.jvmMemory;
+          vm.jvmRelease = vm.application.server.jvmRelease;
+          vm.selectedJvmMemory = vm.jvmMemory;
+          vm.selectedJvmRelease = vm.jvmRelease;
+        }
+      }
+    };
 
     // Function to save the JVM parameters
     function saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease) {
