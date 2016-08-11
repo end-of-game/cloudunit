@@ -37,7 +37,7 @@
     }
     .title {
       font-size: 24px;
-      font_weight: normal;
+      // font-weight: normal;
       .service-icon {
         display: inline-block;
         padding-top: 2px;
@@ -55,7 +55,7 @@
       @include clearfix();
     }
     .features {
-      padding: 16px 11px;
+      padding: 16px 0px;
       color: $color-muted;
       margin-bottom: 32px;
     }

@@ -33,7 +33,6 @@
   </header>
 
   <div class="page-content">
-    <div class="page">
       <div class="subheader">
         <div class="subheader-form" ng-if="snapshots.list.length">
           <div class="input-group inline">
@@ -43,7 +42,7 @@
         </div>
       </div>
 
-      <div class="col-lg-12 col-md-12 col-xs-12 snapshot-list">
+      <div class="col-lg-12  snapshot-list">
         <div class="no-data" ng-if="!snapshots.list.length">
           <h3 class="title">No template created</h3>
 
@@ -52,7 +51,7 @@
 
         <div data-ng-repeat="(key, value) in snapshots.list | groupBy: 'calendarDate'">
           <div ng-if="snapshots.list.length" class="cards">
-            <div ng-repeat="item in value | orderBy: '-date' | filter:snapshots.search.displayTag" class="card small template">
+            <div ng-repeat="item in value | orderBy: '-date' | filter:snapshots.search.tag" class="card smaller template">
               <div class="content">
                 <h3 class="title">{{item.displayTag}}</h3>
                 <div class="features">
@@ -163,7 +162,6 @@
           </div>
         </div>
       </div>
-    </div>
   </div>
 </section>
 

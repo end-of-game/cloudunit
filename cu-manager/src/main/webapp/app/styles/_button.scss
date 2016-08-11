@@ -167,24 +167,21 @@
 
 button.button-effect {
   float: left;
-  min-width: 150px;
-  max-width: 250px;
+  min-width: 105px;
   display: block;
-  margin: 1em;
-  margin-right: 0px;
-  padding: 1em 2em;
+  margin: 0em;
+  margin-left: 1em;
   border: none;
   background: none;
   color: inherit;
   position: relative;
   z-index: 1;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 16px;
+  font-size: 1.2em;
   font-weight: 600;
   background: none;
   border: none;
-  height: 60px;
-  -webkit-transition: color 0.3s;
+  height: 50px;
   transition: color 0.3s;
   -webkit-transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
   transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
