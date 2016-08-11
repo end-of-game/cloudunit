@@ -26,7 +26,7 @@
             class="clearfix" novalidate=""
             data-ng-submit="monitoringApp.chooseQueue(monitoringApp.queueName)">
 
-          <div class="input-group-inline col-lg-11">
+          <div class="input-group-inline col-lg-10">
             <input id="queue-name"
                   name="queueName"
                   type="text"
@@ -39,9 +39,8 @@
           <div class="actions">
             <div class="secondary-actions pull-right">
               <button type="submit"
-                      class="queue-btn button primary raised"
-                      data-ng-disabled="!monitoringApp.queueName"
-                      ripple="">
+                      class="queue-btn button-effect primary pull-right"
+                      data-ng-disabled="!monitoringApp.queueName">
                 <span>Send</span>
               </button>
             </div>

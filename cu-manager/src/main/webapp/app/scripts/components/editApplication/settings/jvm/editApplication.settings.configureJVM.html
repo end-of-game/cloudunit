@@ -77,8 +77,7 @@
           <label for="release-{{configjvm.jvmReleases[$index]}}">{{configjvm.jvmReleases[$index]}}</label>
         </div>
         <div class="clearfix">
-          <button class="config-jvm-btn button raised primary pull-right"
-                  ripple=""
+          <button class="config-jvm-btn button-effect primary pull-right"
                   data-ng-click="configjvm.saveConfigurationJVM(configjvm.application.name, configjvm.selectedJvmMemory, configjvm.jvmOptions, configjvm.selectedJvmRelease)">
             <span>Save</span>
           </button>

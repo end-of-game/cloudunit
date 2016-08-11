@@ -65,11 +65,11 @@
 
         <div class="clearfix">
           <p>{{snapshot.message}}</p>
-          <button class="config-snapshot-btn button raised primary pull-right"
-                  ripple=""
-                  data-ng-click="snapshot.createNewSnapShot(snapshot.app.name, snapshot.newSnapshot)">
-            <span>Create</span>
-          </button>
+          <button class="config-snapshot-btn button-effect primary pull-right"
+                  data-ng-click="snapshot.createNewSnapShot(snapshot.app.name, snapshot.newSnapshot)"
+                  data-ng-disabled="!snapshot.newSnapshot.name">
+              <span>Create</span>
+            </button>
         </div>
       </form>
     </div>

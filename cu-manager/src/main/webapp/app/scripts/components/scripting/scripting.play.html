@@ -61,14 +61,12 @@
             data-ng-disabled="scripting.application.status === 'PENDING'"
             placeholder="Enter your script"></textarea>
       <div class="clearfix">
-        <button class="button raised primary pull-right"
-                ripple=""
+        <button class="button-effect primary pull-right"
                 data-ng-disabled="!scripting.content || !scripting.title"
                 data-ng-click="scripting.addScript(scripting.content, scripting.title)">
           <span>Save script</span>
         </button>
-        <button class="button raised primary pull-right"
-                ripple=""
+        <button class="button-effect primary pull-right"
                 data-ng-disabled="!scripting.content"
                 data-ng-click="scripting.executeScript(scripting.content)">
           <span>Execute script</span>

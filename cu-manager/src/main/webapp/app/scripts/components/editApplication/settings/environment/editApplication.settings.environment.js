@@ -46,6 +46,10 @@
     vm.currentPage = 1;
     vm.environmentVariableKey = '';
     vm.environmentVariableValue = '';
+    vm.addNoticeMsg = '';
+    vm.addErrorMsg = '';
+    vm.manageNoticeMsg = '';
+    vm.manageErrorMsg = '';
 
     vm.predicate = 'value';
     vm.reverse = false;
@@ -96,46 +100,71 @@
     function deleteEnv (environmentVariable) {
       ApplicationService.deleteEnvironmentVariable (  $stateParams.name, vm.myContainer.id, environmentVariable.id )
         .then ( function() {
+          cleanMessage();
           vm.env.splice(vm.env.indexOf(environmentVariable), 1);
-          vm.noticeMsg = 'The variable has been removed!'
-          vm.errorMsg = '';
+          vm.manageNoticeMsg = 'The variable has been removed !';
         } )
-        .catch (errorScript);
+        .catch (errorManageEnvironment);
     }
     
     function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
       ApplicationService.editEnvironmentVariable ( $stateParams.name, vm.myContainer.id, environmentVariableID, environmentVariableKey, environmentVariableValue )
         .then(function(env) {
+          cleanMessage();
           var elementPos = vm.env.map(function(x) {return x.id; }).indexOf(environmentVariableID);         
           vm.env[elementPos] = env;
-          vm.noticeMsg = 'The variable has been edited!'
-          vm.errorMsg = '';
+          vm.manageNoticeMsg = 'The variable has been edited !';
         })
         .catch (function(response) {
           getListEnvironmentVariable();
-          errorScript(response);
+          errorManageEnvironment(response);
         });
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
       ApplicationService.addEnvironmentVariable (  $stateParams.name, vm.myContainer.id, environmentVariableKey, environmentVariableValue )
         .then ( function(env) {
+          cleanMessage();
           vm.env.push(env);
           vm.environmentVariableKey = '';
           vm.environmentVariableValue = '';
-          vm.noticeMsg = 'Variable successfully created!';
-          vm.errorMsg = '';
+          vm.addNoticeMsg = 'Variable successfully created !';
         } )
-        .catch (errorScript);
+        .catch (errorAddEnvironment);
     }
 
     function errorScript (res) {
       if(res.data.message) {
-        vm.errorMsg = res.data.message;
+        vm.manageNoticeMsg = res.data.message;
       } else {
-        vm.errorMsg = 'An error has been encountered!';
+        vm.manageNoticeMsg = 'An error has been encountered!';
       }
-      vm.noticeMsg = '';
+      vm.manageErrorMsg = '';
+    }
+
+    function errorAddEnvironment (res) {
+      cleanMessage();
+      if(res.data.message) {
+        vm.addErrorMsg = res.data.message;
+      } else {
+        vm.addErrorMsg = 'An error has been encountered!';
+      }
+    }
+
+    function errorManageEnvironment (res) {
+      cleanMessage();
+      if(res.data.message) {
+        vm.manageErrorMsg = res.data.message;
+      } else {
+        vm.manageErrorMsg = 'An error has been encountered!';
+      }
+    }
+
+    function cleanMessage() {
+      vm.addErrorMsg = '';
+      vm.addNoticeMsg = '';
+      vm.manageErrorMsg = '';
+      vm.manageNoticeMsg = '';
     }
 
     function order (predicate) {

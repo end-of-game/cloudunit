@@ -18,15 +18,6 @@
   <div class="content clearfix">
     <div class="ports-form">
 
-      <div class="alert alert-danger" data-ng-show="ports.errorMsg">
-        <button type="button"
-                class="close"
-                ng-click="ports.errorMsg = ''">
-          <span>&times;</span>
-        </button>
-        <p>{{ports.errorMsg}}</p>
-      </div>
-
       <h3 class="title large">Add new port</h3>
 
       <form id="add-ports"
@@ -63,15 +54,28 @@
         <div class="actions">
           <div class="secondary-actions pull-right">
             <button type="submit"
-                    class="ports-btn button primary raised"
-                    data-ng-disabled="!ports.number"
-                    ripple="">
+                    class="ports-btn button-effect primary pull-right"
+                    data-ng-disabled="!ports.number">
               <span>Add a port</span>
             </button>
           </div>
         </div>
       </form>
+
+      <div class="alert alert-danger" data-ng-show="ports.errorMsg">
+        <button type="button"
+                class="close"
+                ng-click="ports.errorMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{ports.errorMsg}}</p>
+      </div>
     </div>
+  </div>
+</div>
+
+<div class="card large">
+  <div class="content clearfix">
     <div class="ports-list">
       <h3 class="title large">Registered ports</h3>
 

@@ -13,7 +13,7 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="card">
+<div class="card col-lg-2">
   <div class="content clearfix">
     <h3 class="title large">Environment variables</h3>
     
@@ -37,59 +37,62 @@
   </div>
 </div>
 
-<div class="card">
-  <div class="content clearfix" id="settings-environment">
-
-    <div class="alert alert-danger" data-ng-show="environment.errorMsg">
-      <button type="button"
-              class="close"
-              ng-click="environment.errorMsg = ''">
-        <span>&times;</span>
-      </button>
-      <p>{{environment.errorMsg}}</p>
-    </div>
-    <div class="alert alert-info" data-ng-show="environment.noticeMsg">
-      <button type="button"
-              class="close"
-              ng-click="environment.noticeMsg = ''">
-        <span>&times;</span>
-      </button>
-      <p>{{environment.noticeMsg}}</p>
-    </div>
+<div class="card col-lg-10">
+  <div class="content clearfix">
 
     <h3 class="title large">Add Variable</h3>
 
     <form id="add-env"
-            name="addEnvironmentVariable"
-            class="clearfix" novalidate=""
-            data-ng-submit="environment.addEnv(environment.environmentVariableKey, environment.environmentVariableValue)">
-        <div class="input-group-inline col-lg-5">
-          <label for="key">Key</label>
-          <input id="key"
-                 name="key"
-                 type="text"
-                 data-ng-model="environment.environmentVariableKey">
+          name="addEnvironmentVariable"
+          class="clearfix" novalidate=""
+          data-ng-submit="environment.addEnv(environment.environmentVariableKey, environment.environmentVariableValue)">
+      <div class="input-group-inline col-lg-5">
+        <label for="key">Key</label>
+        <input id="key"
+                name="key"
+                type="text"
+                data-ng-model="environment.environmentVariableKey">
+      </div>
+      <div class="input-group-inline col-lg-5">
+        <label for="value">Value</label>
+        <input id="value"
+                name="value"
+                type="text"
+                data-ng-model="environment.environmentVariableValue"
+                ng-required="">
+      </div>
+      <div class="actions">
+        <div class="secondary-actions pull-right">
+          <button type="submit"
+                  class="alias-btn button-effect primary pull-right"
+                  data-ng-disabled="!environment.environmentVariableKey || !environment.environmentVariableValue">
+            <span>Add variable</span>
+          </button>
         </div>
-        <div class="input-group-inline col-lg-5">
-          <label for="value">Value</label>
-          <input id="value"
-                 name="value"
-                 type="text"
-                 data-ng-model="environment.environmentVariableValue"
-                 ng-required="">
-          </div>
-        <div class="actions">
-          <div class="secondary-actions pull-right">
-            <button type="submit"
-                    class="alias-btn button primary raised"
-                    data-ng-disabled="!environment.environmentVariableKey || !environment.environmentVariableValue"
-                    ripple="">
-              <span>Add variable</span>
-            </button>
-          </div>
-        </div>
-      </form>
+      </div>
+    </form>
 
+    <div class="alert alert-danger" data-ng-show="environment.addErrorMsg">
+      <button type="button"
+              class="close"
+              ng-click="environment.addErrorMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{environment.addErrorMsg}}</p>
+    </div>
+    <div class="alert alert-info" data-ng-show="environment.addNoticeMsg">
+      <button type="button"
+              class="close"
+              ng-click="environment.addNoticeMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{environment.addNoticeMsg}}</p>
+    </div>
+  </div>
+</div>
+
+<div class="card col-lg-12">
+  <div class="content clearfix" id="settings-environment">
     <h3 class="title large">Manage Variable</h3>
 
     <div class="no-data" ng-if="!environment.env.length">
@@ -184,5 +187,22 @@
         </tbody>
       </table>
       <dir-pagination-controls ng-if="environment.env.length"></dir-pagination-controls>
+      
+      <div class="alert alert-danger" data-ng-show="environment.manageErrorMsg">
+        <button type="button"
+                class="close"
+                ng-click="environment.manageErrorMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{environment.manageErrorMsg}}</p>
+      </div>
+      <div class="alert alert-info" data-ng-show="environment.manageNoticeMsg">
+        <button type="button"
+                class="close"
+                ng-click="environment.manageNoticeMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{environment.manageNoticeMsg}}</p>
+      </div>
   </div>
 </div>

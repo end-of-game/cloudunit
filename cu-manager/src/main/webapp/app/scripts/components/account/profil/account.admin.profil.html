@@ -36,25 +36,8 @@
   <div class="page full">
     <div id="user-info" class="card large vertical-spacing">
       <div class="content clearfix">
-        <h3 class="title">Update My Account</h3>
 
-        <div class="alert alert-danger" data-ng-show="accountProfil.errorMsg">
-          <button type="button"
-                  class="close"
-                  ng-click="accountProfil.errorMsg = false">
-            <span>&times;</span>
-          </button>
-          <p>{{accountProfil.errorMsg}}</p>
-        </div>
-          
-        <div class="alert alert-info" data-ng-show="accountProfil.noticeMsg">
-          <button type="button"
-                  class="close"
-                  ng-click="accountProfil.noticeMsg = false">
-            <span>&times;</span>
-          </button>
-          <p>{{accountProfil.noticeMsg}}</p>
-        </div>
+        <h3 class="title">Update My Account</h3>
 
         <form class="form-wrapper" id="account-profil">
           <br>
@@ -85,15 +68,33 @@
           </div>
 
           <div class="clearfix">
-            <button class="config-jvm-btn button raised primary pull-right"
-                    ripple=""
+            <button class="button-effect primary pull-right"
                     ng-disabled="!accountProfil.oldPassword || !accountProfil.newPassword || !accountProfil.confirmPassword"
                     data-ng-click="accountProfil.changePassword(accountProfil.oldPassword, accountProfil.newPassword, accountProfil.confirmPassword)">
               <span>Save</span>
             </button>
           </div>
+        </form>
+
+        <div class="alert alert-danger" data-ng-show="accountProfil.errorMsg">
+          <button type="button"
+                  class="close"
+                  ng-click="accountProfil.errorMsg = false">
+            <span>&times;</span>
+          </button>
+          <p>{{accountProfil.errorMsg}}</p>
         </div>
-      </form>
+          
+        <div class="alert alert-info" data-ng-show="accountProfil.noticeMsg">
+          <button type="button"
+                  class="close"
+                  ng-click="accountProfil.noticeMsg = false">
+            <span>&times;</span>
+          </button>
+          <p>{{accountProfil.noticeMsg}}</p>
+        </div>
+
+      </div>
     </div>
   </div>
 </section>

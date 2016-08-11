@@ -13,7 +13,7 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div class="card">
+<div class="card col-lg-2">
   <div class="content clearfix">
     <h3 class="title large">Volume</h3>
     
@@ -37,25 +37,8 @@
   </div>
 </div>
 
-<div class="card">
-  <div class="content clearfix" id="settings-volume">
-
-    <div class="alert alert-danger" data-ng-show="volume.errorMsg">
-      <button type="button"
-              class="close"
-              ng-click="volume.errorMsg = ''">
-        <span>&times;</span>
-      </button>
-      <p>{{volume.errorMsg}}</p>
-    </div>
-    <div class="alert alert-info" data-ng-show="volume.noticeMsg">
-      <button type="button"
-              class="close"
-              ng-click="volume.noticeMsg = ''">
-        <span>&times;</span>
-      </button>
-      <p>{{volume.noticeMsg}}</p>
-    </div>
+<div class="card col-lg-10">
+  <div class="content clearfix">
 
     <h3 class="title large">Add Volume</h3>
 
@@ -81,14 +64,35 @@
         <div class="actions">
           <div class="secondary-actions pull-right">
             <button type="submit"
-                    class="alias-btn button primary raised"
-                    data-ng-disabled="!volume.volumeName || !volume.volumePath"
-                    ripple="">
-              <span>Add variable</span>
+                    class="addVolume-btn button-effect primary pull-right"
+                    data-ng-disabled="!volume.volumeName || !volume.volumePath">
+              <span>Add volume</span>
             </button>
           </div>
         </div>
       </form>
+    
+    <div class="alert alert-danger" data-ng-show="volume.addErrorMsg">
+      <button type="button"
+              class="close"
+              ng-click="volume.addErrorMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{volume.addErrorMsg}}</p>
+    </div>
+    <div class="alert alert-info" data-ng-show="volume.addNoticeMsg">
+      <button type="button"
+              class="close"
+              ng-click="volume.addNoticeMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{volume.addNoticeMsg}}</p>
+    </div>
+  </div>
+</div>
+
+<div class="card col-lg-12">
+  <div class="content clearfix" id="settings-volume">
 
     <h3 class="title large">Manage Volume</h3>
 
@@ -184,5 +188,22 @@
         </tbody>
       </table>
       <dir-pagination-controls ng-if="volume.volumes.length"></dir-pagination-controls>
+
+       <div class="alert alert-danger" data-ng-show="volume.manageErrorMsg">
+        <button type="button"
+                class="close"
+                ng-click="volume.manageErrorMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{volume.manageErrorMsg}}</p>
+      </div>
+      <div class="alert alert-info" data-ng-show="volume.manageNoticeMsg">
+        <button type="button"
+                class="close"
+                ng-click="volume.manageNoticeMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{volume.manageNoticeMsg}}</p>
+      </div>
   </div>
 </div>

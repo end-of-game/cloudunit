@@ -17,15 +17,6 @@
   <div class="content clearfix">
     <div class="alias-form">
 
-    <div class="alert alert-danger" data-ng-show="alias.errorMsg">
-      <button type="button"
-              class="close"
-              ng-click="alias.errorMsg = ''">
-        <span>&times;</span>
-      </button>
-      <p>{{alias.errorMsg}}</p>
-    </div>
-
       <h3 class="title large">Add new alias</h3>
 
       <form id="add-alias"
@@ -54,15 +45,28 @@
         <div class="actions">
           <div class="secondary-actions pull-right">
             <button type="submit"
-                    class="alias-btn button primary raised"
-                    data-ng-disabled="!alias.domain"
-                    ripple="">
+                    class="alias-btn button-effect primary pull-right"
+                    data-ng-disabled="!alias.domain">
               <span>Add an alias</span>
             </button>
           </div>
         </div>
       </form>
+
+      <div class="alert alert-danger" data-ng-show="alias.errorMsg">
+        <button type="button"
+                class="close"
+                ng-click="alias.errorMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{alias.errorMsg}}</p>
+      </div>
     </div>
+  </div>
+</div>
+
+<div class="card large">
+  <div class="content clearfix">
     <div class="alias-list">
       <h3 class="title large">Registered aliases</h3>
       <p class="no-alias text-muted" data-ng-if="!alias.application.aliases.length">No registered aliases</p>

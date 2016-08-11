@@ -47,7 +47,11 @@
     vm.currentPage = 1;
     vm.volumeName = '';
     vm.volumePath = '';
-    
+    vm.addNoticeMsg = '';
+    vm.addErrorMsg = '';
+    vm.manageNoticeMsg = '';
+    vm.manageErrorMsg = '';
+
     vm.predicate = 'name';
     vm.reverse = false;
     vm.order = order;
@@ -78,7 +82,7 @@
         });
     }
 
-    function getContainers ( selectedContainer ) {
+    function getContainers (selectedContainer) {
       var deferred = $q.defer ();
       vm.isLoading = true;
       ApplicationService.listContainers ( $stateParams.name )
@@ -98,25 +102,25 @@
       console.log('deleteVolume');
       ApplicationService.deleteVolume (  $stateParams.name, vm.myContainer.id, volume.id )
         .then ( function() {
+          cleanMessage();
           vm.volumes.splice(vm.volumes.indexOf(volume), 1);
-          vm.noticeMsg = 'The volume has been removed!'
-          vm.errorMsg = '';
+          vm.manageNoticeMsg = 'The volume has been removed!'
         } )
-        .catch (errorScript);
+        .catch (errorManageVolume);
     }
     
     function editVolume (volumeID, volumeName, volumePath) {
       console.log('editVolume');
       ApplicationService.editVolume ( $stateParams.name, vm.myContainer.id, volumeID, volumeName, volumePath )
         .then(function(volume) {
+          cleanMessage();
           var elementPos = vm.volumes.map(function(x) {return x.id; }).indexOf(volumeID);
           vm.volumes[elementPos] = volume;
-          vm.noticeMsg = 'The volume has been edited!'
-          vm.errorMsg = '';
+          vm.manageNoticeMsg = 'The volume has been edited!'
         })
         .catch ( function(response) {
           getListVolume();
-          errorScript(response);
+          errorManageVolume(response);
         } );
     }
 
@@ -124,22 +128,38 @@
       console.log(volumePath);
       ApplicationService.addVolume (  $stateParams.name, vm.myContainer.id, volumeName, volumePath )
         .then ( function(volume) {
+          cleanMessage();
           vm.volumes.push(volume);
           vm.volumeName = '';
           vm.volumePath = '';
-          vm.noticeMsg = 'volume successfully created!';
-          vm.errorMsg = '';
+          vm.addNoticeMsg = 'volume successfully created !';
         } )
-        .catch (errorScript);
+        .catch (errorAddVolume);
     }
 
-    function errorScript (res) {
+    function errorAddVolume (res) {
+      cleanMessage();
       if(res.data.message) {
-        vm.errorMsg = res.data.message;
+        vm.addErrorMsg = res.data.message;
       } else {
-        vm.errorMsg = 'An error has been encountered!';
+        vm.addErrorMsg = 'An error has been encountered !';
       }
-      vm.noticeMsg = '';
+    }
+
+    function errorManageVolume (res) {
+      cleanMessage();
+      if(res.data.message) {
+        vm.manageErrorMsg = res.data.message;
+      } else {
+        vm.manageErrorMsg = 'An error has been encountered !';
+      };
+    }
+
+    function cleanMessage() {
+      vm.addErrorMsg = '';
+      vm.addNoticeMsg = '';
+      vm.manageErrorMsg = '';
+      vm.manageNoticeMsg = '';
     }
 
     function order (predicate) {
