@@ -171,15 +171,13 @@ button.button-effect {
   max-width: 250px;
   display: block;
   margin: 1em;
-  margin-right: 60px;
+  margin-right: 0px;
   padding: 1em 2em;
   border: none;
   background: none;
   color: inherit;
-  vertical-align: middle;
   position: relative;
   z-index: 1;
-  -webkit-backface-visibility: hidden;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   font-weight: 600;
@@ -190,23 +188,6 @@ button.button-effect {
   transition: color 0.3s;
   -webkit-transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
   transition-timing-function: cubic-bezier(0.75, 0, 0.125, 1);
-}
-
-button.button-link {
-  color: white;
-  float: right;
-  min-width: 57px;
-  max-width: 156px;
-  height: 45px;
-  margin: 0px !important;
-} 
-
-button.button-link span {
-  padding-right: 10px;
-}
-
-button.button-logout {
-  float: none !important;
 }
 
 button.button-effect:focus {
@@ -246,27 +227,11 @@ button.button-effect::before {
 
 button.button-effect::after {
   background: $color-primary;
-
 }
 
 button.button-effect:hover {
   color: $color-primary;
 }
-
-
-/*button.button-link::before {
-  border: 2px solid #F57362 !important;
-  border-color: #F57362 !important;
-}
-
-button.button-link::after {
-  background: #F57362 !important;
-
-}
-
-button.button-link:hover {
-  color: #F57362 !important;
-}*/
 
 button.button-effect:hover::before {
   opacity: 1;
@@ -279,30 +244,19 @@ button.button-effect:hover::after {
   -webkit-transform: scale3d(0.8, 0.8, 1);
   transform: scale3d(0.8, 0.8, 1);
 }
-input[type="submit"] {
-    background: none;
-    border: none;
+
+button.button-effect.disabled,
+button.button-effect[disabled],
+button.button-effect.disabled::after,
+button.button-effect[disabled]::after {
+  color: $color-disabled;
+  background: $color-bg-muted;
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: none;
+  box-shadow: none;
 }
 
-.button-icon {
-  font-size : 2em !important;
-  margin-right: 30px;
-  margin-left: -30px;
-}
-
-.button-icon-link {
-    font-size : 1em !important;
-}
-
-/*button.button-alert::after{
-  background: darken( #F57362, 10% );
-}
-button.button-alert:hover{
-  color : darken( #F57362, 10% );
-}
-button.button-alert::before {
-  border-color: darken( #F57362, 10% );
-}*/
 button.button-effect:active {
     border-color: darken( $color-primary, 10% );
 }
