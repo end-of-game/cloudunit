@@ -101,7 +101,6 @@ public class FileController {
             logger.debug("path:" + path);
         }
 
-        path = convertPathFromUI(path);
         List<FileUnit> fichiers = fileService.listByContainerIdAndPath(
             containerId, path);
         return fichiers;
@@ -124,7 +123,6 @@ public class FileController {
             logger.debug("containerId:" + containerId);
             logger.debug("path:" + path);
         }
-        path = convertPathFromUI(path);
         List<FileUnit> fichiers = fileService.listByContainerIdAndPath(containerId, path);
         return fichiers;
     }
@@ -170,7 +168,7 @@ public class FileController {
 
         if (application != null) {
             try {
-                String path = convertPathFromUI(fileRequestBody.getFilePath());
+                String path = fileRequestBody.getFilePath();
                 fileService.sendFileToContainer(containerId, path, null, fileRequestBody.getFileName(), fileRequestBody.getFileContent());
             } catch (ServiceException e) {
                 StringBuilder msgError = new StringBuilder();
@@ -310,7 +308,6 @@ public class FileController {
             logger.debug("path:" + path);
         }
 
-        path = convertPathFromUI(path);
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user,
             applicationName);
@@ -411,7 +408,6 @@ public class FileController {
             logger.debug("path:" + path);
         }
 
-        path = convertPathFromUI(path);
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user,
                 applicationName);
@@ -456,11 +452,11 @@ public class FileController {
         }
 
         String command =  null;
-        String realPath = convertPathFromUI(path) + "/" + fileName;
+        String realPath = path + "/" + fileName;
         if (FileUnit.tar().test(fileName)) {
-            command = "tar xvf " + realPath + " -C " + convertPathFromUI(path);
+            command = "tar xvf " + realPath + " -C " + path;
         } else if (FileUnit.zip().test(fileName)) {
-            command = "unzip " + realPath + " -d " + convertPathFromUI(path);
+            command = "unzip " + realPath + " -d " + path;
         } else {
             throw new CheckException("Cannot decompress this file. Extension is not right : " + realPath);
         }
@@ -508,11 +504,11 @@ public class FileController {
         }
 
         String command =  null;
-        String realPath = convertPathFromUI(path) + "/" + fileName;
+        String realPath = path + "/" + fileName;
         if (FileUnit.tar().test(fileName)) {
-            command = "tar xvf " + realPath + " -C " + convertPathFromUI(path);
+            command = "tar xvf " + realPath + " -C " + path;
         } else if (FileUnit.zip().test(fileName)) {
-            command = "unzip " + realPath + " -d " + convertPathFromUI(path);
+            command = "unzip " + realPath + " -d " + path;
         } else {
             throw new CheckException("Cannot decompress this file. Extension is not right : " + realPath);
         }
@@ -677,7 +673,6 @@ public class FileController {
 
         // We must be sure there is no running action before starting new one
         this.authentificationUtils.canStartNewAction(user, application, locale);
-        path = convertPathFromUI(path);
         try (OutputStream stream = response.getOutputStream()) {
             fileService.getFileFromContainer(containerId, "/" + path + "/" + fileName, stream);
             stream.flush(); // commits response!
@@ -685,13 +680,5 @@ public class FileController {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    private String convertPathFromUI(String path) {
-        if (path != null) {
-            path = path.replaceAll("____", "/");
-            path = path.replaceAll("__", "/");
-        }
-        return path;
     }
 }
