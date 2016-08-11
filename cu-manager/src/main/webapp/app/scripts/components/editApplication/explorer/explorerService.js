@@ -28,7 +28,6 @@
 
     return {
       buildTree: buildTree,
-      //downloadFile: downloadFile,
       deleteFile: deleteFile,
       addDirectory: addDirectory,
       unzipFile: unzipFile,
@@ -134,26 +133,5 @@
       return request.save().$promise;
     }
 
-    /*function downloadFile ( containerId, applicationName, path, fileName ) {
-      var file = $resource ( '/file/container/:containerId/application/:applicationName/path/:path/fileName/:fileName', {
-        containerId: containerId,
-        applicationName: applicationName,
-        path: path,
-        fileName: fileName
-      }, {
-        get: {
-          method: 'GET',
-          transformResponse: function ( data, headers ) {
-            var response = {};
-            response.data = data;
-            response.headers = headers ();
-            return response;
-          }
-        }
-      } );
-
-      return file.get ().$promise;
-
-    }*/
   }
 }) ();

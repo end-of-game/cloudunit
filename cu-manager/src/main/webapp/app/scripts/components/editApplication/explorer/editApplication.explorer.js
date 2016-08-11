@@ -46,7 +46,7 @@
     // LOGS MANAGEMENT
     // ------------------------------------------------------------------------
     var vm = this,
-      rootPath = '__',
+      rootPath = '/',
       uploader;
 
     vm.editorOptions = {
@@ -68,7 +68,6 @@
     };
     vm.upDir = upDir;
     vm.folderClick = folderClick;
-    //vm.downloadFile = downloadFile;
     vm.deleteFile = deleteFile;
     vm.unzipFile = unzipFile;
     vm.editFile = editFile;
@@ -114,58 +113,58 @@
     }
     
     function addNewDirectory(containerId, path, newDirectoryName) {
-
-      var slug = '__' + path.join ( '__' ) + '__' + newDirectoryName;
-
+      console.log(path);
+      var slug = '/' + path.join ( '/' ) + '/' + newDirectoryName;
+      console.log(slug);
        ExplorerService.addDirectory ( containerId, $stateParams.name, slug )
         .then ( function onDirectoryAdd () {
           vm.isCreatingDirectory = true;
           vm.newDirectoryName = "";
           $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' ).then ( function () {
+            buildTree ( vm.currentPath.join ( '/' ), 'subFolder' ).then ( function () {
               vm.isCreatingDirectory = false;
             } );
           }, 1000 );
         } )
         .catch ( function onDirectoryAddError ( error ) {
           $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+            buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
           }, 1000 );
         } ) 
     }
 
     function deleteFile ( containerId, path, item ) {
 
-      var slug = '__' + path.join ( '__' ) + '__' + item.name;
+      var slug = '/' + path.join ( '/' ) + '/' + item.name;
 
       ExplorerService.deleteFile ( containerId, $stateParams.name, slug )
         .then ( function onFileDelete () {
           $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+            buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
           }, 1000 );
         } )
         .catch ( function onFileDeleteError ( error ) {
           $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+            buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
           }, 1000 );
         } )
     }
 
     function unzipFile ( containerId, path, item ) {
 
-      var slug = '__' + path.join ( '__' );
+      var slug = '/' + path.join ( '/' );
       
       ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
         .then ( function onFileUnzip (data) {
           $timeout ( function () {
-            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+            buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
           }, 1000 );
         } )
     }
     
     function getFile ( containerId, path, item ) {
 
-      var slug = '__' + path.join ( '__' );
+      var slug = '/' + path.join ( '/' );
 
       ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
         .then ( function onFileUnzip (res) {
@@ -174,7 +173,7 @@
     }
     
     function editFile ( containerId, path, item, fileContent) {
-      var slug = '__' + path.join ( '__' );
+      var slug = '/' + path.join ( '/' );
       ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name, fileContent )
         .then ( function onFileEdit (res) {
           vm.fileContent = res.data;
@@ -200,7 +199,7 @@
       if ( path == rootPath ) {
         slug = path;
       } else {
-        slug = rootPath + path.replace ( ' ', '__' ) + '__';
+        slug = rootPath + path.replace ( ' ', '/' ) + '/';
       }
 
       ExplorerService.buildTree ( vm.myContainer.id, slug ).then ( function onSuccess ( data ) {
@@ -220,14 +219,14 @@
       }
       if ( item && item.dir ) {
         vm.currentPath.push ( item.name );
-        buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+        buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
       }
     }
 
     function upDir ( index ) {
       if ( vm.currentPath[0] ) {
         vm.currentPath = vm.currentPath.slice ( 0, index + 1 );
-        buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+        buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
       }
     }
 
@@ -242,7 +241,7 @@
     uploader.onAfterAddingAll = function ( fileItem ) {
       vm.dropped = false;
       fileItem.forEach(function(element, index) {
-        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
+        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/' + vm.currentPath.join ( '/' ) + '/';
       });
       
       uploader.uploadAll ();
@@ -254,21 +253,11 @@
     uploader.onCompleteAll = function () {
       vm.dropped = false;
       vm.uploadSuccess = true;
-      buildTree ( vm.currentPath.join ( '__' ), 'subFolder' ).then ( function () {
+      buildTree ( vm.currentPath.join ( '/' ), 'subFolder' ).then ( function () {
         vm.isUploading = false;
         vm.uploadSuccess = false;
       } );
     };
 
-
-    /*function downloadFile ( containerId, path, file ) {
-      if ( file.dir ) {
-        return;
-      }
-      ExplorerService.downloadFile ( containerId, $stateParams.name, '__' + vm.currentPath.join ( '__' ), file.name ).then ( function ( result ) {
-        var blob = new Blob ( [result.data], { type: result.headers['content-type'] } );
-        saveAs ( blob, file.name );
-      } )
-    }*/
   }
 }) ();
