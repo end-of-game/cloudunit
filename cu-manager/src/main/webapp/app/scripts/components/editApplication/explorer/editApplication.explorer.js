@@ -113,9 +113,8 @@
     }
     
     function addNewDirectory(containerId, path, newDirectoryName) {
-      console.log(path);
       var slug = '/' + path.join ( '/' ) + '/' + newDirectoryName;
-      console.log(slug);
+
        ExplorerService.addDirectory ( containerId, $stateParams.name, slug )
         .then ( function onDirectoryAdd () {
           vm.isCreatingDirectory = true;
@@ -241,7 +240,7 @@
     uploader.onAfterAddingAll = function ( fileItem ) {
       vm.dropped = false;
       fileItem.forEach(function(element, index) {
-        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/' + vm.currentPath.join ( '/' ) + '/';
+        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '?path=/' + vm.currentPath.join ( '/' ) + '/';
       });
       
       uploader.uploadAll ();
