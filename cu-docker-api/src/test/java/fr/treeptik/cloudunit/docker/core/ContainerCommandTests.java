@@ -1,5 +1,17 @@
 package fr.treeptik.cloudunit.docker.core;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import fr.treeptik.cloudunit.docker.builders.ConfigBuilder;
 import fr.treeptik.cloudunit.docker.builders.ContainerBuilder;
 import fr.treeptik.cloudunit.docker.builders.HostConfigBuilder;
@@ -8,11 +20,6 @@ import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.HostConfig;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.utils.ContainerUtils;
-import org.junit.*;
-import org.junit.runners.MethodSorters;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by guillaume on 21/10/15.

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import fr.treeptik.cloudunit.docker.model.Volume;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.treeptik.cloudunit.docker.builders.ImageBuilder;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.Image;
+import fr.treeptik.cloudunit.docker.model.Volume;
 import fr.treeptik.cloudunit.dto.DockerResponse;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.JSONClientException;
@@ -125,7 +125,6 @@ public class SimpleDockerDriver implements DockerDriver {
 		}
 		return dockerResponse;
 	}
-
 
 	@Override
 	public DockerResponse start(DockerContainer container) throws FatalDockerJSONException {
@@ -307,8 +306,7 @@ public class SimpleDockerDriver implements DockerDriver {
 		String body = new String();
 		DockerResponse dockerResponse = null;
 		try {
-			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/create")
-					.setParameter("name", volume.getName()).build();
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/create").build();
 			body = objectMapper.writeValueAsString(volume);
 			dockerResponse = client.sendPost(uri, body, "application/json");
 		} catch (URISyntaxException | IOException | JSONClientException e) {
@@ -323,6 +321,45 @@ public class SimpleDockerDriver implements DockerDriver {
 		return dockerResponse;
 	}
 
+	@Override
+	public DockerResponse findVolume(Volume volume) throws FatalDockerJSONException {
+		URI uri = null;
+		DockerResponse dockerResponse = null;
+		try {
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes")
+					.setParameter("name", volume.getName()).build();
+			dockerResponse = client.sendGet(uri);
+		} catch (URISyntaxException | JSONClientException e) {
+			StringBuilder contextError = new StringBuilder(256);
+			contextError.append("uri : " + uri + " - ");
+			contextError.append("server response : " + dockerResponse);
+			logger.error(contextError.toString());
+			throw new FatalDockerJSONException(
+					"An error has occurred for create container request due to " + e.getMessage(), e);
+		}
+		return dockerResponse;
+	}
+
+	@Override
+	public DockerResponse removeVolume(Volume volume) throws FatalDockerJSONException {
+
+		URI uri = null;
+		String body = new String();
+		DockerResponse dockerResponse = null;
+		try {
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/" + volume.getName()).build();
+			dockerResponse = client.sendDelete(uri, false);
+		} catch (URISyntaxException | JSONClientException e) {
+			StringBuilder contextError = new StringBuilder(256);
+			contextError.append("uri : " + uri + " - ");
+			contextError.append("request body : " + body + " - ");
+			contextError.append("server response : " + dockerResponse);
+			logger.error(contextError.toString());
+			throw new FatalDockerJSONException("An error has occurred for removeImage request due to " + e.getMessage(),
+					e);
+		}
+		return dockerResponse;
+	}
 
 	public JSONClient getClient() {
 		return client;

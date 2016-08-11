@@ -103,6 +103,7 @@ public class DockerServiceImpl implements DockerService {
 	public void removeServer(String containerName) throws DockerJSONException {
 		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
 		dockerCloudUnitClient.removeContainer(container);
+		dockerCloudUnitClient.removeVolume(containerName);
 	}
 
 	@Override
