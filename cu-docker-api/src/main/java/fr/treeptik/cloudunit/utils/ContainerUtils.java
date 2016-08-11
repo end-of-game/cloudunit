@@ -19,9 +19,11 @@ public class ContainerUtils {
 
 
     public static DockerContainer newCreateInstance(String name, String image,
-                                                    List<String> volumesFrom, List<String> args) {
+                                                    List<String> volumesFrom, List<String> args,
+                                                    List<String> rawVolumes, List<String> envs) {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig()
                 .withVolumesFrom(volumesFrom)
+                .withBinds(rawVolumes)
                 .build();
         Config config = ConfigBuilder.aConfig()
                 .withAttachStdin(Boolean.FALSE)
@@ -32,6 +34,7 @@ public class ContainerUtils {
                 .withHostConfig(hostConfig)
                 .withMemory(0L)
                 .withMemorySwap(0L)
+                .withEnv(envs)
                 .build();
         DockerContainer container = ContainerBuilder.aContainer()
                 .withName(name)

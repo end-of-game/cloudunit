@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.config.listener;
 
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -25,6 +26,9 @@ public class ServerListener {
 	private Logger logger = LoggerFactory.getLogger(ApplicationListener.class);
 
 	@Inject
+	private HipacheRedisUtils hipacheRedisUtils;
+
+	@Inject
 	DockerService dockerService;
 
 	@Inject
@@ -37,18 +41,24 @@ public class ServerListener {
 		try {
 			String containerId = server.getContainerID();
 			int counter = 0;
-			boolean notStarted = true;
+			boolean started = false;
 			do {
 				String command = RemoteExecAction.CHECK_RUNNING.getCommand();
 				String exec = dockerService.execCommand(containerId, command);
+				exec = exec.replaceAll(System.getProperty("line.separator"), "");
 				if ("0".equalsIgnoreCase(exec.trim())) {
-					notStarted = false;
+					started = true;
 					break;
 				}
 				Thread.sleep(1000);
-			} while (counter++ < 30 && notStarted);
+			} while (counter++ < 30 && !started);
 			if (counter <= 30) {
 				server.setStatus(Status.START);
+
+				hipacheRedisUtils.updateServerAddress(server.getApplication(), server.getContainerIP(),
+						dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
+						dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+
 			} else {
 				server.setStatus(Status.FAIL);
 			}

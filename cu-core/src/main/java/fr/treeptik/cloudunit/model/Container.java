@@ -68,7 +68,7 @@ public class Container implements Serializable {
 	@Enumerated(EnumType.STRING)
 	protected Status status;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	protected Image image;
 
 	/**

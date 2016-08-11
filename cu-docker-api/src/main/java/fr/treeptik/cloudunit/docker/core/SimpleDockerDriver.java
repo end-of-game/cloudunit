@@ -154,7 +154,7 @@ public class SimpleDockerDriver implements DockerDriver {
 		DockerResponse dockerResponse = null;
 		try {
 			uri = new URIBuilder().setScheme(protocol).setHost(host)
-					.setPath("/containers/" + container.getName() + "/stop").build();
+					.setPath("/containers/" + container.getName() + "/stop").setParameter("t", "10").build();
 			dockerResponse = client.sendPost(uri, body, "application/json");
 		} catch (URISyntaxException | JSONClientException e) {
 			StringBuilder contextError = new StringBuilder(256);

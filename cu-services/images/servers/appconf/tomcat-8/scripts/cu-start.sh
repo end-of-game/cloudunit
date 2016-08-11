@@ -2,9 +2,6 @@
 
 set -x
 
-export ENV_FILE="/opt/cloudunit/.profile"
-source $ENV_FILE
-
 $CATALINA_HOME/bin/catalina.sh start
 
 SHUTDOWN_WAIT=20
@@ -20,5 +17,8 @@ do
         let count=$count+1;
 done
 
-echo "Server Tomcat is started"
-
+if [ $count -gt 30 ]; then
+    echo "Server Tomcat is started"
+else
+    echo "Server Tomcat not started"
+fi

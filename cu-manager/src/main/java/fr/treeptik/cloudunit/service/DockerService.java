@@ -32,7 +32,7 @@ public interface DockerService {
 
     void addEnv(String containerId, String key, String value) throws FatalDockerJSONException;
 
-    void createServer(String name, Server server, String imagePath, User user) throws DockerJSONException;
+    void createServer(String name, Server server, String imagePath, User user, List<String> envs, boolean createMainVolume) throws DockerJSONException;
 
     Server startServer(String containerName, Server server) throws DockerJSONException;
 
@@ -40,7 +40,7 @@ public interface DockerService {
 
     void killServer(String containerName) throws DockerJSONException;
 
-    void removeServer(String containerName) throws DockerJSONException;
+    void removeServer(String containerName, boolean removeVolume) throws DockerJSONException;
 
     String execCommand(String containerName, String command) throws FatalDockerJSONException;
 

@@ -14,7 +14,7 @@ public class Volume {
 	@JsonProperty("Name")
 	private String name;
 
-	@JsonProperty("Label")
+	@JsonProperty("Labels")
 	private Map<String, String> labels;
 
 	public String getName() {

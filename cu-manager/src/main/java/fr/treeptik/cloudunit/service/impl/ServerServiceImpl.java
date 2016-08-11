@@ -16,10 +16,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
@@ -27,6 +24,8 @@ import javax.persistence.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -155,7 +154,7 @@ public class ServerServiceImpl implements ServerService {
 		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
-			dockerService.createServer(containerName, server, imagePath, user);
+			dockerService.createServer(containerName, server, imagePath, user, null, true);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 
@@ -176,14 +175,7 @@ public class ServerServiceImpl implements ServerService {
 
 			server = this.update(server);
 
-			Map<String, String> kvStore = new HashMap<String, String>() {
-				private static final long serialVersionUID = 1L;
-				{
-					put("CU_USER", user.getLogin());
-					put("CU_PASSWORD", user.getPassword());
-				}
-			};
-			dockerService.execCommand(server.getContainerID(), RemoteExecAction.ADD_USER.getCommand(kvStore));
+			addCredentialsForServerManagement(server, user);
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 
 		} catch (PersistenceException e) {
@@ -203,6 +195,17 @@ public class ServerServiceImpl implements ServerService {
 		}
 		logger.info("ServerService : Server " + server.getName() + " successfully created.");
 		return server;
+	}
+
+	private void addCredentialsForServerManagement(Server server, final User user) throws FatalDockerJSONException {
+		Map<String, String> kvStore = new HashMap<String, String>() {
+            private static final long serialVersionUID = 1L;
+            {
+                put("CU_USER", user.getLogin());
+                put("CU_PASSWORD", user.getPassword());
+            }
+        };
+		dockerService.execCommand(server.getContainerID(), RemoteExecAction.ADD_USER.getCommand(kvStore));
 	}
 
 	/**
@@ -236,7 +239,6 @@ public class ServerServiceImpl implements ServerService {
 		}
 	}
 
-	@Override
 	@Transactional
 	public Server update(Server server) throws ServiceException {
 
@@ -252,6 +254,7 @@ public class ServerServiceImpl implements ServerService {
 
 		} catch (PersistenceException | FatalDockerJSONException e) {
 			logger.error("ServerService Error : update Server" + e);
+			e.printStackTrace();
 			throw new ServiceException("Error database : " + e.getLocalizedMessage(), e);
 		}
 
@@ -273,7 +276,7 @@ public class ServerServiceImpl implements ServerService {
 			}
 			Application application = server.getApplication();
 
-			dockerService.removeServer(server.getName());
+			dockerService.removeServer(server.getName(), true);
 
 			// Remove server on cloudunit :
 			hipacheRedisUtils.removeServerAddress(application);
@@ -333,11 +336,8 @@ public class ServerServiceImpl implements ServerService {
 			// Call the hook for pre start
 			server.setStartDate(new Date());
 			applicationDAO.saveAndFlush(application);
-			server = update(server);
-			server = dockerService.startServer(server.getContainerID(), server);
-			hipacheRedisUtils.updateServerAddress(server.getApplication(), server.getContainerIP(),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+			server = this.update(server);
+			server = dockerService.startServer(server.getName(), server);
 
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 
@@ -399,7 +399,7 @@ public class ServerServiceImpl implements ServerService {
 		}
 	}
 
-	@Override
+	@CacheEvict(value = "env", allEntries = true)
 	@Transactional
 	public Server update(Server server, String jvmMemory, String options, String jvmRelease, boolean restorePreviousEnv)
 			throws ServiceException {
@@ -409,26 +409,22 @@ public class ServerServiceImpl implements ServerService {
 		String previousJvmOptions = server.getJvmOptions();
 		
 		options = options == null ? "" : options;
-		
 		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
 
 		try {
-			// If jvm memory or options changes...
-			/*
-			if (!jvmMemory.equalsIgnoreCase(server.getJvmMemory().toString())
-					|| !jvmOptions.equalsIgnoreCase(server.getJvmOptions())) {
-				Map<String, String> kvStore = new HashMap<String, String>() {
-					private static final long serialVersionUID = 1L;
-					{
-						put("MEMORY_VALUE", jvmMemory);
-						put("JVM_OPTIONS", jvmOptions);
-					}
-				};
-				dockerService.execCommand(server.getContainerID(),
-						RemoteExecAction..getCommand(kvStore));
-			}
-			*/
-			// If jvm release changes...
+			String currentJvmMemory = dockerService.getEnv(server.getContainerID(), "JAVA_OPTS");
+			currentJvmMemory = currentJvmMemory.replaceAll(previousJvmMemory, jvmMemory);
+			currentJvmMemory = currentJvmMemory.substring(currentJvmMemory.lastIndexOf("-Xms"));
+			currentJvmMemory = jvmOptions + " " + currentJvmMemory;
+			List<String> envs = Arrays.asList("JAVA_OPTS="+currentJvmMemory);
+
+			dockerService.stopServer(server.getName())	;
+			dockerService.removeServer(server.getName(), false);
+			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+										server.getApplication().getUser(), envs, false);
+			server = startServer(server);
+			addCredentialsForServerManagement(server, server.getApplication().getUser());
+
 			if (!jvmRelease.equalsIgnoreCase(server.getJvmRelease())) {
 				changeJavaVersion(server.getApplication(), jvmRelease);
 			}

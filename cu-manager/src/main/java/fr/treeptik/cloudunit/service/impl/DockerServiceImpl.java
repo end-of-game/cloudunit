@@ -4,11 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -69,15 +65,19 @@ public class DockerServiceImpl implements DockerService {
 	private DockerCloudUnitClient dockerCloudUnitClient;
 
 	@Override
-	public void createServer(String name, Server server, String imagePath, User user) throws DockerJSONException {
+	public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs, boolean createMainVolume) throws DockerJSONException {
 		String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
-		List<String> volumes = Arrays.asList("java");
+		List<String> volumesFrom = Arrays.asList("java");
+		List<String> volumes = new ArrayList<>();
 		if (sharedDir != null) {
-			sharedDir = sharedDir + ":/cloudunit/shared:rw";
-			volumes.add(sharedDir);
+			volumes.add(sharedDir + ":/opt/cloudunit/shared:rw");
 		}
-		dockerCloudUnitClient.createVolume(name, "cloudunit-runtime");
-		DockerContainer container = ContainerUtils.newCreateInstance(name, imagePath, volumes, null);
+		if (createMainVolume) {
+			dockerCloudUnitClient.createVolume(containerName, "runtime");
+		}
+		// always mount the associated volume
+		volumes.add(containerName+":/opt/cloudunit:rw");
+		DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null, volumes, envs);
 		dockerCloudUnitClient.createContainer(container);
 	}
 
@@ -103,10 +103,12 @@ public class DockerServiceImpl implements DockerService {
 	}
 
 	@Override
-	public void removeServer(String containerName) throws DockerJSONException {
+	public void removeServer(String containerName, boolean removeVolume) throws DockerJSONException {
 		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
 		dockerCloudUnitClient.removeContainer(container);
-		dockerCloudUnitClient.removeVolume(containerName);
+		if (removeVolume) {
+			dockerCloudUnitClient.removeVolume(containerName);
+		}
 	}
 
 	@Override

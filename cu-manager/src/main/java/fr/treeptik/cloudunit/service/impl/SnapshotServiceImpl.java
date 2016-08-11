@@ -16,7 +16,6 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;

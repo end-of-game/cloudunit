@@ -176,9 +176,6 @@ public class CheckUtils {
 			throw new CheckException("You are not allowed to set this jvm memory size : [" + jvmMemory + "]");
 		}
 
-		if (!listJvmReleaseAllowed.contains(jvmRelease)) {
-			throw new CheckException("You are not allowed to set this jvm release : [" + jvmRelease + "]");
-		}
 	}
 
 }

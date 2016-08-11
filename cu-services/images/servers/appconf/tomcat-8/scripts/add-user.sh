@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-export ENV_FILE="/opt/cloudunit/.profile"
-source $ENV_FILE
-
 CU_USER=$1
 CU_PASSWORD=$2
 

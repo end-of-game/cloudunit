@@ -269,11 +269,9 @@ public class DockerCloudUnitClient {
 			Volume volume = new Volume();
 			volume.setName(name);
 			Map<String, String> labels = new HashMap<String, String>() {
-
 				private static final long serialVersionUID = 1L;
-
 				{
-					put("type", label);
+					put("cloudunit.type", label);
 				}
 			};
 			volume.setLabels(labels);

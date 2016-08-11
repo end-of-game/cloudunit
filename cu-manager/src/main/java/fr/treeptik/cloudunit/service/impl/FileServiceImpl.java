@@ -290,8 +290,12 @@ public class FileServiceImpl implements FileService {
 					throw new ServiceException("Cannot create : " + createTempHomeDirPerUsage.getAbsolutePath());
 				}
 			} finally {
-				if (createTempHomeDirPerUsage != null)
-					createTempHomeDirPerUsage.delete();
+				if (createTempHomeDirPerUsage != null) {
+					boolean deleted = file.delete();
+					logger.debug(file.getAbsolutePath() + " is deleted ? " + deleted);
+					deleted = createTempHomeDirPerUsage.delete();
+					logger.debug(createTempHomeDirPerUsage.getAbsolutePath() + " is deleted ? " + deleted);
+				}
 			}
 			if (destination.contains("/opt/cloudunit")) {
 				dockerService.execCommand(containerId, RemoteExecAction.CHANGE_CU_RIGHTS.getCommand(), true);

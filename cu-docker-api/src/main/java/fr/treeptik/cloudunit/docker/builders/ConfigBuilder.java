@@ -35,6 +35,7 @@ public class ConfigBuilder {
     private Boolean tty;
     private String user;
     private Map<String, Map<String, String>> volumes;
+
     private String workingDir;
 
     private ConfigBuilder() {
