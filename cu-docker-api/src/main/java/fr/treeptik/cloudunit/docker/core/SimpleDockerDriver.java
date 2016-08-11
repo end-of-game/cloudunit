@@ -326,8 +326,7 @@ public class SimpleDockerDriver implements DockerDriver {
 		URI uri = null;
 		DockerResponse dockerResponse = null;
 		try {
-			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes")
-					.setParameter("name", volume.getName()).build();
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/" + volume.getName()).build();
 			dockerResponse = client.sendGet(uri);
 		} catch (URISyntaxException | JSONClientException e) {
 			StringBuilder contextError = new StringBuilder(256);
