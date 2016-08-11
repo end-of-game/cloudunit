@@ -1,7 +1,16 @@
 package fr.treeptik.cloudunit.docker.core;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.Image;
 import fr.treeptik.cloudunit.docker.model.Volume;
@@ -9,11 +18,6 @@ import fr.treeptik.cloudunit.dto.DockerResponse;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by guillaume on 21/10/15.
@@ -258,12 +262,21 @@ public class DockerCloudUnitClient {
 		return dockerResponse;
 	}
 
-	public DockerResponse createVolume(String name) throws DockerJSONException {
+	public DockerResponse createVolume(String name, String label) throws DockerJSONException {
 		DockerResponse dockerResponse = null;
 		try {
 			logger.info("The client attempts to create a volume...");
 			Volume volume = new Volume();
 			volume.setName(name);
+			Map<String, String> labels = new HashMap<String, String>() {
+
+				private static final long serialVersionUID = 1L;
+
+				{
+					put("type", label);
+				}
+			};
+			volume.setLabels(labels);
 			dockerResponse = driver.createVolume(volume);
 			handleDockerAPIError(dockerResponse);
 		} catch (FatalDockerJSONException e) {

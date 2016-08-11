@@ -4,13 +4,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import com.spotify.docker.client.messages.ContainerConfig;
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,7 @@ import com.spotify.docker.client.messages.ContainerInfo;
 
 import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -73,7 +76,7 @@ public class DockerServiceImpl implements DockerService {
 			sharedDir = sharedDir + ":/cloudunit/shared:rw";
 			volumes.add(sharedDir);
 		}
-		dockerCloudUnitClient.createVolume(name);
+		dockerCloudUnitClient.createVolume(name, "cloudunit-runtime");
 		DockerContainer container = ContainerUtils.newCreateInstance(name, imagePath, volumes, null);
 		dockerCloudUnitClient.createContainer(container);
 	}
