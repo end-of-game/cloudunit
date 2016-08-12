@@ -40,7 +40,7 @@
     </div>
   </div>
   <div class="clearfix">
-    <div class="card card--explorer col-lg-3 ">
+    <div class="card col-lg-3 ">
       <div class="content">
         <div class="subheader">
           <h3 class="subhead">{{explorer.myContainer.name}}</h3>
@@ -54,7 +54,7 @@
         </ul>
       </div>
     </div>
-    <div class="card card--explorer col-lg-9" ng-class="{pending: explorer.isUploading || explorer.isCreatingDirectory}">
+    <div class="card col-lg-9" ng-class="{pending: explorer.isUploading || explorer.isCreatingDirectory}">
       <div class="content">
         <div class="breadcrumb toolbar clearfix">
           <div class="pull-left">
@@ -148,17 +148,19 @@
                         data-toggle="modal"
                         data-target="#unzip-{{$index}}"
                         data-keyboard="true"><i class="icon-whhg import"></i></button>
+
                 <div class="modal"
-                     id="delete-{{$index}}"
-                     modaldismiss="">
+                    id="delete-{{$index}}"
+                    modaldismiss="">
                   <div class="modal-inner">
-                    <div class="content">
+                    <div class="content clearfix">
                       <h3 class="title">Removal confirmation required</h3>
 
-                      <p class="alert">Caution, <strong> this is a permanent action</strong>. It can cause malfunctions
-                        in your application.</p>
+                      <p class="alert">
+                        Caution, <strong> this is a permanent action</strong>.
+                      </p>
 
-                      <div class="action">
+                      <div class="actions pull-right">
                         <button type="button" class="button secondary" data-dismiss="modal">Cancel
                         </button>
                         <button type="button" class="delete-btn button primary"
@@ -170,17 +172,19 @@
                     </div>
                   </div>
                 </div>
+
                 <div class="modal"
                      id="unzip-{{$index}}"
                      modaldismiss="">
                   <div class="modal-inner">
-                    <div class="content">
+                    <div class="content clearfix">
                       <h3 class="title">Unzip confirmation required</h3>
 
-                      <p class="alert">Caution, <strong> this is a permanent action</strong>. It can cause malfunctions
-                        in your application.</p>
+                      <p class="alert">
+                        Caution, <strong> this is a permanent action</strong>.
+                      </p>
 
-                      <div class="action">
+                      <div class="actions pull-right">
                         <button type="button" class="button secondary" data-dismiss="modal">Cancel
                         </button>
                         <button type="button" class="button primary"
