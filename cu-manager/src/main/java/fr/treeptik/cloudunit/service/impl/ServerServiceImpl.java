@@ -412,11 +412,16 @@ public class ServerServiceImpl implements ServerService {
 		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
 
 		try {
+			List<String> envs = new ArrayList<>();
+
 			String currentJvmMemory = dockerService.getEnv(server.getContainerID(), "JAVA_OPTS");
 			currentJvmMemory = currentJvmMemory.replaceAll(previousJvmMemory, jvmMemory);
 			currentJvmMemory = currentJvmMemory.substring(currentJvmMemory.lastIndexOf("-Xms"));
 			currentJvmMemory = jvmOptions + " " + currentJvmMemory;
-			List<String> envs = Arrays.asList("JAVA_OPTS="+currentJvmMemory);
+			envs.add("JAVA_OPTS="+currentJvmMemory);
+
+			// Add the jmv env variable to set the jvm release
+			envs.add("JAVA_HOME=/opt/cloudunit/java/"+jvmRelease);
 
 			dockerService.stopServer(server.getName())	;
 			dockerService.removeServer(server.getName(), false);
@@ -424,10 +429,6 @@ public class ServerServiceImpl implements ServerService {
 										server.getApplication().getUser(), envs, false);
 			server = startServer(server);
 			addCredentialsForServerManagement(server, server.getApplication().getUser());
-
-			if (!jvmRelease.equalsIgnoreCase(server.getJvmRelease())) {
-				changeJavaVersion(server.getApplication(), jvmRelease);
-			}
 
 			server.setJvmMemory(Long.valueOf(jvmMemory));
 			server.setJvmOptions(jvmOptions);

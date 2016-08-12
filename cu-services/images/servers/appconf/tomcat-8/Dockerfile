@@ -37,7 +37,7 @@ ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
 ENV CU_DEFAULT_LOG_FILE catalina.out
 ENV CU_LOGS $CATALINA_HOME/logs
-ENV CU_DEFAULT_JAVA_RELEASE "/opt/cloudunit/java/jdk1.8.0_25"
+ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
 ENV JAVA_HOME $CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
 ENV TOMCAT_MAJOR 8
@@ -51,7 +51,8 @@ RUN cd $HOME \
     && wget $TOMCAT_TGZ_URL \
     && tar xvf apache-tomcat-$TOMCAT_VERSION.tar.gz  \
     && mv $HOME/apache-tomcat-$TOMCAT_VERSION/* $CATALINA_HOME/ \
-    && rm apache-tomcat-$TOMCAT_VERSION.tar.gz
+    && rm apache-tomcat-$TOMCAT_VERSION.tar.gz \
+    && rm -rf $CU_SOFTWARE/webapps/ROOT $CU_SOFTWARE/webapps/examples $CU_SOFTWARE/webapps/docs
 
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
 
