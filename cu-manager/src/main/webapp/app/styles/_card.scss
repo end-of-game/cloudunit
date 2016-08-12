@@ -127,6 +127,11 @@
   }
 }
 
+.volume-card.card .content,
+.environment-card.card .content {
+  min-height: 165px;
+}
+
 .card.overview {
   .content {
     overflow: auto;
@@ -217,4 +222,42 @@
   .subhead, .headline {
     color: $brand-warning;
   }
+}
+
+.list {
+  @include make-xs-column(12, 1rem);
+  @include make-lg-column(9, 1rem);
+  float: right !important;
+  border-radius: 2px;
+  padding: 10px 16px;
+  margin: 0px;
+  .content {
+    border-radius: 2px;
+    padding: 16px;
+    background-color: #fff;
+    position: relative;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    width: 100%;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    .features {
+      p {
+        float: left;
+        padding-right: 10px; 
+      }
+    }
+    .action .secondary-action {
+        float: right;
+      }
+    }
+    .spinner {
+      margin: auto;
+      width: 50px;
+      position: absolute;
+      left: 0;
+      right: 0;
+    }
 }

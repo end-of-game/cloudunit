@@ -44,9 +44,6 @@
     };
   }
 
-
-
-
   function DashboardCtrl($rootScope, $scope, $interval, ApplicationService, ErrorService) {
     var timer, vm = this;
     vm.applications = [];
@@ -57,6 +54,7 @@
     vm.deleteApplication = deleteApplication;
     vm.toggleServer = toggleServer;
     vm.buffer = '';
+    vm.selectedDisplayStyle = 'Grid';
 
     update();
 

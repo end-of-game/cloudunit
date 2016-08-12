@@ -111,8 +111,11 @@ input {
   }
 }
 
-.input-group-inline input{
-  min-width: 100%
+.input-group-inline {
+  padding-left: 0px;
+  input{
+    min-width: 100%;
+  }
 }
 
 .readonly {
@@ -159,7 +162,10 @@ input.input-effect {
   border:none;
   border-bottom:1px solid #757575;
 }
-input.input-effect:focus 		{ outline:none; }
+
+input.input-effect:focus { 
+  outline:none; 
+}
 
 label.label-effect {
   color:#999; 
@@ -174,13 +180,15 @@ label.label-effect {
   -webkit-transition:0.2s ease all;
 }
 
-input.input-effect:focus ~ label, input.input-effect:valid ~ label 		{
+input.input-effect:focus ~ label,
+input.input-effect:valid ~ label {
   top:-20px;
   font-size:14px;
   color:$color-primary;
 }
 
-input.input-effect:focus ~ .bar:before, input.input-effect:focus ~ .bar:after {
+input.input-effect:focus ~ .bar:before,
+input.input-effect:focus ~ .bar:after {
   width:50%;
 }
 
