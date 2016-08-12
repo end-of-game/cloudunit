@@ -28,22 +28,24 @@ RUN chmod +x /opt/cloudunit/scripts/*
 RUN mkdir -p /opt/cloudunit/tomcat &&  \
     mkdir -p /opt/cloudunit/tomcat/logs
 
-#set server environment variables (mandatory)
-
 ENV CATALINA_HOME /opt/cloudunit/tomcat
+ENV TOMCAT_MAJOR 7
+ENV TOMCAT_VERSION 7.0.70
+ENV TOMCAT_TGZ_URL https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
+ENV PATH $CATALINA_HOME/bin:$PATH
+
+## CLOUDUNIT :: BEGINNING
 ENV CU_SOFTWARE $CATALINA_HOME
 ENV CU_SERVER_MANAGER_PATH /manager/html?
 ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
+ENV CU_SERVER_RESTART_POST_CREDENTIALS true
 ENV CU_DEFAULT_LOG_FILE catalina.log
 ENV CU_LOGS $CATALINA_HOME/logs
 ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
 ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
-ENV TOMCAT_MAJOR 7
-ENV TOMCAT_VERSION 7.0.70
-ENV TOMCAT_TGZ_URL https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
-ENV PATH $CATALINA_HOME/bin:$PATH
+## CLOUDUNIT :: END
 
 RUN mkdir -p $CATALINA_HOME
 
@@ -55,7 +57,7 @@ RUN cd $HOME \
     && rm -rf $CU_SOFTWARE/webapps/ROOT $CU_SOFTWARE/webapps/examples $CU_SOFTWARE/webapps/docs
 
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
-#COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
+COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
