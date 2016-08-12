@@ -1,5 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-CU_USER=$1
+set -x
 
-su -l $CU_USER -c env
+env
+
+set +x
