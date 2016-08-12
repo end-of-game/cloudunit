@@ -118,7 +118,7 @@
       LogService.getSources ( $stateParams.name, vm.myContainer.id )
         .then ( function onGetSourceComplete ( sources ) {
           angular.forEach ( sources, function ( source ) {
-            if ( source.name === 'catalina.out'
+            if ( source.name === 'catalina.log' 
                   || source.name === 'server.log'
                   || source.name === 'error.log'
                   || source.name === 'access.log'

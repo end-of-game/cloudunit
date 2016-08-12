@@ -8,6 +8,12 @@ ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
 ENV PGDATA /var/lib/postgresql/data
 ENV LANG en_US.utf8
 
+ENV CU_SERVER_MANAGER_NAME phppgadmin
+ENV CU_SERVER_MANAGER_PORT 80
+ENV CU_SERVER_PORT 5432
+ENV CU_DEFAULT_LOG_FILE TBD
+ENV CU_LOGS /var/log/postgre
+
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 
 # grab gosu for easy step-down from root
@@ -35,10 +41,13 @@ RUN apt-get update
 
 RUN apt-get -y -q install python-software-properties software-properties-common
 RUN apt-get -y -q install postgresql-common \
-                          postgresql-$PG_MAJOR=$PG_VERSION \
-                          postgresql-contrib-$PG_MAJOR=$PG_VERSION \
+                          postgresql-$PG_MAJOR \
+                          postgresql-contrib-$PG_MAJOR \
+                          #postgresql-$PG_MAJOR=$PG_VERSION \
+                          #postgresql-contrib-$PG_MAJOR=$PG_VERSION \
                           phppgadmin \
                   && rm -rf /var/lib/apt/lists/*
+
 
 ## On écoute sur toutes les IP. La sécurité est faite avant.
 RUN echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
@@ -58,8 +67,14 @@ RUN chmod +x /cloudunit/scripts/*
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql
 
+RUN groupadd -r cloudunit --gid=998 && useradd -r -g cloudunit --uid=998 cloudunit
+RUN chown -R cloudunit:cloudunit /opt/cloudunit
+## Add user cloudunit to postgre group
+RUN usermod -G postgres cloudunit
+
+USER postgre
+
 VOLUME /var/lib/postgresql/data
 
-EXPOSE 22
-
 ENTRYPOINT ["/bin/bash", "/cloudunit/scripts/start-service.sh"]
+

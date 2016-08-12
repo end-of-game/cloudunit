@@ -4,6 +4,7 @@ WAITFOR=20
 count=0
 RETURN=1
 
+/usr/sbin/apachectl start
 service postgresql start
 
 until [ "$RETURN" -eq "0" ] || [ $count -gt $WAITFOR ]
@@ -15,6 +16,12 @@ do
 	let count=$count+1;
 done
 
-echo "PostgreSQL is started"
+if [ $count -gt 30 ]; then
+    echo "PostgreSQL is started"
+else
+    echo "PostgreSQL is not started"
+fi
+
+
 
 

@@ -176,6 +176,11 @@ public class ServerServiceImpl implements ServerService {
 			server = this.update(server);
 
 			addCredentialsForServerManagement(server, user);
+			String needToRestart = dockerService.getEnv(server.getContainerID(), "CU_SERVER_RESTART_POST_CREDENTIALS");
+			if ("true".equalsIgnoreCase(needToRestart)) {
+				dockerService.stopServer(server.getName());
+				dockerService.startServer(server.getName(), server);
+			}
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 
 		} catch (PersistenceException e) {
@@ -354,6 +359,7 @@ public class ServerServiceImpl implements ServerService {
 	@Transactional
 	public Server stopServer(Server server) throws ServiceException {
 		try {
+			dockerService.execCommand(server.getContainerID(), RemoteExecAction.CLEAN_LOGS.getCommand());
 			dockerService.stopServer(server.getName());
 			applicationEventPublisher.publishEvent(new ServerStopEvent(server));
 		} catch (PersistenceException e) {

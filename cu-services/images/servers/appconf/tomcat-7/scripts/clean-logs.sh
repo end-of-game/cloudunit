@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-env
+rm -rf $CU_LOGS/*
+

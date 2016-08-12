@@ -18,13 +18,6 @@ RUN mkdir -p /opt/cloudunit/backup &&  \
     mkdir -p /opt/cloudunit/scripts && \
     mkdir -p /opt/cloudunit/tmp
 
-RUN echo "CU_BACKUP=$CU_BACKUP" >> /etc/environment && \
-    echo "CU_HOOKS=$CU_HOOKS" >> /etc/environment && \
-    echo "CU_JAVA=$CU_JAVA" >> /etc/environment && \
-    echo "CU_SCRIPTS=$CU_SCRIPTS" >> /etc/environment && \
-    echo "CU_SHARED=$CU_SHARED" >> /etc/environment && \
-    echo "CU_TMP=$CU_TMP" >> /etc/environment
-
 WORKDIR /opt/cloudunit
 
 # Environment variables

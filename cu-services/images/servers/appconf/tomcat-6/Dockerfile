@@ -1,10 +1,5 @@
 FROM cloudunit/base-14.04
 
-ENV JAVA_HOME /cloudunit/java/jdk1.8.0_25
-ENV CATALINA_HOME /cloudunit/appconf/tomcat
-ENV PATH $CATALINA_HOME/bin:$PATH
-RUN mkdir -p $CATALINA_HOME
-
 RUN set -ex \
 	&& for key in \
 		05AB33110949707C93A279E3D3EFE6B686867BA6 \
@@ -25,27 +20,50 @@ RUN set -ex \
 		gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	done
 
+# add custom scripts
+ADD scripts /opt/cloudunit/scripts
+RUN chmod +x /opt/cloudunit/scripts/*
+
+# Create directory for CloudUnit
+RUN mkdir -p /opt/cloudunit/tomcat &&  \
+    mkdir -p /opt/cloudunit/tomcat/logs
+
+#set server environment variables (mandatory)
+
+ENV CATALINA_HOME /opt/cloudunit/tomcat
+ENV CU_SOFTWARE $CATALINA_HOME
+ENV CU_SERVER_MANAGER_PATH /manager/html?
+ENV CU_SERVER_MANAGER_PORT 8080
+ENV CU_SERVER_PORT 8080
+ENV CU_DEFAULT_LOG_FILE catalina.log
+ENV CU_LOGS $CATALINA_HOME/logs
+ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
+ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
+ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
 ENV TOMCAT_MAJOR 6
 ENV TOMCAT_VERSION 6.0.45
 ENV TOMCAT_TGZ_URL https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
+ENV PATH $CATALINA_HOME/bin:$PATH
 
+RUN mkdir -p $CATALINA_HOME
 
 RUN cd $HOME \
     && wget $TOMCAT_TGZ_URL \
     && tar xvf apache-tomcat-$TOMCAT_VERSION.tar.gz  \
     && mv $HOME/apache-tomcat-$TOMCAT_VERSION/* $CATALINA_HOME/ \
-    && rm apache-tomcat-$TOMCAT_VERSION.tar.gz
+    && rm apache-tomcat-$TOMCAT_VERSION.tar.gz \
+    && rm -rf $CU_SOFTWARE/webapps/ROOT $CU_SOFTWARE/webapps/examples $CU_SOFTWARE/webapps/docs
 
-# add custom scripts
-ADD scripts /cloudunit/scripts
-RUN chmod +x /cloudunit/scripts/*
+COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
+#COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
 
-RUN mkdir -p /cloudunit/appconf/logs/
-RUN ln -s /cloudunit/appconf/tomcat/logs/catalina.out /cloudunit/appconf/logs
+RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
+RUN chown -R cloudunit:cloudunit /opt/cloudunit
+USER cloudunit
 
-VOLUME /cloudunit/appconf/logs
+VOLUME /opt/cloudunit
 
-EXPOSE 22
-EXPOSE 8080
+CMD ["catalina.sh", "run"]
 
-ENTRYPOINT ["/cloudunit/scripts/start-service.sh"]
+
+

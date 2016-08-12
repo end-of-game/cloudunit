@@ -7,6 +7,7 @@ import java.util.Map;
  */
 public enum RemoteExecAction {
 
+    CLEAN_LOGS("Add user for admin console", "/opt/cloudunit/scripts/clean-logs.sh"),
     ADD_USER("Add user for admin console", "/opt/cloudunit/scripts/add-user.sh CU_USER CU_PASSWORD"),
     CHANGE_CU_RIGHTS("Change rights for user CloudUnit", "chown -R cloudunit:cloudunit /opt/cloudunit"),
     CHECK_RUNNING("Check running", "/opt/cloudunit/scripts/check-running.sh"),
