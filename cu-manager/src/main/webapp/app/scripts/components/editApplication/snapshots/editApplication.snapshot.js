@@ -39,7 +39,7 @@
     vm.message = "";
     vm.newSnapshot = {
       name: '',
-      description: 'Enter a comment',
+      description: '',
       tags: []
     };
 

@@ -132,7 +132,7 @@
                   ng-class="item.safe ? 'safe' : 'unsafe'"
                   >{{item.name}} <span ng-show="item.safe">&midast;</span>
                 </a>
-                <button class="action icon-button"
+                <button class="action icon-button danger"
                         ng-if="item.removable"
                         data-toggle="modal"
                         data-target="#delete-{{$index}}"
