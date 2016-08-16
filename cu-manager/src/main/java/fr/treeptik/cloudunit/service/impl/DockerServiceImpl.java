@@ -155,7 +155,6 @@ public class DockerServiceImpl implements DockerService {
 			logger.warn("[" + containerName + "] exec command in privileged mode : " + command);
 			output = execCommand(containerName, command, true);
 		}
-		System.out.println(output);
 		return output;
 	}
 

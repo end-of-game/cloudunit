@@ -10,8 +10,8 @@ FILE=$CU_TM/$WAR_NAME
 
 # Move the app in deployment
 if [[ $WAR_NAME == *.war ]]; then
-	mv $WAR_PATH/$WAR_NAME $WAR_PATH/ROOT.war
-	FILE=$WAR_PATH/ROOT.war
+	mv $CU_TMP/$WAR_NAME $CU_TMP/ROOT.war
+	FILE=$CU_TMP/ROOT.war
 fi
 
 $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="deploy $FILE"
