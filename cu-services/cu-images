@@ -3,11 +3,11 @@ cloudunit/base-12.04 images/base-12.04
 cloudunit/base-14.04 images/base-14.04
 cloudunit/base-16.04 images/base-16.04
 cloudunit/java images/tools/java
-cloudunit/tomcat-6 images/servers/appconf/tomcat-6
-cloudunit/tomcat-7 images/servers/appconf/tomcat-7
-cloudunit/tomcat-8 images/servers/appconf/tomcat-8
-cloudunit/fatjar images/servers/appconf/fatjar
-cloudunit/apache-2-2 images/servers/appconf/apache-2-2
+cloudunit/tomcat-6 images/servers/tomcat-6
+cloudunit/tomcat-7 images/servers/tomcat-7
+cloudunit/tomcat-8 images/servers/tomcat-8
+cloudunit/fatjar images/servers/fatjar
+cloudunit/apache-2-2 images/servers/apache-2-2
 cloudunit/postgresql-9-3 images/modules/postgresql-9-3
 cloudunit/postgresql-9-4 images/modules/postgresql-9-4
 cloudunit/postgresql-9-5 images/modules/postgresql-9-4
@@ -18,6 +18,6 @@ cloudunit/mysql-5-7 images/modules/mysql-5-7
 cloudunit/mongo-2-6 images/modules/mongo-2-6
 cloudunit/redis-2-8 images/modules/redis-2-8
 cloudunit/redis-3-0 images/modules/redis-3-0
-cloudunit/wildfly-8 images/servers/appconf/wildfly-8
-cloudunit/wildfly-9 images/servers/appconf/wildfly-9
-cloudunit/wildfly-10 images/servers/appconf/wildfly-10
+cloudunit/wildfly-8 images/servers/wildfly-8
+cloudunit/wildfly-9 images/servers/wildfly-9
+cloudunit/wildfly-10 images/servers/wildfly-10
