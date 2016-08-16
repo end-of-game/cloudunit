@@ -1,3 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+set -x
 
 env
+
+set +x
