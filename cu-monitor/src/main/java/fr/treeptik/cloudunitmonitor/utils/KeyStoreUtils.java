@@ -59,6 +59,7 @@ public class KeyStoreUtils {
 		return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
 	}
 
+	@SuppressWarnings("resource")
 	private static PEMKeyPair loadPEM(String keyPath) throws IOException {
 		PEMParser parser = new PEMParser(new BufferedReader(new FileReader(keyPath)));
 		return (PEMKeyPair) parser.readObject();

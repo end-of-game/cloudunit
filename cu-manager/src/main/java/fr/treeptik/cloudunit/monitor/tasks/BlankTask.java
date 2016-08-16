@@ -15,12 +15,10 @@
 
 package fr.treeptik.cloudunit.monitor.tasks;
 
-import fr.treeptik.cloudunit.monitor.Task;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import fr.treeptik.cloudunit.monitor.Task;
 
 /**
  * Created by nicolas on 27/11/2015.
@@ -28,26 +26,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class BlankTask implements Task {
 
-    private final static Logger logger = LoggerFactory.getLogger(BlankTask.class);
+	@Override
+	public void run() {
+		isRunning(true);
+	}
 
-    @Override
-    public void run() {
-        isRunning(true);
-    }
+	// Two minutes
+	@Scheduled(fixedDelay = 120000)
+	private void monitor() {
+		isRunning(false);
+	}
 
-    // Two minutes
-    @Scheduled(fixedDelay = 120000)
-    private void monitor() {
-        isRunning(false);
-    }
-
-    /**
-     * To evaluate if service is runnning or not
-     * If needed, we stop the jvm or send an email
-     *
-     * @param exit
-     */
-    private void isRunning(boolean exit) {
-    }
+	/**
+	 * To evaluate if service is runnning or not If needed, we stop the jvm or
+	 * send an email
+	 *
+	 * @param exit
+	 */
+	private void isRunning(boolean exit) {
+	}
 
 }

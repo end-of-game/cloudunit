@@ -6,52 +6,58 @@ import java.io.Serializable;
 @Entity
 public class Volume implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+	private static final long serialVersionUID = 1L;
 
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-    private String path;
+	private String name;
 
-    @ManyToOne
-    private Application application;
+	private String path;
 
-    private String containerId;
+	@ManyToOne
+	private Application application;
 
-    public Integer getId() {
-        return id;
-    }
+	private String containerId;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getPath() {
-        return path;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+	public String getPath() {
+		return path;
+	}
 
-    public Application getApplication() {
-        return application;
-    }
+	public void setPath(String path) {
+		this.path = path;
+	}
 
-    public void setApplication(Application application) {
-        this.application = application;
-    }
+	public Application getApplication() {
+		return application;
+	}
 
-    public String getContainerId() { return containerId; }
+	public void setApplication(Application application) {
+		this.application = application;
+	}
 
-    public void setContainerId(String containerId) { this.containerId = containerId; }
+	public String getContainerId() {
+		return containerId;
+	}
+
+	public void setContainerId(String containerId) {
+		this.containerId = containerId;
+	}
 }
