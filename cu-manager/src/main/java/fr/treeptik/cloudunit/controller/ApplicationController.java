@@ -24,8 +24,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
-import fr.treeptik.cloudunit.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -46,11 +44,17 @@ import fr.treeptik.cloudunit.dto.JsonInput;
 import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.factory.EnvUnitFactory;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.FileService;
+import fr.treeptik.cloudunit.service.GitlabService;
+import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 

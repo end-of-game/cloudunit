@@ -65,7 +65,8 @@ public class DockerServiceImpl implements DockerService {
 	private DockerCloudUnitClient dockerCloudUnitClient;
 
 	@Override
-	public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs, boolean createMainVolume) throws DockerJSONException {
+	public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
+			boolean createMainVolume) throws DockerJSONException {
 		String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
 		List<String> volumesFrom = Arrays.asList("java");
 		List<String> volumes = new ArrayList<>();
@@ -76,8 +77,9 @@ public class DockerServiceImpl implements DockerService {
 			dockerCloudUnitClient.createVolume(containerName, "runtime");
 		}
 		// always mount the associated volume
-		volumes.add(containerName+":/opt/cloudunit:rw");
-		DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null, volumes, envs);
+		volumes.add(containerName + ":/opt/cloudunit:rw");
+		DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null,
+				volumes, envs);
 		dockerCloudUnitClient.createContainer(container);
 	}
 
@@ -153,6 +155,7 @@ public class DockerServiceImpl implements DockerService {
 			logger.warn("[" + containerName + "] exec command in privileged mode : " + command);
 			output = execCommand(containerName, command, true);
 		}
+		System.out.println(output);
 		return output;
 	}
 

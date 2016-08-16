@@ -40,5 +40,5 @@ USER cloudunit
 
 VOLUME /opt/cloudunit/
 
-CMD ["/opt/cloudunit/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]
+CMD ["/opt/cloudunit/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
 
