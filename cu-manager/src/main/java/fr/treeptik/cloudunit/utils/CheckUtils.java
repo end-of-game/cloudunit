@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import org.springframework.context.MessageSource;
 
-import fr.treeptik.cloudunit.enums.JavaRelease;
 import fr.treeptik.cloudunit.enums.JvmMemory;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.model.Application;
@@ -34,9 +33,6 @@ public class CheckUtils {
 	private static final List<String> listJvmMemoriesAllowed = Arrays.asList(JvmMemory.SIZE_512.getSize(),
 			JvmMemory.SIZE_1024.getSize(), JvmMemory.SIZE_2048.getSize(), JvmMemory.SIZE_3072.getSize(),
 			JvmMemory.SIZE_4096.getSize());
-
-	private static final List<String> listJvmReleaseAllowed = Arrays.asList(JavaRelease.Java7.getVersion(),
-			JavaRelease.Java8.getVersion());
 
 	private static MessageSource messageSource = (MessageSource) StaticSpringApplicationContext
 			.getBean("messageSource");

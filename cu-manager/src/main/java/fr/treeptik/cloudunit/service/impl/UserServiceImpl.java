@@ -80,7 +80,7 @@ public class UserServiceImpl
     @Transactional
     public User create(User user)
             throws ServiceException, CheckException {
-        Map<String, Object> mapConfigMail = new HashMap<>();
+		// Map<String, Object> mapConfigMail = new HashMap<>();
 
         try {
             // VALIDATION

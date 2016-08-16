@@ -8,8 +8,10 @@ import org.springframework.context.ApplicationEvent;
  */
 public class ApplicationStopEvent extends ApplicationEvent {
 
-    public ApplicationStopEvent(Application source) {
-        super(source);
-    }
+	private static final long serialVersionUID = 1L;
+
+	public ApplicationStopEvent(Application source) {
+		super(source);
+	}
 
 }

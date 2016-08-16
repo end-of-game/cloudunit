@@ -45,9 +45,9 @@ public class HookServiceImpl implements HookService {
 	public void initDockerEndPointMode() {
 		if ("http".equalsIgnoreCase(dockerEndpointMode)) {
 			logger.warn("Docker TLS mode is disabled");
-			isHttpMode = true;
+			setHttpMode(true);
 		} else {
-			isHttpMode = false;
+			setHttpMode(false);
 		}
 	}
 
@@ -73,6 +73,14 @@ public class HookServiceImpl implements HookService {
 		 * //logger.error(action.toString(), e); } finally { if (output != null)
 		 * { output.close(); } if (docker != null) { docker.close(); } }
 		 */
+	}
+
+	public boolean isHttpMode() {
+		return isHttpMode;
+	}
+
+	public void setHttpMode(boolean isHttpMode) {
+		this.isHttpMode = isHttpMode;
 	}
 
 }

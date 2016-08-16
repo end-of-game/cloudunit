@@ -8,8 +8,10 @@ import org.springframework.context.ApplicationEvent;
  */
 public class ApplicationFailEvent extends ApplicationEvent {
 
-    public ApplicationFailEvent(Application source) {
-        super(source);
-    }
+	private static final long serialVersionUID = 1L;
+
+	public ApplicationFailEvent(Application source) {
+		super(source);
+	}
 
 }

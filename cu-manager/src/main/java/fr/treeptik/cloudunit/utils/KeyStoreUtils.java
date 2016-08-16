@@ -31,43 +31,42 @@ import java.util.Collection;
 
 public class KeyStoreUtils {
 
-    public static KeyStore createDockerKeyStore(String certPath) throws IOException, GeneralSecurityException{
+	public static KeyStore createDockerKeyStore(String certPath) throws IOException, GeneralSecurityException {
 
-        File file = new File(certPath + "/key.pem");
+		PrivateKey privKey = loadPrivateKey(certPath + "/key.pem");
+		Certificate[] certs = loadCertificates(certPath + "/cert.pem");
 
-        PrivateKey privKey = loadPrivateKey(certPath + "/key.pem");
-        Certificate[] certs = loadCertificates(certPath + "/cert.pem");
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		keyStore.load(null);
 
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(null);
+		keyStore.setKeyEntry("docker", privKey, "docker".toCharArray(), certs);
+		addCA(keyStore, certPath + "/ca.pem");
+		return keyStore;
+	}
 
-        keyStore.setKeyEntry("docker", privKey, "docker".toCharArray(), certs);
-        addCA(keyStore, certPath + "/ca.pem");
-        return keyStore;
-    }
+	public static PrivateKey loadPrivateKey(String keyPath) throws IOException, GeneralSecurityException {
+		PEMKeyPair keyPair = loadPEM(keyPath);
+		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyPair.getPrivateKeyInfo().getEncoded());
+		return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+	}
 
-    public static PrivateKey loadPrivateKey(String keyPath) throws IOException, GeneralSecurityException {
-        PEMKeyPair keyPair = loadPEM(keyPath);
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyPair.getPrivateKeyInfo().getEncoded());
-        return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
-    }
+	private static <T> T loadPEM(String keyPath) throws IOException {
+		PEMParser parser = new PEMParser(new BufferedReader(new FileReader(keyPath)));
+		return (T) parser.readObject();
+	}
 
-    private static <T> T loadPEM(String keyPath) throws IOException {
-        PEMParser parser = new PEMParser(new BufferedReader(new FileReader(keyPath)));
-        return (T) parser.readObject();
-    }
+	private static void addCA(KeyStore keyStore, String caPath)
+			throws KeyStoreException, FileNotFoundException, CertificateException {
+		for (Certificate cert : loadCertificates(caPath)) {
+			X509Certificate crt = (X509Certificate) cert;
+			String alias = crt.getSubjectX500Principal().getName();
+			keyStore.setCertificateEntry(alias, crt);
+		}
+	}
 
-    private static void addCA(KeyStore keyStore, String caPath) throws KeyStoreException, FileNotFoundException, CertificateException {
-        for (Certificate cert : loadCertificates(caPath)) {
-            X509Certificate crt = (X509Certificate) cert;
-            String alias = crt.getSubjectX500Principal().getName();
-            keyStore.setCertificateEntry(alias, crt);
-        }
-    }
-
-    private static Certificate[] loadCertificates(String certPath) throws FileNotFoundException, CertificateException {
-        InputStream is = new FileInputStream(certPath);
-        Collection<? extends Certificate> certs = CertificateFactory.getInstance("X509").generateCertificates(is);
-        return new ArrayList<>(certs).toArray(new Certificate[certs.size()]);
-    }
+	private static Certificate[] loadCertificates(String certPath) throws FileNotFoundException, CertificateException {
+		InputStream is = new FileInputStream(certPath);
+		Collection<? extends Certificate> certs = CertificateFactory.getInstance("X509").generateCertificates(is);
+		return new ArrayList<>(certs).toArray(new Certificate[certs.size()]);
+	}
 }

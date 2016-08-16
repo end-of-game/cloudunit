@@ -52,7 +52,6 @@ import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
-import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.service.GitlabService;
 import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
@@ -84,9 +83,6 @@ public class ApplicationController implements Serializable {
 
 	@Inject
 	private DockerService dockerService;
-
-	@Inject
-	private FileService fileService;
 
 	/**
 	 * To verify if an application exists or not.

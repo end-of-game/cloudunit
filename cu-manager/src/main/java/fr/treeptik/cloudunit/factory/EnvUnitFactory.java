@@ -1,13 +1,11 @@
 package fr.treeptik.cloudunit.factory;
 
-import fr.treeptik.cloudunit.dto.EnvUnit;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Comparator.comparing;
+import fr.treeptik.cloudunit.dto.EnvUnit;
 
 /**
  * Created by nicolas on 07/06/2016.

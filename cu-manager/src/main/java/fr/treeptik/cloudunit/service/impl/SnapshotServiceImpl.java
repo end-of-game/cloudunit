@@ -101,9 +101,9 @@ public class SnapshotServiceImpl implements SnapshotService {
 	public void initDockerEndPointMode() {
 		if ("http".equalsIgnoreCase(dockerEndpointMode)) {
 			logger.warn("Docker TLS mode is disabled");
-			isHttpMode = true;
+			setHttpMode(true);
 		} else {
-			isHttpMode = false;
+			setHttpMode(false);
 		}
 	}
 
@@ -118,7 +118,6 @@ public class SnapshotServiceImpl implements SnapshotService {
 			throws ServiceException, CheckException {
 
 		Snapshot snapshot = new Snapshot();
-		ObjectMapper objectMapper = new ObjectMapper();
 
 		Application application = applicationService.findByNameAndUser(user, applicationName);
 
@@ -169,9 +168,9 @@ public class SnapshotServiceImpl implements SnapshotService {
 			// snapshot = server.getServerAction().cloneProperties(snapshot);
 
 			for (Module module : application.getModules()) {
-					ModuleConfiguration moduleConfiguration = moduleConfigurationDAO
-							.saveAndFlush(module.getModuleAction().cloneProperties());
-					config.put(moduleConfiguration.getPath(), moduleConfiguration);
+				ModuleConfiguration moduleConfiguration = moduleConfigurationDAO
+						.saveAndFlush(module.getModuleAction().cloneProperties());
+				config.put(moduleConfiguration.getPath(), moduleConfiguration);
 			}
 
 			snapshot.setAppConfig(config);
@@ -208,7 +207,6 @@ public class SnapshotServiceImpl implements SnapshotService {
 			tag = tag.toLowerCase();
 		}
 		try {
-			ObjectMapper objectMapper = new ObjectMapper();
 
 			snapshot = snapshotDAO.findByTag(tag);
 
@@ -268,7 +266,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 
 			Server server = application.getServer();
 			serverService.update(server, snapshot.getJvmMemory().toString(), snapshot.getJvmOptions(),
-						snapshot.getJvmRelease(), false);
+					snapshot.getJvmRelease(), false);
 
 			restoreModules(snapshot, application, tag);
 
@@ -394,5 +392,13 @@ public class SnapshotServiceImpl implements SnapshotService {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean isHttpMode() {
+		return isHttpMode;
+	}
+
+	public void setHttpMode(boolean isHttpMode) {
+		this.isHttpMode = isHttpMode;
 	}
 }

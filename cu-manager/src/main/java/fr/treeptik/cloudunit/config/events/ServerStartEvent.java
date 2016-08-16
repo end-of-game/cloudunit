@@ -7,9 +7,11 @@ import org.springframework.context.ApplicationEvent;
  * Created by nicolas on 03/08/2016.
  */
 public class ServerStartEvent extends ApplicationEvent {
-    
-    public ServerStartEvent(Server source) {
-        super(source);
-    }
+
+	private static final long serialVersionUID = 1L;
+
+	public ServerStartEvent(Server source) {
+		super(source);
+	}
 
 }

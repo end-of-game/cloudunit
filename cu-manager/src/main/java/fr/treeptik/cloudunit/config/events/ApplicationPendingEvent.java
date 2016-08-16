@@ -8,8 +8,10 @@ import org.springframework.context.ApplicationEvent;
  */
 public class ApplicationPendingEvent extends ApplicationEvent {
 
-    public ApplicationPendingEvent(Application source) {
-        super(source);
-    }
+	private static final long serialVersionUID = 1L;
+
+	public ApplicationPendingEvent(Application source) {
+		super(source);
+	}
 
 }

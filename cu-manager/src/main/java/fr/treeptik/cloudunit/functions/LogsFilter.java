@@ -1,11 +1,10 @@
 package fr.treeptik.cloudunit.functions;
 
-import fr.treeptik.cloudunit.dto.LogLine;
-
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+
+import fr.treeptik.cloudunit.dto.LogLine;
 
 /**
  * Created by nicolas on 18/01/2016.

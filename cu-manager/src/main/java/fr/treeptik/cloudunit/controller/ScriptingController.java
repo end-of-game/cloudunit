@@ -49,186 +49,181 @@ import java.util.Locale;
  */
 @Controller
 @RequestMapping("/scripting")
-public class ScriptingController
-        implements Serializable {
+public class ScriptingController implements Serializable {
 
-    private final Logger logger = LoggerFactory.getLogger(ScriptingController.class);
+	private static final long serialVersionUID = 1L;
 
-    @Inject
-    private ScriptingService scriptingService;
+	private final Logger logger = LoggerFactory.getLogger(ScriptingController.class);
 
-    @Inject
-    private AuthentificationUtils authentificationUtils;
+	@Inject
+	private ScriptingService scriptingService;
 
-    @Inject
-    private UserService userService;
+	@Inject
+	private AuthentificationUtils authentificationUtils;
 
-    @RequestMapping(value = "/exec", method = RequestMethod.POST)
-    public void scriptingExecute(@RequestBody ScriptRequest scriptRequest, HttpServletResponse response)
-            throws ServiceException, CheckException, IOException, InterruptedException {
-        logger.info("Execute");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try{
-            // We must be sure there is no running action before starting new one
-            this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
+	@Inject
+	private UserService userService;
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("scriptRequestBody: " + scriptRequest.getScriptContent());
-            }
+	@RequestMapping(value = "/exec", method = RequestMethod.POST)
+	public void scriptingExecute(@RequestBody ScriptRequest scriptRequest, HttpServletResponse response)
+			throws ServiceException, CheckException, IOException, InterruptedException {
+		logger.info("Execute");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			// We must be sure there is no running action before starting new
+			// one
+			this.authentificationUtils.canStartNewAction(null, null, Locale.ENGLISH);
 
-            scriptingService.execute(scriptRequest.getScriptContent(), user.getLogin(), user.getPassword());
-        } catch (ServiceException e) {
-            throw e;
-        }
-    }
+			if (logger.isDebugEnabled()) {
+				logger.debug("scriptRequestBody: " + scriptRequest.getScriptContent());
+			}
 
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON)
-    public @ResponseBody JsonNode scriptingSave(@RequestBody ScriptRequest scriptRequest)
-            throws ServiceException, IOException, CheckException {
-        logger.info("Save");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            if(scriptRequest.getScriptName().isEmpty() || scriptRequest.getScriptContent().isEmpty())
-                throw new CheckException("Name or content cannot be empty");
+			scriptingService.execute(scriptRequest.getScriptContent(), user.getLogin(), user.getPassword());
+		} catch (ServiceException e) {
+			throw e;
+		}
+	}
 
-            Script script = new Script();
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON)
+	public @ResponseBody JsonNode scriptingSave(@RequestBody ScriptRequest scriptRequest)
+			throws ServiceException, IOException, CheckException {
+		logger.info("Save");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			if (scriptRequest.getScriptName().isEmpty() || scriptRequest.getScriptContent().isEmpty())
+				throw new CheckException("Name or content cannot be empty");
 
-            List<Script> scripts = scriptingService.loadAllScripts();
-            for(Script script1 : scripts)
-            {
-                if(script1.getTitle().equals(scriptRequest.getScriptName()))
-                    throw new CheckException("Script name already exists");
-            }
+			Script script = new Script();
 
-            Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
+			List<Script> scripts = scriptingService.loadAllScripts();
+			for (Script script1 : scripts) {
+				if (script1.getTitle().equals(scriptRequest.getScriptName()))
+					throw new CheckException("Script name already exists");
+			}
 
-            script.setCreationUserId(user.getId());
-            script.setTitle(scriptRequest.getScriptName());
-            script.setContent(scriptRequest.getScriptContent());
-            script.setCreationDate(now);
+			Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
 
-            scriptingService.save(script);
+			script.setCreationUserId(user.getId());
+			script.setTitle(scriptRequest.getScriptName());
+			script.setContent(scriptRequest.getScriptContent());
+			script.setCreationDate(now);
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.createObjectNode();
-            ((ObjectNode) rootNode).put("id", script.getId());
-            ((ObjectNode) rootNode).put("title", script.getTitle());
-            ((ObjectNode) rootNode).put("content", script.getContent());
-            ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
-            ((ObjectNode) rootNode).put("creation_user", user.getFirstName() + " "
-                    + user.getLastName());
+			scriptingService.save(script);
 
-            return rootNode;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode rootNode = mapper.createObjectNode();
+			((ObjectNode) rootNode).put("id", script.getId());
+			((ObjectNode) rootNode).put("title", script.getTitle());
+			((ObjectNode) rootNode).put("content", script.getContent());
+			((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
+			((ObjectNode) rootNode).put("creation_user", user.getFirstName() + " " + user.getLastName());
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public @ResponseBody JsonNode scriptingLoad(@PathVariable @RequestBody Integer id)
-           throws ServiceException, JsonProcessingException {
-        logger.info("Load");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            Script script = scriptingService.load(id);
-            User user1 = userService.findById(script.getCreationUserId());
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.createObjectNode();
-            ((ObjectNode) rootNode).put("id", script.getId());
-            ((ObjectNode) rootNode).put("title", script.getTitle());
-            ((ObjectNode) rootNode).put("content", script.getContent());
-            ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
-            ((ObjectNode) rootNode).put("creation_user", user1.getFirstName() + " "
-                    + user1.getLastName());
+			return rootNode;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            return rootNode;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public @ResponseBody JsonNode scriptingLoad(@PathVariable @RequestBody Integer id)
+			throws ServiceException, JsonProcessingException {
+		logger.info("Load");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			Script script = scriptingService.load(id);
+			User user1 = userService.findById(script.getCreationUserId());
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode rootNode = mapper.createObjectNode();
+			((ObjectNode) rootNode).put("id", script.getId());
+			((ObjectNode) rootNode).put("title", script.getTitle());
+			((ObjectNode) rootNode).put("content", script.getContent());
+			((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
+			((ObjectNode) rootNode).put("creation_user", user1.getFirstName() + " " + user1.getLastName());
 
-    @RequestMapping(method = RequestMethod.GET)
-    public @ResponseBody ArrayNode scriptingLoadAll()
-            throws ServiceException, JsonProcessingException {
-        logger.info("Load All");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            List<Script> scripts = scriptingService.loadAllScripts();
+			return rootNode;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            ObjectMapper mapper = new ObjectMapper();
-            ArrayNode array = mapper.createArrayNode();
+	@RequestMapping(method = RequestMethod.GET)
+	public @ResponseBody ArrayNode scriptingLoadAll() throws ServiceException, JsonProcessingException {
+		logger.info("Load All");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			List<Script> scripts = scriptingService.loadAllScripts();
 
-            for(Script script : scripts) {
-                JsonNode rootNode = mapper.createObjectNode();
-                User user1 = userService.findById(script.getCreationUserId());
+			ObjectMapper mapper = new ObjectMapper();
+			ArrayNode array = mapper.createArrayNode();
 
-                ((ObjectNode) rootNode).put("id", script.getId());
-                ((ObjectNode) rootNode).put("title", script.getTitle());
-                ((ObjectNode) rootNode).put("content", script.getContent());
-                ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
-                ((ObjectNode) rootNode).put("creation_user", user1.getFirstName() + " "
-                        + user1.getLastName());
-                array.add(rootNode);
-            }
+			for (Script script : scripts) {
+				JsonNode rootNode = mapper.createObjectNode();
+				User user1 = userService.findById(script.getCreationUserId());
 
-            return array;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+				((ObjectNode) rootNode).put("id", script.getId());
+				((ObjectNode) rootNode).put("title", script.getTitle());
+				((ObjectNode) rootNode).put("content", script.getContent());
+				((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
+				((ObjectNode) rootNode).put("creation_user", user1.getFirstName() + " " + user1.getLastName());
+				array.add(rootNode);
+			}
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public @ResponseBody JsonNode scriptingUpdate(@PathVariable @RequestBody Integer id, @RequestBody ScriptRequest scriptRequest)
-            throws ServiceException, CheckException {
-        logger.info("Edit");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            if(scriptRequest.getScriptName().isEmpty() || scriptRequest.getScriptContent().isEmpty())
-                throw new CheckException("Name or content cannot be empty");
+			return array;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            Script script = scriptingService.load(id);
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public @ResponseBody JsonNode scriptingUpdate(@PathVariable @RequestBody Integer id,
+			@RequestBody ScriptRequest scriptRequest) throws ServiceException, CheckException {
+		logger.info("Edit");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			if (scriptRequest.getScriptName().isEmpty() || scriptRequest.getScriptContent().isEmpty())
+				throw new CheckException("Name or content cannot be empty");
 
-            List<Script> scripts = scriptingService.loadAllScripts();
-            for(Script script1 : scripts)
-            {
-                if(script1.getTitle().equals(scriptRequest.getScriptName()) && !script1.getTitle().equals(script.getTitle()))
-                    throw new CheckException("Script name already exists");
-            }
+			Script script = scriptingService.load(id);
 
-            Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
+			List<Script> scripts = scriptingService.loadAllScripts();
+			for (Script script1 : scripts) {
+				if (script1.getTitle().equals(scriptRequest.getScriptName())
+						&& !script1.getTitle().equals(script.getTitle()))
+					throw new CheckException("Script name already exists");
+			}
 
-            script.setCreationDate(now);
-            script.setTitle(scriptRequest.getScriptName());
-            script.setContent(scriptRequest.getScriptContent());
-            
-            scriptingService.save(script);
+			Date now = new Timestamp(Calendar.getInstance().getTimeInMillis());
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.createObjectNode();
-            ((ObjectNode) rootNode).put("id", script.getId());
-            ((ObjectNode) rootNode).put("title", script.getTitle());
-            ((ObjectNode) rootNode).put("content", script.getContent());
-            ((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
-            ((ObjectNode) rootNode).put("creation_user", user.getFirstName() + " "
-                    + user.getLastName());
+			script.setCreationDate(now);
+			script.setTitle(scriptRequest.getScriptName());
+			script.setContent(scriptRequest.getScriptContent());
 
-            return rootNode;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			scriptingService.save(script);
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public JsonResponse scriptingDelete(@PathVariable @RequestBody Integer id)
-            throws ServiceException {
-        logger.info("Delete");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            Script script = scriptingService.load(id);
-            scriptingService.delete(script);
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-        return new HttpOk();
-    }
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode rootNode = mapper.createObjectNode();
+			((ObjectNode) rootNode).put("id", script.getId());
+			((ObjectNode) rootNode).put("title", script.getTitle());
+			((ObjectNode) rootNode).put("content", script.getContent());
+			((ObjectNode) rootNode).put("creation_date", script.getCreationDate().toString());
+			((ObjectNode) rootNode).put("creation_user", user.getFirstName() + " " + user.getLastName());
+
+			return rootNode;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public JsonResponse scriptingDelete(@PathVariable @RequestBody Integer id) throws ServiceException {
+		logger.info("Delete");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			Script script = scriptingService.load(id);
+			scriptingService.delete(script);
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+		return new HttpOk();
+	}
 }

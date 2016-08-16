@@ -46,149 +46,140 @@ import javax.inject.Inject;
 @RequestMapping("/snapshot")
 public class SnapshotController {
 
-    private final Logger logger = LoggerFactory.getLogger(SnapshotController.class);
+	private final Logger logger = LoggerFactory.getLogger(SnapshotController.class);
 
-    // Default Locale
-    private final Locale locale = Locale.ENGLISH;
+	// Default Locale
+	private final Locale locale = Locale.ENGLISH;
 
-    @Inject
-    private SnapshotService snapshotService;
+	@Inject
+	private SnapshotService snapshotService;
 
-    @Inject
-    private ApplicationService applicationService;
+	@Inject
+	private ApplicationService applicationService;
 
-    @Inject
-    private AuthentificationUtils authentificationUtils;
+	@Inject
+	private AuthentificationUtils authentificationUtils;
 
-    @Value("${cloudunit.instance.name}")
-    private String cuInstanceName;
+	@Value("${cloudunit.instance.name}")
+	private String cuInstanceName;
 
-    @RequestMapping(method = RequestMethod.POST)
-    public JsonResponse create(@RequestBody JsonInput input)
-            throws ServiceException, CheckException {
+	@RequestMapping(method = RequestMethod.POST)
+	public JsonResponse create(@RequestBody JsonInput input) throws ServiceException, CheckException {
 
-        // Replace accent characters by classic characters
-        String tagName = AlphaNumericsCharactersCheckUtils.deAccent(input.getTag()).toLowerCase();
-        input.setTag(tagName);
-        // Validate input informations for snapshot
-        input.validateCreateSnapshot();
+		// Replace accent characters by classic characters
+		String tagName = AlphaNumericsCharactersCheckUtils.deAccent(input.getTag()).toLowerCase();
+		input.setTag(tagName);
+		// Validate input informations for snapshot
+		input.validateCreateSnapshot();
 
-        Application application;
-        User user = null;
-        try {
+		Application application;
+		User user = null;
+		try {
 
-            user = authentificationUtils.getAuthentificatedUser();
-            application = applicationService.findByNameAndUser(user, input.getApplicationName());
+			user = authentificationUtils.getAuthentificatedUser();
+			application = applicationService.findByNameAndUser(user, input.getApplicationName());
 
-            // To be protected from WebUI uncontrolled requests (angularjs timeout)
-            if (application.getUser().getStatus()
-                    .equals(User.STATUS_NOT_ALLOWED)) {
-                logger.info("Dispatch request");
-                return new HttpOk();
-            }
+			// To be protected from WebUI uncontrolled requests (angularjs
+			// timeout)
+			if (application.getUser().getStatus().equals(User.STATUS_NOT_ALLOWED)) {
+				logger.info("Dispatch request");
+				return new HttpOk();
+			}
 
-            // if current application is running into local application server,
-            // we need to block the user.
-            authentificationUtils.forbidUser(user);
+			// if current application is running into local application server,
+			// we need to block the user.
+			authentificationUtils.forbidUser(user);
 
-            // We must be sure there is no running action before starting new one
-            this.authentificationUtils.canStartNewAction(null, application, locale);
+			// We must be sure there is no running action before starting new
+			// one
+			this.authentificationUtils.canStartNewAction(null, application, locale);
 
-            Status previousStatus = application.getStatus();
+			Status previousStatus = application.getStatus();
 
-            applicationService.setStatus(application, Status.PENDING);
-            snapshotService.create(
-                    input.getApplicationName(),
-                    user,
-                    input.getTag(),
-                    input.getDescription(),
-                    previousStatus);
-            applicationService.setStatus(application, previousStatus);
+			applicationService.setStatus(application, Status.PENDING);
+			snapshotService.create(input.getApplicationName(), user, input.getTag(), input.getDescription(),
+					previousStatus);
+			applicationService.setStatus(application, previousStatus);
 
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+		return new HttpOk();
 
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-        return new HttpOk();
+	}
 
-    }
+	/**
+	 * List all snapshots
+	 *
+	 * @return
+	 * @throws ServiceException
+	 */
+	@RequestMapping(method = RequestMethod.GET, value = "/list")
+	public List<Snapshot> listAll() throws ServiceException {
+		return snapshotService.listAll();
+	}
 
-    /**
-     * List all snapshots
-     *
-     * @return
-     * @throws ServiceException
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/list")
-    public List<Snapshot> listAll()
-            throws ServiceException {
-        User user = authentificationUtils.getAuthentificatedUser();
-        return snapshotService.listAll();
-    }
+	/**
+	 * Delete a snapshot
+	 *
+	 * @param tag
+	 * @return
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@RequestMapping(method = RequestMethod.DELETE, value = "/{tag}")
+	public JsonResponse remove(@PathVariable String tag) throws ServiceException, CheckException {
+		User user = authentificationUtils.getAuthentificatedUser();
+		int count = applicationService.countApplicationsForImage(cuInstanceName, user, tag);
+		if (count > 0) {
+			throw new CheckException("At least one application uses this template. You must delete it before.");
+		}
+		snapshotService.remove(user.getLogin() + "-" + tag);
+		return new HttpOk();
+	}
 
-    /**
-     * Delete a snapshot
-     *
-     * @param tag
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{tag}")
-    public JsonResponse remove(@PathVariable String tag)
-            throws ServiceException, CheckException {
-        User user = authentificationUtils.getAuthentificatedUser();
-        int count = applicationService.countApplicationsForImage(cuInstanceName, user, tag);
-        if (count > 0) {
-            throw new CheckException("At least one application uses this template. You must delete it before.");
-        }
-        snapshotService.remove(user.getLogin()+"-"+tag);
-        return new HttpOk();
-    }
+	/**
+	 * Clone an application from a snapshot It could be a restore or a new one.
+	 *
+	 * @param input
+	 * @return
+	 * @throws ServiceException
+	 * @throws InterruptedException
+	 */
+	@RequestMapping(method = RequestMethod.POST, value = "/clone")
+	public JsonResponse clone(@RequestBody JsonInput input)
+			throws ServiceException, InterruptedException, CheckException {
 
-    /**
-     * Clone an application from a snapshot
-     * It could be a restore or a new one.
-     *
-     * @param input
-     * @return
-     * @throws ServiceException
-     * @throws InterruptedException
-     */
-    @RequestMapping(method = RequestMethod.POST, value = "/clone")
-    public JsonResponse clone(@RequestBody JsonInput input)
-            throws ServiceException, InterruptedException, CheckException {
+		if (logger.isInfoEnabled()) {
+			logger.info(input.toString());
+			logger.info(input.getClientSource());
+		}
 
-        if (logger.isInfoEnabled()) {
-            logger.info(input.toString());
-            logger.info(input.getClientSource());
-        }
+		User user = authentificationUtils.getAuthentificatedUser();
+		if (user.getStatus().equals(User.STATUS_NOT_ALLOWED)) {
+			logger.warn("Request dispatched");
+			return null;
+		}
 
-        User user = authentificationUtils.getAuthentificatedUser();
-        if (user.getStatus().equals(User.STATUS_NOT_ALLOWED)) {
-            logger.warn("Request dispatched");
-            return null;
-        }
+		// Forbid the user for any other action
+		authentificationUtils.forbidUser(user);
 
-        // Forbid the user for any other action
-        authentificationUtils.forbidUser(user);
+		try {
+			// Validate input information for clone
+			input.validateClone();
 
-        try {
-            // Validate input information for clone
-            input.validateClone();
+			logger.info(input.getApplicationName() + ", " + input.getTag());
+			snapshotService.cloneFromASnapshot(input.getApplicationName(), input.getTag());
 
-            logger.info(input.getApplicationName() + ", " + input.getTag());
-            snapshotService.cloneFromASnapshot(input.getApplicationName(), input.getTag());
+			Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
+			applicationService.stop(application);
+			applicationService.setStatus(application, Status.STOP);
 
-            Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
-            applicationService.stop(application);
-            applicationService.setStatus(application, Status.STOP);
+		} finally {
+			// in all cases, we must allow the user to work again
+			authentificationUtils.allowUser(user);
+		}
 
-        } finally {
-            // in all cases, we must allow the user to work again
-            authentificationUtils.allowUser(user);
-        }
-
-        return new HttpOk();
-    }
+		return new HttpOk();
+	}
 }

@@ -1,8 +1,5 @@
 package fr.treeptik.cloudunit.dto;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * Created by nicolas on 25/08/2014.
  */

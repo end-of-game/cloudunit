@@ -1,6 +1,22 @@
 package fr.treeptik.cloudunit.controller;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import fr.treeptik.cloudunit.dto.EnvironmentVariableRequest;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -10,176 +26,167 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @RequestMapping("/application")
 public class EnvironmentController implements Serializable {
 
-    private final Logger logger = LoggerFactory.getLogger(EnvironmentController.class);
+	private static final long serialVersionUID = 1L;
 
-    @Inject
-    private AuthentificationUtils authentificationUtils;
+	private final Logger logger = LoggerFactory.getLogger(EnvironmentController.class);
 
-    @Inject
-    private EnvironmentService environmentService;
+	@Inject
+	private AuthentificationUtils authentificationUtils;
 
-    @Inject
-    private ApplicationService applicationService;
+	@Inject
+	private EnvironmentService environmentService;
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.GET)
-    public @ResponseBody List<EnvironmentVariableRequest> loadAllEnvironmentVariables(@PathVariable String applicationName,
-            @PathVariable String containerId)
-            throws ServiceException, JsonProcessingException, CheckException {
-        logger.info("Load");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            List<Environment> environmentList = environmentService.loadEnvironnmentsByContainer(containerId);
-            List<EnvironmentVariableRequest> environmentVariableRequestList = new ArrayList<>();
+	@Inject
+	private ApplicationService applicationService;
 
-            for (Environment environment : environmentList) {
-                EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
-                environmentVariableRequest.setId(environment.getId());
-                environmentVariableRequest.setKey(environment.getKeyEnv());
-                environmentVariableRequest.setValue(environment.getValueEnv());
-                environmentVariableRequestList.add(environmentVariableRequest);
-            }
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.GET)
+	public @ResponseBody List<EnvironmentVariableRequest> loadAllEnvironmentVariables(
+			@PathVariable String applicationName, @PathVariable String containerId)
+			throws ServiceException, JsonProcessingException, CheckException {
+		logger.info("Load");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			List<Environment> environmentList = environmentService.loadEnvironnmentsByContainer(containerId);
+			List<EnvironmentVariableRequest> environmentVariableRequestList = new ArrayList<>();
 
-            return environmentVariableRequestList;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			for (Environment environment : environmentList) {
+				EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
+				environmentVariableRequest.setId(environment.getId());
+				environmentVariableRequest.setKey(environment.getKeyEnv());
+				environmentVariableRequest.setValue(environment.getValueEnv());
+				environmentVariableRequestList.add(environmentVariableRequest);
+			}
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.GET)
-    public @ResponseBody EnvironmentVariableRequest loadEnvironmentVariable(@PathVariable String applicationName,
-            @PathVariable String containerId, @PathVariable int id)
-            throws ServiceException, CheckException {
-        logger.info("Load");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            Environment environment = environmentService.loadEnvironnment(id);
-            if(environment.equals(null))
-                throw new CheckException("Environment variable doesn't exist");
+			return environmentVariableRequestList;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
-            environmentVariableRequest.setId(environment.getId());
-            environmentVariableRequest.setKey(environment.getKeyEnv());
-            environmentVariableRequest.setValue(environment.getValueEnv());
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.GET)
+	public @ResponseBody EnvironmentVariableRequest loadEnvironmentVariable(@PathVariable String applicationName,
+			@PathVariable String containerId, @PathVariable int id) throws ServiceException, CheckException {
+		logger.info("Load");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			Environment environment = environmentService.loadEnvironnment(id);
+			if (environment.equals(null))
+				throw new CheckException("Environment variable doesn't exist");
 
-            return environmentVariableRequest;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
+			environmentVariableRequest.setId(environment.getId());
+			environmentVariableRequest.setKey(environment.getKeyEnv());
+			environmentVariableRequest.setValue(environment.getValueEnv());
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.POST)
-    public @ResponseBody EnvironmentVariableRequest addEnvironmentVariable (@PathVariable String applicationName,
-            @PathVariable String containerId, @RequestBody EnvironmentVariableRequest environmentVariableRequest)
-            throws ServiceException, CheckException {
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            if(environmentVariableRequest.getKey() == null || environmentVariableRequest.getKey().isEmpty())
-                throw new CheckException("This key is not consistent !");
+			return environmentVariableRequest;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            if(!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
-                throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.POST)
+	public @ResponseBody EnvironmentVariableRequest addEnvironmentVariable(@PathVariable String applicationName,
+			@PathVariable String containerId, @RequestBody EnvironmentVariableRequest environmentVariableRequest)
+			throws ServiceException, CheckException {
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			if (environmentVariableRequest.getKey() == null || environmentVariableRequest.getKey().isEmpty())
+				throw new CheckException("This key is not consistent !");
 
-            List<Environment> environmentList = environmentService.loadAllEnvironnments();
-            for(Environment environment : environmentList)
-                if (environment.getKeyEnv().equals(environmentVariableRequest.getKey()))
-                    throw new CheckException("This key already exists");
+			if (!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
+				throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
 
-            Application application = applicationService.findByNameAndUser(user, applicationName);
-            Environment environment = new Environment();
+			List<Environment> environmentList = environmentService.loadAllEnvironnments();
+			for (Environment environment : environmentList)
+				if (environment.getKeyEnv().equals(environmentVariableRequest.getKey()))
+					throw new CheckException("This key already exists");
 
-            environment.setApplication(application);
-            environment.setContainerId(containerId);
-            environment.setKeyEnv(environmentVariableRequest.getKey());
-            environment.setValueEnv(environmentVariableRequest.getValue());
+			Application application = applicationService.findByNameAndUser(user, applicationName);
+			Environment environment = new Environment();
 
-            environmentService.save(environment);
+			environment.setApplication(application);
+			environment.setContainerId(containerId);
+			environment.setKeyEnv(environmentVariableRequest.getKey());
+			environment.setValueEnv(environmentVariableRequest.getValue());
 
-            EnvironmentVariableRequest environmentVariableRequest1 = new EnvironmentVariableRequest();
-            List<Environment> environmentList1 = environmentService.loadEnvironnmentsByApplication(applicationName);
-            for(Environment environment1 : environmentList1)
-                if(environment1.getKeyEnv().equals(environment.getKeyEnv())) {
-                    environmentVariableRequest1.setId(environment1.getId());
-                    environmentVariableRequest1.setKey(environment1.getKeyEnv());
-                    environmentVariableRequest1.setValue(environment1.getValueEnv());
-                }
-                
-            return environmentVariableRequest1;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			environmentService.save(environment);
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.PUT)
-    public @ResponseBody EnvironmentVariableRequest updateEnvironmentVariable (@PathVariable String applicationName,
-                @PathVariable String containerId, @PathVariable int id,
-                @RequestBody EnvironmentVariableRequest environmentVariableRequest)
-            throws ServiceException, CheckException {
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            if(environmentVariableRequest.getKey() == null || environmentVariableRequest.getKey().isEmpty())
-                throw new CheckException("This key is not consistent !");
+			EnvironmentVariableRequest environmentVariableRequest1 = new EnvironmentVariableRequest();
+			List<Environment> environmentList1 = environmentService.loadEnvironnmentsByApplication(applicationName);
+			for (Environment environment1 : environmentList1)
+				if (environment1.getKeyEnv().equals(environment.getKeyEnv())) {
+					environmentVariableRequest1.setId(environment1.getId());
+					environmentVariableRequest1.setKey(environment1.getKeyEnv());
+					environmentVariableRequest1.setValue(environment1.getValueEnv());
+				}
 
-            if(!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
-                throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
+			return environmentVariableRequest1;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            Environment environment = environmentService.loadEnvironnment(id);
-            List<Environment> environmentList = environmentService.loadAllEnvironnments();
-            for(Environment environment1 : environmentList)
-                if (environment1.getKeyEnv().equals(environmentVariableRequest.getKey()) && !environment1.getKeyEnv().equals(environment.getKeyEnv()))
-                    throw new CheckException("This key already exists");
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.PUT)
+	public @ResponseBody EnvironmentVariableRequest updateEnvironmentVariable(@PathVariable String applicationName,
+			@PathVariable String containerId, @PathVariable int id,
+			@RequestBody EnvironmentVariableRequest environmentVariableRequest)
+			throws ServiceException, CheckException {
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			if (environmentVariableRequest.getKey() == null || environmentVariableRequest.getKey().isEmpty())
+				throw new CheckException("This key is not consistent !");
 
+			if (!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
+				throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
 
-            if(environment.equals(null))
-                throw new CheckException("Environment variable doesn't exist");
+			Environment environment = environmentService.loadEnvironnment(id);
+			List<Environment> environmentList = environmentService.loadAllEnvironnments();
+			for (Environment environment1 : environmentList)
+				if (environment1.getKeyEnv().equals(environmentVariableRequest.getKey())
+						&& !environment1.getKeyEnv().equals(environment.getKeyEnv()))
+					throw new CheckException("This key already exists");
 
-            environment.setKeyEnv(environmentVariableRequest.getKey());
-            environment.setValueEnv(environmentVariableRequest.getValue());
+			if (environment.equals(null))
+				throw new CheckException("Environment variable doesn't exist");
 
-            environmentService.save(environment);
+			environment.setKeyEnv(environmentVariableRequest.getKey());
+			environment.setValueEnv(environmentVariableRequest.getValue());
 
-            EnvironmentVariableRequest returnEnv = new EnvironmentVariableRequest();
-            returnEnv.setId(environment.getId());
-            returnEnv.setKey(environment.getKeyEnv());
-            returnEnv.setValue(environment.getValueEnv());
+			environmentService.save(environment);
 
-            return returnEnv;
+			EnvironmentVariableRequest returnEnv = new EnvironmentVariableRequest();
+			returnEnv.setId(environment.getId());
+			returnEnv.setKey(environment.getKeyEnv());
+			returnEnv.setValue(environment.getValueEnv());
 
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			return returnEnv;
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.DELETE)
-    public void deleteEnvironmentVariable(@PathVariable String applicationName,
-            @PathVariable String containerId, @PathVariable int id)
-            throws ServiceException, CheckException {
-        logger.info("Delete");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            Environment environment = environmentService.loadEnvironnment(id);
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            if(environment.equals(null)) {
-                throw new CheckException("Environment variable doesn't exist");
-            }
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.DELETE)
+	public void deleteEnvironmentVariable(@PathVariable String applicationName, @PathVariable String containerId,
+			@PathVariable int id) throws ServiceException, CheckException {
+		logger.info("Delete");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			Environment environment = environmentService.loadEnvironnment(id);
 
-            environmentService.delete(id);
+			if (environment.equals(null)) {
+				throw new CheckException("Environment variable doesn't exist");
+			}
 
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			environmentService.delete(id);
+
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 }

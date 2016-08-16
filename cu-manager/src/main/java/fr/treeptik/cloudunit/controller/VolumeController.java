@@ -1,192 +1,195 @@
 package fr.treeptik.cloudunit.controller;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fr.treeptik.cloudunit.dto.EnvironmentVariableRequest;
+
 import fr.treeptik.cloudunit.dto.VolumeRequest;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Environment;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.model.Volume;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.VolumeService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @RequestMapping("/application")
 public class VolumeController implements Serializable {
-    private final Logger logger = LoggerFactory.getLogger(VolumeController.class);
 
-    @Inject
-    private AuthentificationUtils authentificationUtils;
+	private static final long serialVersionUID = 1L;
 
-    @Inject
-    private VolumeService volumeService;
+	private final Logger logger = LoggerFactory.getLogger(VolumeController.class);
 
-    @Inject
-    private ApplicationService applicationService;
+	@Inject
+	private AuthentificationUtils authentificationUtils;
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes", method = RequestMethod.GET)
-    public @ResponseBody
-    List<VolumeRequest> loadAllVolumes(@PathVariable String applicationName,
-            @PathVariable String containerId)
-            throws ServiceException, JsonProcessingException, CheckException {
-        logger.info("Load");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            List<Volume> volumeList = volumeService.loadVolumeByContainer(containerId);
-            List<VolumeRequest> volumeRequests = new ArrayList<>();
+	@Inject
+	private VolumeService volumeService;
 
-            for (Volume volume : volumeList) {
-                VolumeRequest volumeRequest = new VolumeRequest();
-                volumeRequest.setId(volume.getId());
-                volumeRequest.setName(volume.getName());
-                volumeRequest.setPath(volume.getPath());
-                volumeRequests.add(volumeRequest);
-            }
+	@Inject
+	private ApplicationService applicationService;
 
-            return volumeRequests;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/volumes", method = RequestMethod.GET)
+	public @ResponseBody List<VolumeRequest> loadAllVolumes(@PathVariable String applicationName,
+			@PathVariable String containerId) throws ServiceException, JsonProcessingException, CheckException {
+		logger.info("Load");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			List<Volume> volumeList = volumeService.loadVolumeByContainer(containerId);
+			List<VolumeRequest> volumeRequests = new ArrayList<>();
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.GET)
-    public @ResponseBody VolumeRequest loadVolume(@PathVariable String applicationName,
-            @PathVariable String containerId, @PathVariable int id)
-            throws ServiceException, CheckException {
-        logger.info("Load");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            Volume volume = volumeService.loadVolume(id);
-            if(volume.equals(null))
-                throw new CheckException("Volume doesn't exist");
+			for (Volume volume : volumeList) {
+				VolumeRequest volumeRequest = new VolumeRequest();
+				volumeRequest.setId(volume.getId());
+				volumeRequest.setName(volume.getName());
+				volumeRequest.setPath(volume.getPath());
+				volumeRequests.add(volumeRequest);
+			}
 
-            VolumeRequest volumeRequest = new VolumeRequest();
-            volumeRequest.setId(volume.getId());
-            volumeRequest.setName(volume.getName());
-            volumeRequest.setPath(volume.getPath());
+			return volumeRequests;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            return volumeRequest;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.GET)
+	public @ResponseBody VolumeRequest loadVolume(@PathVariable String applicationName,
+			@PathVariable String containerId, @PathVariable int id) throws ServiceException, CheckException {
+		logger.info("Load");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			Volume volume = volumeService.loadVolume(id);
+			if (volume.equals(null))
+				throw new CheckException("Volume doesn't exist");
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes", method = RequestMethod.POST)
-    public @ResponseBody VolumeRequest addVolume (@PathVariable String applicationName,
-            @PathVariable String containerId, @RequestBody VolumeRequest volumeRequest)
-            throws ServiceException, CheckException {
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            if(volumeRequest.getName() == null || volumeRequest.getName().isEmpty())
-                throw new CheckException("This name is not consistent !");
+			VolumeRequest volumeRequest = new VolumeRequest();
+			volumeRequest.setId(volume.getId());
+			volumeRequest.setName(volume.getName());
+			volumeRequest.setPath(volume.getPath());
 
-            if(volumeRequest.getPath() == null || volumeRequest.getPath().isEmpty())
-                throw new CheckException("This path is not consistent !");
+			return volumeRequest;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            if(!volumeRequest.getName().matches("^[-a-zA-Z0-9_]*$"))
-                throw new CheckException("This name is not consistent : " + volumeRequest.getName());
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/volumes", method = RequestMethod.POST)
+	public @ResponseBody VolumeRequest addVolume(@PathVariable String applicationName, @PathVariable String containerId,
+			@RequestBody VolumeRequest volumeRequest) throws ServiceException, CheckException {
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			if (volumeRequest.getName() == null || volumeRequest.getName().isEmpty())
+				throw new CheckException("This name is not consistent !");
 
-            List<Volume> volumeList = volumeService.loadAllVolumes();
-            for(Volume volume : volumeList)
-                if (volume.getName().equals(volumeRequest.getName()))
-                    throw new CheckException("This name already exists");
+			if (volumeRequest.getPath() == null || volumeRequest.getPath().isEmpty())
+				throw new CheckException("This path is not consistent !");
 
-            Application application = applicationService.findByNameAndUser(user, applicationName);
-            Volume volume = new Volume();
+			if (!volumeRequest.getName().matches("^[-a-zA-Z0-9_]*$"))
+				throw new CheckException("This name is not consistent : " + volumeRequest.getName());
 
-            volume.setApplication(application);
-            volume.setContainerId(containerId);
-            volume.setName(volumeRequest.getName());
-            volume.setPath(volumeRequest.getPath());
+			List<Volume> volumeList = volumeService.loadAllVolumes();
+			for (Volume volume : volumeList)
+				if (volume.getName().equals(volumeRequest.getName()))
+					throw new CheckException("This name already exists");
 
-            volumeService.save(volume);
+			Application application = applicationService.findByNameAndUser(user, applicationName);
+			Volume volume = new Volume();
 
-            VolumeRequest volumeRequest1 = new VolumeRequest();
-            List<Volume> volumeList1 = volumeService.loadVolumeByApplication(applicationName);
-            for(Volume volume1 : volumeList1)
-                if(volume1.getName().equals(volume.getName())) {
-                    volumeRequest1.setId(volume1.getId());
-                    volumeRequest1.setName(volume1.getName());
-                    volumeRequest1.setPath(volume1.getPath());
-                }
+			volume.setApplication(application);
+			volume.setContainerId(containerId);
+			volume.setName(volumeRequest.getName());
+			volume.setPath(volumeRequest.getPath());
 
-            return volumeRequest1;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			volumeService.save(volume);
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.PUT)
-    public @ResponseBody VolumeRequest updateVolume (@PathVariable String applicationName,
-           @PathVariable String containerId, @PathVariable int id, @RequestBody VolumeRequest volumeRequest)
-           throws ServiceException, CheckException {
+			VolumeRequest volumeRequest1 = new VolumeRequest();
+			List<Volume> volumeList1 = volumeService.loadVolumeByApplication(applicationName);
+			for (Volume volume1 : volumeList1)
+				if (volume1.getName().equals(volume.getName())) {
+					volumeRequest1.setId(volume1.getId());
+					volumeRequest1.setName(volume1.getName());
+					volumeRequest1.setPath(volume1.getPath());
+				}
 
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            if(volumeRequest.getName() == null || volumeRequest.getName().isEmpty())
-                throw new CheckException("This name is not consistent !");
+			return volumeRequest1;
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            if(volumeRequest.getPath() == null || volumeRequest.getPath().isEmpty())
-                throw new CheckException("This path is not consistent !");
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.PUT)
+	public @ResponseBody VolumeRequest updateVolume(@PathVariable String applicationName,
+			@PathVariable String containerId, @PathVariable int id, @RequestBody VolumeRequest volumeRequest)
+			throws ServiceException, CheckException {
 
-            if(!volumeRequest.getName().matches("^[-a-zA-Z0-9_]*$"))
-                throw new CheckException("This name is not consistent : " + volumeRequest.getName());
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			if (volumeRequest.getName() == null || volumeRequest.getName().isEmpty())
+				throw new CheckException("This name is not consistent !");
 
-            Volume volume = volumeService.loadVolume(id);
-            List<Volume> volumeList = volumeService.loadAllVolumes();
-            for(Volume volume1 : volumeList)
-                if (volume1.getName().equals(volumeRequest.getName()) && !volume1.getName().equals(volume.getName()))
-                    throw new CheckException("This name already exists");
+			if (volumeRequest.getPath() == null || volumeRequest.getPath().isEmpty())
+				throw new CheckException("This path is not consistent !");
 
-            if(volume.equals(null))
-                throw new CheckException("Volume doesn't exist");
+			if (!volumeRequest.getName().matches("^[-a-zA-Z0-9_]*$"))
+				throw new CheckException("This name is not consistent : " + volumeRequest.getName());
 
-            volume.setName(volumeRequest.getName());
-            volume.setPath(volumeRequest.getPath());
+			Volume volume = volumeService.loadVolume(id);
+			List<Volume> volumeList = volumeService.loadAllVolumes();
+			for (Volume volume1 : volumeList)
+				if (volume1.getName().equals(volumeRequest.getName()) && !volume1.getName().equals(volume.getName()))
+					throw new CheckException("This name already exists");
 
-            volumeService.save(volume);
+			if (volume.equals(null))
+				throw new CheckException("Volume doesn't exist");
 
-            VolumeRequest volumeRequest1 = new VolumeRequest();
-            volumeRequest1.setId(volume.getId());
-            volumeRequest1.setName(volume.getName());
-            volumeRequest1.setPath(volume.getPath());
+			volume.setName(volumeRequest.getName());
+			volume.setPath(volumeRequest.getPath());
 
-            return volumeRequest1;
+			volumeService.save(volume);
 
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			VolumeRequest volumeRequest1 = new VolumeRequest();
+			volumeRequest1.setId(volume.getId());
+			volumeRequest1.setName(volume.getName());
+			volumeRequest1.setPath(volume.getPath());
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.DELETE)
-    public void deleteEnvironmentVariable(@PathVariable String applicationName,
-            @PathVariable String containerId, @PathVariable int id)
-            throws ServiceException, CheckException {
-        logger.info("Delete");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            Volume volume = volumeService.loadVolume(id);
+			return volumeRequest1;
 
-            if(volume.equals(null)) {
-                throw new CheckException("Volume doesn't exist");
-            }
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 
-            volumeService.delete(id);
+	@RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.DELETE)
+	public void deleteEnvironmentVariable(@PathVariable String applicationName, @PathVariable String containerId,
+			@PathVariable int id) throws ServiceException, CheckException {
+		logger.info("Delete");
+		User user = authentificationUtils.getAuthentificatedUser();
+		try {
+			Volume volume = volumeService.loadVolume(id);
 
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
+			if (volume.equals(null)) {
+				throw new CheckException("Volume doesn't exist");
+			}
+
+			volumeService.delete(id);
+
+		} finally {
+			authentificationUtils.allowUser(user);
+		}
+	}
 }

@@ -2,7 +2,6 @@ package fr.treeptik.cloudunit.dto.gitlab;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Created by nicolas on 07/04/2016.
