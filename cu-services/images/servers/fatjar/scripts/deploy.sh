@@ -7,9 +7,9 @@ CU_PASSWORD=$2
 
 FILETODEPLOY=`ls $CU_TMP`
 
-mv $CU_TMP/$FILETODEPLOY $CU_SOFTWARE/
+rm -rf $CU_SOFTWARE/deployments/*
 
-kill pidof `java`
+mv $CU_TMP/$FILETODEPLOY $CU_SOFTWARE/deployments
 
-$JAVA_HOME/bin/java -jar $CU_SOFTWARE/deploy/$FILETODEPLOY > $CU_LOGS/system.out &
+$JAVA_HOME/bin/java -jar $CU_SOFTWARE/deployments/$FILETODEPLOY > $CU_LOGS/system.out &
 
