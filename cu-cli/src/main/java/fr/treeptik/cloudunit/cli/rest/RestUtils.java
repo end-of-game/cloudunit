@@ -45,7 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -241,7 +241,7 @@ public class RestUtils {
 	public Map<String, Object> sendPostForUpload(String url, Map<String, Object> parameters) {
 		RestTemplate restTemplate = new RestTemplate();
 		List<HttpMessageConverter<?>> mc = restTemplate.getMessageConverters();
-		mc.add(new MappingJacksonHttpMessageConverter());
+		mc.add(new MappingJackson2HttpMessageConverter());
 		restTemplate.setMessageConverters(mc);
 		MultiValueMap<String, Object> postParams = new LinkedMultiValueMap<String, Object>();
 		postParams.setAll(parameters);

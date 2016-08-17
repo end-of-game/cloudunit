@@ -53,7 +53,6 @@ public class MessageConverter {
 						application.getJvmRelease() },
 
 		});
-		logger.log(Level.WARNING, "\n GIT ADDRESS \n");
 
 		logger.log(Level.WARNING, "\n SERVER INFORMATION \n");
 
