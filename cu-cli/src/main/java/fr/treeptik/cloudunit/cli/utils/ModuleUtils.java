@@ -25,9 +25,9 @@ import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
-import fr.treeptik.cloudunit.cli.model.Module;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
+import fr.treeptik.cloudunit.model.Module;
 
 @Component
 public class ModuleUtils {

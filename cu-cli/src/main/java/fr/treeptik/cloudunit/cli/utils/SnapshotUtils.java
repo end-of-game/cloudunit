@@ -15,161 +15,152 @@
 
 package fr.treeptik.cloudunit.cli.utils;
 
-import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
-import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
-import fr.treeptik.cloudunit.cli.model.Snapshot;
-import fr.treeptik.cloudunit.cli.processor.InjectLogger;
-import fr.treeptik.cloudunit.cli.rest.JsonConverter;
-import fr.treeptik.cloudunit.cli.rest.RestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
+import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
+import fr.treeptik.cloudunit.cli.processor.InjectLogger;
+import fr.treeptik.cloudunit.cli.rest.JsonConverter;
+import fr.treeptik.cloudunit.cli.rest.RestUtils;
+import fr.treeptik.cloudunit.model.Snapshot;
+
 @Component
 public class SnapshotUtils {
 
-    @InjectLogger
-    private Logger log;
+	@InjectLogger
+	private Logger log;
 
-    @Autowired
-    private AuthentificationUtils authentificationUtils;
+	@Autowired
+	private AuthentificationUtils authentificationUtils;
 
-    @Autowired
-    private ApplicationUtils applicationUtils;
+	@Autowired
+	private ApplicationUtils applicationUtils;
 
-    @Autowired
-    private RestUtils restUtils;
+	@Autowired
+	private RestUtils restUtils;
 
-    @Autowired
-    private FileUtils fileUtils;
+	@Autowired
+	private FileUtils fileUtils;
 
-    @Autowired
-    private ShellStatusCommand statusCommand;
+	@Autowired
+	private ShellStatusCommand statusCommand;
 
-    public String createSnapshot(String tag, String applicationName) {
+	public String createSnapshot(String tag, String applicationName) {
 
-        String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
+		String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
+		if (checkResponse != null) {
+			return checkResponse;
+		}
 
-        if (applicationName != null) {
-            applicationUtils.useApplication(applicationName);
-        } else {
-            applicationName = applicationUtils.getApplication().getName();
-        }
+		if (applicationName != null) {
+			applicationUtils.useApplication(applicationName);
+		} else {
+			applicationName = applicationUtils.getApplication().getName();
+		}
 
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("applicationName", applicationName);
-        parameters.put("tag", tag);
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("applicationName", applicationName);
+		parameters.put("tag", tag);
 
-        try {
-            restUtils.sendPostCommand(
-                    authentificationUtils.finalHost + "/snapshot",
-                    authentificationUtils.getMap(), parameters).get("body");
-        } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-        }
+		try {
+			restUtils.sendPostCommand(authentificationUtils.finalHost + "/snapshot", authentificationUtils.getMap(),
+					parameters).get("body");
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
 
-        return "A new snapshot called " + tag
-                + " was successfully created.";
-    }
+		return "A new snapshot called " + tag + " was successfully created.";
+	}
 
-    public String deleteSnapshot(String tag) {
+	public String deleteSnapshot(String tag) {
 
-        if (authentificationUtils.getMap().isEmpty()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are not connected to CloudUnit host! Please use connect command"
-                    + ANSIConstants.ANSI_RESET;
-        }
-        if (fileUtils.isInFileExplorer()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are currently in a container file explorer. Please exit it with close-explorer command"
-                    + ANSIConstants.ANSI_RESET;
-        }
+		if (authentificationUtils.getMap().isEmpty()) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
+					+ ANSIConstants.ANSI_RESET;
+		}
+		if (fileUtils.isInFileExplorer()) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED
+					+ "You are currently in a container file explorer. Please exit it with close-explorer command"
+					+ ANSIConstants.ANSI_RESET;
+		}
 
-        try {
-            restUtils.sendDeleteCommand(
-                    authentificationUtils.finalHost + "/snapshot/" + tag,
-                    authentificationUtils.getMap()).get("body");
-        } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-        }
+		try {
+			restUtils.sendDeleteCommand(authentificationUtils.finalHost + "/snapshot/" + tag,
+					authentificationUtils.getMap()).get("body");
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
 
-        return "The snapshot " + tag
-                + " was successfully deleted.";
-    }
+		return "The snapshot " + tag + " was successfully deleted.";
+	}
 
-    public String listAllSnapshots() {
-        List<Snapshot> listSnapshots;
-        String json = null;
+	public String listAllSnapshots() {
+		List<Snapshot> listSnapshots;
+		String json = null;
 
-        if (authentificationUtils.getMap().isEmpty()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are not connected to CloudUnit host! Please use connect command"
-                    + ANSIConstants.ANSI_RESET;
-        }
+		if (authentificationUtils.getMap().isEmpty()) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
+					+ ANSIConstants.ANSI_RESET;
+		}
 
-        if (fileUtils.isInFileExplorer()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are currently in a container file explorer. Please exit it with close-explorer command"
-                    + ANSIConstants.ANSI_RESET;
-        }
-        try {
-            json = (String) restUtils.sendGetCommand(
-                    authentificationUtils.finalHost + "/snapshot/list",
-                    authentificationUtils.getMap()).get("body");
-        } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-        }
+		if (fileUtils.isInFileExplorer()) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED
+					+ "You are currently in a container file explorer. Please exit it with close-explorer command"
+					+ ANSIConstants.ANSI_RESET;
+		}
+		try {
+			json = (String) restUtils
+					.sendGetCommand(authentificationUtils.finalHost + "/snapshot/list", authentificationUtils.getMap())
+					.get("body");
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
 
-        listSnapshots = JsonConverter.getSnapshot(json);
-        MessageConverter.buildListSnapshots(listSnapshots);
-        statusCommand.setExitStatut(0);
-        return listSnapshots.size() + " snapshots found";
-    }
+		listSnapshots = JsonConverter.getSnapshot(json);
+		MessageConverter.buildListSnapshots(listSnapshots);
+		statusCommand.setExitStatut(0);
+		return listSnapshots.size() + " snapshots found";
+	}
 
-    public String clone(String applicationName, String tag) {
-        if (authentificationUtils.getMap().isEmpty()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are not connected to CloudUnit host! Please use connect command"
-                    + ANSIConstants.ANSI_RESET;
-        }
-        if (fileUtils.isInFileExplorer()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are currently in a container file explorer. Please exit it with close-explorer command"
-                    + ANSIConstants.ANSI_RESET;
-        }
+	public String clone(String applicationName, String tag) {
+		if (authentificationUtils.getMap().isEmpty()) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
+					+ ANSIConstants.ANSI_RESET;
+		}
+		if (fileUtils.isInFileExplorer()) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED
+					+ "You are currently in a container file explorer. Please exit it with close-explorer command"
+					+ ANSIConstants.ANSI_RESET;
+		}
 
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("applicationName", applicationName);
-        parameters.put("tag", tag);
-        try {
-            restUtils.sendPostCommand(
-                    authentificationUtils.finalHost + "/snapshot/clone",
-                    authentificationUtils.getMap(), parameters).get("body");
-        } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-        }
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("applicationName", applicationName);
+		parameters.put("tag", tag);
+		try {
+			restUtils.sendPostCommand(authentificationUtils.finalHost + "/snapshot/clone",
+					authentificationUtils.getMap(), parameters).get("body");
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
 
-        statusCommand.setExitStatut(0);
-        return "Your application " + applicationName
-                + " was successfully created.";
-    }
-
+		statusCommand.setExitStatut(0);
+		return "Your application " + applicationName + " was successfully created.";
+	}
 
 }

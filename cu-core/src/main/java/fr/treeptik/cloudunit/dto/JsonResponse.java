@@ -1,4 +1,4 @@
-package fr.treeptik.cloudunit.model;/*
+/*
  * LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
  * but CloudUnit is licensed too under a standard commercial license.
  * Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
@@ -13,51 +13,50 @@ package fr.treeptik.cloudunit.model;/*
  * For any questions, contact us : contact@treeptik.fr
  */
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+package fr.treeptik.cloudunit.dto;
+
 import java.io.Serializable;
 
-@Entity
-public class ProxySshPort
-    implements Serializable {
+public class JsonResponse implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue
-    private Integer id;
+	private int status;
 
-    private String portNumber;
+	private String message = "";
 
-    private boolean used;
+	private String location = "";
 
-    public ProxySshPort() {
-        super();
-    }
+	public JsonResponse() {
+	}
 
-    public Integer getId() {
-        return id;
-    }
+	public JsonResponse(int status, String message, String location) {
+		this.status = status;
+		this.message = message;
+		this.location = location;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public String getLocation() {
+		return location;
+	}
 
-    public String getPortNumber() {
-        return portNumber;
-    }
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
-    public void setPortNumber(String portNumber) {
-        this.portNumber = portNumber;
-    }
+	public int getStatus() {
+		return status;
+	}
 
-    public boolean isUsed() {
-        return used;
-    }
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
-    public void setUsed(boolean used) {
-        this.used = used;
-    }
+	public String getMessage() {
+		return message;
+	}
 
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

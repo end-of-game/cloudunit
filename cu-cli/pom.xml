@@ -35,6 +35,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>fr.treeptik</groupId>
+			<artifactId>cu-core</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.shell</groupId>
 			<artifactId>spring-shell</artifactId>
 			<version>${spring.shell.version}</version>
@@ -55,13 +60,6 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>${httpcomponents.version}</version>
-		</dependency>
-
-		<!-- json -->
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.12</version>
 		</dependency>
 
 		<!-- jfiglet for logo -->

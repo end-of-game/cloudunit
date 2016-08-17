@@ -34,8 +34,7 @@ public class CheckUtils {
 			JvmMemory.SIZE_1024.getSize(), JvmMemory.SIZE_2048.getSize(), JvmMemory.SIZE_3072.getSize(),
 			JvmMemory.SIZE_4096.getSize());
 
-	private static MessageSource messageSource = (MessageSource) StaticSpringApplicationContext
-			.getBean("messageSource");
+	private static MessageSource messageSource = (MessageSource) StaticSpringApplicationContext.getBean("messageSource");
 
 	/**
 	 * Valid not empty input

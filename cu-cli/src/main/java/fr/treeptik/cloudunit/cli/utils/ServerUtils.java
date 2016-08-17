@@ -72,7 +72,7 @@ public class ServerUtils implements CommandMarker {
 		parameters.put("applicationName", applicationUtils.getApplication().getName());
 		parameters.put("jvmMemory", memory);
 		parameters.put("jvmRelease", applicationUtils.getApplication().getJvmRelease());
-		parameters.put("jvmOptions", applicationUtils.getApplication().getServers().get(0).getJvmOptions().toString());
+		parameters.put("jvmOptions", applicationUtils.getApplication().getServer().getJvmOptions().toString());
 		try {
 			restUtils.sendPutCommand(authentificationUtils.finalHost + "/server/configuration/jvm",
 					authentificationUtils.getMap(), parameters).get("body");
@@ -105,7 +105,7 @@ public class ServerUtils implements CommandMarker {
 		parameters.put("applicationName", applicationUtils.getApplication().getName());
 		parameters.put("jvmOptions", opts);
 		parameters.put("jvmRelease", applicationUtils.getApplication().getJvmRelease());
-		parameters.put("jvmMemory", applicationUtils.getApplication().getServers().get(0).getJvmMemory().toString());
+		parameters.put("jvmMemory", applicationUtils.getApplication().getServer().getJvmMemory().toString());
 		try {
 			restUtils.sendPutCommand(authentificationUtils.finalHost + "/server/configuration/jvm",
 					authentificationUtils.getMap(), parameters).get("body");
@@ -148,8 +148,8 @@ public class ServerUtils implements CommandMarker {
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("applicationName", applicationUtils.getApplication().getName());
 		parameters.put("jvmRelease", jvmRelease);
-		parameters.put("jvmMemory", applicationUtils.getApplication().getServers().get(0).getJvmMemory().toString());
-		parameters.put("jvmOptions", applicationUtils.getApplication().getServers().get(0).getJvmOptions().toString());
+		parameters.put("jvmMemory", applicationUtils.getApplication().getServer().getJvmMemory().toString());
+		parameters.put("jvmOptions", applicationUtils.getApplication().getServer().getJvmOptions().toString());
 		try {
 			restUtils.sendPutCommand(authentificationUtils.finalHost + "/server/configuration/jvm",
 					authentificationUtils.getMap(), parameters).get("body");

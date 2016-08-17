@@ -26,6 +26,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 public class Message
     implements Serializable {
@@ -41,6 +43,7 @@ public class Message
     private Integer id;
 
     @Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "YYYY-MM-dd HH:mm")
     private Date date;
 
     @ManyToOne

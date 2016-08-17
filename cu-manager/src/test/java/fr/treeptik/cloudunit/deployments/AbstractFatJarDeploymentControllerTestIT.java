@@ -2,15 +2,18 @@ package fr.treeptik.cloudunit.deployments;
 
 import static fr.treeptik.cloudunit.utils.TestUtils.downloadAndPrepareFileToDeploy;
 import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.TestUtils;
+import java.util.Random;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.Filter;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,11 +45,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Random;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.servlet.Filter;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.TestUtils;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

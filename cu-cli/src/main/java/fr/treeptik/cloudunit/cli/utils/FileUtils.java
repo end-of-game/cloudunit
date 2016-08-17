@@ -30,14 +30,14 @@ import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
-import fr.treeptik.cloudunit.cli.model.Application;
-import fr.treeptik.cloudunit.cli.model.FileUnit;
-import fr.treeptik.cloudunit.cli.model.Module;
-import fr.treeptik.cloudunit.cli.model.Server;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.JsonConverter;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
 import fr.treeptik.cloudunit.cli.shell.CloudUnitPromptProvider;
+import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Server;
 
 @Component
 public class FileUtils {
@@ -86,13 +86,11 @@ public class FileUtils {
 		}
 
 		Application application = applicationUtils.getApplication();
-		List<Server> servers = application.getServers();
+		Server server = application.getServer();
 
-		for (Server server : servers) {
-			if (server.getName().equalsIgnoreCase(containerName)) {
-				currentContainer = server.getContainerID();
-				break;
-			}
+		if (server.getName().equalsIgnoreCase(containerName)) {
+			currentContainer = server.getContainerID();
+
 		}
 
 		for (Module module : application.getModules()) {
@@ -455,9 +453,10 @@ public class FileUtils {
 
 	public void displayAvailableContainerNames() {
 		StringBuilder builder = new StringBuilder();
-		for (Server server : applicationUtils.getApplication().getServers()) {
-			builder.append("\t" + server.getName() + "\t");
-		}
+		Server server = applicationUtils.getApplication().getServer();
+
+		builder.append("\t" + server.getName() + "\t");
+
 		for (Module module : applicationUtils.getApplication().getModules()) {
 			builder.append("\t" + module.getName() + "\t");
 		}

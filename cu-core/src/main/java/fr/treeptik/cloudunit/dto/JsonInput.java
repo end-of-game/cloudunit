@@ -15,10 +15,10 @@
 
 package fr.treeptik.cloudunit.dto;
 
+import java.io.Serializable;
+
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.utils.CheckUtils;
-
-import java.io.Serializable;
 
 /**
  * Created by nicolas on 31/07/2014.

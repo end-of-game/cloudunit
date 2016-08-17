@@ -15,45 +15,16 @@
 
 package fr.treeptik.cloudunit.dto;
 
-import java.io.Serializable;
+import org.apache.http.HttpStatus;
 
-public class JsonResponse implements Serializable {
+public class HttpErrorServer extends JsonResponse {
 
 	private static final long serialVersionUID = 1L;
 
-	private int status;
-
-	private String message = "";
-
-	private String location = "";
-
-	public JsonResponse(int status, String message, String location) {
-		this.status = status;
-		this.message = message;
-		this.location = location;
+	public HttpErrorServer() {
 	}
 
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
+	public HttpErrorServer(String message) {
+		super(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, "");
 	}
 }
