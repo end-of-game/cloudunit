@@ -1,44 +1,45 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>fr.treeptik</groupId>
-    <artifactId>cloudunit</artifactId>
-    <version>1.0</version>
-    <packaging>pom</packaging>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.treeptik</groupId>
+	<artifactId>cloudunit</artifactId>
+	<version>1.0</version>
+	<packaging>pom</packaging>
 
-    <modules>
-        <module>cu-core</module>
-        <module>cu-docker-api</module>
-        <module>cu-manager</module>
-        <module>cu-monitor</module>
-        <module>cu-maven</module>
-    </modules>
+	<modules>
+		<module>cu-core</module>
+		<module>cu-docker-api</module>
+		<module>cu-manager</module>
+		<module>cu-monitor</module>
+		<module>cu-maven</module>
+		<module>cu-cli</module>
+	</modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.6.1</version>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.6.1</version>
+		</dependency>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.6.1</version>
-        </dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.6.1</version>
+		</dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.spotify/docker-client -->
-        <dependency>
-            <groupId>com.spotify</groupId>
-            <artifactId>docker-client</artifactId>
-            <version>5.0.3-SNAPSHOT</version>
-        </dependency>
+		<!-- https://mvnrepository.com/artifact/com.spotify/docker-client -->
+		<dependency>
+			<groupId>com.spotify</groupId>
+			<artifactId>docker-client</artifactId>
+			<version>5.0.3-SNAPSHOT</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.9</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.9</version>
+		</dependency>
 
-    </dependencies>
+	</dependencies>
 </project>
