@@ -10,6 +10,7 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     @Inject
     private ApplicationService applicationService;
 
+    @Transactional
     public EnvironmentVariableRequest save(User user, EnvironmentVariableRequest environmentVariableRequest,
                                            String applicationName, String containerId)
             throws ServiceException, CheckException {
@@ -33,7 +35,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         if (!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
             throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
 
-        List<Environment> environmentList = loadAllEnvironnments();
+        List<Environment> environmentList = environmentDAO.findByContainer(containerId);
         for (Environment environment : environmentList)
             if (environment.getKeyEnv().equals(environmentVariableRequest.getKey()))
                 throw new CheckException("This key already exists");
@@ -91,11 +93,8 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         return environmentVariableRequestList;
     }
 
-    public List<Environment> loadAllEnvironnments() throws ServiceException {
-        return environmentDAO.findAllEnvironnments();
-    }
-
     @Override
+    @Transactional
     public void delete(int id) throws ServiceException, CheckException {
         Environment environment = environmentDAO.findById(id);
 
@@ -115,7 +114,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
 
         Environment environment = environmentDAO.findById(id);
-        List<Environment> environmentList = loadAllEnvironnments();
+        List<Environment> environmentList = environmentDAO.findByContainer(containerId);
         for (Environment environment1 : environmentList)
             if (environment1.getKeyEnv().equals(environmentVariableRequest.getKey())
                     && !environment1.getKeyEnv().equals(environment.getKeyEnv()))
