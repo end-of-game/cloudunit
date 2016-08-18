@@ -31,12 +31,13 @@ public class VolumeServiceImpl implements VolumeService {
 
 		if (!volume.getName().matches("^[-a-zA-Z0-9_]*$"))
 			throw new CheckException("This name is not consistent : " + volume.getName());
-		volume = loadVolume(volume.getId());
+		if(volume.getId() !=null){
+		volume = loadVolume(volume.getId());}
 		List<Volume> volumes = loadAllVolumes();
 		for (Volume v : volumes) {
 			if (volume.getId() != null && v.getName().equals(volume.getName()) && !v.getName().equals(volume.getName()))
 				throw new CheckException("This name already exists");
-			if (volume.getId() == null && volume.getName().equals(volume.getName()))
+			if (volume.getId() == null && v.getName().equals(volume.getName()))
 				throw new CheckException("This name already exists");
 		}
 		if (volume.equals(null))

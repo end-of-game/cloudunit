@@ -103,7 +103,7 @@
       ApplicationService.deleteVolume (  $stateParams.name, vm.myContainer.id, volume.id )
         .then ( function() {
           cleanMessage();
-          vm.volumes.splice(vm.volumes.indexOf(volume), 1);
+          getListVolume();
           vm.manageNoticeMsg = 'The volume has been removed!'
         } )
         .catch (errorManageVolume);
@@ -114,8 +114,7 @@
       ApplicationService.editVolume ( $stateParams.name, vm.myContainer.id, volumeID, volumeName, volumePath )
         .then(function(volume) {
           cleanMessage();
-          var elementPos = vm.volumes.map(function(x) {return x.id; }).indexOf(volumeID);
-          vm.volumes[elementPos] = volume;
+          getListVolume();
           vm.manageNoticeMsg = 'The volume has been edited!'
         })
         .catch ( function(response) {
@@ -129,7 +128,7 @@
       ApplicationService.addVolume (  $stateParams.name, vm.myContainer.id, volumeName, volumePath )
         .then ( function(volume) {
           cleanMessage();
-          vm.volumes.push(volume);
+          getListVolume();
           vm.volumeName = '';
           vm.volumePath = '';
           vm.addNoticeMsg = 'volume successfully created !';
