@@ -73,7 +73,7 @@ public class VolumeController implements Serializable {
 	}
 
 	@RequestMapping(value = "/{applicationName}/container/{containerId}/volumes", method = RequestMethod.POST)
-	public JsonResponse addVolume(@PathVariable String applicationName, @PathVariable String containerId,
+	public @ResponseBody JsonResponse addVolume(@PathVariable String applicationName, @PathVariable String containerId,
 			@RequestBody VolumeRequest volumeRequest) throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
@@ -82,7 +82,8 @@ public class VolumeController implements Serializable {
 			volume.setApplication(application);
 			volume.setContainerId(containerId);
 			volumeService.save(volume);
-			return new HttpOk();
+			return new HttpOk(
+					"/application/" + applicationName + "/container/" + containerId + "/volumes/" + volume.getId());
 		} finally {
 			authentificationUtils.allowUser(user);
 		}
