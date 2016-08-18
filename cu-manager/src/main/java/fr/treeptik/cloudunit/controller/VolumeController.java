@@ -1,8 +1,8 @@
 package fr.treeptik.cloudunit.controller;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import fr.treeptik.cloudunit.dto.HttpOk;
+import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.dto.VolumeRequest;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -50,18 +52,9 @@ public class VolumeController implements Serializable {
 		logger.info("Load");
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			List<Volume> volumeList = volumeService.loadVolumeByContainer(containerId);
-			List<VolumeRequest> volumeRequests = new ArrayList<>();
+			List<Volume> volumes = volumeService.loadVolumeByContainer(containerId);
+			return volumes.stream().map(v -> v.mapToVolume()).collect(Collectors.toList());
 
-			for (Volume volume : volumeList) {
-				VolumeRequest volumeRequest = new VolumeRequest();
-				volumeRequest.setId(volume.getId());
-				volumeRequest.setName(volume.getName());
-				volumeRequest.setPath(volume.getPath());
-				volumeRequests.add(volumeRequest);
-			}
-
-			return volumeRequests;
 		} finally {
 			authentificationUtils.allowUser(user);
 		}
@@ -73,101 +66,37 @@ public class VolumeController implements Serializable {
 		logger.info("Load");
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			Volume volume = volumeService.loadVolume(id);
-			if (volume.equals(null))
-				throw new CheckException("Volume doesn't exist");
-
-			VolumeRequest volumeRequest = new VolumeRequest();
-			volumeRequest.setId(volume.getId());
-			volumeRequest.setName(volume.getName());
-			volumeRequest.setPath(volume.getPath());
-
-			return volumeRequest;
+			return volumeService.loadVolume(id).mapToVolume();
 		} finally {
 			authentificationUtils.allowUser(user);
 		}
 	}
 
 	@RequestMapping(value = "/{applicationName}/container/{containerId}/volumes", method = RequestMethod.POST)
-	public @ResponseBody VolumeRequest addVolume(@PathVariable String applicationName, @PathVariable String containerId,
+	public JsonResponse addVolume(@PathVariable String applicationName, @PathVariable String containerId,
 			@RequestBody VolumeRequest volumeRequest) throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			if (volumeRequest.getName() == null || volumeRequest.getName().isEmpty())
-				throw new CheckException("This name is not consistent !");
-
-			if (volumeRequest.getPath() == null || volumeRequest.getPath().isEmpty())
-				throw new CheckException("This path is not consistent !");
-
-			if (!volumeRequest.getName().matches("^[-a-zA-Z0-9_]*$"))
-				throw new CheckException("This name is not consistent : " + volumeRequest.getName());
-
-			List<Volume> volumeList = volumeService.loadAllVolumes();
-			for (Volume volume : volumeList)
-				if (volume.getName().equals(volumeRequest.getName()))
-					throw new CheckException("This name already exists");
-
 			Application application = applicationService.findByNameAndUser(user, applicationName);
-			Volume volume = new Volume();
-
+			Volume volume = volumeRequest.mapToVolumeRequest();
 			volume.setApplication(application);
 			volume.setContainerId(containerId);
-			volume.setName(volumeRequest.getName());
-			volume.setPath(volumeRequest.getPath());
-
 			volumeService.save(volume);
-
-			VolumeRequest volumeRequest1 = new VolumeRequest();
-			List<Volume> volumeList1 = volumeService.loadVolumeByApplication(applicationName);
-			for (Volume volume1 : volumeList1)
-				if (volume1.getName().equals(volume.getName())) {
-					volumeRequest1.setId(volume1.getId());
-					volumeRequest1.setName(volume1.getName());
-					volumeRequest1.setPath(volume1.getPath());
-				}
-
-			return volumeRequest1;
+			return new HttpOk();
 		} finally {
 			authentificationUtils.allowUser(user);
 		}
 	}
 
 	@RequestMapping(value = "/{applicationName}/container/{containerId}/volumes/{id}", method = RequestMethod.PUT)
-	public @ResponseBody VolumeRequest updateVolume(@PathVariable String applicationName,
+	public @ResponseBody JsonResponse updateVolume(@PathVariable String applicationName,
 			@PathVariable String containerId, @PathVariable int id, @RequestBody VolumeRequest volumeRequest)
 			throws ServiceException, CheckException {
 
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			if (volumeRequest.getName() == null || volumeRequest.getName().isEmpty())
-				throw new CheckException("This name is not consistent !");
-
-			if (volumeRequest.getPath() == null || volumeRequest.getPath().isEmpty())
-				throw new CheckException("This path is not consistent !");
-
-			if (!volumeRequest.getName().matches("^[-a-zA-Z0-9_]*$"))
-				throw new CheckException("This name is not consistent : " + volumeRequest.getName());
-
-			Volume volume = volumeService.loadVolume(id);
-			List<Volume> volumeList = volumeService.loadAllVolumes();
-			for (Volume volume1 : volumeList)
-				if (volume1.getName().equals(volumeRequest.getName()) && !volume1.getName().equals(volume.getName()))
-					throw new CheckException("This name already exists");
-
-			if (volume.equals(null))
-				throw new CheckException("Volume doesn't exist");
-
-			volume.setName(volumeRequest.getName());
-			volume.setPath(volumeRequest.getPath());
-
-			volumeService.save(volume);
-
-			VolumeRequest volumeRequest1 = new VolumeRequest();
-			volumeRequest1.setId(volume.getId());
-			volumeRequest1.setName(volume.getName());
-			volumeRequest1.setPath(volume.getPath());
-
-			return volumeRequest1;
+			volumeService.save(volumeRequest.mapToVolumeRequest());
+			return new HttpOk();
 
 		} finally {
 			authentificationUtils.allowUser(user);
@@ -180,14 +109,7 @@ public class VolumeController implements Serializable {
 		logger.info("Delete");
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			Volume volume = volumeService.loadVolume(id);
-
-			if (volume.equals(null)) {
-				throw new CheckException("Volume doesn't exist");
-			}
-
 			volumeService.delete(id);
-
 		} finally {
 			authentificationUtils.allowUser(user);
 		}

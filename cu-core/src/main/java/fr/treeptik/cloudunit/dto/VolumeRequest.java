@@ -2,36 +2,47 @@ package fr.treeptik.cloudunit.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import fr.treeptik.cloudunit.model.Volume;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VolumeRequest {
 
-    private Integer id;
+	private Integer id;
 
-    private String name;
+	private String name;
 
-    private String path;
+	private String path;
 
-    public Integer getId() {
-        return id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getPath() {
-        return path;
-    }
+	public String getPath() {
+		return path;
+	}
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public Volume mapToVolumeRequest() {
+		Volume volume = new Volume();
+		volume.setId(id);
+		volume.setName(name);
+		volume.setPath(path);
+		return volume;
+	}
+
 }

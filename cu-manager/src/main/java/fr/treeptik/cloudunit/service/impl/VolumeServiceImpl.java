@@ -1,47 +1,77 @@
 package fr.treeptik.cloudunit.service.impl;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import fr.treeptik.cloudunit.dao.VolumeDAO;
+import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Volume;
 import fr.treeptik.cloudunit.service.VolumeService;
-import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
-import java.util.List;
 
 @Service
 public class VolumeServiceImpl implements VolumeService {
 
-    @Inject
-    private VolumeDAO volumeDAO;
+	@Inject
+	private VolumeDAO volumeDAO;
 
-    @Override
-    public void save(Volume volume) throws ServiceException {
-        volumeDAO.save(volume);
-    }
+	@Override
+	@Transactional
+	public void save(Volume volume) throws ServiceException, CheckException {
 
-    @Override
-    public Volume loadVolume(int id) throws ServiceException {
-        return volumeDAO.findById(id);
-    }
+		if (volume.getName() == null || volume.getName().isEmpty())
+			throw new CheckException("This name is not consistent !");
 
-    @Override
-    public List<Volume> loadVolumeByApplication(String applicationName) throws ServiceException {
-        return volumeDAO.findByApplicationName(applicationName);
-    }
+		if (volume.getPath() == null || volume.getPath().isEmpty())
+			throw new CheckException("This path is not consistent !");
 
-    @Override
-    public List<Volume> loadVolumeByContainer(String containerId) throws ServiceException {
-        return volumeDAO.findByContainer(containerId);
-    }
+		if (!volume.getName().matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This name is not consistent : " + volume.getName());
+		volume = loadVolume(volume.getId());
+		List<Volume> volumes = loadAllVolumes();
+		for (Volume v : volumes) {
+			if (volume.getId() != null && v.getName().equals(volume.getName()) && !v.getName().equals(volume.getName()))
+				throw new CheckException("This name already exists");
+			if (volume.getId() == null && volume.getName().equals(volume.getName()))
+				throw new CheckException("This name already exists");
+		}
+		if (volume.equals(null))
+			throw new CheckException("Volume doesn't exist");
 
-    @Override
-    public List<Volume> loadAllVolumes() throws ServiceException {
-        return volumeDAO.findAllVolumes();
-    }
+		volumeDAO.save(volume);
+	}
 
-    @Override
-    public void delete(int id) throws ServiceException {
-        volumeDAO.delete(id);
-    }
+	@Override
+	public Volume loadVolume(int id) throws CheckException {
+		Volume volume = volumeDAO.findById(id);
+		if (volume.equals(null))
+			throw new CheckException("Volume doesn't exist");
+		return volume;
+	}
+
+	@Override
+	public List<Volume> loadVolumeByApplication(String applicationName) {
+		return volumeDAO.findByApplicationName(applicationName);
+	}
+
+	@Override
+	public List<Volume> loadVolumeByContainer(String containerId) {
+		return volumeDAO.findByContainer(containerId);
+	}
+
+	@Override
+	public List<Volume> loadAllVolumes() {
+		return volumeDAO.findAllVolumes();
+	}
+
+	@Override
+	@Transactional
+	public void delete(int id) throws CheckException {
+		loadVolume(id);
+		volumeDAO.delete(id);
+	}
 }

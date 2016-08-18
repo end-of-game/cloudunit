@@ -1,6 +1,9 @@
 package fr.treeptik.cloudunit.model;
 
 import javax.persistence.*;
+
+import fr.treeptik.cloudunit.dto.VolumeRequest;
+
 import java.io.Serializable;
 
 @Entity
@@ -59,5 +62,13 @@ public class Volume implements Serializable {
 
 	public void setContainerId(String containerId) {
 		this.containerId = containerId;
+	}
+
+	public VolumeRequest mapToVolume() {
+		VolumeRequest volumeRequest = new VolumeRequest();
+		volumeRequest.setId(id);
+		volumeRequest.setName(name);
+		volumeRequest.setPath(path);
+		return volumeRequest;
 	}
 }
