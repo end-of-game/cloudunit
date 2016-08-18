@@ -51,16 +51,7 @@ public class EnvironmentController implements Serializable {
 		logger.info("Load");
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			List<Environment> environmentList = environmentService.loadEnvironnmentsByContainer(containerId);
-			List<EnvironmentVariableRequest> environmentVariableRequestList = new ArrayList<>();
-
-			for (Environment environment : environmentList) {
-				EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
-				environmentVariableRequest.setId(environment.getId());
-				environmentVariableRequest.setKey(environment.getKeyEnv());
-				environmentVariableRequest.setValue(environment.getValueEnv());
-				environmentVariableRequestList.add(environmentVariableRequest);
-			}
+			List<EnvironmentVariableRequest> environmentVariableRequestList = environmentService.loadEnvironnmentsByContainer(containerId);
 
 			return environmentVariableRequestList;
 		} finally {
@@ -74,16 +65,11 @@ public class EnvironmentController implements Serializable {
 		logger.info("Load");
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			Environment environment = environmentService.loadEnvironnment(id);
-			if (environment.equals(null))
-				throw new CheckException("Environment variable doesn't exist");
-
-			EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
-			environmentVariableRequest.setId(environment.getId());
-			environmentVariableRequest.setKey(environment.getKeyEnv());
-			environmentVariableRequest.setValue(environment.getValueEnv());
+			EnvironmentVariableRequest environmentVariableRequest = environmentService.loadEnvironnment(id);
 
 			return environmentVariableRequest;
+		} catch (Exception e) {
+			throw e;
 		} finally {
 			authentificationUtils.allowUser(user);
 		}
@@ -95,37 +81,12 @@ public class EnvironmentController implements Serializable {
 			throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			if (environmentVariableRequest.getKey() == null || environmentVariableRequest.getKey().isEmpty())
-				throw new CheckException("This key is not consistent !");
-
-			if (!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
-				throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
-
-			List<Environment> environmentList = environmentService.loadAllEnvironnments();
-			for (Environment environment : environmentList)
-				if (environment.getKeyEnv().equals(environmentVariableRequest.getKey()))
-					throw new CheckException("This key already exists");
-
-			Application application = applicationService.findByNameAndUser(user, applicationName);
-			Environment environment = new Environment();
-
-			environment.setApplication(application);
-			environment.setContainerId(containerId);
-			environment.setKeyEnv(environmentVariableRequest.getKey());
-			environment.setValueEnv(environmentVariableRequest.getValue());
-
-			environmentService.save(environment);
-
-			EnvironmentVariableRequest environmentVariableRequest1 = new EnvironmentVariableRequest();
-			List<Environment> environmentList1 = environmentService.loadEnvironnmentsByApplication(applicationName);
-			for (Environment environment1 : environmentList1)
-				if (environment1.getKeyEnv().equals(environment.getKeyEnv())) {
-					environmentVariableRequest1.setId(environment1.getId());
-					environmentVariableRequest1.setKey(environment1.getKeyEnv());
-					environmentVariableRequest1.setValue(environment1.getValueEnv());
-				}
+			EnvironmentVariableRequest environmentVariableRequest1 = environmentService.save(user, environmentVariableRequest,
+					applicationName, containerId);
 
 			return environmentVariableRequest1;
+		} catch (Exception e) {
+			throw e;
 		} finally {
 			authentificationUtils.allowUser(user);
 		}
@@ -138,34 +99,12 @@ public class EnvironmentController implements Serializable {
 			throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			if (environmentVariableRequest.getKey() == null || environmentVariableRequest.getKey().isEmpty())
-				throw new CheckException("This key is not consistent !");
+			EnvironmentVariableRequest environmentVariableRequest1 = environmentService.update(user, environmentVariableRequest,
+					applicationName, containerId, id);
 
-			if (!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
-				throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
-
-			Environment environment = environmentService.loadEnvironnment(id);
-			List<Environment> environmentList = environmentService.loadAllEnvironnments();
-			for (Environment environment1 : environmentList)
-				if (environment1.getKeyEnv().equals(environmentVariableRequest.getKey())
-						&& !environment1.getKeyEnv().equals(environment.getKeyEnv()))
-					throw new CheckException("This key already exists");
-
-			if (environment.equals(null))
-				throw new CheckException("Environment variable doesn't exist");
-
-			environment.setKeyEnv(environmentVariableRequest.getKey());
-			environment.setValueEnv(environmentVariableRequest.getValue());
-
-			environmentService.save(environment);
-
-			EnvironmentVariableRequest returnEnv = new EnvironmentVariableRequest();
-			returnEnv.setId(environment.getId());
-			returnEnv.setKey(environment.getKeyEnv());
-			returnEnv.setValue(environment.getValueEnv());
-
-			return returnEnv;
-
+			return environmentVariableRequest1;
+		} catch (Exception e) {
+			throw e;
 		} finally {
 			authentificationUtils.allowUser(user);
 		}
@@ -177,14 +116,9 @@ public class EnvironmentController implements Serializable {
 		logger.info("Delete");
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			Environment environment = environmentService.loadEnvironnment(id);
-
-			if (environment.equals(null)) {
-				throw new CheckException("Environment variable doesn't exist");
-			}
-
 			environmentService.delete(id);
-
+		} catch (Exception e) {
+			throw e;
 		} finally {
 			authentificationUtils.allowUser(user);
 		}

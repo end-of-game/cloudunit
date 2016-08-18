@@ -1,20 +1,25 @@
 package fr.treeptik.cloudunit.service;
 
+import fr.treeptik.cloudunit.dto.EnvironmentVariableRequest;
+import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Environment;
+import fr.treeptik.cloudunit.model.User;
 
 import java.util.List;
 
 public interface EnvironmentService {
-    void save(Environment environment) throws ServiceException;
+    EnvironmentVariableRequest save(User user, EnvironmentVariableRequest environmentVariableRequest,
+                                    String applicationName, String containerId)
+            throws ServiceException, CheckException;
 
-    Environment loadEnvironnment(int id) throws ServiceException;
+    EnvironmentVariableRequest loadEnvironnment(int id) throws ServiceException, CheckException;
 
-    List<Environment> loadEnvironnmentsByApplication(String applicationName) throws ServiceException;
+    List<EnvironmentVariableRequest> loadEnvironnmentsByContainer(String containerId) throws ServiceException;
 
-    List<Environment> loadEnvironnmentsByContainer(String containerId) throws ServiceException;
+    void delete(int id) throws ServiceException, CheckException;
 
-    List<Environment> loadAllEnvironnments() throws ServiceException;
-
-    void delete(int id) throws ServiceException;
+    EnvironmentVariableRequest update(User user, EnvironmentVariableRequest environmentVariableRequest,
+                                      String applicationName, String containerId, Integer id)
+            throws ServiceException, CheckException;
 }
