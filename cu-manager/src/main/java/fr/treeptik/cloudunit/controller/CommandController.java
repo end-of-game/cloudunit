@@ -44,13 +44,12 @@ public class CommandController {
         }
     }
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.DELETE)
-    public @ResponseBody JsonResponse deleteCommand(@PathVariable String applicationName, @PathVariable String containerId,
-                              @RequestBody CommandRequest commandRequest) throws ServiceException {
+    @RequestMapping(value = "/{applicationName}/container/{containerId}/command/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody JsonResponse deleteCommand(@PathVariable String applicationName, @PathVariable String containerId, @PathVariable Integer id) throws ServiceException {
         logger.info("Delete");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            commandService.deleteCommand(commandRequest.getId());
+            commandService.deleteCommand(id);
 
             return new HttpOk();
         } finally {
@@ -58,13 +57,13 @@ public class CommandController {
         }
     }
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{applicationName}/container/{containerId}/command/{id}", method = RequestMethod.PUT)
     public @ResponseBody JsonResponse updateCommand(@PathVariable String applicationName, @PathVariable String containerId,
-                                        @RequestBody CommandRequest commandRequest) throws ServiceException {
+                                                    @PathVariable Integer id, @RequestBody CommandRequest commandRequest) throws ServiceException {
         logger.info("Update");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            commandService.updateCommand(commandRequest, containerId, applicationName);
+            commandService.updateCommand(commandRequest, containerId, applicationName, id);
             return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);

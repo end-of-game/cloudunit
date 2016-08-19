@@ -11,7 +11,7 @@ public interface CommandService {
 
     void deleteCommand(Integer id) throws ServiceException;
 
-    void updateCommand(CommandRequest commandRequest, String containerId, String applicationName) throws ServiceException;
+    void updateCommand(CommandRequest commandRequest, String containerId, String applicationName, Integer id) throws ServiceException;
 
     CommandRequest getCommand(Integer id) throws ServiceException;
 

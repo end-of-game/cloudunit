@@ -3,6 +3,7 @@ package fr.treeptik.cloudunit.service.impl;
 import fr.treeptik.cloudunit.dao.CommandDAO;
 import fr.treeptik.cloudunit.dto.CommandRequest;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
+import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Command;
 import fr.treeptik.cloudunit.model.Image;
@@ -42,6 +43,14 @@ public class CommandServiceImpl implements CommandService {
         if(commandRequest.getDescription() == null)
             throw new ServiceException("The description is empty");
 
+        List<Command> commandList = commandDAO.findAll();
+        Optional<Command> value = commandList.stream().filter(v ->
+                v.getValue().equals(commandRequest.getValue()))
+                .findFirst();
+
+        if(value.isPresent())
+            throw new CheckException("This value already exists");
+
         List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
         String type = containerUnits.stream().filter(v -> v.getId().equals(containerId)).findFirst().get().getType();
         Integer imageId = type.equals("server") ? serverService.findByContainerID(containerId).getImage().getId() :
@@ -51,6 +60,7 @@ public class CommandServiceImpl implements CommandService {
 
         Command command = new Command();
         command.setValue(commandRequest.getValue());
+        command.setDescription(commandRequest.getDescription());
         command.setArguments(commandRequest.getArguments());
         command.setImage(image);
         commandDAO.save(command);
@@ -67,12 +77,21 @@ public class CommandServiceImpl implements CommandService {
 
     @Override
     @Transactional
-    public void updateCommand(CommandRequest commandRequest, String containerId, String applicationName) throws ServiceException {
+    public void updateCommand(CommandRequest commandRequest, String containerId, String applicationName, Integer id) throws ServiceException {
         if(commandRequest.getValue() == null)
             throw new ServiceException("The value is empty");
 
         if(commandRequest.getDescription() == null)
             throw new ServiceException("The description is empty");
+
+        Command oldCommand = commandDAO.findById(id);
+        List<Command> commandList = commandDAO.findAll();
+        Optional<Command> value = commandList.stream().filter(v ->
+                v.getValue().equals(commandRequest.getValue()) && !v.getValue().equals(oldCommand.getValue()))
+                .findFirst();
+
+        if(value.isPresent())
+            throw new CheckException("This value already exists");
 
         List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
         String type = containerUnits.stream().filter(v -> v.getId().equals(containerId)).findFirst().get().getType();
@@ -83,6 +102,7 @@ public class CommandServiceImpl implements CommandService {
         Command command = new Command();
         command.setId(commandRequest.getId());
         command.setValue(commandRequest.getValue());
+        command.setDescription(commandRequest.getDescription());
         command.setArguments(commandRequest.getArguments());
         command.setImage(image);
         commandDAO.save(command);
