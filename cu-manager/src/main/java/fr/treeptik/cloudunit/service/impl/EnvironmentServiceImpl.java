@@ -13,8 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EnvironmentServiceImpl implements EnvironmentService {
@@ -36,9 +37,13 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
 
         List<Environment> environmentList = environmentDAO.findByContainer(containerId);
-        for (Environment environment : environmentList)
-            if (environment.getKeyEnv().equals(environmentVariableRequest.getKey()))
-                throw new CheckException("This key already exists");
+
+        Optional<Environment> value = environmentList.stream().filter(v ->
+                v.getKeyEnv().equals(environmentVariableRequest.getKey()))
+                .findFirst();
+
+        if(value.isPresent())
+            throw new CheckException("This key already exists");
 
         Application application = applicationService.findByNameAndUser(user, applicationName);
         Environment environment = new Environment();
@@ -50,16 +55,12 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
         environmentDAO.save(environment);
 
-        EnvironmentVariableRequest environmentVariableRequest1 = new EnvironmentVariableRequest();
         List<EnvironmentVariableRequest> environmentVariableRequestList = loadEnvironnmentsByContainer(containerId);
-        for (EnvironmentVariableRequest environmentVariableRequest2 : environmentVariableRequestList)
-            if (environmentVariableRequest2.getKey().equals(environment.getKeyEnv())) {
-                environmentVariableRequest1.setId(environmentVariableRequest2.getId());
-                environmentVariableRequest1.setKey(environmentVariableRequest2.getKey());
-                environmentVariableRequest1.setValue(environmentVariableRequest2.getValue());
-            }
 
-        return environmentVariableRequest1;
+        Optional<EnvironmentVariableRequest> value2 = environmentVariableRequestList.stream()
+                .filter(v -> v.getKey().equals(environment.getKeyEnv())).findFirst();
+
+        return value2.get();
     }
 
     @Override
@@ -80,15 +81,9 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
     @Override
     public List<EnvironmentVariableRequest> loadEnvironnmentsByContainer(String containerId) throws ServiceException {
-        List<EnvironmentVariableRequest> environmentVariableRequestList = new ArrayList<>();
         List<Environment> environmentList = environmentDAO.findByContainer(containerId);
-        for (Environment environment : environmentList) {
-            EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
-            environmentVariableRequest.setId(environment.getId());
-            environmentVariableRequest.setKey(environment.getKeyEnv());
-            environmentVariableRequest.setValue(environment.getValueEnv());
-            environmentVariableRequestList.add(environmentVariableRequest);
-        }
+        List<EnvironmentVariableRequest> environmentVariableRequestList = environmentList.stream()
+                .map(v -> v.mapToRequest()).collect(Collectors.toList());
 
         return environmentVariableRequestList;
     }
@@ -115,10 +110,13 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
         Environment environment = environmentDAO.findById(id);
         List<Environment> environmentList = environmentDAO.findByContainer(containerId);
-        for (Environment environment1 : environmentList)
-            if (environment1.getKeyEnv().equals(environmentVariableRequest.getKey())
-                    && !environment1.getKeyEnv().equals(environment.getKeyEnv()))
-                throw new CheckException("This key already exists");
+
+        Optional<Environment> value = environmentList.stream().filter(v ->
+            v.getKeyEnv().equals(environmentVariableRequest.getKey()) && !v.getKeyEnv().equals(environment.getKeyEnv()))
+                .findFirst();
+
+        if(value.isPresent())
+            throw new CheckException("This key already exists");
 
         if (environment.equals(null))
             throw new CheckException("Environment variable doesn't exist");

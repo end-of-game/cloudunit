@@ -79,16 +79,8 @@ public class CommandController {
             List<Command> commandList = commandService.listCommandByContainer(containerId);
             List<CommandRequest> commandRequestList = new ArrayList<>();
 
-            for (Command command : commandList) {
-                List<String> arguments = new ArrayList<>(command.getArguments());
-
-                CommandRequest commandRequest = new CommandRequest();
-                commandRequest.setId(command.getId());
-                commandRequest.setValue(command.getValue());
-                commandRequest.setArguments(arguments);
-                commandRequest.setContainerId(command.getContainerId());
-                commandRequestList.add(commandRequest);
-            }
+            for (Command command : commandList)
+                commandRequestList.add(command.mapToRequest());
 
             return commandRequestList;
         } finally {
@@ -104,14 +96,7 @@ public class CommandController {
         try {
             Command command = commandService.getCommand(id);
 
-            List<String> arguments = new ArrayList<>(command.getArguments());
-            CommandRequest commandRequest = new CommandRequest();
-            commandRequest.setId(command.getId());
-            commandRequest.setValue(command.getValue());
-            commandRequest.setArguments(arguments);
-            commandRequest.setContainerId(command.getContainerId());
-
-            return commandRequest;
+            return command.mapToRequest();
         } finally {
             authentificationUtils.allowUser(user);
         }

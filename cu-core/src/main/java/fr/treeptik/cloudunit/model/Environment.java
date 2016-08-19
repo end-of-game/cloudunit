@@ -1,5 +1,7 @@
 package fr.treeptik.cloudunit.model;
 
+import fr.treeptik.cloudunit.dto.EnvironmentVariableRequest;
+
 import java.io.Serializable;
 
 import javax.persistence.Entity;
@@ -64,6 +66,14 @@ public class Environment implements Serializable {
     public String getContainerId() { return containerId; }
 
     public void setContainerId(String containerId) { this.containerId = containerId; }
+
+    public EnvironmentVariableRequest mapToRequest() {
+        EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
+        environmentVariableRequest.setId(id);
+        environmentVariableRequest.setKey(keyEnv);
+        environmentVariableRequest.setValue(valueEnv);
+        return environmentVariableRequest;
+    }
 
     @Override
     public String toString() {

@@ -5,6 +5,7 @@ import fr.treeptik.cloudunit.dto.CommandRequest;
 import fr.treeptik.cloudunit.model.Command;
 import fr.treeptik.cloudunit.service.CommandService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ public class CommandServiceImpl implements CommandService {
     private CommandDAO commandDAO;
 
     @Override
+    @Transactional
     public void addCommand(CommandRequest commandRequest) {
         Set<String> arguments = new HashSet<String>(commandRequest.getArguments());
         Command command = new Command();
@@ -28,11 +30,13 @@ public class CommandServiceImpl implements CommandService {
     }
 
     @Override
+    @Transactional
     public void deleteCommand(Integer id) {
         commandDAO.delete(id);
     }
 
     @Override
+    @Transactional
     public void updateCommand(CommandRequest commandRequest) {
         Set<String> arguments = new HashSet<String>(commandRequest.getArguments());
         Command command = new Command();
