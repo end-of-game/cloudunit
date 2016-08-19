@@ -59,7 +59,7 @@ public class CommandController {
     }
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.PUT)
-    public JsonResponse updateCommand(@PathVariable String applicationName, @PathVariable String containerId,
+    public @ResponseBody JsonResponse updateCommand(@PathVariable String applicationName, @PathVariable String containerId,
                                         @RequestBody CommandRequest commandRequest) throws ServiceException {
         logger.info("Update");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -72,7 +72,7 @@ public class CommandController {
     }
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.GET)
-    public List<CommandRequest> listCommandByContainer(@PathVariable String applicationName,
+    public @ResponseBody List<CommandRequest> listCommandByContainer(@PathVariable String applicationName,
                                                        @PathVariable String containerId) throws ServiceException {
         logger.info("Load by container");
         User user = authentificationUtils.getAuthentificatedUser();
@@ -86,7 +86,7 @@ public class CommandController {
     }
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/command/{id}", method = RequestMethod.POST)
-    public CommandRequest getCommand(@PathVariable String applicationName, @PathVariable String containerId,
+    public @ResponseBody CommandRequest getCommand(@PathVariable String applicationName, @PathVariable String containerId,
                                      @PathVariable Integer id) throws ServiceException {
         logger.info("Load by id");
         User user = authentificationUtils.getAuthentificatedUser();
