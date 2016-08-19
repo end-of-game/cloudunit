@@ -45,33 +45,35 @@
 
   function TimelineCtrl (FeedService, ErrorService) {
 
-        var vm;
-        vm = this;
+    var vm;
+    vm = this;
 
-        vm.event = '';
-        vm.date = 'recent';
-        vm.orderByDate = true;
-        vm.applicationName = '';
-        
-        ////////////////////////////////////////////////////
+    vm.pageSize = 10;
+    vm.currentPage = 1;
+    vm.event = '';
+    vm.date = 'recent';
+    vm.orderByDate = true;
+    vm.applicationName = '';
 
-        vm.$onInit = function() {
-          FeedService.listMessagesFirstRows()
-            .then(success)
-            .catch(error);
+    ////////////////////////////////////////////////////
 
-          function success(messages) {
-            vm.messages = messages;
-            return vm.messages;
-          }
+    vm.$onInit = function() {
+      FeedService.listMessagesFirstRows()
+        .then(success)
+        .catch(error);
 
-          function error(response) {
-            ErrorService.handle(response);
-            if(timer){
-              $interval.cancel(timer);
-            }
-          }
+      function success(messages) {
+        vm.messages = messages;
+        return vm.messages;
+      }
+
+      function error(response) {
+        ErrorService.handle(response);
+        if(timer){
+          $interval.cancel(timer);
         }
+      }
+    }
       
   }
 }) ();

@@ -49,7 +49,6 @@
         vm.domain = '';
       }
 
-
       function error(response) {
         vm.errorMsg = response.data.message;
         return vm.errorMsg;

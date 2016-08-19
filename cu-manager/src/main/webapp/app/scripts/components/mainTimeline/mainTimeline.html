@@ -73,15 +73,19 @@
         <p>No data available from this source</p>
       </div>
       
-      <div id="timeline-task" data-ng-show="timeline.messages.length">
-        <table class="table ng-table-responsive terminal">
-          <tr data-ng-repeat="message in timeline.messages | filter:{event:timeline.event, applicationName:timeline.applicationName} | orderBy:'date':timeline.orderByDate">
+      <dir-pagination-controls ng-if="timeline.messages.length"></dir-pagination-controls>
+      <br>
+      <table id="timeline-task" class="table ng-table-responsive terminal" ng-if="timeline.messages.length">
+          <tr 
+            dir-paginate="message in timeline.messages | filter:{event:timeline.event, applicationName:timeline.applicationName} | orderBy:'date':timeline.orderByDate | itemsPerPage: timeline.pageSize track by message.id"
+            data-current-page="timeline.currentPage">
             <td>
               {{ message.applicationName }} {{ message.dateAsString }} {{ message.event }}
             </td>
           </tr>
-        </table>
-      </div>
+      </table>
+      <br>
+      <dir-pagination-controls ng-if="timeline.messages.length"></dir-pagination-controls>
     </div>
   </div>
 </div>
