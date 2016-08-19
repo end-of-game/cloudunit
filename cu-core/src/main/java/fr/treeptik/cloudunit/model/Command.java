@@ -7,46 +7,48 @@ import java.util.Set;
 @Entity
 public class Command implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+	private static final long serialVersionUID = 1L;
 
-    private String value;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-    @ElementCollection
-    private Set<String> arguments;
+	private String value;
 
-    private String containerId;
+	@ElementCollection
+	private Set<String> arguments;
 
-    public Integer getId() {
-        return id;
-    }
+	private String containerId;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public Set<String> getArguments() {
-        return arguments;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    public void setArguments(Set<String> arguments) {
-        this.arguments = arguments;
-    }
+	public Set<String> getArguments() {
+		return arguments;
+	}
 
-    public String getContainerId() {
-        return containerId;
-    }
+	public void setArguments(Set<String> arguments) {
+		this.arguments = arguments;
+	}
 
-    public void setContainerId(String containerId) {
-        this.containerId = containerId;
-    }
+	public String getContainerId() {
+		return containerId;
+	}
+
+	public void setContainerId(String containerId) {
+		this.containerId = containerId;
+	}
 }

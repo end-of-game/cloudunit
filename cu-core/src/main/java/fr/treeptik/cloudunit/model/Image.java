@@ -63,6 +63,8 @@ public class Image implements Serializable {
 
 	private String prefixEnv;
 
+	private Integer prefixId;
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "image")
 	private List<Module> modules;
@@ -172,6 +174,15 @@ public class Image implements Serializable {
 
 	public void setPrefixEnv(String prefixEnv) {
 		this.prefixEnv = prefixEnv;
+	}
+
+	public Integer getPrefixId() {
+		prefixId = hashCode();
+		return prefixId;
+	}
+
+	public void setPrefixId(Integer prefixId) {
+		this.prefixId = prefixId;
 	}
 
 }

@@ -8,43 +8,45 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CommandRequest implements Serializable {
 
-    private Integer id;
+	private static final long serialVersionUID = 1L;
 
-    private String value;
+	private Integer id;
 
-    private List<String> arguments;
+	private String value;
 
-    private String containerId;
+	private List<String> arguments;
 
-    public Integer getId() {
-        return id;
-    }
+	private String containerId;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public List<String> getArguments() {
-        return arguments;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    public void setArguments(List<String> arguments) {
-        this.arguments = arguments;
-    }
+	public List<String> getArguments() {
+		return arguments;
+	}
 
-    public String getContainerId() {
-        return containerId;
-    }
+	public void setArguments(List<String> arguments) {
+		this.arguments = arguments;
+	}
 
-    public void setContainerId(String containerId) {
-        this.containerId = containerId;
-    }
+	public String getContainerId() {
+		return containerId;
+	}
+
+	public void setContainerId(String containerId) {
+		this.containerId = containerId;
+	}
 }
