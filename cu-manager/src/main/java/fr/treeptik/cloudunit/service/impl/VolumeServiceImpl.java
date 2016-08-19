@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.treeptik.cloudunit.dao.VolumeDAO;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Volume;
 import fr.treeptik.cloudunit.service.VolumeService;
 
@@ -21,7 +22,8 @@ public class VolumeServiceImpl implements VolumeService {
 
 	@Override
 	@Transactional
-	public void save(Volume volume) throws ServiceException, CheckException {
+	public void save(Volume volume, Application application, String containerId)
+			throws ServiceException, CheckException {
 
 		if (volume.getName() == null || volume.getName().isEmpty())
 			throw new CheckException("This name is not consistent !");
@@ -31,8 +33,6 @@ public class VolumeServiceImpl implements VolumeService {
 
 		if (!volume.getName().matches("^[-a-zA-Z0-9_]*$"))
 			throw new CheckException("This name is not consistent : " + volume.getName());
-		if(volume.getId() !=null){
-		volume = loadVolume(volume.getId());}
 		List<Volume> volumes = loadAllVolumes();
 		for (Volume v : volumes) {
 			if (volume.getId() != null && v.getName().equals(volume.getName()) && !v.getName().equals(volume.getName()))
@@ -42,7 +42,8 @@ public class VolumeServiceImpl implements VolumeService {
 		}
 		if (volume.equals(null))
 			throw new CheckException("Volume doesn't exist");
-
+		volume.setApplication(application);
+		volume.setContainerId(containerId);
 		volumeDAO.save(volume);
 	}
 

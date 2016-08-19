@@ -71,4 +71,11 @@ public class Volume implements Serializable {
 		volumeRequest.setPath(path);
 		return volumeRequest;
 	}
+
+	@Override
+	public String toString() {
+		return "Volume [id=" + id + ", name=" + name + ", path=" + path + ", application=" + application
+				+ ", containerId=" + containerId + "]";
+	}
+
 }

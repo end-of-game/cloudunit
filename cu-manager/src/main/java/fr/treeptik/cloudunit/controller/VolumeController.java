@@ -79,9 +79,7 @@ public class VolumeController implements Serializable {
 		try {
 			Application application = applicationService.findByNameAndUser(user, applicationName);
 			Volume volume = volumeRequest.mapToVolumeRequest();
-			volume.setApplication(application);
-			volume.setContainerId(containerId);
-			volumeService.save(volume);
+			volumeService.save(volume, application, containerId);
 			return new HttpOk(
 					"/application/" + applicationName + "/container/" + containerId + "/volumes/" + volume.getId());
 		} finally {
@@ -96,7 +94,10 @@ public class VolumeController implements Serializable {
 
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			volumeService.save(volumeRequest.mapToVolumeRequest());
+			Application application = applicationService.findByNameAndUser(user, applicationName);
+
+			volumeRequest.setId(id);
+			volumeService.save(volumeRequest.mapToVolumeRequest(), application, containerId);
 			return new HttpOk();
 
 		} finally {
