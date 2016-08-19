@@ -52,6 +52,61 @@ There are many installation guides
 * [MongoDB](documentation/MONGO_GUIDE.md) 
 * [WordPress](documentation/WORDPRESS_GUIDE.md)
 
+## Browsers Support
+
+<table>
+	<thead>
+		<th></th>
+		<th>Windows</th>
+		<th>MacOS</th>
+		<th>Linux</th>
+	</thead>
+	<tbody>
+		<!-- Chrome -->
+		<tr>
+			<td>Chrome</td>
+			<td>✓</td>
+			<td>✓</td>
+			<td>✓</td>
+		</tr>
+		<!-- Firefox -->
+		<tr>
+			<td>Firefox<sup>33</sup></td>
+			<td>✓</td>
+			<td>✓</td>
+			<td>✓</td>
+		</tr>
+		<!-- Opera -->
+		<tr>
+			<td>Opera</td>
+			<td>✓</td>
+			<td>?</td>
+			<td>✓</td>
+		</tr>
+		<!-- Safari -->
+		<tr>
+			<td>Safari</td>
+			<td>?</td>
+			<td>✓</td>
+			<td>-</td>
+		</tr>
+		<!-- Edge -->
+		<tr>
+			<td>Edge</td>
+			<td>✓</td>
+			<td>-</td>
+			<td>-</td>
+		</tr>
+		<!-- IE -->
+		<tr>
+			<td>IE<sup>1</sup></td>
+			<td>✓</td>
+			<td>-</td>
+			<td>-</td>
+		</tr>
+	</tbody>
+</table>
+
 # Licensing
 
 All the source code is licensed under GNU AFFERO GENERAL PUBLIC LICENSE. License is available [here](/LICENSE)
