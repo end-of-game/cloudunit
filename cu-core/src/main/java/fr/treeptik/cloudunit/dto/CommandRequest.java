@@ -14,6 +14,8 @@ public class CommandRequest implements Serializable {
 
 	private String value;
 
+	private String description;
+
 	private List<String> arguments;
 
 	private String containerId;
@@ -33,6 +35,10 @@ public class CommandRequest implements Serializable {
 	public void setValue(String value) {
 		this.value = value;
 	}
+
+	public String getDescription() { return description; }
+
+	public void setDescription(String description) { this.description = description; }
 
 	public List<String> getArguments() {
 		return arguments;

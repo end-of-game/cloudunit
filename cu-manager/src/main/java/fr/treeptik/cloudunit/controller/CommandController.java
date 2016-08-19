@@ -2,6 +2,8 @@ package fr.treeptik.cloudunit.controller;
 
 
 import fr.treeptik.cloudunit.dto.CommandRequest;
+import fr.treeptik.cloudunit.dto.HttpOk;
+import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Command;
 import fr.treeptik.cloudunit.model.User;
@@ -11,10 +13,7 @@ import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -33,38 +32,40 @@ public class CommandController {
     private CommandService commandService;
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.POST)
-    public CommandRequest addCommand(@PathVariable String applicationName, @PathVariable String containerId,
-                                     @RequestBody CommandRequest commandRequest) throws ServiceException {
+    public @ResponseBody JsonResponse addCommand(@PathVariable String applicationName, @PathVariable String containerId,
+                            @RequestBody CommandRequest commandRequest) throws ServiceException {
         logger.info("Add");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             commandService.addCommand(commandRequest);
-            return commandRequest;
+            return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.DELETE)
-    public void deleteCommand(@PathVariable String applicationName, @PathVariable String containerId,
+    public @ResponseBody JsonResponse deleteCommand(@PathVariable String applicationName, @PathVariable String containerId,
                               @RequestBody CommandRequest commandRequest) throws ServiceException {
         logger.info("Delete");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             commandService.deleteCommand(commandRequest.getId());
+
+            return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.PUT)
-    public CommandRequest updateCommand(@PathVariable String applicationName, @PathVariable String containerId,
+    public JsonResponse updateCommand(@PathVariable String applicationName, @PathVariable String containerId,
                                         @RequestBody CommandRequest commandRequest) throws ServiceException {
         logger.info("Update");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             commandService.updateCommand(commandRequest);
-            return commandRequest;
+            return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);
         }
@@ -76,11 +77,7 @@ public class CommandController {
         logger.info("Load by container");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            List<Command> commandList = commandService.listCommandByContainer(containerId);
-            List<CommandRequest> commandRequestList = new ArrayList<>();
-
-            for (Command command : commandList)
-                commandRequestList.add(command.mapToRequest());
+            List<CommandRequest> commandRequestList = commandService.listCommandByContainer(containerId);
 
             return commandRequestList;
         } finally {
@@ -94,9 +91,9 @@ public class CommandController {
         logger.info("Load by id");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            Command command = commandService.getCommand(id);
+            CommandRequest commandRequest = commandService.getCommand(id);
 
-            return command.mapToRequest();
+            return commandRequest;
         } finally {
             authentificationUtils.allowUser(user);
         }
