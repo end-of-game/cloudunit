@@ -4,9 +4,7 @@ import fr.treeptik.cloudunit.dto.CommandRequest;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 public class Command implements Serializable {
@@ -23,8 +21,6 @@ public class Command implements Serializable {
 
 	@ElementCollection
 	private List<String> arguments;
-
-	private String containerId;
 
 	@ManyToOne
 	private Image image;
@@ -57,14 +53,6 @@ public class Command implements Serializable {
 		this.arguments = arguments;
 	}
 
-	public String getContainerId() {
-		return containerId;
-	}
-
-	public void setContainerId(String containerId) {
-		this.containerId = containerId;
-	}
-
 	public Image getImage() { return image; }
 
 	public void setImage(Image image) { this.image = image; }
@@ -75,7 +63,6 @@ public class Command implements Serializable {
 		commandRequest.setArguments(arguments);
 		commandRequest.setValue(value);
 		commandRequest.setDescription(description);
-		commandRequest.setContainerId(containerId);
 		return commandRequest;
 	}
 }

@@ -37,7 +37,7 @@ public class CommandController {
         logger.info("Add");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            commandService.addCommand(commandRequest);
+            commandService.addCommand(commandRequest, containerId, applicationName);
             return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);
@@ -64,7 +64,7 @@ public class CommandController {
         logger.info("Update");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            commandService.updateCommand(commandRequest);
+            commandService.updateCommand(commandRequest, containerId, applicationName);
             return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);
@@ -72,12 +72,12 @@ public class CommandController {
     }
 
     @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.GET)
-    public @ResponseBody List<CommandRequest> listCommandByContainer(@PathVariable String applicationName,
-                                                       @PathVariable String containerId) throws ServiceException {
+    public @ResponseBody List<CommandRequest> listCommandByImage(@PathVariable String applicationName,
+                                                                @PathVariable String containerId) throws ServiceException {
         logger.info("Load by container");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            List<CommandRequest> commandRequestList = commandService.listCommandByContainer(containerId);
+            List<CommandRequest> commandRequestList = commandService.listCommandByImage(applicationName, containerId);
 
             return commandRequestList;
         } finally {

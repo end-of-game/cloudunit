@@ -18,8 +18,6 @@ public class CommandRequest implements Serializable {
 
 	private List<String> arguments;
 
-	private String containerId;
-
 	public Integer getId() {
 		return id;
 	}
@@ -46,13 +44,5 @@ public class CommandRequest implements Serializable {
 
 	public void setArguments(List<String> arguments) {
 		this.arguments = arguments;
-	}
-
-	public String getContainerId() {
-		return containerId;
-	}
-
-	public void setContainerId(String containerId) {
-		this.containerId = containerId;
 	}
 }
