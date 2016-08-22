@@ -15,16 +15,16 @@
 
 package fr.treeptik.cloudunit.service;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.util.List;
 
 public interface ApplicationService {
 
