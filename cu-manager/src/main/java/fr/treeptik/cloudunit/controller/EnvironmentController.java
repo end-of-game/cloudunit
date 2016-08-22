@@ -83,6 +83,5 @@ public class EnvironmentController implements Serializable {
 		logger.info("Delete");
 		environmentService.delete(id);
 		return new HttpOk();
-
 	}
 }
