@@ -72,7 +72,7 @@
     ////////////////////////////////////////////////
 
     function getListEnvironmentVariable() {
-      ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.id)
+      ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.name)
         .then(function(response) {
           vm.env = response;
         })
@@ -98,7 +98,7 @@
     }
 
     function deleteEnv (environmentVariable) {
-      ApplicationService.deleteEnvironmentVariable (  $stateParams.name, vm.myContainer.id, environmentVariable.id )
+      ApplicationService.deleteEnvironmentVariable (  $stateParams.name, vm.myContainer.name, environmentVariable.id )
         .then ( function() {
           cleanMessage();
           vm.env.splice(vm.env.indexOf(environmentVariable), 1);
@@ -108,7 +108,7 @@
     }
     
     function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
-      ApplicationService.editEnvironmentVariable ( $stateParams.name, vm.myContainer.id, environmentVariableID, environmentVariableKey, environmentVariableValue )
+      ApplicationService.editEnvironmentVariable ( $stateParams.name, vm.myContainer.name, environmentVariableID, environmentVariableKey, environmentVariableValue )
         .then(function(env) {
           cleanMessage();
           var elementPos = vm.env.map(function(x) {return x.id; }).indexOf(environmentVariableID);         
@@ -122,7 +122,7 @@
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
-      ApplicationService.addEnvironmentVariable (  $stateParams.name, vm.myContainer.id, environmentVariableKey, environmentVariableValue )
+      ApplicationService.addEnvironmentVariable (  $stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue )
         .then ( function(env) {
           cleanMessage();
           vm.env.push(env);

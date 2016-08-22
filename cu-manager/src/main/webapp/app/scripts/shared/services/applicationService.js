@@ -216,46 +216,46 @@
     
     // Gestion des variables environnement
     
-    function getListSettingsEnvironmentVariable ( applicationName, containerId ) {
-      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables' );
+    function getListSettingsEnvironmentVariable ( applicationName, containerName ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables' );
       return dir.query ( {
         applicationName: applicationName,
-        containerId: containerId
+        containerName: containerName
       } ).$promise;      
     }
 
-    function getSettingsEnvironmentVariable ( applicationName, containerId, environmentVariableID ) {
-      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables/:id' );
+    function getSettingsEnvironmentVariable ( applicationName, containerName, environmentVariableID ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables/:id' );
       return dir.get ( {
         applicationName: applicationName,
-        containerId: containerId,
+        containerName: containerName,
         id: environmentVariableID
       } ).$promise;
     }
 
-    function addEnvironmentVariable ( applicationName, containerId, environmentVariableKey, environmentVariableValue ) {
+    function addEnvironmentVariable ( applicationName, containerName, environmentVariableKey, environmentVariableValue ) {
       var data = {
         key: environmentVariableKey,
         value: environmentVariableValue
       };
 
-      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables' );
+      var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables' );
       return dir.save ( {
         applicationName: applicationName,
-        containerId: containerId
+        containerName: containerName
       }, data ).$promise;
     }
 
-    function editEnvironmentVariable ( applicationName, containerId, environmentVariableID, environmentVariableKey, environmentVariableValue ) {
+    function editEnvironmentVariable ( applicationName, containerName, environmentVariableID, environmentVariableKey, environmentVariableValue ) {
       var data = {
         key: environmentVariableKey,
         value: environmentVariableValue
       };
       
-      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables/:id' ,
+      var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables/:id' ,
         { 
           applicationName: applicationName,
-          containerId: containerId,
+          containerName: containerName,
           id: environmentVariableID
         },
         { 
@@ -272,20 +272,20 @@
       return dir.update( { }, data ).$promise; 
     }
 
-    function deleteEnvironmentVariable ( applicationName, containerId, environmentVariableID ) {
-      var dir = $resource ( 'application/:applicationName/container/:containerId/environmentVariables/:id' );
+    function deleteEnvironmentVariable ( applicationName, containerName, environmentVariableID ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables/:id' );
       return dir.delete ( { 
         applicationName: applicationName,
-        containerId: containerId,
+        containerName: containerName,
         id: environmentVariableID
       }, {} ).$promise; 
     }
 
-    function getVariableEnvironment ( applicationName, containerId ) {
-      var dir = $resource ( 'application/:applicationName/container/:containerId/env' );
+    function getVariableEnvironment ( applicationName, containerName ) {
+      var dir = $resource ( 'application/:applicationName/container/:containerName/env' );
       return dir.query ( {
         applicationName: applicationName,
-        containerId: containerId
+        containerName: containerName
       } ).$promise;      
     }
 
