@@ -55,7 +55,7 @@ public class VolumeServiceImpl implements VolumeService {
 		if (loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getName())).findAny().isPresent()) {
 			throw new CheckException("This name already exists");
 		}
-		Server server = serverService.findByContainerID(containerName);
+		Server server = serverService.findByName(containerName);
 		publisher.publishEvent(new ApplicationPendingEvent(application));
 		volume.setApplication(application);
 		volume.setContainerName(containerName);
@@ -63,7 +63,7 @@ public class VolumeServiceImpl implements VolumeService {
 		volumeDAO.save(volume);
 		publisher.publishEvent(new ServerStopEvent(server));
 		dockerService.removeServer(server.getName(), false);
-		List<String> volumes = loadVolumeByContainer(server.getContainerID()).stream()
+		List<String> volumes = loadVolumeByContainer(server.getName()).stream()
 				.map(t -> t.getName() + ":" + t.getPath() + ":rw").collect(Collectors.toList());
 		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
 				server.getApplication().getUser(), null, false, volumes);
