@@ -55,7 +55,7 @@ public class VolumeServiceImpl implements VolumeService {
 		if (loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getName())).findAny().isPresent()) {
 			throw new CheckException("This name already exists");
 		}
-		createVolumeAndLaunchContainer(volume, containerName, application);
+		createVolumeAndLaunchContainer(volume, containerName, application, false);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class VolumeServiceImpl implements VolumeService {
 			throw new CheckException("The volume does not change");
 		}
 		dockerCloudUnitClient.removeVolume(volume.getName());
-		createVolumeAndLaunchContainer(volume, containerName, application);
+		createVolumeAndLaunchContainer(volume, containerName, application, false);
 
 	}
 
@@ -106,20 +106,26 @@ public class VolumeServiceImpl implements VolumeService {
 
 	@Override
 	@Transactional
-	public void delete(int id) throws CheckException {
+	public void delete(int id) throws CheckException, ServiceException {
 		Volume volume = loadVolume(id);
 		dockerCloudUnitClient.removeVolume(volume.getName());
 		volumeDAO.delete(id);
+		createVolumeAndLaunchContainer(volume, volume.getContainerName(),
+				serverService.findByName(volume.getContainerName()).getApplication(), true);
 	}
 
-	private void createVolumeAndLaunchContainer(Volume volume, String containerName, Application application)
-			throws ServiceException {
+	private void createVolumeAndLaunchContainer(Volume volume, String containerName, Application application,
+			boolean afterRemove) throws ServiceException {
 		Server server = serverService.findByName(containerName);
 		publisher.publishEvent(new ApplicationPendingEvent(application));
-		volume.setApplication(application);
-		volume.setContainerName(containerName);
-		dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
-		volumeDAO.save(volume);
+
+		if (!afterRemove) {
+			volume.setApplication(application);
+			volume.setContainerName(containerName);
+			dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
+			volumeDAO.save(volume);
+		}
+
 		publisher.publishEvent(new ServerStopEvent(server));
 		dockerService.removeServer(server.getName(), false);
 		List<String> volumes = loadVolumeByContainer(server.getName()).stream()
@@ -128,9 +134,7 @@ public class VolumeServiceImpl implements VolumeService {
 				server.getApplication().getUser(), null, false, volumes);
 		server = serverService.startServer(server);
 		serverService.addCredentialsForServerManagement(server, server.getApplication().getUser());
-
 		publisher.publishEvent(new ServerStartEvent(server));
-
 		publisher.publishEvent(new ApplicationStartEvent(application));
 	}
 
