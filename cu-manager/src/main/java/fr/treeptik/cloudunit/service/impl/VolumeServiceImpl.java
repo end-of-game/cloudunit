@@ -112,8 +112,8 @@ public class VolumeServiceImpl implements VolumeService {
 	}
 
 	@Override
-	public List<Volume> loadVolumeByContainer(String containerId) {
-		return volumeDAO.findByContainer(containerId);
+	public List<Volume> loadVolumeByContainer(String containerName) {
+		return volumeDAO.findByContainer(containerName);
 	}
 
 	@Override
