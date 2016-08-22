@@ -44,35 +44,76 @@ public class VolumeServiceImpl implements VolumeService {
 
 	@Override
 	@Transactional
-	public void createNewVolume(Volume volume, Application application, String containerName)
-			throws ServiceException, CheckException {
+	public void createNewVolume(Volume volume, Application application, String containerName) throws ServiceException {
 		checkVolumeFormat(volume);
-		Server server = serverService.findByName(containerName);
-		stopAndRemoveServer(server, application);
-		volume.setApplication(application);
-		volume.setContainerName(containerName);
-		dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
-		volumeDAO.save(volume);
-		recreateAndMountVolumes(server, application);
+		Server server = null;
+		try {
+			server = serverService.findByName(containerName);
+			stopAndRemoveServer(server, application);
+			volume.setApplication(application);
+			volume.setContainerName(containerName);
+			dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
+			volumeDAO.save(volume);
+			recreateAndMountVolumes(server, application);
+		} catch (CheckException e) {
+			throw new CheckException(e.getMessage());
+		} catch (ServiceException e) {
+			throw new ServiceException(e.getMessage());
+		} finally {
+			publisher.publishEvent(new ServerStartEvent(server));
+			publisher.publishEvent(new ApplicationStartEvent(application));
+		}
+
 	}
 
 	@Override
 	@Transactional
-	public void updateVolume(Volume volume, Application application, String containerName)
-			throws ServiceException, CheckException {
-		checkVolumeFormat(volume);
-		Volume currentVolume = loadVolume(volume.getId());
-		if (currentVolume.getName().equals(volume.getName()) && currentVolume.getPath().equals(volume.getPath())) {
-			throw new CheckException("The volume does not change");
+	public void updateVolume(Volume volume, Application application, String containerName) throws ServiceException {
+		Server server = null;
+		try {
+			checkVolumeFormat(volume);
+			Volume currentVolume = loadVolume(volume.getId());
+			if (currentVolume.getName().equals(volume.getName()) && currentVolume.getPath().equals(volume.getPath())) {
+				throw new CheckException("The volume does not change");
+			}
+			server = serverService.findByName(containerName);
+			stopAndRemoveServer(server, application);
+			dockerCloudUnitClient.removeVolume(currentVolume.getName());
+			volume.setApplication(application);
+			volume.setContainerName(containerName);
+			dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
+			volumeDAO.save(volume);
+			recreateAndMountVolumes(server, application);
+		} catch (CheckException e) {
+			throw new CheckException(e.getMessage());
+		} catch (ServiceException e) {
+			throw new ServiceException(e.getMessage());
+		} finally {
+			publisher.publishEvent(new ServerStartEvent(server));
+			publisher.publishEvent(new ApplicationStartEvent(application));
 		}
-		Server server = serverService.findByName(containerName);
-		stopAndRemoveServer(server, application);
-		dockerCloudUnitClient.removeVolume(volume.getName());
-		volume.setApplication(application);
-		volume.setContainerName(containerName);
-		dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
-		volumeDAO.save(volume);
-		recreateAndMountVolumes(server, application);
+
+	}
+
+	@Override
+	@Transactional
+	public void delete(int id) throws ServiceException {
+		Server server = null;
+		try {
+			Volume volume = loadVolume(id);
+			volumeDAO.delete(id);
+			server = serverService.findByName(volume.getContainerName());
+			stopAndRemoveServer(server, server.getApplication());
+			dockerCloudUnitClient.removeVolume(volume.getName());
+			recreateAndMountVolumes(server, server.getApplication());
+		} catch (CheckException e) {
+			throw new CheckException(e.getMessage());
+		} catch (ServiceException e) {
+			throw new ServiceException(e.getMessage());
+		} finally {
+			publisher.publishEvent(new ServerStartEvent(server));
+			publisher.publishEvent(new ApplicationStartEvent(server.getApplication()));
+		}
 
 	}
 
@@ -99,17 +140,6 @@ public class VolumeServiceImpl implements VolumeService {
 		return volumeDAO.findAllVolumes();
 	}
 
-	@Override
-	@Transactional
-	public void delete(int id) throws CheckException, ServiceException {
-		Volume volume = loadVolume(id);
-		volumeDAO.delete(id);
-		Server server = serverService.findByName(volume.getContainerName());
-		stopAndRemoveServer(server, server.getApplication());
-		dockerCloudUnitClient.removeVolume(volume.getName());
-		recreateAndMountVolumes(server, server.getApplication());
-	}
-
 	private void stopAndRemoveServer(Server server, Application application) throws ServiceException {
 		publisher.publishEvent(new ApplicationPendingEvent(application));
 		publisher.publishEvent(new ServerStopEvent(server));
@@ -123,8 +153,6 @@ public class VolumeServiceImpl implements VolumeService {
 				server.getApplication().getUser(), null, false, volumes);
 		server = serverService.startServer(server);
 		serverService.addCredentialsForServerManagement(server, server.getApplication().getUser());
-		publisher.publishEvent(new ServerStartEvent(server));
-		publisher.publishEvent(new ApplicationStartEvent(application));
 	}
 
 	private void checkVolumeFormat(Volume volume) {
