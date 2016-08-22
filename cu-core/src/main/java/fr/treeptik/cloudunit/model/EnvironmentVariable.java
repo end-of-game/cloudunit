@@ -1,7 +1,5 @@
 package fr.treeptik.cloudunit.model;
 
-import fr.treeptik.cloudunit.dto.EnvironmentVariableRequest;
-
 import java.io.Serializable;
 
 import javax.persistence.Entity;
@@ -11,8 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class Environment implements Serializable {
+public class EnvironmentVariable implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -20,16 +20,18 @@ public class Environment implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
-	private String keyEnv;
+	private String key;
 
-	private String valueEnv;
+	private String value;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
 	private Application application;
 
+	@JsonIgnore
 	private String containerName;
 
-	public Environment() {
+	public EnvironmentVariable() {
 	}
 
 	public Integer getId() {
@@ -40,20 +42,20 @@ public class Environment implements Serializable {
 		this.id = id;
 	}
 
-	public String getKeyEnv() {
-		return keyEnv;
+	public String getKey() {
+		return key;
 	}
 
-	public void setKeyEnv(String keyEnv) {
-		this.keyEnv = keyEnv;
+	public void setKey(String key) {
+		this.key = key;
 	}
 
-	public String getValueEnv() {
-		return valueEnv;
+	public String getValue() {
+		return value;
 	}
 
-	public void setValueEnv(String valueEnv) {
-		this.valueEnv = valueEnv;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public Application getApplication() {
@@ -72,17 +74,10 @@ public class Environment implements Serializable {
 		this.containerName = containerName;
 	}
 
-	public EnvironmentVariableRequest mapToRequest() {
-		EnvironmentVariableRequest environmentVariableRequest = new EnvironmentVariableRequest();
-		environmentVariableRequest.setId(id);
-		environmentVariableRequest.setKey(keyEnv);
-		environmentVariableRequest.setValue(valueEnv);
-		return environmentVariableRequest;
-	}
-
 	@Override
 	public String toString() {
-		return "Environment{" + "id=" + id + ", key=" + keyEnv + ", value='" + valueEnv + '\'' + ", application="
-				+ application + ", containerName=" + containerName + '}';
+		return "EnvironmentVariable [id=" + id + ", key=" + key + ", value=" + value + ", containerName="
+				+ containerName + "]";
 	}
+
 }

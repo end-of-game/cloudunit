@@ -121,7 +121,7 @@ public class Application implements Serializable {
 	private Set<PortToOpen> portsToOpen;
 
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
-	private Set<Environment> environments;
+	private Set<EnvironmentVariable> environmentVariables;
 
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
 	private Set<Volume> volumes;
@@ -374,15 +374,32 @@ public class Application implements Serializable {
 		this.portsToOpen = portsToOpen;
 	}
 
-	public Set<Environment> getEnvironments() {
-		return environments;
-	}
-
-	public void setEnvironments(Set<Environment> environments) {
-		this.environments = environments;
-	}
-
 	public void setLocation(String location) {
 		this.location = location;
 	}
+
+	public Set<EnvironmentVariable> getEnvironmentVariables() {
+		return environmentVariables;
+	}
+
+	public void setEnvironmentVariables(Set<EnvironmentVariable> environmentVariables) {
+		this.environmentVariables = environmentVariables;
+	}
+
+	public Set<Volume> getVolumes() {
+		return volumes;
+	}
+
+	public void setVolumes(Set<Volume> volumes) {
+		this.volumes = volumes;
+	}
+
+	public void setModules(Set<Module> modules) {
+		this.modules = modules;
+	}
+
+	public void setDeployments(Set<Deployment> deployments) {
+		this.deployments = deployments;
+	}
+
 }

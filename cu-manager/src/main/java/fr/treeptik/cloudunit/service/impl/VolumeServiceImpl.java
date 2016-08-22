@@ -71,12 +71,12 @@ public class VolumeServiceImpl implements VolumeService {
 	public void updateVolume(Volume volume, Application application, String containerName) throws ServiceException {
 		Server server = null;
 		try {
+			server = serverService.findByName(containerName);
 			checkVolumeFormat(volume);
 			Volume currentVolume = loadVolume(volume.getId());
 			if (currentVolume.getName().equals(volume.getName()) && currentVolume.getPath().equals(volume.getPath())) {
 				throw new CheckException("The volume does not change");
 			}
-			server = serverService.findByName(containerName);
 			stopAndRemoveServer(server, application);
 			dockerCloudUnitClient.removeVolume(currentVolume.getName());
 			volume.setApplication(application);
