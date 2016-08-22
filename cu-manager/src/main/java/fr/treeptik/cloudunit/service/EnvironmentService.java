@@ -1,12 +1,11 @@
 package fr.treeptik.cloudunit.service;
 
+import java.util.List;
+
 import fr.treeptik.cloudunit.dto.EnvironmentVariableRequest;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Environment;
 import fr.treeptik.cloudunit.model.User;
-
-import java.util.List;
 
 public interface EnvironmentService {
     EnvironmentVariableRequest save(User user, EnvironmentVariableRequest environmentVariableRequest,
