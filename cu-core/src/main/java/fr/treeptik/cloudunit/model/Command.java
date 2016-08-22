@@ -19,7 +19,7 @@ public class Command implements Serializable {
 
 	private String description;
 
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<String> arguments;
 
 	@ManyToOne

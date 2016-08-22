@@ -4,7 +4,9 @@ import fr.treeptik.cloudunit.dao.CommandDAO;
 import fr.treeptik.cloudunit.dto.CommandRequest;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Command;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.service.*;
@@ -34,9 +36,12 @@ public class CommandServiceImpl implements CommandService {
     @Inject
     private ImageService imageService;
 
+    @Inject
+    private DockerService dockerService;
+
     @Override
     @Transactional
-    public void addCommand(CommandRequest commandRequest, String containerId, String applicationName) throws ServiceException {
+    public void addCommand(CommandRequest commandRequest, String containerName, String applicationName) throws ServiceException {
         if(commandRequest.getValue() == null)
             throw new ServiceException("The value is empty");
 
@@ -52,9 +57,9 @@ public class CommandServiceImpl implements CommandService {
             throw new CheckException("This value already exists");
 
         List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
-        String type = containerUnits.stream().filter(v -> v.getId().equals(containerId)).findFirst().get().getType();
-        Integer imageId = type.equals("server") ? serverService.findByContainerID(containerId).getImage().getId() :
-                moduleService.findByContainerID(containerId).getImage().getId();
+        String type = containerUnits.stream().filter(v -> v.getName().equals(containerName)).findFirst().get().getType();
+        Integer imageId = type.equals("server") ? serverService.findByName(containerName).getImage().getId() :
+                moduleService.findByName(containerName).getImage().getId();
         Image image = imageService.findById(imageId);
 
 
@@ -77,7 +82,7 @@ public class CommandServiceImpl implements CommandService {
 
     @Override
     @Transactional
-    public void updateCommand(CommandRequest commandRequest, String containerId, String applicationName, Integer id) throws ServiceException {
+    public void updateCommand(CommandRequest commandRequest, String containerName, String applicationName, Integer id) throws ServiceException {
         if(commandRequest.getValue() == null)
             throw new ServiceException("The value is empty");
 
@@ -94,13 +99,13 @@ public class CommandServiceImpl implements CommandService {
             throw new CheckException("This value already exists");
 
         List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
-        String type = containerUnits.stream().filter(v -> v.getId().equals(containerId)).findFirst().get().getType();
-        Integer imageId = type.equals("server") ? serverService.findByContainerID(containerId).getImage().getId() :
-                moduleService.findByContainerID(containerId).getImage().getId();
+        String type = containerUnits.stream().filter(v -> v.getName().equals(containerName)).findFirst().get().getType();
+        Integer imageId = type.equals("server") ? serverService.findByName(containerName).getImage().getId() :
+                moduleService.findByName(containerName).getImage().getId();
         Image image = imageService.findById(imageId);
 
         Command command = new Command();
-        command.setId(commandRequest.getId());
+        command.setId(id);
         command.setValue(commandRequest.getValue());
         command.setDescription(commandRequest.getDescription());
         command.setArguments(commandRequest.getArguments());
@@ -117,17 +122,39 @@ public class CommandServiceImpl implements CommandService {
     }
 
     @Override
-    public List<CommandRequest> listCommandByImage(String applicationName, String containerId) throws ServiceException {
-        if (containerId == null)
-            throw new ServiceException("The container id is empty");
+    public List<CommandRequest> listCommandByImage(String applicationName, String containerName) throws ServiceException {
+        if (containerName == null)
+            throw new ServiceException("The container name is empty");
 
         List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
-        String type = containerUnits.stream().filter(v -> v.getId().equals(containerId)).findFirst().get().getType();
-        Integer imageId = type.equals("server") ? serverService.findByContainerID(containerId).getImage().getId() :
-                moduleService.findByContainerID(containerId).getImage().getId();
+        String type = containerUnits.stream().filter(v -> v.getName().equals(containerName)).findFirst().get().getType();
+        Integer imageId = type.equals("server") ? serverService.findByName(containerName).getImage().getId() :
+                moduleService.findByName(containerName).getImage().getId();
         List<CommandRequest> commandRequestList = commandDAO.findByImage(imageId).stream()
                 .map(v -> v.mapToRequest()).collect(Collectors.toList());
 
         return commandRequestList;
+    }
+
+    @Override
+    public String execCommand(Integer id, String containerName, String applicationName) throws ServiceException {
+        if(id == null)
+            throw new ServiceException("The id is empty");
+
+        if (containerName == null)
+            throw new ServiceException("The container name is empty");
+
+        String result = "";
+        try{
+            Command command = commandDAO.findById(id);
+            String commandString = command.getValue() + " " + command.getArguments().stream().map(v -> v + " ").collect(Collectors.joining());
+            List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
+            ContainerUnit containerUnit = containerUnits.stream().filter(v -> v.getName().equals(containerName)).findFirst().get();
+            result = dockerService.execCommand(containerUnit.getName(), command.getValue());
+            return result;
+        } catch (FatalDockerJSONException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
