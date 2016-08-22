@@ -46,38 +46,33 @@ public class VolumeServiceImpl implements VolumeService {
 	@Transactional
 	public void createNewVolume(Volume volume, Application application, String containerName)
 			throws ServiceException, CheckException {
-		if (volume.getName() == null || volume.getName().isEmpty())
-			throw new CheckException("This name is not consistent !");
-		if (volume.getPath() == null || volume.getPath().isEmpty())
-			throw new CheckException("This path is not consistent !");
-		if (!volume.getName().matches("^[-a-zA-Z0-9_]*$"))
-			throw new CheckException("This name is not consistent : " + volume.getName());
-		if (loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getName())).findAny().isPresent()) {
-			throw new CheckException("This name already exists");
-		}
-		createVolumeAndLaunchContainer(volume, containerName, application, false);
+		checkVolumeFormat(volume);
+		Server server = serverService.findByName(containerName);
+		stopAndRemoveServer(server, application);
+		volume.setApplication(application);
+		volume.setContainerName(containerName);
+		dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
+		volumeDAO.save(volume);
+		recreateAndMountVolumes(server, application);
 	}
 
 	@Override
 	@Transactional
 	public void updateVolume(Volume volume, Application application, String containerName)
 			throws ServiceException, CheckException {
-
-		if (volume.getName() == null || volume.getName().isEmpty())
-			throw new CheckException("This name is not consistent !");
-		if (volume.getPath() == null || volume.getPath().isEmpty())
-			throw new CheckException("This path is not consistent !");
-		if (!volume.getName().matches("^[-a-zA-Z0-9_]*$"))
-			throw new CheckException("This name is not consistent : " + volume.getName());
-		if (loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getName())).findAny().isPresent()) {
-			throw new CheckException("This name already exists");
-		}
+		checkVolumeFormat(volume);
 		Volume currentVolume = loadVolume(volume.getId());
 		if (currentVolume.getName().equals(volume.getName()) && currentVolume.getPath().equals(volume.getPath())) {
 			throw new CheckException("The volume does not change");
 		}
+		Server server = serverService.findByName(containerName);
+		stopAndRemoveServer(server, application);
 		dockerCloudUnitClient.removeVolume(volume.getName());
-		createVolumeAndLaunchContainer(volume, containerName, application, false);
+		volume.setApplication(application);
+		volume.setContainerName(containerName);
+		dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
+		volumeDAO.save(volume);
+		recreateAndMountVolumes(server, application);
 
 	}
 
@@ -108,26 +103,20 @@ public class VolumeServiceImpl implements VolumeService {
 	@Transactional
 	public void delete(int id) throws CheckException, ServiceException {
 		Volume volume = loadVolume(id);
-		dockerCloudUnitClient.removeVolume(volume.getName());
 		volumeDAO.delete(id);
-		createVolumeAndLaunchContainer(volume, volume.getContainerName(),
-				serverService.findByName(volume.getContainerName()).getApplication(), true);
+		Server server = serverService.findByName(volume.getContainerName());
+		stopAndRemoveServer(server, server.getApplication());
+		dockerCloudUnitClient.removeVolume(volume.getName());
+		recreateAndMountVolumes(server, server.getApplication());
 	}
 
-	private void createVolumeAndLaunchContainer(Volume volume, String containerName, Application application,
-			boolean afterRemove) throws ServiceException {
-		Server server = serverService.findByName(containerName);
+	private void stopAndRemoveServer(Server server, Application application) throws ServiceException {
 		publisher.publishEvent(new ApplicationPendingEvent(application));
-
-		if (!afterRemove) {
-			volume.setApplication(application);
-			volume.setContainerName(containerName);
-			dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
-			volumeDAO.save(volume);
-		}
-
 		publisher.publishEvent(new ServerStopEvent(server));
 		dockerService.removeServer(server.getName(), false);
+	}
+
+	private void recreateAndMountVolumes(Server server, Application application) throws ServiceException {
 		List<String> volumes = loadVolumeByContainer(server.getName()).stream()
 				.map(t -> t.getName() + ":" + t.getPath() + ":rw").collect(Collectors.toList());
 		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
@@ -136,6 +125,18 @@ public class VolumeServiceImpl implements VolumeService {
 		serverService.addCredentialsForServerManagement(server, server.getApplication().getUser());
 		publisher.publishEvent(new ServerStartEvent(server));
 		publisher.publishEvent(new ApplicationStartEvent(application));
+	}
+
+	private void checkVolumeFormat(Volume volume) {
+		if (volume.getName() == null || volume.getName().isEmpty())
+			throw new CheckException("This name is not consistent !");
+		if (volume.getPath() == null || volume.getPath().isEmpty())
+			throw new CheckException("This path is not consistent !");
+		if (!volume.getName().matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This name is not consistent : " + volume.getName());
+		if (loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getName())).findAny().isPresent()) {
+			throw new CheckException("This name already exists");
+		}
 	}
 
 }

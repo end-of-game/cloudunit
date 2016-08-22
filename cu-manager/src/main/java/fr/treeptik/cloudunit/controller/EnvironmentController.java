@@ -39,84 +39,50 @@ public class EnvironmentController implements Serializable {
 	@Inject
 	private EnvironmentService environmentService;
 
-	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.GET)
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/environmentVariables", method = RequestMethod.GET)
 	public @ResponseBody List<EnvironmentVariableRequest> loadAllEnvironmentVariables(
-			@PathVariable String applicationName, @PathVariable String containerId)
+			@PathVariable String applicationName, @PathVariable String containerName)
 			throws ServiceException, JsonProcessingException, CheckException {
 		logger.info("Load");
-		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			List<EnvironmentVariableRequest> environmentVariableRequestList = environmentService
-					.loadEnvironnmentsByContainer(containerId);
-
-			return environmentVariableRequestList;
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
+		List<EnvironmentVariableRequest> environmentVariableRequestList = environmentService
+				.loadEnvironnmentsByContainer(containerName);
+		return environmentVariableRequestList;
 	}
 
-	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/environmentVariables/{id}", method = RequestMethod.GET)
 	public @ResponseBody EnvironmentVariableRequest loadEnvironmentVariable(@PathVariable String applicationName,
-			@PathVariable String containerId, @PathVariable int id) throws ServiceException, CheckException {
+			@PathVariable String containerName, @PathVariable int id) throws ServiceException, CheckException {
 		logger.info("Load");
-		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			EnvironmentVariableRequest environmentVariableRequest = environmentService.loadEnvironnment(id);
-
-			return environmentVariableRequest;
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
+		EnvironmentVariableRequest environmentVariableRequest = environmentService.loadEnvironnment(id);
+		return environmentVariableRequest;
 	}
 
-	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.POST)
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/environmentVariables", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse addEnvironmentVariable(@PathVariable String applicationName,
-			@PathVariable String containerId, @RequestBody EnvironmentVariableRequest environmentVariableRequest)
+			@PathVariable String containerName, @RequestBody EnvironmentVariableRequest environmentVariableRequest)
 			throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			environmentService.save(user, environmentVariableRequest, applicationName, containerId);
+		environmentService.save(user, environmentVariableRequest, applicationName, containerName);
+		return new HttpOk();
 
-			return new HttpOk();
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
 	}
 
-	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/environmentVariables/{id}", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse updateEnvironmentVariable(@PathVariable String applicationName,
-			@PathVariable String containerId, @PathVariable int id,
+			@PathVariable String containerName, @PathVariable int id,
 			@RequestBody EnvironmentVariableRequest environmentVariableRequest)
 			throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			environmentService.update(user, environmentVariableRequest, applicationName, containerId, id);
-
-			return new HttpOk();
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
+		environmentService.update(user, environmentVariableRequest, applicationName, containerName, id);
+		return new HttpOk();
 	}
 
 	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteEnvironmentVariable(@PathVariable String applicationName,
-			@PathVariable String containerId, @PathVariable int id) throws ServiceException, CheckException {
+			@PathVariable String containerName, @PathVariable int id) throws ServiceException, CheckException {
 		logger.info("Delete");
-		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			environmentService.delete(id);
+		environmentService.delete(id);
+		return new HttpOk();
 
-			return new HttpOk();
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
 	}
 }
