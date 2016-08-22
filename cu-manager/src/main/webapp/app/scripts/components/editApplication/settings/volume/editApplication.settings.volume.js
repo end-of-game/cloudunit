@@ -73,7 +73,8 @@
     ////////////////////////////////////////////////
 
     function getListVolume() {
-      ApplicationService.getListSettingsVolume($stateParams.name, vm.myContainer.id)
+      console.log(vm.myContainer);
+      ApplicationService.getListSettingsVolume($stateParams.name, vm.myContainer.name)
         .then(function(response) {
           vm.volumes = response;
         })
@@ -99,8 +100,7 @@
     }
 
     function deleteVolume (volume) {
-      console.log('deleteVolume');
-      ApplicationService.deleteVolume (  $stateParams.name, vm.myContainer.id, volume.id )
+      ApplicationService.deleteVolume (  $stateParams.name, vm.myContainer.name, volume.id )
         .then ( function() {
           cleanMessage();
           getListVolume();
@@ -110,8 +110,7 @@
     }
     
     function editVolume (volumeID, volumeName, volumePath) {
-      console.log('editVolume');
-      ApplicationService.editVolume ( $stateParams.name, vm.myContainer.id, volumeID, volumeName, volumePath )
+      ApplicationService.editVolume ( $stateParams.name, vm.myContainer.name, volumeID, volumeName, volumePath )
         .then(function(volume) {
           cleanMessage();
           getListVolume();
@@ -124,8 +123,7 @@
     }
 
     function addVolume (volumeName, volumePath) {
-      console.log(volumePath);
-      ApplicationService.addVolume (  $stateParams.name, vm.myContainer.id, volumeName, volumePath )
+      ApplicationService.addVolume (  $stateParams.name, vm.myContainer.name, volumeName, volumePath )
         .then ( function(volume) {
           cleanMessage();
           getListVolume();
