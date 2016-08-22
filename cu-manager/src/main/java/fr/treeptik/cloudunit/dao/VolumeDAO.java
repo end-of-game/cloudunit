@@ -10,20 +10,15 @@ import java.util.List;
 
 public interface VolumeDAO extends JpaRepository<Volume, Integer> {
 
-    @Query("Select v from Volume v where v.application.name=:name")
-    List<Volume> findByApplicationName(@Param("name") String name)
-            throws DataAccessException;
+	@Query("Select v from Volume v where v.application.name=:name")
+	List<Volume> findByApplicationName(@Param("name") String name) throws DataAccessException;
 
-    @Query("Select v from Volume v where v.containerId=:containerId")
-    List<Volume> findByContainer(@Param("containerId") String containerId)
-            throws DataAccessException;
+	@Query("Select v from Volume v where v.containerId=:containerId")
+	List<Volume> findByContainer(@Param("containerId") String containerId) throws DataAccessException;
 
-    @Query("Select v from Volume v where v.id=:id")
-    Volume findById(@Param("id") int id)
-            throws DataAccessException;
+	@Query("Select v from Volume v where v.id=:id")
+	Volume findById(@Param("id") int id) throws DataAccessException;
 
-    @Query("select v from Volume v")
-    List<Volume> findAllVolumes()
-            throws DataAccessException;
+	@Query("select v from Volume v")
+	List<Volume> findAllVolumes() throws DataAccessException;
 }
-

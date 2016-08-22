@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
@@ -48,6 +49,7 @@ import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.VolumeService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 
@@ -88,6 +90,9 @@ public class ServerServiceImpl implements ServerService {
 
 	@Inject
 	private ApplicationEventPublisher applicationEventPublisher;
+
+	@Inject
+	private VolumeService volumeService;
 
 	public ServerDAO getServerDAO() {
 		return this.serverDAO;
@@ -157,7 +162,7 @@ public class ServerServiceImpl implements ServerService {
 		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
-			dockerService.createServer(containerName, server, imagePath, user, null, true);
+			dockerService.createServer(containerName, server, imagePath, user, null, true, null);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 
@@ -205,14 +210,15 @@ public class ServerServiceImpl implements ServerService {
 		return server;
 	}
 
-	private void addCredentialsForServerManagement(Server server, final User user) throws FatalDockerJSONException {
+	@Override
+	public void addCredentialsForServerManagement(Server server, final User user) throws FatalDockerJSONException {
 		Map<String, String> kvStore = new HashMap<String, String>() {
-            private static final long serialVersionUID = 1L;
-            {
-                put("CU_USER", user.getLogin());
-                put("CU_PASSWORD", user.getPassword());
-            }
-        };
+			private static final long serialVersionUID = 1L;
+			{
+				put("CU_USER", user.getLogin());
+				put("CU_PASSWORD", user.getPassword());
+			}
+		};
 		dockerService.execCommand(server.getContainerID(), RemoteExecAction.ADD_USER.getCommand(kvStore));
 	}
 
@@ -416,26 +422,27 @@ public class ServerServiceImpl implements ServerService {
 		String previousJvmMemory = server.getJvmMemory().toString();
 		String previousJvmRelease = server.getJvmRelease();
 		String previousJvmOptions = server.getJvmOptions();
-		
+
 		options = options == null ? "" : options;
 		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
 
 		try {
 			List<String> envs = new ArrayList<>();
-
 			String currentJvmMemory = dockerService.getEnv(server.getContainerID(), "JAVA_OPTS");
 			currentJvmMemory = currentJvmMemory.replaceAll(previousJvmMemory, jvmMemory);
 			currentJvmMemory = currentJvmMemory.substring(currentJvmMemory.lastIndexOf("-Xms"));
 			currentJvmMemory = jvmOptions + " " + currentJvmMemory;
-			envs.add("JAVA_OPTS="+currentJvmMemory);
+			envs.add("JAVA_OPTS=" + currentJvmMemory);
 
 			// Add the jmv env variable to set the jvm release
-			envs.add("JAVA_HOME=/opt/cloudunit/java/"+jvmRelease);
+			envs.add("JAVA_HOME=/opt/cloudunit/java/" + jvmRelease);
 
-			dockerService.stopServer(server.getName())	;
+			dockerService.stopServer(server.getName());
 			dockerService.removeServer(server.getName(), false);
+			List<String> volumes = volumeService.loadVolumeByContainer(server.getContainerID()).stream()
+					.map(t -> t.getName()).collect(Collectors.toList());
 			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
-										server.getApplication().getUser(), envs, false);
+					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
 			addCredentialsForServerManagement(server, server.getApplication().getUser());
 

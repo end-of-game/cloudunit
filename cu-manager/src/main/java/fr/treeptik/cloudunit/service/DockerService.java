@@ -15,8 +15,6 @@
 
 package fr.treeptik.cloudunit.service;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -30,37 +28,39 @@ import fr.treeptik.cloudunit.model.User;
  */
 public interface DockerService {
 
-    void addEnv(String containerId, String key, String value) throws FatalDockerJSONException;
+	void addEnv(String containerId, String key, String value) throws FatalDockerJSONException;
 
-    void createServer(String name, Server server, String imagePath, User user, List<String> envs, boolean createMainVolume) throws DockerJSONException;
+	void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
+			boolean createMainVolume, List<String> volumes) throws DockerJSONException;
 
-    Server startServer(String containerName, Server server) throws DockerJSONException;
+	Server startServer(String containerName, Server server) throws DockerJSONException;
 
-    void stopServer(String containerName) throws DockerJSONException;
+	void stopServer(String containerName) throws DockerJSONException;
 
-    void killServer(String containerName) throws DockerJSONException;
+	void killServer(String containerName) throws DockerJSONException;
 
-    void removeServer(String containerName, boolean removeVolume) throws DockerJSONException;
+	void removeServer(String containerName, boolean removeVolume) throws DockerJSONException;
 
-    String execCommand(String containerName, String command) throws FatalDockerJSONException;
+	String execCommand(String containerName, String command) throws FatalDockerJSONException;
 
-    String execCommand(String containerName, String command, boolean privileged) throws FatalDockerJSONException;
+	String execCommand(String containerName, String command, boolean privileged) throws FatalDockerJSONException;
 
-    String getContainerId(String containerName) throws FatalDockerJSONException;
+	String getContainerId(String containerName) throws FatalDockerJSONException;
 
-    Boolean isRunning(String containerName) throws FatalDockerJSONException;
+	Boolean isRunning(String containerName) throws FatalDockerJSONException;
 
-    Boolean isStoppedGracefully(String containerName) throws FatalDockerJSONException;
+	Boolean isStoppedGracefully(String containerName) throws FatalDockerJSONException;
 
-    List<String> listContainers() throws FatalDockerJSONException;
+	List<String> listContainers() throws FatalDockerJSONException;
 
-    String getContainerNameFromId(String id) throws FatalDockerJSONException;
+	String getContainerNameFromId(String id) throws FatalDockerJSONException;
 
-    String getEnv(String containerId, String variable) throws FatalDockerJSONException;
+	String getEnv(String containerId, String variable) throws FatalDockerJSONException;
 
-    int getFileFromContainer(String containerId, String path, OutputStream outputStream) throws FatalDockerJSONException;
+	int getFileFromContainer(String containerId, String path, OutputStream outputStream)
+			throws FatalDockerJSONException;
 
-    void sendFileToContainer(String containerId, String localPathFile, String originalName, String destination) throws FatalDockerJSONException;
+	void sendFileToContainer(String containerId, String localPathFile, String originalName, String destination)
+			throws FatalDockerJSONException;
 
 }
-

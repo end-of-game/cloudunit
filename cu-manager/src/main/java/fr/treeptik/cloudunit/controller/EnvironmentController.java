@@ -1,7 +1,6 @@
 package fr.treeptik.cloudunit.controller;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,10 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.treeptik.cloudunit.dto.EnvironmentVariableRequest;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Environment;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 
@@ -43,9 +39,6 @@ public class EnvironmentController implements Serializable {
 	@Inject
 	private EnvironmentService environmentService;
 
-	@Inject
-	private ApplicationService applicationService;
-
 	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.GET)
 	public @ResponseBody List<EnvironmentVariableRequest> loadAllEnvironmentVariables(
 			@PathVariable String applicationName, @PathVariable String containerId)
@@ -53,7 +46,8 @@ public class EnvironmentController implements Serializable {
 		logger.info("Load");
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
-			List<EnvironmentVariableRequest> environmentVariableRequestList = environmentService.loadEnvironnmentsByContainer(containerId);
+			List<EnvironmentVariableRequest> environmentVariableRequestList = environmentService
+					.loadEnvironnmentsByContainer(containerId);
 
 			return environmentVariableRequestList;
 		} finally {
@@ -79,7 +73,7 @@ public class EnvironmentController implements Serializable {
 
 	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables", method = RequestMethod.POST)
 	public @ResponseBody JsonResponse addEnvironmentVariable(@PathVariable String applicationName,
-										@PathVariable String containerId, @RequestBody EnvironmentVariableRequest environmentVariableRequest)
+			@PathVariable String containerId, @RequestBody EnvironmentVariableRequest environmentVariableRequest)
 			throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {
@@ -111,8 +105,8 @@ public class EnvironmentController implements Serializable {
 	}
 
 	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.DELETE)
-	public @ResponseBody JsonResponse deleteEnvironmentVariable(@PathVariable String applicationName, @PathVariable String containerId,
-			@PathVariable int id) throws ServiceException, CheckException {
+	public @ResponseBody JsonResponse deleteEnvironmentVariable(@PathVariable String applicationName,
+			@PathVariable String containerId, @PathVariable int id) throws ServiceException, CheckException {
 		logger.info("Delete");
 		User user = authentificationUtils.getAuthentificatedUser();
 		try {

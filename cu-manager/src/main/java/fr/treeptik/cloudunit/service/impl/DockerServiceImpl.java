@@ -4,7 +4,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -66,10 +71,12 @@ public class DockerServiceImpl implements DockerService {
 
 	@Override
 	public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
-			boolean createMainVolume) throws DockerJSONException {
+			boolean createMainVolume, List<String> volumes) throws DockerJSONException {
 		String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
 		List<String> volumesFrom = Arrays.asList("java");
-		List<String> volumes = new ArrayList<>();
+		if (volumes == null) {
+			volumes = new ArrayList<>();
+		}
 		if (sharedDir != null) {
 			volumes.add(sharedDir + ":/opt/cloudunit/shared:rw");
 		}

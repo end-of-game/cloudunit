@@ -22,7 +22,7 @@ public class Volume implements Serializable {
 	@ManyToOne
 	private Application application;
 
-	private String containerId;
+	private String containerName;
 
 	public Integer getId() {
 		return id;
@@ -56,12 +56,12 @@ public class Volume implements Serializable {
 		this.application = application;
 	}
 
-	public String getContainerId() {
-		return containerId;
+	public String getContainerName() {
+		return containerName;
 	}
 
-	public void setContainerId(String containerId) {
-		this.containerId = containerId;
+	public void setContainerName(String containerName) {
+		this.containerName = containerName;
 	}
 
 	public VolumeRequest mapToVolume() {
@@ -75,7 +75,7 @@ public class Volume implements Serializable {
 	@Override
 	public String toString() {
 		return "Volume [id=" + id + ", name=" + name + ", path=" + path + ", application=" + application
-				+ ", containerId=" + containerId + "]";
+				+ ", containerName=" + containerName + "]";
 	}
 
 }

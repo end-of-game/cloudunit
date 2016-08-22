@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface VolumeService {
 
+	void createNewVolume(Volume volume, Application application, String containerId)
+			throws ServiceException, CheckException;
+
 	Volume loadVolume(int id) throws ServiceException, CheckException;
 
 	List<Volume> loadVolumeByApplication(String applicationName) throws ServiceException;
@@ -19,5 +22,7 @@ public interface VolumeService {
 
 	void delete(int id) throws ServiceException, CheckException;
 
-	void save(Volume volume, Application application, String containerId) throws ServiceException, CheckException;
+	void updateVolume(Volume volume, Application application, String containerId)
+			throws ServiceException, CheckException;
+
 }

@@ -16,9 +16,11 @@
 package fr.treeptik.cloudunit.service;
 
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.User;
 
 import java.util.List;
 
@@ -56,5 +58,7 @@ public interface ServerService {
 	void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException;
 
 	Server create(Server server, String tag) throws ServiceException, CheckException;
+
+	void addCredentialsForServerManagement(Server server, User user) throws FatalDockerJSONException;
 
 }
