@@ -20,12 +20,12 @@ public class EnvironmentVariable implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
-	private String key;
+	private String keyEnv;
 
-	private String value;
+	private String valueEnv;
 
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Application application;
 
 	@JsonIgnore
@@ -42,20 +42,20 @@ public class EnvironmentVariable implements Serializable {
 		this.id = id;
 	}
 
-	public String getKey() {
-		return key;
+	public String getKeyEnv() {
+		return keyEnv;
 	}
 
-	public void setKey(String key) {
-		this.key = key;
+	public void setKeyEnv(String keyEnv) {
+		this.keyEnv = keyEnv;
 	}
 
-	public String getValue() {
-		return value;
+	public String getValueEnv() {
+		return valueEnv;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setValueEnv(String valueEnv) {
+		this.valueEnv = valueEnv;
 	}
 
 	public Application getApplication() {
@@ -76,8 +76,7 @@ public class EnvironmentVariable implements Serializable {
 
 	@Override
 	public String toString() {
-		return "EnvironmentVariable [id=" + id + ", key=" + key + ", value=" + value + ", containerName="
-				+ containerName + "]";
+		return "EnvironmentVariable [id=" + id + ", keyEnv=" + keyEnv + ", valueEnv=" + valueEnv + "]";
 	}
 
 }

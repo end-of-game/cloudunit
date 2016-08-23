@@ -29,16 +29,16 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	@Transactional
 	public EnvironmentVariable save(User user, EnvironmentVariable environmentVariableRequest, String applicationName,
 			String containerName) throws ServiceException, CheckException {
-		if (environmentVariableRequest.getKey() == null || environmentVariableRequest.getKey().isEmpty())
+		if (environmentVariableRequest.getKeyEnv() == null || environmentVariableRequest.getKeyEnv().isEmpty())
 			throw new CheckException("This key is not consistent !");
 
-		if (!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
-			throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
+		if (!environmentVariableRequest.getKeyEnv().matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKeyEnv());
 
 		List<EnvironmentVariable> environmentList = environmentDAO.findByContainer(containerName);
 
 		Optional<EnvironmentVariable> value = environmentList.stream()
-				.filter(v -> v.getKey().equals(environmentVariableRequest.getKey())).findFirst();
+				.filter(v -> v.getKeyEnv().equals(environmentVariableRequest.getKeyEnv())).findFirst();
 
 		if (value.isPresent())
 			throw new CheckException("This key already exists");
@@ -48,15 +48,15 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 		environment.setApplication(application);
 		environment.setContainerName(containerName);
-		environment.setKey(environmentVariableRequest.getKey());
-		environment.setValue(environmentVariableRequest.getValue());
+		environment.setKeyEnv(environmentVariableRequest.getKeyEnv());
+		environment.setValueEnv(environmentVariableRequest.getValueEnv());
 
 		environmentDAO.save(environment);
 
 		List<EnvironmentVariable> environmentVariableRequestList = loadEnvironnmentsByContainer(containerName);
 
 		Optional<EnvironmentVariable> value2 = environmentVariableRequestList.stream()
-				.filter(v -> v.getKey().equals(environment.getKey())).findFirst();
+				.filter(v -> v.getKeyEnv().equals(environment.getKeyEnv())).findFirst();
 
 		return value2.get();
 	}
@@ -92,17 +92,18 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 	public EnvironmentVariable update(User user, EnvironmentVariable environmentVariableRequest, String applicationName,
 			String containerName, Integer id) throws ServiceException, CheckException {
-		if (environmentVariableRequest.getKey() == null || environmentVariableRequest.getKey().isEmpty())
+		if (environmentVariableRequest.getKeyEnv() == null || environmentVariableRequest.getKeyEnv().isEmpty())
 			throw new CheckException("This key is not consistent !");
 
-		if (!environmentVariableRequest.getKey().matches("^[-a-zA-Z0-9_]*$"))
-			throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKey());
+		if (!environmentVariableRequest.getKeyEnv().matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This key is not consistent : " + environmentVariableRequest.getKeyEnv());
 
 		final EnvironmentVariable environment = environmentDAO.findById(id);
 		List<EnvironmentVariable> environmentList = environmentDAO.findByContainer(containerName);
 
-		Optional<EnvironmentVariable> value = environmentList.stream().filter(
-				v -> v.getKey().equals(environmentVariableRequest.getKey()) && !v.getKey().equals(environment.getKey()))
+		Optional<EnvironmentVariable> value = environmentList.stream()
+				.filter(v -> v.getKeyEnv().equals(environmentVariableRequest.getKeyEnv())
+						&& !v.getKeyEnv().equals(environment.getKeyEnv()))
 				.findFirst();
 
 		if (value.isPresent())
