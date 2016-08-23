@@ -33,22 +33,22 @@ public class CommandController {
     @Inject
     private CommandService commandService;
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.POST)
-    public @ResponseBody JsonResponse addCommand(@PathVariable String applicationName, @PathVariable String containerId,
+    @RequestMapping(value = "/{applicationName}/container/{containerName}/command", method = RequestMethod.POST)
+    public @ResponseBody JsonResponse addCommand(@PathVariable String applicationName, @PathVariable String containerName,
                                                  @RequestBody CommandRequest commandRequest) throws ServiceException {
         logger.info("Add");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            commandService.addCommand(commandRequest, containerId, applicationName);
+            commandService.addCommand(commandRequest, containerName, applicationName);
             return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/command/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{id}", method = RequestMethod.DELETE)
     public @ResponseBody JsonResponse deleteCommand(@PathVariable String applicationName,
-                                                    @PathVariable String containerId, @PathVariable Integer id) throws ServiceException {
+                                                    @PathVariable String containerName, @PathVariable Integer id) throws ServiceException {
         logger.info("Delete");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
@@ -60,27 +60,27 @@ public class CommandController {
         }
     }
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/command/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{id}", method = RequestMethod.PUT)
     public @ResponseBody JsonResponse updateCommand(@PathVariable String applicationName,
-                                                    @PathVariable String containerId, @PathVariable Integer id, @RequestBody CommandRequest commandRequest)
+                                                    @PathVariable String containerName, @PathVariable Integer id, @RequestBody CommandRequest commandRequest)
             throws ServiceException {
         logger.info("Update");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            commandService.updateCommand(commandRequest, containerId, containerId, id);
+            commandService.updateCommand(commandRequest, containerName, applicationName, id);
             return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/command", method = RequestMethod.GET)
+    @RequestMapping(value = "/{applicationName}/container/{containerName}/command", method = RequestMethod.GET)
     public @ResponseBody List<CommandRequest> listCommandByImage(@PathVariable String applicationName,
-                                                                 @PathVariable String containerId) throws ServiceException {
+                                                                 @PathVariable String containerName) throws ServiceException {
         logger.info("Load by container");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            List<CommandRequest> commandRequestList = commandService.listCommandByImage(applicationName, containerId);
+            List<CommandRequest> commandRequestList = commandService.listCommandByImage(applicationName, containerName);
 
             return commandRequestList;
         } finally {
@@ -88,15 +88,29 @@ public class CommandController {
         }
     }
 
-    @RequestMapping(value = "/{applicationName}/container/{containerId}/command/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{id}", method = RequestMethod.POST)
     public @ResponseBody CommandRequest getCommand(@PathVariable String applicationName,
-                                                   @PathVariable String containerId, @PathVariable Integer id) throws ServiceException {
+                                                   @PathVariable String containerName, @PathVariable Integer id) throws ServiceException {
         logger.info("Load by id");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
             CommandRequest commandRequest = commandService.getCommand(id);
 
             return commandRequest;
+        } finally {
+            authentificationUtils.allowUser(user);
+        }
+    }
+
+    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{id}/exec", method = RequestMethod.POST)
+    public @ResponseBody JsonResponse execCommand(@PathVariable String applicationName,
+                                                  @PathVariable String containerName, @PathVariable Integer id) throws ServiceException {
+        logger.info("Execute by id");
+        User user = authentificationUtils.getAuthentificatedUser();
+        try {
+            commandService.execCommand(id, containerName, applicationName);
+
+            return new HttpOk();
         } finally {
             authentificationUtils.allowUser(user);
         }
