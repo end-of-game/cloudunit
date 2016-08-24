@@ -138,13 +138,13 @@ Else ask your questions on [CloudUnit Google group](https://groups.google.com/fo
 Copyright 2016 Treeptik
 
 ![Github downloads](https://img.shields.io/github/downloads/Treeptik/cloudunit/total.svg?style=flat-square)
-
-![Github issues opened](https://img.shields.io/github/issues/Treeptik/cloudunit.svg?style=flat-square)
-![Github issues closed](https://img.shields.io/github/issues-closed/Treeptik/cloudunit.svg?style=flat-square)
-
-![Github pr opened](https://img.shields.io/github/issues-pr/Treeptik/cloudunit.svg?style=flat-square)
-![Github pr closed](https://img.shields.io/github/issues-pr-closed/Treeptik/cloudunit.svg?style=flat-square)
-
 ![Github contributors](https://img.shields.io/github/contributors/Treeptik/cloudunit.svg?style=flat-square)
 ![Github stars](https://img.shields.io/github/stars/Treeptik/cloudunit.svg?style=flat-square)
 ![Github forks](https://img.shields.io/github/forks/Treeptik/cloudunit.svg?style=flat-square)
+
+![Github issues opened](https://img.shields.io/github/issues/Treeptik/cloudunit.svg?style=flat-square)
+![Github issues closed](https://img.shields.io/github/issues-closed/Treeptik/cloudunit.svg?style=flat-square)
+![Github pr opened](https://img.shields.io/github/issues-pr/Treeptik/cloudunit.svg?style=flat-square)
+![Github pr closed](https://img.shields.io/github/issues-pr-closed/Treeptik/cloudunit.svg?style=flat-square)
+
+
