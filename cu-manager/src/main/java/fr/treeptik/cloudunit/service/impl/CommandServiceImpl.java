@@ -79,7 +79,8 @@ public class CommandServiceImpl implements CommandService {
             String commandLine = fileUnits.stream().filter(v -> v.getName().equals(command.getName())).findFirst().get().getBreadcrump();
             commandLine = commandLine + " " + command.getArguments().stream().map(v -> v + " ").collect(Collectors.joining());
 
-            dockerService.execCommand(containerName, commandLine);
+            String s = dockerService.execCommand(containerName, commandLine);
+            System.out.println(s);
         } catch (Exception e) {
             e.printStackTrace();
         }
