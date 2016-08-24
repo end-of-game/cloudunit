@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
@@ -439,8 +438,7 @@ public class ServerServiceImpl implements ServerService {
 
 			dockerService.stopServer(server.getName());
 			dockerService.removeServer(server.getName(), false);
-			List<String> volumes = volumeService.loadVolumeByContainer(server.getContainerID()).stream()
-					.map(t -> t.getName()).collect(Collectors.toList());
+			List<String> volumes = new ArrayList<>();
 			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);

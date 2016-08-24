@@ -123,9 +123,6 @@ public class Application implements Serializable {
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
 	private Set<EnvironmentVariable> environmentVariables;
 
-	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
-	private Set<Volume> volumes;
-
 	private String location;
 
 	public Application() {
@@ -384,14 +381,6 @@ public class Application implements Serializable {
 
 	public void setEnvironmentVariables(Set<EnvironmentVariable> environmentVariables) {
 		this.environmentVariables = environmentVariables;
-	}
-
-	public Set<Volume> getVolumes() {
-		return volumes;
-	}
-
-	public void setVolumes(Set<Volume> volumes) {
-		this.volumes = volumes;
 	}
 
 	public void setModules(Set<Module> modules) {

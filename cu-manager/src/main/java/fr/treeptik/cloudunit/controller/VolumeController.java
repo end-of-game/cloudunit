@@ -24,7 +24,7 @@ import fr.treeptik.cloudunit.model.Volume;
 import fr.treeptik.cloudunit.service.VolumeService;
 
 @Controller
-@RequestMapping("/volumes")
+@RequestMapping("/volume")
 public class VolumeController implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -38,7 +38,7 @@ public class VolumeController implements Serializable {
 	public @ResponseBody List<Volume> loadAllVolumes(@PathVariable String applicationName,
 			@PathVariable String containeName) throws ServiceException, JsonProcessingException, CheckException {
 		logger.info("Load");
-		List<Volume> volumes = volumeService.loadVolumeByContainer(containeName);
+		List<Volume> volumes = volumeService.loadAllVolumes();
 		return volumes;
 	}
 

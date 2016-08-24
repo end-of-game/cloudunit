@@ -214,4 +214,5 @@ public class Container implements Serializable {
 	public void setDockerState(String dockerState) {
 		this.dockerState = dockerState;
 	}
+
 }
