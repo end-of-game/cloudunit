@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.service;
 
+import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -60,5 +61,9 @@ public interface ServerService {
 	Server create(Server server, String tag) throws ServiceException, CheckException;
 
 	void addCredentialsForServerManagement(Server server, User user) throws FatalDockerJSONException;
+
+	void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException;
+
+	void removeVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException;
 
 }

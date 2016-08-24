@@ -15,9 +15,13 @@
 
 package fr.treeptik.cloudunit.config;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.hibernate.ejb.HibernatePersistence;
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.SharedCacheMode;
+import javax.sql.DataSource;
+
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,10 +42,8 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.SharedCacheMode;
-import javax.sql.DataSource;
-import java.util.Properties;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @EnableJpaRepositories("fr.treeptik.cloudunit.dao")
@@ -121,7 +123,7 @@ public class DatabaseConfiguration {
     public EntityManagerFactory entityManagerFactory() {
         logger.debug("Configuring EntityManager");
         LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
-        lcemfb.setPersistenceProvider(new HibernatePersistence());
+        lcemfb.setPersistenceProvider(new HibernatePersistenceProvider());
         lcemfb.setPersistenceUnitName("persistenceUnit");
         lcemfb.setDataSource(dataSource());
         lcemfb.setJpaDialect(new HibernateJpaDialect());

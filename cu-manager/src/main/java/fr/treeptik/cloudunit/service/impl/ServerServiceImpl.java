@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
@@ -33,10 +34,13 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
+import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
@@ -46,6 +50,9 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.Volume;
+import fr.treeptik.cloudunit.model.VolumeAssociation;
+import fr.treeptik.cloudunit.model.VolumeAssociationId;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.VolumeService;
@@ -438,7 +445,10 @@ public class ServerServiceImpl implements ServerService {
 
 			dockerService.stopServer(server.getName());
 			dockerService.removeServer(server.getName(), false);
-			List<String> volumes = new ArrayList<>();
+			List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
+					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
+							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
+					.collect(Collectors.toList());
 			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
@@ -483,7 +493,87 @@ public class ServerServiceImpl implements ServerService {
 		} catch (Exception e) {
 			throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
 		}
+	}
 
+	@Override
+	@Transactional
+	public void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException {
+		checkVolumeFormat(volumeAssociationDTO);
+		Server server = null;
+		try {
+			server = findByName(volumeAssociationDTO.getContainerName());
+			Volume volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
+			volumeService.saveAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume),
+					volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode()));
+			stopAndRemoveServer(server, application);
+			recreateAndMountVolumes(server, application);
+		} catch (CheckException e) {
+			throw new CheckException(e.getMessage());
+		} catch (ServiceException e) {
+			throw new ServiceException(e.getMessage());
+		} finally {
+			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+		}
+	}
+
+	@Override
+	@Transactional
+	public void removeVolume(Application application, VolumeAssociationDTO volumeAssociationDTO)
+			throws ServiceException {
+		Server server = null;
+		try {
+			server = findByName(volumeAssociationDTO.getContainerName());
+			Volume volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
+			volumeService.removeAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume), null, null));
+			stopAndRemoveServer(server, application);
+			recreateAndMountVolumes(server, application);
+		} catch (CheckException e) {
+			throw new CheckException(e.getMessage());
+		} catch (ServiceException e) {
+			throw new ServiceException(e.getMessage());
+		} finally {
+			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+		}
+	}
+
+	private void stopAndRemoveServer(Server server, Application application) throws ServiceException {
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+		applicationEventPublisher.publishEvent(new ServerStopEvent(server));
+		dockerService.removeServer(server.getName(), false);
+	}
+
+	private void recreateAndMountVolumes(Server server, Application application) throws ServiceException {
+		List<String> volumes = volumeService.loadAllByContainerName(server.getName())
+				.stream().map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath()
+						+ ":" + v.getVolumeAssociations().stream().findFirst().get().getMode())
+				.collect(Collectors.toList());
+		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+				server.getApplication().getUser(), null, false, volumes);
+		server = startServer(server);
+		addCredentialsForServerManagement(server, server.getApplication().getUser());
+	}
+
+	private void checkVolumeFormat(VolumeAssociationDTO volume) throws ServiceException {
+		if (volume.getVolumeName() == null || volume.getVolumeName().isEmpty())
+			throw new CheckException("This name is not consistent !");
+		if (volume.getApplicationName() == null || volume.getApplicationName().isEmpty())
+			throw new CheckException("Application name is not consistent !");
+		if (volume.getContainerName() == null || volume.getContainerName().isEmpty())
+			throw new CheckException("Application name is not consistent !");
+		if (volume.getPath() == null || volume.getPath().isEmpty() || !volume.getPath().startsWith("/")
+				|| !volume.getPath().replaceAll("/", "").matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This path is not consistent !");
+		if (!volume.getVolumeName().matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This name is not consistent : " + volume.getVolumeName());
+		if (!volumeService.loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getVolumeName())).findAny()
+				.isPresent()) {
+			throw new CheckException("This volume does not exist");
+		}
+		if (!(volume.getMode().equalsIgnoreCase("ro") || volume.getMode().equalsIgnoreCase("rw"))) {
+			throw new CheckException("Authorized mode value : ro (readOnly) or rw (read-write)");
+		}
 	}
 
 }

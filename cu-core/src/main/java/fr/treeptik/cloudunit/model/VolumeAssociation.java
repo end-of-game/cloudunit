@@ -13,12 +13,41 @@ public class VolumeAssociation implements Serializable {
 	@EmbeddedId
 	private VolumeAssociationId volumeAssociationId;
 
+	private String path;
+
+	private String mode;
+
+	public VolumeAssociation() {
+	}
+
+	public VolumeAssociation(VolumeAssociationId volumeAssociationId, String path, String mode) {
+		this.volumeAssociationId = volumeAssociationId;
+		this.path = path;
+		this.mode = mode;
+	}
+
 	public VolumeAssociationId getVolumeAssociationId() {
 		return volumeAssociationId;
 	}
 
 	public void setVolumeAssociationId(VolumeAssociationId volumeAssociationId) {
 		this.volumeAssociationId = volumeAssociationId;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 
 }

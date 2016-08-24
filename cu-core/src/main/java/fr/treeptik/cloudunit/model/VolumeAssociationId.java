@@ -13,6 +13,14 @@ public class VolumeAssociationId implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public VolumeAssociationId() {
+	}
+
+	public VolumeAssociationId(Server server, Volume volume) {
+		this.server = server;
+		this.volume = volume;
+	}
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Server server;
 

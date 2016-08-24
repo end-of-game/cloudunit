@@ -57,6 +57,10 @@ public class JsonInput implements Serializable {
 
 	private String portNature;
 
+	private String volumeName;
+
+	private String mountPath;
+
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
 	}
@@ -193,6 +197,22 @@ public class JsonInput implements Serializable {
 	}
 
 	// VALIDATIONS
+
+	public String getVolumeName() {
+		return volumeName;
+	}
+
+	public void setVolumeName(String volumeName) {
+		this.volumeName = volumeName;
+	}
+
+	public String getMountPath() {
+		return mountPath;
+	}
+
+	public void setMountPath(String mountPath) {
+		this.mountPath = mountPath;
+	}
 
 	public void validateCreateApp() throws CheckException {
 		CheckUtils.validateSyntaxInput(applicationName, "check.app.name");

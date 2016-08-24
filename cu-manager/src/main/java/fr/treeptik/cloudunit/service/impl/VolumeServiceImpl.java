@@ -7,10 +7,13 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.treeptik.cloudunit.dao.VolumeAssociationDAO;
 import fr.treeptik.cloudunit.dao.VolumeDAO;
 import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Volume;
+import fr.treeptik.cloudunit.model.VolumeAssociation;
 import fr.treeptik.cloudunit.service.VolumeService;
 
 @Service
@@ -18,6 +21,9 @@ public class VolumeServiceImpl implements VolumeService {
 
 	@Inject
 	private VolumeDAO volumeDAO;
+
+	@Inject
+	private VolumeAssociationDAO volumeAssociationDAO;
 
 	@Inject
 	private DockerCloudUnitClient dockerCloudUnitClient;
@@ -49,7 +55,6 @@ public class VolumeServiceImpl implements VolumeService {
 		} catch (CheckException e) {
 			throw new CheckException(e.getMessage());
 		}
-
 	}
 
 	@Override
@@ -85,6 +90,26 @@ public class VolumeServiceImpl implements VolumeService {
 		if (loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getName())).findAny().isPresent()) {
 			throw new CheckException("This name already exists");
 		}
+	}
+
+	@Override
+	public List<Volume> loadAllByContainerName(String containerName) throws ServiceException {
+		return volumeDAO.findVolumesByContainerName(containerName);
+	}
+
+	@Override
+	public Volume findByName(String name) {
+		return volumeDAO.findByName(name);
+	}
+
+	@Override
+	public VolumeAssociation saveAssociation(VolumeAssociation volumeAssociation) {
+		return volumeAssociationDAO.save(volumeAssociation);
+	}
+
+	@Override
+	public void removeAssociation(VolumeAssociation volumeAssociation) {
+		volumeAssociationDAO.delete(volumeAssociation);
 	}
 
 }

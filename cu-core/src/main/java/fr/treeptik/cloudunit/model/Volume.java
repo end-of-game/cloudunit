@@ -23,6 +23,16 @@ public class Volume implements Serializable {
 
 	private String name;
 
+	public Volume() {
+
+	}
+
+	public Volume(Integer id, String name, Set<VolumeAssociation> volumeAssociations) {
+		this.id = id;
+		this.name = name;
+		this.volumeAssociations = volumeAssociations;
+	}
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "volumeAssociationId.volume", fetch = FetchType.LAZY)
 	private Set<VolumeAssociation> volumeAssociations;
