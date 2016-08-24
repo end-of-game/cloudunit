@@ -35,39 +35,33 @@ public class VolumeController implements Serializable {
 	private VolumeService volumeService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public @ResponseBody List<Volume> loadAllVolumes(@PathVariable String applicationName,
-			@PathVariable String containeName) throws ServiceException, JsonProcessingException, CheckException {
+	public @ResponseBody List<Volume> loadAllVolumes() throws ServiceException, JsonProcessingException, CheckException {
 		logger.info("Load");
 		List<Volume> volumes = volumeService.loadAllVolumes();
 		return volumes;
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public @ResponseBody Volume loadVolume(@PathVariable String applicationName, @PathVariable String containeName,
-			@PathVariable int id) throws ServiceException, CheckException {
+	public @ResponseBody Volume loadVolume(@PathVariable int id) throws ServiceException, CheckException {
 		return volumeService.loadVolume(id);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public @ResponseBody JsonResponse addVolume(@PathVariable String applicationName, @PathVariable String containeName,
-			@RequestBody Volume volume) throws ServiceException, CheckException {
+	public @ResponseBody JsonResponse addVolume(@RequestBody Volume volume) throws ServiceException, CheckException {
 		volumeService.createNewVolume(volume);
 		return new HttpOk();
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse updateVolume(@PathVariable String applicationName,
-			@PathVariable String containeName, @PathVariable int id, @RequestBody Volume volume)
+	public @ResponseBody JsonResponse updateVolume(@RequestBody Volume volume)
 			throws ServiceException, CheckException {
-
 		volumeService.updateVolume(volume);
 		return new HttpOk();
 
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public void deleteEnvironmentVariable(@PathVariable String applicationName, @PathVariable String containeName,
-			@PathVariable int id) throws ServiceException, CheckException {
+	public void deleteVolume(@PathVariable int id) throws ServiceException, CheckException {
 		volumeService.delete(id);
 	}
 }
