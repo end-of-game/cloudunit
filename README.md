@@ -137,3 +137,11 @@ Else ask your questions on [CloudUnit Google group](https://groups.google.com/fo
 
 Copyright 2016 Treeptik
 
+https://img.shields.io/github/forks/Treeptik/cloudunit.svg?style=flat-square
+https://img.shields.io/github/stars/Treeptik/cloudunit.svg?style=flat-square
+https://img.shields.io/github/downloads/Treeptik/cloudunit/total.svg
+https://img.shields.io/github/issues/Treeptik/cloudunit.svg
+https://img.shields.io/github/issues-closed/Treeptik/cloudunit.svg
+https://img.shields.io/github/issues-pr/Treeptik/cloudunit.svg
+https://img.shields.io/github/issues-pr-closed/Treeptik/cloudunit.svg
+https://img.shields.io/github/contributors/Treeptik/cloudunit.svg
