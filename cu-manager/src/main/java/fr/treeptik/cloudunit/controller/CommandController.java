@@ -4,18 +4,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.dto.Command;
+import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.HttpOk;
+import fr.treeptik.cloudunit.dto.JsonResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import fr.treeptik.cloudunit.dto.CommandRequest;
-import fr.treeptik.cloudunit.dto.HttpOk;
-import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.CommandService;
@@ -33,82 +30,31 @@ public class CommandController {
     @Inject
     private CommandService commandService;
 
-    @RequestMapping(value = "/{applicationName}/container/{containerName}/command", method = RequestMethod.POST)
-    public @ResponseBody JsonResponse addCommand(@PathVariable String applicationName, @PathVariable String containerName,
-                                                 @RequestBody CommandRequest commandRequest) throws ServiceException {
-        logger.info("Add");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            commandService.addCommand(commandRequest, containerName, applicationName);
-            return new HttpOk();
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
-
-    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{id}", method = RequestMethod.DELETE)
-    public @ResponseBody JsonResponse deleteCommand(@PathVariable String applicationName,
-                                                    @PathVariable String containerName, @PathVariable Integer id) throws ServiceException {
-        logger.info("Delete");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            commandService.deleteCommand(id);
-
-            return new HttpOk();
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
-
-    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{id}", method = RequestMethod.PUT)
-    public @ResponseBody JsonResponse updateCommand(@PathVariable String applicationName,
-                                                    @PathVariable String containerName, @PathVariable Integer id, @RequestBody CommandRequest commandRequest)
-            throws ServiceException {
-        logger.info("Update");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            commandService.updateCommand(commandRequest, containerName, applicationName, id);
-            return new HttpOk();
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
-
     @RequestMapping(value = "/{applicationName}/container/{containerName}/command", method = RequestMethod.GET)
-    public @ResponseBody List<CommandRequest> listCommandByImage(@PathVariable String applicationName,
-                                                                 @PathVariable String containerName) throws ServiceException {
+    public @ResponseBody List<Command> listCommandByImage(@PathVariable String applicationName,
+                                                           @PathVariable String containerName) throws ServiceException {
         logger.info("Load by container");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            List<CommandRequest> commandRequestList = commandService.listCommandByImage(applicationName, containerName);
+            List<Command> commands = commandService.listCommandByContainer(applicationName, containerName);
 
-            return commandRequestList;
+            return commands;
         } finally {
             authentificationUtils.allowUser(user);
         }
     }
 
-    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{id}", method = RequestMethod.POST)
-    public @ResponseBody CommandRequest getCommand(@PathVariable String applicationName,
-                                                   @PathVariable String containerName, @PathVariable Integer id) throws ServiceException {
-        logger.info("Load by id");
-        User user = authentificationUtils.getAuthentificatedUser();
-        try {
-            CommandRequest commandRequest = commandService.getCommand(id);
-
-            return commandRequest;
-        } finally {
-            authentificationUtils.allowUser(user);
-        }
-    }
-
-    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{id}/exec", method = RequestMethod.POST)
-    public @ResponseBody JsonResponse execCommand(@PathVariable String applicationName,
-                                                  @PathVariable String containerName, @PathVariable Integer id) throws ServiceException {
+    @RequestMapping(value = "/{applicationName}/container/{containerName}/command/{filename}/exec", method = RequestMethod.POST)
+    public @ResponseBody JsonResponse execCommand(@PathVariable String applicationName, @PathVariable String containerName,
+                                                  @PathVariable String filename, @RequestBody List<String> arguments) throws ServiceException {
         logger.info("Execute by id");
         User user = authentificationUtils.getAuthentificatedUser();
         try {
-            commandService.execCommand(id, containerName, applicationName);
+            Command command = new Command();
+            command.setName(filename);
+            command.setArgumentNumber(arguments.size());
+            command.setArguments(arguments);
+            commandService.execCommand(command, containerName, applicationName);
 
             return new HttpOk();
         } finally {

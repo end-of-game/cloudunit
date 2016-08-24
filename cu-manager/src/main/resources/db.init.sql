@@ -37,11 +37,3 @@ VALUES
 
 INSERT IGNORE INTO `Metric` (`id`, `name`, `url`, `serverName`, `suffix`) VALUES (1, "memoryHeap", "java.lang:type=Memory/HeapMemoryUsage", "all", "used")
    ,(2, "threadCount", "java.lang:type=Threading", "all", "ThreadCount"), (3, "currentThreadsBusy", 'Catalina:name="http-bio-8080",type=ThreadPool', "tomcat", "currentThreadsBusy") ;
-
-
-INSERT IGNORE INTO `Command` (`id`, `value`, `description`, `image_id`) VALUES
-  (1, "./scripts/custom_scripts/create_datasource.sh", "Create a datasource", 60),
-  (2, "ls", "Display files and directories", 60);
-
-INSERT IGNORE INTO `Command_arguments` (`Command_id`, `arguments`) VALUES
-  (1, "name"), (1, "driver-name"), (1, "connection-url"), (1, "user-name"), (1, "password");

@@ -73,10 +73,6 @@ public class Image implements Serializable {
 	@OneToMany(mappedBy = "image")
 	private List<Server> servers;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "image")
-	private List<Command> commands;
-
 	public Integer getId() {
 		return id;
 	}
