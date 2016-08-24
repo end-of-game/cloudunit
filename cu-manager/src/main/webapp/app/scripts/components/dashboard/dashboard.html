@@ -103,7 +103,7 @@
               </ul>
             </div>
           </div>
-          <div class="input-group inline">
+          <!--<div class="input-group inline">
             <span class="label">Display by :</span>
             <div class="dropdown" dropdown="">
               <a class="dropdown-toggle"
@@ -125,8 +125,26 @@
                 </li>
               </ul>
             </div>
-          </div>
+          </div>-->
         </div>
+        <button class="icon-button  pull-left"
+                tooltip=""
+                data-title="Grid"
+                data-placement="top"
+                data-ng-click="dashboard.selectedDisplayStyle = 'Grid';"
+                data-ng-class="{selected: dashboard.selectedDisplayStyle == 'Grid'}">
+          <i class="icon-whhg grid-th"></i>
+        </button>
+
+        <button class="icon-button  pull-left"
+                tooltip=""
+                data-title="List"
+                data-placement="top"
+                data-ng-click="dashboard.selectedDisplayStyle = 'List';"
+                data-ng-class="{selected: dashboard.selectedDisplayStyle == 'List'}">
+          <i class="icon-whhg list-th"></i>
+        </button>
+
       </div>
       <div class="cards">
         <!--create application-->

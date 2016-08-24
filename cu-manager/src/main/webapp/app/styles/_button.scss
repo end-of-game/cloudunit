@@ -72,6 +72,14 @@
   color: $brand-danger;
 }
 
+.icon-button.selected, .icon-button.selected:hover {
+  color: $color-primary;
+}
+
+.subheader .icon-button .icon-whhg {
+  font-size: 21px;
+}
+
 .float-button {
   position: fixed;
   width: 56px;
