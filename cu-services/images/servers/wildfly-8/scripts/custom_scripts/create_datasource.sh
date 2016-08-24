@@ -1,4 +1,6 @@
-/opt/cloudunit/wildfly/bin/jboss-cli.sh
-connect
-data-source add  --name=$1 --driver-name=$2 --connection-url=$3 --jndi-name=jboss/jdbc/$1
-data-source enable --name=$1 
+#!/bin/bash
+
+NAME=$1
+DRIVER=$2
+
+bash $JBOSS_HOME/bin/jboss-cli.sh -c --user=$CU_USER --password=$CU_PASSWORD --command="/subsystem=datasources/data-source=$NAME:add(jndi-name=java:jboss/datasources/$NAME, pool-name=$NAME, driver-name=$DRIVER, connection-url=jdbc:h2:mem:test;DB_CLOSE_DELAY=-1)"
