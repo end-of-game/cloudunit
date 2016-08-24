@@ -1,10 +1,11 @@
 package fr.treeptik.cloudunit.model;
 
-import javax.persistence.*;
-
-import fr.treeptik.cloudunit.dto.VolumeRequest;
-
 import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Volume implements Serializable {
@@ -16,13 +17,6 @@ public class Volume implements Serializable {
 	private Integer id;
 
 	private String name;
-
-	private String path;
-
-	@ManyToOne
-	private Application application;
-
-	private String containerName;
 
 	public Integer getId() {
 		return id;
@@ -40,42 +34,9 @@ public class Volume implements Serializable {
 		this.name = name;
 	}
 
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public Application getApplication() {
-		return application;
-	}
-
-	public void setApplication(Application application) {
-		this.application = application;
-	}
-
-	public String getContainerName() {
-		return containerName;
-	}
-
-	public void setContainerName(String containerName) {
-		this.containerName = containerName;
-	}
-
-	public VolumeRequest mapToVolume() {
-		VolumeRequest volumeRequest = new VolumeRequest();
-		volumeRequest.setId(id);
-		volumeRequest.setName(name);
-		volumeRequest.setPath(path);
-		return volumeRequest;
-	}
-
 	@Override
 	public String toString() {
-		return "Volume [id=" + id + ", name=" + name + ", path=" + path + ", application=" + application
-				+ ", containerName=" + containerName + "]";
+		return "Volume [id=" + id + ", name=" + name + "]";
 	}
 
 }

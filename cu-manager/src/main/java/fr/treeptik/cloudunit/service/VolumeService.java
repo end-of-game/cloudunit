@@ -1,16 +1,12 @@
 package fr.treeptik.cloudunit.service;
 
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Volume;
-
 import java.util.List;
 
-public interface VolumeService {
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Volume;
 
-	void createNewVolume(Volume volume, Application application, String containerId)
-			throws ServiceException, CheckException;
+public interface VolumeService {
 
 	Volume loadVolume(int id) throws ServiceException, CheckException;
 
@@ -22,7 +18,8 @@ public interface VolumeService {
 
 	void delete(int id) throws ServiceException, CheckException;
 
-	void updateVolume(Volume volume, Application application, String containerId)
-			throws ServiceException, CheckException;
+	Volume updateVolume(Volume volume) throws ServiceException, CheckException;
+
+	Volume createNewVolume(Volume volume) throws ServiceException;
 
 }

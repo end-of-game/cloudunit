@@ -2,7 +2,6 @@ package fr.treeptik.cloudunit.controller;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -19,18 +18,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonResponse;
-import fr.treeptik.cloudunit.dto.VolumeRequest;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.model.Volume;
-import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.VolumeService;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 
 @Controller
-@RequestMapping("/application")
+@RequestMapping("/volumes")
 public class VolumeController implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -38,81 +32,42 @@ public class VolumeController implements Serializable {
 	private final Logger logger = LoggerFactory.getLogger(VolumeController.class);
 
 	@Inject
-	private AuthentificationUtils authentificationUtils;
-
-	@Inject
 	private VolumeService volumeService;
 
-	@Inject
-	private ApplicationService applicationService;
-
-	@RequestMapping(value = "/{applicationName}/container/{containeName}/volumes", method = RequestMethod.GET)
-	public @ResponseBody List<VolumeRequest> loadAllVolumes(@PathVariable String applicationName,
+	@RequestMapping(method = RequestMethod.GET)
+	public @ResponseBody List<Volume> loadAllVolumes(@PathVariable String applicationName,
 			@PathVariable String containeName) throws ServiceException, JsonProcessingException, CheckException {
 		logger.info("Load");
-		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			List<Volume> volumes = volumeService.loadVolumeByContainer(containeName);
-			return volumes.stream().map(v -> v.mapToVolume()).collect(Collectors.toList());
-
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
+		List<Volume> volumes = volumeService.loadVolumeByContainer(containeName);
+		return volumes;
 	}
 
-	@RequestMapping(value = "/{applicationName}/container/{containeName}/volumes/{id}", method = RequestMethod.GET)
-	public @ResponseBody VolumeRequest loadVolume(@PathVariable String applicationName,
-			@PathVariable String containeName, @PathVariable int id) throws ServiceException, CheckException {
-		logger.info("Load");
-		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			return volumeService.loadVolume(id).mapToVolume();
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public @ResponseBody Volume loadVolume(@PathVariable String applicationName, @PathVariable String containeName,
+			@PathVariable int id) throws ServiceException, CheckException {
+		return volumeService.loadVolume(id);
 	}
 
-	@RequestMapping(value = "/{applicationName}/container/{containeName}/volumes", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public @ResponseBody JsonResponse addVolume(@PathVariable String applicationName, @PathVariable String containeName,
-			@RequestBody VolumeRequest volumeRequest) throws ServiceException, CheckException {
-		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			Application application = applicationService.findByNameAndUser(user, applicationName);
-			Volume volume = volumeRequest.mapToVolumeRequest();
-			volumeService.createNewVolume(volume, application, containeName);
-			return new HttpOk();
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
+			@RequestBody Volume volume) throws ServiceException, CheckException {
+		volumeService.createNewVolume(volume);
+		return new HttpOk();
 	}
 
-	@RequestMapping(value = "/{applicationName}/container/{containeName}/volumes/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse updateVolume(@PathVariable String applicationName,
-			@PathVariable String containeName, @PathVariable int id, @RequestBody VolumeRequest volumeRequest)
+			@PathVariable String containeName, @PathVariable int id, @RequestBody Volume volume)
 			throws ServiceException, CheckException {
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			Application application = applicationService.findByNameAndUser(user, applicationName);
+		volumeService.updateVolume(volume);
+		return new HttpOk();
 
-			volumeRequest.setId(id);
-			volumeService.updateVolume(volumeRequest.mapToVolumeRequest(), application, containeName);
-			return new HttpOk();
-
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
 	}
 
-	@RequestMapping(value = "/{applicationName}/container/{containeName}/volumes/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public void deleteEnvironmentVariable(@PathVariable String applicationName, @PathVariable String containeName,
 			@PathVariable int id) throws ServiceException, CheckException {
-		logger.info("Delete");
-		User user = authentificationUtils.getAuthentificatedUser();
-		try {
-			volumeService.delete(id);
-		} finally {
-			authentificationUtils.allowUser(user);
-		}
+		volumeService.delete(id);
 	}
 }
