@@ -47,6 +47,7 @@
       'ui.codemirror',
       'ngclipboard',
       'xeditable',
+      'ng-sweet-alert',
 
       //shared modules
       'webuiApp.filters',

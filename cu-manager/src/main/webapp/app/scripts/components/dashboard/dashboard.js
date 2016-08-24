@@ -38,13 +38,14 @@
         '$interval',
         'ApplicationService',
         'ErrorService',
+        'SweetAlert',
         DashboardCtrl
       ],
       controllerAs: 'dashboard',
     };
   }
 
-  function DashboardCtrl($rootScope, $scope, $interval, ApplicationService, ErrorService) {
+  function DashboardCtrl($rootScope, $scope, $interval, ApplicationService, ErrorService, SweetAlert) {
     var timer, vm = this;
     vm.applications = [];
     vm.selectedItem = 'All';
@@ -55,7 +56,7 @@
     vm.toggleServer = toggleServer;
     vm.buffer = '';
     vm.selectedDisplayStyle = 'Grid';
-
+    // vm.checkCancel = checkCancel;
     update();
 
     // Polling on refresh
@@ -81,7 +82,10 @@
     });
     
     /////////////////////////////////////////////
-
+    // function checkCancel()  {
+    //   console.log("cancel");
+    //   // SweetAlert.success("You have successfully completed our poll!", {title: "Good job!"});
+    // }
     // Refresh the application list
     function update() {
       ApplicationService.list()
