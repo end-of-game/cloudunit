@@ -75,6 +75,7 @@
       ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.name)
         .then(function(response) {
           vm.env = response;
+          console.log(response);
         })
         .catch(function(response) {
           ErrorService.handle(response);
