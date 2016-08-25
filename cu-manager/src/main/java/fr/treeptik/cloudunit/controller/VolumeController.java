@@ -46,6 +46,7 @@ public class VolumeController implements Serializable {
 		return volumeService.loadVolume(id);
 	}
 
+	// REQUEST BODY => * Name : String
 	@RequestMapping(method = RequestMethod.POST)
 	public @ResponseBody JsonResponse addVolume(@RequestBody Volume volume) throws ServiceException, CheckException {
 		volumeService.createNewVolume(volume);
