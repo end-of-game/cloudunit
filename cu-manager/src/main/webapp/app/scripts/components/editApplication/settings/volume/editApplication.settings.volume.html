@@ -45,18 +45,18 @@
     <form id="add-volume"
             name="addvolumeVariable"
             class="clearfix" novalidate=""
-            data-ng-submit="volume.addVolume(volume.volumeName, volume.volumePath)">
+            data-ng-submit="volume.linkVolume(volume.volumeName, volume.volumePath)">
       <div class="dropdown dropdown--small" dropdown>
         <a class="dropdown-toggle"
             dropdown-toggle=""
             selectbox=""
-            ng-init="volumePicked = volume.volumes[0].name">
-          {{ volume.volumes[0].name }}
+            ng-init="volume.volumePicked = volume.volumes[0].name">
+          {{ volume.volumePicked }}
         </a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
           <li data-ng-repeat="vol in volume.volumes">
             <a ng-href=""
-                data-ng-click="volumePicked = vol.name;">
+                data-ng-click="volume.volumePicked = vol.name;">
               {{vol.name}}
             </a>
           </li>
@@ -66,7 +66,7 @@
           <div class="secondary-actions pull-right">
             <button type="submit"
                     class="addVolume-btn button-effect primary pull-right"
-                    data-ng-disabled="!volume.volumeName || !volume.volumePath">
+                    data-ng-disabled="!volume.volumePicked">
               <span>Link volume</span>
             </button>
           </div>
