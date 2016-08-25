@@ -39,12 +39,12 @@ public class ServerListener {
 	public void onServerStart(ServerStartEvent serverStartEvent) {
 		Server server = (Server) serverStartEvent.getSource();
 		try {
-			String containerId = server.getContainerID();
+			String containerName = server.getName();
 			int counter = 0;
 			boolean started = false;
 			do {
 				String command = RemoteExecAction.CHECK_RUNNING.getCommand();
-				String exec = dockerService.execCommand(containerId, command);
+				String exec = dockerService.execCommand(containerName, command);
 				exec = exec.replaceAll(System.getProperty("line.separator"), "");
 				if ("0".equalsIgnoreCase(exec.trim())) {
 					started = true;
@@ -56,8 +56,8 @@ public class ServerListener {
 				server.setStatus(Status.START);
 
 				hipacheRedisUtils.updateServerAddress(server.getApplication(), server.getContainerIP(),
-						dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
-						dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+						dockerService.getEnv(containerName, "CU_SERVER_PORT"),
+						dockerService.getEnv(containerName, "CU_SERVER_MANAGER_PORT"));
 
 			} else {
 				server.setStatus(Status.FAIL);
