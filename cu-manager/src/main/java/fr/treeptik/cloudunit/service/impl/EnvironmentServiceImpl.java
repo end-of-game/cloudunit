@@ -153,6 +153,8 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 			application = applicationService.findByNameAndUser(user, applicationName);
 			stopAndRemoveServer(server, application);
 			environmentVariable.setId(id);
+			environmentVariable.setContainerName(containerName);
+			environmentVariable.setApplication(application);
 			environmentVariable = environmentDAO.save(environmentVariable);
 			recreateAndMountVolumes(server, application);
 		} catch (CheckException e) {
