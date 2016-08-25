@@ -175,25 +175,25 @@ public class ServerServiceImpl implements ServerService {
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 
-			logger.info(dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
-			logger.info(dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+			logger.info(dockerService.getEnv(server.getName(), "CU_SERVER_PORT"));
+			logger.info(dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 			logger.info(application.getLocation());
 
 			hipacheRedisUtils.createRedisAppKey(server.getApplication(), server.getContainerIP(),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 
 			// Update server with all its informations
 			server.setManagerLocation("http://manager-" + application.getLocation().substring(7)
-					+ dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PATH"));
+					+ dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH"));
 			server.setStatus(Status.START);
 			server.setJvmMemory(512L);
-			server.setJvmRelease(dockerService.getEnv(server.getContainerID(), "CU_DEFAULT_JAVA_RELEASE"));
+			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
 
 			server = this.update(server);
 
 			addCredentialsForServerManagement(server, user);
-			String needToRestart = dockerService.getEnv(server.getContainerID(), "CU_SERVER_RESTART_POST_CREDENTIALS");
+			String needToRestart = dockerService.getEnv(server.getName(), "CU_SERVER_RESTART_POST_CREDENTIALS");
 			if ("true".equalsIgnoreCase(needToRestart)) {
 				dockerService.stopServer(server.getName());
 				dockerService.startServer(server.getName(), server);
@@ -228,7 +228,7 @@ public class ServerServiceImpl implements ServerService {
 				put("CU_PASSWORD", user.getPassword());
 			}
 		};
-		dockerService.execCommand(server.getContainerID(), RemoteExecAction.ADD_USER.getCommand(kvStore));
+		dockerService.execCommand(server.getName(), RemoteExecAction.ADD_USER.getCommand(kvStore));
 	}
 
 	/**
@@ -272,8 +272,8 @@ public class ServerServiceImpl implements ServerService {
 			Application application = server.getApplication();
 
 			hipacheRedisUtils.updateServerAddress(application, server.getContainerIP(),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 
 		} catch (PersistenceException | FatalDockerJSONException e) {
 			logger.error("ServerService Error : update Server" + e);
@@ -377,7 +377,7 @@ public class ServerServiceImpl implements ServerService {
 	@Transactional
 	public Server stopServer(Server server) throws ServiceException {
 		try {
-			dockerService.execCommand(server.getContainerID(), RemoteExecAction.CLEAN_LOGS.getCommand());
+			dockerService.execCommand(server.getName(), RemoteExecAction.CLEAN_LOGS.getCommand());
 			dockerService.stopServer(server.getName());
 			applicationEventPublisher.publishEvent(new ServerStopEvent(server));
 		} catch (PersistenceException e) {
@@ -438,7 +438,7 @@ public class ServerServiceImpl implements ServerService {
 		try {
 			List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
 					.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
-			String currentJvmMemory = dockerService.getEnv(server.getContainerID(), "JAVA_OPTS");
+			String currentJvmMemory = dockerService.getEnv(server.getName(), "JAVA_OPTS");
 			currentJvmMemory = currentJvmMemory.replaceAll(previousJvmMemory, jvmMemory);
 			currentJvmMemory = currentJvmMemory.substring(currentJvmMemory.lastIndexOf("-Xms"));
 			currentJvmMemory = jvmOptions + " " + currentJvmMemory;

@@ -237,6 +237,7 @@ public class DockerServiceImpl implements DockerService {
 		try {
 			Optional<String> value = dockerClient.inspectContainer(containerName).config().env().stream()
 					.filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=") + 1)).findFirst();
+			System.out.println("VARIABLE=" + value);
 			return (value.orElseThrow(
 					() -> new ServiceException("$CU_LOGS is missing into DOCKERFILE. Needed to set the dir log path")));
 		} catch (Exception e) {
