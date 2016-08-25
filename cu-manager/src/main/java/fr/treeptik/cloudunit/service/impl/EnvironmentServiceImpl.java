@@ -108,7 +108,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	@Override
 	@Transactional
 	@CacheEvict(value = "env", allEntries = true)
-	public void delete(User user, int id, String containerName, String applicationName) throws ServiceException {
+	public void delete(User user, int id, String applicationName, String containerName) throws ServiceException {
 		Server server = null;
 		Application application = null;
 		try {
