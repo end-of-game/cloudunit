@@ -232,16 +232,16 @@ public class DockerServiceImpl implements DockerService {
 	}
 
 	@Override
-	@Cacheable(value = "env", key = "{#containerId,#variable}")
-	public String getEnv(String containerId, String variable) throws FatalDockerJSONException {
+	@Cacheable(value = "env", key = "{#containerName,#variable}")
+	public String getEnv(String containerName, String variable) throws FatalDockerJSONException {
 		try {
-			Optional<String> value = dockerClient.inspectContainer(containerId).config().env().stream()
+			Optional<String> value = dockerClient.inspectContainer(containerName).config().env().stream()
 					.filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=") + 1)).findFirst();
 			return (value.orElseThrow(
 					() -> new ServiceException("$CU_LOGS is missing into DOCKERFILE. Needed to set the dir log path")));
 		} catch (Exception e) {
 			StringBuilder msgError = new StringBuilder();
-			msgError.append("containerId=").append(containerId);
+			msgError.append("containerId=").append(containerName);
 			msgError.append("variable=").append(variable);
 			throw new FatalDockerJSONException(msgError.toString(), e);
 		}
