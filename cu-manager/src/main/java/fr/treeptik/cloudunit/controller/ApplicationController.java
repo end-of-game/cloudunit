@@ -557,18 +557,18 @@ public class ApplicationController implements Serializable {
 	 */
 	@CloudUnitSecurable
 	@ResponseBody
-	@RequestMapping(value = "/{applicationName}/container/{containerId}/env", method = RequestMethod.GET)
-	public List<EnvUnit> displayEnv(@PathVariable String applicationName, @PathVariable String containerId)
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/env", method = RequestMethod.GET)
+	public List<EnvUnit> displayEnv(@PathVariable String applicationName, @PathVariable String containerName)
 			throws ServiceException, CheckException {
 		List<EnvUnit> envUnits = null;
 		try {
 			User user = this.authentificationUtils.getAuthentificatedUser();
-			String content = dockerService.execCommand(containerId,
+			String content = dockerService.execCommand(containerName,
 					RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
 			logger.debug(content);
 			envUnits = EnvUnitFactory.fromOutput(content);
 		} catch (FatalDockerJSONException e) {
-			throw new ServiceException(applicationName + ", " + containerId, e);
+			throw new ServiceException(applicationName + ", " + containerName, e);
 		}
 		return envUnits;
 	}

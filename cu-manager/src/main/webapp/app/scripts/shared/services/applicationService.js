@@ -235,8 +235,8 @@
 
     function addEnvironmentVariable ( applicationName, containerName, environmentVariableKey, environmentVariableValue ) {
       var data = {
-        key: environmentVariableKey,
-        value: environmentVariableValue
+        keyEnv: environmentVariableKey,
+        valueEnv: environmentVariableValue
       };
 
       var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables' );

@@ -501,6 +501,7 @@ public class ServerServiceImpl implements ServerService {
 
 	@Override
 	@Transactional
+	@CacheEvict(value = "env", allEntries = true)
 	public void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException {
 		checkVolumeFormat(volumeAssociationDTO);
 		Server server = null;
@@ -523,6 +524,7 @@ public class ServerServiceImpl implements ServerService {
 
 	@Override
 	@Transactional
+	@CacheEvict(value = "env", allEntries = true)
 	public void removeVolume(Application application, VolumeAssociationDTO volumeAssociationDTO)
 			throws ServiceException {
 		Server server = null;

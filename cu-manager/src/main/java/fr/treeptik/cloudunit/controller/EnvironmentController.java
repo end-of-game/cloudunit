@@ -69,18 +69,18 @@ public class EnvironmentController implements Serializable {
 	@RequestMapping(value = "/{applicationName}/container/{containerName}/environmentVariables/{id}", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse updateEnvironmentVariable(@PathVariable String applicationName,
 			@PathVariable String containerName, @PathVariable int id,
-			@RequestBody EnvironmentVariable environmentVariableRequest)
-			throws ServiceException, CheckException {
+			@RequestBody EnvironmentVariable environmentVariableRequest) throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
 		environmentService.update(user, environmentVariableRequest, applicationName, containerName, id);
 		return new HttpOk();
 	}
 
-	@RequestMapping(value = "/{applicationName}/container/{containerId}/environmentVariables/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/environmentVariables/{id}", method = RequestMethod.DELETE)
 	public @ResponseBody JsonResponse deleteEnvironmentVariable(@PathVariable String applicationName,
 			@PathVariable String containerName, @PathVariable int id) throws ServiceException, CheckException {
 		logger.info("Delete");
-		environmentService.delete(id);
+		User user = authentificationUtils.getAuthentificatedUser();
+		environmentService.delete(user, id, applicationName, containerName);
 		return new HttpOk();
 	}
 }
