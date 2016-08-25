@@ -109,9 +109,11 @@
     }
     
     function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
-      ApplicationService.editEnvironmentVariable ( $stateParams.name, vm.myContainer.name, environmentVariableID, environmentVariableKey, environmentVariableValue )
+      ApplicationService.editEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableID, environmentVariableKey,
+      environmentVariableValue)
         .then(function(env) {
           cleanMessage();
+          getListEnvironmentVariable();
           var elementPos = vm.env.map(function(x) {return x.id; }).indexOf(environmentVariableID);         
           vm.env[elementPos] = env;
           vm.manageNoticeMsg = 'The variable has been edited !';
@@ -126,9 +128,7 @@
       ApplicationService.addEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue)
         .then ( function(env) {
           cleanMessage();
-          vm.env.push(env);
-          vm.environmentVariableKey = '';
-          vm.environmentVariableValue = '';
+          getListEnvironmentVariable();
           vm.addNoticeMsg = 'Variable successfully created !';
         } )
         .catch (errorAddEnvironment);
