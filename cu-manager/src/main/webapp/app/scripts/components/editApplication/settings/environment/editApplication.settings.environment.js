@@ -123,7 +123,7 @@
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
-      ApplicationService.addEnvironmentVariable (  $stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue )
+      ApplicationService.addEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue)
         .then ( function(env) {
           cleanMessage();
           vm.env.push(env);
