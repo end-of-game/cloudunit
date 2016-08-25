@@ -78,7 +78,7 @@ public class ServerListener {
 			int counter = 0;
 			boolean isStopped = false;
 			do {
-				isStopped = dockerService.isStoppedGracefully(server.getContainerID());
+				isStopped = dockerService.isStoppedGracefully(server.getName());
 				Thread.sleep(1000);
 			} while (counter++ < 30 && !isStopped);
 			if (counter <= 30) {
@@ -89,7 +89,7 @@ public class ServerListener {
 			logger.info("Server status : " + server.getStatus());
 			serverService.update(server);
 		} catch (Exception e) {
-			logger.error(server.getContainerID(), e);
+			logger.error(server.getName(), e);
 			e.printStackTrace();
 		}
 	}

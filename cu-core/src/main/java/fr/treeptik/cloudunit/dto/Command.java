@@ -3,33 +3,34 @@ package fr.treeptik.cloudunit.dto;
 import java.util.List;
 
 public class Command {
-    private String name;
 
-    private Integer argumentNumber;
+	private String name;
 
-    private List<String> arguments;
+	private Integer argumentNumber;
 
-    public String getName() {
-        return name;
-    }
+	private List<String> arguments;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Integer getArgumentNumber() {
-        return argumentNumber;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setArgumentNumber(Integer argumentNumber) {
-        this.argumentNumber = argumentNumber;
-    }
+	public Integer getArgumentNumber() {
+		return argumentNumber;
+	}
 
-    public List<String> getArguments() {
-        return arguments;
-    }
+	public void setArgumentNumber(Integer argumentNumber) {
+		this.argumentNumber = argumentNumber;
+	}
 
-    public void setArguments(List<String> arguments) {
-        this.arguments = arguments;
-    }
+	public List<String> getArguments() {
+		return arguments;
+	}
+
+	public void setArguments(List<String> arguments) {
+		this.arguments = arguments;
+	}
 }

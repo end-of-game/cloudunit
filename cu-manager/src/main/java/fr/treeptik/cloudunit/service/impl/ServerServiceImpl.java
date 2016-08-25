@@ -267,7 +267,7 @@ public class ServerServiceImpl implements ServerService {
 
 		logger.info("ServerService : Starting updating Server " + server.getName());
 		try {
-			server = serverDAO.save(server);
+			serverDAO.save(server);
 
 			Application application = server.getApplication();
 
