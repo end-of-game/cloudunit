@@ -16,7 +16,6 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +53,7 @@ import fr.treeptik.cloudunit.model.Volume;
 import fr.treeptik.cloudunit.model.VolumeAssociation;
 import fr.treeptik.cloudunit.model.VolumeAssociationId;
 import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.VolumeService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
@@ -99,6 +99,9 @@ public class ServerServiceImpl implements ServerService {
 
 	@Inject
 	private VolumeService volumeService;
+
+	@Inject
+	private EnvironmentService environmentService;
 
 	public ServerDAO getServerDAO() {
 		return this.serverDAO;
@@ -433,7 +436,8 @@ public class ServerServiceImpl implements ServerService {
 		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
 
 		try {
-			List<String> envs = new ArrayList<>();
+			List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
+					.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
 			String currentJvmMemory = dockerService.getEnv(server.getContainerID(), "JAVA_OPTS");
 			currentJvmMemory = currentJvmMemory.replaceAll(previousJvmMemory, jvmMemory);
 			currentJvmMemory = currentJvmMemory.substring(currentJvmMemory.lastIndexOf("-Xms"));
@@ -549,8 +553,10 @@ public class ServerServiceImpl implements ServerService {
 				.stream().map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath()
 						+ ":" + v.getVolumeAssociations().stream().findFirst().get().getMode())
 				.collect(Collectors.toList());
+		List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
+				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
 		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
-				server.getApplication().getUser(), null, false, volumes);
+				server.getApplication().getUser(), envs, false, volumes);
 		server = startServer(server);
 		addCredentialsForServerManagement(server, server.getApplication().getUser());
 	}
