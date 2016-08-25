@@ -54,7 +54,7 @@
 
     vm.$onInit = function() {
       if(vm.app) {
-      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.containerID)
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.containerName)
         .then ( function (data) {
           vm.app.env = data;
         } )
@@ -64,7 +64,7 @@
     ///////////////////////////////////////////
 
     function refreshEnvVar () {
-      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.containerID)
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.containerName)
       .then ( function (data) {
         vm.app.env = data;
       } )
