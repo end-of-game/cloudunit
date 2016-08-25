@@ -10,8 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 public class Volume implements Serializable {
 
@@ -33,7 +31,6 @@ public class Volume implements Serializable {
 		this.volumeAssociations = volumeAssociations;
 	}
 
-	@JsonIgnore
 	@OneToMany(mappedBy = "volumeAssociationId.volume", fetch = FetchType.LAZY)
 	private Set<VolumeAssociation> volumeAssociations;
 
