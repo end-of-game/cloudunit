@@ -75,6 +75,7 @@
       ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.name)
         .then(function(response) {
           vm.env = response;
+          console.log(response);
         })
         .catch(function(response) {
           ErrorService.handle(response);
@@ -108,9 +109,11 @@
     }
     
     function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
-      ApplicationService.editEnvironmentVariable ( $stateParams.name, vm.myContainer.name, environmentVariableID, environmentVariableKey, environmentVariableValue )
+      ApplicationService.editEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableID, environmentVariableKey,
+      environmentVariableValue)
         .then(function(env) {
           cleanMessage();
+          getListEnvironmentVariable();
           var elementPos = vm.env.map(function(x) {return x.id; }).indexOf(environmentVariableID);         
           vm.env[elementPos] = env;
           vm.manageNoticeMsg = 'The variable has been edited !';
@@ -122,12 +125,10 @@
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
-      ApplicationService.addEnvironmentVariable (  $stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue )
+      ApplicationService.addEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue)
         .then ( function(env) {
           cleanMessage();
-          vm.env.push(env);
-          vm.environmentVariableKey = '';
-          vm.environmentVariableValue = '';
+          getListEnvironmentVariable();
           vm.addNoticeMsg = 'Variable successfully created !';
         } )
         .catch (errorAddEnvironment);

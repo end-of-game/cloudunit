@@ -26,7 +26,6 @@
   angular
     .module('webuiApp',
     [
-
       // core modules
       'ngResource',
       'ngCookies',
@@ -56,6 +55,7 @@
       'webuiApp.login',
       'webuiApp.dashboard',
       'webuiApp.editApplication',
+      'webuiApp.editVolume',
       'webuiApp.snapshots',
       'webuiApp.mainTimeline',
       'webuiApp.scripting',

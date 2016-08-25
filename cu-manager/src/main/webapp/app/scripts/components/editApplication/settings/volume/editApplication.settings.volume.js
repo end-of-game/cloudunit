@@ -30,13 +30,14 @@
         '$q',
         'ApplicationService',
         'ErrorService',
+        '$resource',
         volumeCtrl
       ],
       controllerAs: 'volume',
     }
   }
 
-  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService) {
+  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService, $resource) {
 
     var vm = this;
     vm.volumes = [];
@@ -73,14 +74,22 @@
     ////////////////////////////////////////////////
 
     function getListVolume() {
-      console.log(vm.myContainer);
-      ApplicationService.getListSettingsVolume($stateParams.name, vm.myContainer.name)
-        .then(function(response) {
-          vm.volumes = response;
+      // ApplicationService.getListSettingsVolume($stateParams.name, vm.myContainer.name)
+      //   .then(function(response) {
+      //     console.log("volumes", response);
+      //     vm.volumes = response;
+      //   })
+      //   .catch(function(response) {
+      //     ErrorService.handle(response);
+      //   });
+
+        var dir = $resource('volume');
+
+        var volumesList = dir.query().$promise;
+        volumesList.then(function(response) {
+            console.log(response);
+            vm.volumes = response;
         })
-        .catch(function(response) {
-          ErrorService.handle(response);
-        });
     }
 
     function getContainers (selectedContainer) {

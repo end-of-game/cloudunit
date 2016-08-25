@@ -123,7 +123,10 @@
                   <a id="settings-tab" ui-sref="editApplication.settingsEnvironment"><span>Variables Environment</span></a>
                 </li>
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
-                  <a id="settings-tab" ui-sref="editApplication.settingsVolume"><span>Volume Configuration</span></a>
+                  <a id="settings-tab" ui-sref="editApplication.settingsVolume"><span>Volume Association</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsCommand"><span>Command Run</span></a>
                 </li>
               </ul>
             </div>
