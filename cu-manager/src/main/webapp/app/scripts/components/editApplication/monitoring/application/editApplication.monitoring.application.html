@@ -58,7 +58,6 @@
           class="clearfix" novalidate=""
           data-ng-submit="monitoringApp.loadStats(monitoringApp.selectedQueueStats)">
 
-
           <div class="input-group check checkbox inline" ng-repeat="(queueStatsName, value) in monitoringApp.queueStats | displayNumeric: monitoringApp.queueStats">
             <input id="{{queueStatsName}}" type="checkbox"
               ng-model="monitoringApp.selectedQueueStats[queueStatsName]"

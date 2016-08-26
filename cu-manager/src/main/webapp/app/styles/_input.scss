@@ -25,6 +25,7 @@ input, textarea, .form-control, .dropdown-toggle {
   border-radius: 0;
   border-bottom: 1px solid $color-muted;
   font-size: 16px;
+  
   &:focus {
     color: $color-default;
     outline: 0;
@@ -68,7 +69,12 @@ input[type='text'].ng-invalid:not(.ng-pristine) {
   border-bottom: 2px solid $color-error;
 }
 
+input.checkbox {
+  height: 30px;
+}
+
 input {
+
   &.large {
     min-width: 360px;
   }

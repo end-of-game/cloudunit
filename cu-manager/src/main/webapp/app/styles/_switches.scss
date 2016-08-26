@@ -13,7 +13,8 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-.check {
+.check:not(.icon-whhg) {
+
   padding: 8px 0;
   label {
     position: relative;
@@ -47,14 +48,14 @@
 }
 
 .checkbox label:before {
-  content: '\f10c';
+  content: '\f6bb';
   /*unchecked*/
   opacity: 0.54;
 }
 
 .check.checkbox label:after {
   /*checked*/
-  content: '\f192';
+  content: '\f6d5';
   max-width: 0;
   /*transition*/
   -webkit-transition: all 0.2s;
@@ -75,7 +76,7 @@
 
 .check.radio input[type="radio"]:disabled + label:before {
   /*checked*/
-  content: '\f111';
+  content: '\f0c8';
 }
 
 .check.radio input[type="radio"]:disabled + label {

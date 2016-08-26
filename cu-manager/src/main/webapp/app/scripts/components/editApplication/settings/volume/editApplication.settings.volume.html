@@ -1,165 +1,188 @@
 <!--
-  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
-  ~     but CloudUnit is licensed too under a standard commercial license.
-  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
-  ~     If you are not sure whether the GPL is right for you,
-  ~     you can always test our software under the GPL and inspect the source code before you contact us
-  ~     about purchasing a commercial license.
-  ~
-  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
-  ~     or promote products derived from this project without prior written permission from Treeptik.
-  ~     Products or services derived from this software may not be called "CloudUnit"
-  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
-  ~     For any questions, contact us : contact@treeptik.fr
-  -->
+~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+~     but CloudUnit is licensed too under a standard commercial license.
+~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+~     If you are not sure whether the GPL is right for you,
+~     you can always test our software under the GPL and inspect the source code before you contact us
+~     about purchasing a commercial license.
+~
+~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+~     or promote products derived from this project without prior written permission from Treeptik.
+~     Products or services derived from this software may not be called "CloudUnit"
+~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+~     For any questions, contact us : contact@treeptik.fr
+-->
 
 <div class="volume-card card col-lg-3">
-  <div class="content clearfix">
-    <h3 class="title large">Volume</h3>
-    
-    <p class="hint">Choose a container</p>
+    <div class="content clearfix">
+        <h3 class="title large">Container</h3>
 
-    <div class="dropdown dropdown--small" dropdown>
-      <a class="dropdown-toggle"
-          dropdown-toggle=""
-          selectbox="">
-        {{ volume.myContainer.name }}
-      </a>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-        <li data-ng-repeat="container in volume.containers">
-          <a ng-href=""
-              data-ng-click="volume.myContainer = container; volume.getContainers(volume.myContainer)">
-            {{container.name}}
-          </a>
-        </li>
-      </ul>
+        <p class="hint">Choose a container</p>
+
+        <div class="dropdown dropdown--small" dropdown>
+            <a class="dropdown-toggle"
+                dropdown-toggle=""
+                selectbox="">
+                {{ volume.myContainer.name }}
+            </a>
+
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li data-ng-repeat="container in volume.containers">
+                    <a ng-href=""
+                    data-ng-click="volume.myContainer = container; volume.getContainers(volume.myContainer)">
+                    {{container.name}}
+                </a>
+                </li>
+            </ul>
+        </div>
     </div>
-  </div>
 </div>
 
 <div class="volume-card card col-lg-9">
-  <div class="content clearfix">
+    <div class="content clearfix">
 
-    <h3 class="title large">Associating Volume</h3>
+        <h3 class="title large">Associating Volume</h3>
 
-    <form id="add-volume"
-            name="addvolumeVariable"
-            class="clearfix" novalidate=""
-            data-ng-submit="volume.linkVolume(volume.volumeName, volume.volumePath)">
-      <div class="dropdown dropdown--small" dropdown>
-        <a class="dropdown-toggle"
-            dropdown-toggle=""
-            selectbox=""
-            ng-init="volume.volumePicked = volume.volumes[0].name">
-          {{ volume.volumePicked }}
-        </a>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-          <li data-ng-repeat="vol in volume.volumes">
-            <a ng-href=""
-                data-ng-click="volume.volumePicked = vol.name;">
-              {{vol.name}}
+        <form id="add-volume"
+        name="addvolumeVariable"
+        class="clearfix" novalidate=""
+        data-ng-submit="volume.setLinkVolume()">
+
+        <div class="dropdown dropdown--small col-lg-10" dropdown>
+            <a  class="dropdown-toggle"
+                dropdown-toggle=""
+                selectbox=""
+                ng-init="volume.volumePicked = volume.volumes[0].name">
+                {{ volume.volumePicked }}
             </a>
-          </li>
-        </ul>
-      </div>
-        <div class="actions">
-          <div class="secondary-actions pull-right">
-            <button type="submit"
-                    class="addVolume-btn button-effect primary pull-right"
-                    data-ng-disabled="!volume.volumePicked">
-              <span>Link volume</span>
-            </button>
-          </div>
+
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li data-ng-repeat="vol in volume.volumes">
+                    <a ng-href=""
+                        data-ng-click="volume.volumePicked = vol.name;">
+                        {{vol.name}}
+                    </a>
+                </li>
+            </ul>
         </div>
-      </form>
-    
-    <div class="alert alert-danger" data-ng-show="volume.addErrorMsg">
-      <button type="button"
-              class="close"
-              ng-click="volume.addErrorMsg = ''">
-        <span>&times;</span>
-      </button>
-      <p>{{volume.addErrorMsg}}</p>
-    </div>
-    <div class="alert alert-info" data-ng-show="volume.addNoticeMsg">
-      <button type="button"
-              class="close"
-              ng-click="volume.addNoticeMsg = ''">
-        <span>&times;</span>
-      </button>
-      <p>{{volume.addNoticeMsg}}</p>
-    </div>
-  </div>
+
+        <label for="" class="col-lg-2">
+            Read only
+            <button class="icon-button"
+                tooltip=""
+                type="button"
+                data-title="Read only"
+                data-placement="top"
+                data-ng-click="volume.IReadOnly = !volume.IReadOnly">
+                <i class="icon-whhg" data-ng-class="{'rectangle': !volume.IReadOnly, 'check': volume.IReadOnly}"></i>
+            </button>
+        </label>
+
+        <label for="" class="col-lg-12">
+            Path
+            <input class="col-lg-12" type="text" text="" ng-model="volume.createLinkPath">
+        </label>
+
+        <p class="hint error" data-ng-if="volume.errorLinkCreate" ng-bind="editVolume.errorLinkCreate">
+        </p>
+
+        <div class="actions">
+            <div class="secondary-actions pull-right">
+                <button type="submit"
+                    class="addVolume-btn button-effect primary pull-right"
+                    data-ng-disabled="!volume.volumePicked || !volume.createLinkPath">
+                    <span>Link volume</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+<div class="alert alert-danger" data-ng-show="volume.addErrorMsg">
+    <button type="button"
+    class="close"
+    ng-click="volume.addErrorMsg = ''">
+    <span>&times;</span>
+</button>
+<p>{{volume.addErrorMsg}}</p>
+</div>
+<div class="alert alert-info" data-ng-show="volume.addNoticeMsg">
+    <button type="button"
+    class="close"
+    ng-click="volume.addNoticeMsg = ''">
+    <span>&times;</span>
+</button>
+<p>{{volume.addNoticeMsg}}</p>
+</div>
+</div>
 </div>
 
 <div class="volume-card card col-lg-12">
-  <div class="content clearfix lol" id="settings-volume">
+    <div class="content clearfix lol" id="settings-volume">
+        <h3 class="title large">Manage Volume</h3>
 
-    <h3 class="title large">Manage Volume</h3>
+        <div class="no-data" ng-if="!volume.volumes.length">
+            <p>No volume has been created yet !</p>
+        </div>
 
-    <div class="no-data" ng-if="!volume.volumes.length">
-      <p>No volume has been created yet !</p>
-    </div>
-
-    <table class="table" ng-if="volume.volumes.length">
-        <thead>
-        <tr>
-          <th ng-click="volume.order('name')"><i class="icon-whhg"  ng-show="volume.predicate == 'name'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> name</th>
-          <th ng-click="volume.order('path')"><i class="icon-whhg"  ng-show="volume.predicate == 'path'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i>  path</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-          <tr 
-            dir-paginate="vol in volume.volumes | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by vol.id"
-            data-current-page="volume.currentPage">
-            <td>
-              <span editable-text="vol.name" e-name="name" e-form="rowform"  e-required>
-                <span class="clipboard" id="name-{{vol.id}}"
-                  data-title="Copy to clipboard"
-                  tooltip=""
-                  ngclipboard data-clipboard-target="#name-{{vol.id}}">{{ vol.name }}</span>
-              </span>
-            </td>
-            <td>
-              <span editable-text="vol.path" e-name="path" e-form="rowform" e-required>
-                <span class="clipboard" id="path-{{vol.id}}"
-                  data-title="Copy to clipboard"
-                  tooltip=""
-                  ngclipboard data-clipboard-target="#path-{{vol.id}}">{{ vol.path }}</span>
-              </span>
-            </td>
-            <td>
-              <!-- ASSOCIATING WITH VOLUME -->
-              <button class="icon-button"
-                  ripple=""
-                  tooltip=""
-                  data-title="Unlink volume"
-                  data-placement="bottom"
-                  ng-click="rowform.$show()">
-                <i class="icon-whhg brokenlink"></i>
+        <table class="table" ng-if="volume.volumes.length">
+            <thead>
+                <tr>
+                    <th ng-click="volume.order('name')"><i class="icon-whhg"  ng-show="volume.predicate == 'name'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> name</th>
+                    <th ng-click="volume.order('path')"><i class="icon-whhg"  ng-show="volume.predicate == 'path'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> path</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr 
+                dir-paginate="vol in volume.volumes | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by vol.id"
+                data-current-page="volume.currentPage">
+                <td>
+                    <span editable-text="vol.name" e-name="name" e-form="rowform"  e-required>
+                        <span class="clipboard" id="name-{{vol.id}}"
+                        data-title="Copy to clipboard"
+                        tooltip=""
+                        ngclipboard data-clipboard-target="#name-{{vol.id}}">{{ vol.name }}</span>
+                    </span>
+                </td>
+                <td>
+                    <span editable-text="vol.path" e-name="path" e-form="rowform" e-required>
+                        <span class="clipboard" id="path-{{vol.id}}"
+                        data-title="Copy to clipboard"
+                        tooltip=""
+                        ngclipboard data-clipboard-target="#path-{{vol.id}}">{{ vol.path }}</span>
+                    </span>
+                </td>
+                <td>
+                    <!-- ASSOCIATING WITH VOLUME -->
+                    <button class="icon-button"
+                    ripple=""
+                    tooltip=""
+                    data-title="Unlink volume"
+                    data-placement="bottom"
+                    ng-click="rowform.$show()">
+                    <i class="icon-whhg brokenlink"></i>
                 </button> 
             </td>
-          </tr>
-        </tbody>
-      </table>
-      <dir-pagination-controls ng-if="volume.volumes.length"></dir-pagination-controls>
+        </tr>
+    </tbody>
+</table>
+<dir-pagination-controls ng-if="volume.volumes.length"></dir-pagination-controls>
 
-       <div class="alert alert-danger" data-ng-show="volume.manageErrorMsg">
-        <button type="button"
-                class="close"
-                ng-click="volume.manageErrorMsg = ''">
-          <span>&times;</span>
-        </button>
-        <p>{{volume.manageErrorMsg}}</p>
-      </div>
-      <div class="alert alert-info" data-ng-show="volume.manageNoticeMsg">
-        <button type="button"
-                class="close"
-                ng-click="volume.manageNoticeMsg = ''">
-          <span>&times;</span>
-        </button>
-        <p>{{volume.manageNoticeMsg}}</p>
-      </div>
-  </div>
+<div class="alert alert-danger" data-ng-show="volume.manageErrorMsg">
+    <button type="button"
+    class="close"
+    ng-click="volume.manageErrorMsg = ''">
+    <span>&times;</span>
+</button>
+<p>{{volume.manageErrorMsg}}</p>
+</div>
+<div class="alert alert-info" data-ng-show="volume.manageNoticeMsg">
+    <button type="button"
+    class="close"
+    ng-click="volume.manageNoticeMsg = ''">
+    <span>&times;</span>
+</button>
+<p>{{volume.manageNoticeMsg}}</p>
+</div>
+</div>
 </div>

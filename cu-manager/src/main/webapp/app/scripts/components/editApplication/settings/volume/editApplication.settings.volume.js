@@ -31,13 +31,14 @@
         'ApplicationService',
         'ErrorService',
         '$resource',
+        '$http',
         volumeCtrl
       ],
       controllerAs: 'volume',
     }
   }
 
-  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService, $resource) {
+  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService, $resource, $http) {
 
     var vm = this;
     vm.volumes = [];
@@ -60,8 +61,12 @@
     vm.addVolume = addVolume;
     vm.editVolume = editVolume;
     vm.deleteVolume = deleteVolume;
+    vm.setLinkVolume = setLinkVolume;
+    vm.getLinkVolume = getLinkVolume;
 
-    vm.$onInit = function() {  
+    vm.$onInit = function() { 
+      getLinkVolume();
+
       getContainers()
       .then(function() {
        getListVolume();
@@ -73,21 +78,50 @@
 
     ////////////////////////////////////////////////
 
-    function getListVolume() {
-      // ApplicationService.getListSettingsVolume($stateParams.name, vm.myContainer.name)
-      //   .then(function(response) {
-      //     console.log("volumes", response);
-      //     vm.volumes = response;
-      //   })
-      //   .catch(function(response) {
-      //     ErrorService.handle(response);
-      //   });
+    function setLinkVolume() {
+        var mode = 'rw';
+        if (vm.IReadOnly === true) {
+            mode = 'ro'
+        }
+        var data = {
+            applicationName: $stateParams.name,
+            containerName: vm.myContainer.name,
+            path: vm.createLinkPath,
+            mode: mode,
+            volumeName: vm.volumePicked
+        };
+        var urlLink = 'server/volume/';
 
+        $http({
+            method: 'PUT',
+            url: urlLink,
+            data: data
+        }).then(function successCallback(response) {
+            console.log(response);
+            vm.getLinkVolume();
+        }, function errorCallback(response) {
+            vm.errorLinkCreate = response.data.message;
+        });
+    }
+
+    function getLinkVolume() {
+        var urlLink = 'server/volume/containerName/' + vm.myContainer.name;
+
+        $http({
+            method: 'GET',
+            url: urlLink
+        }).then(function successCallback(response) {
+            console.log(response);
+        }, function errorCallback(response) {
+            console.log(response);
+        });
+    }
+
+    function getListVolume() {
         var dir = $resource('volume');
 
         var volumesList = dir.query().$promise;
         volumesList.then(function(response) {
-            console.log(response);
             vm.volumes = response;
         })
     }
