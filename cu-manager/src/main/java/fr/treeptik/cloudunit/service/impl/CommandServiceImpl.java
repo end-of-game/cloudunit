@@ -33,8 +33,10 @@ public class CommandServiceImpl implements CommandService {
 		List<FileUnit> fileUnits = fileService.listByContainerIdAndPath(
 				applicationService.listContainers(applicationName).stream()
 						.filter(v -> v.getName().equals(containerName)).findFirst().get().getId(),
-				dockerService.getEnv(containerName, "CU_SCRIPTS")+"/custom-scripts/");
+				dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom-scripts/");
+
 		List<Command> commands = new ArrayList<>();
+
 		try {
 			for (FileUnit fileUnit : fileUnits) {
 				List<String> arguments = new ArrayList<>();
@@ -75,7 +77,7 @@ public class CommandServiceImpl implements CommandService {
 					.get().getId();
 
 			List<FileUnit> fileUnits = fileService.listByContainerIdAndPath(containerId,
-					"/opt/cloudunit/scripts/custom_scripts/");
+					dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom-scripts/");
 			String commandLine = fileUnits.stream().filter(v -> v.getName().equals(command.getName())).findFirst().get()
 					.getBreadcrump();
 			commandLine = commandLine + " "
