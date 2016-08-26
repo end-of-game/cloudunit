@@ -134,7 +134,7 @@
             </thead>
             <tbody>
                 <tr 
-                dir-paginate="vol in volume.volumes | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by vol.id"
+                dir-paginate="vol in volume.listVolumes | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by vol.id"
                 data-current-page="volume.currentPage">
                 <td>
                     <span editable-text="vol.name" e-name="name" e-form="rowform"  e-required>
@@ -149,7 +149,7 @@
                         <span class="clipboard" id="path-{{vol.id}}"
                         data-title="Copy to clipboard"
                         tooltip=""
-                        ngclipboard data-clipboard-target="#path-{{vol.id}}">{{ vol.path }}</span>
+                        ngclipboard data-clipboard-target="#path-{{vol.id}}">{{ vol.volumeAssociations[0].path }}</span>
                     </span>
                 </td>
                 <td>
@@ -159,7 +159,7 @@
                     tooltip=""
                     data-title="Unlink volume"
                     data-placement="bottom"
-                    ng-click="rowform.$show()">
+                    ng-click="volume.breakLink(vol)">
                     <i class="icon-whhg brokenlink"></i>
                 </button> 
             </td>

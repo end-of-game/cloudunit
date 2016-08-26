@@ -48,6 +48,7 @@
     vm.pageSize = 5;
     vm.currentPage = 1;
     vm.volumeName = '';
+    vm.listVolumes = '';
     vm.volumePath = '';
     vm.addNoticeMsg = '';
     vm.addErrorMsg = '';
@@ -63,17 +64,16 @@
     vm.deleteVolume = deleteVolume;
     vm.setLinkVolume = setLinkVolume;
     vm.getLinkVolume = getLinkVolume;
+    vm.breakLink = breakLink;
 
     vm.$onInit = function() { 
-      getLinkVolume();
-
-      getContainers()
-      .then(function() {
-       getListVolume();
-      })
-      .catch(function(response) {
-         ErrorService.handle(response);
-      });
+        getContainers().then(function() {
+            getListVolume();
+            getLinkVolume();
+        })
+        .catch(function(response) {
+            ErrorService.handle(response);
+        });
     }
 
     ////////////////////////////////////////////////
@@ -111,7 +111,8 @@
             method: 'GET',
             url: urlLink
         }).then(function successCallback(response) {
-            console.log(response);
+            vm.listVolumes = response.data;
+            console.log(response.data);
         }, function errorCallback(response) {
             console.log(response);
         });
@@ -124,6 +125,29 @@
         volumesList.then(function(response) {
             vm.volumes = response;
         })
+    }
+
+    function breakLink(volume) {
+        var data = {
+            applicationName: $stateParams.name,
+            containerName: vm.myContainer.name,
+            path: volume.volumeAssociations[0].path,
+            mode: 'rw',
+            volumeName: volume.name
+        };
+        var urlLink = 'server/volume/';
+
+        $http({
+            method: 'DELETE',
+            url: urlLink,
+            data: data
+        }).then(function successCallback(response) {
+            console.log(response);
+            vm.getLinkVolume();
+        }, function errorCallback(response) {
+            vm.errorLinkCreate = response.data.message;
+        });
+
     }
 
     function getContainers (selectedContainer) {
