@@ -129,10 +129,11 @@
 
     function breakLink(volume) {
         var data = {
-            applicationName: $stateParams.name,
+            // serialVersionUID: volume.id,
+            containerName: vm.myContainer.name,
             containerName: vm.myContainer.name,
             path: volume.volumeAssociations[0].path,
-            mode: 'rw',
+            // mode: 'rw',
             volumeName: volume.name
         };
         var urlLink = 'server/volume/';
@@ -145,9 +146,9 @@
             console.log(response);
             vm.getLinkVolume();
         }, function errorCallback(response) {
-            vm.errorLinkCreate = response.data.message;
+            console.log(response);
         });
-
+        
     }
 
     function getContainers (selectedContainer) {

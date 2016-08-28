@@ -129,6 +129,7 @@
                 <tr>
                     <th ng-click="volume.order('name')"><i class="icon-whhg"  ng-show="volume.predicate == 'name'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> name</th>
                     <th ng-click="volume.order('path')"><i class="icon-whhg"  ng-show="volume.predicate == 'path'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> path</th>
+                    <th>Mode(RW/RO)</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -150,6 +151,11 @@
                         data-title="Copy to clipboard"
                         tooltip=""
                         ngclipboard data-clipboard-target="#path-{{vol.id}}">{{ vol.volumeAssociations[0].path }}</span>
+                    </span>
+                </td>
+                <td>
+                    <span e-form="rowform" e-required>
+                        <span tooltip="">{{ vol.volumeAssociations[0].mode }}</span>
                     </span>
                 </td>
                 <td>
