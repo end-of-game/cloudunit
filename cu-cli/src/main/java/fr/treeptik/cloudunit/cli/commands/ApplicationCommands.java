@@ -108,4 +108,17 @@ public class ApplicationCommands implements CommandMarker {
 		return applicationUtils.removeAlias(applicationName, alias);
 	}
 
+	@CliCommand(value = "create-var-env", help = "Create a new environment variable")
+	public String createEnvironmentVariable(
+			@CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName,
+			@CliOption(key = {"", "key"}, mandatory = true, help = "Key to the environment variable") String key,
+			@CliOption(key = {"", "value"}, mandatory = true, help = "Value to the environment variable") String value) {
+		return applicationUtils.createEnvironmentVariable(applicationName, key, value);
+	}
+
+    @CliCommand(value = "list-var-env", help = "List all environment variables")
+    public String listEnvironmentVariables(
+            @CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName) {
+        return applicationUtils.listAllEnvironmentVariables(applicationName);
+    }
 }

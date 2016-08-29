@@ -25,13 +25,7 @@ import java.util.logging.Logger;
 
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Message;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Snapshot;
-import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.*;
 
 public class MessageConverter {
 
@@ -360,6 +354,22 @@ public class MessageConverter {
 		} else {
 			for (int i = 0; i < aliases.size(); i++) {
 				tab[i + 1][0] = aliases.get(i);
+			}
+			printer.print(tab);
+		}
+	}
+
+	public static void buildListEnvironmentVariables(List<EnvironmentVariable> environmentVariables) {
+		String[][] tab = new String[environmentVariables.size() + 1][2];
+		tab[0][0] = "CURRENT ENVIRONMENT VARIABLES";
+        tab[0][1] = "VALUES";
+
+		if (environmentVariables.size() == 0) {
+			logger.log(Level.INFO, "This application has not custom environment variable");
+		} else {
+			for (int i = 0; i < environmentVariables.size(); i++) {
+				tab[i + 1][0] = environmentVariables.get(i).getKeyEnv();
+				tab[i + 1][1] = environmentVariables.get(i).getValueEnv();
 			}
 			printer.print(tab);
 		}

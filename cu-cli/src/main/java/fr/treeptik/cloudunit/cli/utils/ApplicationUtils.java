@@ -481,4 +481,61 @@ public class ApplicationUtils {
 
 		return null;
 	}
+
+	public String createEnvironmentVariable(String applicationName, String key, String value) {
+		String response;
+
+		if(application != null && applicationName == null)
+			applicationName = application.getName();
+		if(application == null && applicationName != null)
+			useApplication(applicationName);
+
+		String checkResponse = checkAndRejectIfError(applicationName);
+		if (checkResponse != null) {
+			return checkResponse;
+		}
+
+		try {
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put("keyEnv", key);
+			parameters.put("valueEnv", value);
+
+			restUtils.sendPostCommand(authentificationUtils.finalHost + urlLoader.actionApplication
+					+ application.getName() + "/container/" + application.getServer().getName() + "/environmentVariables",
+					authentificationUtils.getMap(), parameters).get("body");
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
+
+		statusCommand.setExitStatut(0);
+		response = "An environment variable has been successfully added to " + application.getName();
+
+		return response;
+	}
+
+	public String listAllEnvironmentVariables(String applicationName) {
+		String response = null;
+
+		String checkResponse = checkAndRejectIfError(applicationName);
+		if (checkResponse != null) {
+			return checkResponse;
+		}
+
+		try {
+			response = restUtils.sendGetCommand(
+					authentificationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/container/"
+					+ application.getServer().getName() + "/environmentVariables",
+					authentificationUtils.getMap()).get("body");
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
+
+		MessageConverter.buildListEnvironmentVariables(JsonConverter.getEnvironmentVariables(response));
+
+		statusCommand.setExitStatut(0);
+
+		return JsonConverter.getEnvironmentVariables(response).size() + " variables found!";
+	}
 }

@@ -27,13 +27,7 @@ import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.FileUnit;
 import fr.treeptik.cloudunit.dto.HttpErrorServer;
 import fr.treeptik.cloudunit.dto.LogUnit;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Message;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Snapshot;
-import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.*;
 
 public class JsonConverter {
 
@@ -212,6 +206,18 @@ public class JsonConverter {
 			e.printStackTrace();
 		}
 		return containerUnits;
+	}
+
+	public static List<EnvironmentVariable> getEnvironmentVariables(String response) {
+		List<EnvironmentVariable> environmentVariables = new ArrayList<>();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			environmentVariables = mapper.readValue(response, new TypeReference<List<EnvironmentVariable>>() {
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return environmentVariables;
 	}
 
 	public static List<String> getAliases(String response) {
