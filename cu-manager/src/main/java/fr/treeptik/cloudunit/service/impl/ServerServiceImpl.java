@@ -534,8 +534,10 @@ public class ServerServiceImpl implements ServerService {
 			stopAndRemoveServer(server, server.getApplication());
 			recreateAndMountVolumes(server, server.getApplication());
 		} catch (CheckException e) {
+			e.printStackTrace();
 			throw new CheckException(e.getMessage());
-		} catch (ServiceException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
 			throw new ServiceException(e.getMessage());
 		} finally {
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));

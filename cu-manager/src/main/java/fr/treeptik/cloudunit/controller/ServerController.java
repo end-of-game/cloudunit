@@ -132,7 +132,6 @@ public class ServerController implements Serializable {
 		return new HttpOk();
 	}
 
-	@CloudUnitSecurable
 	@RequestMapping(value = "/volume/{volumeName}/container/{containerName}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public JsonResponse removeVolume(@PathVariable("containerName") String containerName,
@@ -140,7 +139,7 @@ public class ServerController implements Serializable {
 		if (logger.isDebugEnabled()) {
 			logger.debug("" + containerName + " " + volumeName);
 		}
-		serverService.removeVolume(volumeName, containerName);
+		serverService.removeVolume(containerName, volumeName);
 		return new HttpOk();
 	}
 
