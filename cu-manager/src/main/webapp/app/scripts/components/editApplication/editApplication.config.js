@@ -106,7 +106,7 @@ angular.module('webuiApp.editApplication', [])
           })
         .state('editApplication.settingsCommand',
           {
-            url: '/settingsVolume',
+            url: '/settingsCommand',
             template: '<command-component app="editApp.application"></command-component>',
           });
 

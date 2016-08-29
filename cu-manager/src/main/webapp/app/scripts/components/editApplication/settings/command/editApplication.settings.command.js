@@ -30,31 +30,53 @@
             '$q',
             'ApplicationService',
             'ErrorService',
+            '$resource',
             commandCtrl
             ],
             controllerAs: 'commandRun',
         }
     }
 
-    function commandCtrl($stateParams, $q, ApplicationService, ErrorService) {
 
+    function commandCtrl($stateParams, $q, ApplicationService, ErrorService, $resource) {
         var commandRun = this;
+
+        commandRun.$onInit = function() {
+            getContainers();
+            getCommandList();
+        }
 
     ////////////////////////////////////////////////
 
-    function getCommand() {
+    function getCommandList() {
         // var data = {
         //     applicationName: $stateParams.name,
         //     containerName: vm.myContainer.name,
         // };
         console.log('command get');
-        var urlLink = '/{applicationName}/container/{containerName}/command';
-        var dir = $resource('volume');
+        var urlLink = 'application/newappouf/container/dev-johndoe-newappouf-wildfly-8/command';
+        var dir = $resource(urlLink);
 
-        var volumesList = dir.query().$promise;
-        volumesList.then(function(response) {
-            editVolume.volumes = response;
+        var commandList = dir.query().$promise;
+        commandList.then(function(response) {
+            console.log(response);
         });
+    }
+
+    function getContainers (selectedContainer) {
+        var deferred = $q.defer ();
+        commandRun.isLoading = true;
+        ApplicationService.listContainers ( $stateParams.name )
+        .then ( function ( containers ) {
+            commandRun.containers = containers;
+            commandRun.myContainer = selectedContainer || containers[0];
+            commandRun.isLoading = false;
+            deferred.resolve ( containers );
+        } )
+        .catch ( function ( response ) {
+            deferred.reject ( response );
+        } );
+        return deferred.promise;
     }
 }
 })();

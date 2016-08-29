@@ -13,6 +13,27 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div>
-    <h1>command</h1>
+<div class="card col-lg-3">
+    <div class="content clearfix">
+        <h3 class="title large">Container</h3>
+
+        <p class="hint">Choose a container</p>
+
+        <div class="dropdown dropdown--small" dropdown>
+            <a class="dropdown-toggle"
+                dropdown-toggle=""
+                selectbox="">
+                {{ commandRun.myContainer.name }}
+            </a>
+
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li data-ng-repeat="container in commandRun.containers">
+                    <a ng-href=""
+                    data-ng-click="commandRun.myContainer = container; commandRun.getContainers(commandRun.myContainer)">
+                    {{container.name}}
+                </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
