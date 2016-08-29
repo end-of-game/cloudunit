@@ -31,6 +31,7 @@
             'ApplicationService',
             'ErrorService',
             '$resource',
+            '$http',
             commandCtrl
             ],
             controllerAs: 'commandRun',
@@ -38,45 +39,77 @@
     }
 
 
-    function commandCtrl($stateParams, $q, ApplicationService, ErrorService, $resource) {
+    function commandCtrl($stateParams, $q, ApplicationService, ErrorService, $resource, $http) {
         var commandRun = this;
+
+        commandRun.getCommandList = getCommandList;
+        commandRun.execCommand = execCommand;
+
+        commandRun.commandList = [];
+        commandRun.formsExec = [];
 
         commandRun.$onInit = function() {
             getContainers();
-            getCommandList();
         }
 
-    ////////////////////////////////////////////////
+        ////////////////////////////////////////////////
 
-    function getCommandList() {
-        // var data = {
-        //     applicationName: $stateParams.name,
-        //     containerName: vm.myContainer.name,
-        // };
-        console.log('command get');
-        var urlLink = 'application/newappouf/container/dev-johndoe-newappouf-wildfly-8/command';
-        var dir = $resource(urlLink);
+        function getCommandList(containerSelected) {
+            // var data = {
+            //     applicationName: $stateParams.name,
+            //     containerName: vm.myContainer.name,
+            // };
+            console.log('command get');
 
-        var commandList = dir.query().$promise;
-        commandList.then(function(response) {
-            console.log(response);
-        });
+            var urlLink = 'application/' + $stateParams.name + '/container/' + containerSelected + '/command';
+            var dir = $resource(urlLink);
+
+            var commandList = dir.query().$promise;
+            commandList.then(function(response) {
+                commandRun.commandList = response;
+            });
+        }
+
+        function execCommand(form, namefile) {
+            var urlLink = 'application' + '/' + $stateParams.name + '/container/' + commandRun.myContainer.name + '/command/' + namefile + '/exec';
+
+            var sizeObject = Object.keys(form).length;
+            var objectList = [];
+
+            for(var i=0 ; i < sizeObject; i++) {
+                objectList.push(form[i]);
+            }
+
+            $http({
+                method: 'POST',
+                url: urlLink,
+                data: {
+                    name: namefile,
+                    arguments: objectList
+                }
+            }).then(function successCallback(response) {
+                vm.listVolumes = response.data;
+                console.log(response.data);
+            }, function errorCallback(response) {
+                console.log(response);
+            });
+        }
+
+        function getContainers(selectedContainer) {
+            var deferred = $q.defer ();
+            commandRun.isLoading = true;
+            ApplicationService.listContainers($stateParams.name)
+            .then(function(containers) {
+                commandRun.containers = containers;
+                commandRun.myContainer = selectedContainer || containers[0];
+                commandRun.isLoading = false;
+                commandRun.getCommandList(commandRun.myContainer.name);
+                deferred.resolve(containers);
+            })
+            .catch (function (response) {
+                deferred.reject(response);
+            });
+            return deferred.promise;
+        }
     }
-
-    function getContainers (selectedContainer) {
-        var deferred = $q.defer ();
-        commandRun.isLoading = true;
-        ApplicationService.listContainers ( $stateParams.name )
-        .then ( function ( containers ) {
-            commandRun.containers = containers;
-            commandRun.myContainer = selectedContainer || containers[0];
-            commandRun.isLoading = false;
-            deferred.resolve ( containers );
-        } )
-        .catch ( function ( response ) {
-            deferred.reject ( response );
-        } );
-        return deferred.promise;
-    }
-}
 })();
