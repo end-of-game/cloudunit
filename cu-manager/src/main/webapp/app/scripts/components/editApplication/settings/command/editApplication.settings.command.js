@@ -43,7 +43,18 @@
     ////////////////////////////////////////////////
 
     function getCommand() {
+        // var data = {
+        //     applicationName: $stateParams.name,
+        //     containerName: vm.myContainer.name,
+        // };
         console.log('command get');
+        var urlLink = '/{applicationName}/container/{containerName}/command';
+        var dir = $resource('volume');
+
+        var volumesList = dir.query().$promise;
+        volumesList.then(function(response) {
+            editVolume.volumes = response;
+        });
     }
 }
 })();
