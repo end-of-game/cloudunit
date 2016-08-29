@@ -297,13 +297,14 @@ public class ServerServiceImpl implements ServerService {
 			if (this.checkStatusPENDING(server)) {
 				return null;
 			}
+
 			Application application = server.getApplication();
+			cleanServerDependencies(server.getName(), application.getUser(), application.getName());
 
 			dockerService.removeServer(server.getName(), true);
 
 			// Remove server on cloudunit :
 			hipacheRedisUtils.removeServerAddress(application);
-
 			serverDAO.delete(server);
 
 			logger.info("ServerService : Server successfully removed ");
@@ -583,6 +584,18 @@ public class ServerServiceImpl implements ServerService {
 		if (!(volume.getMode().equalsIgnoreCase("ro") || volume.getMode().equalsIgnoreCase("rw"))) {
 			throw new CheckException("Authorized mode value : ro (readOnly) or rw (read-write)");
 		}
+	}
+
+	private void cleanServerDependencies(String name, User user, String applicationName) throws ServiceException {
+		volumeService.loadAllByContainerName(name).stream()
+				.forEach(v -> volumeService.removeAssociation(v.getVolumeAssociations().stream().findFirst().get()));
+		environmentService.loadEnvironnmentsByContainer(name).forEach(env -> {
+			try {
+				environmentService.delete(user, env.getId(), name, applicationName);
+			} catch (ServiceException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 }
