@@ -32,9 +32,8 @@ public class CommandServiceImpl implements CommandService {
 			throw new ServiceException("The container name is empty");
 		List<FileUnit> fileUnits = fileService.listByContainerIdAndPath(
 				applicationService.listContainers(applicationName).stream()
-						.filter(v -> v.getName().equals(containerName)).findFirst().get().getId(),
-				dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom-scripts/");
-
+						.filter(v -> v.getName().equals(containerName)).findFirst().get().getName(),
+				dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom_scripts/");
 		List<Command> commands = new ArrayList<>();
 
 		try {
@@ -77,7 +76,7 @@ public class CommandServiceImpl implements CommandService {
 					.get().getId();
 
 			List<FileUnit> fileUnits = fileService.listByContainerIdAndPath(containerId,
-					dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom-scripts/");
+					dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom_scripts/");
 			String commandLine = fileUnits.stream().filter(v -> v.getName().equals(command.getName())).findFirst().get()
 					.getBreadcrump();
 			commandLine = commandLine + " "

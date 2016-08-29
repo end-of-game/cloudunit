@@ -144,7 +144,9 @@ public class FileServiceImpl implements FileService {
 		List<LogLine> files = new ArrayList<>();
 		try {
 			String logDir = getLogDirectory(containerId);
-			if (!logDir.endsWith("/")) { logDir = logDir + "/"; }
+			if (!logDir.endsWith("/")) {
+				logDir = logDir + "/";
+			}
 			final String command = "tail -n " + nbRows + " " + logDir + file;
 			String execOutput = dockerService.execCommand(containerId, command);
 			if (execOutput != null && execOutput.contains("cannot access") == false) {
@@ -177,7 +179,6 @@ public class FileServiceImpl implements FileService {
 	 * @throws ServiceException
 	 */
 	public List<FileUnit> listByContainerIdAndPath(String containerId, String path) throws ServiceException {
-
 		List<FileUnit> files = new ArrayList<>();
 		try {
 			final String command = "ls -laF " + path;
