@@ -95,7 +95,7 @@
         var volumesList = dir.query().$promise;
         volumesList.then(function(response) {
             editVolume.volumes = response;
-        })
+        });
     }
   }
 }) ();

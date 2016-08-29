@@ -133,13 +133,9 @@
             "containerName": vm.myContainer.name,
             "volumeName": volume.name
         };
-        var urlLink = 'server/volume/';
+        var urlLink = 'server/volume/'+volume.name+'/container/'+vm.myContainer.name;
 
-        $http({ url: urlLink, 
-                method: 'DELETE', 
-                data: data, 
-                headers: {"Content-Type": "application/json;"}
-        }).then(function successCallback(response) {
+        $http.delete(urlLink).then(function successCallback(response) {
             console.log(response);
             vm.getLinkVolume();
         }, function errorCallback(response) {

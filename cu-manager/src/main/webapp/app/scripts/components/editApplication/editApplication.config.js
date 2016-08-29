@@ -103,6 +103,11 @@ angular.module('webuiApp.editApplication', [])
           {
             url: '/settingsVolume',
             template: '<volume-component app="editApp.application"></volume-component>',
+          })
+        .state('editApplication.settingsCommand',
+          {
+            url: '/settingsVolume',
+            template: '<command-component app="editApp.application"></command-component>',
           });
 
     }, ]);
