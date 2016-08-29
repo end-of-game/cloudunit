@@ -133,20 +133,14 @@ public class ServerController implements Serializable {
 	}
 
 	@CloudUnitSecurable
-	@RequestMapping(value = "/volume", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/volume/{volumeName}/container/{containerName}", method = RequestMethod.DELETE)
 	@ResponseBody
-	public JsonResponse removeVolume(@RequestBody VolumeAssociationDTO volumeAssociationDTO)
-			throws ServiceException, CheckException {
-
+	public JsonResponse removeVolume(@PathVariable("containerName") String containerName,
+			@PathVariable("volumeName") String volumeName) throws ServiceException, CheckException {
 		if (logger.isDebugEnabled()) {
-			logger.debug("" + volumeAssociationDTO);
+			logger.debug("" + containerName + " " + volumeName);
 		}
-
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, volumeAssociationDTO.getApplicationName());
-
-		serverService.removeVolume(application, volumeAssociationDTO);
-
+		serverService.removeVolume(volumeName, containerName);
 		return new HttpOk();
 	}
 

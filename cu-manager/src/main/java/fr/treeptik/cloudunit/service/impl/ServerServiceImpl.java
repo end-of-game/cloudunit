@@ -525,22 +525,21 @@ public class ServerServiceImpl implements ServerService {
 	@Override
 	@Transactional
 	@CacheEvict(value = "env", allEntries = true)
-	public void removeVolume(Application application, VolumeAssociationDTO volumeAssociationDTO)
-			throws ServiceException {
+	public void removeVolume(String containerName, String volumeName) throws ServiceException {
 		Server server = null;
 		try {
-			server = findByName(volumeAssociationDTO.getContainerName());
-			Volume volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
+			server = findByName(containerName);
+			Volume volume = volumeService.findByName(volumeName);
 			volumeService.removeAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume), null, null));
-			stopAndRemoveServer(server, application);
-			recreateAndMountVolumes(server, application);
+			stopAndRemoveServer(server, server.getApplication());
+			recreateAndMountVolumes(server, server.getApplication());
 		} catch (CheckException e) {
 			throw new CheckException(e.getMessage());
 		} catch (ServiceException e) {
 			throw new ServiceException(e.getMessage());
 		} finally {
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(server.getApplication()));
 		}
 	}
 

@@ -64,6 +64,6 @@ public interface ServerService {
 
 	void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException;
 
-	void removeVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException;
+	void removeVolume(String containerName, String volumeName) throws ServiceException;
 
 }
