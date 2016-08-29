@@ -129,26 +129,23 @@
 
     function breakLink(volume) {
         var data = {
-            // serialVersionUID: volume.id,
-            containerName: vm.myContainer.name,
-            containerName: vm.myContainer.name,
-            path: volume.volumeAssociations[0].path,
-            // mode: 'rw',
-            volumeName: volume.name
+            "applicationName": $stateParams.name,
+            "containerName": vm.myContainer.name,
+            "volumeName": volume.name
         };
         var urlLink = 'server/volume/';
 
-        $http({
-            method: 'DELETE',
-            url: urlLink,
-            data: data
+        $http({ url: urlLink, 
+                method: 'DELETE', 
+                data: data, 
+                headers: {"Content-Type": "application/json;"}
         }).then(function successCallback(response) {
             console.log(response);
             vm.getLinkVolume();
         }, function errorCallback(response) {
             console.log(response);
         });
-        
+
     }
 
     function getContainers (selectedContainer) {
