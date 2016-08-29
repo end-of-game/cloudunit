@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.shell.core.CommandMarker;
 import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
@@ -31,7 +30,7 @@ import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
 
 @Component
-public class ServerUtils implements CommandMarker {
+public class ServerUtils {
 
 	@InjectLogger
 	private Logger log;

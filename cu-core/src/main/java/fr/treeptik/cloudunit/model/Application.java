@@ -367,28 +367,4 @@ public class Application implements Serializable {
 		return this.portsToOpen;
 	}
 
-	public void setPortsToOpen(Set<PortToOpen> portsToOpen) {
-		this.portsToOpen = portsToOpen;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public Set<EnvironmentVariable> getEnvironmentVariables() {
-		return environmentVariables;
-	}
-
-	public void setEnvironmentVariables(Set<EnvironmentVariable> environmentVariables) {
-		this.environmentVariables = environmentVariables;
-	}
-
-	public void setModules(Set<Module> modules) {
-		this.modules = modules;
-	}
-
-	public void setDeployments(Set<Deployment> deployments) {
-		this.deployments = deployments;
-	}
-
 }
