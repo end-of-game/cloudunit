@@ -92,6 +92,48 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 	}
 
 	@Override
+	@Transactional
+	@CacheEvict(value = "env", allEntries = true)
+	public void save(User user, List<EnvironmentVariable> environments, String applicationName, String containerName)
+			throws ServiceException {
+
+		environments.stream().forEach(e -> checkEnvironmentVariableConsistence(e, containerName));
+
+		final Application application = applicationService.findByNameAndUser(user, applicationName);
+		Server server = null;
+		try {
+			server = serverService.findByName(containerName);
+			stopAndRemoveServer(server, application);
+
+			environments.stream().forEach(e -> {
+				e.setApplication(application);
+				e.setContainerName(containerName);
+				environmentDAO.save(e);
+			});
+
+			recreateAndMountVolumes(server, application);
+		} catch (CheckException e) {
+			StringBuilder msgError = new StringBuilder();
+			msgError.append("environments:[").append(environments).append("]");
+			msgError.append(", applicationName:[").append(applicationName).append("]");
+			msgError.append(", containerName:[").append(containerName).append("]");
+			logger.error(msgError.toString());
+			throw new CheckException(e.getMessage(), e);
+		} catch (ServiceException e) {
+			StringBuilder msgError = new StringBuilder();
+			msgError.append("environment:[").append(environments).append("]");
+			msgError.append(", applicationName:[").append(applicationName).append("]");
+			msgError.append(", containerName:[").append(containerName).append("]");
+			logger.error(msgError.toString());
+			throw new ServiceException(e.getMessage(), e);
+		} finally {
+			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+		}
+
+	}
+
+	@Override
 	public EnvironmentVariable loadEnvironnment(int id) throws ServiceException, CheckException {
 		EnvironmentVariable environment = environmentDAO.findById(id);
 		if (environment.equals(null))

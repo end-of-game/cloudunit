@@ -341,7 +341,6 @@ public class SnapshotServiceImpl implements SnapshotService {
 				moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());
 				module.getImage().setName(snapshot.getAppConfig().get(key).getName());
 				module.setName(snapshot.getAppConfig().get(key).getName());
-				module = moduleService.initModule(application, module, snapshot.getFullTag());
 
 				Map<String, String> properties = new HashMap<>();
 				properties.put("username", snapshot.getAppConfig().get(key).getProperties()

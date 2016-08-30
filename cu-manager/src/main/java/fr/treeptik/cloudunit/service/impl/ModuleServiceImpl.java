@@ -15,10 +15,9 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,31 +35,31 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-
-import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.EnvironmentVariable;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Snapshot;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.HookService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.service.SnapshotService;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.ContainerMapper;
 import fr.treeptik.cloudunit.utils.EmailUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
+import fr.treeptik.cloudunit.utils.ModuleUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 
 @Service
@@ -72,10 +71,13 @@ public class ModuleServiceImpl implements ModuleService {
 	private ModuleDAO moduleDAO;
 
 	@Inject
+	private EnvironmentService environmentService;
+
+	@Inject
 	private ImageService imageService;
 
 	@Inject
-	private ApplicationDAO applicationDAO;
+	private ApplicationService applicationService;
 
 	@Inject
 	private UserService userService;
@@ -99,7 +101,7 @@ public class ModuleServiceImpl implements ModuleService {
 	private ContainerMapper containerMapper;
 
 	@Inject
-	private SnapshotService snapshotService;
+	private DockerService dockerService;
 
 	@Value("${suffix.cloudunit.io}")
 	private String suffixCloudUnitIO;
@@ -141,16 +143,74 @@ public class ModuleServiceImpl implements ModuleService {
 		return this.moduleDAO;
 	}
 
-	/**
-	 * comprend deux étapes : Creation et affectation des valeurs des proprietes
-	 * du container et du service hébergé / Ajout des variables d'environnement
-	 * aux serveurs associés
-	 */
 	@Override
-	public Module initModule(Application application, Module module, String tagName)
-			throws ServiceException, CheckException {
-		this.createAndAffectModuleValues(application, module, tagName);
-		this.connectModuleToServers(application, module, tagName);
+	@Transactional
+	public Module create(String imageName, String applicationName, User user) throws ServiceException, CheckException {
+		Application application = applicationService.findByNameAndUser(user, applicationName);
+		// General informations
+		checkImageExist(imageName);
+		Module module = new Module();
+		module.setImage(imageService.findByName(imageName));
+		module.setName(imageName);
+		module.setApplication(application);
+		module.setStatus(Status.PENDING);
+		module.setStartDate(new Date());
+		// Build a custom container
+		String containerName = "";
+		try {
+			containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
+					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
+					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(module.getApplication().getName()) + "-"
+					+ module.getName();
+		} catch (UnsupportedEncodingException e2) {
+			throw new ServiceException("Error rename Server", e2);
+		}
+		String imagePath = module.getImage().getPath();
+		logger.debug("imagePath:" + imagePath);
+
+		String subdomain = System.getenv("CU_SUB_DOMAIN");
+		if (subdomain == null) {
+			subdomain = "";
+		}
+		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
+
+		module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
+
+		try {
+
+			Map<String, String> moduleUserAccess = ModuleUtils.generateRamdomUserAccess();
+
+			List<String> envs = Arrays.asList("POSTGRES_PASSWORD=" + moduleUserAccess.get("password"),
+					"POSTGRES_USER=" + moduleUserAccess.get("username"), "POSTGRES_DB=" + applicationName);
+			module.setModuleInfos(moduleUserAccess);
+
+			List<EnvironmentVariable> environmentVariables = new ArrayList<>();
+			EnvironmentVariable environmentVariable = new EnvironmentVariable();
+			environmentVariable.setKeyEnv("CU_DATABASE_USER");
+			environmentVariable.setValueEnv(moduleUserAccess.get("username"));
+			environmentVariables.add(environmentVariable);
+			environmentVariable = new EnvironmentVariable();
+			environmentVariable.setKeyEnv("CU_DATABASE_PASSWORD");
+			environmentVariable.setValueEnv(moduleUserAccess.get("password"));
+			environmentVariables.add(environmentVariable);
+			environmentVariable = new EnvironmentVariable();
+			environmentVariable.setKeyEnv("CU_DATABASE_NAME");
+			environmentVariable.setValueEnv(applicationName);
+			environmentVariables.add(environmentVariable);
+			environmentService.save(user, environmentVariables, applicationName, application.getServer().getName());
+			dockerService.createModule(containerName, module, imagePath, user, envs, true, new ArrayList<>());
+			module = dockerService.startModule(containerName, module);
+			module = moduleDAO.save(module);
+			applicationService.setStatus(application, Status.START);
+		} catch (PersistenceException e) {
+			logger.error("ServerService Error : Create Server " + e);
+			throw new ServiceException(e.getLocalizedMessage(), e);
+		} catch (DockerJSONException e) {
+			StringBuilder msgError = new StringBuilder(512);
+			msgError.append("server=").append(module);
+			logger.error("" + msgError, e);
+			throw new ServiceException(msgError.toString(), e);
+		}
 		return module;
 	}
 
@@ -166,244 +226,6 @@ public class ModuleServiceImpl implements ModuleService {
 	}
 
 	@Transactional(rollbackFor = ServiceException.class)
-	private Module connectModuleToServers(Application application, Module module, String tagName)
-			throws ServiceException, CheckException {
-
-		if (module.getImage().getImageType().equals("module")) {
-			Map<String, String> configShell = new HashMap<>();
-			Server server = application.getServer();
-
-			String command = null;
-			try {
-				// On redémarre temporairement le container Server et
-				// lancer les scripts via SSH
-				if (module.getApplication().getStatus().equals(Status.STOP)) {
-					serverService.startServer(server);
-					application.setStatus(Status.STOP);
-					application = applicationDAO.saveAndFlush(application);
-				}
-
-				logger.info("dockerManagerAddress=" + application.getManagerIp());
-				logger.info("password=" + server.getApplication().getUser().getPassword());
-				logger.info("port=" + server.getSshPort());
-
-				configShell.put("password", server.getApplication().getUser().getPassword());
-				configShell.put("port", server.getSshPort());
-				configShell.put("dockerManagerAddress", application.getManagerIp());
-
-				int counter = 0;
-				while (!server.getStatus().equals(Status.START)) {
-					if (counter == 10) {
-						break;
-					}
-					Thread.sleep(1000);
-					logger.info(" wait server sshd processus start");
-					logger.info("SSHDSTATUS = server : " + server.getStatus());
-					server = serverService.findById(server.getId());
-					counter++;
-				}
-				if (tagName == null) {
-					Thread.sleep(3000);
-					command = "sh /cloudunit/scripts/addDBEnvVar.sh " + module.getModuleInfos().get("username") + " "
-							+ module.getModuleInfos().get("password") + " " + module.getInternalDNSName() + " "
-							+ module.getImage().getPrefixEnv().toUpperCase() + "_" + module.getInstanceNumber();
-				} else {
-					Thread.sleep(3000);
-					Snapshot snapshot = snapshotService.findOne(tagName);
-					Map<String, String> map = new HashMap<>();
-
-					for (String key : snapshot.getAppConfig().keySet()) {
-						if (snapshot.getAppConfig().get(key).getProperties()
-								.get("username-" + module.getImage().getName()) != null) {
-							map.put("username", snapshot.getAppConfig().get(key).getProperties()
-									.get("username-" + module.getImage().getName()));
-						}
-
-						if (snapshot.getAppConfig().get(key).getProperties()
-								.get("password-" + module.getImage().getName()) != null) {
-							map.put("password", snapshot.getAppConfig().get(key).getProperties()
-									.get("password-" + module.getImage().getName()));
-
-						}
-					}
-
-					command = "sh /cloudunit/scripts/addDBEnvVarForClone.sh " + map.get("username") + " "
-							+ map.get("password") + " " + module.getInternalDNSName() + " "
-							+ module.getImage().getPrefixEnv().toUpperCase() + "_" + module.getInstanceNumber();
-				}
-				logger.info("command shell to execute [" + command + "]");
-
-				shellUtils.executeShell(command, configShell);
-
-				if (module.getApplication().getStatus().equals(Status.STOP)) {
-					this.stopModule(module);
-					serverService.stopServer(server);
-					application.setStatus(Status.STOP);
-				}
-			} catch (Exception e1) {
-				server.setStatus(Status.FAIL);
-				serverService.saveInDB(server);
-				module.setStatus(Status.FAIL);
-				this.saveInDB(module);
-				logger.error("Error :  Error during adding module " + e1);
-				e1.printStackTrace();
-
-				throw new ServiceException(e1.getLocalizedMessage(), e1);
-			}
-
-			this.update(module);
-			this.sendEmail(module);
-		}
-
-		return module;
-	}
-
-	@Transactional
-	private Module createAndAffectModuleValues(Application application, Module module, String tagName)
-			throws ServiceException, CheckException {
-
-		try {
-			// user = userService.findById(user.getId());
-
-			module.setImage(imageService.findByName(module.getImage().getName()));
-
-			// Create container module in docker
-			module = this.create(application, module, tagName);
-
-			Long instanceNumber = module.getInstanceNumber();
-
-			// Add extra properties
-			module.setStartDate(new Date());
-			if (tagName != null) {
-				module.setInternalDNSName(
-						module.getName() + "." + module.getImage().getName() + "-" + instanceNumber + ".cloud.unit");
-			} else {
-				module.setInternalDNSName(module.getName() + "." + module.getImage().getName() + ".cloud.unit");
-			}
-
-			this.addModuleManager(module, instanceNumber);
-
-			// save module in DB
-			module = this.update(module);
-
-		} catch (ServiceException e) {
-			module.setStatus(Status.FAIL);
-			logger.error(application.toString() + module.toString(), e);
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-		return module;
-	}
-
-	/**
-	 * Create module in docker (Not in DB)
-	 *
-	 * @param module
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@Transactional
-	private Module create(Application application, Module module, String tagName)
-			throws ServiceException, CheckException {
-
-		logger.debug("create : Methods parameters : " + module);
-		logger.info("logger.ModuleService : Starting creating Module " + module.getName());
-
-		// Nommage du module - Méthode recursive, on part de 1
-		module = initNewModule(module, application.getName(), 1);
-
-		String imagePath = module.getImage().getPath();
-		if (tagName != null) {
-			imagePath = imagePath + ":" + tagName;
-		}
-
-		if (logger.isDebugEnabled()) {
-			logger.info("imagePath:" + imagePath);
-		}
-
-		DockerContainer dockerContainer = new DockerContainer();
-
-		// Définition des paramètres Docker du container
-		// dockerContainer = DockerContainerBuilder.dockerContainer()
-		// .withName(module.getName()).withImage(imagePath).withMemory(0L)
-		// .withMemorySwap(0L).build();
-
-		module.getModuleAction().initModuleInfos();
-
-		if (tagName != null) {
-			List<String> commandesSpe = new ArrayList<>();
-
-			Snapshot snapshot = snapshotService.findOne(tagName);
-			Map<String, String> map = new HashMap<>();
-
-			for (String key : snapshot.getAppConfig().keySet()) {
-				if (key.equalsIgnoreCase(module.getImage().getPath() + "-" + module.getInstanceNumber())) {
-
-					// dockerContainer =
-					// DockerContainerBuilder.dockerContainer()
-					// .withName(module.getName()).withImage(key + ":" +
-					// tagName).withMemory(0L)
-					// .withMemorySwap(0L).build();
-
-					if (logger.isDebugEnabled()) {
-						logger.debug("KEY : " + key);
-						logger.debug("MODULE : " + module.getImage().getPath() + "-" + module.getInstanceNumber());
-					}
-
-					map.put("username", snapshot.getAppConfig().get(key).getProperties()
-							.get("username-" + module.getImage().getName()));
-					map.put("password", snapshot.getAppConfig().get(key).getProperties()
-							.get("password-" + module.getImage().getName()));
-				}
-
-			}
-
-			commandesSpe.addAll(
-					module.getModuleAction().createDockerCmdForClone(map, databasePassword, envExec, databaseHostname));
-			// dockerContainer.setCmd(commandesSpe);
-		} else {
-			// dockerContainer.setCmd(module.getModuleAction().createDockerCmd(databasePassword,
-			// envExec, databaseHostname));
-		}
-
-		// DockerContainer.create(dockerContainer,
-		// application.getManagerIp());
-		// dockerContainer = DockerContainer.findOne(dockerContainer,
-		// application.getManagerIp());
-		//
-		// if (module.getImage().getImageType().equals("module")) {
-		// List<String> volumesFrom = new ArrayList<>();
-		// volumesFrom.add("java");
-		// dockerContainer.setVolumesFrom(volumesFrom);
-		// }
-		//
-		// String sharedDir =
-		// JvmOptionsUtils.extractDirectory(application.getServers().get(0).getJvmOptions());
-		// dockerContainer = DockerContainer.start(dockerContainer,
-		// application.getManagerIp(), sharedDir);
-		//
-		// dockerContainer = DockerContainer.findOne(dockerContainer,
-		// application.getManagerIp());
-
-		module = containerMapper.mapDockerContainerToModule(dockerContainer, module);
-
-		if (module.getApplication().getStatus().equals(Status.STOP)) {
-
-			// DockerContainer.stop(dockerContainer,
-			// application.getManagerIp());
-			// module.setStatus(Status.STOP);
-		}
-
-		if (module.getApplication().getStatus().equals(Status.START)
-				|| module.getApplication().getStatus().equals(Status.PENDING)) {
-			module.setStatus(Status.START);
-		}
-
-		module = this.update(module);
-
-		logger.info("ModuleService : Module " + module.getName() + " successfully created.");
-		return module;
-	}
 
 	private void sendEmail(Module module) throws ServiceException {
 
@@ -518,7 +340,6 @@ public class ModuleServiceImpl implements ModuleService {
 				if (previousApplicationStatus.equals(Status.STOP)) {
 					serverService.startServer(server);
 					application.setStatus(Status.STOP);
-					application = applicationDAO.save(application);
 
 				}
 
@@ -769,64 +590,6 @@ public class ModuleServiceImpl implements ModuleService {
 
 		} catch (ServiceException e) {
 			logger.error("Error ModuleService : error addModuleManager Method : " + e);
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-
-	}
-
-	@Override
-	@Transactional
-	public void initDb(User user, String applicationName, final String moduleName, File file) throws ServiceException {
-
-		logger.info("initData : " + applicationName + " - " + moduleName);
-
-		Map<String, String> configShell = new HashMap<>();
-
-		Application application = applicationDAO.findByNameAndUser(user.getId(), applicationName, cuInstanceName);
-
-		if (application == null) {
-			throw new ServiceException("initData : Application not found", null);
-		}
-
-		logger.debug("Application found ID " + application.getId() + " - " + application.getName());
-
-		Collection<Module> modules = Collections2.filter(application.getModules(), new Predicate<Module>() {
-			@Override
-			public boolean apply(Module input) {
-				return input.getName().equalsIgnoreCase(moduleName) ? true : false;
-			}
-		});
-
-		if (modules.size() < 1) {
-			throw new ServiceException("initDb : Module not found", null);
-		}
-
-		Module module = modules.iterator().next();
-
-		logger.debug("Module found " + module.getId() + " - " + module.getName());
-
-		try {
-
-			configShell.put("port", module.getSshPort());
-			configShell.put("dockerManagerAddress", application.getManagerIp());
-			String rootPassword = module.getApplication().getUser().getPassword();
-			configShell.put("password", rootPassword);
-
-			shellUtils.sendFile(file, "root", rootPassword, module.getSshPort(), application.getManagerIp(),
-					"/cloudunit/software/tmp/initData.sql");
-
-			shellUtils.executeShell(module.getModuleAction().getInitDataCmd(), configShell);
-
-			module.setStatus(Status.START);
-			module = this.update(module);
-
-			// file.delete();
-
-		} catch (Exception e) {
-
-			module.setStatus(Status.FAIL);
-			this.saveInDB(module);
-
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 

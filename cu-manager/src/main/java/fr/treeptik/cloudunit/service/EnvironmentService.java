@@ -19,4 +19,7 @@ public interface EnvironmentService {
 			String containerId, Integer id) throws ServiceException, CheckException;
 
 	void delete(User user, int id, String containerName, String applicationName) throws ServiceException;
+
+	void save(User user, List<EnvironmentVariable> environment, String applicationName, String containerName)
+			throws ServiceException;
 }

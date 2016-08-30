@@ -32,6 +32,7 @@ import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
@@ -296,6 +297,28 @@ public class DockerServiceImpl implements DockerService {
 			msgError.append("localPathFile=").append(localPathFile);
 			throw new FatalDockerJSONException(msgError.toString(), e);
 		}
+	}
+
+	@Override
+	public void createModule(String containerName, Module module, String imagePath, User user, List<String> envs,
+			boolean createMainVolume, List<String> volumes) throws DockerJSONException {
+		if (createMainVolume) {
+			dockerCloudUnitClient.createVolume(containerName, "runtime");
+		}
+		volumes.add(containerName + ":/opt/cloudunit:rw");
+		logger.info("Volumes to add : " + volumes.toString());
+		DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
+				envs);
+		dockerCloudUnitClient.createContainer(container);
+	}
+
+	@Override
+	public Module startModule(String containerName, Module module) throws DockerJSONException {
+		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
+		dockerCloudUnitClient.startContainer(container);
+		container = dockerCloudUnitClient.findContainer(container);
+		module = containerMapper.mapDockerContainerToModule(container, module);
+		return module;
 	}
 
 }

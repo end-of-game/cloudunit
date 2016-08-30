@@ -81,7 +81,6 @@ public class ModuleController implements Serializable {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	public JsonResponse addModule(@RequestBody JsonInput input) throws ServiceException, CheckException {
-
 		// validate the input
 		input.validateAddModule();
 
@@ -89,34 +88,12 @@ public class ModuleController implements Serializable {
 		String imageName = input.getImageName();
 
 		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
-
-		// We must be sure there is no running action before starting new one
-		authentificationUtils.canStartNewAction(user, application, locale);
-
-		// check if there is no action currently on the entity
-		Status previousStatus = application.getStatus();
 
 		try {
-			// Application busy
-			applicationService.setStatus(application, Status.PENDING);
-
-			Module module = ModuleFactory.getModule(imageName);
-
-			moduleService.checkImageExist(imageName);
-
-			module.getImage().setName(imageName);
-			module.setName(imageName);
-			module.setApplication(application);
-
-			moduleService.initModule(application, module, null);
-
+			moduleService.create(imageName, applicationName, user);
 			logger.info("--initModule " + imageName + " to " + applicationName + " successful--");
-
 		} catch (Exception e) {
 			logger.error(input.toString(), e);
-		} finally {
-			applicationService.setStatus(application, previousStatus);
 		}
 
 		return new HttpOk();

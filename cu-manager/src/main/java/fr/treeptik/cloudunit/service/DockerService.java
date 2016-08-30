@@ -20,6 +20,7 @@ import java.util.List;
 
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
+import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
 
@@ -62,5 +63,10 @@ public interface DockerService {
 
 	void sendFileToContainer(String containerId, String localPathFile, String originalName, String destination)
 			throws FatalDockerJSONException;
+
+	void createModule(String containerName, Module module, String imagePath, User user, List<String> envs,
+			boolean createMainVolume, List<String> volumes) throws DockerJSONException;
+
+	Module startModule(String containerName, Module module) throws DockerJSONException;
 
 }
