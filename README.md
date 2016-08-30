@@ -99,7 +99,7 @@ There are many installation guides
 		</tr>
 		<!-- IE -->
 		<tr>
-			<td>IE<sup>1</sup></td>
+			<td>IE<sup>11</sup></td>
 			<td>✓</td>
 			<td>-</td>
 			<td>-</td>
