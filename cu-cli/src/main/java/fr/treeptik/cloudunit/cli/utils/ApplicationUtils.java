@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.treeptik.cloudunit.model.EnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
@@ -501,7 +503,7 @@ public class ApplicationUtils {
 			parameters.put("valueEnv", value);
 
 			restUtils.sendPostCommand(authentificationUtils.finalHost + urlLoader.actionApplication
-					+ application.getName() + "/container/" + application.getServer().getName() + "/environmentVariables",
+							+ application.getName() + "/container/" + application.getServer().getName() + "/environmentVariables",
 					authentificationUtils.getMap(), parameters).get("body");
 		} catch (ManagerResponseException e) {
 			statusCommand.setExitStatut(1);
@@ -512,6 +514,78 @@ public class ApplicationUtils {
 		response = "An environment variable has been successfully added to " + application.getName();
 
 		return response;
+	}
+
+	public String removeEnvironmentVariable(String applicationName, String key) {
+		String response;
+
+		String checkResponse = checkAndRejectIfError(applicationName);
+		if (checkResponse != null) {
+			return checkResponse;
+		}
+
+		try {
+			response = restUtils.sendGetCommand(
+					authentificationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/container/"
+							+ application.getServer().getName() + "/environmentVariables",
+					authentificationUtils.getMap()).get("body");
+
+			ObjectMapper mapper = new ObjectMapper();
+			List<EnvironmentVariable> environmentVariables = JsonConverter.getEnvironmentVariables(response);
+			int id = -1;
+			for(EnvironmentVariable var : environmentVariables)
+				if(var.getKeyEnv().equals(key))
+					id = var.getId();
+
+			restUtils.sendDeleteCommand(authentificationUtils.finalHost + urlLoader.actionApplication
+							+ application.getName() + "/container/" + application.getServer().getName() + "/environmentVariables/" + id,
+					authentificationUtils.getMap()).get("body");
+		} catch (Exception e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
+
+		statusCommand.setExitStatut(0);
+
+		return "This environment variable has successful been deleted";
+	}
+
+	public String updateEnvironmentVariable(String applicationName, String oldKey, String newKey, String value) {
+		String response;
+
+		String checkResponse = checkAndRejectIfError(applicationName);
+		if (checkResponse != null) {
+			return checkResponse;
+		}
+
+		try {
+			response = restUtils.sendGetCommand(
+					authentificationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/container/"
+							+ application.getServer().getName() + "/environmentVariables",
+					authentificationUtils.getMap()).get("body");
+
+			ObjectMapper mapper = new ObjectMapper();
+			List<EnvironmentVariable> environmentVariables = JsonConverter.getEnvironmentVariables(response);
+			int id = -1;
+			Map<String, String> parameters = new HashMap<>();
+			for(EnvironmentVariable var : environmentVariables)
+				if(var.getKeyEnv().equals(oldKey)) {
+					id = var.getId();
+					parameters.put("keyEnv", newKey);
+					parameters.put("valueEnv", value);
+				}
+
+			restUtils.sendPutCommand(authentificationUtils.finalHost + urlLoader.actionApplication
+							+ application.getName() + "/container/" + application.getServer().getName() + "/environmentVariables/" + id,
+					authentificationUtils.getMap(), parameters).get("body");
+		} catch (Exception e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
+
+		statusCommand.setExitStatut(0);
+
+		return "This environment variable has successful been updated";
 	}
 
 	public String listAllEnvironmentVariables(String applicationName) {
@@ -525,7 +599,7 @@ public class ApplicationUtils {
 		try {
 			response = restUtils.sendGetCommand(
 					authentificationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/container/"
-					+ application.getServer().getName() + "/environmentVariables",
+							+ application.getServer().getName() + "/environmentVariables",
 					authentificationUtils.getMap()).get("body");
 		} catch (ManagerResponseException e) {
 			statusCommand.setExitStatut(1);
