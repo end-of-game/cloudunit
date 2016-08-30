@@ -176,13 +176,10 @@ public class Image implements Serializable {
 		this.prefixEnv = prefixEnv;
 	}
 
+	// do not remove prefixId use for splitting server by nature
 	public Integer getPrefixId() {
-		prefixId = hashCode();
-		return prefixId;
+		return prefixEnv.hashCode();
 	}
 
-	public void setPrefixId(Integer prefixId) {
-		this.prefixId = prefixId;
-	}
 
 }
