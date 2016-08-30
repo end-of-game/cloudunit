@@ -46,10 +46,6 @@ public interface ModuleService {
 
 	List<Module> findByApp(Application application) throws ServiceException;
 
-	Module startModule(Module module) throws ServiceException;
-
-	Module stopModule(Module module) throws ServiceException;
-
 	void checkStatus(Module module, String status) throws CheckException, ServiceException;
 
 	boolean checkStatusPENDING(Module module) throws ServiceException;
@@ -58,9 +54,13 @@ public interface ModuleService {
 
 	void addModuleManager(Module module, Long instanceNumber) throws ServiceException;
 
-	void remove(User user, String moduleName, Boolean isModuleRemoving,
-			Status previousApplicationStatus) throws ServiceException, CheckException;
+	void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
+			throws ServiceException, CheckException;
 
 	Module create(String imageName, String applicationName, User user) throws ServiceException, CheckException;
+
+	Module stopModule(String moduleName) throws ServiceException;
+
+	Module startModule(String moduleName) throws ServiceException;
 
 }

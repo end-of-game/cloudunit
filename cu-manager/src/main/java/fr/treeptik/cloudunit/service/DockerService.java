@@ -36,8 +36,6 @@ public interface DockerService {
 
 	Server startServer(String containerName, Server server) throws DockerJSONException;
 
-	void stopServer(String containerName) throws DockerJSONException;
-
 	void killServer(String containerName) throws DockerJSONException;
 
 	void removeContainer(String containerName, boolean removeVolume) throws DockerJSONException;
@@ -68,5 +66,7 @@ public interface DockerService {
 			boolean createMainVolume, List<String> volumes) throws DockerJSONException;
 
 	Module startModule(String containerName, Module module) throws DockerJSONException;
+
+	void stopContainer(String containerName) throws DockerJSONException;
 
 }

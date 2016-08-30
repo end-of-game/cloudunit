@@ -39,9 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
+import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
-import fr.treeptik.cloudunit.docker.model.DockerContainer;
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -53,17 +52,13 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
-import fr.treeptik.cloudunit.service.HookService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.ContainerMapper;
 import fr.treeptik.cloudunit.utils.EmailUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
-import fr.treeptik.cloudunit.utils.ShellUtils;
 
 @Service
 public class ModuleServiceImpl implements ModuleService {
@@ -86,22 +81,10 @@ public class ModuleServiceImpl implements ModuleService {
 	private UserService userService;
 
 	@Inject
-	private ServerService serverService;
-
-	@Inject
 	private EmailUtils emailUtils;
 
 	@Inject
-	private ShellUtils shellUtils;
-
-	@Inject
-	private HookService hookService;
-
-	@Inject
 	private HipacheRedisUtils hipacheRedisUtils;
-
-	@Inject
-	private ContainerMapper containerMapper;
 
 	@Inject
 	private DockerService dockerService;
@@ -343,44 +326,17 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Override
 	@Transactional
-	public Module startModule(Module module) throws ServiceException {
-
-		logger.debug("start : Methods parameters : " + module);
-		logger.info("Module : Starting module " + module.getName());
-
-		Map<String, String> forwardedPorts = new HashMap<>();
-
-		Application application = module.getApplication();
+	public Module startModule(String moduleName) throws ServiceException {
+		logger.info("Module : Starting module " + moduleName);
+		Module module = null;
 
 		try {
-			DockerContainer dockerContainer = new DockerContainer();
-			DockerContainer dataDockerContainer = new DockerContainer();
-			dockerContainer.setName(module.getName());
-			// dockerContainer.setPorts(forwardedPorts);
-			dockerContainer.setImage(module.getImage().getName());
-
-			// Call the hook for pre start
-			hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_START);
-
-			// DockerContainer
-			// .start(dockerContainer, application.getManagerIp(), null);
-			// dockerContainer = DockerContainer.findOne(dockerContainer,
-			// application.getManagerIp());
-
-			module = containerMapper.mapDockerContainerToModule(dockerContainer, module);
-
-			// Unsubscribe module manager
-			module.getModuleAction().updateModuleManager(hipacheRedisUtils);
-
-			module = saveInDB(module);
-
-			// Call the hook for post start
-			hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_START);
+			module = findByName(moduleName);
+			module = dockerService.startModule(moduleName, module);
+			applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
 
 		} catch (PersistenceException e) {
-			module.setStatus(Status.FAIL);
-			module = this.saveInDB(module);
-			logger.error("ModuleService Error : fail to start Module" + e);
+			logger.error("ModuleService Error : fail to start Module" + moduleName);
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 		return module;
@@ -388,34 +344,14 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Override
 	@Transactional
-	public Module stopModule(Module module) throws ServiceException {
-
-		DockerContainer dockerContainer = null;
+	public Module stopModule(String moduleName) throws ServiceException {
+		Module module = null;
 		try {
-			Application application = module.getApplication();
-
-			dockerContainer = new DockerContainer();
-			dockerContainer.setName(module.getName());
-			dockerContainer.setImage(module.getImage().getName());
-
-			// Call the hook for pre stop
-			hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
-
-			// DockerContainer.stop(dockerContainer,
-			// application.getManagerIp());
-			// dockerContainer = DockerContainer.findOne(dockerContainer,
-			// application.getManagerIp());
-
-			module.setStatus(Status.STOP);
-			module = this.update(module);
-
-			// Call the hook for post stop
-			hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_STOP);
-
+			module = findByName(moduleName);
+			dockerService.stopContainer(moduleName);
+			applicationEventPublisher.publishEvent(new ModuleStopEvent(module));
 		} catch (DataAccessException e) {
-			module.setStatus(Status.FAIL);
-			module = this.saveInDB(module);
-			logger.error("[" + dockerContainer.getName() + "] Fail to stop Module : " + module);
+			logger.error("[" + moduleName + "] Fail to stop Module : " + moduleName);
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 		return module;
@@ -535,47 +471,6 @@ public class ModuleServiceImpl implements ModuleService {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 
-	}
-
-	/**
-	 * Affecte un nom disponible pour le module que l'on souhaite créer
-	 *
-	 * @param module
-	 * @param applicationName
-	 * @param counter
-	 * @return module
-	 * @throws ServiceException
-	 */
-	private Module initNewModule(Module module, String applicationName, int counter) throws ServiceException {
-		try {
-
-			Long nbInstance = imageService.countNumberOfInstances(module.getName(), applicationName,
-					module.getApplication().getUser().getLogin(), cuInstanceName);
-
-			Long counterGlobal = (nbInstance.longValue() == 0 ? 1L : (nbInstance + counter));
-			try {
-				String containerName = AlphaNumericsCharactersCheckUtils
-						.convertToAlphaNumerics(cuInstanceName.toLowerCase())
-						+ "-"
-						+ AlphaNumericsCharactersCheckUtils
-								.convertToAlphaNumerics(module.getApplication().getUser().getLogin())
-						+ "-"
-						+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(module.getApplication().getName())
-						+ "-" + module.getName() + "-" + counterGlobal;
-				logger.info("containerName generated : " + containerName);
-				Module moduleTemp = moduleDAO.findByName(containerName);
-				if (moduleTemp == null) {
-					module.setName(containerName);
-				} else {
-					initNewModule(module, applicationName, counter + 1);
-				}
-			} catch (UnsupportedEncodingException e1) {
-				throw new ServiceException("Error renaming container", e1);
-			}
-		} catch (ServiceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-		return module;
 	}
 
 	public boolean isHttpMode() {

@@ -195,7 +195,7 @@ public class ServerServiceImpl implements ServerService {
 			addCredentialsForServerManagement(server, user);
 			String needToRestart = dockerService.getEnv(server.getName(), "CU_SERVER_RESTART_POST_CREDENTIALS");
 			if ("true".equalsIgnoreCase(needToRestart)) {
-				dockerService.stopServer(server.getName());
+				dockerService.stopContainer(server.getName());
 				dockerService.startServer(server.getName(), server);
 			}
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
@@ -378,7 +378,7 @@ public class ServerServiceImpl implements ServerService {
 	public Server stopServer(Server server) throws ServiceException {
 		try {
 			dockerService.execCommand(server.getName(), RemoteExecAction.CLEAN_LOGS.getCommand());
-			dockerService.stopServer(server.getName());
+			dockerService.stopContainer(server.getName());
 			applicationEventPublisher.publishEvent(new ServerStopEvent(server));
 		} catch (PersistenceException e) {
 			throw new ServiceException(server.toString(), e);
@@ -447,7 +447,7 @@ public class ServerServiceImpl implements ServerService {
 			// Add the jmv env variable to set the jvm release
 			envs.add("JAVA_HOME=/opt/cloudunit/java/" + jvmRelease);
 
-			dockerService.stopServer(server.getName());
+			dockerService.stopContainer(server.getName());
 			dockerService.removeContainer(server.getName(), false);
 			List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
 					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"

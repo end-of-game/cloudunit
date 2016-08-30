@@ -102,7 +102,7 @@ public class DockerServiceImpl implements DockerService {
 	}
 
 	@Override
-	public void stopServer(String containerName) throws DockerJSONException {
+	public void stopContainer(String containerName) throws DockerJSONException {
 		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
 		dockerCloudUnitClient.stopContainer(container);
 	}
@@ -239,8 +239,7 @@ public class DockerServiceImpl implements DockerService {
 			Optional<String> value = dockerClient.inspectContainer(containerName).config().env().stream()
 					.filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=") + 1)).findFirst();
 			logger.info("VARIABLE=" + value);
-			return (value.orElseThrow(
-					() -> new ServiceException(variable + " is missing into DOCKERFILE.")));
+			return (value.orElseThrow(() -> new ServiceException(variable + " is missing into DOCKERFILE.")));
 		} catch (Exception e) {
 			StringBuilder msgError = new StringBuilder();
 			msgError.append("containerId=").append(containerName);

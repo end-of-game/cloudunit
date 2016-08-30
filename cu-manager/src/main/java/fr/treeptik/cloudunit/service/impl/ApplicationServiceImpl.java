@@ -398,14 +398,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 			// set the application in pending mode
 			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 
-			List<Module> modules = application.getModules();
-			for (Module module : modules) {
+			application.getModules().stream().forEach(m -> {
 				try {
-					module = moduleService.startModule(module);
+					moduleService.startModule(m.getName());
 				} catch (ServiceException e) {
-					logger.error("failed to start " + application.toString(), e);
+					e.printStackTrace();
 				}
-			}
+			});
 			Server server = application.getServer();
 			logger.info("old server ip : " + server.getContainerIP());
 			server = serverService.startServer(server);
@@ -437,14 +436,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 			Server server = application.getServer();
 			server = serverService.stopServer(server);
-			List<Module> modules = application.getModules();
-			for (Module module : modules) {
+			application.getModules().stream().forEach(m -> {
 				try {
-					module = moduleService.stopModule(module);
+					moduleService.stopModule(m.getName());
 				} catch (ServiceException e) {
-					logger.error("ApplicationService Error : failed to stop " + application.getName() + " : " + e);
+					e.printStackTrace();
 				}
-			}
+			});
 			applicationEventPublisher.publishEvent(new ApplicationStopEvent(application));
 			logger.info("ApplicationService : Application successfully stopped ");
 		} catch (PersistenceException e) {
@@ -703,7 +701,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public boolean isStarted(String name) {
 		int serversNotStarted = applicationDAO.countServersNotStatus(name, Status.START);
-		int modulesNotStarted = applicationDAO.countServersNotStatus(name, Status.START);
+		int modulesNotStarted = applicationDAO.countModulesNotStatus(name, Status.START);
 		logger.debug("serversNotStarted=" + serversNotStarted);
 		logger.debug("modulesNotStarted=" + modulesNotStarted);
 		return (serversNotStarted + modulesNotStarted) == 0;
@@ -712,7 +710,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public boolean isStopped(String name) {
 		int serversNotStopped = applicationDAO.countServersNotStatus(name, Status.STOP);
-		int modulesNotStopped = applicationDAO.countServersNotStatus(name, Status.STOP);
+		int modulesNotStopped = applicationDAO.countModulesNotStatus(name, Status.STOP);
 		logger.debug("serversNotStarted=" + serversNotStopped);
 		logger.debug("modulesNotStarted=" + modulesNotStopped);
 		return (serversNotStopped + modulesNotStopped) == 0;
