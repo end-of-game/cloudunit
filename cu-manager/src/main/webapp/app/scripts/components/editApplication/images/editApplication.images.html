@@ -17,7 +17,8 @@
   <div class="content clearfix">
     <h3 class="title large">Add a module</h3>
 
-    <div class="tile tile-sm module" data-ng-class="{disabled:image.isTemp}" data-ng-repeat="image in modules.moduleImages">
+    <div class="tile tile-sm module animate-module" data-ng-class="{disabled:image.isTemp}" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
+    data-ng-repeat="image in modules.moduleImages | filter:modules.typeImage:strict">
       <button
         class="tile-content"
         ripple=""

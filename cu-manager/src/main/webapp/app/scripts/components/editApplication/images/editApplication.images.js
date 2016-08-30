@@ -29,16 +29,19 @@
         '$rootScope',
         'ImageService',
         'ModuleService',
+        '$stateParams',
         ModulesCtrl
       ],
       controllerAs: 'modules',
     };
   }
 
-  function ModulesCtrl ( $rootScope, ImageService, ModuleService) {
+  function ModulesCtrl ( $rootScope, ImageService, ModuleService, $stateParams) {
     var vm = this;
     vm.moduleImages = [];
+    vm.categorieImage = [];
     vm.addModule = addModule;
+    vm.typeImage = $stateParams.typeImage;
     
     vm.$onInit = function() {
       getModulesImages ();
@@ -50,6 +53,11 @@
         .catch ( error );
 
       function success ( images ) {
+        var imagesPicked;
+        var listingCategorie =  [];
+        console.log('params', $stateParams);
+        console.log('list image', images);
+
         vm.moduleImages = images;
         vm.moduleImages.push({
           id: 9999,

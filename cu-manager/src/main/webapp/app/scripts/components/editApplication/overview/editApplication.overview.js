@@ -56,7 +56,7 @@
       if(vm.app) {
       ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name)
         .then ( function (data) {
-console.log(data);
+          console.log(data);
           vm.app.env = data;
         } )
       }
