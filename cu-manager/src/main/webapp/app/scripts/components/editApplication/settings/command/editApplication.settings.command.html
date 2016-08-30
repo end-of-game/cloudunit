@@ -29,7 +29,7 @@
             <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                 <li data-ng-repeat="container in commandRun.containers">
                     <a ng-href="" data-ng-click="commandRun.myContainer = container; commandRun.getContainers(commandRun.myContainer); commandRun.getCommandList(container.name);">
-                        {{container.name}}
+                        {{ container.name }}
                     </a>
                 </li>
             </ul>
