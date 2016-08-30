@@ -58,7 +58,7 @@ public interface ModuleService {
 
 	void addModuleManager(Module module, Long instanceNumber) throws ServiceException;
 
-	Module remove(Application application, User user, Module module, Boolean isModuleRemoving,
+	void remove(User user, String moduleName, Boolean isModuleRemoving,
 			Status previousApplicationStatus) throws ServiceException, CheckException;
 
 	Module create(String imageName, String applicationName, User user) throws ServiceException, CheckException;

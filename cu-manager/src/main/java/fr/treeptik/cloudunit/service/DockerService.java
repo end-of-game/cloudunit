@@ -40,7 +40,7 @@ public interface DockerService {
 
 	void killServer(String containerName) throws DockerJSONException;
 
-	void removeServer(String containerName, boolean removeVolume) throws DockerJSONException;
+	void removeContainer(String containerName, boolean removeVolume) throws DockerJSONException;
 
 	String execCommand(String containerName, String command) throws FatalDockerJSONException;
 

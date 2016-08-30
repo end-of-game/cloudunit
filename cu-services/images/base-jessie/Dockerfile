@@ -1,3 +1,4 @@
+# Base Dockerfile for all IMAGES
 FROM debian:jessie
 
 USER root
@@ -27,9 +28,10 @@ ENV CU_SCRIPTS /opt/cloudunit/scripts
 ENV CU_SHARED /opt/cloudunit/shared
 ENV CU_TMP /opt/cloudunit/tmp
 
+COPY hooks /opt/cloudunit/hooks
+RUN chmod a+x /opt/cloudunit/hooks/*
+
 # needed for shell script filter and deletion
 LABEL origin cloudunit
-
-
 
 

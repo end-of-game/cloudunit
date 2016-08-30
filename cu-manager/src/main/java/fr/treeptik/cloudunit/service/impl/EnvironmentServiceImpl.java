@@ -233,8 +233,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 	private void stopAndRemoveServer(Server server, Application application) throws ServiceException {
 		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-		applicationEventPublisher.publishEvent(new ServerStopEvent(server));
-		dockerService.removeServer(server.getName(), false);
+		dockerService.removeContainer(server.getName(), false);
 	}
 
 	private void recreateAndMountVolumes(Server server, Application application) throws ServiceException {

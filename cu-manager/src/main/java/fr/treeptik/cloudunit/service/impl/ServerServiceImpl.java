@@ -220,15 +220,19 @@ public class ServerServiceImpl implements ServerService {
 	}
 
 	@Override
-	public void addCredentialsForServerManagement(Server server, final User user) throws FatalDockerJSONException {
-		Map<String, String> kvStore = new HashMap<String, String>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put("CU_USER", user.getLogin());
-				put("CU_PASSWORD", user.getPassword());
-			}
-		};
-		dockerService.execCommand(server.getName(), RemoteExecAction.ADD_USER.getCommand(kvStore));
+	public void addCredentialsForServerManagement(Server server, final User user) throws ServiceException {
+		try {
+			Map<String, String> kvStore = new HashMap<String, String>() {
+				private static final long serialVersionUID = 1L;
+				{
+					put("CU_USER", user.getLogin());
+					put("CU_PASSWORD", user.getPassword());
+				}
+			};
+			dockerService.execCommand(server.getName(), RemoteExecAction.ADD_USER.getCommand(kvStore));
+		} catch (FatalDockerJSONException fex) {
+			throw new ServiceException(fex.getMessage());
+		}
 	}
 
 	/**
@@ -293,15 +297,10 @@ public class ServerServiceImpl implements ServerService {
 		try {
 			server = this.findByName(serverName);
 
-			// check if there is no action currently on the entity
-			if (this.checkStatusPENDING(server)) {
-				return null;
-			}
-
 			Application application = server.getApplication();
 			cleanServerDependencies(server.getName(), application.getUser(), application.getName());
 
-			dockerService.removeServer(server.getName(), true);
+			dockerService.removeContainer(server.getName(), true);
 
 			// Remove server on cloudunit :
 			hipacheRedisUtils.removeServerAddress(application);
@@ -449,7 +448,7 @@ public class ServerServiceImpl implements ServerService {
 			envs.add("JAVA_HOME=/opt/cloudunit/java/" + jvmRelease);
 
 			dockerService.stopServer(server.getName());
-			dockerService.removeServer(server.getName(), false);
+			dockerService.removeContainer(server.getName(), false);
 			List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
 					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
 							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
@@ -503,7 +502,8 @@ public class ServerServiceImpl implements ServerService {
 	@Override
 	@Transactional
 	@CacheEvict(value = "env", allEntries = true)
-	public void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException {
+	public void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO)
+			throws ServiceException, CheckException {
 		checkVolumeFormat(volumeAssociationDTO);
 		Server server = null;
 		try {
@@ -513,10 +513,6 @@ public class ServerServiceImpl implements ServerService {
 					volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode()));
 			stopAndRemoveServer(server, application);
 			recreateAndMountVolumes(server, application);
-		} catch (CheckException e) {
-			throw new CheckException(e.getMessage());
-		} catch (ServiceException e) {
-			throw new ServiceException(e.getMessage());
 		} finally {
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
@@ -549,10 +545,11 @@ public class ServerServiceImpl implements ServerService {
 	private void stopAndRemoveServer(Server server, Application application) throws ServiceException {
 		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 		applicationEventPublisher.publishEvent(new ServerStopEvent(server));
-		dockerService.removeServer(server.getName(), false);
+		dockerService.removeContainer(server.getName(), false);
 	}
 
 	private void recreateAndMountVolumes(Server server, Application application) throws ServiceException {
+
 		List<String> volumes = volumeService.loadAllByContainerName(server.getName())
 				.stream().map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath()
 						+ ":" + v.getVolumeAssociations().stream().findFirst().get().getMode())
@@ -589,13 +586,6 @@ public class ServerServiceImpl implements ServerService {
 	private void cleanServerDependencies(String name, User user, String applicationName) throws ServiceException {
 		volumeService.loadAllByContainerName(name).stream()
 				.forEach(v -> volumeService.removeAssociation(v.getVolumeAssociations().stream().findFirst().get()));
-		environmentService.loadEnvironnmentsByContainer(name).forEach(env -> {
-			try {
-				environmentService.delete(user, env.getId(), name, applicationName);
-			} catch (ServiceException e) {
-				e.printStackTrace();
-			}
-		});
 	}
 
 }

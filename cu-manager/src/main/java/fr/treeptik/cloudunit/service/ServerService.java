@@ -60,7 +60,7 @@ public interface ServerService {
 
 	Server create(Server server, String tag) throws ServiceException, CheckException;
 
-	void addCredentialsForServerManagement(Server server, User user) throws FatalDockerJSONException;
+	void addCredentialsForServerManagement(Server server, User user) throws ServiceException;
 
 	void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException;
 

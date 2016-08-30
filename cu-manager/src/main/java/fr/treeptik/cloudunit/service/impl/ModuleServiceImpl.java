@@ -155,6 +155,7 @@ public class ModuleServiceImpl implements ModuleService {
 		module.setApplication(application);
 		module.setStatus(Status.PENDING);
 		module.setStartDate(new Date());
+
 		// Build a custom container
 		String containerName = "";
 		try {
@@ -174,11 +175,13 @@ public class ModuleServiceImpl implements ModuleService {
 		}
 		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
 
+		module.setInternalDNSName(containerName+"."+imageName+".cloud.unit");
 		module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
 
 			Map<String, String> moduleUserAccess = ModuleUtils.generateRamdomUserAccess();
+			moduleUserAccess.put("database", applicationName);
 
 			List<String> envs = Arrays.asList("POSTGRES_PASSWORD=" + moduleUserAccess.get("password"),
 					"POSTGRES_USER=" + moduleUserAccess.get("username"), "POSTGRES_DB=" + applicationName);
@@ -308,95 +311,22 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Override
 	@Transactional
-	public Module remove(Application application, User user, Module module, Boolean isModuleRemoving,
+	public void remove(User user, String moduleName, Boolean isModuleRemoving,
 			Status previousApplicationStatus) throws ServiceException, CheckException {
 
-		logger.debug("remove : Methods parameters : " + module.getName() + " applicationName " + application.getName());
-
 		try {
+			Module module = this.findByName(moduleName);
 
-			logger.info("Module to remove : " + module);
-			logger.info("From application : " + application);
-
-			// Unsubscribe module manager
-			module.getModuleAction().unsubscribeModuleManager(hipacheRedisUtils);
-
-			// Delete container in docker
-			DockerContainer dockerContainer = new DockerContainer();
-			dockerContainer.setName(module.getName());
-			dockerContainer.setImage(module.getImage().getName());
-
-			DockerContainer dataContainer = new DockerContainer();
-			dataContainer.setName(dockerContainer.getName());
-
-			// Delete in database
-			if (isModuleRemoving) {
-
-				Server server = application.getServer();
-				Map<String, String> configShell = new HashMap<>();
-
-				// On redémarre temporairement les containers Server et
-				// Module pour lancer les scripts via SSH
-				if (previousApplicationStatus.equals(Status.STOP)) {
-					serverService.startServer(server);
-					application.setStatus(Status.STOP);
-
-				}
-
-				configShell.put("port", server.getSshPort());
-				configShell.put("dockerManagerAddress", application.getManagerIp());
-				configShell.put("password", server.getApplication().getUser().getPassword());
-
-				String command;
-				Integer exitCode1;
-				command = "sh /cloudunit/scripts/rmDBEnvVar.sh " + module.getImage().getPrefixEnv().toUpperCase() + "_"
-						+ module.getInstanceNumber();
-
-				int counter = 0;
-				while (!server.getStatus().equals(Status.START)) {
-					if (counter == 100) {
-						break;
-					}
-					Thread.sleep(1000);
-					logger.info(" wait server sshd processus start");
-					logger.info("SSHDSTATUS = server : " + server.getStatus());
-					server = serverService.findById(server.getId());
-					counter++;
-				}
-
-				logger.info("command shell to execute [" + command + "]");
-				exitCode1 = shellUtils.executeShell(command, configShell);
-
-				if (exitCode1 != 0) {
-					server.setStatus(Status.FAIL);
-					serverService.saveInDB(server);
-					logger.error("Error : Error during reset module's parameters of server - exitCode1 = " + exitCode1);
-					throw new ServiceException(
-							"Error : Error during reset module's parameters of server - exitCode1 = " + exitCode1,
-							null);
-				}
-
-				if (previousApplicationStatus.equals(Status.STOP)) {
-					serverService.stopServer(server);
-					application.setStatus(Status.STOP);
-				}
-
-			}
-
+			dockerService.removeContainer(module.getName(), true);
 			moduleDAO.delete(module);
 
-			logger.info("ModuleService : Module successfully removed ");
-
+			logger.info("Module successfully removed ");
 		} catch (PersistenceException e) {
-			module.setStatus(Status.FAIL);
-			throw new ServiceException("Error database : failed to remove " + module.getName(), e);
-
-		} catch (InterruptedException e) {
-			// todo
-			logger.error(e.getMessage());
+			logger.error("Error database :  " + moduleName + " : " + e);
+			throw new ServiceException("Error database :  " + e.getLocalizedMessage(), e);
+		} catch (DockerJSONException e) {
+			logger.error(moduleName, e);
 		}
-
-		return module;
 	}
 
 	@Override

@@ -114,7 +114,7 @@ public class DockerServiceImpl implements DockerService {
 	}
 
 	@Override
-	public void removeServer(String containerName, boolean removeVolume) throws DockerJSONException {
+	public void removeContainer(String containerName, boolean removeVolume) throws DockerJSONException {
 		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
 		dockerCloudUnitClient.removeContainer(container);
 		if (removeVolume) {
@@ -238,9 +238,9 @@ public class DockerServiceImpl implements DockerService {
 		try {
 			Optional<String> value = dockerClient.inspectContainer(containerName).config().env().stream()
 					.filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=") + 1)).findFirst();
-			System.out.println("VARIABLE=" + value);
+			logger.info("VARIABLE=" + value);
 			return (value.orElseThrow(
-					() -> new ServiceException("$CU_LOGS is missing into DOCKERFILE. Needed to set the dir log path")));
+					() -> new ServiceException(variable + " is missing into DOCKERFILE.")));
 		} catch (Exception e) {
 			StringBuilder msgError = new StringBuilder();
 			msgError.append("containerId=").append(containerName);

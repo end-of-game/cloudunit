@@ -129,8 +129,7 @@ public class ModuleController implements Serializable {
 			// Application occupée
 			applicationService.setStatus(application, Status.PENDING);
 
-			Module module = moduleService.findByName(moduleName);
-			moduleService.remove(application, user, module, true, previousApplicationStatus);
+			moduleService.remove(user, moduleName, true, previousApplicationStatus);
 
 			logger.info("-- removeModule " + applicationName + " to " + moduleName + " successful-- ");
 
