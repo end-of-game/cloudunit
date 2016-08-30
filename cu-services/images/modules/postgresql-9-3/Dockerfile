@@ -4,6 +4,20 @@ FROM cloudunit/base-jessie
 # explicitly set user/group IDs
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 
+## CLOUDUNIT :: BEGINNING
+
+ENV CU_MODULE_PORT 5432
+ENV CU_DEFAULT_LOG_FILE " "
+ENV CU_LOGS " "
+
+# add custom scripts
+ADD scripts /opt/cloudunit/scripts
+RUN chmod +x /opt/cloudunit/scripts/*
+
+## CLOUDUNIT :: END
+
+
+
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
 RUN set -x \

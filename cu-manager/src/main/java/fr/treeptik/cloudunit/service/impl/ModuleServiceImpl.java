@@ -31,10 +31,14 @@ import javax.persistence.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
@@ -44,7 +48,6 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.EnvironmentVariable;
 import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
@@ -127,6 +130,9 @@ public class ModuleServiceImpl implements ModuleService {
 	@Value("${docker.manager.ip:192.168.50.4:2376}")
 	private String dockerManagerIp;
 
+	@Inject
+	private ApplicationEventPublisher applicationEventPublisher;
+
 	private boolean isHttpMode;
 
 	@PostConstruct
@@ -147,6 +153,7 @@ public class ModuleServiceImpl implements ModuleService {
 	@Transactional
 	public Module create(String imageName, String applicationName, User user) throws ServiceException, CheckException {
 		Application application = applicationService.findByNameAndUser(user, applicationName);
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 		// General informations
 		checkImageExist(imageName);
 		Module module = new Module();
@@ -175,7 +182,7 @@ public class ModuleServiceImpl implements ModuleService {
 		}
 		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
 
-		module.setInternalDNSName(containerName+"."+imageName+".cloud.unit");
+		module.setInternalDNSName(containerName + "." + imageName + ".cloud.unit");
 		module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
@@ -189,22 +196,27 @@ public class ModuleServiceImpl implements ModuleService {
 
 			List<EnvironmentVariable> environmentVariables = new ArrayList<>();
 			EnvironmentVariable environmentVariable = new EnvironmentVariable();
-			environmentVariable.setKeyEnv("CU_DATABASE_USER");
+			environmentVariable.setKeyEnv("CU_DATABASE_USER_POSTGRESQL_1");
 			environmentVariable.setValueEnv(moduleUserAccess.get("username"));
 			environmentVariables.add(environmentVariable);
 			environmentVariable = new EnvironmentVariable();
-			environmentVariable.setKeyEnv("CU_DATABASE_PASSWORD");
+			environmentVariable.setKeyEnv("CU_DATABASE_PASSWORD_POSTGRESQL_1");
 			environmentVariable.setValueEnv(moduleUserAccess.get("password"));
 			environmentVariables.add(environmentVariable);
 			environmentVariable = new EnvironmentVariable();
 			environmentVariable.setKeyEnv("CU_DATABASE_NAME");
 			environmentVariable.setValueEnv(applicationName);
 			environmentVariables.add(environmentVariable);
+			environmentVariable = new EnvironmentVariable();
+			environmentVariable.setKeyEnv("CU_DATABASE_DNS_POSTGRESQL_1");
+			environmentVariable.setValueEnv(module.getInternalDNSName());
+			environmentVariables.add(environmentVariable);
 			environmentService.save(user, environmentVariables, applicationName, application.getServer().getName());
 			dockerService.createModule(containerName, module, imagePath, user, envs, true, new ArrayList<>());
 			module = dockerService.startModule(containerName, module);
 			module = moduleDAO.save(module);
-			applicationService.setStatus(application, Status.START);
+			applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);
 			throw new ServiceException(e.getLocalizedMessage(), e);
@@ -311,8 +323,8 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Override
 	@Transactional
-	public void remove(User user, String moduleName, Boolean isModuleRemoving,
-			Status previousApplicationStatus) throws ServiceException, CheckException {
+	public void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
+			throws ServiceException, CheckException {
 
 		try {
 			Module module = this.findByName(moduleName);
