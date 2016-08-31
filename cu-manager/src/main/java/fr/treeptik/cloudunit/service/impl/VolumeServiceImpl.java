@@ -72,7 +72,7 @@ public class VolumeServiceImpl implements VolumeService {
 	@Override
 	public Volume loadVolume(int id) throws CheckException {
 		Volume volume = volumeDAO.findById(id);
-		if (volume.equals(null))
+		if (volume == null)
 			throw new CheckException("Volume doesn't exist");
 		return volume;
 	}
