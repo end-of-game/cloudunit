@@ -147,32 +147,21 @@
                   tooltip=""
                   data-title="Delete"
                   data-placement="bottom"
-                  data-toggle="modal"
-                  data-target="#delete-{{vol.id}}">
+                  sweetalert
+                  sweet-options="{'title':'Removal confirmation required for volume {{volume.name}}',
+                  'text':'Caution, this is a permanent action.',
+                  'type':'warning',
+                  'showCancelButton':true,
+                  'confirmButtonText':'PERMANENTLY DELETE!',
+                  'cancelButtonText':'CANCEL',
+                  'closeOnConfirm':false,
+                  'closeOnCancel':false,
+                  'animation': 'slide-from-top'}"
+                  sweet-confirm-option="{'title':'Deleted!','text':'Your volume has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-cancel-option="{'title':'Cancelled!','text':'Your volume is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-on-confirm="volume.deleteVolume(vol)">
                 <i class="icon-whhg trash"></i>
                 </button>
-                <div class="modal"
-                    id="delete-{{vol.id}}"
-                    modaldismiss="">
-                  <div class="modal-inner">
-                    <div class="content clearfix">
-                      <h3 class="title">Removal confirmation required for volume {{volume.name}}</h3>
-
-                      <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
-
-                      <div class="actions pull-right">
-                        <button type="button" class="button secondary" data-dismiss="modal">Cancel
-                        </button>
-                        <button type="button"
-                                class="delete-btn button primary"
-                                data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
-                                data-ng-click="volume.deleteVolume(vol);">
-                          Delete variable
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 <button class="icon-button"
                   ripple=""

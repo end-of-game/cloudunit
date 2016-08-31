@@ -71,14 +71,25 @@
                             tooltip-placement="{{$even ? 'right' : 'left'}}">
                       <i class="icon-whhg stickynote"></i>
                     </button>
-                    <button class="toggle-modal icon-button secondary danger"
-                            data-toggle="modal"
-                            data-target="#delete-{{item.tag}}"
+                    <button class="icon-button secondary danger"
                             data-keyboard="true"
                             ripple=""
                             tooltip=""
                             data-title="Delete"
-                            data-placement="bottom">
+                            data-placement="bottom"
+                            sweetalert
+                            sweet-options="{'title':'Removal confirmation required for {{item.tag}}',
+                            'text':'Caution, this is a permanent action. Once you delete a snapshot, you cannot get it back. This snapshot will no longer be available.',
+                            'type':'warning',
+                            'showCancelButton':true,
+                            'confirmButtonText':'PERMANENTLY DELETE!',
+                            'cancelButtonText':'CANCEL',
+                            'closeOnConfirm':false,
+                            'closeOnCancel':false,
+                            'animation': 'slide-from-top'}"
+                            sweet-confirm-option="{'title':'Deleted!','text':'Your snapshot has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+                            sweet-cancel-option="{'title':'Cancelled!','text':'Your snapshot is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+                            sweet-on-confirm="snapshots.deleteTag(item.tag)">
                       <i class="icon-whhg trash"></i>
                     </button>
                     <button class="toggle-modal icon-button primary"
@@ -136,27 +147,6 @@
                   </div>
                 </div>
 
-                <div class="modal card"
-                     id="delete-{{item.tag}}"
-                     modaldismiss="">
-                  <div class="modal-inner content">
-                    <h3 class="title">Removal confirmation required for {{item.tag}}</h3>
-
-                    <p class="alert">Caution, <strong> this is a permanent action</strong>. Once you
-                      delete a snapshot, you cannot get it back. This snapshot will no longer be available.
-                    </p>
-
-                    <div class="action">
-                      <button type="button" class="button secondary" data-dismiss="modal">Cancel
-                      </button>
-                      <button type="button" class="delete-btn button primary"
-                              data-ng-click="snapshots.deleteTag(item.tag)"
-                              data-dismiss="modal">
-                        I understand, permanently delete my snapshot
-                      </button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

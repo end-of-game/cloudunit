@@ -38,14 +38,13 @@
         '$interval',
         'ApplicationService',
         'ErrorService',
-        'SweetAlert',
         DashboardCtrl
       ],
       controllerAs: 'dashboard',
     };
   }
 
-  function DashboardCtrl($rootScope, $scope, $interval, ApplicationService, ErrorService, SweetAlert) {
+  function DashboardCtrl($rootScope, $scope, $interval, ApplicationService, ErrorService) {
     var timer, vm = this;
     vm.applications = [];
     vm.selectedItem = 'All';
@@ -82,10 +81,7 @@
     });
     
     /////////////////////////////////////////////
-    // function checkCancel()  {
-    //   console.log("cancel");
-    //   // SweetAlert.success("You have successfully completed our poll!", {title: "Good job!"});
-    // }
+
     // Refresh the application list
     function update() {
       ApplicationService.list()

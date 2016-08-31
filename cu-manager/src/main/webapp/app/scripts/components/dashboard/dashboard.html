@@ -206,16 +206,14 @@
                         'text':'Caution, this is a permanent action. Once you delete an app, you cannot get it back. This app will no longer be available.',
                         'type':'warning',
                         'showCancelButton':true,
-                        'confirmButtonColor':'#DD6B55',
                         'confirmButtonText':'PERMANENTLY DELETE!',
                         'cancelButtonText':'CANCEL',
                         'closeOnConfirm':false,
-                        'closeOnCancel':false}"
-                        sweet-confirm-option="{'title':'Deleted!','text':'Your application has been deleted!','type':'success'}"
-                        sweet-cancel-option="{'title':'Cancelled!','text':'Your application is safe','type':'error'}"
-                        sweet-on-confirm="dashboard.deleteApplication(application.name)" 
-                        
-                        ><!--sweet-on-cancel="dashboard.checkCancel()"-->
+                        'closeOnCancel':false,
+                        'animation': 'slide-from-top'}"
+                        sweet-confirm-option="{'title':'Deleted!','text':'Your application has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+                        sweet-cancel-option="{'title':'Cancelled!','text':'Your application is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+                        sweet-on-confirm="dashboard.deleteApplication(application.name)">
                   <i class="icon-whhg trash"></i>
                 </button>
 
