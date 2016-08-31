@@ -375,6 +375,19 @@ public class MessageConverter {
 		}
 	}
 
+	public static void buildListVolumes(List<Volume> volumes) {
+		String[][] tab = new String[volumes.size() + 1][1];
+		tab[0][0] = "VOLUMES NAMES";
+		if (volumes.size() == 0) {
+			logger.log(Level.INFO, "It has not custom volume");
+		} else {
+			for (int i = 0; i < volumes.size(); i++) {
+				tab[i + 1][0] = volumes.get(i).getName();
+			}
+			printer.print(tab);
+		}
+	}
+
 	public static void buildListFileUnit(List<FileUnit> fileUnits) {
 		StringBuilder builder = new StringBuilder();
 		for (FileUnit fileUnit : fileUnits) {

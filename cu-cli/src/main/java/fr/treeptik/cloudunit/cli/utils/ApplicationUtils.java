@@ -519,6 +519,12 @@ public class ApplicationUtils {
 	public String removeEnvironmentVariable(String applicationName, String key) {
 		String response;
 
+		if (authentificationUtils.getMap().isEmpty()) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
+					+ ANSIConstants.ANSI_RESET;
+		}
+
 		String checkResponse = checkAndRejectIfError(applicationName);
 		if (checkResponse != null) {
 			return checkResponse;

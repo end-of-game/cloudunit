@@ -243,4 +243,16 @@ public class JsonConverter {
 		}
 		return fileUnits;
 	}
+
+	public static List<Volume> getVolumes(String response) {
+		List<Volume> volumes = new ArrayList<Volume>();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			volumes = mapper.readValue(response, new TypeReference<List<Volume>>() {
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return volumes;
+	}
 }
