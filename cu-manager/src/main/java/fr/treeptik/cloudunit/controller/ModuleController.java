@@ -98,6 +98,37 @@ public class ModuleController implements Serializable {
 	}
 
 	/**
+	 * Add a module to an existing application
+	 *
+	 * @param input
+	 * @return
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@CloudUnitSecurable
+	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+	@ResponseBody
+	public JsonResponse publishPort(@PathVariable("id") Integer id, @RequestBody JsonInput input)
+			throws ServiceException, CheckException {
+		// validate the input
+		input.validateAddModule();
+
+		String applicationName = input.getApplicationName();
+		String imageName = input.getImageName();
+
+		User user = authentificationUtils.getAuthentificatedUser();
+
+		try {
+			moduleService.publishPort(id, input.getPublishPort(), applicationName, user);
+			logger.info("--initModule " + imageName + " to " + applicationName + " successful--");
+		} catch (Exception e) {
+			logger.error(input.toString(), e);
+		}
+
+		return new HttpOk();
+	}
+
+	/**
 	 * Remove a module to an existing application
 	 *
 	 * @param jsonInput

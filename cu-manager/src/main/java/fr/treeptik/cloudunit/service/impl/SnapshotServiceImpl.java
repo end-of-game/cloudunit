@@ -349,7 +349,6 @@ public class SnapshotServiceImpl implements SnapshotService {
 				properties.put("database", snapshot.getAppConfig().get(key).getProperties()
 						.get("database-" + module.getImage().getName()));
 				module.setModuleInfos(properties);
-				module = moduleService.saveInDB(module);
 
 				if (tag != null) {
 					restoreDataModule(module);

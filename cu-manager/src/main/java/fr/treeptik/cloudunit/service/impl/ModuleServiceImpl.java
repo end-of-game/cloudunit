@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -46,6 +47,7 @@ import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.EnvironmentVariable;
+import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
@@ -57,7 +59,6 @@ import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.EmailUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
 
 @Service
@@ -82,9 +83,6 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Inject
 	private EmailUtils emailUtils;
-
-	@Inject
-	private HipacheRedisUtils hipacheRedisUtils;
 
 	@Inject
 	private DockerService dockerService;
@@ -128,10 +126,6 @@ public class ModuleServiceImpl implements ModuleService {
 		}
 	}
 
-	public ModuleDAO getModuleDAO() {
-		return this.moduleDAO;
-	}
-
 	@Override
 	@Transactional
 	public Module create(String imageName, String applicationName, User user) throws ServiceException, CheckException {
@@ -145,6 +139,7 @@ public class ModuleServiceImpl implements ModuleService {
 		module.setApplication(application);
 		module.setStatus(Status.PENDING);
 		module.setStartDate(new Date());
+		module.setPublishPorts(false);
 
 		// Build a custom container
 		String containerName = "";
@@ -218,8 +213,20 @@ public class ModuleServiceImpl implements ModuleService {
 	 */
 	@Override
 	@Transactional(rollbackFor = ServiceException.class)
-	public Module saveInDB(Module module) throws ServiceException {
-		moduleDAO.saveAndFlush(module);
+	public Module publishPort(Integer id, Boolean publishPort, String applicationName, User user)
+			throws ServiceException {
+		Application application = applicationService.findByNameAndUser(user, applicationName);
+		Module module = findById(id);
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+		applicationEventPublisher.publishEvent(new ModuleStopEvent(module));
+		module = moduleDAO.saveAndFlush(module);
+		List<String> envs = environmentService.loadEnvironnmentsByContainer(module.getName()).stream()
+				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
+		dockerService.removeContainer(module.getName(), false);
+		dockerService.createModule(module.getName(), module, module.getImage().getPath(), user, envs, false,
+				new ArrayList<String>());
+		applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
+		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 		return module;
 	}
 
@@ -244,59 +251,24 @@ public class ModuleServiceImpl implements ModuleService {
 		}
 	}
 
-	/**
-	 * check if the status passed in parameter is the as in db if it's case a
-	 * checkException is throws
-	 *
-	 * @throws ServiceException
-	 *             CheckException
-	 */
-	@Override
-	public void checkStatus(Module module, String status) throws CheckException, ServiceException {
-		logger.info("--CHECK APP STATUS--");
-
-		if (module.getStatus().name().equalsIgnoreCase(status)) {
-			if (module.getStatus().name().equalsIgnoreCase(status)) {
-				throw new CheckException("Error : Module " + module.getName() + " is already " + status + "ED");
-			}
-		}
-	}
-
-	/**
-	 * check if the status is PENDING return TRUE else return false
-	 *
-	 * @throws ServiceException
-	 *             CheckException
-	 */
-	@Override
-	public boolean checkStatusPENDING(Module module) throws ServiceException {
-		logger.info("--CHECK MODULE STATUS PENDING--");
-		if (module.getStatus().name().equalsIgnoreCase("PENDING")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public void checkImageExist(String moduleName) throws ServiceException {
-		try {
-			imageService.findByName(moduleName);
-		} catch (ServiceException e) {
-			throw new ServiceException("Error : the module " + moduleName + " is not available", e);
+		Image image = imageService.findByName(moduleName);
+		if (image == null) {
+			throw new ServiceException("Error : the module " + moduleName + " is not available");
 		}
+
 	}
 
 	@Override
 	@Transactional
 	public Module update(Module module) throws ServiceException {
-
 		logger.debug("update : Methods parameters : " + module.toString());
 		logger.info("ModuleService : Starting updating Module " + module.getName());
 		try {
 			module = moduleDAO.save(module);
 		} catch (PersistenceException e) {
 			module.setStatus(Status.FAIL);
-			module = this.saveInDB(module);
+			module = moduleDAO.save(module);
 			logger.error("ModuleService Error : update Module" + e);
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
@@ -454,25 +426,6 @@ public class ModuleServiceImpl implements ModuleService {
 
 	}
 
-	@Override
-	@Transactional
-	public void addModuleManager(Module module, Long instanceNumber) throws ServiceException {
-		try {
-			module = module.getModuleAction().enableModuleManager(hipacheRedisUtils, module, instanceNumber);
-
-			String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-			module.setManagerLocation(module.getModuleAction().getManagerLocation(subdomain, suffixCloudUnitIO));
-
-			// persist in database
-			update(module);
-
-		} catch (ServiceException e) {
-			logger.error("Error ModuleService : error addModuleManager Method : " + e);
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-
-	}
-
 	public boolean isHttpMode() {
 		return isHttpMode;
 	}
@@ -481,21 +434,4 @@ public class ModuleServiceImpl implements ModuleService {
 		this.isHttpMode = isHttpMode;
 	}
 
-	/*
-	 * private void restoreDataModule(Module module) {
-	 * 
-	 * try { DockerClient docker = null; if (Boolean.valueOf(isHttpMode)) {
-	 * docker = DefaultDockerClient .builder() .uri("http://" +
-	 * dockerManagerIp).build(); } else { final DockerCertificates certs = new
-	 * DockerCertificates(Paths.get(certsDirPath)); docker = DefaultDockerClient
-	 * .builder() .uri("https://" +
-	 * dockerManagerIp).dockerCertificates(certs).build(); }
-	 * 
-	 * final String[] commandBackupData = {"bash", "-c",
-	 * "/cloudunit/scripts/restore-data.sh"};
-	 * docker.execCreate(module.getName(), commandBackupData,
-	 * DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-	 * 
-	 * } catch (Exception e) { logger.error(e.getMessage() + ", " + module); } }
-	 */
 }

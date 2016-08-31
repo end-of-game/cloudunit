@@ -18,9 +18,9 @@ import fr.treeptik.cloudunit.docker.model.HostConfig;
 public class ContainerUtils {
 
 	public static DockerContainer newCreateInstance(String name, String image, List<String> volumesFrom,
-			List<String> args, List<String> rawVolumes, List<String> envs) {
+			List<String> args, List<String> rawVolumes, List<String> envs, Boolean publishPorts) {
 		HostConfig hostConfig = HostConfigBuilder.aHostConfig().withVolumesFrom(volumesFrom).withBinds(rawVolumes)
-				.build();
+				.withPublishAllPorts(publishPorts).build();
 		Config config = ConfigBuilder.aConfig().withAttachStdin(Boolean.FALSE).withAttachStdout(Boolean.TRUE)
 				.withAttachStderr(Boolean.TRUE).withCmd(args).withImage(image).withHostConfig(hostConfig).withMemory(0L)
 				.withMemorySwap(0L).withEnv(envs).build();
@@ -29,10 +29,10 @@ public class ContainerUtils {
 	}
 
 	public static DockerContainer newStartInstance(String name, Map<String, String> ports, List<String> volumesFrom,
-			List<String> volumes) {
+			List<String> volumes, Boolean publishAllPorts) {
 		HostConfig hostConfig = HostConfigBuilder.aHostConfig().withBinds(volumes)
 				.withPortBindings(buildPortBindingBody(ports)).withPrivileged(Boolean.FALSE)
-				.withPublishAllPorts(Boolean.FALSE).withVolumesFrom(volumesFrom).build();
+				.withPublishAllPorts(publishAllPorts).withVolumesFrom(volumesFrom).build();
 		Config config = ConfigBuilder.aConfig().withHostConfig(hostConfig).build();
 		DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
 		return container;

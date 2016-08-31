@@ -45,6 +45,8 @@ public class Module extends Container implements Serializable {
 
 	private String managerLocation;
 
+	private Boolean publishPorts;
+
 	@ManyToOne
 	@JsonIgnore
 	private Application application;
@@ -127,6 +129,14 @@ public class Module extends Container implements Serializable {
 			throw new RuntimeException("Cannot get instance number without first call initNewModule");
 		}
 		return Long.parseLong((name.substring(name.lastIndexOf("-") + 1)));
+	}
+
+	public Boolean getPublishPorts() {
+		return publishPorts;
+	}
+
+	public void setPublishPorts(Boolean publishPorts) {
+		this.publishPorts = publishPorts;
 	}
 
 }

@@ -38,21 +38,13 @@ public interface ModuleService {
 
 	void checkImageExist(String moduleName) throws ServiceException;
 
-	Module saveInDB(Module module) throws ServiceException;
-
 	List<Module> findAllStatusStopModules() throws ServiceException;
 
 	List<Module> findAllStatusStartModules() throws ServiceException;
 
 	List<Module> findByApp(Application application) throws ServiceException;
 
-	void checkStatus(Module module, String status) throws CheckException, ServiceException;
-
-	boolean checkStatusPENDING(Module module) throws ServiceException;
-
 	Module findByContainerID(String id) throws ServiceException;
-
-	void addModuleManager(Module module, Long instanceNumber) throws ServiceException;
 
 	void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
 			throws ServiceException, CheckException;
@@ -62,5 +54,7 @@ public interface ModuleService {
 	Module stopModule(String moduleName) throws ServiceException;
 
 	Module startModule(String moduleName) throws ServiceException;
+
+	Module publishPort(Integer id, Boolean publishPort, String applicationName, User user) throws ServiceException;
 
 }

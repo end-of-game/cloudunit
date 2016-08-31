@@ -88,13 +88,13 @@ public class DockerServiceImpl implements DockerService {
 		volumes.add(containerName + ":/opt/cloudunit:rw");
 		logger.info("Volumes to add : " + volumes.toString());
 		DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null,
-				volumes, envs);
+				volumes, envs, false);
 		dockerCloudUnitClient.createContainer(container);
 	}
 
 	@Override
 	public Server startServer(String containerName, Server server) throws DockerJSONException {
-		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
+		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null, false);
 		dockerCloudUnitClient.startContainer(container);
 		container = dockerCloudUnitClient.findContainer(container);
 		server = containerMapper.mapDockerContainerToServer(container, server);
@@ -103,19 +103,19 @@ public class DockerServiceImpl implements DockerService {
 
 	@Override
 	public void stopContainer(String containerName) throws DockerJSONException {
-		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
+		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null, false);
 		dockerCloudUnitClient.stopContainer(container);
 	}
 
 	@Override
 	public void killServer(String containerName) throws DockerJSONException {
-		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
+		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null, false);
 		dockerCloudUnitClient.killContainer(container);
 	}
 
 	@Override
 	public void removeContainer(String containerName, boolean removeVolume) throws DockerJSONException {
-		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
+		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null, false);
 		dockerCloudUnitClient.removeContainer(container);
 		if (removeVolume) {
 			dockerCloudUnitClient.removeVolume(containerName);
@@ -307,13 +307,14 @@ public class DockerServiceImpl implements DockerService {
 		volumes.add(containerName + ":/opt/cloudunit:rw");
 		logger.info("Volumes to add : " + volumes.toString());
 		DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
-				envs);
+				envs, module.getPublishPorts());
 		dockerCloudUnitClient.createContainer(container);
 	}
 
 	@Override
 	public Module startModule(String containerName, Module module) throws DockerJSONException {
-		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null);
+		DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null,
+				module.getPublishPorts());
 		dockerCloudUnitClient.startContainer(container);
 		container = dockerCloudUnitClient.findContainer(container);
 		module = containerMapper.mapDockerContainerToModule(container, module);
