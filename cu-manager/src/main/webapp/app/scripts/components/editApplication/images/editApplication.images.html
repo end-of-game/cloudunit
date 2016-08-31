@@ -14,11 +14,30 @@
   -->
 
 <div class="tab-pane card large vertical-spacing">
-  <div class="content clearfix">
-    <h3 class="title large">Add a module</h3>
+  <div class="content clearfix" ng-if="modules.typeImage">
+    <h3 class="title large">Add {{ typeImage }} a module</h3>
+
+    <div class="tile tile-sm module animate-module backcard" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}">
+      <button
+        class="tile-content"
+        ripple=""
+        click-once=""
+        data-ng-disabled="image.isTemp"
+        ui-sref="editApplication.addModule({ typeImage: '' })">
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
+        </div>
+        <span class="icon-whhg pageback image"></span>
+        <span class="text"> Select other module</span>
+      </button>
+    </div>
 
     <div class="tile tile-sm module animate-module" data-ng-class="{disabled:image.isTemp}" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
-    data-ng-repeat="image in modules.moduleImages | filter:modules.typeImage:strict">
+    data-ng-repeat="image in modules.moduleImages | filter:modules.typeImage:strict" style="animation-delay: .{{ $index * 150 }}s" ng-if="modules.typeImage">
       <button
         class="tile-content"
         ripple=""
@@ -35,6 +54,30 @@
         <span class="image icon-tech {{ image.name | truncatestringfilter | lowercase }}"></span>
         <span class="text">{{ image.displayName }} </span>
       </button>
+    </div>
+  </div>
+
+<div class="content clearfix" ng-if="!modules.typeImage">
+    <h3 class="title large">Add a module</h3>
+    
+    <div class="tile tile-sm module animate-module" data-ng-class="{disabled:image.isTemp}" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
+    data-ng-repeat="image in modules.categorieImage | filter:modules.typeImage:strict" style="animation-delay: .{{ $index * 150 }}s" >
+      <button
+        class="tile-content"
+        ripple=""
+        click-once=""
+        data-ng-disabled="image.isTemp"
+        ui-sref="editApplication.addModule({ typeImage: image })" >
+          <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+          </div>
+          <span class="image icon-tech {{ image | truncatestringfilter | lowercase }}"></span>
+          <span class="text" style="text-transform: uppercase;">{{ image }} </span>
+        </button>
     </div>
   </div>
 </div>

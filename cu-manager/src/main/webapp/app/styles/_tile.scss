@@ -1,4 +1,5 @@
-/*
+/* MODULE SCSS => ./scss2/_tile.scss
+*//*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
  *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
@@ -24,6 +25,16 @@
     box-shadow: none;
     border: 0;
     position: relative;
+  }
+
+  &.backcard.module .tile-content {
+    background-color: #fff;
+    color: #02BAF2;
+
+    .text {
+      background-color: #fff;
+      color: #02BAF2;
+    }
   }
 }
 
@@ -103,5 +114,3 @@
     text-transform: uppercase;
   }
 }
-
-

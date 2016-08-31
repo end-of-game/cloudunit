@@ -58,6 +58,7 @@
         console.log('params', $stateParams);
         console.log('list image', images);
 
+        // isTemp Key for gray card
         vm.moduleImages = images;
         vm.moduleImages.push({
           id: 9999,
@@ -76,6 +77,16 @@
           status: null,
           isTemp: true
         });
+
+        if(vm.typeImage === '') {
+        console.log(vm.moduleImages);
+          // @TODO foreach
+          for(var i=0 ; i < vm.moduleImages.length - 1 ; i++) {
+            if (!(vm.categorieImage.indexOf(vm.moduleImages[i].prefixEnv) != -1 || vm.moduleImages[i].prefixEnv == undefined)) {
+              vm.categorieImage.push(vm.moduleImages[i].prefixEnv);
+            }
+          }
+        }
         
         return vm.moduleImages;
       }
@@ -87,6 +98,7 @@
 
     // Ajout d'un module
     function addModule ( applicationName, imageName ) {
+      // @TODO redirection to overview
       ModuleService.addModule ( applicationName, imageName ).then ( function (data) {
         $rootScope.$broadcast('application:addModule');
         return data;

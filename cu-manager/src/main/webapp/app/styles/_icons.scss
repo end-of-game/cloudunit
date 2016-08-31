@@ -1,4 +1,5 @@
-/*
+/* MODULE SCSS => ./scss2/_icons.scss
+*//*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
  *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
@@ -58,22 +59,22 @@
 }
 
 .icon-tech.hornetq:before {
-  content: "\e901";
+  content: "901";
 }
 .icon-tech.rabbitmq:before {
-  content: "\e912";
+  content: "912";
 }
 .icon-tech.memcached:before {
-  content: "\e902";
+  content: "902";
 }
 .icon-tech.elasticsearch:before {
-  content: "\e900";
+  content: "900";
 }
 .icon-tech.influxdb:before {
-  content: "\e907";
+  content: "907";
 }
 .icon-tech.solr:before {
-  content: "\e911";
+  content: "911";
 }
 .icon-tech.postgresql:before {
   content: "\f14a";
@@ -165,7 +166,7 @@
 .icon-whhg.arrow-right:before{content:'\f304'}
 .icon-whhg.arrow-up:before{content:'\f301'}
 .icon-whhg.asterisk:before{content:'\f317'}
-.icon-whhg.asteriskalt:before{content:'\002a'}
+.icon-whhg.asteriskalt:before{content:'a'}
 .icon-whhg.at:before{content:'\40'}
 .icon-whhg.atari:before{content:'\f3b9'}
 .icon-whhg.authentication-keyalt:before{content:'\f051'}
@@ -878,7 +879,7 @@
 .icon-whhg.pilcrow:before{content:'\00b6'}
 .icon-whhg.pill-antivirusalt:before{content:'\f0aa'}
 .icon-whhg.pin:before{content:'\f20a'}
-.icon-whhg.pipe:before{content:'\01c0'}
+.icon-whhg.pipe:before{content:'c0'}
 .icon-whhg.piwigo:before{content:'\f0ad'}
 .icon-whhg.pizza:before{content:'\f35c'}
 .icon-whhg.placeadd:before{content:'\f221'}
@@ -895,7 +896,7 @@
 .icon-whhg.playvideo:before{content:'\f03d'}
 .icon-whhg.plug:before{content:'\f0ea'}
 .icon-whhg.pluginalt:before{content:'\f098'}
-.icon-whhg.plus:before{content:'\002b'}
+.icon-whhg.plus:before{content:'b'}
 .icon-whhg.plus-sign:before{content:'\f476'}
 .icon-whhg.pocket:before{content:'\f16b'}
 .icon-whhg.podcast:before{content:'\f1a2'}
@@ -987,7 +988,7 @@
 .icon-whhg.restricted:before{content:'\f0ab'}
 .icon-whhg.retweet:before{content:'\f486'}
 .icon-whhg.rim:before{content:'\f36f'}
-.icon-whhg.ring:before{content:'\02da'}
+.icon-whhg.ring:before{content:'da'}
 .icon-whhg.road:before{content:'\f249'}
 .icon-whhg.roadsign-roadsignright:before{content:'\f21b'}
 .icon-whhg.roadsignleft:before{content:'\f240'}
@@ -1248,7 +1249,7 @@
 .icon-whhg.vps:before{content:'\f025'}
 .icon-whhg.wacom:before{content:'\f1bb'}
 .icon-whhg.walle:before{content:'\f3bc'}
-.icon-whhg.wallet:before{content:'\e000'}
+.icon-whhg.wallet:before{content:'000'}
 .icon-whhg.warcraft:before{content:'\f3bf'}
 .icon-whhg.warmedal:before{content:'\f2e4'}
 .icon-whhg.warning-sign:before{content:'\f316'}

@@ -1,4 +1,5 @@
-/*
+/* MODULE SCSS => ./scss2/_switches.scss
+*//*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
  *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
@@ -48,14 +49,14 @@
 }
 
 .checkbox label:before {
-  content: '\f6bb';
+  content: '6bb';
   /*unchecked*/
   opacity: 0.54;
 }
 
 .check.checkbox label:after {
   /*checked*/
-  content: '\f6d5';
+  content: '6d5';
   max-width: 0;
   /*transition*/
   -webkit-transition: all 0.2s;
@@ -66,17 +67,17 @@
 
 .check.radio label:before {
   /*unchecked*/
-  content: '\f10c';
+  content: '10c';
 }
 
 .check.radio input[type="radio"]:checked + label:before {
   /*checked*/
-  content: '\f192';
+  content: '192';
 }
 
 .check.radio input[type="radio"]:disabled + label:before {
   /*checked*/
-  content: '\f0c8';
+  content: '0c8';
 }
 
 .check.radio input[type="radio"]:disabled + label {

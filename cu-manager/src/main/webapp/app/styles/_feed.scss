@@ -1,4 +1,5 @@
-/*
+/* MODULE SCSS => ./scss2/_feed.scss
+*//*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
  *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
@@ -46,7 +47,7 @@
   }
   .feed-item:before {
     font-family: "fontawesome";
-    content: "\f10c";
+    content: "10c";
     display: block;
     position: absolute;
     left: -22px;

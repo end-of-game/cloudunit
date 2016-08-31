@@ -37,8 +37,8 @@
           </li>
           <li ng-click="editApp.updateRoute();"
               ui-sref-active="active"
-              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
-            <a id="add-service-tab" ui-sref="editApplication.addModule" ripple="">
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+            <a id="add-service-tab" ui-sref="editApplication.addModule({ typeImage: '' })" ripple="">
               <span>Add module</span>
             </a>
           </li>
