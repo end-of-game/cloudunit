@@ -165,9 +165,9 @@ No modules found!
 Terminated
 ```
 
-### Listing
+### Listing applications
 
-You can list all applications of the server :
+You can list all applications :
 ```bash
 cloudunit-DEV>  list-apps
 +----------------+--------+----------------+-----------+------+
@@ -208,6 +208,62 @@ Your application myapp is currently being stopped
 
 ## Features on an application
 
+### Listing containers
+
+You can list all containers of an application :
+```bash
+cloudunit-DEV-test>  list-containers
++-------------------------+
+|CONTAINER NAME           |
++-------------------------+
+|dev-johndoe-test-tomcat-6|
++-------------------------+
+1 containers found!
+```
+
+### Environment variables
+
+#### Add
+
+You can create an environment variable to an application with this command :
+
+```bash
+cloudunit-DEV-test>  create-var-env --key key --value value
+test
+An environment variable has been successfully added to test
+```
+
+Accents and specials characters are forbbiden in keys.
+
+#### Remove
+
+You can remove an environment variable if you use the command *rm-var-env* :
+```bash
+cloudunit-DEV-test>  rm-var-env --key key
+This environment variable has successful been deleted
+```
+
+#### Listing
+
+You can list all environment variables of an application :
+```bash
+cloudunit-DEV-test>  list-var-env
++-----------------------------+------+
+|CURRENT ENVIRONMENT VARIABLES|VALUES|
++-----------------------------+------+
+|key                          |value |
++-----------------------------+------+
+1 variables found!
+```
+
+#### Update
+
+You can update a environment variable by modifying key, value or both.
+```bash
+cloudunit-DEV-test>  update-var-env --old-key key --new-key keyUpdated --value valueUpdated
+This environment variable has successful been updated
+```
+
 ### Aliases
 
 #### Add
@@ -225,15 +281,15 @@ Aliases must to respect some pattern (treeptik.fr, treeptik-test.fr, treeptik123
 
 You can remove an alias if you use the command *rm-alias* :
 ```bash
-rm-alias --alias treeptik.fr 
+rm-alias --alias treeptik.fr
 This alias has successful been deleted
 ```
 
 #### Listing
 
-You can list all aliases of an application : 
+You can list all aliases of an application :
 ```bash
-cloudunit-DEV-myapp>  list-aliases 
+cloudunit-DEV-myapp>  list-aliases
 +---------------+
 |CURRENT ALIASES|
 +---------------+
@@ -273,7 +329,7 @@ Add java options to myapp application successfully
 
 #### Change
 
-You can change option of Java in your application : 
+You can change option of Java in your application :
 
 - Change the version of Java which your application use :
 ```bash
@@ -292,7 +348,7 @@ By default, an application has memory of 512.
 
 ### Modules
 
-#### Add 
+#### Add
 You can add a module on your application with this command :
 ```bash
 cloudunit-DEV-myapp> add-module --name mysql-5-5
@@ -315,7 +371,7 @@ Your module mysql-5-5 is currently being removed from your application myapp
 You can display informations about all modules of an application with the command *display-modules* :
 ```bash
 cloudunit-DEV-myapp>  display-modules
-MODULES INFORMATION 
+MODULES INFORMATION
 
 +-----------+---------------------------------------------------------------+
 |MODULE NAME|mysql-5-5-1                                                    |
@@ -363,7 +419,7 @@ At least one application uses this template. You must delete it before.
 
 #### Listing
 
-You can list all snapshots of an application : 
+You can list all snapshots of an application :
 
 ```bash
 cloudunit-DEV-myapp>  list-snapshot
@@ -381,6 +437,40 @@ War deployed - Access on http://myapp-johndoe-admin.cloudunit.dev
 ```
 
 ## Globales features
+
+### Volume management
+
+#### Create a volume
+
+You can create a volume with this command :
+```bash
+cloudunit-DEV>  create-volume --name volumeTest
+The volume volumeTest was been successfully created
+```
+
+#### Remove a volume
+
+You can remove a volume :
+```bash
+cloudunit-DEV>  rm-volume --name volumeTest
+This volume has successful been deleted
+```
+
+#### Mount a volume on a application
+
+When you have created your volume, you can mount it on an existant application (**You must use an absolute path for this command**) :
+```bash
+cloudunit-DEV-test>  mount-volume --volume-name volumeTest --path /cloudunit/ --container-name dev-johndoe-test-tomcat-6 --application-name test
+This volume has successful been mounted
+```
+
+#### Unmount a volume on a application
+
+Once your volume mount on your application, you can unmount it with the command :
+```bash
+cloudunit-DEV-test>  unmount-volume --container-name dev-johndoe-test-tomcat-6 --volume-name volumeTest
+This volume has successful been unmounted
+```
 
 ### Clear the console
 
