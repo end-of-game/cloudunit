@@ -436,6 +436,21 @@ cloudunit-DEV-myapp>  deploy --path ~/cloudunit-webapp-examples/pizzaiolo-mysql/
 War deployed - Access on http://myapp-johndoe-admin.cloudunit.dev
 ```
 
+### Run commands
+
+#### Listing
+
+You can list all command files in a container with this command :
+```bash
+cloudunit-DEV-test>  list-commands --container-name dev-johndoe-test-wildfly-8
++--------------------+------------------------+-----------+
+|CURRENT COMMAND     |ARGUMENT NUMBER REQUIRED|ARGUMENTS  |
++--------------------+------------------------+-----------+
+|create_datasource.sh|2                       |NAME DRIVER|
++--------------------+------------------------+-----------+
+1 commands found!
+```
+
 ## Globales features
 
 ### Volume management
