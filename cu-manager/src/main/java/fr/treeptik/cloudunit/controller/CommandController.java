@@ -7,6 +7,12 @@ import javax.inject.Inject;
 import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonResponse;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.impl.ApplicationServiceImpl;
+import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,6 +30,12 @@ public class CommandController {
     @Inject
     private CommandService commandService;
 
+    @Inject
+    private ApplicationService applicationService;
+
+    @Inject
+    private AuthentificationUtils authentificationUtils;
+
     @RequestMapping(value = "/{applicationName}/container/{containerName}/command", method = RequestMethod.GET)
     public @ResponseBody List<Command> listCommandByImage(@PathVariable String applicationName,
                                                            @PathVariable String containerName) throws ServiceException {
@@ -37,7 +49,15 @@ public class CommandController {
     public @ResponseBody JsonResponse execCommand(@PathVariable String applicationName, @PathVariable String containerName,
                                                   @PathVariable String filename, @RequestBody Command command) throws ServiceException {
         logger.info("Execute by filename");
-        commandService.execCommand(command, containerName, applicationName);
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+        try {
+            applicationService.setStatus(application, Status.PENDING);
+            String output = commandService.execCommand(command, containerName, applicationName);
+            logger.debug(output);
+        } finally {
+            applicationService.setStatus(application, Status.START);
+        }
         return new HttpOk();
     }
 }

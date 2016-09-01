@@ -24,7 +24,7 @@ import fr.treeptik.cloudunit.model.Server;
 
 public interface ServerDAO extends JpaRepository<Server, Integer> {
 
-	@Query("Select distinct s " + "from Server s " + "left join fetch s.image left join fetch s.application " + "where s.name=:name")
+	@Query("Select distinct s " + "from Server s " + "left join fetch s.image left join fetch s.application a left join fetch a.user " + "where s.name=:name")
 	Server findByName(@Param("name") String name) throws DataAccessException;
 
 	@Query("Select distinct s " + "from Server s " + "left join fetch s.image " + "where s.application.id=:appId")

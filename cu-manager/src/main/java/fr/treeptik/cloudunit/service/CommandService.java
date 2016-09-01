@@ -9,5 +9,5 @@ public interface CommandService {
 
     List<Command> listCommandByContainer(String applicationName, String containerName) throws ServiceException;
 
-    void execCommand(Command command, String containerName, String applicationName) throws ServiceException;
+    String execCommand(Command command, String containerName, String applicationName) throws ServiceException;
 }

@@ -17,6 +17,9 @@ import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ServerService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by nicolas on 03/08/2016.
  */
@@ -43,7 +46,14 @@ public class ServerListener {
 			int counter = 0;
 			boolean started = false;
 			do {
-				String command = RemoteExecAction.CHECK_RUNNING.getCommand();
+				Map<String, String> kvStore = new HashMap<String, String>() {
+					private static final long serialVersionUID = 1L;
+					{
+						put("CU_USER", server.getApplication().getUser().getLogin());
+						put("CU_PASSWORD", server.getApplication().getUser().getPassword());
+					}
+				};
+				String command = RemoteExecAction.CHECK_RUNNING.getCommand(kvStore);
 				String exec = dockerService.execCommand(containerName, command);
 				exec = exec.replaceAll(System.getProperty("line.separator"), "");
 				if ("0".equalsIgnoreCase(exec.trim())) {

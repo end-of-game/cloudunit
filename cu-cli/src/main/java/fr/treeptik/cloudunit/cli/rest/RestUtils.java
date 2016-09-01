@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.DeserializationConfig;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -169,12 +170,33 @@ public class RestUtils {
 	 * sendPostCommand
 	 *
 	 * @param url
+	 * @param credentials
 	 * @param parameters
 	 * @return
 	 * @throws ClientProtocolException
 	 */
 	public Map<String, Object> sendPostCommand(String url, Map<String, Object> credentials,
 			Map<String, String> parameters) throws ManagerResponseException {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String entity = mapper.writeValueAsString(parameters);
+			return sendPostCommand(url, credentials, entity);
+		} catch (Exception e) {
+			throw new ManagerResponseException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * sendPostCommand
+	 *
+	 * @param url
+	 * @param credentials
+	 * @param entity
+	 * @return
+	 * @throws ClientProtocolException
+	 */
+	public Map<String, Object> sendPostCommand(String url, Map<String, Object> credentials,
+											   String entity) throws ManagerResponseException {
 		Map<String, Object> response = new HashMap<String, Object>();
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -183,8 +205,8 @@ public class RestUtils {
 		httpPost.setHeader("Content-type", "application/json");
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			StringEntity entity = new StringEntity(mapper.writeValueAsString(parameters));
-			httpPost.setEntity(entity);
+			StringEntity stringEntity = new StringEntity(entity);
+			httpPost.setEntity(stringEntity);
 			CloseableHttpResponse httpResponse = httpclient.execute(httpPost, localContext);
 			ResponseHandler<String> handler = new CustomResponseErrorHandler();
 			String body = handler.handleResponse(httpResponse);
@@ -196,6 +218,8 @@ public class RestUtils {
 
 		return response;
 	}
+
+
 
 	/**
 	 * sendPutCommand

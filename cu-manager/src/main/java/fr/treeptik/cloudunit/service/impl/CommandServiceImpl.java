@@ -3,12 +3,17 @@ package fr.treeptik.cloudunit.service.impl;
 import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.utils.AuthentificationUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +31,8 @@ public class CommandServiceImpl implements CommandService {
 	@Inject
 	private DockerService dockerService;
 
+	private Logger logger = LoggerFactory.getLogger(CommandServiceImpl.class);
+
 	@Override
 	public List<Command> listCommandByContainer(String applicationName, String containerName) throws ServiceException {
 		if (containerName == null)
@@ -35,13 +42,13 @@ public class CommandServiceImpl implements CommandService {
 						.filter(v -> v.getName().equals(containerName)).findFirst().get().getName(),
 				dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom_scripts/");
 		List<Command> commands = new ArrayList<>();
-
+		BufferedReader bf = null;
 		try {
 			for (FileUnit fileUnit : fileUnits) {
 				List<String> arguments = new ArrayList<>();
 				Integer number = 0;
 				String content = dockerService.execCommand(containerName, "cat " + fileUnit.getBreadcrump());
-				BufferedReader bf = new BufferedReader(new StringReader(content));
+				bf = new BufferedReader(new StringReader(content));
 				String line;
 				int c = 0;
 				while ((line = bf.readLine()) != null) {
@@ -57,42 +64,55 @@ public class CommandServiceImpl implements CommandService {
 				commands.add(command);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			StringBuilder msgError = new StringBuilder(128);
+			msgError.append(containerName);
+			msgError.append(",").append(applicationName);
+			logger.error(msgError.toString(), e);
+		} finally {
+			if (bf != null) try {
+				bf.close();
+			} catch (IOException e) {
+			}
 		}
 		return commands;
 	}
 
 	@Override
-	public void execCommand(Command command, String containerName, String applicationName) throws ServiceException {
+	public String execCommand(Command command, String containerName, String applicationName) throws ServiceException {
 		if (command.getName() == null)
 			throw new ServiceException("The filename is empty");
 
 		if (containerName == null)
 			throw new ServiceException("The container name is empty");
 
+		String output =  null;
 		try {
 			List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
-			String containerId = containerUnits.stream().filter(v -> v.getName().equals(containerName)).findFirst()
-					.get().getId();
+			String containerId = containerUnits.stream().filter(v -> v.getName().equals(containerName)).findFirst().get().getId();
 
-			List<FileUnit> fileUnits = fileService.listByContainerIdAndPath(containerId,
-					dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom_scripts/");
-			String commandLine = fileUnits.stream().filter(v -> v.getName().equals(command.getName())).findFirst().get()
-					.getBreadcrump();
-			commandLine = commandLine + " "
-					+ command.getArguments().stream().map(v -> v + " ").collect(Collectors.joining());
+			String customScriptPathFiles = dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom_scripts/";
+			List<FileUnit> fileUnits = fileService.listByContainerIdAndPath(containerId,customScriptPathFiles);
+			String commandLine = fileUnits.stream().filter(v -> v.getName().equals(command.getName())).findFirst().get().getBreadcrump();
+			commandLine = commandLine + " " + command.getArguments().stream().map(v -> v + " ").collect(Collectors.joining());
 
-			dockerService.execCommand(containerName, commandLine);
+			// Warning : do not forget * at the end of the command
+			dockerService.execCommand(containerName, RemoteExecAction.CHMOD_PLUSX.getCommand() + " " + customScriptPathFiles + "*", true);
+
+			// Execute the raw commad through the chosen file with its arguments
+			output = dockerService.execCommand(containerName, commandLine);
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			StringBuilder msgError = new StringBuilder(128);
+			msgError.append(command);
+			msgError.append(",").append(containerName);
+			msgError.append(",").append(applicationName);
+			logger.error(msgError.toString(), e);
 		}
+		return output;
 	}
 
 	public Command fileUnitToCommand(FileUnit fileUnit, Integer number, List<String> names) {
-		Command command = new Command();
-		command.setName(fileUnit.getName());
-		command.setArgumentNumber(number);
-		command.setArguments(names);
+		Command command = new Command(fileUnit.getName(), number, names);
 		return command;
 	}
 }

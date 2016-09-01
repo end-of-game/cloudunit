@@ -18,7 +18,7 @@
 package fr.treeptik.cloudunit.exception;
 
 public class FatalDockerJSONException
-        extends DockerJSONException {
+        extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

@@ -14,20 +14,29 @@ public class Command {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public Integer getArgumentNumber() {
 		return argumentNumber;
+	}
+
+	public List<String> getArguments() {
+		return arguments;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setArgumentNumber(Integer argumentNumber) {
 		this.argumentNumber = argumentNumber;
 	}
 
-	public List<String> getArguments() {
-		return arguments;
+	public Command() {
+	}
+
+	public Command(String name, Integer argumentNumber, List<String> arguments) {
+		this.name = name;
+		this.argumentNumber = argumentNumber;
+		this.arguments = arguments;
 	}
 
 	public void setArguments(List<String> arguments) {

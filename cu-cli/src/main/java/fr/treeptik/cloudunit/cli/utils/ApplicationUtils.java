@@ -21,14 +21,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.model.EnvironmentVariable;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
@@ -678,17 +677,17 @@ public class ApplicationUtils {
 		}
 
 		try {
-
-			Map<String, String> parameters = new HashMap<>();
-			parameters.put("name", name);
-			parameters.put("argumentNumber", String.valueOf(arguments.split(",").length));
-			parameters.put("arguments", arguments.toString());
+            Command command = new Command();
+            command.setName(name);
+            command.setArguments(Arrays.asList(arguments.split(",")));
+            ObjectMapper objectMapper = new ObjectMapper();
+            String entity = objectMapper.writeValueAsString(command);
 			restUtils.sendPostCommand(
 					authentificationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/container/"
 							+ application.getServer().getName() + "/command/" + name + "/exec",
-					authentificationUtils.getMap(), parameters);
+					authentificationUtils.getMap(), entity);
 
-		} catch (ManagerResponseException e) {
+		} catch (ManagerResponseException | JsonProcessingException e) {
 			statusCommand.setExitStatut(1);
 			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
 		}
