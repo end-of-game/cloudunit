@@ -291,4 +291,14 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         Assert.assertTrue(result.contains(expectedResult));
     }
 
+    @Test
+    public void test70_shouldListContainers() {
+        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
+        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
+        cr = getShell().executeCommand("list-containers --name " + applicationName);
+        String result = cr.getResult().toString();
+        String expectedResult = "found";
+        Assert.assertTrue(result.contains(expectedResult));
+    }
+
 }

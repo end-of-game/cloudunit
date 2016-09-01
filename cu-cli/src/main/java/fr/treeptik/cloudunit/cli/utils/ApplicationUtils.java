@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.treeptik.cloudunit.model.EnvironmentVariable;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
@@ -617,6 +620,25 @@ public class ApplicationUtils {
 		statusCommand.setExitStatut(0);
 
 		return JsonConverter.getEnvironmentVariables(response).size() + " variables found!";
+	}
+
+	public String listContainers(String applicationName) {
+		String checkResponse = checkAndRejectIfError(applicationName);
+		if (checkResponse != null) {
+			return checkResponse;
+		}
+
+		List<String> containers = new ArrayList<>();
+		containers.add(getApplication().getServer().getName());
+
+		for (Module module : getApplication().getModules()) {
+			containers.add(module.getName());
+		}
+		MessageConverter.buildListContainers(containers);
+
+		statusCommand.setExitStatut(0);
+
+		return containers.size() + " containers found!";
 	}
 
 	public String listCommands(String containerName) {

@@ -422,4 +422,18 @@ public class MessageConverter {
 		}
 	}
 
+	public static void buildListContainers(List<String> containers) {
+        String[][] tab = new String[containers.size() + 1][1];
+        tab[0][0] = "CONTAINER NAME";
+
+        if (containers.size() == 0) {
+            logger.log(Level.INFO, "This application has not container");
+        } else {
+            for (int i = 0; i < containers.size(); i++) {
+                tab[i + 1][0] = containers.get(i);
+            }
+            printer.print(tab);
+        }
+    }
+
 }

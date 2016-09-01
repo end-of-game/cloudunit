@@ -137,4 +137,10 @@ public class ApplicationCommands implements CommandMarker {
             @CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName) {
         return applicationUtils.listAllEnvironmentVariables(applicationName);
     }
+
+    @CliCommand(value = "list-containers", help = "List all containers")
+	public String listContainers(
+			@CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName) {
+    	return applicationUtils.listContainers(applicationName);
+	}
 }
