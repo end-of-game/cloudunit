@@ -25,7 +25,7 @@
     <div class="content clearfix">
         <h3 class="title large">Add volume</h3>
 
-        <div class="group">      
+        <div class="group col-xs-12">      
             <input type="text"
                 class="input-effect col-xs-12" 
                 id="username"
@@ -33,12 +33,12 @@
                 required="">
             <span class="bar"></span>
             <label class="label-effect">Volume name</label>
+
+            <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right" ng-click="editVolume.addVolume()">Create volume</button>
         </div>
 
         <p class="hint error" data-ng-if="editVolume.errorVolumeCreate != ''" ng-bind="editVolume.errorVolumeCreate">
         </p>
-        
-        <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right" ng-click="editVolume.addVolume()">Create volume</button>
     </div>
 </div>
 
