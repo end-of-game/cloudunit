@@ -112,7 +112,7 @@
             dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by env.id"
             data-current-page="environment.currentPage">
             <td>
-              <span editable-text="env.key" e-name="key" e-form="rowform"  e-required>
+              <span  e-name="key" e-form="rowform"  e-required>
                 <span class="clipboard" id="key-{{env.id}}"
                   data-title="Copy to clipboard"
                   tooltip=""
@@ -120,7 +120,7 @@
               </span>
             </td>
             <td>
-              <span editable-text="env.value" e-name="value" e-form="rowform" e-required>
+              <span e-name="value" e-form="rowform" e-required>
                 <span class="clipboard" id="value-{{env.id}}"
                   data-title="Copy to clipboard"
                   tooltip=""

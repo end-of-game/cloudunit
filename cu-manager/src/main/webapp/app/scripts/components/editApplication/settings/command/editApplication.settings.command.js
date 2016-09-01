@@ -66,7 +66,28 @@
 
             var commandList = dir.query().$promise;
             commandList.then(function(response) {
+                var labelform;
+                var labelAction = [];
                 commandRun.commandList = response;
+
+                for(var i=0 ; i < commandRun.commandList.length ; i++) {
+                    commandRun.commandList[i].label = commandRun.commandList[i].name;
+                    labelform = commandRun.commandList[i].label;
+                    for(var i2=0 ; i2 < labelform.length ; i2++) {
+                        if(labelform[i2] === '_') {
+                            labelform = labelform.substring(i2, labelform.length);
+                            labelform = labelAction + labelform;
+                            break;
+                        }
+                        labelAction.push(labelform[i2].toUpperCase());
+                    }
+                    labelform = labelform.substring(0, labelform.length - 3);
+                    labelform = labelform.replace(/_/g, ' ');
+                    labelform = labelform.replace(/,/g, '');
+                    commandRun.commandList[i].label = labelform;
+
+                    console.log(labelform);
+                }
             });
         }
 

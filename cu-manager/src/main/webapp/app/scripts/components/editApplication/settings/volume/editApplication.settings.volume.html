@@ -78,10 +78,11 @@
             </button>
         </label>
 
-        <label for="" class="col-lg-12">
+        <div for="" class="col-lg-10">
+            <label for="path-form" class="label-effect"></label>
             Path
-            <input class="col-lg-12" type="text" text="" ng-model="volume.createLinkPath">
-        </label>
+            <input id="path-form" class="col-lg-12 input-effect" type="text" text="" ng-model="volume.createLinkPath">
+        </div>
 
         <p class="hint error" data-ng-if="volume.errorLinkCreate" ng-bind="editVolume.errorLinkCreate">
         </p>

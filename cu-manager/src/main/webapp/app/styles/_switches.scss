@@ -49,14 +49,14 @@
 }
 
 .checkbox label:before {
-  content: '6bb';
+  content: '\f6bb';
   /*unchecked*/
   opacity: 0.54;
 }
 
 .check.checkbox label:after {
   /*checked*/
-  content: '6d5';
+  content: '\f6d5';
   max-width: 0;
   /*transition*/
   -webkit-transition: all 0.2s;
@@ -67,17 +67,17 @@
 
 .check.radio label:before {
   /*unchecked*/
-  content: '10c';
+  content: '\f10c';
 }
 
 .check.radio input[type="radio"]:checked + label:before {
   /*checked*/
-  content: '192';
+  content: '\f192';
 }
 
 .check.radio input[type="radio"]:disabled + label:before {
   /*checked*/
-  content: '0c8';
+  content: '\f0c8';
 }
 
 .check.radio input[type="radio"]:disabled + label {

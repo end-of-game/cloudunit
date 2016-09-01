@@ -25,10 +25,15 @@
     <div class="content clearfix">
         <h3 class="title large">Add volume</h3>
 
-        <label class="col-xs-12">
-            Volume name<br>
-            <input class="col-xs-12" type="text" ng-model="editVolume.newVolumeName">
-        </label>
+        <div class="group">      
+            <input type="text"
+                class="input-effect col-xs-12" 
+                id="username"
+                data-ng-model="editVolume.newVolumeName"
+                required="">
+            <span class="bar"></span>
+            <label class="label-effect">Volume name</label>
+        </div>
 
         <p class="hint error" data-ng-if="editVolume.errorVolumeCreate != ''" ng-bind="editVolume.errorVolumeCreate">
         </p>

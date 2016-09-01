@@ -13,7 +13,7 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 <div class="tab-pane active vertical-spacing">
-  <div id="{{overview.app.name}}-server" class="clearfix">
+  <div id="{{overview.app.name}}-server" class="clearfix col-lg-6">
     <div class="card large application overview {{overview.app.status | lowercase}}">
       <div class="content">
         <div class="status">
@@ -37,7 +37,7 @@
             <div class="rect5"></div>
           </div>
         </div>
-        <div class="features col-lg-6">
+        <div class="features col-lg-12">
           <div class="readonly">
             <label for="creation-date">Creation date: </label>
             <input class="clipboard"
@@ -104,7 +104,7 @@
           </div>
 
         </div>
-        <div class="col-lg-6" ng-if="overview.app.env">
+        <div class="col-lg-12" ng-if="overview.app.env">
           <label>Environment variables :</label>
           <li class="label-like" ng-repeat="env in overview.app.env track by $index">
             <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">

@@ -130,7 +130,7 @@
 
 .volume-card.card .content,
 .environment-card.card .content {
-  min-height: 165px;
+  min-height: 235px;
 }
 
 .card.overview {
@@ -201,7 +201,7 @@
     border: 0;
   }
   .check.radio input[type="radio"] + label:before {
-    content: '111';
+    content: '\f111';
   }
 }
 

@@ -40,7 +40,7 @@
 
 <div class="card col-lg-3" ng-repeat="command in commandRun.commandList" ng-init="commandRun.forms[$index] = {};commandRun.currentIndex = $index;">
     <div class="content clearfix">
-        <h3 class="title large" ng-bind="command.name"></h3>
+        <h3 class="title large" ng-bind="command.label"></h3>
 
         <div ng-repeat="argument in command.arguments">
             <input placeholder="{{argument}}" ng-model="commandRun.forms[commandRun.currentIndex][$index]"/>                 

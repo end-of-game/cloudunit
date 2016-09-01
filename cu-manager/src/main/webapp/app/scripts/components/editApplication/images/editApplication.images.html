@@ -15,7 +15,7 @@
 
 <div class="tab-pane card large vertical-spacing">
   <div class="content clearfix" ng-if="modules.typeImage">
-    <h3 class="title large">Add {{ typeImage }} a module</h3>
+    <h3 class="title large">Add module <i>{{ modules.typeImage }}</i></h3>
 
     <div class="tile tile-sm module animate-module backcard" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}">
       <button
@@ -37,7 +37,7 @@
     </div>
 
     <div class="tile tile-sm module animate-module" data-ng-class="{disabled:image.isTemp}" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
-    data-ng-repeat="image in modules.moduleImages | filter:modules.typeImage:strict" style="animation-delay: .{{ $index * 150 }}s" ng-if="modules.typeImage">
+    data-ng-repeat="image in modules.moduleImages | filter:modules.typeImage:strict" style="animation-delay: .{{ $index * 300 }}s" ng-if="modules.typeImage">
       <button
         class="tile-content"
         ripple=""

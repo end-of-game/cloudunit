@@ -126,11 +126,31 @@
   animation: displayingCardList .5s 1 linear;
   animation-fill-mode: forwards;
   -wekkit-animation-fill-mode: forwards;
-  transform: translateX(2000px);
   opacity: 0 !important;
 
 }
 
+@-webkit-keyframes displayingCardList {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes displayingCardList {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/*
 @-webkit-keyframes displayingCardList {
   0%, {
     // -webkit-transform: scaleY(0.8)
@@ -159,3 +179,4 @@
 
   }
 }
+*/
