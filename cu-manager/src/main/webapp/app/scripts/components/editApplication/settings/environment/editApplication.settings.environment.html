@@ -47,21 +47,24 @@
           class="clearfix" novalidate=""
           data-ng-submit="environment.addEnv(environment.environmentVariableKey, environment.environmentVariableValue)">
       <div class="input-group-inline col-lg-5">
-        <label for="key">Key</label>
-        <input id="key"
-                name="key"
-                type="text"
-                data-ng-model="environment.environmentVariableKey">
+            <input type="text"
+              name="key"
+              class="input-effect col-xs-12" 
+              data-ng-model="environment.environmentVariableKey"
+              required="">
+          <span class="bar"></span>
+          <label class="label-effect">Key</label>
       </div>
       <div class="input-group-inline col-lg-5">
-        <label for="value">Value</label>
-        <input id="value"
-                name="value"
-                type="text"
-                data-ng-model="environment.environmentVariableValue"
-                ng-required="">
+            <input type="text"
+              name="key"
+              class="input-effect col-xs-12" 
+              data-ng-model="environment.environmentVariableValue"
+              required="">
+          <span class="bar"></span>
+          <label class="label-effect">Value</label>
       </div>
-      <div class="actions">
+      <div class="actions clearfix col-lg-12">
         <div class="secondary-actions pull-right">
           <button type="submit"
                   class="alias-btn button-effect primary pull-right"

@@ -80,12 +80,14 @@
           </div>
         </div>
         <div class="form-group" style="overflow: hidden;">
-          <div class="input-group stack col-lg-9">
-            <label>Add directory...</label>
-            <input type="text" id="add-directory" class="pull-left"
-                    data-ng-model="explorer.newDirectoryName"
-                     protectinput=""
-                    placeholder="Name">
+          <label>Add directory...</label>
+          <div class="input-group stack col-lg-9 align-margin">
+            <input type="text"
+                class="input-effect col-xs-12" 
+                data-ng-model="explorer.newDirectoryName"
+                required="">
+            <span class="bar"></span>
+            <label class="label-effect">Name</label>
 
           </div>
           <button class="button-effect primary pull-right"

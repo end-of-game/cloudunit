@@ -27,12 +27,13 @@
             data-ng-submit="monitoringApp.chooseQueue(monitoringApp.queueName)">
 
           <div class="input-group-inline col-lg-10">
-            <input id="queue-name"
-                  name="queueName"
-                  type="text"
-                  data-ng-model="monitoringApp.queueName"
-                  ng-required="true"
-                  placeholder="Queue Name"/>
+              <input type="text"
+              name="queueName"
+                class="input-effect col-xs-12" 
+                data-ng-model="monitoringApp.queueName"
+                ng-required="true">
+            <span class="bar"></span>
+            <label class="label-effect">Queue Name</label>
 
             <p class="hint error" data-ng-show="monitoringApp.errorMsg">{{monitoringApp.errorMsg}}</p>
           </div>

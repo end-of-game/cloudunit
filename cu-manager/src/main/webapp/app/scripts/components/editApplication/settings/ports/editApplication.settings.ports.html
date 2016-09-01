@@ -26,15 +26,15 @@
             data-ng-submit="ports.createPort(ports.application.name, ports.number, ports.myNature.value)">
 
         <div class="input-group-inline col-lg-5">
-          <input id="new-port"
-                 name="port"
-                 type="text"
-                 data-ng-model="ports.number"
-                 ng-required=""
-                 placeholder="Port number"/>
-          <p class="hint">Enter your port number</p>
+          <input type="text"
+              name="port"
+              class="input-effect col-xs-12" 
+              data-ng-model="ports.number"
+              required="">
+          <span class="bar"></span>
+          <label class="label-effect">Domain name</label>
         </div>
-        <div class="input-group-inline col-lg-5">
+        <div class="input-group-inline align-margin col-lg-5">
           <div class="dropdown" dropdown="">
             <a class="dropdown-toggle"
                dropdown-toggle=""

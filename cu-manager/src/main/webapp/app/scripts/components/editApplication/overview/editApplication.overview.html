@@ -103,10 +103,9 @@
             </a>
           </div>
 
-        </div>
-        <div class="col-lg-12" ng-if="overview.app.env">
+          <div class="readonly" ng-if="overview.app.env">
           <label>Environment variables :</label>
-          <li class="label-like" ng-repeat="env in overview.app.env track by $index">
+          <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.app.env track by $index">
             <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
               {{ env.key }}
             </span>
@@ -115,6 +114,7 @@
               {{ env.value }}
             </span>
           </li>
+        </div>
         </div>
       </div>
     </div>

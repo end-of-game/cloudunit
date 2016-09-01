@@ -31,7 +31,7 @@
                  data-ng-model="alias.application.location"
                  readonly>
         </div>
-        <div class="input-group-inline col-lg-5">
+        <!-- <div class="input-group-inline col-lg-5">
           <label for="new-alias">Domain name</label>
           <input id="new-alias"
                  name="alias"
@@ -40,7 +40,19 @@
                  ng-required=""
                  placeholder="mydomain.com">
           <span class="suffix-text"></span>
-          <p class="hint">Enter your custom domain name</p>
+          <p class="hint">Enter your custom domain name</p> -->
+
+        <div class="input-group-inline col-lg-5">      
+          <input type="text"
+              name="alias"
+              class="input-effect col-xs-12 marge-label" 
+              id="username"
+              data-ng-model="alias.domain"
+              required="">
+          <span class="bar"></span>
+          <label class="label-effect">Domain name</label>
+        </div>
+
         </div>
         <div class="actions">
           <div class="secondary-actions pull-right">

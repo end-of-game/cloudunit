@@ -42,8 +42,14 @@
     <div class="content clearfix">
         <h3 class="title large" ng-bind="command.label"></h3>
 
-        <div ng-repeat="argument in command.arguments">
-            <input placeholder="{{argument}}" ng-model="commandRun.forms[commandRun.currentIndex][$index]"/>                 
+        <div class="group col-xs-12" ng-repeat="argument in command.arguments"> 
+            <input type="text"
+                class="input-effect col-xs-12" 
+                id="username"
+                data-ng-model="commandRun.forms[commandRun.currentIndex][$index]"
+                required="">
+            <span class="bar"></span>
+            <label class="label-effect">{{argument}}</label>        
         </div>
 
         <button class="button primary raised pull-right" ng-click="commandRun.execCommand(commandRun.forms[$index], command.name)">Execute</button>

@@ -66,7 +66,7 @@
             </ul>
         </div>
 
-        <label for="" class="col-lg-2">
+        <label for="" class="col-lg-2 small-margin-bottom">
             Read only
             <button class="icon-button"
                 tooltip=""
@@ -78,10 +78,14 @@
             </button>
         </label>
 
-        <div for="" class="col-lg-10">
-            <label for="path-form" class="label-effect"></label>
-            Path
-            <input id="path-form" class="col-lg-12 input-effect" type="text" text="" ng-model="volume.createLinkPath">
+        <div class="col-lg-12">
+            <input type="text"
+              name="port"
+              class="input-effect col-xs-12" 
+              ng-model="volume.createLinkPath"
+              required="">
+            <span class="bar"></span>
+            <label class="label-effect">Path</label>
         </div>
 
         <p class="hint error" data-ng-if="volume.errorLinkCreate" ng-bind="editVolume.errorLinkCreate">

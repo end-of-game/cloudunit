@@ -40,11 +40,13 @@
           <p>{{snapshot.message}}</p>
         </div>
         <div class="form-group">
-          <div class="input-group stack">
-            <label>Snapshot Name</label>
-            <input type="text" id="snapshop-name"
-                   data-ng-model="snapshot.newSnapshot.name"
-                   placeholder="Name">
+          <div class="input-group stack small-margin-top">
+            <input type="text"
+                class="input-effect col-xs-12" 
+                data-ng-model="snapshot.newSnapshot.name"
+                required="">
+            <span class="bar"></span>
+            <label class="label-effect">Snapshot Name</label>
           </div>
 
           <!--<cu-tags read-only="snapshot.tagReadOnly"
