@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.FileUnit;
 import fr.treeptik.cloudunit.model.*;
@@ -397,6 +398,28 @@ public class MessageConverter {
 			builder.append("\t" + fileUnit.getName() + "\t");
 		}
 		logger.log(Level.INFO, builder.toString());
+	}
+
+	public static void buildListCommands(List<Command> commands) {
+		String[][] tab = new String[commands.size() + 1][3];
+		tab[0][0] = "CURRENT COMMAND";
+		tab[0][1] = "ARGUMENT NUMBER REQUIRED";
+		tab[0][2] = "ARGUMENTS";
+
+		if (commands.size() == 0) {
+			logger.log(Level.INFO, "This application has not custom command");
+		} else {
+			for (int i = 0; i < commands.size(); i++) {
+				tab[i + 1][0] = commands.get(i).getName();
+				tab[i + 1][1] = commands.get(i).getArgumentNumber().toString();
+				String arguments = "";
+				for(String argument : commands.get(i).getArguments())
+					arguments = arguments + argument + " ";
+				arguments = arguments.substring(0, arguments.length()-1);
+				tab[i + 1][2] = arguments;
+			}
+			printer.print(tab);
+		}
 	}
 
 }

@@ -618,4 +618,60 @@ public class ApplicationUtils {
 
 		return JsonConverter.getEnvironmentVariables(response).size() + " variables found!";
 	}
+
+	public String listCommands(String containerName) {
+		String response;
+
+		try {
+			response = restUtils.sendGetCommand(
+					authentificationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/container/"
+							+ application.getServer().getName() + "/command",
+					authentificationUtils.getMap()).get("body");
+
+
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
+
+		MessageConverter.buildListCommands(JsonConverter.getCommands(response));
+
+		statusCommand.setExitStatut(0);
+
+		return JsonConverter.getCommands(response).size() + " commands found!";
+	}
+
+	public String execCommand(String name, String containerName, String arguments) {
+		String response;
+
+		if(containerName == null)
+		{
+			if(getApplication() == null) {
+				statusCommand.setExitStatut(1);
+				return ANSIConstants.ANSI_RED
+						+ "No application is currently selected by the following command line : use <application name>"
+						+ ANSIConstants.ANSI_RESET;
+			}
+			containerName = getApplication().getServer().getName();
+		}
+
+		try {
+
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put("name", name);
+			parameters.put("argumentNumber", String.valueOf(arguments.split(",").length));
+			parameters.put("arguments", arguments.toString());
+			restUtils.sendPostCommand(
+					authentificationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/container/"
+							+ application.getServer().getName() + "/command/" + name + "/exec",
+					authentificationUtils.getMap(), parameters);
+
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
+		statusCommand.setExitStatut(0);
+
+		return "The command " + name + " has been executed";
+	}
 }

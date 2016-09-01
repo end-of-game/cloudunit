@@ -23,11 +23,9 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.treeptik.cloudunit.dto.ContainerUnit;
-import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.HttpErrorServer;
-import fr.treeptik.cloudunit.dto.LogUnit;
+import fr.treeptik.cloudunit.dto.*;
 import fr.treeptik.cloudunit.model.*;
+import org.omg.CORBA.Object;
 
 public class JsonConverter {
 
@@ -254,5 +252,17 @@ public class JsonConverter {
 			e.printStackTrace();
 		}
 		return volumes;
+	}
+
+	public static List<Command> getCommands(String response) {
+		List<Command> commands = new ArrayList<>();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			commands = mapper.readValue(response, new TypeReference<List<Command>>() {
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return commands;
 	}
 }
