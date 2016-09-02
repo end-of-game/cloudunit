@@ -83,8 +83,6 @@
         publishPort: true
       };
 
-      console.log("DD");
-      return 0;
 
       $http({
             method: 'PUT',

@@ -73,7 +73,8 @@
     </div>
 
     <div>
-        <switch id="enabled" name="enabled" ng-model="enabled" class="blue" ng-click="overview.changePort(module.id, module.name)">Change port</switch>
+        <label>Pulish port</label>
+        <switch id="enabled" name="enabled" ng-model="enabled" ng-change="overview.changePort(module.id, module.name)"></switch>
     </div>
   </div>
 
