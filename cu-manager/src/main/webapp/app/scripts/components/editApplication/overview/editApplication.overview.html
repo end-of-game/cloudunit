@@ -105,6 +105,15 @@
 
           <div class="readonly" ng-if="overview.app.env">
             <label>Environment variables :</label>
+            <button class="server-btn icon-button secondary power"
+                data-ng-click="overview.toggleServer(overview.app)"
+                ripple=""
+                tooltip=""
+                data-title="{{overview.app.status === 'STOP' ? 'Start' : 'Stop'}}"
+                data-placement="bottom"
+                click-once="">
+            <i class="icon-whhg off"></i>
+            button
             <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.app.env track by $index">
               <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
                 {{ env.key }}
