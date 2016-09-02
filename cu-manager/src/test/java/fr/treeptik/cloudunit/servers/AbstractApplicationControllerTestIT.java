@@ -204,15 +204,15 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Start the application : " + applicationName);
         String jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
         ResultActions resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
+        resultats.andExpect(status().isAccepted());
 
         logger.info("Stop the application : " + applicationName);
         resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
+        resultats.andExpect(status().isAccepted());
 
         logger.info("Start the application : " + applicationName);
         resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
+        resultats.andExpect(status().isAccepted());
     }
 
     @Test()

@@ -54,13 +54,17 @@ public class ServerListener {
 					}
 				};
 				String command = RemoteExecAction.CHECK_RUNNING.getCommand(kvStore);
-				String exec = dockerService.execCommand(containerName, command);
-				exec = exec.replaceAll(System.getProperty("line.separator"), "");
-				if ("0".equalsIgnoreCase(exec.trim())) {
-					started = true;
-					break;
+				try {
+					String exec = dockerService.execCommand(containerName, command);
+					exec = exec.replaceAll(System.getProperty("line.separator"), "");
+					if ("0".equalsIgnoreCase(exec.trim())) {
+						started = true;
+						break;
+					}
+					Thread.sleep(1000);
+				} catch (Exception e) {
+					logger.error(e.getMessage());
 				}
-				Thread.sleep(1000);
 			} while (counter++ < 30 && !started);
 			if (counter <= 30) {
 				server.setStatus(Status.START);

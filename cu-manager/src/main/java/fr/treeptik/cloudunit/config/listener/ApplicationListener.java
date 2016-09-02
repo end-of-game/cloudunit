@@ -16,6 +16,8 @@ import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.service.ApplicationService;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by nicolas on 03/08/2016.
@@ -29,7 +31,6 @@ public class ApplicationListener {
 	private ApplicationService applicationService;
 
 	@EventListener
-	@Async
 	public void onApplicationStart(ApplicationStartEvent applicationStartEvent) {
 		Application application = (Application) applicationStartEvent.getSource();
 		try {
@@ -52,7 +53,6 @@ public class ApplicationListener {
 	}
 
 	@EventListener
-	@Async
 	public void onApplicationStop(ApplicationStopEvent applicationStopEvent) {
 		Application application = (Application) applicationStopEvent.getSource();
 		try {

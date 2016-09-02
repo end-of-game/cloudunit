@@ -24,15 +24,15 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
@@ -83,6 +83,9 @@ public class ApplicationController implements Serializable {
 
 	@Inject
 	private DockerService dockerService;
+
+	@Inject
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * To verify if an application exists or not.
@@ -202,6 +205,7 @@ public class ApplicationController implements Serializable {
 	 * @throws InterruptedException
 	 */
 	@CloudUnitSecurable
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	@ResponseBody
 	@RequestMapping(value = "/start", method = RequestMethod.POST)
 	public JsonResponse startApplication(@RequestBody JsonInput input)
@@ -222,7 +226,13 @@ public class ApplicationController implements Serializable {
 		// We must be sure there is no running action before starting new one
 		authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
+		// set the application in pending mode
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
 		applicationService.start(application);
+
+		// wait for modules and servers starting
+		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
 		return new HttpOk();
 	}
@@ -237,6 +247,7 @@ public class ApplicationController implements Serializable {
 	 */
 	@CloudUnitSecurable
 	@ResponseBody
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	@RequestMapping(value = "/stop", method = RequestMethod.POST)
 	public JsonResponse stopApplication(@RequestBody JsonInput input) throws ServiceException, CheckException {
 
@@ -251,8 +262,13 @@ public class ApplicationController implements Serializable {
 		// We must be sure there is no running action before starting new one
 		authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
+		// set the application in pending mode
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
 		// stop the application
 		applicationService.stop(application);
+
+		applicationEventPublisher.publishEvent(new ApplicationStopEvent(application));
 
 		return new HttpOk();
 	}

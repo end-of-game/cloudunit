@@ -395,8 +395,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		try {
 			logger.debug("start : Methods parameters : " + application);
 
-			// set the application in pending mode
-			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 
 			application.getModules().stream().forEach(m -> {
 				try {
@@ -415,9 +413,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 			application.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, application));
 
-			// wait for modules and servers starting
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
-
 			logger.info("ApplicationService : Application successfully started ");
 		} catch (PersistenceException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
@@ -431,9 +426,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 		try {
 
-			// set the application in pending mode
-			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-
 			Server server = application.getServer();
 			server = serverService.stopServer(server);
 			application.getModules().stream().forEach(m -> {
@@ -443,7 +435,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					e.printStackTrace();
 				}
 			});
-			applicationEventPublisher.publishEvent(new ApplicationStopEvent(application));
+
 			logger.info("ApplicationService : Application successfully stopped ");
 		} catch (PersistenceException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
