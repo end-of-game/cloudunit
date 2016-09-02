@@ -110,20 +110,13 @@ public class ModuleController implements Serializable {
 	@ResponseBody
 	public JsonResponse publishPort(@PathVariable("id") Integer id, @RequestBody JsonInput input)
 			throws ServiceException, CheckException {
-		// validate the input
-		input.validateAddModule();
+		input.validatePublishPort();
 
 		String applicationName = input.getApplicationName();
-		String imageName = input.getImageName();
 
 		User user = authentificationUtils.getAuthentificatedUser();
 
-		try {
-			moduleService.publishPort(id, input.getPublishPort(), applicationName, user);
-			logger.info("--initModule " + imageName + " to " + applicationName + " successful--");
-		} catch (Exception e) {
-			logger.error(input.toString(), e);
-		}
+		moduleService.publishPort(id, input.getPublishPort(), applicationName, user);
 
 		return new HttpOk();
 	}

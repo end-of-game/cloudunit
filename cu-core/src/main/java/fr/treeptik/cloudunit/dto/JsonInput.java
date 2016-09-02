@@ -246,6 +246,10 @@ public class JsonInput implements Serializable {
 		CheckUtils.validateInput(imageName, "check.image.name");
 	}
 
+	public void validatePublishPort() throws CheckException {
+		CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
+	}
+
 	public void validateRemoveModule() throws CheckException {
 		CheckUtils.validateSyntaxInput(applicationName, "check.app.name");
 		CheckUtils.validateInputNotEmpty(moduleName, "check.module.name");

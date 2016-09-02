@@ -306,6 +306,7 @@ public class DockerServiceImpl implements DockerService {
 		}
 		volumes.add(containerName + ":/opt/cloudunit:rw");
 		logger.info("Volumes to add : " + volumes.toString());
+		System.out.println(module.getPublishPorts());
 		DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
 				envs, module.getPublishPorts());
 		dockerCloudUnitClient.createContainer(container);

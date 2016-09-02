@@ -74,7 +74,7 @@ public class Container implements Serializable {
 	 * for docker use
 	 */
 	@ElementCollection
-	protected Map<String, String> listPorts = new HashMap<>();
+	protected Map<String, List<Object>> listPorts = new HashMap<>();
 
 	protected String internalDNSName;
 
@@ -167,12 +167,12 @@ public class Container implements Serializable {
 		this.image = image;
 	}
 
-	public Map<String, String> getListPorts() {
+	public Map<String, List<Object>> getListPorts() {
 		return listPorts;
 	}
 
-	public void setListPorts(Map<String, String> listPorts) {
-		this.listPorts = listPorts;
+	public void setListPorts(Map<String, List<Object>> map) {
+		this.listPorts = map;
 	}
 
 	public String getSshPort() {

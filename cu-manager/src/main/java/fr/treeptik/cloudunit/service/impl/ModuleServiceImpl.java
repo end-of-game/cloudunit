@@ -214,9 +214,16 @@ public class ModuleServiceImpl implements ModuleService {
 	@Override
 	@Transactional(rollbackFor = ServiceException.class)
 	public Module publishPort(Integer id, Boolean publishPort, String applicationName, User user)
-			throws ServiceException {
+			throws ServiceException, CheckException {
 		Application application = applicationService.findByNameAndUser(user, applicationName);
 		Module module = findById(id);
+		if (application == null) {
+			throw new CheckException("Application not found");
+		}
+		if (module == null) {
+			throw new CheckException("Module not found");
+		}
+		module.setPublishPorts(publishPort);
 		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 		applicationEventPublisher.publishEvent(new ModuleStopEvent(module));
 		module = moduleDAO.saveAndFlush(module);
@@ -225,6 +232,7 @@ public class ModuleServiceImpl implements ModuleService {
 		dockerService.removeContainer(module.getName(), false);
 		dockerService.createModule(module.getName(), module, module.getImage().getPath(), user, envs, false,
 				new ArrayList<String>());
+		module = dockerService.startModule(module.getName(), module);
 		applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
 		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 		return module;

@@ -13,7 +13,6 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-
 package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
@@ -25,70 +24,65 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 
 @Component
-public class ContainerMapper
-    implements Serializable {
+public class ContainerMapper implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Assign docker's container properties to object handle by cloudunit
-     * (servers, modules)
-     *
-     * @param dockerContainer
-     * @param container
-     * @return
-     */
-    private Container mapDockerContainerToContainer(
-        DockerContainer dockerContainer, Container container) {
-        container.setContainerID(dockerContainer.getId().substring(0, 12));
-        container.setContainerFullID(dockerContainer.getId());
-        container.setName(dockerContainer.getName().substring(1));
-        container.setVolumes(dockerContainer.getVolumes());
-        container.setContainerIP(dockerContainer.getNetworkSettings().getIPAddress());
+	/**
+	 * Assign docker's container properties to object handle by cloudunit
+	 * (servers, modules)
+	 *
+	 * @param dockerContainer
+	 * @param container
+	 * @return
+	 */
+	private Container mapDockerContainerToContainer(DockerContainer dockerContainer, Container container) {
+		container.setContainerID(dockerContainer.getId().substring(0, 12));
+		container.setContainerFullID(dockerContainer.getId());
+		container.setName(dockerContainer.getName().substring(1));
+		container.setVolumes(dockerContainer.getVolumes());
+		container.setContainerIP(dockerContainer.getNetworkSettings().getIPAddress());
+		container.setListPorts(dockerContainer.getHostConfig().getPortBindings());
+		return container;
 
-        return container;
+	}
 
-    }
+	private Container mapDockerContainerToContainer(DockerContainer dockerContainer) {
 
-    private Container mapDockerContainerToContainer(
-        DockerContainer dockerContainer) {
+		Container container = new Container();
 
-        Container container = new Container();
+		this.mapDockerContainerToContainer(dockerContainer, container);
 
-        this.mapDockerContainerToContainer(dockerContainer, container);
+		return container;
 
-        return container;
+	}
 
-    }
+	public Server mapDockerContainerToServer(DockerContainer dockerContainer) {
 
-    public Server mapDockerContainerToServer(DockerContainer dockerContainer) {
+		Server server = (Server) mapDockerContainerToContainer(dockerContainer);
 
-        Server server = (Server) mapDockerContainerToContainer(dockerContainer);
+		return server;
 
-        return server;
+	}
 
-    }
+	public Server mapDockerContainerToServer(DockerContainer dockerContainer, Server server) {
 
-    public Server mapDockerContainerToServer(DockerContainer dockerContainer,
-                                             Server server) {
+		mapDockerContainerToContainer(dockerContainer, server);
 
-        mapDockerContainerToContainer(dockerContainer, server);
+		return server;
 
-        return server;
+	}
 
-    }
+	public Module mapDockerContainerToModule(DockerContainer dockerContainer) {
 
-    public Module mapDockerContainerToModule(DockerContainer dockerContainer) {
+		return (Module) mapDockerContainerToContainer(dockerContainer);
 
-        return (Module) mapDockerContainerToContainer(dockerContainer);
+	}
 
-    }
+	public Module mapDockerContainerToModule(DockerContainer dockerContainer, Module module) {
 
-    public Module mapDockerContainerToModule(DockerContainer dockerContainer,
-                                             Module module) {
+		return (Module) mapDockerContainerToContainer(dockerContainer, module);
 
-        return (Module) mapDockerContainerToContainer(dockerContainer, module);
-
-    }
+	}
 
 }
