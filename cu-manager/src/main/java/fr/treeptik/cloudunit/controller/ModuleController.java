@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonInput;
 import fr.treeptik.cloudunit.dto.JsonResponse;
@@ -66,6 +69,9 @@ public class ModuleController implements Serializable {
 
 	@Inject
 	private AuthentificationUtils authentificationUtils;
+
+	@Inject
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * Add a module to an existing application
@@ -115,9 +121,10 @@ public class ModuleController implements Serializable {
 		String applicationName = input.getApplicationName();
 
 		User user = authentificationUtils.getAuthentificatedUser();
-
+		Application application = applicationService.findByNameAndUser(user, applicationName);
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 		moduleService.publishPort(id, input.getPublishPort(), applicationName, user);
-
+		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 		return new HttpOk();
 	}
 
