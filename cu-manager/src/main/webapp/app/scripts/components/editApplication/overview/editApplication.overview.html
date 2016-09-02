@@ -104,17 +104,17 @@
           </div>
 
           <div class="readonly" ng-if="overview.app.env">
-          <label>Environment variables :</label>
-          <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.app.env track by $index">
-            <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
-              {{ env.key }}
-            </span>
-            =
-            <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
-              {{ env.value }}
-            </span>
-          </li>
-        </div>
+            <label>Environment variables :</label>
+            <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.app.env track by $index">
+              <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
+                {{ env.key }}
+              </span>
+              =
+              <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
+                {{ env.value }}
+              </span>
+            </li>
+          </div>
         </div>
       </div>
     </div>
@@ -132,9 +132,8 @@
     </div>
     <div id="{{module.name}}" class="service card medium {{module.status | lowercase}}"
          data-ng-repeat="module in overview.app.modules | filter: {image: {imageType: 'module'}} track by $index">
-
+         
       <ng-include src="overview.getTplUrl(module.image.name)"></ng-include>
-
     </div>
   </div>
 </div>

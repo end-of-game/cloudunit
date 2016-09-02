@@ -29,18 +29,21 @@
         'ApplicationService',
         'ModuleService',
         '$filter',
+        '$http',
+        '$stateParams',
         OverviewCtrl
       ],
       controllerAs: 'overview',
     };
   }
 
-  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter){
+  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter, $http, $stateParams){
 
     var vm = this;
 
     vm.toggleServer = toggleServer;
     vm.getTplUrl = getTplUrl;
+    vm.changePort = changePort;
     vm.removeModule = removeModule;
 
     $scope.$on ( 'application:ready', function ( e, data ) {
@@ -70,6 +73,28 @@
 
         vm.app.env = data;
       } )
+    }
+
+    function changePort(idModule, imageName) {
+      var urlUpdate = '/module/' + idModule;
+      var data = {
+        applicationName: $stateParams.name,
+        imageName: imageName,
+        publishPort: true
+      };
+
+      console.log("DD");
+      return 0;
+
+      $http({
+            method: 'PUT',
+            url: urlUpdate,
+            data: data
+        }).then(function successCallback(response) {
+            console.log(response);
+        }, function errorCallback(response) {
+            console.log(response);
+        }); 
     }
 
     function toggleServer(application) {

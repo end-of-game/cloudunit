@@ -60,6 +60,13 @@
       };
     }
 
+    vm.$onInit = function () {
+      setTimeout(function() {
+        document.getElementById('password').focus();
+        document.getElementById('password').blur();
+      }, 100);
+    }
+
     function check(username, password) {
 
       return UserService.check(username, password)
