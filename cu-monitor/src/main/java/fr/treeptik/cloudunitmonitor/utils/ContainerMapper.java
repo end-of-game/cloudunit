@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunitmonitor.docker.model.DockerContainer;
 
-
 @Component
 public class ContainerMapper implements Serializable {
 
@@ -23,8 +22,7 @@ public class ContainerMapper implements Serializable {
 	 * @param container
 	 * @return
 	 */
-	private Container mapDockerContainerToContainer(
-			DockerContainer dockerContainer, Container container) {
+	private Container mapDockerContainerToContainer(DockerContainer dockerContainer, Container container) {
 
 		container.setContainerID(dockerContainer.getId().substring(0, 12));
 		container.setName(dockerContainer.getName());
@@ -38,8 +36,6 @@ public class ContainerMapper implements Serializable {
 		container.setSshPort(dockerContainer.getPorts().get("22/tcp"));
 		dockerContainer.getPorts().remove("22/tcp");
 
-		container.setListPorts(dockerContainer.getPorts());
-
 		container.setVolumes(dockerContainer.getVolumes());
 		container.setVolumesFrom(dockerContainer.getVolumesFrom());
 
@@ -47,8 +43,7 @@ public class ContainerMapper implements Serializable {
 
 	}
 
-	private Container mapDockerContainerToContainer(
-			DockerContainer dockerContainer) {
+	private Container mapDockerContainerToContainer(DockerContainer dockerContainer) {
 
 		Container container = new Container();
 
@@ -66,8 +61,7 @@ public class ContainerMapper implements Serializable {
 
 	}
 
-	public Server mapDockerContainerToServer(DockerContainer dockerContainer,
-			Server server) {
+	public Server mapDockerContainerToServer(DockerContainer dockerContainer, Server server) {
 
 		mapDockerContainerToContainer(dockerContainer, server);
 
@@ -81,8 +75,7 @@ public class ContainerMapper implements Serializable {
 
 	}
 
-	public Module mapDockerContainerToModule(DockerContainer dockerContainer,
-			Module module) {
+	public Module mapDockerContainerToModule(DockerContainer dockerContainer, Module module) {
 
 		return (Module) mapDockerContainerToContainer(dockerContainer, module);
 

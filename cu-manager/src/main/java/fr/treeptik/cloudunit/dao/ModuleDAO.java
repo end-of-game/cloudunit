@@ -28,7 +28,6 @@ public interface ModuleDAO
 
     @Query("Select m from Module m " +
         "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
         "left join fetch m.image " +
         "where m.containerID=:containerID")
     Module findByContainerID(@Param("containerID") String id)
@@ -36,7 +35,6 @@ public interface ModuleDAO
 
     @Query("Select m from Module m " +
         "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
         "left join fetch m.image " +
         "where m.name=:name ")
     Module findByName(@Param("name") String name)
@@ -45,7 +43,6 @@ public interface ModuleDAO
     @Query("Select m " +
         "from Module m " +
         "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
         "left join fetch m.image " +
         "where m.application.name=:applicationName " +
         "and m.application.user.id=:userId " +
@@ -58,7 +55,6 @@ public interface ModuleDAO
 
     @Query("Select m from Module m " +
         "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
         "left join fetch m.image " +
         "where m.application.name=:applicationName " +
         "and m.application.cuInstanceName=:cuInstanceName")

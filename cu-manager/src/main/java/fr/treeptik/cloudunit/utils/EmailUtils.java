@@ -235,8 +235,8 @@ public class EmailUtils {
 
             if (module.getName().contains("mysql")) {
                 mapVariables.put("mysqlDatabase", moduleInfos.get("database"));
-                mapVariables.put("mysqlPort",
-                    module.getListPorts().get("mysqlPort"));
+//                mapVariables.put("mysqlPort",
+//                    module.getListPorts().get("mysqlPort"));
                 mapVariables.put("mysqlUser", moduleInfos.get("username"));
                 mapVariables.put("mysqlPassword", moduleInfos.get("password"));
                 mapVariables
@@ -247,7 +247,7 @@ public class EmailUtils {
             } else if (module.getName().contains("postgres") || module.getName().contains("postgis")) {
                 mapVariables.put("pgDatabase", moduleInfos.get("database"));
                 mapVariables.put("pgAlias", moduleInfos.get("linkAlias"));
-                mapVariables.put("pgPort", module.getListPorts().get("pgPort"));
+//                mapVariables.put("pgPort", module.getListPorts().get("pgPort"));
                 mapVariables.put("pgUser", moduleInfos.get("username"));
                 mapVariables.put("pgPassword", moduleInfos.get("password"));
 
@@ -259,8 +259,8 @@ public class EmailUtils {
             } else if (module.getName().contains("mongo")) {
                 mapVariables.put("mongoDatabase", moduleInfos.get("database"));
                 mapVariables.put("mongoAlias", moduleInfos.get("linkAlias"));
-                mapVariables.put("mongoPort",
-                    module.getListPorts().get("mongoPort"));
+//                mapVariables.put("mongoPort",
+//                    module.getListPorts().get("mongoPort"));
                 mapVariables.put("mongoUser", moduleInfos.get("username"));
                 mapVariables.put("mongoPassword", moduleInfos.get("password"));
                 mapVariables
@@ -270,8 +270,8 @@ public class EmailUtils {
             } else if (module.getName().contains("oracle-xe")) {
                 mapVariables.put("oracleDatabase", moduleInfos.get("database"));
                 mapVariables.put("oracleIP", module.getContainerIP());
-                mapVariables.put("oraclePort",
-                    module.getListPorts().get("oraclePort"));
+				// mapVariables.put("oraclePort",
+				// module.getListPorts().get("oraclePort"));
                 mapVariables.put("oracleUser", moduleInfos.get("username"));
                 mapVariables.put("oraclePassword", moduleInfos.get("password"));
                 template = configuration

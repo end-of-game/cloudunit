@@ -42,7 +42,6 @@ public class ContainerMapper implements Serializable {
 		container.setName(dockerContainer.getName().substring(1));
 		container.setVolumes(dockerContainer.getVolumes());
 		container.setContainerIP(dockerContainer.getNetworkSettings().getIPAddress());
-		container.setListPorts(dockerContainer.getHostConfig().getPortBindings());
 		return container;
 
 	}

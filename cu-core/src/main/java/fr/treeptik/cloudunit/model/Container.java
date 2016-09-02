@@ -15,11 +15,9 @@ package fr.treeptik.cloudunit.model;/*
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -69,12 +67,6 @@ public class Container implements Serializable {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	protected Image image;
-
-	/**
-	 * for docker use
-	 */
-	@ElementCollection
-	protected Map<String, List<Object>> listPorts = new HashMap<>();
 
 	protected String internalDNSName;
 
@@ -165,14 +157,6 @@ public class Container implements Serializable {
 
 	public void setImage(Image image) {
 		this.image = image;
-	}
-
-	public Map<String, List<Object>> getListPorts() {
-		return listPorts;
-	}
-
-	public void setListPorts(Map<String, List<Object>> map) {
-		this.listPorts = map;
 	}
 
 	public String getSshPort() {

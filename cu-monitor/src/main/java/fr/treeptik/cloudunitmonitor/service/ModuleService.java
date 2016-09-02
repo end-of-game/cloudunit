@@ -63,11 +63,6 @@ public class ModuleService {
 			if (module.getImage().getImageType().equals("module")) {
 				dockerContainer.setVolumesFrom(module.getVolumesFrom());
 			}
-			if (module.getImage().getName().contains("git")) {
-				dockerContainer.setPortBindings("22/tcp", "0.0.0.0", module.getSshPort());
-				dockerContainer.setPortBindings("80/tcp", "0.0.0.0", module.getListPorts().get("80/tcp"));
-
-			}
 
 			DockerContainer.start(dockerContainer, application.getManagerIp());
 
