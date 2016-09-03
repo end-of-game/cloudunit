@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -240,6 +241,8 @@ public class DockerServiceImpl implements DockerService {
 					.filter(e -> e.startsWith(variable)).map(s -> s.substring(s.indexOf("=") + 1)).findFirst();
 			logger.info("VARIABLE=" + value);
 			return (value.orElseThrow(() -> new ServiceException(variable + " is missing into DOCKERFILE.")));
+		} catch (ContainerNotFoundException e) {
+			return null;
 		} catch (Exception e) {
 			StringBuilder msgError = new StringBuilder();
 			msgError.append("containerId=").append(containerName);

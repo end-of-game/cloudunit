@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
@@ -143,9 +144,9 @@ public class ApplicationController implements Serializable {
 		authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
 		// GITLAB + JENKINS
-		gitlabService.createProject(input.getApplicationName());
-		String repository = gitlabService.getGitRepository(input.getApplicationName());
-		jenkinsService.createProject(input.getApplicationName(), repository);
+		//gitlabService.createProject(input.getApplicationName());
+		//String repository = gitlabService.getGitRepository(input.getApplicationName());
+		//jenkinsService.createProject(input.getApplicationName(), repository);
 
 		// CREATE AN APP
 		applicationService.create(input.getApplicationName(), input.getLogin(), input.getServerName(), null, null);
@@ -297,7 +298,8 @@ public class ApplicationController implements Serializable {
 
 		try {
 			// Application busy
-			applicationService.setStatus(application, Status.PENDING);
+			// set the application in pending mode
+			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 
 			logger.info("delete application :" + applicationName);
 
@@ -306,8 +308,8 @@ public class ApplicationController implements Serializable {
 			// gitlabService.listBranches(applicationName);
 			// gitlabService.deleteProject(applicationName);
 		} catch (ServiceException e) {
-			logger.error(application.toString(), e);
-			applicationService.setStatus(application, Status.FAIL);
+			// set the application in pending mode
+			applicationEventPublisher.publishEvent(new ApplicationFailEvent(application));
 		}
 
 		logger.info("Application " + applicationName + " is deleted.");
@@ -566,7 +568,6 @@ public class ApplicationController implements Serializable {
 	 * Display env variables for a container
 	 *
 	 * @param applicationName
-	 * @param containerId
 	 * @return
 	 * @throws ServiceException
 	 * @throws CheckException
