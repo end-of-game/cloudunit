@@ -300,4 +300,61 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats.andExpect(status().isOk());
     }
 
+    @Test(timeout = 30000)
+    public void test051_ChangeFailWithXmsJvmOptionsApplicationTest()
+            throws Exception {
+
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+
+        ResultActions resultats =
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        logger.info("Change JVM With Xms : not allowed");
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Xms=512m\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+        resultats =
+                mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().is4xxClientError());
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+    }
+
+    @Test()
+    public void test050_OpenAPort()
+            throws Exception {
+        logger.info("Open custom ports !");
+
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+
+        ResultActions resultats =
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"6115\",\"alias\":\"access6115\"}";
+        resultats =
+                this.mockMvc.perform(post("/server/ports/open").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        logger.info("Close custom ports !");
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"portToOpen\":\"6115\",\"alias\":\"access6115\"}";
+        resultats =
+                this.mockMvc.perform(post("/server/ports/close").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+    }
+
 }
