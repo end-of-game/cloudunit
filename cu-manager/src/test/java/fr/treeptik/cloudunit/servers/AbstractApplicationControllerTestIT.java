@@ -89,7 +89,7 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         logger.info("setup");
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(springSecurityFilterChain).build();
@@ -115,31 +115,10 @@ public abstract class AbstractApplicationControllerTestIT {
     @After
     public void teardown() throws Exception {
         logger.info("teardown");
-
-        ResultActions resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
         SecurityContextHolder.clearContext();
         session.invalidate();
     }
 
-    @Before
-    public void createApplication() {
-        try {
-            final String jsonString =
-                    "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-            ResultActions resultats =
-                    mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-            resultats.andExpect(status().isOk());
-
-            resultats =
-                    mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-            resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
-        } catch(Exception e) {
-            logger.error(e.getLocalizedMessage());
-        }
-    }
     /**
      * We cannot create an application with an empty name.
      *
@@ -174,11 +153,11 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
 
-    @Test(timeout = 30000)
+    @Test
     public void test013_CreateAccentNameApplication()
             throws Exception {
 
-        String accentName = "àéèîôù";
+        String accentName = "aeeioù";
         String deAccentName = "aeeiou";
 
         logger.info("**************************************");
@@ -187,7 +166,8 @@ public abstract class AbstractApplicationControllerTestIT {
 
         final String jsonString = "{\"applicationName\":\"" + accentName + "\", \"serverName\":\"" + release + "\"}";
         ResultActions resultats =
-                this.mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+                this.mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString));
         resultats.andExpect(status().isOk());
 
         logger.info("**************************************");
@@ -201,9 +181,17 @@ public abstract class AbstractApplicationControllerTestIT {
     @Test()
     public void test031_StartStopStartApplicationTest()
             throws Exception {
+
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+
+        ResultActions resultats =
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
         logger.info("Start the application : " + applicationName);
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isAccepted());
 
         logger.info("Stop the application : " + applicationName);
@@ -213,78 +201,145 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Start the application : " + applicationName);
         resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isAccepted());
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
     }
+
 
     @Test()
     public void test040_ChangeJvmMemorySizeApplicationTest()
-        throws Exception {
-        logger.info("Change JVM Memory !");
-        final String jsonString =
-            "{\"applicationName\":\"" + applicationName
-                + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\",\"location\":\"webui\"}";
+            throws Exception {
+
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+
         ResultActions resultats =
-            this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        logger.info("Change JVM Memory !");
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"jvmMemory\":\"1024\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\",\"location\":\"webui\"}";
+        resultats =
+                this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        resultats =
+                mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(jsonPath("$.server.jvmMemory").value(1024));
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
     }
 
     @Test(timeout = 30000)
     public void test041_ChangeInvalidJvmMemorySizeApplicationTest()
-        throws Exception {
-        logger.info("Change JVM Memory size with an incorrect value : number not allowed");
+            throws Exception {
         String jsonString =
-            "{\"applicationName\":\"" + applicationName
-                + "\",\"jvmMemory\":\"666\",\"jvmOptions\":\"\",\"jvmRelease\":\"\"}";
+                "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+
         ResultActions resultats =
-            mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+
+        logger.info("Change JVM Memory size with an incorrect value : number not allowed");
+         jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"jvmMemory\":\"666\",\"jvmOptions\":\"\",\"jvmRelease\":\"\"}";
+        resultats =
+                mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
 
         logger.info("Change JVM Memory size with an empty value");
         jsonString =
-            "{\"applicationName\":\"" + applicationName
-                + "\",\"jvmMemory\":\"\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"jvmMemory\":\"\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\"}";
         resultats =
-            mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+                mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
     }
 
     @Test(timeout = 60000)
     public void test050_ChangeJvmOptionsApplicationTest()
-        throws Exception {
+            throws Exception {
+
         logger.info("Change JVM Options !");
-        final String jsonString =
-            "{\"applicationName\":\"" + applicationName
-                + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+
         ResultActions resultats =
-            mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                       + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+        resultats =
+                mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
         resultats =
-            mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(jsonPath("$.servers[0].jvmMemory").value(512)).andExpect(jsonPath(
-            "$.servers[0].jvmRelease").value("jdk1.8.0_25")).andExpect(jsonPath(
-            "$.servers[0].jvmOptions").value("-Dkey1=value1"));
+                mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(jsonPath("$.server.jvmMemory").value(512)).andExpect(jsonPath(
+                "$.server.jvmRelease").value("jdk1.8.0_25")).andExpect(jsonPath(
+                "$.server.jvmOptions").value("-Dkey1=value1"));
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
     }
 
     @Test(timeout = 30000)
     public void test051_ChangeFailWithXmsJvmOptionsApplicationTest()
-        throws Exception {
-        logger.info("Change JVM With Xms : not allowed");
-        final String jsonString =
-            "{\"applicationName\":\"" + applicationName
-                + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Xms=512m\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+            throws Exception {
+
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+
         ResultActions resultats =
-            mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        logger.info("Change JVM With Xms : not allowed");
+        jsonString =
+                "{\"applicationName\":\"" + applicationName
+                        + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Xms=512m\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+        resultats =
+                mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
     }
 
     @Test()
     public void test050_OpenAPort()
             throws Exception {
         logger.info("Open custom ports !");
+
         String jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
+
+        ResultActions resultats =
+                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        jsonString =
                 "{\"applicationName\":\"" + applicationName
                         + "\",\"portToOpen\":\"6115\",\"alias\":\"access6115\"}";
-        ResultActions resultats =
+        resultats =
                 this.mockMvc.perform(post("/server/ports/open").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
@@ -295,18 +350,11 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats =
                 this.mockMvc.perform(post("/server/ports/close").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
+
+        resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
     }
 
-   /* @Test()
-    public void test060_testJolokiaLibTest() throws Exception {
-        logger.info("Testing jolokia war the application : " + applicationName);
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/jolokia";
-        String contentPage = getUrlContentPage(urlToCall);
-        int counter = 0;
-        while ((contentPage.isEmpty() ||contentPage.contains("Error 502 - Application Not Responding") || (contentPage.contains("404"))  && counter++ < TestUtils.NB_ITERATION_MAX)) {
-            contentPage = getUrlContentPage(urlToCall);
-            Thread.sleep(1000);
-        }
-        Assert.assertTrue(contentPage.contains("\"status\":200"));
-    }*/
 }
