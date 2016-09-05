@@ -104,25 +104,25 @@
           </div>
 
           <div class="readonly" ng-if="overview.app.env">
-            <label>Environment variables :</label>
-            <button class="server-btn icon-button secondary power"
-                data-ng-click="overview.toggleServer(overview.app)"
-                ripple=""
-                tooltip=""
-                data-title="{{overview.app.status === 'STOP' ? 'Start' : 'Stop'}}"
-                data-placement="bottom"
-                click-once="">
-            <i class="icon-whhg off"></i>
-            button
-            <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.app.env track by $index">
-              <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
-                {{ env.key }}
-              </span>
-              =
-              <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
-                {{ env.value }}
-              </span>
-            </li>
+            <label>
+              <button class="server-btn icon-button secondary power"
+                  data-ng-click="colapseOverview=!colapseOverview;"
+                  tooltip="">
+              <i class="icon-whhg" ng-class="{'minus-sign': !colapseOverview, 'plus-sign': colapseOverview}"></i>
+              </button>
+              Environment variables ({{ overview.app.env.length }}):
+            </label>
+            <div class="colapse-reduct" ng-class="{'colapse-on' : colapseOverview}">
+              <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.app.env track by $index">
+                <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
+                  {{ env.key }}
+                </span>
+                =
+                <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
+                  {{ env.value }}
+                </span>
+              </li>
+            </div>
           </div>
         </div>
       </div>
@@ -134,14 +134,13 @@
         <div class="no-data" ng-if="!snapshot.snapshots.length">
           <h3 class="title">No modules added</h3>
 
-          <p>Add a module from the <a ng-href="#editApplication/{{overview.app.name}}/addModule">add module</a>
+          <p>Add a module from the <a ui-sref="editApplication.addModule({ typeImage: '' })">add module</a>
             panel</p>
         </div>
       </div>
     </div>
     <div id="{{module.name}}" class="service card medium {{module.status | lowercase}}"
          data-ng-repeat="module in overview.app.modules | filter: {image: {imageType: 'module'}} track by $index">
-         
       <ng-include src="overview.getTplUrl(module.image.name)"></ng-include>
     </div>
   </div>

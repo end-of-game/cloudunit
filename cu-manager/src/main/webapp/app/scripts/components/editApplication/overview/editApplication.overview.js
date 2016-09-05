@@ -45,6 +45,7 @@
     vm.getTplUrl = getTplUrl;
     vm.changePort = changePort;
     vm.removeModule = removeModule;
+    vm.listEnvModule = [];
 
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
@@ -57,11 +58,24 @@
 
     vm.$onInit = function() {
       if(vm.app) {
-      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name)
-        .then ( function (data) {
+        ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
           console.log(data);
           vm.app.env = data;
-        } )
+
+          angular.forEach(vm.app.modules, function(value, key) {
+              var urlLink = 'http://localhost:9000/application/' + $stateParams.name +'/container/' + value.name + '/env'
+              $http({
+                method: 'GET',
+                url: urlLink
+              }).then(function successCallback(response) {
+                  console.log(value);
+                  vm.listEnvModule[value.id] = response.data;
+              }, function errorCallback(response) {
+                  console.log(response);
+              });
+          });
+
+        });
       }
     }
 
@@ -70,8 +84,8 @@
     function refreshEnvVar () {
       ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name)
       .then ( function (data) {
-
         vm.app.env = data;
+
       } )
     }
 
@@ -80,11 +94,22 @@
       var data = {
         applicationName: $stateParams.name,
         imageName: imageName,
-        publishPort: true
+        publishPort: false
       };
 
 
       $http({
+            method: 'GET',
+            url: urlUpdate
+        }).then(function successCallback(response) {
+            console.log(response);
+        }, function errorCallback(response) {
+            console.log(response);
+        }); 
+
+        return 0;
+
+        $http({
             method: 'PUT',
             url: urlUpdate,
             data: data
