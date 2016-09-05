@@ -46,6 +46,7 @@
       'ui.codemirror',
       'ngclipboard',
       'xeditable',
+      'uiSwitch',
 
       //shared modules
       'webuiApp.filters',

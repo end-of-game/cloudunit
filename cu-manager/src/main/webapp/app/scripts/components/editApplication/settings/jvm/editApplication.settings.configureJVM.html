@@ -82,6 +82,11 @@
             <span>Save</span>
           </button>
         </div>
+
+        <div>
+        <label>Debug JMX</label>
+          <switch id="enabled" name="enabled" ng-model="enabled" ng-change="overview.changePort(module.id, module.name)"></switch>
+        </div>
       </div>
 
 

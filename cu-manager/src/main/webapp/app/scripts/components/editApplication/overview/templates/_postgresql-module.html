@@ -71,6 +71,33 @@
              oneclickselect="">
       <a href="" class="showPass-btn button-link" reveal-password=""><i class="icon-whhg eye-view"></i></a>
     </div>
+
+    <div>
+        <label>Publish port</label>
+        <switch id="enabled" name="enabled" ng-model="enabled" ng-change="overview.changePort(module.id, module.name)"></switch>
+    </div>
+  </div>
+
+  <div>
+      <label>
+        <button class="server-btn icon-button secondary power"
+            data-ng-click="overview.colapseModuleId = module.id;"
+            tooltip="">
+        <i class="icon-whhg" ng-class="{'minus-sign': overview.colapseModuleId == module.id, 'plus-sign': overview.colapseModuleId != module.id}"></i>
+        </button>
+        Environment variables ({{ overview.listEnvModule[module.id].length }}):
+      </label>
+      <div class="colapse-reduct" ng-class="{'colapse-on' : overview.colapseModuleId != module.id}">
+        <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.listEnvModule[module.id] track by $index">
+          <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
+            {{ env.key }}
+          </span>
+          =
+          <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
+            {{ env.value }}
+          </span>
+        </li>
+      </div>
   </div>
 
   <div class="action">

@@ -29,19 +29,24 @@
         'ApplicationService',
         'ModuleService',
         '$filter',
+        '$http',
+        '$stateParams',
         OverviewCtrl
       ],
       controllerAs: 'overview',
     };
   }
 
-  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter){
+  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter, $http, $stateParams){
 
     var vm = this;
 
     vm.toggleServer = toggleServer;
     vm.getTplUrl = getTplUrl;
+    vm.changePort = changePort;
     vm.removeModule = removeModule;
+    vm.listEnvModule = [];
+    vm.colapseModuleId;
 
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
@@ -54,11 +59,26 @@
 
     vm.$onInit = function() {
       if(vm.app) {
-      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name)
-        .then ( function (data) {
+        ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
           console.log(data);
           vm.app.env = data;
-        } )
+
+          angular.forEach(vm.app.modules, function(value, key) {
+              var urlLink = 'http://localhost:9000/application/' + $stateParams.name +'/container/' + value.name + '/env'
+              $http({
+                method: 'GET',
+                url: urlLink
+              }).then(function successCallback(response) {
+                  if (key === 0) {
+                    vm.colapseModuleId = value.id;
+                  }
+                  vm.listEnvModule[value.id] = response.data;
+              }, function errorCallback(response) {
+                  console.log(response);
+              });
+          });
+
+        });
       }
     }
 
@@ -67,9 +87,40 @@
     function refreshEnvVar () {
       ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name)
       .then ( function (data) {
-
         vm.app.env = data;
+
       } )
+    }
+
+    function changePort(idModule, imageName) {
+      var urlUpdate = '/module/' + idModule;
+      var data = {
+        applicationName: $stateParams.name,
+        imageName: imageName,
+        publishPort: false
+      };
+
+
+      $http({
+            method: 'GET',
+            url: urlUpdate
+        }).then(function successCallback(response) {
+            console.log(response);
+        }, function errorCallback(response) {
+            console.log(response);
+        }); 
+
+        return 0;
+
+        $http({
+            method: 'PUT',
+            url: urlUpdate,
+            data: data
+        }).then(function successCallback(response) {
+            console.log(response);
+        }, function errorCallback(response) {
+            console.log(response);
+        }); 
     }
 
     function toggleServer(application) {
