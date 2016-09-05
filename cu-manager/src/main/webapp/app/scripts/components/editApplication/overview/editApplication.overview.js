@@ -46,6 +46,7 @@
     vm.changePort = changePort;
     vm.removeModule = removeModule;
     vm.listEnvModule = [];
+    vm.colapseModuleId;
 
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
@@ -68,7 +69,9 @@
                 method: 'GET',
                 url: urlLink
               }).then(function successCallback(response) {
-                  console.log(value);
+                  if (key === 0) {
+                    vm.colapseModuleId = value.id;
+                  }
                   vm.listEnvModule[value.id] = response.data;
               }, function errorCallback(response) {
                   console.log(response);
