@@ -10,6 +10,8 @@ services:
 
   mysql:
     image: mysql:5.7.4
+    networks:
+        - back
     ports:
       - "3306:3306"
     environment:
@@ -19,11 +21,12 @@ services:
       - /var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-    networks:
-      - back
 
   tomcat:
     image: cloudunit/manager
+    networks:
+        - front
+        - manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
@@ -34,12 +37,12 @@ services:
       - CU_SUB_DOMAIN
       - CATALINA_OPTS="-Dspring.profiles.active=production"
       - MYSQL_ROOT_PASSWORD=nausicaa
-  networks:
-      - back
-      - app
 
   dnsdock:
     image: tonistiigi/dnsdock:v1.10.0
+    networks:
+        - front
+        - back
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - /etc/localtime:/etc/localtime:ro
@@ -47,12 +50,11 @@ services:
     ports:
        - "172.17.42.1:53:53/udp"
     command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
-    networks:
-      - front
-      - manager
 
   hipache:
     image: tutum/hipache:0.3.1
+    networks:
+        - front
     ports:
         - "80:80"
     links:
@@ -60,20 +62,21 @@ services:
     volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
-    networks:
-      - front
 
   redis:
     image: redis:3.0.1
+    networks:
+        - front
+        - manager
     command: redis-server --appendonly yes
     volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
-    networks:
-      - manager
 
 networks:
   front:
+    driver: bridge
   manager:
+    driver: bridge
   back:
-
+    driver: bridge
