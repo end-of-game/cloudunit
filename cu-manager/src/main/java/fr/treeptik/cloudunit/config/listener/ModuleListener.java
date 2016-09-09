@@ -31,7 +31,6 @@ public class ModuleListener {
 	ModuleService moduleService;
 
 	@EventListener
-	@Async
 	public void onModuleStart(ModuleStartEvent moduleStartEvent) {
 		Module module = (Module) moduleStartEvent.getSource();
 		try {

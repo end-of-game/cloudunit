@@ -74,13 +74,9 @@ public class DockerServiceImpl implements DockerService {
 	@Override
 	public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
 			boolean createMainVolume, List<String> volumes) throws DockerJSONException {
-		String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
 		List<String> volumesFrom = Arrays.asList("java");
 		if (volumes == null) {
 			volumes = new ArrayList<>();
-		}
-		if (sharedDir != null) {
-			volumes.add(sharedDir + ":/opt/cloudunit/shared:rw");
 		}
 		if (createMainVolume) {
 			dockerCloudUnitClient.createVolume(containerName, "runtime");

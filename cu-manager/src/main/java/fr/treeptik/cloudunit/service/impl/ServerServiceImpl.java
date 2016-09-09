@@ -231,6 +231,7 @@ public class ServerServiceImpl implements ServerService {
 			};
 			dockerService.execCommand(server.getName(), RemoteExecAction.ADD_USER.getCommand(kvStore));
 		} catch (FatalDockerJSONException fex) {
+			fex.printStackTrace();
 			throw new ServiceException(fex.getMessage());
 		}
 	}
