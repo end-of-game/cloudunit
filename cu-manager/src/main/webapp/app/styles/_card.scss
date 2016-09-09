@@ -210,10 +210,26 @@
   input.blank {
     border: 0;
   }
+
   .check.radio input[type="radio"] + label:before {
     content: '\f111';
   }
 }
+
+.radio.check.inline {
+    display: inline-block;
+    min-width: 100px;
+
+    input[type='radio'] {
+      margin-left: -35px;
+    }
+
+    label {
+      position: relative;
+      top: 2px;
+      left: 8px;
+    }
+  }
 
 .application.start .status {
   color: #8bc34a;
