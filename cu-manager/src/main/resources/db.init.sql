@@ -28,7 +28,7 @@ INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariabl
 VALUES
 	("POSTGRES_USER", "USER", 50),
 	("POSTGRES_PASSWORD", "PASSWORD", 50),
-	("POSTGRES_DB", "DB_NAME", 50);
+	("POSTGRES_DB", "NAME", 50);
 
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)

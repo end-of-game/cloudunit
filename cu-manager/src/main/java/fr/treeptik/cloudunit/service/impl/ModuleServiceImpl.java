@@ -125,6 +125,7 @@ public class ModuleServiceImpl implements ModuleService {
 		checkImageExist(imageName);
 		Module module = new Module();
 		Image image = imageService.findByName(imageName);
+//		checkModuleAlreadyPresent(image.getPrefixEnv(), application.getId());
 		module.setImage(image);
 		module.setName(imageName);
 		module.setApplication(application);
@@ -155,16 +156,16 @@ public class ModuleServiceImpl implements ModuleService {
 		module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
-			Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs =
-					getModuleEnvironmentVariables(image, applicationName);
-			
+			Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs = getModuleEnvironmentVariables(image,
+					applicationName);
+
 			List<String> internalEnvironment = getInternalEnvironment(moduleEnvs);
 
-			List<EnvironmentVariable> exportedEnvironment =
-					getExportedEnvironment(module, image, moduleEnvs);
-			
+			List<EnvironmentVariable> exportedEnvironment = getExportedEnvironment(module, image, moduleEnvs);
+
 			environmentService.save(user, exportedEnvironment, applicationName, application.getServer().getName());
-			dockerService.createModule(containerName, module, imagePath, user, internalEnvironment, true, new ArrayList<>());
+			dockerService.createModule(containerName, module, imagePath, user, internalEnvironment, true,
+					new ArrayList<>());
 			module = dockerService.startModule(containerName, module);
 			module = moduleDAO.save(module);
 			applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
@@ -183,27 +184,23 @@ public class ModuleServiceImpl implements ModuleService {
 
 	private List<String> getInternalEnvironment(Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
 		List<String> internalEnvironment = moduleEnvs.values().stream()
-				.map(v -> String.format("%s=%s", v.getName(), v.getValue()))
-				.collect(Collectors.toList());
+				.map(v -> String.format("%s=%s", v.getName(), v.getValue())).collect(Collectors.toList());
 		return internalEnvironment;
 	}
 
 	private List<EnvironmentVariable> getExportedEnvironment(Module module, Image image,
 			Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
-		List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream()
-				.map(kv -> {
-					EnvironmentVariable environmentVariable = new EnvironmentVariable();
-					
-					environmentVariable.setKeyEnv(String.format("CU_DATABASE_%s_%s_1",
-							kv.getKey().toString(),
-							image.getPrefixEnv()));
-					
-					return environmentVariable;
-				})
-				.collect(Collectors.toList());
-		
+		List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
+			EnvironmentVariable environmentVariable = new EnvironmentVariable();
+
+			environmentVariable
+					.setKeyEnv(String.format("CU_DATABASE_%s_%s", kv.getKey().toString(), image.getPrefixEnv()));
+			environmentVariable.setValueEnv(kv.getValue().getValue());
+			return environmentVariable;
+		}).collect(Collectors.toList());
+
 		EnvironmentVariable environmentVariable = new EnvironmentVariable();
-		environmentVariable.setKeyEnv("CU_DATABASE_DNS_POSTGRESQL_1");
+		environmentVariable.setKeyEnv("CU_DATABASE_DNS_POSTGRESQL");
 		environmentVariable.setValueEnv(module.getInternalDNSName());
 		environmentVariables.add(environmentVariable);
 		return environmentVariables;
@@ -420,30 +417,30 @@ public class ModuleServiceImpl implements ModuleService {
 		this.isHttpMode = isHttpMode;
 	}
 
-	public Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> getModuleEnvironmentVariables(
-			Image image, String applicationName) {
+	public Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> getModuleEnvironmentVariables(Image image,
+			String applicationName) {
 		return image.getModuleEnvironmentVariables().entrySet().stream()
-			.collect(Collectors.toMap(kv -> kv.getKey(), kv -> {
-				String value = null;
-				switch(kv.getKey()) {
-				case USER:
-					value = ModuleUtils.generateRamdomUser();
-					break;
-				case PASSWORD:
-					value = ModuleUtils.generateRamdomPassword();
-					break;
-				case DB_NAME:
-					value = applicationName;
-					break;
-				}
-				return new ModuleEnvironmentVariable(kv.getValue(), value);
-			}));
+				.collect(Collectors.toMap(kv -> kv.getKey(), kv -> {
+					String value = null;
+					switch (kv.getKey()) {
+					case USER:
+						value = ModuleUtils.generateRamdomUser();
+						break;
+					case PASSWORD:
+						value = ModuleUtils.generateRamdomPassword();
+						break;
+					case NAME:
+						value = applicationName;
+						break;
+					}
+					return new ModuleEnvironmentVariable(kv.getValue(), value);
+				}));
 	}
-	
+
 	private static class ModuleEnvironmentVariable {
 		private final String name;
 		private final String value;
-		
+
 		public ModuleEnvironmentVariable(String name, String value) {
 			super();
 			this.name = name;
@@ -453,9 +450,16 @@ public class ModuleServiceImpl implements ModuleService {
 		public String getName() {
 			return name;
 		}
-		
+
 		public String getValue() {
 			return value;
+		}
+	}
+
+	public void checkModuleAlreadyPresent(String imagePrefixEnv, Integer applicationId) throws CheckException {
+		if (moduleDAO.countModuleNameByApplication(imagePrefixEnv, applicationId) != 0) {
+			logger.info("This module already exists");
+			throw new CheckException("This module already exists");
 		}
 	}
 
