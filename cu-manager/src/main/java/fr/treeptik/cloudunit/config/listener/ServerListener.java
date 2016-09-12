@@ -38,7 +38,6 @@ public class ServerListener {
 	ServerService serverService;
 
 	@EventListener
-	@Async
 	public void onServerStart(ServerStartEvent serverStartEvent) {
 		Server server = (Server) serverStartEvent.getSource();
 		try {
@@ -85,7 +84,6 @@ public class ServerListener {
 	}
 
 	@EventListener
-	@Async
 	public void onServerStop(ServerStopEvent serverStopEvent) {
 		Server server = (Server) serverStopEvent.getSource();
 		try {

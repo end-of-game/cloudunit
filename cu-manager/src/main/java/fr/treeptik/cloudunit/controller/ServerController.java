@@ -21,8 +21,11 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,6 +72,9 @@ public class ServerController implements Serializable {
 
 	@Inject
 	private AuthentificationUtils authentificationUtils;
+
+	@Inject
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * Set the JVM Options and Memory
@@ -128,6 +134,8 @@ public class ServerController implements Serializable {
 		Application application = applicationService.findByNameAndUser(user, volumeAssociationDTO.getApplicationName());
 
 		serverService.addVolume(application, volumeAssociationDTO);
+		applicationEventPublisher.publishEvent(new ServerStartEvent(application.getServer()));
+		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
 		return new HttpOk();
 	}

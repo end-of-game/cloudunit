@@ -506,18 +506,12 @@ public class ServerServiceImpl implements ServerService {
 	public void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO)
 			throws ServiceException, CheckException {
 		checkVolumeFormat(volumeAssociationDTO);
-		Server server = null;
-		try {
-			server = findByName(volumeAssociationDTO.getContainerName());
-			Volume volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
-			volumeService.saveAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume),
-					volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode()));
-			stopAndRemoveServer(server, application);
-			recreateAndMountVolumes(server, application);
-		} finally {
-			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
-		}
+		Server server = findByName(volumeAssociationDTO.getContainerName());
+		Volume volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
+		volumeService.saveAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume),
+				volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode()));
+		stopAndRemoveServer(server, application);
+		recreateAndMountVolumes(server, application);
 	}
 
 	@Override
