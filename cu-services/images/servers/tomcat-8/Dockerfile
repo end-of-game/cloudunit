@@ -57,6 +57,8 @@ RUN cd $HOME \
     && rm -rf $CU_SOFTWARE/webapps/ROOT $CU_SOFTWARE/webapps/examples $CU_SOFTWARE/webapps/docs
 
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
+COPY files/web.xml $CU_SOFTWARE/conf/web.xml
+COPY files/javamelody-1.61.0.archive $CU_SOFTWARE/lib/javamelody-1.61.0.jar
 COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
