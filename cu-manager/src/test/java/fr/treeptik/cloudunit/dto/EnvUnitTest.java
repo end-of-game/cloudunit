@@ -18,6 +18,7 @@ import java.util.stream.Stream;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EnvUnitTest {
+
     @Test
     public void decode() {
         String output = "HOSTNAME=58f99ebf2f88\n" +
@@ -35,5 +36,37 @@ public class EnvUnitTest {
 
         List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(output);
         Assert.assertEquals("Output should contains 6 CU env", 6, envUnits.size());
+    }
+
+    @Test
+    public void decodeOne() {
+        String output = "HOSTNAME=58f99ebf2f88\n" +
+                "CU_SCRIPTS=/cloudunit/scripts\n" +
+                "_=/usr/bin/env\n";
+        List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 1 CU env", 1, envUnits.size());
+    }
+
+    @Test
+    public void decodeEmpty() {
+        String output = "\n";
+        List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
+
+        output = "\t";
+        envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
+
+        output = "";
+        envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
+
+        output = "  ";
+        envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
+
+        output = null;
+        envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
     }
 }
