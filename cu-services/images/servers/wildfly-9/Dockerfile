@@ -1,8 +1,9 @@
 FROM cloudunit/base-14.04
 
 # Set the WILDFLY_VERSION env variable
-ENV WILDFLY_VERSION 9.0.2.Final
-ENV WILDFLY_SHA1 75738379f726c865d41e544e9b61f7b27d2853c7
+ARG WILDFLY_VERSION
+ENV WILDFLY_TGZ_URL https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz
+ARG WILDFLY_SHA1
 ENV JBOSS_HOME /opt/cloudunit/wildfly
 
 ## CLOUDUNIT :: BEGINNING
@@ -21,7 +22,7 @@ ENV JAVA_OPTS "-Xms512m -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack
 # Add the WildFly distribution to /opt/cloudunit/wildfly, and make wildfly the owner of the extracted tar content
 # Make sure the distribution is available from a well-known place
 RUN cd $HOME \
-    && curl -O https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz \
+    && curl -O $WILDFLY_TGZ_URL \
     && sha1sum wildfly-$WILDFLY_VERSION.tar.gz | grep $WILDFLY_SHA1 \
     && tar xf wildfly-$WILDFLY_VERSION.tar.gz \
     && mv $HOME/wildfly-$WILDFLY_VERSION $JBOSS_HOME \
