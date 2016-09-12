@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-import javax.mail.MessagingException;
 import javax.persistence.PersistenceException;
 
 import org.slf4j.Logger;
@@ -44,7 +43,6 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
-import fr.treeptik.cloudunit.utils.EmailUtils;
 import fr.treeptik.cloudunit.utils.ShellUtils;
 
 @Service
@@ -53,9 +51,6 @@ public class UserServiceImpl
         implements UserService {
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
-    @Inject
-    private EmailUtils emailUtils;
 
     @Inject
     private UserDAO userDAO;
@@ -320,50 +315,6 @@ public class UserServiceImpl
             logger.error("change Passsword - Error execute ssh Request - " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
-    }
-
-    @Override
-    public void changeEmail(User user, String newEmail)
-            throws ServiceException {
-        Map<String, Object> mapConfigMail = new HashMap<>();
-
-        user.setEmail(newEmail);
-        user.setStatus(User.STATUS_MAIL_NOT_CONFIRMED);
-        this.update(user);
-        mapConfigMail.put("user", user);
-        mapConfigMail.put("emailType", "changeEmail");
-        try {
-            emailUtils.sendEmail(mapConfigMail);
-        } catch (MessagingException e) {
-            logger.error("Error sendEmail method : send mail : " + e);
-            throw new ServiceException("Error : failed to send an email", e);
-        }
-
-    }
-
-    @Override
-    public String sendPassword(User user)
-            throws ServiceException {
-        Map<String, Object> mapConfigMail = new HashMap<>();
-
-        logger.debug("create : Methods parameters : " + user.toString());
-        logger.info("UserService : Starting creating user "
-                + user.getLastName());
-
-        mapConfigMail.put("user", user);
-        mapConfigMail.put("emailType", "sendPassword");
-
-        try {
-            emailUtils.sendEmail(mapConfigMail);
-        } catch (MessagingException e) {
-            logger.error("Error sendEmail method : send mail : " + e);
-            throw new ServiceException("Error : failed to send an email", e);
-        }
-
-        logger.info("UserService : User " + user.getLastName()
-                + " successfully created.");
-
-        return null;
     }
 
     @Override

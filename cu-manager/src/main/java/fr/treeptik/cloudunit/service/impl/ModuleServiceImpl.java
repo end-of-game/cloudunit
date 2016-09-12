@@ -17,16 +17,13 @@ package fr.treeptik.cloudunit.service.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.mail.MessagingException;
 import javax.persistence.PersistenceException;
 
 import org.slf4j.Logger;
@@ -57,9 +54,7 @@ import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.EmailUtils;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
 
 @Service
@@ -78,12 +73,6 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Inject
 	private ApplicationService applicationService;
-
-	@Inject
-	private UserService userService;
-
-	@Inject
-	private EmailUtils emailUtils;
 
 	@Inject
 	private DockerService dockerService;
@@ -166,33 +155,16 @@ public class ModuleServiceImpl implements ModuleService {
 		module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
+			Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs =
+					getModuleEnvironmentVariables(image, applicationName);
+			
+			List<String> internalEnvironment = getInternalEnvironment(moduleEnvs);
 
-			Map<ModuleEnvironmentRole, String> moduleUserAccess = new HashMap<>();
-			moduleUserAccess.put(ModuleEnvironmentRole.DB_NAME, applicationName);
-
-			List<String> envs = Arrays.asList("POSTGRES_PASSWORD=" + moduleUserAccess.get("password"),
-					"POSTGRES_USER=" + moduleUserAccess.get("username"), "POSTGRES_DB=" + applicationName);
-			module.setModuleInfos(moduleUserAccess);
-
-			List<EnvironmentVariable> environmentVariables = new ArrayList<>();
-			EnvironmentVariable environmentVariable = new EnvironmentVariable();
-			environmentVariable.setKeyEnv("CU_DATABASE_USER_POSTGRESQL_1");
-			environmentVariable.setValueEnv(moduleUserAccess.get("username"));
-			environmentVariables.add(environmentVariable);
-			environmentVariable = new EnvironmentVariable();
-			environmentVariable.setKeyEnv("CU_DATABASE_PASSWORD_POSTGRESQL_1");
-			environmentVariable.setValueEnv(moduleUserAccess.get("password"));
-			environmentVariables.add(environmentVariable);
-			environmentVariable = new EnvironmentVariable();
-			environmentVariable.setKeyEnv("CU_DATABASE_NAME");
-			environmentVariable.setValueEnv(applicationName);
-			environmentVariables.add(environmentVariable);
-			environmentVariable = new EnvironmentVariable();
-			environmentVariable.setKeyEnv("CU_DATABASE_DNS_POSTGRESQL_1");
-			environmentVariable.setValueEnv(module.getInternalDNSName());
-			environmentVariables.add(environmentVariable);
-			environmentService.save(user, environmentVariables, applicationName, application.getServer().getName());
-			dockerService.createModule(containerName, module, imagePath, user, envs, true, new ArrayList<>());
+			List<EnvironmentVariable> exportedEnvironment =
+					getExportedEnvironment(module, image, moduleEnvs);
+			
+			environmentService.save(user, exportedEnvironment, applicationName, application.getServer().getName());
+			dockerService.createModule(containerName, module, imagePath, user, internalEnvironment, true, new ArrayList<>());
 			module = dockerService.startModule(containerName, module);
 			module = moduleDAO.save(module);
 			applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
@@ -207,6 +179,34 @@ public class ModuleServiceImpl implements ModuleService {
 			throw new ServiceException(msgError.toString(), e);
 		}
 		return module;
+	}
+
+	private List<String> getInternalEnvironment(Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
+		List<String> internalEnvironment = moduleEnvs.values().stream()
+				.map(v -> String.format("%s=%s", v.getName(), v.getValue()))
+				.collect(Collectors.toList());
+		return internalEnvironment;
+	}
+
+	private List<EnvironmentVariable> getExportedEnvironment(Module module, Image image,
+			Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
+		List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream()
+				.map(kv -> {
+					EnvironmentVariable environmentVariable = new EnvironmentVariable();
+					
+					environmentVariable.setKeyEnv(String.format("CU_DATABASE_%s_%s_1",
+							kv.getKey().toString(),
+							image.getPrefixEnv()));
+					
+					return environmentVariable;
+				})
+				.collect(Collectors.toList());
+		
+		EnvironmentVariable environmentVariable = new EnvironmentVariable();
+		environmentVariable.setKeyEnv("CU_DATABASE_DNS_POSTGRESQL_1");
+		environmentVariable.setValueEnv(module.getInternalDNSName());
+		environmentVariables.add(environmentVariable);
+		return environmentVariables;
 	}
 
 	/**
@@ -235,27 +235,6 @@ public class ModuleServiceImpl implements ModuleService {
 		applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
 
 		return module;
-	}
-
-	@Transactional(rollbackFor = ServiceException.class)
-
-	private void sendEmail(Module module) throws ServiceException {
-
-		Map<String, Object> mapConfigEmail = new HashMap<>();
-
-		mapConfigEmail.put("module", module);
-		mapConfigEmail.put("user", userService.findById(module.getApplication().getUser().getId()));
-		mapConfigEmail.put("emailType", "moduleInformations");
-
-		try {
-			if ("apache".equalsIgnoreCase(module.getName()) == false) {
-				emailUtils.sendEmail(mapConfigEmail);
-			}
-		} catch (MessagingException e) {
-			logger.error("Error while sending email " + e);
-			// On ne bloque pas l'appli pour une erreur d'email
-			// Les infos sont aussi dans le CLI
-		}
 	}
 
 	public void checkImageExist(String moduleName) throws ServiceException {
@@ -441,23 +420,43 @@ public class ModuleServiceImpl implements ModuleService {
 		this.isHttpMode = isHttpMode;
 	}
 
-	public List<String> extractModuleEnvironmentVariables(Image image, String applicationName){
-		
-		image.getModuleEnvironmentVariables().entrySet().stream()
-			.map((kv)-> {
-				
-				StringBuilder builder = new StringBuilder();
-				builder.append(kv.getValue());
-				builder.append("=");
-				switch(kv.getKey()){
-				case USER :
-					
+	public Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> getModuleEnvironmentVariables(
+			Image image, String applicationName) {
+		return image.getModuleEnvironmentVariables().entrySet().stream()
+			.collect(Collectors.toMap(kv -> kv.getKey(), kv -> {
+				String value = null;
+				switch(kv.getKey()) {
+				case USER:
+					value = ModuleUtils.generateRamdomUser();
+					break;
+				case PASSWORD:
+					value = ModuleUtils.generateRamdomPassword();
+					break;
+				case DB_NAME:
+					value = applicationName;
+					break;
 				}
-				
-				return "";
-				
-			});
-		return null;
+				return new ModuleEnvironmentVariable(kv.getValue(), value);
+			}));
 	}
 	
+	private static class ModuleEnvironmentVariable {
+		private final String name;
+		private final String value;
+		
+		public ModuleEnvironmentVariable(String name, String value) {
+			super();
+			this.name = name;
+			this.value = value;
+		}
+
+		public String getName() {
+			return name;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+	}
+
 }

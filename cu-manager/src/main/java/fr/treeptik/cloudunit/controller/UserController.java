@@ -109,19 +109,6 @@ public class UserController implements Serializable {
 		return new HttpOk();
 	}
 
-	@RequestMapping(value = "/send-password", method = RequestMethod.POST)
-	public @ResponseBody JsonResponse sendPassword(@RequestBody JsonInputForAdmin input) {
-		logger.info("--CALL SEND PASSWORD--");
-		User user = null;
-		try {
-			user = userService.findByLogin(input.getLogin());
-			userService.sendPassword(user);
-		} catch (ServiceException e) {
-			return new HttpErrorServer(e.getMessage());
-		}
-		return new HttpOk();
-	}
-
 	@RequestMapping(value = "/change-password", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse changePassword(@RequestBody JsonInputForAdmin input) throws CheckException {
 		User user = null;

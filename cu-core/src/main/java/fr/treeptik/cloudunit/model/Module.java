@@ -13,30 +13,20 @@ package fr.treeptik.cloudunit.model;/*
 									* For any questions, contact us : contact@treeptik.fr
 									*/
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
 
-import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
-import fr.treeptik.cloudunit.model.action.ModuleAction;
-
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.PostLoad;
 import javax.persistence.Transient;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import fr.treeptik.cloudunit.model.action.ModuleAction;
 
 @Entity
 public class Module extends Container implements Serializable {
-
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * linkAlias - userName - password - phpMyAdmin - database
-	 */
-	@ElementCollection
-	protected Map<ModuleEnvironmentRole, String> moduleInfos = new HashMap<>();
 
 	@Transient
 	protected String suffixCU;
@@ -55,7 +45,6 @@ public class Module extends Container implements Serializable {
 
 	public Module() {
 		this.image = new Image();
-		this.moduleInfos = new HashMap<>();
 	}
 
 	public String getManagerLocation() {
@@ -64,14 +53,6 @@ public class Module extends Container implements Serializable {
 
 	public void setManagerLocation(String managerLocation) {
 		this.managerLocation = managerLocation;
-	}
-
-	public Map<ModuleEnvironmentRole, String> getModuleInfos() {
-		return moduleInfos;
-	}
-
-	public void setModuleInfos(Map<ModuleEnvironmentRole, String> moduleInfos) {
-		this.moduleInfos = moduleInfos;
 	}
 
 	public ModuleAction getModuleAction() {

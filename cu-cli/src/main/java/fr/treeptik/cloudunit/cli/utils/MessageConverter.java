@@ -160,13 +160,14 @@ public class MessageConverter {
 				tab[1][moduleIndex + 1] = module.getImage().getName();
 				tab[2][moduleIndex + 1] = module.getInternalDNSName();
 				tab[3][moduleIndex + 1] = modulePorts.get(module.getImage().getName());
-				tab[4][moduleIndex + 1] = module.getModuleInfos().get("username") != null
-						? module.getModuleInfos().get("username") : "NONE";
-				tab[5][moduleIndex + 1] = module.getModuleInfos().get("password") != null
-						? module.getModuleInfos().get("password") : "NONE";
-				tab[6][moduleIndex + 1] = module.getModuleInfos().get("database") != null
-						? module.getModuleInfos().get("database") : "NONE";
-				tab[7][moduleIndex + 1] = module.getManagerLocation() + " ";
+				// FIXME after refactoring in ModuleServiceImpl
+//				tab[4][moduleIndex + 1] = module.getModuleInfos().get("username") != null
+//						? module.getModuleInfos().get("username") : "NONE";
+//				tab[5][moduleIndex + 1] = module.getModuleInfos().get("password") != null
+//						? module.getModuleInfos().get("password") : "NONE";
+//				tab[6][moduleIndex + 1] = module.getModuleInfos().get("database") != null
+//						? module.getModuleInfos().get("database") : "NONE";
+//				tab[7][moduleIndex + 1] = module.getManagerLocation() + " ";
 
 				moduleIndex++;
 
