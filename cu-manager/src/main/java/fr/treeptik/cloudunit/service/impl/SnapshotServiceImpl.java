@@ -348,7 +348,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 						.get("password-" + module.getImage().getName()));
 				properties.put("database", snapshot.getAppConfig().get(key).getProperties()
 						.get("database-" + module.getImage().getName()));
-				module.setModuleInfos(properties);
+				// module.setModuleInfos(properties);
 
 				if (tag != null) {
 					restoreDataModule(module);

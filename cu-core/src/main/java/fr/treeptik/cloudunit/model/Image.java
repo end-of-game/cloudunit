@@ -15,14 +15,20 @@ package fr.treeptik.cloudunit.model;/*
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 
 @Entity
 public class Image implements Serializable {
@@ -47,14 +53,6 @@ public class Image implements Serializable {
 
 	private String displayName;
 
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
 	private Integer status;
 
 	private String imageType;
@@ -64,6 +62,10 @@ public class Image implements Serializable {
 	private String prefixEnv;
 
 	private Integer prefixId;
+
+	@ElementCollection
+	@MapKeyEnumerated(EnumType.STRING)
+	private Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "image")
@@ -137,6 +139,35 @@ public class Image implements Serializable {
 		this.managerName = managerName;
 	}
 
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getPrefixEnv() {
+		return prefixEnv;
+	}
+
+	public void setPrefixEnv(String prefixEnv) {
+		this.prefixEnv = prefixEnv;
+	}
+
+	// do not remove prefixId use for splitting server by nature
+	public Integer getPrefixId() {
+		return prefixEnv.hashCode();
+	}
+
+	public Map<ModuleEnvironmentRole, String> getModuleEnvironmentVariables() {
+		return moduleEnvironmentVariables;
+	}
+
+	public void setModuleEnvironmentVariables(Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables) {
+		this.moduleEnvironmentVariables = moduleEnvironmentVariables;
+	}
+
 	@Override
 	public String toString() {
 		return "Image [id=" + id + ", name=" + name + ", path=" + path + ", status=" + status + ", imageType="
@@ -167,19 +198,5 @@ public class Image implements Serializable {
 			return false;
 		return true;
 	}
-
-	public String getPrefixEnv() {
-		return prefixEnv;
-	}
-
-	public void setPrefixEnv(String prefixEnv) {
-		this.prefixEnv = prefixEnv;
-	}
-
-	// do not remove prefixId use for splitting server by nature
-	public Integer getPrefixId() {
-		return prefixEnv.hashCode();
-	}
-
 
 }

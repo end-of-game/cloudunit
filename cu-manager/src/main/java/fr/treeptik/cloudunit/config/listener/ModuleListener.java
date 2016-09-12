@@ -41,7 +41,6 @@ public class ModuleListener {
 				String command = RemoteExecAction.CHECK_RUNNING.getCommand();
 				String exec = dockerService.execCommand(containerName, command);
 				exec = exec.replaceAll(System.getProperty("line.separator"), "");
-				System.out.println("RETURN check running  : " + exec);
 				if ("0".equalsIgnoreCase(exec.trim())) {
 					started = true;
 					break;

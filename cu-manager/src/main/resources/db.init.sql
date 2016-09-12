@@ -24,6 +24,12 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `displayName`, `prefixEnv`, `i
   (70, 'fatjar', 'cloudunit/fatjar', 'FatJar', 'fatjar', 'server', ''),
   (80, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', '');
 
+INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariables`,`moduleEnvironmentVariables_KEY`,`Image_id`)
+VALUES
+	("POSTGRES_USER", "USER", 50),
+	("POSTGRES_PASSWORD", "PASSWORD", 50),
+	("POSTGRES_DB", "DB_NAME", 50);
+
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES

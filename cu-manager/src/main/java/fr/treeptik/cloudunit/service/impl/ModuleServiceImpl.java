@@ -42,6 +42,7 @@ import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
+import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -134,7 +135,8 @@ public class ModuleServiceImpl implements ModuleService {
 		// General informations
 		checkImageExist(imageName);
 		Module module = new Module();
-		module.setImage(imageService.findByName(imageName));
+		Image image = imageService.findByName(imageName);
+		module.setImage(image);
 		module.setName(imageName);
 		module.setApplication(application);
 		module.setStatus(Status.PENDING);
@@ -165,8 +167,8 @@ public class ModuleServiceImpl implements ModuleService {
 
 		try {
 
-			Map<String, String> moduleUserAccess = ModuleUtils.generateRamdomUserAccess();
-			moduleUserAccess.put("database", applicationName);
+			Map<ModuleEnvironmentRole, String> moduleUserAccess = new HashMap<>();
+			moduleUserAccess.put(ModuleEnvironmentRole.DB_NAME, applicationName);
 
 			List<String> envs = Arrays.asList("POSTGRES_PASSWORD=" + moduleUserAccess.get("password"),
 					"POSTGRES_USER=" + moduleUserAccess.get("username"), "POSTGRES_DB=" + applicationName);
@@ -439,4 +441,23 @@ public class ModuleServiceImpl implements ModuleService {
 		this.isHttpMode = isHttpMode;
 	}
 
+	public List<String> extractModuleEnvironmentVariables(Image image, String applicationName){
+		
+		image.getModuleEnvironmentVariables().entrySet().stream()
+			.map((kv)-> {
+				
+				StringBuilder builder = new StringBuilder();
+				builder.append(kv.getValue());
+				builder.append("=");
+				switch(kv.getKey()){
+				case USER :
+					
+				}
+				
+				return "";
+				
+			});
+		return null;
+	}
+	
 }

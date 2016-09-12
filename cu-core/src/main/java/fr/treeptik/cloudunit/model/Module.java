@@ -14,6 +14,8 @@ package fr.treeptik.cloudunit.model;/*
 									*/
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 import fr.treeptik.cloudunit.model.action.ModuleAction;
 
 import javax.persistence.ElementCollection;
@@ -34,7 +36,7 @@ public class Module extends Container implements Serializable {
 	 * linkAlias - userName - password - phpMyAdmin - database
 	 */
 	@ElementCollection
-	protected Map<String, String> moduleInfos = new HashMap<>();
+	protected Map<ModuleEnvironmentRole, String> moduleInfos = new HashMap<>();
 
 	@Transient
 	protected String suffixCU;
@@ -64,11 +66,11 @@ public class Module extends Container implements Serializable {
 		this.managerLocation = managerLocation;
 	}
 
-	public Map<String, String> getModuleInfos() {
+	public Map<ModuleEnvironmentRole, String> getModuleInfos() {
 		return moduleInfos;
 	}
 
-	public void setModuleInfos(Map<String, String> moduleInfos) {
+	public void setModuleInfos(Map<ModuleEnvironmentRole, String> moduleInfos) {
 		this.moduleInfos = moduleInfos;
 	}
 
