@@ -82,11 +82,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 			msgError.append(", containerName:[").append(containerName).append("]");
 			logger.error(msgError.toString());
 			throw new ServiceException(e.getMessage(), e);
-		} finally {
-			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 		}
-
 		return environment;
 	}
 
@@ -125,11 +121,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 			msgError.append(", containerName:[").append(containerName).append("]");
 			logger.error(msgError.toString());
 			throw new ServiceException(e.getMessage(), e);
-		} finally {
-			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 		}
-
 	}
 
 	@Override

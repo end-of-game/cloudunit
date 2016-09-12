@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.factory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ public class EnvUnitFactory {
     }
 
     public static List<EnvUnit> fromOutput(String outputShell) {
+        if (outputShell == null) { return new ArrayList<>(); }
         List<EnvUnit> envUnits = Stream.of(outputShell)
                 .map(line -> line.split("\\n"))
                 .flatMap(Arrays::stream)

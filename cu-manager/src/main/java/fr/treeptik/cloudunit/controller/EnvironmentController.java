@@ -5,8 +5,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ServerStartEvent;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.service.ApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +44,12 @@ public class EnvironmentController implements Serializable {
 	@Inject
 	private EnvironmentService environmentService;
 
+	@Inject
+	private ApplicationService applicationService;
+
+	@Inject
+	private ApplicationEventPublisher applicationEventPublisher;
+
 	@RequestMapping(value = "/{applicationName}/container/{containerName}/environmentVariables", method = RequestMethod.GET)
 	public @ResponseBody List<EnvironmentVariable> loadAllEnvironmentVariables(@PathVariable String applicationName,
 			@PathVariable String containerName) throws ServiceException, JsonProcessingException, CheckException {
@@ -61,7 +72,11 @@ public class EnvironmentController implements Serializable {
 			@PathVariable String containerName, @RequestBody EnvironmentVariable environmentVariableRequest)
 			throws ServiceException, CheckException {
 		User user = authentificationUtils.getAuthentificatedUser();
+		Application application = applicationService.findByNameAndUser(user, applicationName);
+
 		environmentService.save(user, environmentVariableRequest, applicationName, containerName);
+		applicationEventPublisher.publishEvent(new ServerStartEvent(application.getServer()));
+		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 		return new HttpOk();
 
 	}

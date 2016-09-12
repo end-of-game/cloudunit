@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.config.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,10 +35,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
-import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
-import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
 import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -164,12 +161,17 @@ public class ModuleServiceImpl implements ModuleService {
 			List<EnvironmentVariable> exportedEnvironment = getExportedEnvironment(module, image, moduleEnvs);
 
 			environmentService.save(user, exportedEnvironment, applicationName, application.getServer().getName());
+			applicationEventPublisher.publishEvent(new ServerStartEvent(application.getServer()));
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+
 			dockerService.createModule(containerName, module, imagePath, user, internalEnvironment, true,
 					new ArrayList<>());
 			module = dockerService.startModule(containerName, module);
 			module = moduleDAO.save(module);
 			applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
 			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+
+
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);
 			throw new ServiceException(e.getLocalizedMessage(), e);
