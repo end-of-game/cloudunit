@@ -38,8 +38,21 @@
           <li ng-click="editApp.updateRoute();"
               ui-sref-active="active"
               data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+            <a id="add-service-tab" ui-sref="editApplication.addServer({ typeImage: '' })" ripple="">
+              <span>
+                <span class="icon-whhg plus-sign icon-nav"></span>
+                Server
+              </span>
+            </a>
+          </li>
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
             <a id="add-service-tab" ui-sref="editApplication.addModule({ typeImage: '' })" ripple="">
-              <span>Add module</span>
+              <span>
+                <span class="icon-whhg plus-sign icon-nav"></span>
+                Module
+              </span>
             </a>
           </li>
           <li ng-click="editApp.updateRoute();"

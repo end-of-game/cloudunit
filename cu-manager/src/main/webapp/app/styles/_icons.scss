@@ -59,22 +59,22 @@
 }
 
 .icon-tech.hornetq:before {
-  content: "901";
+  content: "\e901";
 }
 .icon-tech.rabbitmq:before {
-  content: "912";
+  content: "\e912";
 }
 .icon-tech.memcached:before {
-  content: "902";
+  content: "\e902";
 }
 .icon-tech.elasticsearch:before {
-  content: "900";
+  content: "\e900";
 }
 .icon-tech.influxdb:before {
-  content: "907";
+  content: "\e907";
 }
 .icon-tech.solr:before {
-  content: "911";
+  content: "\e911";
 }
 .icon-tech.postgresql:before {
   content: "\f14a";
@@ -96,6 +96,15 @@
 }
 .icon-tech.mongo:before {
   content: "\f135";
+}
+.icon-tech.tomcat:before {
+  content: "\e903";
+}
+.icon-tech.wildfly:before {
+  content: "\e904";
+}
+.icon-tech.fatjar:before {
+  content: "\e91c";
 }
 
 
@@ -1249,7 +1258,7 @@
 .icon-whhg.vps:before{content:'\f025'}
 .icon-whhg.wacom:before{content:'\f1bb'}
 .icon-whhg.walle:before{content:'\f3bc'}
-.icon-whhg.wallet:before{content:'000'}
+.icon-whhg.wallet:before{content:'\e000'}
 .icon-whhg.warcraft:before{content:'\f3bf'}
 .icon-whhg.warmedal:before{content:'\f2e4'}
 .icon-whhg.warning-sign:before{content:'\f316'}
@@ -2189,3 +2198,10 @@
 .icon-whhg.fontcaligraphy:before{content:'\f7f1'}
 .icon-whhg.fontgothic:before{content:'\f7f2'}
 .icon-whhg.fontstencil:before{content:'\f7f3'}
+
+.icon-nav {
+  font-size: 13px;
+  position: relative;
+  top: 1px;
+  margin-right: 4px;
+}

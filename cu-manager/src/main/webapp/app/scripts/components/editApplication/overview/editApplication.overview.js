@@ -100,27 +100,15 @@
         publishPort: false
       };
 
-
       $http({
-            method: 'GET',
-            url: urlUpdate
-        }).then(function successCallback(response) {
-            console.log(response);
-        }, function errorCallback(response) {
-            console.log(response);
-        }); 
-
-        return 0;
-
-        $http({
-            method: 'PUT',
-            url: urlUpdate,
-            data: data
-        }).then(function successCallback(response) {
-            console.log(response);
-        }, function errorCallback(response) {
-            console.log(response);
-        }); 
+          method: 'PUT',
+          url: urlUpdate,
+          data: data
+      }).then(function successCallback(response) {
+          console.log(response);
+      }, function errorCallback(response) {
+          console.log(response);
+      }); 
     }
 
     function toggleServer(application) {

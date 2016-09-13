@@ -141,6 +141,10 @@
 .volume-card.card .content,
 .environment-card.card .content {
   min-height: 180px;
+
+  &.height-ajustation {
+    min-height: 222px;
+  }
 }
 
 .card.overview {
