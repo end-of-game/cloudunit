@@ -98,10 +98,12 @@ var initesforkibana = setInterval(function () {
 
 	}, 10000)
 } else {
-	container_name = process.argv[2]
+	container_id = process.argv[2]
+	container_name = process.argv[3]
+	console.log(container_name, container_id)
 	var jmxproxybeat_visualization_bulk = fs.readFileSync("file/visualization.json").toString();
 	var jmxproxybeat_dashboard_bulk = fs.readFileSync("file/dashboard.json").toString();
-	jmxproxybeat_visualization_bulk = jmxproxybeat_visualization_bulk.replace(/sethostname/gi, container_name)
+	jmxproxybeat_visualization_bulk = jmxproxybeat_visualization_bulk.replace(/sethostname/gi, container_id)
 	jmxproxybeat_visualization_bulk = jmxproxybeat_visualization_bulk.replace(/Tomcat-Thread/gi, "Tomcat-Thread-"+container_name)	
 	jmxproxybeat_visualization_bulk = jmxproxybeat_visualization_bulk.replace(/Tomcat-Load/gi, "Tomcat-Load-"+container_name)	
 	jmxproxybeat_visualization_bulk = jmxproxybeat_visualization_bulk.replace(/Tomcat-Class/gi, "Tomcat-Class-"+container_name)	
