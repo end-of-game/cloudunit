@@ -16,12 +16,9 @@
 package fr.treeptik.cloudunit.modules;
 
 import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Random;
 
@@ -33,10 +30,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +54,14 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import fr.treeptik.cloudunit.dto.ModuleResource;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
 import junit.framework.TestCase;
 
 /**
@@ -74,7 +73,6 @@ import junit.framework.TestCase;
     CloudUnitApplicationContext.class,
     MockServletContext.class
 })
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
 public abstract class AbstractModuleControllerTestIT extends TestCase {
 
@@ -85,6 +83,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     private WebApplicationContext context;
 
     private MockMvc mockMvc;
+    
+    @Inject
+    private ObjectMapper objectMapper;
 
     @Inject
     private AuthenticationManager authenticationManager;
@@ -157,8 +158,11 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // create an application server
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
+        mockMvc.perform(post("/application")
+        		.session(session)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonString))
+        	.andExpect(status().isOk());
     }
 
     @After
@@ -166,8 +170,11 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("teardown");
 
         logger.info("Delete application : " + applicationName);
-        ResultActions resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
+        
+        mockMvc.perform(delete("/application/" + applicationName)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         SecurityContextHolder.clearContext();
         session.invalidate();
@@ -392,6 +399,51 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .andExpect(jsonPath("$.modules[0].name").value(module1))
                 .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1));
     }
+    
+    public ResultActions requestPublishPort(Integer id) throws Exception {
+        ModuleResource request = ModuleResource.of()
+                .withPublishPort(true)
+                .build();
+        String jsonString = objectMapper.writeValueAsString(request);
+        return mockMvc.perform(put("/module/" + id)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+            .andDo(print());
+    }
+    
+    public ResultActions requestAddModule() throws Exception {
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        return mockMvc.perform(post("/module")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+            .andDo(print());
+    }
+    
+    public ResultActions requestApplication() throws Exception {
+        return mockMvc.perform(get("/application/" + applicationName)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andDo(print());
+    }
 
+    @Test
+    public void test_PublishPort() throws Exception {
+        logger.info("Publish module port for external access");
+        
+        requestAddModule()
+        	.andExpect(status().isOk());
+        
+        SpyMatcherDecorator<Integer> responseIdSpy = new SpyMatcherDecorator<>();
+        
+        requestApplication()
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.modules[0].id", responseIdSpy));
+        
+        Integer id = responseIdSpy.getMatchedValue();
 
+        requestPublishPort(id)
+            .andExpect(status().isOk());
+    }
 }
