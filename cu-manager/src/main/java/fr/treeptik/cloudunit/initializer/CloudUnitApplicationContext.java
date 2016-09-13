@@ -241,6 +241,12 @@ public class CloudUnitApplicationContext
         }
         return dockerClient;
     }
+    
+    @Bean
+    @Profile("integration")
+    public ObjectMapper objectMapper() {
+    	return new ObjectMapper();
+    }
 
 
     /**
