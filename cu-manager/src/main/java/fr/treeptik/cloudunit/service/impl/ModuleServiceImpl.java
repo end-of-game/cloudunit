@@ -122,7 +122,7 @@ public class ModuleServiceImpl implements ModuleService {
 		checkImageExist(imageName);
 		Module module = new Module();
 		Image image = imageService.findByName(imageName);
-//		checkModuleAlreadyPresent(image.getPrefixEnv(), application.getId());
+		checkModuleAlreadyPresent(image.getPrefixEnv(), application.getId());
 		module.setImage(image);
 		module.setName(imageName);
 		module.setApplication(application);
@@ -169,8 +169,6 @@ public class ModuleServiceImpl implements ModuleService {
 			module = dockerService.startModule(containerName, module);
 			module = moduleDAO.save(module);
 			applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
-
 
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);

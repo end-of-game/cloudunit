@@ -172,36 +172,4 @@ public class ModuleController implements Serializable {
 		return new HttpOk();
 	}
 
-	@RequestMapping(value = "/{applicationName}/{moduleName}/initData", method = RequestMethod.POST, consumes = {
-			"multipart/form-data" })
-	@ResponseBody
-	public JsonResponse deploy(@RequestPart("file") MultipartFile fileUpload,
-			@PathVariable final String applicationName, @PathVariable final String moduleName,
-			HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServiceException, CheckException {
-
-		logger.info("initDb : applicationName = " + applicationName + ", moduleName = " + moduleName);
-
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, applicationName);
-
-		// We must be sure there is no running action before starting new one
-		this.authentificationUtils.canStartNewAction(user, application, locale);
-
-		File file = null;
-		try {
-
-			// Application occupée
-			applicationService.setStatus(application, Status.PENDING);
-
-			file = File.createTempFile("script-", fileUpload.getOriginalFilename());
-			fileUpload.transferTo(file);
-
-		} catch (IOException e) {
-			throw new ServiceException("initDb Error while creating file", e);
-		} finally {
-			applicationService.setStatus(application, Status.START);
-		}
-		return new HttpOk();
-	}
 }
