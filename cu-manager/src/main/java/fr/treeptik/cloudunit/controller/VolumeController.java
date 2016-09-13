@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.controller;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -39,31 +40,34 @@ public class VolumeController implements Serializable {
 	private VolumeService volumeService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public @ResponseBody List<Volume> loadAllVolumes()
+	public @ResponseBody ResponseEntity<List<VolumeResource>> loadAllVolumes()
 			throws ServiceException, JsonProcessingException, CheckException {
-		logger.info("Load");
+		logger.info("List all volumes");
 		List<Volume> volumes = volumeService.loadAllVolumes();
-		return volumes;
+		List<VolumeResource> volumeResourceList = volumes.stream().map(VolumeResource::new).collect(Collectors.toList());
+		return ResponseEntity.status(HttpStatus.OK).body(volumeResourceList);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public @ResponseBody Volume loadVolume(@PathVariable int id) throws ServiceException, CheckException {
-		return volumeService.loadVolume(id);
+	public @ResponseBody ResponseEntity<VolumeResource> loadVolume(@PathVariable int id) throws ServiceException, CheckException {
+		Volume volume = volumeService.loadVolume(id);
+		VolumeResource volumeResource = new VolumeResource(volume);
+		return ResponseEntity.status(HttpStatus.OK).body(volumeResource);
 	}
 
-	// REQUEST BODY => * Name : String
 	@RequestMapping(method = RequestMethod.POST)
 	public @ResponseBody
-	ResponseEntity addVolume(@RequestBody VolumeResource request) throws ServiceException, CheckException {
+	ResponseEntity<VolumeResource> addVolume(@RequestBody VolumeResource request) throws ServiceException, CheckException {
 		Volume volume = volumeService.createNewVolume(request.getName());
 		VolumeResource volumeResource = new VolumeResource(volume);
 		return ResponseEntity.status(HttpStatus.CREATED).body(volumeResource);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public @ResponseBody JsonResponse updateVolume(@RequestBody Volume volume) throws ServiceException, CheckException {
-		volumeService.updateVolume(volume);
-		return new HttpOk();
+	public @ResponseBody ResponseEntity<VolumeResource> updateVolume(@RequestBody Volume request) throws ServiceException, CheckException {
+		Volume volume = volumeService.updateVolume(request);
+		VolumeResource volumeResource = new VolumeResource(volume);
+		return ResponseEntity.status(HttpStatus.OK).body(volumeResource);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
