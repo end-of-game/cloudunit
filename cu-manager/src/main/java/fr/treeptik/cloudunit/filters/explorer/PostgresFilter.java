@@ -29,9 +29,6 @@ public class PostgresFilter
 
     @Override
     public boolean isValid(FileUnit fileUnit) {
-
-        // On laisse passer tous les fichiers.
-        // la sélection a été fait en aval
         if (!fileUnit.isDir())
             return true;
 
@@ -40,18 +37,18 @@ public class PostgresFilter
         }
 
         String breadcrumb = fileUnit.getBreadcrump();
-        if (breadcrumb.equalsIgnoreCase("/cloudunit")
-                || breadcrumb.startsWith("/cloudunit/backup")
-                || breadcrumb.startsWith("/cloudunit/database")
-                || breadcrumb.startsWith("/cloudunit/tmp")
+        if (   breadcrumb.startsWith("/cloudunit")
                 || breadcrumb.startsWith("/etc")
-                || breadcrumb.equalsIgnoreCase("/var")
-                || breadcrumb.startsWith("/var/log")) {
+                || breadcrumb.startsWith("/opt")
+                || breadcrumb.startsWith("/usr")
+                || breadcrumb.startsWith("/var")) {
             return true;
         }
 
         return false;
     }
+
+
 
     @Override
     public void isRemovable(FileUnit fileUnit) {

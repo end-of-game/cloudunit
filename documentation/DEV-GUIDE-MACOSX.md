@@ -118,10 +118,10 @@ vagrant plugin install vagrant-vbguest
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/cloudUnit 
-$ vagrant up
-$ vagrant ssh 
-cd cloudunit/cu-platform && ./reset-all.sh -y
+cd $HOME/cloudUnit 
+vagrant up
+vagrant ssh 
+cd cloudunit/cu-platform && ./reset.sh -y
 ```
 
 2 - Run the UI for development (http://0.0.0.0:9000) from Mac
@@ -142,8 +142,10 @@ sudo npm update
 3 - Start the Java Backend from Mac
 
 ```
-$ cd $HOME/cloudUnit/cu-manager
-$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+cd $HOME/cloudUnit
+mvn clean install -DskipTests
+cd $HOME/cloudUnit/cu-manager
+mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 You can use default password and login
@@ -155,9 +157,17 @@ password: abc2015
 ## How to reset Environment Developpment
 
 ```
-$ cd $HOME/cloudUnit
-$ vagrant ssh dev
-$ cloudunit/cu-platform/reset-all.sh -y
+cd $HOME/cloudUnit
+vagrant ssh dev
+cloudunit/cu-platform/reset.sh -y
 ```
 
+## How to run e2e test (selenium & protractor)
 
+First of all, you have to you have to install Google Chrome.
+Then, start the application in parallel.
+
+```
+cd $HOME/cloudunit/cu-manager
+grunt test
+```

@@ -104,6 +104,7 @@ public class ApplicationServiceImpl
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
+    @Deprecated
     @Value("${cloudunit.manager.ip}")
     private String hostName2;
 
@@ -135,7 +136,7 @@ public class ApplicationServiceImpl
                 throw new CheckException(messageSource.getMessage("app.exists",
                         null, locale));
             }
-            if(checkNameLength(application.getName())) {
+            if (checkNameLength(application.getName())) {
                 throw new CheckException("This name has length equal to zero : " + application.getName());
             }
             if (imageService.findByName(serverName) == null)
@@ -171,7 +172,7 @@ public class ApplicationServiceImpl
     }
 
     public boolean checkNameLength(String applicationName) {
-        if(applicationName.length() == 0)
+        if (applicationName.length() == 0)
             return true;
         return false;
     }
@@ -277,7 +278,7 @@ public class ApplicationServiceImpl
             application.setDomainName(subdomain + suffixCloudUnitIO);
             application = applicationDAO.save(application);
             application.setManagerIp(dockerManagerIp);
-            application.setJvmRelease(javaVersionDefault);
+
             application.setRestHost(restHost);
             logger.info(application.getManagerIp());
 
@@ -295,6 +296,7 @@ public class ApplicationServiceImpl
             application.setServers(servers);
 
             // Persistence for Application model
+            application.setJvmRelease(server.getJvmRelease());
             application = applicationDAO.save(application);
 
         } catch (DataAccessException e) {
@@ -557,16 +559,13 @@ public class ApplicationServiceImpl
 
         try {
             // get app with all its components
-
             for (Server server : application.getServers()) {
 
-                // loading server ssh informations
 
-                String rootPassword = server.getApplication().getUser()
-                        .getPassword();
+                // loading server ssh informations
+                String rootPassword = server.getApplication().getUser() .getPassword();
                 configShell.put("port", server.getSshPort());
-                configShell.put("dockerManagerAddress",
-                        application.getManagerIp());
+                configShell.put("dockerManagerAddress", application.getManagerIp());
                 configShell.put("password", rootPassword);
                 String destFile = "/cloudunit/tmp/";
 
@@ -576,7 +575,6 @@ public class ApplicationServiceImpl
                         application.getManagerIp(), destFile);
 
                 // call deployment script
-
                 code = shellUtils.executeShell(
                         "bash /cloudunit/scripts/deploy.sh " + file.getName()
                                 + " " + application.getUser().getLogin(),
@@ -585,11 +583,10 @@ public class ApplicationServiceImpl
             }
 
             // if all is ok, create a new deployment tag and set app to starting
-
             if (code == 0) {
                 deploymentService.create(application, Type.WAR);
             } else {
-                throw new CheckException("No way to deploy application " + file + ", " + application);
+                throw new ServiceException("No way to deploy application " + file + ", " + application);
             }
 
         } catch (Exception e) {

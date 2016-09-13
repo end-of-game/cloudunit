@@ -19,6 +19,82 @@ var DashboardPage = (function () {
     this.container = element(by.id("dashboard"));
     this.createAppForm = element(by.id('create-application-form'));
     this.applications = element.all(by.repeater('application in dashboard.applications'));
+
+    this.formContainer = element(by.id('create-application'));
+    this.applicationNameInput = element(by.model('createApp.applicationName'));
+    this.dropdownToggle = this.createAppForm.element(by.css('.selectize-control input'));
+    this.createBtn = element(by.id('create-btn'));
+    this.errorMessage = element(by.binding('createApp.message'));
+    this.formatErrorMessage = element(by.css('.format'));
+    this.spinner = this.formContainer.element(by.css('.spinner'));
+    this.setApplicationName = function (name) {
+         browser.driver.sleep(browser.params.sleep.small);
+        return this.applicationNameInput.sendKeys(name);
+    };
+    this.createApp = function (appName, serverChoice) {
+      var self = this;
+      self.setApplicationName(appName);
+      self.dropdownToggle.click().then(function () {
+          //console.log(element(by.repeater('serverImage in createApp.serverImages').row(1));
+          /*
+            element(by.repeater('serverImage in createApp.serverImages').row(serverChoice)).click()
+            .then(function () {
+              self.createBtn.click()
+            })
+          */
+          //self.dropdownToggle.sendKeys(serverChoice);
+         
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          for(var i = 0; i < serverChoice; i++) {
+            self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
+          }
+
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
+          // self.createBtn.click();
+          //var selectorAppNameQuery = '#application-' + appName;
+          //browser.driver.wait(protractor.until.elementIsVisible($('.pending', selectorAppNameQuery)), browser.params.sleep.large);
+          //var EC = protractor.ExpectedConditions;
+          browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
+          //button.click();
+      });
+      
+    }
+     this.createAppWithoutWaiting = function (appName, serverChoice) {
+      var self = this;
+      self.setApplicationName(appName);
+      self.dropdownToggle.click().then(function () {
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          for(var i = 0; i < serverChoice; i++) {
+            self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
+          }
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
+      });
+    }
+    this.createAppByName = function (appName, serverName) {
+      var self = this;
+      self.setApplicationName(appName);
+      self.dropdownToggle.click().then(function () {;
+          self.dropdownToggle.sendKeys(serverName);
+          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+          browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
+          browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
+      });
+      
+    }
+    this.serverChoice = function (serverChoice) {
+      var self = this;
+      self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+      for(var i = 0; i < serverChoice; i++) {
+        self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
+      }
+      return self.dropdownToggle.getAttribute('value');
+      //return element(by.repeater('serverImage in createApp.serverImages').row(serverChoice));
+    }
+    this.getAppProperty = function (propertyName, appChoice) {
+      return element(by.repeater('application in dashboard.applications').row(appChoice).column('application.' + propertyName));
+    }
     this.findApplication = function (applicationName) {
       return element(by.id('application-' + applicationName));
     };
@@ -29,28 +105,8 @@ var DashboardPage = (function () {
       modal = appToDelete.element(by.css('.modal'));
       toggleModal.click();
       modal.element(by.css('.delete-btn')).click();
+      browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
     };
-    this.formContainer = element(by.id('create-application'));
-    this.createAppForm = element(by.id('create-application-form'));
-    this.applicationNameInput = element(by.model('createApplication.applicationName'));
-    this.dropdownToggle = this.createAppForm.element(by.css('.dropdown-toggle'));
-    this.createBtn = element(by.id('create-btn'));
-    this.errorMessage = element(by.binding('createApplication.message'));
-    this.formatErrorMessage = element(by.css('.format'));
-    this.spinner = this.formContainer.element(by.css('.spinner'));
-    this.setApplicationName = function (name) {
-      return this.applicationNameInput.sendKeys(name);
-    };
-    this.createApp = function (appName, serverChoice) {
-      var self = this;
-      self.setApplicationName(appName);
-      self.dropdownToggle.click().then(function () {
-        element(by.repeater('serverImage in createApplication.serverImages').row(serverChoice)).click()
-          .then(function () {
-            self.createBtn.click()
-          })
-      });
-    }
   }
 
   return DashboardPage;

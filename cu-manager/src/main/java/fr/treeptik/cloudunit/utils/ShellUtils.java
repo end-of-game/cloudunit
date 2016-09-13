@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -170,7 +167,6 @@ public class ShellUtils {
     /**
      * TODO : COMMENT
      *
-     * @param file
      * @param rootPassword
      * @param sshPort
      * @param dockerManagerAddress
@@ -181,21 +177,21 @@ public class ShellUtils {
                              String dockerManagerAddress, String completeFilePath)
         throws CheckException {
         Channel channel = null;
+
         try {
             String dockerManagerIP = dockerManagerAddress.substring(0,
                 dockerManagerAddress.length() - 5);
-            channel = this.getSession("root", rootPassword, dockerManagerIP,
-                sshPort).openChannel("sftp");
+            channel = this.getSession("root", rootPassword, dockerManagerIP, sshPort).openChannel("sftp");
             channel.connect();
             ChannelSftp sftpChannel = (ChannelSftp) channel;
-            // file source, file destination
+            
             sftpChannel.get(completeFilePath, file.getAbsolutePath());
 
             logger.debug("File received correctly");
 
         } catch (SftpException | JSchException e) {
-            logger.error(e.getMessage());
-            throw new CheckException("Error during file downloading");
+            e.printStackTrace();
+            throw new CheckException("Error during file downloading", e);
         } finally {
             try {
                 if (channel != null) {
@@ -262,6 +258,7 @@ public class ShellUtils {
                 .openChannel("sftp");
             channel.connect();
             fileInputStream = new FileInputStream(file);
+
             ChannelSftp sftpChannel = (ChannelSftp) channel;
             sftpChannel
                 .put(fileInputStream, destPathFile+file.getName(), ChannelSftp.OVERWRITE);
@@ -277,7 +274,7 @@ public class ShellUtils {
             throw new CheckException("Error during file copying : " + msgError);
 
         } finally {
-            try {
+           try {
                 if (fileInputStream != null) {
                     fileInputStream.close();
                 }

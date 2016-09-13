@@ -4,6 +4,7 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 
 ## Requirements
 
+* A virtual or baremetal server with at least 8 Go RAM. 32 or 64 will be better !
 * A server with Ubuntu 14.04 LTS with a 3.13 or 3.19 kernel. Ok for 4.x
 * Git installed and a root account
 
@@ -12,16 +13,92 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 ## Installation
 
 We hope to provide a simple installation following KISS principles.
-So you just need to run this command as root :
+So you just need to run this command as *ROOT* :
 
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/master/cu-production/boot.sh | bash
+curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
 ```
 
-## Certificats
+After installation, you need to set a password for *admincu* user account. 
 
-TODO
+## Configuration
 
-## Security
+### CloudUnit properties.
 
-TODO
+The default configuration files is `/home/admincu/.docker/application.properties`
+The template is 
+
+```
+# cloudunit.max.apps=100
+
+# mail.apiKey=
+# mail.emailFrom=
+# mail.secretKey=
+# mail.smtpHost=smtp.gmail.com
+# mail.socketFactoryPort=587
+# mail.smtpPort=587
+
+cloudunit.instance.name=PROD
+
+# database password must be the same in /etc/environment
+# database.hostname=cuplatform_mysql_1.mysql.cloud.unit
+# database.port=3306
+# database.schema=cloudunit
+# database.user=root
+# database.password=changeit
+
+```
+
+### Database password 
+
+You have to change MYSQL root password (*changeit* by default)
+To do it, you have to change the 
+* /home/admincu/.docker/application.properties
+* /etc/profile
+
+Run `/home/admincu/cloudunit/cu-platform/reset-prod.sh -y`
+
+## Domain Name and SSL Certificates
+
+In order to customize your Cloudunit installation with your own domain name and SSL certificates, please follow these instructions.
+
+### NGINX config files
+
+NGINX is the entrypoint of the Cloudunit PAAS frontend and is provided as docker conatainer.
+
+SSL certificates directory location:
+
+```
+/home/admincu/cloudunit/cu-production/nginx/DOMAIN_NAME/
+```
+
+NGINX global configuration for domain wildcard:
+
+```
+/home/admincu/cloudunit/cu-production/nginx/nginx.conf
+```
+
+NGINX domain configuration for apps (gitlab, jenkins, admin...):
+Please rename the following file with your domain name and customize it.
+
+```
+/home/admincu/cloudunit/cu-production/nginx/sites-enabled/cloudunit.io.conf
+```
+### SSL Certificates
+
+The number of certificates to list per Nginx server name depends on your SSL Provider.
+Extensions also could be differ from a provider to another.
+
+As an example Globalsign gives, in addition, an intermediate certificate. Some others aggregate and encrypt certificates in PKCS / P7B format. In this case, you have to split the file in multiple standard certificates.
+
+
+# FAQ
+
+## How to reset Environment Production
+
+```
+/home/admincu/cloudunit/cu-platform/reset-prod.sh -y
+```
+
+
+

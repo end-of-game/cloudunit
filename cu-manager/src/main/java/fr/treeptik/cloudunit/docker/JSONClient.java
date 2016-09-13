@@ -100,9 +100,6 @@ public class JSONClient {
                     + " - contentype : " + contentType);
         }
 
-        /**
-         * TODO
-         */
         logger.info("POST : uri " + uri + " - body  :  " + body
                 + " - contentype : " + contentType);
 
@@ -111,8 +108,22 @@ public class JSONClient {
         httpPost.addHeader("content-type", contentType);
 
         httpPost.setEntity(new StringEntity(body));
+        HttpResponse response = httpclient.execute(httpPost);
+        /*
+        if (logger.isDebugEnabled()) {
+            InputStreamReader reader = null;
+            reader = new InputStreamReader(response.getEntity()
+                    .getContent());
+            LineIterator lineIterator = new LineIterator(reader);
+            StringBuilder jsonStringBuilder = new StringBuilder();
 
-        StatusLine statusLine = httpclient.execute(httpPost).getStatusLine();
+            while (lineIterator.hasNext()) {
+                jsonStringBuilder.append(lineIterator.nextLine());
+            }
+            logger.debug(jsonStringBuilder.toString());
+        }
+        */
+        StatusLine statusLine = response.getStatusLine();
         if (logger.isDebugEnabled()) {
             logger.debug("POST : uri " + uri + " returns "
                     + statusLine.getStatusCode());
@@ -137,7 +148,8 @@ public class JSONClient {
         logger.info("POST : uri " + uri + " - body  :  " + body
                 + " - contentype : " + contentType);
 
-        CloseableHttpClient httpclient = build();;
+        CloseableHttpClient httpclient = build();
+        ;
         HttpPost httpPost = new HttpPost(uri);
         httpPost.addHeader("content-type", contentType);
 
@@ -183,7 +195,8 @@ public class JSONClient {
         logger.info("POST : uri " + uri + " - body  :  " + body
                 + " - contentype : " + contentType);
 
-        CloseableHttpClient httpclient = build();;
+        CloseableHttpClient httpclient = build();
+        ;
         HttpPost httpPost = new HttpPost(uri);
         httpPost.addHeader("content-type", contentType);
 
@@ -225,7 +238,8 @@ public class JSONClient {
         logger.info("POST : uri " + uri + " - body  :  " + body
                 + " - contentype : " + contentType);
 
-        CloseableHttpClient httpclient = build();;
+        CloseableHttpClient httpclient = build();
+        ;
         RequestConfig config = RequestConfig.custom()
                 .setSocketTimeout(1000 * 60 * 5)
                 .setConnectTimeout(1000 * 60 * 5).build();
@@ -261,7 +275,8 @@ public class JSONClient {
         if (logger.isDebugEnabled()) {
             logger.debug("DELETE : uri " + uri);
         }
-        CloseableHttpClient httpClient = build();;
+        CloseableHttpClient httpClient = build();
+        ;
         HttpDelete httpDelete = new HttpDelete(uri);
         StatusLine statusLine = httpClient.execute(httpDelete).getStatusLine();
         if (logger.isDebugEnabled()) {

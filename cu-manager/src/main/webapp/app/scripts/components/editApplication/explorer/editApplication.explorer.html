@@ -54,7 +54,7 @@
         </ul>
       </div>
     </div>
-    <div class="card card--explorer col-lg-9 " ng-class="{pending: explorer.isUploading}">
+    <div class="card card--explorer col-lg-9" ng-class="{pending: explorer.isUploading || explorer.isCreatingDirectory}">
       <div class="content">
         <div class="breadcrumb toolbar clearfix">
           <div class="pull-left">
@@ -79,6 +79,23 @@
             </div>
           </div>
         </div>
+        <div class="form-group" style="overflow: hidden;">
+          <div class="input-group stack col-lg-9">
+            <label>Add directory...</label>
+            <input type="text" id="add-directory" class="pull-left"
+                    data-ng-model="explorer.newDirectoryName"
+                     protectinput=""
+                    placeholder="Name">
+
+          </div>
+          <button class="button raised primary pull-right"
+                ripple=""
+                data-ng-disabled="!explorer.newDirectoryName"
+                data-ng-click="explorer.addNewDirectory(explorer.myContainer.id, explorer.currentPath, explorer.newDirectoryName)">
+            <span>Create</span>
+          </button>
+        <br>
+        </div>
         <div class="upload-progress" data-ng-show="uploader.isUploading">
           <div class="progress" ng-class="{'success': explorer.uploadSuccess}">
             <div class="progress-bar"
@@ -86,6 +103,13 @@
                  ng-style="{ 'width': uploader.progress + '%' }">
             </div>
           </div>
+        </div>  
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
         </div>
         <div class="explorer__sub" nv-file-over="" nv-file-drop="" uploader="uploader"
              ng-class="{'nv-file-drop': explorer.dropped}">
@@ -102,11 +126,11 @@
                   >{{item.name}} <span ng-show="item.safe">&midast;</span>
                 </a>
                 <a
+                  target="_blank"
                   ng-switch-when="false"
-                  ng-href=""
+                  href="{{ '/file/container/' + explorer.myContainer.id + '/application/' + explorer.app.name + '/path/' + explorer.currentPath.join('__') + '/fileName/' + item.name }}"
                   class="file"
                   ng-class="item.safe ? 'safe' : 'unsafe'"
-                  ng-click="explorer.downloadFile(explorer.myContainer.id, explorer.currentPath, item)"
                   >{{item.name}} <span ng-show="item.safe">&midast;</span>
                 </a>
                 <button class="action icon-button"
@@ -114,7 +138,17 @@
                         data-toggle="modal"
                         data-target="#delete-{{$index}}"
                         data-keyboard="true"><i class="icon-whhg trash"></i></button>
-
+                <button class="action icon-button"
+                        ng-if="item.editable"
+                        ng-click="explorer.getFile(explorer.myContainer.id, explorer.currentPath, item)"
+                        data-toggle="modal"
+                        data-target="#edit-{{$index}}"
+                        data-keyboard="true"><i class="icon-whhg edit"></i></button>
+               <button class="action icon-button"
+                        ng-if="item.zipable"
+                        data-toggle="modal"
+                        data-target="#unzip-{{$index}}"
+                        data-keyboard="true"><i class="icon-whhg import"></i></button>
                 <div class="modal"
                      id="delete-{{$index}}"
                      modaldismiss="">
@@ -137,6 +171,50 @@
                     </div>
                   </div>
                 </div>
+                <div class="modal"
+                     id="unzip-{{$index}}"
+                     modaldismiss="">
+                  <div class="modal-inner">
+                    <div class="content">
+                      <h3 class="title">Unzip confirmation required</h3>
+
+                      <p class="alert">Caution, <strong> this is a permanent action</strong>. It can cause malfunctions
+                        in your application.</p>
+
+                      <div class="action">
+                        <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                        </button>
+                        <button type="button" class="button primary"
+                                ng-click="explorer.unzipFile(explorer.myContainer.id, explorer.currentPath, item)"
+                                data-dismiss="modal">
+                          Unzip
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal large"
+                     id="edit-{{$index}}"
+                     modaldismiss="">
+                  <div class="modal-inner">
+                    <div class="content modal-full-input">
+                      <h3 class="title">Edit File</h3>
+                      <!--<textarea  data-ng-model="explorer.fileContent" class="textarea-full" ></textarea>-->
+                      <div ng-model="explorer.fileContent" ui-codemirror="{ onLoad : explorer.codemirrorLoaded }" ></div>
+                      
+                      <div class="action">
+                        <button type="button" class="button primary raised" data-dismiss="modal">Cancel
+                        </button>
+                        <button type="button" class="button primary raised"
+                                ng-click="explorer.editFile(explorer.myContainer.id, explorer.currentPath, item, explorer.fileContent)"
+                                data-dismiss="modal">
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-switch>
             </li>
           </ul>
         </div>
@@ -144,8 +222,3 @@
     </div>
   </div>
 </div>
-
-
-
-
-

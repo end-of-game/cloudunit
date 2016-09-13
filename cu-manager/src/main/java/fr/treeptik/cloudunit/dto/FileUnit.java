@@ -16,10 +16,54 @@
 
 package fr.treeptik.cloudunit.dto;
 
+import java.util.function.Predicate;
+
 /**
  * Created by nicolas on 20/05/15.
  */
 public class FileUnit {
+
+    public static Predicate<FileUnit> edition() {
+        return f -> f.getName().toLowerCase().endsWith(".xml")
+                || f.getName().toLowerCase().endsWith(".yml")
+                || f.getName().toLowerCase().endsWith(".toml")
+                || f.getName().toLowerCase().endsWith(".sh")
+                || f.getName().toLowerCase().endsWith(".md")
+                || f.getName().toLowerCase().endsWith(".conf")
+                || f.getName().toLowerCase().endsWith(".policy")
+                || f.getName().toLowerCase().endsWith(".jsp")
+                || f.getName().toLowerCase().endsWith(".js")
+                || f.getName().toLowerCase().endsWith(".xsl")
+                || f.getName().toLowerCase().endsWith(".xsd")
+                || f.getName().toLowerCase().endsWith(".html")
+                || f.getName().toLowerCase().endsWith(".htm")
+                || f.getName().toLowerCase().endsWith(".php")
+                || f.getName().toLowerCase().endsWith(".json")
+                || f.getName().toLowerCase().endsWith(".py")
+                || f.getName().toLowerCase().endsWith(".ini")
+                || f.getName().toLowerCase().endsWith(".cf")
+                || f.getName().toLowerCase().endsWith(".cnf")
+                || f.getName().toLowerCase().endsWith(".conf")
+                || f.getName().toLowerCase().endsWith(".config")
+                || f.getName().toLowerCase().endsWith(".properties")
+                || f.getName().toLowerCase().endsWith(".txt");
+    };
+
+    public static Predicate<String> tar() {
+        return s -> s.toLowerCase().endsWith(".tar.gz")
+                || s.toLowerCase().endsWith(".tar")
+                || s.toLowerCase().endsWith(".tgz");
+    };
+
+    public static Predicate<String> zip() {
+        return s -> s.toLowerCase().endsWith(".zip")
+                || s.toLowerCase().endsWith(".gzip")
+                || s.toLowerCase().endsWith(".7z");
+    };
+
+    public static Predicate<FileUnit> exec() {
+        return f -> f.getName().toLowerCase().endsWith(".sh");
+    };
 
     private String name;
 
@@ -40,6 +84,10 @@ public class FileUnit {
 
     private boolean isRemovable;
 
+    private boolean isZipable;
+
+    private boolean isEditable;
+
     private String breadcrumb;
 
     public FileUnit(String name, String user, String day, String month, String hour, boolean safe, boolean dir,
@@ -57,10 +105,6 @@ public class FileUnit {
 
     public boolean isDir() {
         return dir;
-    }
-
-    public boolean isExec() {
-        return exec;
     }
 
     public String getName() {
@@ -90,6 +134,12 @@ public class FileUnit {
     public void safe(boolean safe) {
         this.safe = safe;
     }
+
+    public boolean isZipable() { return zip().test(name) || tar().test(name); }
+
+    public boolean isExec() { return exec().test(this); }
+
+    public boolean isEditable() { return edition().test(this); }
 
     public boolean isRemovable() {
         return isRemovable;

@@ -26,56 +26,70 @@
    */
   angular
     .module('webuiApp.editApplication')
-    .directive('editApplication', EditApplication);
+    .component('editApplication', EditApplication());
 
   function EditApplication() {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/editApplication.html',
-      scope: {
+      bindings: {
         state: '=',
       },
       controller: [
         '$rootScope',
-        '$scope',
         '$stateParams',
         'ApplicationService',
+        '$state',
+        'CONFIG',
         EditApplicationCtrl,
       ],
       controllerAs: 'editApp',
-      bindToController: true,
     };
   }
 
-  function EditApplicationCtrl($rootScope, $scope, $stateParams, ApplicationService) {
+  function EditApplicationCtrl($rootScope, $stateParams, ApplicationService, $state, CONFIG) {
 
     // ------------------------------------------------------------------------
     // SCOPE
     // ------------------------------------------------------------------------
-
+    
     var vm = this;
-
-    vm.hideFeed = false;
+    vm.monitoringRoute = false;
+    vm.dislayJolokia = CONFIG.dislayJolokia;
     vm.applicationService = ApplicationService;
+    
+    function refreshRoute() {
+      if (($state.current.name == "editApplication.monitoringContainers")
+        || ($state.current.name == "editApplication.monitoringApplication")) {
+        vm.monitoringRoute = true;
+      } else {
+        vm.monitoringRoute = false;
+      }
+    }
 
+    vm.$onInit = function() {
+      refreshRoute();
+    }
+    
     vm.applicationService.init($stateParams.name).then(function() {
       vm.application = vm.applicationService.state;
-      $rootScope.$broadcast('application:ready');
+      $rootScope.$broadcast('application:ready', {
+          app: vm.application,
+        });
     });
 
     // We must destroy the polling when the scope is destroyed
-    $scope.$on('$destroy', function() {
+     vm.$onDestroy = function () {
       vm.applicationService.stopPolling();
-    });
+    };
+    
 
-    $scope.$watch(function() {
-      return vm.state;
-    }, function(oldVal, newVal) {
-
-      if (oldVal) {
-        vm.hideFeed = oldVal.name === 'editApplication.logs' || oldVal.name === 'editApplication.monitoring';
-      }
-    });
+    vm.updateRoute = function () { 
+      
+      setTimeout(function() {
+        refreshRoute();
+      }, 0);
+    }
   }
 })();
+
 

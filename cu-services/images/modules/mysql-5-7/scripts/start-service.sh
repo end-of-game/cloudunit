@@ -24,7 +24,7 @@ MAX=30
 
 # Callback bound to the application stop
 terminate_handler() {
-  echo "/cloudunit/java/jdk1.7.0_55/bin/java -jar /cloudunit/tools/cloudunitAgent-1.0-SNAPSHOT.jar MODULE $MYSQL_ENDPOINT $HOSTNAME STOP $MANAGER_DATABASE_PASSWORD"
+  /etc/init.d/apache2 stop
   kill -s SIGTERM $(pidof mysqld)
   CODE=$?
   if [[ "$CODE" -eq "0" ]]; then
@@ -66,7 +66,7 @@ if [ ! -f /cloudunit/database/init-service-ok ]; then
 	done
 	# Create the admin user
 	mysql -u root --password=root -e 'GRANT ALL PRIVILEGES ON *.* TO '$CU_USER'@"localhost" IDENTIFIED BY "'$CU_PASSWORD'" WITH GRANT OPTION; GRANT ALL PRIVILEGES ON *.* TO '$CU_USER'@"%" IDENTIFIED BY "'$CU_PASSWORD'" WITH GRANT OPTION; FLUSH PRIVILEGES; CREATE DATABASE IF NOT EXISTS `'$CU_DATABASE_NAME'`;ALTER DATABASE `'$CU_DATABASE_NAME'` charset=utf8;'
-	mysql -u $CU_USER --password=$CU_PASSWORD -e 'UPDATE mysql.user SET password=PASSWORD("'$CU_PASSWORD'") WHERE user="root";'
+	# mysql -u $CU_USER --password=$CU_PASSWORD -e 'UPDATE mysql.user SET password=PASSWORD("'$CU_PASSWORD'") WHERE user="root";'
 	touch /cloudunit/database/init-service-ok
 fi
 
@@ -79,6 +79,9 @@ do
 	let count=$count+1;
 	sleep 1
 done
+
+# source /etc/apache2/envvars && /usr/sbin/apache2 -DFOREGROUND &
+/etc/init.d/apache2 start
 
 # ####################################
 # If mysql is started we notify it #

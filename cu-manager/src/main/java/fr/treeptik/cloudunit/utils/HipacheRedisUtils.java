@@ -33,7 +33,7 @@ import java.io.UnsupportedEncodingException;
  * Redis is used with Hipache DotCloud ReverseProxy
  */
 @Component
-public class HipacheRedisUtils {
+public class HipacheRedisUtils implements KeyValueStoreUtils {
 
     private Logger logger = LoggerFactory.getLogger(HipacheRedisUtils.class);
 
@@ -54,6 +54,7 @@ public class HipacheRedisUtils {
      * @param serverPort
      * @param serverManagerPort
      */
+    @Override
     public void createRedisAppKey(Application application,
                                   String dockerManagerIP, String serverPort, String serverManagerPort) {
         String suffixCloudUnit = application.getSuffixCloudUnitIO();
@@ -104,6 +105,7 @@ public class HipacheRedisUtils {
      * @param application
      * @param serverPort
      */
+    @Override
     public void writeNewAlias(String alias, Application application, String serverPort) {
 
         String dockerManagerIP = application.getServers().get(0)
@@ -141,6 +143,7 @@ public class HipacheRedisUtils {
      * @param application
      * @param serverPort
      */
+    @Override
     public void updateAlias(String alias, Application application, String serverPort) {
 
         String dockerManagerIP = application.getManagerIp();
@@ -176,6 +179,7 @@ public class HipacheRedisUtils {
      * @param serverPort
      * @param serverManagerPort
      */
+    @Override
     public void updateServerAddress(Application application,
                                     String dockerManagerIP, String serverPort, String serverManagerPort) {
 
@@ -221,6 +225,7 @@ public class HipacheRedisUtils {
      *
      * @param application
      */
+    @Override
     public void removeServerAddress(Application application) {
         String suffixCloudUnit = application.getSuffixCloudUnitIO();
         JedisPool pool = null;
@@ -257,6 +262,7 @@ public class HipacheRedisUtils {
         }
     }
 
+    @Override
     public void updatePortAlias(
             String serverIP, Integer port, String portAlias) {
 
@@ -291,6 +297,7 @@ public class HipacheRedisUtils {
      * Remove the server address
      * portAlias
      */
+    @Override
     public void removeServerPortAlias(String portAlias) {
         JedisPool pool = new JedisPool(new JedisPoolConfig(), redisIp, Integer.parseInt(redisPort), 3000);
         Jedis jedis = pool.getResource();
@@ -316,6 +323,7 @@ public class HipacheRedisUtils {
      *
      * @param application
      */
+    @Override
     public void removeRedisAppKey(Application application) {
 
         String suffixCloudUnit = application.getSuffixCloudUnitIO();
@@ -343,7 +351,7 @@ public class HipacheRedisUtils {
             }
         }
     }
-
+    @Override
     public void createModuleManagerKey(Application application,
                                        String dockerContainerIP, String modulePort,
                                        String cloudunitModuleManagerSuffix, Long instanceNumber) {
@@ -388,7 +396,7 @@ public class HipacheRedisUtils {
             }
         }
     }
-
+    @Override
     public void updatedAdminAddress(Application application,
                                     String dockerManagerIP, String modulePort,
                                     String cloudunitModuleManagerSuffix, Long instanceNumber) {
@@ -432,7 +440,7 @@ public class HipacheRedisUtils {
             }
         }
     }
-
+    @Override
     public void removePhpMyAdminKey(Application application,
                                     String cloudunitModuleManagerSuffix, Long instanceNumber) {
 
@@ -470,6 +478,7 @@ public class HipacheRedisUtils {
      *
      * @param alias
      */
+    @Override
     public void removeAlias(String alias) {
 
         JedisPool pool = null;

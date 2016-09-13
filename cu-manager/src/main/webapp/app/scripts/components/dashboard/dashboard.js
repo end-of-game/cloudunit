@@ -25,14 +25,15 @@
    */
   angular
     .module('webuiApp')
-    .directive('dashboard', Dashboard);
+    .component('dashboard', Dashboard());
 
   function Dashboard(){
     return {
       restrict: 'E',
       templateUrl: 'scripts/components/dashboard/dashboard.html',
-      scope: {},
+      bindings: {},
       controller: [
+        '$rootScope',
         '$scope',
         '$interval',
         'ApplicationService',
@@ -40,17 +41,18 @@
         DashboardCtrl
       ],
       controllerAs: 'dashboard',
-      bindToController: true
     };
   }
 
 
 
 
-  function DashboardCtrl($scope, $interval, ApplicationService, ErrorService) {
+  function DashboardCtrl($rootScope, $scope, $interval, ApplicationService, ErrorService) {
     var timer, vm = this;
     vm.applications = [];
     vm.selectedItem = 'All';
+    vm.selectedServerSearch = 'All';
+    vm.selectedServer = '';
     vm.search = '';
     vm.deleteApplication = deleteApplication;
     vm.toggleServer = toggleServer;
@@ -64,10 +66,10 @@
     }, 2000);
 
 
-    $scope.$on('$destroy', function () {
+    vm.$onDestroy = function () {
       $interval.cancel(timer);
-    });
-
+    };
+  
     $scope.$on('app:creating', function(e, data){
       vm.buffer = data;
     });
@@ -75,7 +77,11 @@
     $scope.$on('app:create:fail', function(e, data){
       vm.buffer = '';
     });
-
+    
+    $scope.$on('app:serverImages', function(event, args) {
+      vm.serverImages = args.serverImages;
+    });
+    
     /////////////////////////////////////////////
 
     // Refresh the application list
@@ -87,7 +93,7 @@
       function success(applications) {
 
         var newApp = _.find(applications, function(app){
-          return app.name === vm.buffer.toLowerCase();
+          return app.name === vm.buffer.toLowerCase().replace(/[^a-z0-9]/gi,'');
         });
 
         // display shadow app while new app is being created
@@ -101,8 +107,8 @@
             vm.buffer = '';
           }
         }
-
-        vm.applications = applications;
+        
+        vm.applications = applications;     
         return vm.applications;
       }
 
@@ -138,4 +144,3 @@
     }
   }
 })();
-

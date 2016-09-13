@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.config;
 
+import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -142,6 +143,7 @@ public class SecurityConfiguration
             .antMatchers("/snapshot/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/monitoring/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/messages/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .antMatchers("/scripting/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .antMatchers("/gitlab/**").permitAll()
             .antMatchers("/nopublic/**").permitAll().and()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);

@@ -40,6 +40,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
@@ -59,6 +60,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.util.Random;
@@ -106,7 +108,13 @@ public class AliasControllerTestIT {
     private static String applicationName2;
     private static boolean isAppCreated = false;
 
-    private final String alias = "myAlias.cloudunit.dev";
+    @Value("${suffix.cloudunit.io}")
+    private String domainSuffix;
+    private String alias;
+    @PostConstruct
+    private void init() {
+        alias = "myAlias" + domainSuffix;
+    }
 
     @BeforeClass
     public static void initEnv() {
@@ -191,7 +199,7 @@ public class AliasControllerTestIT {
         logger.info("*********************************************************");
         logger.info("create an alias for the application : " + applicationName1);
         logger.info("*********************************************************");
-        String alias = "myapp.cloudunit.dev";
+        String alias = "myapp" + domainSuffix;
         String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + alias + "\"}";
         ResultActions resultats = this.mockMvc
                 .perform(

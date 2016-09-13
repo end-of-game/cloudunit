@@ -44,6 +44,15 @@ textarea:focus {
   max-height: 72px;
 }
 
+.textarea-full {
+  height: auto;
+  min-height: 60vh;
+  padding: 6px 12px;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 10px;
+}
+  
 input[type='text']:disabled, input[type='text'].disabled, input[readonly] {
   border-bottom: 1px dashed #bdbdbd;
   background-color: transparent;
@@ -54,8 +63,10 @@ input[type='text'].ng-invalid:not(.ng-pristine) {
   border-bottom: 2px solid $color-error;
 }
 
-input.large {
-  min-width: 360px;
+input {
+  &.large {
+    min-width: 360px;
+  }
 }
 
 .label {
@@ -82,6 +93,7 @@ input.large {
     display: block;
   }
 }
+
 
 .input-group.stack.suffix {
   input, textarea {
@@ -125,6 +137,6 @@ input.large {
   }
 }
 
-
-
-
+.CodeMirror{
+    min-height: 80vh;
+}

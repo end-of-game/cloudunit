@@ -25,9 +25,12 @@
   <!-- build:css(.) styles/vendor.css -->
   <!-- bower:css -->
   <link rel="stylesheet" href="bower_components/ng-table/ng-table.css" />
-  <link rel="stylesheet" href="bower_components/bootstrap-css-only/css/bootstrap.css" />
-  <link rel="stylesheet" href="bower_components/textAngular/src/textAngular.css" />
   <link rel="stylesheet" href="bower_components/chartist/dist/chartist.min.css" />
+  <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css" />
+  <link rel="stylesheet" href="bower_components/textAngular/dist/textAngular.css" />
+  <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.css" />
+  <link rel="stylesheet" href="bower_components/metrics-graphics/dist/metricsgraphics.css" />
+  <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css(.tmp) styles/main.css -->
@@ -76,6 +79,8 @@
             </ul>
           </div>
         </li>
+        <li><a ui-sref="mainTimeline">Messages</a></li>
+        <li><a ui-sref="scripting">Scripts</a></li>
       </ul>
     </div>
     <div class="app-bar-icons">
@@ -137,9 +142,6 @@
 <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-touch/angular-touch.js"></script>
-<script src="bower_components/angular-route/angular-route.js"></script>
-<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-<script src="bower_components/angular-file-upload/angular-file-upload.js"></script>
 <script src="bower_components/ng-table/ng-table.js"></script>
 <script src="bower_components/moment/moment.js"></script>
 <script src="bower_components/angular-gravatar/build/md5.js"></script>
@@ -157,27 +159,44 @@
 <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tooltip.js"></script>
 <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/popover.js"></script>
 <script src="bower_components/angular-utils-pagination/dirPagination.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="bower_components/angular-timeline/src/angular-timeline.js"></script>
+<script src="bower_components/angular-filter/dist/angular-filter.js"></script>
+<script src="bower_components/FileSaver/FileSaver.js"></script>
+<script src="bower_components/lodash/lodash.js"></script>
+<script src="bower_components/chartist/dist/chartist.min.js"></script>
+<script src="bower_components/sifter/sifter.js"></script>
+<script src="bower_components/microplugin/src/microplugin.js"></script>
+<script src="bower_components/selectize/dist/js/selectize.js"></script>
+<script src="bower_components/angular-chartist.js/dist/angular-chartist.js"></script>
+<script src="bower_components/chartist-plugin-legend/chartist-plugin-legend.js"></script>
+<script src="bower_components/angular-file-upload/dist/angular-file-upload.min.js"></script>
 <script src="bower_components/rangy/rangy-core.js"></script>
 <script src="bower_components/rangy/rangy-classapplier.js"></script>
 <script src="bower_components/rangy/rangy-highlighter.js"></script>
 <script src="bower_components/rangy/rangy-selectionsaverestore.js"></script>
 <script src="bower_components/rangy/rangy-serializer.js"></script>
 <script src="bower_components/rangy/rangy-textrange.js"></script>
-<script src="bower_components/textAngular/src/textAngular.js"></script>
-<script src="bower_components/textAngular/src/textAngular-sanitize.js"></script>
-<script src="bower_components/textAngular/src/textAngularSetup.js"></script>
-<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script src="bower_components/angular-timeline/src/angular-timeline.js"></script>
-<script src="bower_components/angular-filter/dist/angular-filter.min.js"></script>
-<script src="bower_components/FileSaver/FileSaver.js"></script>
-<script src="bower_components/lodash/lodash.js"></script>
-<script src="bower_components/chartist/dist/chartist.min.js"></script>
-<script src="bower_components/angular-chartist.js/dist/angular-chartist.js"></script>
-<script src="bower_components/chartist-plugin-legend/chartist-plugin-legend.js"></script>
+<script src="bower_components/textAngular/dist/textAngular.js"></script>
+<script src="bower_components/textAngular/dist/textAngular-sanitize.js"></script>
+<script src="bower_components/textAngular/dist/textAngularSetup.js"></script>
+<script src="bower_components/d3/d3.js"></script>
+<script src="bower_components/nvd3/build/nv.d3.js"></script>
+<script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
+<script src="bower_components/metrics-graphics/dist/metricsgraphics.js"></script>
+<script src="bower_components/angular-metrics-graphics/dist/angular-metrics-graphics.js"></script>
+<script src="bower_components/codemirror/lib/codemirror.js"></script>
+<script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
+<script src="bower_components/clipboard/dist/clipboard.js"></script>
+<script src="bower_components/ngclipboard/dist/ngclipboard.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 
 <!-- build:js({.tmp,app}) scripts/scripts.js -->
+
+<!-- code color -->
+<script src="bower_components/codemirror/mode/properties/properties.js"></script>
 
 <!--Application configuration-->
 <script src="scripts/app.js"></script>
@@ -206,6 +225,8 @@
 <script src="scripts/shared/directives/closeModalDirective.js"></script>
 <script src="scripts/shared/directives/revealPasswordDirective.js"></script>
 <script src="scripts/shared/directives/reloadChartDirective.js"></script>
+<script src="scripts/shared/directives/protectInputDirective.js"></script>
+<script src="scripts/shared/directives/selectizeDirective.js"></script>
 
 <script src="scripts/shared/filters/filters.module.js"></script>
 <script src="scripts/shared/filters/formatAppStatusFilter.js"></script>
@@ -215,6 +236,10 @@
 <script src="scripts/shared/filters/uniqueFilter.js"></script>
 <script src="scripts/shared/filters/formatUserRolesFilter.js"></script>
 <script src="scripts/shared/filters/cleanPathFilter.js"></script>
+<script src="scripts/shared/filters/appByServerImage.js"></script>
+<script src="scripts/shared/filters/displayNumeric.js"></script>
+<script src="scripts/shared/filters/isEmpty.js"></script>
+<script src="scripts/shared/filters/cleanEscapeSlashAndReverse.js"></script>
 
 <!--UI-->
 <script src="scripts/shared/tags/tags.js"></script>
@@ -246,8 +271,9 @@
 <script src="scripts/components/editApplication/logs/logService.js"></script>
 <script src="scripts/components/editApplication/images/editApplication.images.js"></script>
 <script src="scripts/components/editApplication/images/imageService.js"></script>
-<script src="scripts/components/editApplication/monitoring/editApplication.monitoring.js"></script>
+<script src="scripts/components/editApplication/monitoring/containers/editApplication.monitoring.containers.js"></script>
 <script src="scripts/components/editApplication/monitoring/monitoringService.js"></script>
+<script src="scripts/components/editApplication/monitoring/application/editApplication.monitoring.application.js"></script>
 <script src="scripts/components/editApplication/overview/editApplication.overview.js"></script>
 <script src="scripts/components/editApplication/snapshots/editApplication.snapshot.js"></script>
 <script src="scripts/components/editApplication/settings/editApplication.settings.js"></script>
@@ -259,6 +285,12 @@
 <!--snapshots-->
 <script src="scripts/components/snapshots/snapshots.config.js"></script>
 <script src="scripts/components/snapshots/snapshots.js"></script>
+<!--timeline-->
+<script src="scripts/components/scripting/scripting.config.js"></script>
+<script src="scripts/components/scripting/scripting.js"></script>
+<!--scripting-->
+<script src="scripts/components/mainTimeline/mainTimeline.config.js"></script>
+<script src="scripts/components/mainTimeline/mainTimeline.js"></script>
 <!--account-->
 <script src="scripts/components/account/account.config.js"></script>
 <script src="scripts/components/account/account.admin.js"></script>

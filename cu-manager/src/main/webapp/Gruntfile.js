@@ -138,6 +138,13 @@ module.exports = function (grunt) {
           changeOrigin: false
         },
         {
+          context: '/scripting',
+          host: 'localhost',
+          port: 8080,
+          https: false,
+          changeOrigin: false
+        },
+        {
           context: '/image',
           host: 'localhost',
           port: 8080,
@@ -181,6 +188,13 @@ module.exports = function (grunt) {
         },
         {
           context: '/file',
+          host: 'localhost',
+          port: 8080,
+          https: false,
+          changeOrigin: false
+        },
+        {
+          context: '/scripting',
           host: 'localhost',
           port: 8080,
           https: false,
@@ -518,7 +532,7 @@ module.exports = function (grunt) {
         'sass'
       ],
       test: [
-        'compass'
+        'sass'
       ],
       dist: [
         'sass',
@@ -533,14 +547,25 @@ module.exports = function (grunt) {
       },
       run: {}
     },
+    run: {
+      selenium: {
+        options: {
+          wait: false
+        },
+        // cmd: "node" default
+        args: [
+          'node_modules/protractor/bin/webdriver-manager', 'start'
+        ]
+      }
+    },
     /*jshint camelcase: false */
-    protractor_webdriver: {
+    /*protractor_webdriver: {
       start: {
         options: {
           command: 'webdriver-manager start'
         }
       }
-    }
+    }*/
   });
 
 
@@ -571,8 +596,9 @@ module.exports = function (grunt) {
     'clean:server',
     'concurrent:test',
     'autoprefixer',
+    'run:selenium',
     //'karma:unit',
-    'protractor_webdriver',
+    //'protractor_webdriver',
     'protractor:run'
   ]);
 

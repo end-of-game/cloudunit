@@ -25,13 +25,12 @@
    */
   angular
     .module('webuiApp')
-    .directive('createApp', CreateApp);
+    .component('createApp', CreateApp());
 
   function CreateApp(){
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/dashboard/dashboard.createApplication.html',
-      scope: {},
+      bindings: {},
       controller: [
         '$rootScope',
         'ApplicationService',
@@ -40,7 +39,6 @@
         CreateAppCtrl
       ],
       controllerAs: 'createApp',
-      bindToController: true
     };
   }
 
@@ -50,30 +48,61 @@
     vm.applicationName = '';
     vm.serverImages = [];
     vm.serverImageChoice = {};
+    vm.serverImageSelect2 = undefined;
+
+    vm.group = [];
     vm.notValidated = true;
     vm.message = '';
     vm.isPending = false;
-
     vm.createApplication = createApplication;
     vm.isValid = isValid;
 
-    init();
+    vm.selectConfig = {
+      optgroupField: 'prefixId',
+      optgroupLabelField: 'title',
+      maxItems: 1,
+      valueField: 'id',
+      labelField: 'displayName',
+      searchField: 'displayName',
+      placeholder: 'Select Server',
+      render: {
+        optgroup_header: function(data, escape) {
+          return '<div class="selectize">' + escape(data.title) + '</div>';
+        }
+      },
+      onChange: function(value) {
+        vm.serverImageChoice =  vm.serverImages[vm.serverImages.map(function(x) {return x.id; }).indexOf(+value)];
+      }
+    };
 
-    function init() {
-      ImageService.findEnabledServer()
+    vm.$onInit = function() {
+       ImageService.findEnabledServer()
         .then(success)
         .catch(error);
 
       function success(serverImages) {
         vm.serverImages = serverImages;
-        vm.serverImageChoice = serverImages[2];
+
+         serverImages.forEach(function (element, index) {
+          var rang = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[index].prefixEnv);
+          if(rang == -1) {
+            vm.group.push({
+              id: serverImages[index].prefixId,
+              title: serverImages[index].prefixEnv,
+            });
+          }
+         });
+         
+        $rootScope.$broadcast('app:serverImages', {serverImages: vm.group});
+        
+        vm.serverImageChoice = serverImages[0];
       }
 
       function error(response) {
         ErrorService.handle(response);
-      }
+      }  
     }
-
+    
     function createApplication(applicationName, serverName) {
       // emit app:creating event to display a shadow app during creation process
       vm.isPending = true;
@@ -88,6 +117,10 @@
         vm.createAppForm.$setPristine();
         vm.applicationName = '';
         vm.isPending = false;
+        vm.serverImageSelect2 = undefined;
+        setTimeout(function() {
+          vm.serverImageChoice = vm.serverImages[0];
+        }, 1);
       }
 
       function error(response) {
@@ -97,22 +130,20 @@
     }
 
     function isValid(applicationName, serverName) {
-      ApplicationService.isValid(applicationName, serverName)
+        ApplicationService.isValid(applicationName, serverName)
         .then(success)
         .catch(error);
 
-      function success() {
-        vm.notValidated = false;
-        vm.message = '';
-      }
+        function success() {
+          vm.notValidated = false;
+          vm.message = '';
+        }
 
-      function error(response) {
-        vm.message = response.data.message;
-        vm.notValidated = true;
-        vm.isPending = false;
-      }
+        function error(response) {
+          vm.message = response.data.message;
+          vm.notValidated = true;
+          vm.isPending = false;
+        }
     }
   }
 })();
-
-

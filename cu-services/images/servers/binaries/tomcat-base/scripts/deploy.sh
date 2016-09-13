@@ -27,12 +27,7 @@ rm -rf $TOMCAT_HOME/work/Catalina/localhost/_
 mv $WAR_PATH/$WAR_NAME $TOMCAT_HOME/webapps/ROOT.war
 
 #restart the server
-if [ $USER = "root" ];then
-	/bin/bash -c "su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'"
-fi
-if [ $USER = $RUNNER ];then
-	/cloudunit/scripts/cu-start.sh
-fi
+su - $RUNNER -c '/cloudunit/scripts/cu-start.sh'
 
 sleep 2
 chown -R $RUNNER:$RUNNER $TOMCAT_HOME/webapps

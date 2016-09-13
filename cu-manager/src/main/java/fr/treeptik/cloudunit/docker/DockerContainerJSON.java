@@ -40,7 +40,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
 
 @Component
 @SuppressWarnings("unchecked")
@@ -518,8 +517,7 @@ public class DockerContainerJSON {
             StringBuilder msgError = new StringBuilder(256);
             msgError.append(dockerContainer).append(",hostIP=").append(hostIp)
                     .append(",uri=").append(uri);
-            System.out.println(msgError);
-            logger.error("" + msgError, e);
+            logger.error(msgError.toString(), e);
             throw new FatalDockerJSONException("docker : error fatal");
         }
 
@@ -676,11 +674,11 @@ public class DockerContainerJSON {
             switch (statusCode) {
                 case 304:
                     throw new WarningDockerJSONException(
-                            "container already started");
+                            "container already started" + dockerContainer);
                 case 404:
-                    throw new ErrorDockerJSONException("docker : no such container");
+                    throw new ErrorDockerJSONException("docker : no such container" + dockerContainer);
                 case 500:
-                    throw new ErrorDockerJSONException("docker : error server");
+                    throw new ErrorDockerJSONException("docker : error server : " + dockerContainer);
             }
             dockerContainer = this.findOne(dockerContainer.getName(), hostIp);
         } catch (URISyntaxException | IOException e) {
@@ -795,7 +793,7 @@ public class DockerContainerJSON {
                     .setParameter("tag", tag.toLowerCase()).build();
             response = client.sendPostWithRegistryHost(uri, "",
                     "application/json");
-            System.out.println(response);
+            //System.out.println(response);
             int statusCode = (int) response.get("code");
 
             switch (statusCode) {
@@ -820,8 +818,8 @@ public class DockerContainerJSON {
         String digest = "";
         int indexOfDigest = ((String) response.get("body")).indexOf("Digest:");
         if (indexOfDigest != -1) {
-            digest = ((String) response.get("body")).substring(indexOfDigest+8);
-            digest = digest.substring(0, digest.length()-4);
+            digest = ((String) response.get("body")).substring(indexOfDigest + 8);
+            digest = digest.substring(0, digest.length() - 4);
         }
         return digest;
 

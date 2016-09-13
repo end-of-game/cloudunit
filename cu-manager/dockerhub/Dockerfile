@@ -29,7 +29,6 @@ RUN apt-get install -y git
 RUN apt-get install -y wget
 RUN apt-get install -y git-core
 
-
 # Fix pour permettre de tirer correctement certaines dépendances
 RUN git config --global url."https://".insteadOf git://
 
@@ -47,7 +46,7 @@ RUN chown -R cloudunit /home/cloudunit/app
 
 WORKDIR /home/cloudunit/app
 
-RUN cd /home/cloudunit/app && git clone https://github.com/Treeptik/CloudUnit.git -b master --depth 1
+RUN cd /home/cloudunit/app && git clone https://github.com/Treeptik/CloudUnit.git -b dev --depth 1
 
 # Add nodesource PPA for specific version of node and install
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
@@ -63,14 +62,14 @@ RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && npm install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && bower --allow-root install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && grunt build
 
-RUN cd /home/cloudunit/app/CloudUnit/cu-manager/ && mvn clean package -DskipTests -Pdefault -Pproduction
+RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault -Pproduction
 
 ENV CATALINA_HOME /opt/tomcat
 ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/scripts
 
 # Install Tomcat
-RUN wget http://apache.websitebeheerjd.nl/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33.tar.gz && \
-	tar -xvf apache-tomcat-8.0.33.tar.gz && \
+RUN wget http://apache.websitebeheerjd.nl/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz && \
+	tar -xvf apache-tomcat-8.0.36.tar.gz && \
 	rm apache-tomcat*.tar.gz && \
 	mv apache-tomcat* ${CATALINA_HOME}
 

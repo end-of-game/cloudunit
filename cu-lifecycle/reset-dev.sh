@@ -6,7 +6,7 @@ source ./common.sh
 check_cu_home
 
 cd $CU_HOME/cu-vagrant
-vagrant ssh -c "/home/vagrant/cloudunit/cu-platform/reset-all.sh -y"
+vagrant ssh -c "/home/vagrant/cloudunit/cu-platform/reset.sh -y"
 
 # display logo
 logo

@@ -16,7 +16,10 @@
 exports.config = {
   seleniumAddress: 'http://localhost:4444/wd/hub',
   specs: [
-    '../test/e2e/dashboard/tomcat7.spec.js',
+    //'../test/e2e/dashboard/tomcat7.spec.js',
+    '../test/e2e/login/login.spec.js',
+    '../test/e2e/routes/role-admin.spec.js',
+    '../test/e2e/dashboard/dashboard.spec.js',
     '../test/e2e/editApplication/editApplication.spec.js',
     '../test/e2e/editApplication/editApplication.overview.spec.js',
     '../test/e2e/editApplication/editApplication.alias.spec.js',
@@ -25,19 +28,11 @@ exports.config = {
     '../test/e2e/editApplication/editApplication.deploy.spec.js'
   ],
 
-  multiCapabilities: [
-    /*{
-     'browserName': 'firefox'
-     },*/
-    {
-      'browserName': 'chrome',
-      'chromeOptions': {
-        args: [],
-        extensions: []
-      }
-    }
-  ],
-
+  capabilities: {
+    browserName: 'chrome',
+    shardTestFiles: true
+  },
+  
   chromeDriver: '/usr/local/lib/node_modules/protractor/selenium/chromedriver',
   params: {
     loginUser: {
@@ -47,12 +42,18 @@ exports.config = {
     loginAdmin: {
       login: 'johndoe',
       password: 'abc2015'
+    },
+    sleep: {
+      smallest: 500,
+      small: 2000,
+      medium: 10000,
+      large: 20000
     }
   },
   suites: {
     login: '../test/e2e/login/login.spec.js',
     routeAdmin: '../test/e2e/routes/role-admin.spec.js',
-    routeUser: '../test/e2e/routes/role-user.spec.js',
+    //routeUser: '../test/e2e/routes/role-user.spec.js',
     dashboard: '../test/e2e/dashboard/dashboard.spec.js',
     editApplication: '../test/e2e/editApplication/editApplication.spec.js',
     editApplicationOverview: '../test/e2e/editApplication/editApplication.overview.spec.js',
@@ -60,9 +61,9 @@ exports.config = {
     editApplicationAddModule: '../test/e2e/editApplication/editApplication.addModule.spec.js',
     editApplicationConfigJVM: '../test/e2e/editApplication/editApplication.configJVM.spec.js',
     editApplicationDeploy: ['../test/e2e/editApplication/editApplication.deploy.spec.js'],
-    deployTomcat6: ['../test/e2e/deployments/tomcat6.spec.js'],
-    deployTomcat7: ['../test/e2e/deployments/tomcat7.spec.js'],
-    deployTomcat8: ['../test/e2e/deployments/tomcat8.spec.js']
+    //deployTomcat6: ['../test/e2e/deployments/tomcat6.spec.js'],
+    //deployTomcat7: ['../test/e2e/deployments/tomcat7.spec.js'],
+    //deployTomcat8: ['../test/e2e/deployments/tomcat8.spec.js']
   },
   baseUrl: 'http://localhost:9000',
   framework: 'jasmine',
@@ -74,7 +75,7 @@ exports.config = {
     // If true, include stack traces in failures.
     includeStackTrace: true,
     // Default time to wait in ms before a test fails.
-    defaultTimeoutInterval: 30000
+    defaultTimeoutInterval: 60000
   },
   onPrepare: function () {
     global.dvr = browser.driver;

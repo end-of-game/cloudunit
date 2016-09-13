@@ -18,18 +18,16 @@
   'use strict';
   angular
     .module('webuiApp.editApplication')
-    .directive('portsComponent', PortsComponent);
+    .component('portsComponent', PortsComponent());
 
   function PortsComponent(){
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/settings/ports/editApplication.settings.ports.html',
-      scope: {
+      bindings: {
         application: '=app'
       },
       controller: ['$scope', 'ApplicationService', PortsCtrl],
       controllerAs: 'ports',
-      bindToController: true
     }
   }
 

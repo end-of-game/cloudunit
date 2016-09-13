@@ -15,24 +15,15 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerCertificates;
-import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
-import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.hooks.HookAction;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.ServerFactory;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.*;
 import fr.treeptik.cloudunit.utils.*;
 import org.slf4j.Logger;
@@ -41,17 +32,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 @Service
 public class ServerServiceImpl
@@ -178,7 +162,9 @@ public class ServerServiceImpl
         logger.debug("imagePath:" + imagePath);
 
         List<String> volumesFrom = new ArrayList<>();
-        if (!server.getImage().getName().contains("fatjar") && !server.getImage().getName().startsWith("apache")) {
+        if (!server.getImage().getName().contains("fatjar")
+                && !server.getImage().getName().startsWith("apache")
+                && !server.getImage().getName().startsWith("wildfly")) {
             volumesFrom.add(server.getImage().getName());
         }
         volumesFrom.add("java");
@@ -193,7 +179,8 @@ public class ServerServiceImpl
                         Arrays.asList(user.getLogin(), user.getPassword(), server
                                         .getApplication().getRestHost(), server
                                         .getApplication().getName(),
-                                "jdk1.7.0_55", databasePassword, envExec, databaseHostname)).build();
+                                server.getServerAction().getDefaultJavaRelease(),
+                                databasePassword, envExec, databaseHostname)).build();
 
         try {
             // create a container and get informations
@@ -237,7 +224,7 @@ public class ServerServiceImpl
                     + server.getServerAction().getServerManagerPath());
             server.setStatus(Status.START);
             server.setJvmMemory(512L);
-            server.setJvmRelease("jdk1.7.0_55");
+            server.setJvmRelease(server.getServerAction().getDefaultJavaRelease());
 
             server = this.update(server);
 
@@ -504,7 +491,7 @@ public class ServerServiceImpl
             dockerContainer.setImage(server.getImage().getName());
 
             // Call the hook for pre start
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_START);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_START);
             String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
             DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
             dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
@@ -523,7 +510,7 @@ public class ServerServiceImpl
                             .getServerManagerPort());
 
             // Call the hook for post start
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_START);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_START);
 
         } catch (PersistenceException e) {
             logger.error("ServerService Error : fail to start Server" + e);
@@ -549,7 +536,7 @@ public class ServerServiceImpl
             dockerContainer.setImage(server.getImage().getName());
 
             // Call the hook for pre stop
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_PRE_STOP);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
 
             DockerContainer.stop(dockerContainer, application.getManagerIp());
             dockerContainer = DockerContainer.findOne(dockerContainer,
@@ -559,7 +546,7 @@ public class ServerServiceImpl
             server = update(server);
 
             // Call the hook for post stop
-            hookService.call(dockerContainer.getName(), HookAction.APPLICATION_POST_STOP);
+            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_STOP);
 
         } catch (PersistenceException e) {
             throw new ServiceException("Error database : "
@@ -643,8 +630,9 @@ public class ServerServiceImpl
                 String command = "bash /cloudunit/appconf/scripts/change-server-config.sh "
                         + jvmMemory + " " + "\"" + jvmOptions + "\"";
 
-
-                if (server.getImage().getName().contains("jar")) {
+                if (server.getImage().getName().contains("jar")
+                        || server.getImage().getName().contains("wildfly")
+                        || server.getImage().getName().contains("apache")) {
                     command = "bash /cloudunit/scripts/change-server-config.sh "
                             + jvmMemory + " " + "\"" + jvmOptions + "\"";
                 }
@@ -746,10 +734,7 @@ public class ServerServiceImpl
                     continue;
                 }
             }
-            /**
-             * TODO : REFACTOR quand on pourra avoir plusieurs instances de
-             * serveur
-             */
+
             server = this.findByApp(application).get(0);
             server.setStatus(Status.START);
             server = this.saveInDB(server);

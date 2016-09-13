@@ -16,7 +16,6 @@
 package fr.treeptik.cloudunit.dao;
 
 import fr.treeptik.cloudunit.model.Application;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

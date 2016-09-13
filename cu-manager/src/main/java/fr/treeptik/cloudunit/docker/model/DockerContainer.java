@@ -22,7 +22,6 @@ import fr.treeptik.cloudunit.model.PortToOpen;
 import fr.treeptik.cloudunit.utils.StaticSpringApplicationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,10 +30,10 @@ import java.util.Map;
 public class DockerContainer {
 
     private static Logger logger = LoggerFactory
-        .getLogger(DockerContainerJSON.class);
+            .getLogger(DockerContainerJSON.class);
 
     private static DockerContainerJSON dockerContainerJSON = (DockerContainerJSON) StaticSpringApplicationContext
-        .getBean("dockerContainerJSON");
+            .getBean("dockerContainerJSON");
 
     private String id;
 
@@ -70,83 +69,83 @@ public class DockerContainer {
     }
 
     public static String checkDockerInfos(String hostAddress)
-        throws DockerJSONException {
+            throws DockerJSONException {
         String response = dockerContainerJSON.checkDockerInfos(hostAddress);
         return response;
     }
 
     public static DockerContainer findOne(DockerContainer dockerContainer,
                                           String hostIp)
-        throws DockerJSONException {
+            throws DockerJSONException {
         dockerContainer = dockerContainerJSON.findOne(
-            dockerContainer.getName(), hostIp);
+                dockerContainer.getName(), hostIp);
         return dockerContainer;
     }
 
     public static DockerContainer findOneWithImageID(
-        DockerContainer dockerContainer, String hostIp)
-        throws DockerJSONException {
+            DockerContainer dockerContainer, String hostIp)
+            throws DockerJSONException {
 
         dockerContainer = dockerContainerJSON.findOneWithImageID(
-            dockerContainer.getName(), hostIp);
+                dockerContainer.getName(), hostIp);
         return dockerContainer;
     }
 
     public static String commit(DockerContainer dockerContainer, String tag,
                                 String hostIp, String repo)
-        throws DockerJSONException {
+            throws DockerJSONException {
         return dockerContainerJSON.commit(dockerContainer.getName(), tag,
-            hostIp, repo);
+                hostIp, repo);
     }
 
     public static String push(String image, String tag, String hostIp, String registryIp)
-        throws DockerJSONException {
-        String digest = dockerContainerJSON.push(registryIp+":5000/" + image + tag, tag, hostIp);
+            throws DockerJSONException {
+        String digest = dockerContainerJSON.push(registryIp + ":5000/" + image + tag, tag, hostIp);
         return digest;
     }
 
     public static void pull(String image, String tag, String hostIp, String registryIp)
-        throws DockerJSONException {
-        dockerContainerJSON.pull(registryIp+":5000/" + image + tag, tag, hostIp);
+            throws DockerJSONException {
+        dockerContainerJSON.pull(registryIp + ":5000/" + image + tag, tag, hostIp);
     }
 
     public static void deleteImage(String id, String hostIp)
-        throws DockerJSONException {
+            throws DockerJSONException {
         dockerContainerJSON.deleteImage(id, hostIp);
     }
 
 
     public static List<DockerContainer> listAllContainers(String hostAddress)
-        throws DockerJSONException {
+            throws DockerJSONException {
 
         List<DockerContainer> listContainers = dockerContainerJSON
-            .listAllContainers(hostAddress);
+                .listAllContainers(hostAddress);
 
         return listContainers;
     }
 
     public static DockerContainer create(DockerContainer dockerContainer,
                                          String hostIp)
-        throws DockerJSONException {
+            throws DockerJSONException {
         dockerContainer = dockerContainerJSON.create(dockerContainer, hostIp);
         return dockerContainer;
     }
 
     public static void remove(DockerContainer dockerContainer, String hostIp)
-        throws DockerJSONException {
+            throws DockerJSONException {
 
         dockerContainerJSON.remove(dockerContainer.getName(), hostIp);
     }
 
     public static DockerContainer start(DockerContainer dockerContainer,
                                         String hostIp, String sharedDir)
-        throws DockerJSONException {
+            throws DockerJSONException {
         dockerContainer = dockerContainerJSON.start(dockerContainer, hostIp, sharedDir);
         return dockerContainer;
     }
 
     public static void stop(DockerContainer dockerContainer, String hostIp)
-        throws DockerJSONException {
+            throws DockerJSONException {
         // Stop du container application
         logger.debug("Stop dockerContainer : " + dockerContainer);
         dockerContainerJSON.stop(dockerContainer, hostIp);
@@ -251,10 +250,10 @@ public class DockerContainer {
     @Override
     public String toString() {
         return "DockerContainer [id=" + id + ", name=" + name + ", memory="
-            + memory + ", memorySwap=" + memorySwap + ", image=" + image
-            + ", ip=" + ip + ", state=" + state + ", ports=" + ports
-            + ", volumes=" + volumes + ", volumesFrom=" + volumesFrom
-            + ", links=" + links + ", cmd=" + cmd + "]";
+                + memory + ", memorySwap=" + memorySwap + ", image=" + image
+                + ", ip=" + ip + ", state=" + state + ", ports=" + ports
+                + ", volumes=" + volumes + ", volumesFrom=" + volumesFrom
+                + ", links=" + links + ", cmd=" + cmd + "]";
     }
 
     public Map<String, Map<String, String>[]> getPortBindings() {

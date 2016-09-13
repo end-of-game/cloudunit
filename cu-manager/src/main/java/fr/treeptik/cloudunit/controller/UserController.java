@@ -24,9 +24,7 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -149,12 +147,12 @@ public class UserController
                         "This functionnality is not available yet");
             }
 
-            if (!user.getPassword().equalsIgnoreCase(input.getPassword())) {
+            if (!user.getPassword().equalsIgnoreCase(new CustomPasswordEncoder().decode(input.getPassword()))) {
                 throw new CheckException(
                         "Your current password is not correct. Please retry!");
             }
 
-            user.setPassword(input.getNewPassword());
+            user.setPassword(new CustomPasswordEncoder().encode(input.getNewPassword()));
 
             userService.update(user);
 

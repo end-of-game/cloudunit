@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.explorer;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.UserService;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -48,7 +49,6 @@ import javax.servlet.Filter;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -83,13 +83,16 @@ public class FileControllerTestIT {
     @Inject
     private UserService userService;
 
+    @Inject
+    private DockerService dockerService;
+
     private MockHttpSession session;
 
     private static String applicationName;
 
     @BeforeClass
     public static void initEnv() {
-        applicationName = "App" + new Random().nextInt(1000);
+        applicationName = "app" + new Random().nextInt(100000);
     }
 
     @Before
@@ -147,23 +150,93 @@ public class FileControllerTestIT {
     }
 
     @Test
-    public void test() throws Exception {
-        ResultActions resultats =
-            mockMvc.perform(get("/application/" + applicationName.toLowerCase() + "/containers").session(session).contentType(MediaType.APPLICATION_JSON));
-        ResultActions resultActions = resultats.andExpect(status().isOk()).andDo(print());
-        String content = resultActions.andReturn().getResponse().getContentAsString();
-        String subContent = content.substring(content.indexOf("\"id\":\"")+6);
-        String containerId = subContent.substring(0, subContent.indexOf("\",\"type\""));
-
-        resultats =
+    public void dir_exists() throws Exception {
+        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
+        ResultActions resultActions =
             mockMvc.perform(get("/file/container/"+containerId+"/path/__cloudunit__")
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON));
-        resultActions = resultats.andExpect(status().isOk());
-        content = resultActions.andReturn().getResponse().getContentAsString();
-
+        resultActions = resultActions.andExpect(status().isOk());
+        String content = resultActions.andReturn().getResponse().getContentAsString();
         Assert.assertTrue(content.contains("/cloudunit/appconf"));
     }
 
+    @Test
+    public void displayContentFileFromContainer() throws Exception {
+        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
+        String url = "/file/content/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/context.xml";
+        logger.debug(url);
+        ResultActions resultats = this.mockMvc
+                .perform(
+                        get(url)
+                                .session(session));
+        String contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        resultats.andExpect(status().isOk());
+
+        url = "/file/content/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/UNDEF.xml";
+        logger.debug(url);
+        resultats = this.mockMvc
+                .perform(
+                        get(url)
+                                .session(session));
+        contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        Assert.assertTrue(contentAsString.contains("No such file or directory"));
+    }
+
+    @Test
+    public void saveContentFileIntoContainer() throws Exception {
+        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
+        String urlGet = "/file/content/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/context.xml";
+        logger.debug(urlGet);
+        ResultActions resultats = this.mockMvc
+                .perform(
+                        get(urlGet)
+                                .session(session));
+        String contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        resultats.andExpect(status().isOk());
+
+        String filePath = "__cloudunit__appconf__conf";
+        String fileName = "context.xml";
+        final String jsonString =
+                "{\"fileContent\":\"Hello\", \"filePath\":\""+filePath+"\", \"fileName\":\"" + fileName + "\"}";
+        String url = "/file/content/container/"+containerId+"/application/"+applicationName;
+        logger.debug(url);
+        resultats = this.mockMvc
+                .perform(
+                        put(url)
+                                .content(jsonString).contentType(MediaType.APPLICATION_JSON)
+                                .session(session));
+        contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        logger.debug(contentAsString);
+        resultats.andExpect(status().isOk());
+
+        logger.debug(urlGet);
+        resultats = this.mockMvc
+                .perform(
+                        get(urlGet)
+                                .session(session));
+        contentAsString = resultats.andReturn().getResponse().getContentAsString();
+        System.out.println(contentAsString);
+        logger.debug(contentAsString);
+        Assert.assertTrue(contentAsString.contains("Hello"));
+    }
+
+
+//    @Test
+//    public void unzipFileIntoContainer() throws Exception {
+//        String containerId = dockerService.getContainerId("int-johndoe-"+applicationName+"-tomcat-8").substring(0, 12);
+//        String url = "/file/unzip/container/"+containerId+"/application/"+applicationName+"/path/__cloudunit__appconf__conf/fileName/context.xml";
+//        logger.debug(url);
+//        ResultActions resultats = this.mockMvc
+//                .perform(
+//                        put(url)
+//                                .session(session));
+//        String contentAsString = resultats.andReturn().getResponse().getContentAsString();
+//        logger.debug(contentAsString);
+//        Assert.assertTrue(contentAsString.contains("Extension is not right"));
+//    }
 
 }

@@ -25,19 +25,28 @@
   <div class="features">
     <div class="readonly">
       <label for="host">Host: </label>
-      <input id="host"
-             class="large"
+      <input class="large clipboard"
+             id="host host-redis"
              type="text"
              value="{{module.internalDNSName}}"
-             readonly="" oneclickselect="">
+             readonly=""
+             data-title="Copy to clipboard"
+             tooltip=""
+             ngclipboard data-clipboard-target="#host-redis"
+             oneclickselect="">
     </div>
 
     <div class="readonly">
       <label for="username">User: </label>
-      <input id="username"
+      <input class="clipboard"
+             id="username username-redis"
              type="text"
              value="{{module.moduleInfos.username}}"
-             readonly="" oneclickselect="">
+             readonly=""
+             data-title="Copy to clipboard"
+             tooltip=""
+             ngclipboard data-clipboard-target="#username-redis"
+             oneclickselect="">
     </div>
 
     <div class="readonly password">

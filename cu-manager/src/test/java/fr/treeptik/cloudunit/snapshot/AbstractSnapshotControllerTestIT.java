@@ -60,6 +60,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Random;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
@@ -105,8 +106,25 @@ public abstract class AbstractSnapshotControllerTestIT {
         applicationName = "app" + new Random().nextInt(10000);
     }
 
+    @Value("${suffix.cloudunit.io}")
+    private String domainSuffix;
+
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+    private String subdomain;
+
+    private String domain;
+
+    @PostConstruct
+    public void init () {
+        if (subdomain != null) {
+            domain = subdomain + domainSuffix;
+        } else {
+            domain = domainSuffix;
+        }
+    }
+
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         logger.info("setup");
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(springSecurityFilterChain).build();
 
@@ -127,18 +145,6 @@ public abstract class AbstractSnapshotControllerTestIT {
         session = new MockHttpSession();
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
-    }
-
-    @After
-    public void teardown() {
-        logger.info("teardown");
-        SecurityContextHolder.clearContext();
-        session.invalidate();
-    }
-
-    @Test()
-    public void test010_CreateSimpleApplicationSnapshot()
-            throws Exception {
         logger.info("**************************************");
         logger.info("Create Tomcat server");
         logger.info("**************************************");
@@ -147,16 +153,35 @@ public abstract class AbstractSnapshotControllerTestIT {
         ResultActions resultats =
                 mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
+    }
 
+    @After
+    public void teardown() throws Exception {
+        logger.info("teardown");
+
+        logger.info("**************************************");
+        logger.info("Delete application : " + applicationName);
+        logger.info("**************************************");
+        ResultActions resultats =
+                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
+        SecurityContextHolder.clearContext();
+        session.invalidate();
+    }
+
+    @Test()
+    public void test010_CreateSimpleApplicationSnapshot()
+            throws Exception {
         logger.info("**************************************");
         logger.info("Create a snapshot");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + tagName
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
@@ -173,48 +198,32 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats = mockMvc.perform(delete("/snapshot/" + tagName.toLowerCase()).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test()
     public void test011_CreateHelloworldApplicationSnapshot()
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Deploy a helloworld Application");
         logger.info("**************************************");
 
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
                         "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         Thread.sleep(5000);
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         int counter = 0;
 
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
         } else {
-            while (contentPage.contains("CloudUnit PaaS")==false || counter++ < 10) {
+            while (!contentPage.contains("CloudUnit PaaS") || counter++ < 10) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -225,7 +234,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("Create a snapshot");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + tagName
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
@@ -245,13 +254,6 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("**************************************");
 
         resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
     }
 
@@ -289,22 +291,13 @@ public abstract class AbstractSnapshotControllerTestIT {
     public void test015_CreateAndCloneApplicationWithPorts()
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Open a port");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName
                         + "\",\"portToOpen\":\"6115\",\"alias\":\"" + applicationName + "\",\"portNature\":\"web\"}";
-        resultats =
+        ResultActions resultats =
                 this.mockMvc.perform(post("/application/ports")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -341,13 +334,6 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(6115));
 
         logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Delete the cloned application");
         logger.info("**************************************");
 
@@ -369,22 +355,13 @@ public abstract class AbstractSnapshotControllerTestIT {
     public void test016_CreateAndCloneApplicationWithPortsAndGetAccess()
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Open a port");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName
                         + "\",\"portToOpen\":\"8080\",\"alias\":\"" + applicationName + "\",\"portNature\":\"web\"}";
-        resultats =
+        ResultActions resultats =
                 this.mockMvc.perform(post("/application/ports")
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -402,9 +379,9 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
                         "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080" + domain;
         String contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -450,9 +427,9 @@ public abstract class AbstractSnapshotControllerTestIT {
                 mockMvc.perform(get("/application/" + applicationName + "cloned").session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats.andExpect(jsonPath("$.portsToOpen[0].port").value(8080));
 
-        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-forward-8080.cloudunit.dev";
+        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-forward-8080" + domain;
         contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -475,37 +452,19 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
     }
 
     @Test()
-    public void test020_CloneASimpleApplicationSnapshot()
-            throws Exception {
-        logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
+    public void test020_CloneASimpleApplicationSnapshot() throws Exception {
         logger.info("**************************************");
         logger.info("Create a snapshot");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + tagName
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
@@ -515,14 +474,6 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats = mockMvc.perform(get("/snapshot/list").session(session)).andDo(print());
         resultats.andExpect(status().isOk()).andExpect(jsonPath("$[0].tag").value(tagName.toLowerCase()));
-
-        logger.info("**************************************");
-        logger.info("Delete the original application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
 
         logger.info("**************************************");
         logger.info("Clone an application : " + applicationName + "cloned");
@@ -559,25 +510,16 @@ public abstract class AbstractSnapshotControllerTestIT {
     public void test021_CloneAHelloworldApplicationSnapshot()
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Deploy a helloworld Application");
         logger.info("**************************************");
 
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(fileUpload("/application/" + applicationName + "/deploy").file(downloadAndPrepareFileToDeploy("helloworld.war",
                         "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -590,7 +532,7 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("Create a snapshot");
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + tagName
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
@@ -604,13 +546,6 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats = mockMvc.perform(get("/snapshot/list").session(session)).andDo(print());
         resultats.andExpect(status().isOk()).andExpect(jsonPath("$[0].tag").value(tagName.toLowerCase()));
-
-        logger.info("**************************************");
-        logger.info("Delete the original application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
 
         logger.info("**************************************");
         logger.info("Clone an application : " + applicationName + "cloned");
@@ -637,9 +572,9 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("Check the keyword of " + applicationName + "cloned");
         logger.info("**************************************");
 
-        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin.cloudunit.dev";
+        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin" + domain;
         contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -685,22 +620,12 @@ public abstract class AbstractSnapshotControllerTestIT {
     @Test()
     public void test030_ChangeJvmOptionsApplicationTest()
             throws Exception {
-
-        logger.info("**************************************");
-        logger.info("Create app server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
         logger.info("Change JVM Options !");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName
                         + "\",\"jvmMemory\":\"1024\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\"jdk1.8.0_25\"}";
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
@@ -728,13 +653,6 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats = mockMvc.perform(get("/snapshot/list").session(session)).andDo(print());
         resultats.andExpect(status().isOk()).andExpect(jsonPath("$[0].tag").value(tagName.toLowerCase()));
-
-        logger.info("**************************************");
-        logger.info("Delete the original application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
 
         logger.info("**************************************");
         logger.info("Clone an application : " + applicationName + "cloned");
@@ -781,53 +699,27 @@ public abstract class AbstractSnapshotControllerTestIT {
 
 
     @Test()
-    public void test040_CreateSimpleApplicationSnapshotWithWrongSyntaxName()
+    public void test040_CreateSimpleApplicationSnapshotWithNonAlphaNumericSyntaxName()
             throws Exception {
+        String nonAlphaNum = "NON-ALPHA-NUM";
 
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
+        logger.info("Create a snapshot with a non-alpha numeric syntax : " + nonAlphaNum );
         logger.info("**************************************");
 
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        String wrongTagName = "WRONG-NAME";
-
-        logger.info("**************************************");
-        logger.info("Create a snapshot with a wrong syntax : " + wrongTagName );
-        logger.info("**************************************");
-
-        jsonString =
-                "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + wrongTagName
+        String jsonString =
+                "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + nonAlphaNum
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
-        resultats.andExpect(status().is4xxClientError());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
+        resultats.andExpect(status().is2xxSuccessful());
     }
 
 
     @Test()
     public void test041_CreateSimpleApplicationSnapshotWithAccentName()
             throws Exception {
-        logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
         String accentTagName = "1234àéèîù";
         String deAccentTagName = "1234aeeiu";
 
@@ -835,11 +727,11 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("Create a snapshot with a accent name : " + accentTagName);
         logger.info("**************************************");
 
-        jsonString =
+        String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"tag\":\"" + accentTagName
                         + "\", \"description\":\"This is a test snapshot\"}";
         logger.info(jsonString);
-        resultats =
+        ResultActions resultats =
                 mockMvc.perform(post("/snapshot").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
 
@@ -856,13 +748,6 @@ public abstract class AbstractSnapshotControllerTestIT {
 
         resultats = mockMvc.perform(delete("/snapshot/" + deAccentTagName).session(session)).andDo(print());
         resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
 
@@ -870,22 +755,24 @@ public abstract class AbstractSnapshotControllerTestIT {
                                                                        String keywordIntoPage)
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create app server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Add the module");
         logger.info("**************************************");
 
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
-        resultats =
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        ResultActions resultats =
                 mockMvc.perform(post("/module").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().isOk());
+
+        // Stop the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        // Start the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
 
         logger.info("**************************************");
         logger.info("Deploy a helloworld Application");
@@ -899,9 +786,9 @@ public abstract class AbstractSnapshotControllerTestIT {
                                 + appName + ".war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         // test the application content page
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
-        if (release.contains("jboss")) {
+        if (release.contains("jboss")||release.contains("wildfly")) {
             int counter = 0;
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
@@ -930,13 +817,6 @@ public abstract class AbstractSnapshotControllerTestIT {
         resultats.andExpect(status().isOk()).andExpect(jsonPath("$[0].tag").value(tagName.toLowerCase()));
 
         logger.info("**************************************");
-        logger.info("Delete the original application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Clone an application : " + applicationName + "cloned");
         logger.info("**************************************");
 
@@ -961,8 +841,8 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("Check the contentPage of " + applicationName + "cloned");
         logger.info("**************************************");
 
-        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin.cloudunit.dev";
-        if (release.contains("jboss")) {
+        urlToCall = "http://" + applicationName.toLowerCase() + "cloned" + "-johndoe-admin" + domain;
+        if (release.contains("jboss")||release.contains("wildlfy")) {
             int counter = 0;
             contentPage = getUrlContentPage(urlToCall);
             while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
@@ -991,21 +871,22 @@ public abstract class AbstractSnapshotControllerTestIT {
     private void createApplicationSnapshotWithAModuleAndADeployment(String module, String appName, String keywordIntoPage)
             throws Exception {
         logger.info("**************************************");
-        logger.info("Create Tomcat server");
-        logger.info("**************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
-        ResultActions resultats =
-                mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
         logger.info("Add the module");
         logger.info("**************************************");
 
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
-        resultats =
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        ResultActions resultats =
                 mockMvc.perform(post("/module").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
+        resultats.andExpect(status().isOk());
+
+        // Stop the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
+
+        // Start the application
+        jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
+        resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
         logger.info("**************************************");
@@ -1021,16 +902,16 @@ public abstract class AbstractSnapshotControllerTestIT {
                                 + ".war")).session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         // test the application content page
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
         String contentPage = getUrlContentPage(urlToCall);
         int counter = 0;
-        if (release.contains("jboss")) {
-            while (contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
+        if (release.contains("jboss")||release.contains("wildfly")) {
+            while (!contentPage.contains("Welcome to WildFly") && counter++ < TestUtils.NB_ITERATION_MAX) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
         } else {
-            while (contentPage.contains(keywordIntoPage)==false || counter++ < 10) {
+            while (!contentPage.contains(keywordIntoPage) || counter++ < 10) {
                 contentPage = getUrlContentPage(urlToCall);
                 Thread.sleep(1000);
             }
@@ -1061,13 +942,6 @@ public abstract class AbstractSnapshotControllerTestIT {
         logger.info("**************************************");
 
         resultats = mockMvc.perform(delete("/snapshot/" + tagName).session(session)).andDo(print());
-        resultats.andExpect(status().isOk());
-
-        logger.info("**************************************");
-        logger.info("Delete application : " + applicationName);
-        logger.info("**************************************");
-        resultats =
-                mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
     }
 

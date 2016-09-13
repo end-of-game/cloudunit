@@ -22,17 +22,20 @@
 
   MonitoringService.$inject = [
     '$http',
-    '$interval'
+    '$interval',
+    '$q'
   ];
 
-  function MonitoringService ( $http, $interval ) {
+  function MonitoringService ( $http, $interval, $q ) {
 
     var oneMegabyte = 1024 * 1024;
 
     return {
       stats: {},
       initStats: initStats,
-      stopPollStats: stopPollStats
+      stopPollStats: stopPollStats,
+      chooseQueue: chooseQueue,
+      getUrlMetrics: getUrlMetrics
     };
 
 
@@ -266,7 +269,38 @@
       }
       return data;
     }
-
+    
+    function getUrlMetrics (serverImagePrefixEnv) {
+      var deferred = $q.defer ();
+      $http.get ( '/monitoring/metrics/' + serverImagePrefixEnv)
+        .then ( function onSuccess ( response ) {
+          deferred.resolve ( response.data );  
+      } )
+      .catch ( function onError ( reason ) {
+        deferred.reject ( reason );
+      } );
+      return deferred.promise;
+    }
+    
+    function chooseQueue (appLocation, queueName) {
+      var deferred = $q.defer ();
+      $http.get ( appLocation + '/jolokia/read/' + queueName)
+        .then ( function onSuccess ( response ) {
+        if(response.data.status !== 200) {
+          deferred.reject ({
+            data: { 
+              message : "This address is not found!"
+            }
+          });
+        } else {
+          deferred.resolve ( response.data );  
+        }
+      } )
+      .catch ( function onError ( reason ) {
+        deferred.reject ( reason );
+      } );
+      return deferred.promise;
+    }
 
   }
 }) ();

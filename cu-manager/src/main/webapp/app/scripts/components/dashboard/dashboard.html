@@ -30,7 +30,7 @@
     </div>
   </header>
   <div class="page-content" id="dashboard">
-    <div class="page">
+    <div class="page full">
       <div class="subheader">
         <h3 class="subhead"
             ng-show="!dashboard.search">
@@ -80,6 +80,29 @@
               </ul>
             </div>
           </div>
+          <div class="input-group inline"> 
+            <span class="label">Filter by server:</span>
+            <div class="dropdown" dropdown="">
+              <a class="dropdown-toggle"
+                 dropdown-toggle=""
+                 data-ng-bind="dashboard.selectedServerSearch">
+              </a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li>
+                  <a ng-href=""
+                     data-ng-click="dashboard.selectedServer = ''; dashboard.selectedServerSearch = 'All' ">
+                    All
+                  </a>
+                </li>
+                <li data-ng-repeat="serverImage in dashboard.serverImages">
+                  <a ng-href=""
+                     data-ng-click="dashboard.selectedServer = serverImage.title; dashboard.selectedServerSearch = serverImage.title ">
+                    {{ serverImage.title }}
+                  </a>
+                </li>
+              </ul>
+            </div>   
+          </div>
         </div>
       </div>
       <div class="cards">
@@ -88,10 +111,10 @@
         <create-app></create-app>
 
         <!--application list-->
-
+        
         <div id='application-{{application.name}}'
-             class="application card small {{ application.status | lowercase}}"
-             data-ng-repeat="application in dashboard.applications | orderBy:sortorder | filter:{status: dashboard.search} track by $index">
+             class="application card smaller {{ application.status | lowercase}}"
+             data-ng-repeat="application in dashboard.applications | orderBy:sortorder | filter:{status: dashboard.search} | appByServerImage: dashboard.selectedServer track by $index">
           <div class="content">
             <h3 class="title">
               {{application.displayName}}
@@ -133,7 +156,7 @@
             <div class="features">
               <p class="subhead">Services</p>
 
-              <p>{{ application.servers[0].image.displayName}}</p>
+              <p>{{ application.servers[0].image.displayName}}<span class="image icon-tech {{ application.servers[0].image.prefixEnv | lowercase }}"></span></p>
 
               <p ng-hide="application.modules.length > 0">No modules</p>
               <ul class="modules" ng-show="application.modules.length > 0">
@@ -145,7 +168,7 @@
             </div>
             <div class="action clearfix">
               <div class="secondary-action">
-                <button class="toggle-modal icon-button secondary pull-left"
+                <button class="toggle-modal icon-button secondary pull-left allowed"
                         data-toggle="modal"
                         data-target="#delete-{{application.name}}"
                         data-keyboard="true"
@@ -206,9 +229,9 @@
                   </p>
 
                   <div class="action">
-                    <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                    <button type="button" class="button secondary allowed" data-dismiss="modal">Cancel
                     </button>
-                    <button type="button" class="delete-btn button primary"
+                    <button type="button" class="delete-btn button primary allowed"
                             data-ng-click="dashboard.deleteApplication(application.name)"
                             data-dismiss="modal">
                       I understand, permanently delete my app
@@ -223,8 +246,5 @@
       </div>
     </div>
 
-    <!--message timeline-->
-
-    <feed context="'dashboard'"></feed>
   </div>
 </section>

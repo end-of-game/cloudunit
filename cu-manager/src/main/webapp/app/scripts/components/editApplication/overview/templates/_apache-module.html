@@ -25,20 +25,28 @@
 
   <div class="readonly">
     <label for="host">Host: </label>
-    <input id="host"
-           class="large"
+    <input class="large clipboard"
+           id="host host-apache"
            type="text"
            value="{{module.internalDNSName}}"
-           readonly="" oneclickselect="">
+           readonly=""
+           data-title="Copy to clipboard"
+           tooltip=""
+           ngclipboard data-clipboard-target="#host-apache"
+           oneclickselect="">
   </div>
 
   <div class="readonly">
     <label for="host">Port exposed</label>
-    <input id="PortHTTP"
-           class="large"
+    <input  class="large clipboard"
+           id="PortHTTP PortHTTP-apache"
            type="text"
            value="{{module.listPorts['80/tcp']}}"
-           readonly="" oneclickselect="">
+           readonly=""
+           data-title="Copy to clipboard"
+           tooltip=""
+           ngclipboard data-clipboard-target="#PortHTTP-apache"
+           oneclickselect="">
   </div>
 
   <div class="action">

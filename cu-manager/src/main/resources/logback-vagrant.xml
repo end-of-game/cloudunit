@@ -24,7 +24,8 @@
 
     <logger name="fr.treeptik.cloudunit" level="warn"/>
     <logger name="fr.treeptik.cloudunit.controller" level="info"/>
-    <logger name="fr.treeptik.cloudunit.service.impl" level="info"/>
+    <logger name="fr.treeptik.cloudunit.service.impl.ScriptingServiceImpl" level="debug"/>
+    <logger name="fr.treeptik.cloudunit.service.impl.HookServiceImpl" level="debug"/>
 
     <logger name="org.springframework" level="warn"/>
     <logger name="net.sf.ehcache" level="warn"/>

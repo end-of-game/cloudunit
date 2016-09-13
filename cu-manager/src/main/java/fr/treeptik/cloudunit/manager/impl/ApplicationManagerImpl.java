@@ -114,11 +114,12 @@ public class ApplicationManagerImpl
             // Application en cours de démarrage
             applicationService.start(application);
 
-            // Wait for the server has a status START (set by shell agent)
+            int counter = 0;
+            // Wait for the server has a status START
             for (Server server : application.getServers()) {
-                int counter = 0;
-                while (!server.getStatus().equals(Status.START)) {
-                    if (counter == 600) {
+                //logger.debug(server.getStatus().toString());
+                while (server.getStatus() != null && !server.getStatus().equals(Status.START)) {
+                    if (counter == 60) {
                         break;
                     }
                     try {
@@ -131,10 +132,11 @@ public class ApplicationManagerImpl
             }
 
             // Wait for the module has a status START (set by shell agent)
+
             for (Module module : application.getModules()) {
-                int counter = 0;
-                while (!module.getStatus().equals(Status.START)) {
-                    if (counter == 600) {
+                counter = 0;
+                while (module.getStatus() != null && !module.getStatus().equals(Status.START)) {
+                    if (counter == 60) {
                         break;
                     }
                     try {
@@ -146,7 +148,11 @@ public class ApplicationManagerImpl
                 }
             }
 
-            applicationService.setStatus(application, Status.START);
+            if (counter == 60) {
+                applicationService.setStatus(application, Status.FAIL);
+            } else {
+                applicationService.setStatus(application, Status.START);
+            }
 
         } catch (ServiceException e) {
             logger.error(application.toString(), e);
@@ -215,6 +221,7 @@ public class ApplicationManagerImpl
                 throw new CheckException(messageSource.getMessage("check.war.ear", null, Locale.ENGLISH));
             }
         } catch (IOException e) {
+            e.printStackTrace();
             applicationService.setStatus(application, Status.FAIL);
             throw new ServiceException(e.getMessage());
         }

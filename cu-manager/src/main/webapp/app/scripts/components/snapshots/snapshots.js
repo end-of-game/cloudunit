@@ -25,14 +25,13 @@
    */
   angular
     .module ( 'webuiApp.snapshots' )
-    .directive ( 'snapshots', Snapshots );
+    .component ( 'snapshots', Snapshots() );
 
 
   function Snapshots () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/snapshots/snapshots.html',
-      scope: {},
+      bindings: {},
       controller: [
         'SnapshotService',
         'ApplicationService',
@@ -40,7 +39,6 @@
         SnapshotsCtrl
       ],
       controllerAs: 'snapshots',
-      bindToController: true
     };
   }
 
@@ -55,11 +53,13 @@
     vm.resetForm = resetForm;
     vm.errorMsg = false;
 
-    init ();
+    vm.$onInit = function() {
+      getSnapshotList();
+    };
 
     ////////////////////////////////////////////
 
-    function init () {
+    function getSnapshotList () {
       SnapshotService.list ()
         .then ( success );
 
@@ -78,7 +78,7 @@
         .catch ( error );
 
       function success () {
-        init ();
+        getSnapshotList ();
         resetForm ();
       }
 
@@ -93,7 +93,7 @@
         .catch ( error );
 
       function success () {
-        init ();
+        getSnapshotList ();
       }
 
       function error ( response ) {

@@ -18,13 +18,12 @@
 
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppExplorer', Explorer );
+    .component ( 'editAppExplorer', Explorer() );
 
   function Explorer () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/explorer/editApplication.explorer.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -38,7 +37,6 @@
         ExplorerCtrl
       ],
       controllerAs: 'explorer',
-      bindToController: true
     };
   }
 
@@ -51,6 +49,13 @@
       rootPath = '__',
       uploader;
 
+    vm.editorOptions = {
+      lineWrapping : true,
+      lineNumbers: true,
+      mode: 'properties',
+    };
+
+    vm.newDirectoryName = '';
     vm.containers = [];
     vm.myContainer = {};
     vm.rootFolder = [];
@@ -63,13 +68,20 @@
     };
     vm.upDir = upDir;
     vm.folderClick = folderClick;
-    vm.downloadFile = downloadFile;
+    //vm.downloadFile = downloadFile;
     vm.deleteFile = deleteFile;
+    vm.unzipFile = unzipFile;
+    vm.editFile = editFile;
+    vm.fileContent = "";
+    vm.getFile = getFile;
+    vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
-
-    init ();
-
-    function init ( containerIndex ) {
+    
+    vm.$onInit = function() {
+      displayContainersAndSelectCurrent(); 
+    }
+     
+    function displayContainersAndSelectCurrent ( containerIndex ) {
       // Display the list of containers
       getContainers ().then ( function onSuccess ( data ) {
         var index = containerIndex || 0;
@@ -98,8 +110,29 @@
       vm.rootFolder = [];
       vm.subFolder = [];
       vm.currentPath = [];
-      init ( index );
-    } 
+      displayContainersAndSelectCurrent ( index );
+    }
+    
+    function addNewDirectory(containerId, path, newDirectoryName) {
+
+      var slug = '__' + path.join ( '__' ) + '__' + newDirectoryName;
+
+       ExplorerService.addDirectory ( containerId, $stateParams.name, slug )
+        .then ( function onDirectoryAdd () {
+          vm.isCreatingDirectory = true;
+          vm.newDirectoryName = "";
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' ).then ( function () {
+              vm.isCreatingDirectory = false;
+            } );
+          }, 1000 );
+        } )
+        .catch ( function onDirectoryAddError ( error ) {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } ) 
+    }
 
     function deleteFile ( containerId, path, item ) {
 
@@ -118,6 +151,36 @@
         } )
     }
 
+    function unzipFile ( containerId, path, item ) {
+
+      var slug = '__' + path.join ( '__' );
+      
+      ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
+        .then ( function onFileUnzip (data) {
+          $timeout ( function () {
+            buildTree ( vm.currentPath.join ( '__' ), 'subFolder' );
+          }, 1000 );
+        } )
+    }
+    
+    function getFile ( containerId, path, item ) {
+
+      var slug = '__' + path.join ( '__' );
+
+      ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
+        .then ( function onFileUnzip (res) {
+          vm.fileContent = res.data; 
+        } )
+    }
+    
+    function editFile ( containerId, path, item, fileContent) {
+      var slug = '__' + path.join ( '__' );
+      ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name, fileContent )
+        .then ( function onFileEdit (res) {
+          vm.fileContent = res.data;
+        } )
+    }
+    
     function getContainers () {
       var deferred = $q.defer ();
       ApplicationService.listContainers ( $stateParams.name )
@@ -172,14 +235,16 @@
     // file upload
     uploader = $scope.uploader = new FileUploader ( {
       autoUpload: false,
-      removeAfterUpload: true,
-      queueLimit: 1
+      removeAfterUpload: true
     } );
 
 
-    uploader.onAfterAddingFile = function ( fileItem ) {
+    uploader.onAfterAddingAll = function ( fileItem ) {
       vm.dropped = false;
-      fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
+      fileItem.forEach(function(element, index) {
+        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '/path/__' + vm.currentPath.join ( '__' ) + '__';
+      });
+      
       uploader.uploadAll ();
       vm.isUploading = true;
       vm.dropped = true;
@@ -189,14 +254,14 @@
     uploader.onCompleteAll = function () {
       vm.dropped = false;
       vm.uploadSuccess = true;
-      vm.isUploading = false;
       buildTree ( vm.currentPath.join ( '__' ), 'subFolder' ).then ( function () {
+        vm.isUploading = false;
         vm.uploadSuccess = false;
       } );
     };
 
 
-    function downloadFile ( containerId, path, file ) {
+    /*function downloadFile ( containerId, path, file ) {
       if ( file.dir ) {
         return;
       }
@@ -204,7 +269,7 @@
         var blob = new Blob ( [result.data], { type: result.headers['content-type'] } );
         saveAs ( blob, file.name );
       } )
-    }
+    }*/
   }
 }) ();
 

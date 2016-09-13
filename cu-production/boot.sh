@@ -1,68 +1,88 @@
 #!/bin/bash
- 
-set -x
 
-export CU_HOME=/home/admincu/cloudunit
+# trap "set +x; sleep 5; set -x" DEBUG
+
+export CU_USER=admincu
+export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
 
-# install admincu account
-function create_admincu {
-  useradd -m admincu
-  echo "Choose a password for admincu"
-  passwd admincu
-}
+# INIT
+apt-get update &
+wait
 
-# clone the project
-function clone_cloudunit {
-  cd /home/admincu
-  git clone https://github.com/Treeptik/cloudunit.git 
-  chown -R admincu:admincu /home/admincu
-}
+# CREATE ADMINCU USER admincu account
+useradd -m $CU_USER
+usermod $CU_USER -aG sudo
 
-# prepare the environment
-function provision_env {
- apt-get install -y git
- apt-get install -y mysql-client
-}
+# PROVISION THE ENV
+apt-get install -y nmap &
+wait
+apt-get install -y htop &
+wait
+apt-get install -y ncdu &
+wait
+apt-get install -y git &
+wait
+apt-get install -y mysql-client &
+wait
 
-# install docker 
-function provision_docker {
-  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9 
-  cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
-  apt-get update
-  apt-get install -y lxc-docker-1.6.2 1.6.2
-  apt-mark hold lxc-docker
-  apt-get install -y linux-image-extra-$(uname -r)
-  usermod -aG docker admincu
+# CLONE CLOUDUNIT
+cd /home/$CU_USER
+git clone https://github.com/Treeptik/cloudunit.git
+cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
+chown -R $CU_USER:$CU_USER /home/$CU_USER
 
-  curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > docker-compose
-  chmod +x docker-compose
-  mv docker-compose /usr/local/bin
-}
+# INSTALL DOCKER
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
+apt-get update &
+wait
+apt-get install -y lxc-docker-1.6.2 1.6.2 &
+wait
+apt-mark hold lxc-docker
+apt-get install -y linux-image-extra-$(uname -r) &
+wait
+usermod -aG docker $CU_USER
+usermod admincu -s /bin/bash
+curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > docker-compose
+chmod +x docker-compose
+mv docker-compose /usr/local/bin
+cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
-# install certificats for docker engine and client
-function install_certs {
-  mkdir -p /root/.docker
-  cp /home/admincu/cloudunit/conf/cert/server/* /root/.docker
+# INSTALL CERTIFICATS
+cp $CU_INSTALL_DIR/files/docker.secure /etc/default/docker
+mkdir -p /root/.docker
+cp $CU_HOME/conf/cert/server/* /root/.docker
+mkdir -p /home/$CU_USER/.docker
+cp $CU_HOME/conf/cert/server/* /home/admincu/.docker/
+chown -R $CU_USER:$CU_USER /home/$CU_USER/.docker
+cp $CU_INSTALL_DIR/files/environment /etc/environment
+cp $CU_INSTALL_DIR/files/hosts /etc/hosts
+service docker stop
+sleep 5
+service docker start
 
-  mkdir -p /home/admincu/.docker
-  cp /home/admincu/cloudunit/conf/cert/server/* /home/admincu/.docker/
-  chown -R admincu:admincu /home/admincu/.docker
+# BUILD SERVICES
+su -l $CU_USER -c "cd $CU_HOME/cu-services && ./build-services.sh"
+# Exit on child script error
+if [ $? -eq 1 ]; then
+	echo "EXIT DUE TO FATAL ERROR !"
+        exit 1
+fi
 
-  cp $CU_INSTALL_DIR/files/environment /etc/environment
-  cp $CU_INSTALL_DIR/files/hosts /etc/hosts
-}
+# COMPILE ROOT WAR FOR CLOUDUNIT
+mkdir -p $CU_HOME/cu-platform/tomcat
+cd $CU_HOME/cu-manager && su -l $CU_USER -c "$CU_HOME/cu-manager/compile-root-war.sh"
+cp target/ROOT.war $CU_HOME/cu-platform/tomcat
+chown -R $CU_USER:$CU_USER /home/$CU_USER/
 
-function build_cloudunit {
- su -l admincu -c "cd /home/admincu/cloudunit/cu-services && ./build-services.sh" 
-}
+# RESET ALL FOR FIRST START
+su -l $CU_USER -c "cd $CU_HOME/cu-platform && ./reset-prod.sh -y"
 
-create_admincu
-provision_env
-clone_cloudunit
-provision_docker
-install_certs
-build_cloudunit
+#active cron for cloudunitmonitor
 
-set +x
+sh $CU_HOME/cu-platform/update-cron.sh
+
+
+
 

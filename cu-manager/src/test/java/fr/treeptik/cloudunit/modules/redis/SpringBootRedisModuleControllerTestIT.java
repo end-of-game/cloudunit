@@ -45,7 +45,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -103,13 +102,16 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
     protected String managerSuffix = "";
     protected String managerPageContent = "Redis";
 
+    @Value("${suffix.cloudunit.io}")
+    private String domainSuffix;
+
     @BeforeClass
     public static void initEnv() {
         applicationName = "app" + new Random().nextInt(100000);
     }
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         logger.info("setup");
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
@@ -132,11 +134,21 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         String secContextAttr = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
         session.setAttribute(secContextAttr,
             securityContext);
+
+        // create an application server
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
+        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andExpect(status().isOk());
     }
 
     @After
-    public void teardown() {
+    public void teardown() throws Exception {
         logger.info("teardown");
+
+        logger.info("Delete application : " + applicationName);
+        ResultActions resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        resultats.andExpect(status().isOk());
+
         SecurityContextHolder.clearContext();
         session.invalidate();
     }
@@ -189,17 +201,12 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
     public void test10_CreateServerThenAddModuleThenTestManagerThenRemoveModule() throws Exception {
         logger.info("Create an application, add a " + module + " module and delete it");
 
-        // create an application server
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
         // verify if app exists
-        resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        ResultActions resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
 
         // add a module
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -209,7 +216,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         // Expected values
         String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
         String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
-        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domainSuffix+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -226,7 +233,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         String managerUrlAuth = "http://" + userNameRedis + ":" + passwordRedis + "@"
                 + managerPrefix + "1-"
                 + applicationName.toLowerCase()
-                + "-johndoe-admin.cloudunit.dev/"
+                + "-johndoe-admin" +domainSuffix + "/"
                 + managerSuffix;
 
         String contentPage = getUrlContentPage(managerUrlAuth);
@@ -250,10 +257,6 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         resultats
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.modules[0]").doesNotExist());
-
-        logger.info("Delete application : " + applicationName);
-        resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
     @Test
@@ -261,17 +264,12 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         logger.info("Create an application, add a " + module + " module and delete it");
         String binary = "spring-boot-redis-1.0.0.jar";
 
-        // create an application server
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
-
         // verify if app exists
-        resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
+        ResultActions resultats = mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
 
         // add a module
-        jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -300,7 +298,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         // Expected values
         String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
         String gitModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-git-1";
-        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin.cloudunit.dev/" + managerSuffix;
+        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domainSuffix+"/" + managerSuffix;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -324,7 +322,7 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
                                 "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary))
                         .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080"+domainSuffix;
         logger.debug(urlToCall);
         int i = 0;
         String content = null;
@@ -338,10 +336,6 @@ public class SpringBootRedisModuleControllerTestIT extends TestCase {
         if (content != null) {
             Assert.assertTrue(content.contains("Redis is great"));
         }
-
-        logger.info("Delete application : " + applicationName);
-        resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
     }
 
 

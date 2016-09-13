@@ -96,33 +96,35 @@ cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
 Warning because this step could need lot of times !
 
 ```
-$ cd $HOME/cloudunit/cu-vagrant 
-$ vagrant up
-$ vagrant provision
+cd $HOME/cloudunit/cu-vagrant 
+vagrant up
+vagrant provision
 ```
 
-### Step 6 - How to start the application
+### <a name="step6"></a>Step 6 - How to start the application
 
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-$ cd $HOME/cloudunit/cu-vagrant 
-$ vagrant up (if not running)
-$ vagrant ssh 
-cd cloudunit/cu-platform && ./reset-all.sh -y
+cd $HOME/cloudunit/cu-vagrant 
+vagrant up (if not running)
+vagrant ssh 
+cd cloudunit/cu-platform && ./reset.sh -y
 ```
 
 2 - Start the Java Backend from Linux
 
 ```
-$ cd $HOME/cloudunit/cu-manager
-$ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+cd $HOME/cloudunit
+mvn clean install -DskipTests
+cd $HOME/cloudunit/cu-manager
+mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 3 - Run the UI for development (http://0.0.0.0:9000) from Linux
 
 ```
-$ cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
 ```
 You can use default password and login
 ```
@@ -163,7 +165,6 @@ You can run CloudUnit with a Maven task easily as :
     
 ![Architecture Dev](img/intellij_conf.png "Architecture Development")
 
-
 # FAQ
 
 All questions and answers about dev tasks
@@ -172,15 +173,27 @@ All questions and answers about dev tasks
 
 ```
 vagrant ssh
-cloudunit/cu-platform/reset-all.sh -y
+cloudunit/cu-platform/reset.sh -y
 ```
-
+    
 ## How to rebuild images
 
 Update your sources, build the images and reninit the database :
 
 ```
-$ vagrant ssh dev
-$ cloudunit/cu-services/build-services.sh
-$ cloudunit/cu-platform/reset-all.sh -y
+vagrant ssh dev
+cloudunit/cu-services/build-services.sh
+cloudunit/cu-platform/reset.sh -y
 ```
+
+## How to run e2e test (selenium & protractor)
+
+First of all, you have to install Google Chrome.
+Then, start the application ([see step 6](#step6)) in parallel.
+
+```
+cd $HOME/cloudunit/cu-manager
+grunt test
+```
+
+

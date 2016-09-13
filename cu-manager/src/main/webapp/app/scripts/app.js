@@ -32,7 +32,6 @@
       'ngCookies',
       'ngSanitize',
       'ngAnimate',
-      'ngRoute',
       'ui.router',
       'angularFileUpload',
       'ngTable',
@@ -43,6 +42,10 @@
       'angular.filter',
       'ui.bootstrap',
       'angular-chartist',
+      'nvd3',
+      'metricsgraphics',
+      'ui.codemirror',
+      'ngclipboard',
 
       //shared modules
       'webuiApp.filters',
@@ -53,6 +56,8 @@
       'webuiApp.dashboard',
       'webuiApp.editApplication',
       'webuiApp.snapshots',
+      'webuiApp.mainTimeline',
+      'webuiApp.scripting',
       'webuiApp.account',
       'webuiApp.feed',
       'webuiApp.tags',
@@ -63,7 +68,6 @@
         $urlRouterProvider.otherwise('/login');
       },])
     .constant('moment', moment)
-
     // moment locale config
     .config(function() {
       moment.locale('en', {
@@ -72,6 +76,9 @@
           sameDay: '[Today]',
         },
       });
+    })
+    .constant('CONFIG', {
+     dislayJolokia: true,
     });
 })();
 

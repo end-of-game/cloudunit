@@ -14,8 +14,9 @@ RUN echo mysql-server-5.5 mysql-server/root_password password 'root' | debconf-s
 RUN echo mysql-server-5.5 mysql-server/root_password_again password 'root' | debconf-set-selections
 
 ENV MYSQL_MAJOR 5.5
-ENV MYSQL_VERSION 5.5.49-0ubuntu0.14.04.1
-RUN apt-get install -y mysql-server-$MYSQL_MAJOR=$MYSQL_VERSION
+# ENV MYSQL_VERSION 5.5.49-0ubuntu0.14.04.1
+# RUN apt-get install -y mysql-server-$MYSQL_MAJOR
+RUN apt-get install -y mysql-server-$MYSQL_MAJOR
 
 RUN chown mysql:mysql /var/run/mysqld
 RUN sed -i -e"s/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/" -e"s/\/var\/lib\/mysql/\/cloudunit\/database/g" -e"/skip-external-locking/ a\lower_case_table_names = 1" /etc/mysql/my.cnf

@@ -13,6 +13,9 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
+var https = require('https');
+var fs = require('fs');
+
 var DeployPage = (function () {
   function DeployPage() {
     "use strict";
@@ -28,9 +31,28 @@ var DeployPage = (function () {
     this.appStatusError = element(by.css('.app-status-error'));
     this.progressBar = element(by.css('.upload-progress'));
     this.deployFile = function (filePath) {
-      var absolutePath = this.path.resolve(__dirname, filePath);
-      return this.uploadFileInput.sendKeys(absolutePath);
-    }
+        var absolutePath = this.path.resolve(__dirname, filePath);
+        return element(by.id('upload-file')).sendKeys(absolutePath);
+    };
+    this.download = function(url, dest) {
+        var file = fs.createWriteStream(dest);
+        var request = https.get(url, function(response) {
+            https.get(response.headers.location, function(response) {
+                response.pipe(file);
+                file.on('finish', function() {
+                    file.close(); 
+                    return true;
+                });
+            }).on('error', function(err) {
+                fs.unlink(dest);
+                console.log(err);
+            });
+
+        }).on('error', function(err) {
+            fs.unlink(dest); // Delete the file async.
+            console.log(err);
+        });
+    };
   }
 
   return DeployPage;

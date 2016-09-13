@@ -15,14 +15,20 @@
 
 package fr.treeptik.cloudunit.service;
 
+import fr.treeptik.cloudunit.model.Metric;
+
+import java.util.List;
+
 /**
  * Created by nicolas on 25/08/2014.
  */
 public interface MonitoringService {
 
-    public String getFullContainerId(String containerName);
+    String getFullContainerId(String containerName);
 
-    public String getJsonFromCAdvisor(String containerId);
+    String getJsonFromCAdvisor(String containerId);
 
-    public String getJsonMachineFromCAdvisor();
+    String getJsonMachineFromCAdvisor();
+
+    List<Metric> findByServer(String serverName);
 }

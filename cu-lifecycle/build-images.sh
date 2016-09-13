@@ -10,7 +10,7 @@ display_build_images
 
 cd $CU_HOME/cu-vagrant
 vagrant up
-vagrant ssh -c "/home/vagrant/cloudunit/cu-platform/reset-all.sh -y"
+vagrant ssh -c "/home/vagrant/cloudunit/cu-platform/reset.sh -y"
 
 
 

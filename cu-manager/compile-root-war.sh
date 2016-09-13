@@ -1,7 +1,8 @@
 
 #!/bin/bash
 
-node_dir=src/main/webapp
+cd /home/admincu/cloudunit/cu-manager
+node_dir=/home/admincu/cloudunit/cu-manager/src/main/webapp
 tomcat_dir=/home/admincu/cloudunit/cu-platform/tomcat
 
 if [ ! -d "$tomcat_dir" ]; then
@@ -16,11 +17,10 @@ if [ ! -d "$node_dir/bower_components" ]; then
 	wget https://github.com/Treeptik/CloudUnit/releases/download/1.0/bower_components.tar.gz -O /tmp/bower_components.tar.gz && tar -xf /tmp/bower_components.tar.gz -C $node_dir
 fi
 
-
 for dir in cu-nodebuild cu-javabuild
 do
 	git checkout images/$dir/Dockerfile
-	sed --in-place "s/builder_uid/$(id -u)/g;s/builder_gid/$(id -g)/g" images/$dir/Dockerfile
+	sed --in-place "s/builder_uid/$(id -u admincu)/g;s/builder_gid/$(id -g admincu)/g" images/$dir/Dockerfile
 done
 
 docker-compose up cunodebuild

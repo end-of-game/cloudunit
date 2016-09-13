@@ -14,7 +14,7 @@
 #!/usr/bin/env bash
 
 # remote execution for cleaning env
-ssh 'vagrant@192.168.50.4' "cd cloudunit/cu-platform && ./reset-all.sh -y"
+ssh 'vagrant@192.168.50.4' "cd cloudunit/cu-platform && ./reset.sh -y"
 
 
 

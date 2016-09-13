@@ -16,13 +16,12 @@
 (function(){
   "use strict";
   angular.module('webuiApp.editApplication')
-    .directive('editAppOverview', Overview);
+    .component('editAppOverview', Overview());
 
   function Overview () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/overview/editApplication.overview.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
@@ -33,7 +32,6 @@
         OverviewCtrl
       ],
       controllerAs: 'overview',
-      bindToController: true
     };
   }
 
@@ -41,16 +39,36 @@
 
     var vm = this;
 
-
     vm.toggleServer = toggleServer;
     vm.getTplUrl = getTplUrl;
     vm.removeModule = removeModule;
-
-    $scope.$on ( 'application:ready', function ( e, app ) {
-      vm.app = app;
+    
+    $scope.$on ( 'application:ready', function ( e, data ) {
+      vm.app = data.app;
+      if(vm.app.servers[0].status === 'START') {
+        refreshEnvVar();
+      }
     });
-
+    
+    $scope.$on ( 'application:addModule', refreshEnvVar);
+    
+    vm.$onInit = function() {
+      if(vm.app) {
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
+        .then ( function (data) {
+          vm.app.env = data;
+        } ) 
+      }
+    }
+    
     ///////////////////////////////////////////
+
+    function refreshEnvVar () {
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.servers[0].containerID)
+      .then ( function (data) {
+        vm.app.env = data;
+      } )
+    }
 
     function toggleServer(application) {
       if (application.status === 'START') {
@@ -62,8 +80,11 @@
 
     // Démarrage de l'application
     function startApplication(applicationName) {
-      ApplicationService.start(applicationName);
-      $scope.$emit('workInProgress', {delay: 3000});
+      ApplicationService.start(applicationName)
+        .then(function() {
+          refreshEnvVar();
+          $scope.$emit('workInProgress', {delay: 3000});
+        });
     }
 
     // Arrêt de l'application
@@ -79,7 +100,10 @@
 
     // Suppression d'un module
     function removeModule ( applicationName, moduleName ) {
-      return ModuleService.removeModule ( applicationName, moduleName );
+      return ModuleService.removeModule ( applicationName, moduleName )
+        .then(function() {
+          refreshEnvVar();
+        });
     }
   }
 })();

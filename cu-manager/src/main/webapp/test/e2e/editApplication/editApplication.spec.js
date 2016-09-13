@@ -13,134 +13,153 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-var EditApplicationPage = require('../../pages/EditApplicationPage');
-var DashboardPage = require('../../pages/DashboardPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 describe('E2E: EditApplication', function () {
   "use strict";
-  var ptor, editApp, dashboard;
+  var editApp, dashboard;
 
   login(browser.params.loginAdmin);
 
   beforeEach(function () {
-    ptor = protractor.getInstance();
-    ptor.ignoreSynchronization = true;
-    editApp = new EditApplicationPage();
-    dashboard = new DashboardPage();
+    editApp = components.EditApplicationPage;
+    dashboard = components.DashboardPage;
   });
 
-  // test du header de la vue editApplication
+  describe('create an application', function () {
+
+    it('should display a spinner when being created', function () {
+      // set test environment
+      dashboard.createAppWithoutWaiting('testApp', 1);
+      browser.driver.sleep(browser.params.sleep.smallest);
+      expect(element(by.css('.pending')).isPresent()).toBeTruthy();
+    });
+
+    it('should stop display a spinner after being created', function () {
+      browser.driver.sleep(browser.params.sleep.large);
+      expect(element(by.css('.pending')).isPresent()).toBeFalsy();
+    });
+
+    it('should be in start status', function() {
+      var dashboardTestApp = dashboard.findApplication('testapp');
+      expect(dashboardTestApp.element(by.css('.status')).getText()).toMatch('Start');
+      //expect(element(by.id('application-testapp')).element(by.css('.status')).getText()).toMatch('Start');
+      //var statusProperty = dashboard.getAppProperty('status', 0);
+      //expect(statusProperty.getText()).toMatch('Start');
+    });
+
+    it('should appear the server choice in service section', function() {
+      var dashboardTestApp = dashboard.findApplication('testapp');
+      expect(dashboardTestApp.element(by.css('.features p:nth-child(1)')).getText()).toMatch(dashboard.serverChoice(1).getText());
+    });
+
+  });
+
 
   describe('page header', function () {
+
     it('should have application name in page title', function () {
-
-      // set test environment
-      dashboard.createApp('testApp', 1);
-      browser.driver.sleep(6000);
       browser.get('/#/editApplication/testApp/overview');
-      browser.driver.sleep(2000);
-
-      browser.driver.sleep(2000);
       expect(editApp.pageTitle.getText()).toMatch('Application testApp');
     });
 
     describe('go back link', function () {
       it('should exist', function () {
-        browser.driver.sleep(2000);
         expect(editApp.goBackLink.isPresent()).toBeTruthy();
       });
 
       it('should navigate to dashboard', function () {
         editApp.goBackLink.click();
-        browser.driver.sleep(2000);
         expect(browser.getLocationAbsUrl()).toMatch('/dashboard');
       })
+
     });
 
-    // tests des tabs de la vue editApplication
-
+    // tests tabs about editApplication
     describe('Tabs menu', function () {
 
       describe('Overview Tab', function () {
         it('should be displayed by default', function () {
           browser.get('/#/editApplication/testApp/overview');
-          browser.driver.sleep(1000);
           expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/overview');
+           browser.driver.sleep(browser.params.sleep.small);
         })
-      });
-
-      describe('Alias Tab', function () {
-        it('should display alias section', function () {
-          editApp.aliasTab.click();
-          browser.driver.sleep(1000);
-          expect(editApp.aliasContent.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/alias');
-        })
-
       });
 
       describe('Add Module Tab', function () {
         it('should display add module section', function () {
-          editApp.addModuleTab.click();
-          browser.driver.sleep(1000);
-          expect(editApp.addModuleContent.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/addModule');
-        })
-      });
-
-      describe('Configure JVM Tab', function () {
-        it('should display configure JVM section', function () {
-          editApp.jvmConfigTab.click();
-          browser.driver.sleep(1000);
-          expect(editApp.jvmConfigContent.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/configureJVM');
-        })
-      });
-
-      describe('Logs Tab', function () {
-        it('should display logs section', function () {
-          editApp.logsTab.click();
-          browser.driver.sleep(3000);
-          expect(editApp.logsContent.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/logs');
-        })
-      });
-
-      describe('Monitoring Tab', function () {
-        it('should display monitoring section', function () {
-          editApp.monitoringTab.click();
-          browser.driver.sleep(3000);
-          expect(editApp.monitoringContent.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/monitoring');
+          editApp.addModuleTab.click().then(function() {
+            expect(editApp.addModuleTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/addModule');
+          });
         })
       });
 
       describe('Deploy Tab', function () {
-        it('should display deploy section', function () {
-          editApp.deployTab.click();
-          browser.driver.sleep(1000);
-          expect(editApp.deployContent.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/deploy');
-
+       it('should display deploy section', function () {
+          editApp.deployTab.click().then(function() {
+            expect(editApp.deployTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/deploy');
+          });
         });
+      });
+
+      describe('Explorer Tab', function () {
+        it('should display explorer section', function () {
+          editApp.explorerTab.click().then(function(){
+            expect(editApp.explorerTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/explorer');
+          });
+        });
+      });
+
+      describe('Logs Tab', function () {
+        it('should display logs section', function () {
+          editApp.logsTab.click().then( function(){
+            expect(editApp.logsTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/logs');
+          });
+        })
+      });
+
+      describe('Monitoring Tab', function () {
+        xit('should display monitoring section', function () {
+          editApp.monitoringTab.click().then(function() {
+            expect(editApp.monitoringTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/monitoring');
+          });
+        })
       });
 
       describe('Snapshot Tab', function () {
         it('should display snapshot section', function () {
-          editApp.snapshotTab.click();
-          browser.driver.sleep(1000);
-          expect(editApp.snapshotContent.isPresent()).toBeTruthy();
-          expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/snapshot');
-          browser.driver.sleep(1000);
+          editApp.snapshotTab.click().then(function(){
+            expect(editApp.snapshotTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/snapshot');
+          });
+        });
+      });
 
-          // reset test environment
-          browser.get('/#/dashboard');
-          browser.driver.sleep(3000);
-          dashboard.deleteApp('testApp');
-          browser.driver.sleep(3000);
-          logout();
+      describe('Settings Tab', function () {
+        it('should display settings section', function () {
+          editApp.settingsTab.click().then(function(){
+            expect(editApp.settingsTab.isPresent()).toBeTruthy();
+            expect(browser.getLocationAbsUrl()).toMatch('/editApplication/testApp/settings');
+            browser.driver.sleep(browser.params.sleep.smallest);
+          });
         });
       });
     })
+  });
+
+  describe('delete an application', function () {
+      it('should delete an application', function() {
+        // reset test environment
+        browser.get('/#/dashboard');
+        dashboard.deleteApp('testapp');
+        expect(element(by.id('application-testApp')).isPresent()).toBeFalsy();
+        logout();
+      });
   });
 });

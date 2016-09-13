@@ -17,32 +17,33 @@
   'use strict';
   angular
     .module ( 'webuiApp.editApplication' )
-    .directive ( 'editAppModules', Modules );
+    .component ( 'editAppModules', Modules() );
 
   function Modules () {
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/images/editApplication.images.html',
-      scope: {
+      bindings: {
         app: '='
       },
       controller: [
+        '$rootScope',
         'ImageService',
         'ModuleService',
         ModulesCtrl
       ],
       controllerAs: 'modules',
-      bindToController: true
     };
   }
 
-  function ModulesCtrl ( ImageService, ModuleService) {
+  function ModulesCtrl ( $rootScope, ImageService, ModuleService) {
     var vm = this;
     vm.moduleImages = [];
     vm.addModule = addModule;
-
-    getModulesImages ();
-
+    
+    vm.$onInit = function() {
+      getModulesImages ();
+    }
+    
     function getModulesImages () {
       return ImageService.findEnabledModule ()
         .then ( success )
@@ -50,6 +51,24 @@
 
       function success ( images ) {
         vm.moduleImages = images;
+        vm.moduleImages.push({
+          id: 9999,
+          name: "influxdb",
+          path: "cloudunit/influxdb",
+          displayName: "Influxdb",
+          status: null,
+          isTemp: true
+        });
+        
+        vm.moduleImages.push({
+          id: 9998,
+          name: "mongo-3-2",
+          path: "cloudunit/mongo-3-2",
+          displayName: "Mongo 3.2",
+          status: null,
+          isTemp: true
+        });
+        
         return vm.moduleImages;
       }
 
@@ -60,7 +79,10 @@
 
     // Ajout d'un module
     function addModule ( applicationName, imageName ) {
-      return ModuleService.addModule ( applicationName, imageName );
+      ModuleService.addModule ( applicationName, imageName ).then ( function (data) {
+        $rootScope.$broadcast('application:addModule');
+        return data;
+      } );
     }
   }
 }) ();

@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 
-export GL_MAJOR=8.7.2-ce.0
+export GL_MAJOR=8.8.3-ce.0
 
 docker images |grep gitlab/gitlab-ce |grep $GL_MAJOR
 if [ "$?" == "1" ]; then
     docker pull gitlab/gitlab-ce:$GL_MAJOR
 fi
 
-docker ps | grep gitlab
+ETURN=`docker ps | grep gitlab`
 
 # If jenkins is not running
-if [ "$?" == "1" ]; then
+if [ -z "$RETURN" ]; then
 
     docker run --detach \
-        --hostname gitlab.cloudunit.serv \
+        --hostname gitabl-g2c.cloudunit.io \
         --publish 4443:443 --publish 480:80 --publish 422:22 \
         --name gitlab \
         --restart always \
-        --volume /home/vagrant/gitlab_home/config:/etc/gitlab \
-        --volume /home/vagrant/gitlab_home/logs:/var/log/gitlab \
-        --volume /home/vagrant/gitlab_home/data:/var/opt/gitlab \
+        --volume /home/$USER/gitlab_home/config:/etc/gitlab \
+        --volume /home/$USER/gitlab_home/logs:/var/log/gitlab \
+        --volume /home/$USER/gitlab_home/data:/var/opt/gitlab \
         gitlab/gitlab-ce:$GL_MAJOR
 
     # Maybe it could already exist
@@ -28,7 +28,7 @@ if [ "$?" == "1" ]; then
     fi
 fi
 
-echo -e "***************************************************"
-echo -e "* ACCESS TO GITLAB AT --> http://192.168.50.4:480"
-echo -e "***************************************************"
+echo -e "**********************************************************"
+echo -e "* ACCESS TO GITLAB AT --> http://192.168.50.4:480 FOR DEV"
+echo -e "**********************************************************"
 

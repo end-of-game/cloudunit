@@ -12,10 +12,9 @@
   ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
   ~     For any questions, contact us : contact@treeptik.fr
   -->
-
 <div class="tab-pane active vertical-spacing">
   <div id="{{overview.app.name}}-server" class="clearfix">
-    <div class="card large application {{overview.app.status | lowercase}}">
+    <div class="card large application overview {{overview.app.status | lowercase}}">
       <div class="content">
         <div class="status">
           <p class="headline">
@@ -38,48 +37,63 @@
             <div class="rect5"></div>
           </div>
         </div>
-        <div class="features">
+        <div class="features col-lg-6">
           <div class="readonly">
             <label for="creation-date">Creation date: </label>
-            <input
+            <input class="clipboard"
               id="creation-date"
               type="text"
               value="{{ overview.app.date }}"
+              data-title="Copy to clipboard"
+              tooltip=""
+              ngclipboard data-clipboard-target="#creation-date"
               readonly="">
           </div>
           <div class="readonly">
             <label for="server">Server: </label>
-            <input
+            <input class="clipboard"
               id="server"
               type="text"
               value="{{ overview.app.servers[0].image.displayName}}"
+              data-title="Copy to clipboard"
+              tooltip=""
+              ngclipboard data-clipboard-target="#server"
               readonly="">
           </div>
           <div class="readonly">
             <label for="jvm-memory">JVM memory: </label>
-            <input
+            <input class="clipboard"
               id="jvm-memory"
               type="text"
               value="{{overview.app.servers[0].jvmMemory}} Mo"
+              data-title="Copy to clipboard"
+              tooltip=""
+              ngclipboard data-clipboard-target="#jvm-memory"
               readonly="">
           </div>
 
           <div class="readonly">
             <label for="jvm-options">JVM options: </label>
-            <input class="large code"
+            <input class="code clipboard"
                    id="jvm-options"
                    type="text"
-                   value="{{overview.app.servers[0].jvmOptions}}"
-                   readonly="">
+                   value="{{overview.app.servers[0].jvmOptions | cleanEscapeSlashAndReverse: true}}"
+                   readonly=""
+                   data-title="Copy to clipboard"
+                   tooltip=""
+                   ngclipboard data-clipboard-target="#jvm-options">
           </div>
 
           <div class="readonly">
             <label for="jvm-release">JVM Release: </label>
-            <input class="large code"
+            <input class="code clipboard"
                    id="jvm-release"
                    type="text"
                    value="{{overview.app.servers[0].jvmRelease}}"
-                   readonly="">
+                   readonly=""
+                   data-title="Copy to clipboard"
+                   tooltip=""
+                   ngclipboard data-clipboard-target="#jvm-release">
           </div>
 
           <div class="readonly">
@@ -89,6 +103,18 @@
             </a>
           </div>
 
+        </div>
+        <div class="col-lg-6" ng-if="overview.app.env">
+          <label>Environment variables :</label>
+          <li class="label-like" ng-repeat="env in overview.app.env track by $index">
+            <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
+              {{ env.key }}
+            </span> 
+            = 
+            <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
+              {{ env.value }}
+            </span>
+          </li>
         </div>
       </div>
     </div>

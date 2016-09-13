@@ -24,13 +24,12 @@ var AppBar = function(){
 
 
 describe('E2E: routes : role user', function(){
-  var ptor, appBar;
+  var appBar;
 
   login(browser.params.loginUser);
 
   beforeEach(function(){
-    ptor = protractor.getInstance();
-    ptor.ignoreSynchronization = true;
+    browser.ignoreSynchronization = true;
     appBar = new AppBar();
   });
 

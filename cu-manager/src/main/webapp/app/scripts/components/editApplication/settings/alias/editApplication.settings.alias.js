@@ -17,18 +17,16 @@
   'use strict';
   angular
     .module('webuiApp.editApplication')
-    .directive('aliasComponent', AliasComponent);
+    .component('aliasComponent', AliasComponent());
 
   function AliasComponent(){
     return {
-      restrict: 'E',
       templateUrl: 'scripts/components/editApplication/settings/alias/editApplication.settings.alias.html',
-      scope: {
+      bindings: {
         application: '=app'
       },
       controller: ['$scope', 'ApplicationService', AliasCtrl],
       controllerAs: 'alias',
-      bindToController: true
     }
   }
 
@@ -57,8 +55,10 @@
         return vm.errorMsg;
       }
     }
+    
     function removeAlias(applicationName, domain) {
       ApplicationService.removeAlias(applicationName, domain);
     }
+    
   }
 })();

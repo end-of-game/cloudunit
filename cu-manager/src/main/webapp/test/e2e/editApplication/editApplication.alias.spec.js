@@ -13,8 +13,8 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-var EditApplicationPage = require('../../pages/EditApplicationPage');
-var DashboardPage = require('../../pages/DashboardPage');
+var importer = require('../../pages/importerE2EComponents');
+var components = new importer();
 
 var AliasSection = function () {
   "use strict";
@@ -31,63 +31,72 @@ var AliasSection = function () {
 
 describe('E2E: EditApplication', function () {
   "use strict";
-  var ptor, editApp, alias, dashboard;
-
-  beforeEach(function () {
-    ptor = protractor.getInstance();
-    ptor.ignoreSynchronization = true;
-    editApp = new EditApplicationPage();
-    alias = new AliasSection();
-    dashboard = new DashboardPage();
-    browser.driver.sleep(1000);
-  });
+  var editApp, alias, dashboard;
 
   login(browser.params.loginAdmin);
 
-  describe('E2E: Edit Application Alias', function () {
-    it('should display the application url', function () {
-      // set test environment
+  beforeEach(function () {
+    editApp = components.EditApplicationPage;
+    dashboard = components.DashboardPage;
+    alias = new AliasSection();
+  });
 
+  describe('E2E: Edit Application Alias', function () {
+    it('should display the alias card in settings url', function () {
+      // set test environment
       dashboard.createApp('testAlias', 1);
-      browser.driver.sleep(6000);
-      browser.get('/#/editApplication/testAlias/alias');
-      browser.driver.sleep(2000);
+      browser.get('/#/editApplication/testAlias/settings');
+
       expect(alias.domain.getAttribute('value')).not.toEqual('');
     });
 
     describe('Add new alias', function () {
-      it('should create a new alias', function () {
+      it('should display an error message if alias doesn\'t respect a valid domain name pattern', function () {
+        browser.get('/#/editApplication/testAlias/settings');
         var aliasList;
         alias.setAlias('test');
-        browser.driver.sleep(1000);
         alias.addAliasBtn.click();
-        browser.driver.sleep(2000);
-        aliasList = element.all(by.repeater('aliase in editApp.application.aliases'));
-        expect(aliasList.count()).toBe(1);
+
+        //browser.driver.wait(protractor.until.elementTextContains(alias.errorMsg, 'This alias must respect a valid domain name pattern'), 8000);
+        browser.driver.sleep(browser.params.sleep.medium);
+        expect(alias.errorMsg.getText()).toContain('This alias must respect a valid domain name pattern');
+      });
+
+      it('should create a new alias', function () {
+        browser.get('/#/editApplication/testAlias/settings');
+        var aliasList;
+        alias.setAlias('treeptik.fr');
+        alias.addAliasBtn.click().then(function(){
+          browser.driver.sleep(browser.params.sleep.medium);
+          aliasList = element.all(by.repeater('aliase in alias.application.aliases'));
+          expect(aliasList.count()).toBe(1);
+        });
+        
       });
 
       it('should display an error message if alias already exists', function () {
-        alias.setAlias('test');
-        browser.driver.sleep(1000);
-        alias.addAliasBtn.click();
-        browser.driver.sleep(2000);
-        expect(alias.errorMsg.getText()).toMatch('This alias is already used by another application on this CloudUnit instance');
+        browser.get('/#/editApplication/testAlias/settings');
+        alias.setAlias('treeptik.fr');
+        alias.addAliasBtn.click().then(function(){
+          expect(alias.errorMsg.getText()).toContain('This alias is already used by another application in CloudUnit instance(s)');
+        });        
       });
     });
 
     describe('remove alias', function () {
       it('should remove alias on click', function () {
+        browser.get('/#/editApplication/testAlias/settings');
         var aliasList;
-        alias.removeAliasBtn.click();
-        browser.driver.sleep(2000);
-        expect(alias.noAliasMsg.isPresent()).toBeTruthy();
+        alias.removeAliasBtn.click().then(function(){
+          browser.wait(protractor.ExpectedConditions.presenceOf(alias.noAliasMsg), browser.params.sleep.medium);
+          expect(alias.noAliasMsg.isPresent()).toBeTruthy();
 
-        // rest test environment
-        browser.get('/#/dashboard');
-        browser.driver.sleep(3000);
-        dashboard.deleteApp('testAlias');
-        browser.driver.sleep(3000);
-        logout();
+          // reset test environment
+          browser.get('/#/dashboard');
+          browser.sleep(browser.params.sleep.medium);
+          dashboard.deleteApp('testalias');
+          logout();
+        });
       })
     })
   });

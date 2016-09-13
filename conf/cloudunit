@@ -61,7 +61,7 @@ if [ $# == 1 ]; then
 
 	case $arg1 in
 		reset)
-			cd /home/admincu/cloudunit/cu-platform && ./reset-all.sh
+			cd /home/admincu/cloudunit/cu-platform && ./reset.sh
 			;;
 		restart)
 			cd /home/admincu/cloudunit/cu-platform && ./restart-platform.sh

@@ -93,9 +93,9 @@ cd %HOMEPATH%/cloudunit/cu-manager/src/main/webapp && bower install
 Warning because this step could need lot of times !
 
 ```
-$ cd %HOMEPATH%/cloudunit/cu-vagrant 
-$ vagrant up
-$ vagrant provision
+cd %HOMEPATH%/cloudunit/cu-vagrant 
+vagrant up
+vagrant provision
 ```
 
 ### Step 7 - How to start the application
@@ -144,7 +144,7 @@ All questions and answers about dev tasks
 
 ```
 vagrant ssh
-cloudunit/cu-platform/reset-all.sh -y
+cloudunit/cu-platform/reset.sh -y
 ```
 
 ## How to rebuild images
@@ -152,7 +152,17 @@ cloudunit/cu-platform/reset-all.sh -y
 Update your sources, build the images and reninit the database :
 
 ```
-$ vagrant ssh dev
-$ cloudunit/cu-services/build-services.sh
-$ cloudunit/cu-platform/reset-all.sh -y
+vagrant ssh dev
+cloudunit/cu-services/build-services.sh
+cloudunit/cu-platform/reset.sh -y
+```
+
+## How to run e2e test (selenium & protractor)
+
+First of all, you have to install Google Chrome.
+Then, you have to start the application in parallel.
+
+```
+cd $HOME/cloudunit/cu-manager
+grunt test
 ```

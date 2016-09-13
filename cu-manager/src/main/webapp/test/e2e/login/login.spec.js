@@ -40,10 +40,9 @@ var LoginPage = function () {
 };
 
 describe('e2e test: login', function () {
-  var loginPage, ptor, params;
+  var loginPage, params;
   beforeEach(function () {
-    ptor = protractor.getInstance();
-    ptor.ignoreSynchronization = true;
+    browser.ignoreSynchronization=true;
     loginPage = new LoginPage();
     params = browser.params;
   });
@@ -51,7 +50,7 @@ describe('e2e test: login', function () {
 
   it('should redirect user to login if not authenticated', function () {
     browser.get('/#/dashboard');
-    browser.driver.sleep(1000);
+    browser.driver.sleep(browser.params.sleep.smallest);
     expect(browser.getLocationAbsUrl()).toMatch('/login');
   });
 
@@ -83,7 +82,7 @@ describe('e2e test: login', function () {
     loginPage.setUsername(params.loginUser.login);
     loginPage.setPassword(params.loginUser.password);
     loginPage.loginBtn.click().then(function () {
-      browser.sleep(500).then(function () {
+      browser.sleep(browser.params.sleep.smallest).then(function () {
         expect(browser.getLocationAbsUrl()).toMatch('/dashboard');
       });
     });

@@ -1,10 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.treeptik</groupId>
-	<artifactId>CloudUnitPublic</artifactId>
+	<parent>
+		<groupId>fr.treeptik</groupId>
+		<artifactId>cloudunit</artifactId>
+		<version>1.0</version>
+	</parent>
+	<artifactId>cu-manager</artifactId>
 	<packaging>war</packaging>
-	<version>1.0</version>
 	<name>CloudUnit</name>
 
 	<properties>
@@ -39,7 +42,6 @@
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
 		<hibernate.version>4.2.3.Final</hibernate.version>
 		<codahale.metrics.version>3.0.1</codahale.metrics.version>
-
 		<skip.integration.tests>true</skip.integration.tests>
 		<skip.unit.tests>false</skip.unit.tests>
 		<!-- surefire argLine empty by default it will be populated by plugin contributing 
@@ -84,6 +86,12 @@
     </developers>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>fr.treeptik</groupId>
+			<artifactId>cu-core</artifactId>
+			<version>1.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.spotify</groupId>
@@ -454,6 +462,14 @@
 			<artifactId>ehcache-core</artifactId>
 			<version>2.6.9</version>
 		</dependency>
+
+		<!-- GitLab API -->
+		<dependency>
+			<groupId>org.gitlab</groupId>
+			<artifactId>java-gitlab-api</artifactId>
+			<version>1.2.5</version>
+		</dependency>
+
 
 
 	</dependencies>

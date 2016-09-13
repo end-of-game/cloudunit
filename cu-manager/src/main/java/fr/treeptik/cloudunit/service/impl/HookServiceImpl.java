@@ -19,7 +19,7 @@ import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
-import fr.treeptik.cloudunit.hooks.HookAction;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.service.HookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,10 +55,10 @@ public class HookServiceImpl implements HookService {
         }
     }
 
-    public void call(String containerName, HookAction action){
-
+    public void call(String containerName, RemoteExecAction action) {
+        DockerClient docker = null;
+        LogStream output = null;
         try {
-            DockerClient docker = null;
             if (Boolean.valueOf(isHttpMode)) {
                 docker = DefaultDockerClient
                         .builder()
@@ -70,14 +70,18 @@ public class HookServiceImpl implements HookService {
                         .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
             }
 
-            logger.info("Calling Hook script : " + action.getCommand()[1] + " for " + containerName);
-            final String execId = docker.execCreate(containerName, action.getCommand(), DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
-            final LogStream output = docker.execStart(execId);
+            logger.info("Calling Hook script : " + action.getCommand() + " for " + containerName);
+            final String execId = docker.execCreate(containerName, action.getCommandBash(), DockerClient.ExecParameter.STDOUT, DockerClient.ExecParameter.STDERR);
+            output = docker.execStart(execId);
             final String execOutput = output.readFully();
+            System.out.println(execOutput);
 
         } catch (Exception ignore) {
             // dev in progress. No log
             //logger.error(action.toString(), e);
+        } finally {
+            if (output != null) { output.close(); }
+            if (docker != null) { docker.close(); }
         }
     }
 

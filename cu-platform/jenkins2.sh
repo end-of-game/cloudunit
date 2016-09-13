@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export JK_MAJOR=2.1
+export JK_MAJOR=2.14
 
 docker images |grep jenkinsci/jenkins |grep $JK_MAJOR
 if [ "$?" == "1" ]; then
@@ -10,22 +10,24 @@ fi
 RETURN=`docker ps | grep jenkins2`
 
 # If jenkins is not running
-if [ "$RETURN" == "1" ]; then
+if [ -z "$RETURN" ]; then
 
-    mkdir -p /home/vagrant/jenkins_home
+    mkdir -p /home/$USER/jenkins_home
+    sudo chown -R $USER /home/$USER/jenkins_home/
     docker run  --name jenkins2 \
+                --restart always \
                 -d -p 9080:8080 -p 50000:50000 \
-                -v /home/vagrant/jenkins_home:/var/jenkins_home \
+                -v /home/$USER/jenkins_home:/var/jenkins_home \
                 jenkinsci/jenkins:$JK_MAJOR
 
     # Maybe it could already exist
     if [ "$?" == "1" ]; then
-        sudo chown -R vagrant /home/vagrant/jenkins_home
+        sudo chown -R $USER /home/$USER/jenkins_home
         docker start jenkins2
     fi
 fi
 
 echo -e "\nThink about 'docker logs -f jenkins2' to get password\n"
-echo -e "*****************************************************"
-echo -e "* ACCESS TO JENKINS AT --> http://192.168.50.4:9080"
-echo -e "*****************************************************"
+echo -e "************************************************************"
+echo -e "* ACCESS TO JENKINS AT --> http://192.168.50.4:9080 IF DEV "
+echo -e "************************************************************"

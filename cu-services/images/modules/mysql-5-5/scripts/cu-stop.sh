@@ -17,5 +17,6 @@ do
 	let count=$count+1;
 done
 
+/etc/init.d/apache2 stop
 echo "Mysql is stoped"
 
