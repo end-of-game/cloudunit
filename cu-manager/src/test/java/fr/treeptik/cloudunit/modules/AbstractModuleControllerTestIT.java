@@ -15,19 +15,16 @@
 
 package fr.treeptik.cloudunit.modules;
 
-import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Random;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -109,17 +106,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
     private String subdomain;
 
-    private String domain;
-
-    @PostConstruct
-    public void init () {
-        if (subdomain != null) {
-            domain = subdomain + domainSuffix;
-        } else {
-            domain = domainSuffix;
-        }
-    }
-
     protected String server;
     protected String module;
     protected String managerPrefix;
@@ -188,7 +174,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().is5xxServerError());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -199,7 +185,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().is5xxServerError());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -210,7 +196,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().is5xxServerError());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -221,7 +207,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().is5xxServerError());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -241,8 +227,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
+        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -250,17 +235,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(genericModule))
-            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected));
-
-        String contentPage = getUrlContentPage(managerExpected);
-        int counter = 0;
-        while (!contentPage.contains(managerPageContent) || counter++ < 10) {
-            contentPage = getUrlContentPage(managerExpected);
-            Thread.sleep(1000);
-        }
-
-        Assert.assertTrue(contentPage.contains(managerPageContent));
+            .andExpect(jsonPath("$.modules[0].name").value(genericModule));
 
         // remove a module
         resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + genericModule)
@@ -277,7 +252,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     @Test
-    public void test20_CreateServerThenAddTwoModule() throws Exception {
+    public void test20_FailCreateServerThenAddTwoModule() throws Exception {
         logger.info("Create an application, add two " + module + " modules, stop them then delete all");
 
         // verify if app exists
@@ -293,8 +268,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
+        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -302,20 +276,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(module1))
-            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1));
-
-        String contentPage = getUrlContentPage(managerExpected1);
-
-        int counter = 0;
-        while (!contentPage.contains(managerPageContent) || counter++ < 20) {
-            contentPage = getUrlContentPage(managerExpected1);
-            Thread.sleep(1000);
-        }
-
-        System.out.println(contentPage);
-        System.out.println(managerPageContent);
-        Assert.assertTrue(contentPage.contains(managerPageContent));
+            .andExpect(jsonPath("$.modules[0].name").value(module1));
 
         // add a second module
         jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
@@ -323,41 +284,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        // Expected values
-        String module2 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-2";
-        String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
-
-        // get the detail of the applications to verify modules addition
-        resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats
-            .andExpect(status().isOk())
-
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(module1))
-            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1))
-
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(module2))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected2));
-
-        // remove the first module 
-        resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + module1)
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
-        // we must verify the first module disappared and second one replaced it
-        resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(module2))
-            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected2))
-            .andExpect(jsonPath("$.modules[1]").doesNotExist());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -374,30 +301,32 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
+        resultats.andDo(print());
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
+        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
 
         // Stop the application
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
         resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andDo(print());
         resultats.andExpect(status().isOk());
 
         // Start the application
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
         resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andDo(print());
         resultats.andExpect(status().isOk());
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
                 .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats.andDo(print());
         resultats
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.modules[0].status").value("START"))
-                .andExpect(jsonPath("$.modules[0].name").value(module1))
-                .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1));
+                .andExpect(jsonPath("$.modules[0].name").value(module1));
     }
     
     public ResultActions requestPublishPort(Integer id) throws Exception {
