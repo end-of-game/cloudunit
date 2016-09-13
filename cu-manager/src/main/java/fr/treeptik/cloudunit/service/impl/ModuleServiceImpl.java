@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import fr.treeptik.cloudunit.config.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +34,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
+import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
+import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
 import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -46,7 +49,6 @@ import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ImageService;
@@ -67,9 +69,6 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Inject
 	private ImageService imageService;
-
-	@Inject
-	private ApplicationService applicationService;
 
 	@Inject
 	private DockerService dockerService;
@@ -115,9 +114,8 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Override
 	@Transactional
-	public Module create(String imageName, String applicationName, User user) throws ServiceException, CheckException {
-		Application application = applicationService.findByNameAndUser(user, applicationName);
-		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+	public Module create(String imageName, Application application, User user) throws ServiceException, CheckException {
+
 		// General informations
 		checkImageExist(imageName);
 		Module module = new Module();
@@ -154,13 +152,14 @@ public class ModuleServiceImpl implements ModuleService {
 
 		try {
 			Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs = getModuleEnvironmentVariables(image,
-					applicationName);
+					application.getName());
 
 			List<String> internalEnvironment = getInternalEnvironment(moduleEnvs);
 
 			List<EnvironmentVariable> exportedEnvironment = getExportedEnvironment(module, image, moduleEnvs);
 
-			environmentService.save(user, exportedEnvironment, applicationName, application.getServer().getName());
+			environmentService.save(user, exportedEnvironment, application.getName(),
+					application.getServer().getName());
 			applicationEventPublisher.publishEvent(new ServerStartEvent(application.getServer()));
 			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
