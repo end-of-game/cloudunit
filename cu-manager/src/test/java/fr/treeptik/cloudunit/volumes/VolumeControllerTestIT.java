@@ -140,7 +140,7 @@ public class VolumeControllerTestIT {
 
         existVolume(volumeResource);
 
-        deleteVolume(volumeResource.getId());
+        deleteVolume(volumeResource.getId(), HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -164,8 +164,19 @@ public class VolumeControllerTestIT {
         resultActions.andExpect(status().is4xxClientError());
 
         // delete the volume
-        deleteVolume(volumeResource.getId());
+        deleteVolume(volumeResource.getId(), HttpStatus.NO_CONTENT);
+    }
 
+    /**
+     * Delete a missing volume
+     *
+     * @throws Exception
+     */
+    @Test
+    public void deleteMissingVolume()
+            throws Exception {
+        // delete the volume
+        deleteVolume(Integer.MIN_VALUE, HttpStatus.BAD_REQUEST);
     }
 
     private void existVolume(VolumeResource volumeResource) throws Exception {
@@ -199,11 +210,11 @@ public class VolumeControllerTestIT {
         return ow.writeValueAsString(volumeResource);
     }
 
-    private void deleteVolume(Integer id) throws Exception {
+    private void deleteVolume(Integer id, HttpStatus status) throws Exception {
         logger.info("Delete Volume : " + id);
         ResultActions resultats =
                 mockMvc.perform(delete("/volume/"+id).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().is(HttpStatus.NO_CONTENT.value()));
+        resultats.andExpect(status().is(status.value()));
     }
 
 
