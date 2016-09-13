@@ -26,6 +26,7 @@ import fr.treeptik.cloudunit.model.action.ModuleAction;
 
 @Entity
 public class Module extends Container implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Transient
@@ -38,6 +39,8 @@ public class Module extends Container implements Serializable {
 	private String managerLocation;
 
 	private Boolean publishPorts;
+
+	private Integer forwardedPort;
 
 	@ManyToOne
 	@JsonIgnore
@@ -120,6 +123,14 @@ public class Module extends Container implements Serializable {
 
 	public void setPublishPorts(Boolean publishPorts) {
 		this.publishPorts = publishPorts;
+	}
+
+	public Integer getForwardedPort() {
+		return forwardedPort;
+	}
+
+	public void setForwardedPort(Integer forwardedPort) {
+		this.forwardedPort = forwardedPort;
 	}
 
 }
