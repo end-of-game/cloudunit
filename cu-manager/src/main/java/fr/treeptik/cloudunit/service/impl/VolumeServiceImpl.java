@@ -30,10 +30,12 @@ public class VolumeServiceImpl implements VolumeService {
 
 	@Override
 	@Transactional
-	public Volume createNewVolume(Volume volume) {
+	public Volume createNewVolume(String name) {
 		try {
-			checkVolumeFormat(volume);
-			dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
+			checkVolumeFormat(name);
+			dockerCloudUnitClient.createVolume(name, "runtime");
+			Volume volume = new Volume();
+			volume.setName(name);
 			volume = volumeDAO.save(volume);
 			return volume;
 		} catch (CheckException e) {
@@ -46,7 +48,7 @@ public class VolumeServiceImpl implements VolumeService {
 	@Transactional
 	public Volume updateVolume(Volume volume) {
 		try {
-			checkVolumeFormat(volume);
+			checkVolumeFormat(volume.getName());
 			Volume currentVolume = loadVolume(volume.getId());
 			dockerCloudUnitClient.removeVolume(currentVolume.getName());
 			dockerCloudUnitClient.createVolume(volume.getName(), "runtime");
@@ -82,12 +84,12 @@ public class VolumeServiceImpl implements VolumeService {
 		return volumeDAO.findAllVolumes();
 	}
 
-	private void checkVolumeFormat(Volume volume) {
-		if (volume.getName() == null || volume.getName().isEmpty())
+	private void checkVolumeFormat(String name) {
+		if (name == null || name.isEmpty())
 			throw new CheckException("This name is not consistent !");
-		if (!volume.getName().matches("^[-a-zA-Z0-9_]*$"))
-			throw new CheckException("This name is not consistent : " + volume.getName());
-		if (loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getName())).findAny().isPresent()) {
+		if (!name.matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This name is not consistent : " + name);
+		if (loadAllVolumes().stream().filter(v -> v.getName().equals(name)).findAny().isPresent()) {
 			throw new CheckException("This name already exists");
 		}
 	}

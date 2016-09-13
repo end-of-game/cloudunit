@@ -14,11 +14,8 @@
   -->
 
 <div class="tab-pane card large vertical-spacing">
-  <div class="content clearfix" ng-if="modules.typeImage">
-    <h3 class="title large">
-      Add module <i>{{ modules.typeImage }}</i>
-      <span ng-if="modules.errorAdding" class="pull-right hint error nolabel">{{ modules.errorAdding }}</span>
-    </h3>
+  <div class="content clearfix" ng-if="servers.typeImage">
+    <h3 class="title large">Add server <i>{{ servers.typeImage }}</i></h3>
 
     <div class="tile tile-sm module animate-module backcard" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}">
       <button
@@ -26,7 +23,7 @@
         ripple=""
         click-once=""
         data-ng-disabled="image.isTemp"
-        ui-sref="editApplication.addModule({ typeImage: '' })">
+        ui-sref="editApplication.addServer({ typeImage: '' })">
         <div class="spinner">
           <div class="rect1"></div>
           <div class="rect2"></div>
@@ -35,18 +32,18 @@
           <div class="rect5"></div>
         </div>
         <span class="icon-whhg pageback image"></span>
-        <span class="text"> Select other module</span>
+        <span class="text"> Select other server</span>
       </button>
     </div>
 
     <div class="tile tile-sm module animate-module" data-ng-class="{disabled:image.isTemp}" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
-    data-ng-repeat="image in modules.moduleImages | filter:modules.typeImage:strict" style="animation-delay: {{ $index * 0.3 }}s" ng-if="modules.typeImage">
+    data-ng-repeat="image in servers.serversList | filter:servers.typeImage:strict" style="animation-delay: {{ $index * 0.300 }}s" ng-if="servers.typeImage">
       <button
         class="tile-content"
         ripple=""
         click-once=""
         data-ng-disabled="image.isTemp"
-        data-ng-click="modules.addModule(modules.app.name, image.name)">
+        data-ng-click="servers.addModule(servers.app.name, image.name)">
         <div class="spinner">
           <div class="rect1"></div>
           <div class="rect2"></div>
@@ -60,17 +57,17 @@
     </div>
   </div>
 
-<div class="content clearfix" ng-if="!modules.typeImage">
-    <h3 class="title large">Add a module</h3>
+<div class="content clearfix" ng-if="!servers.typeImage">
+    <h3 class="title large">Add a server</h3>
     
     <div class="tile tile-sm module animate-module" data-ng-class="{disabled: image == 'mongo' || image == 'redis'}" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
-    data-ng-repeat="image in modules.categorieImage | orderBy:'toString()' | filter:modules.typeImage:strict" style="animation-delay: {{ $index * 0.3 }}s" >
+    data-ng-repeat="image in servers.serversCategorie | orderBy:'toString()' | filter:servers.typeImage:strict" style="animation-delay: {{ $index * .150 }}s" >
       <button
         class="tile-content"
         ripple=""
         click-once=""
         data-ng-disabled="image == 'mongo' || image == 'redis'"
-        ui-sref="editApplication.addModule({ typeImage: image })" >
+        ui-sref="editApplication.addServer({ typeImage: image })" >
           <div class="spinner">
             <div class="rect1"></div>
             <div class="rect2"></div>

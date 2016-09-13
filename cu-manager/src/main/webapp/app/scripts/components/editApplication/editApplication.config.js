@@ -44,6 +44,11 @@ angular.module('webuiApp.editApplication', [])
             url: '/addModule/:typeImage',
             template: '<edit-app-modules app="editApp.application"></edit-app-modules>',
           })
+        .state('editApplication.addServer',
+          {
+            url: '/addServer/:typeImage',
+            template: '<edit-app-servers app="editApp.application"></edit-app-servers>',
+          })
         .state('editApplication.deploy',
           {
             url: '/deploy',

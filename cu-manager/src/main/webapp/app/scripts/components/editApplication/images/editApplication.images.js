@@ -42,6 +42,7 @@
     vm.categorieImage = [];
     vm.addModule = addModule;
     vm.typeImage = $stateParams.typeImage;
+    vm.errorAdding;
     
     vm.$onInit = function() {
       getModulesImages ();
@@ -98,8 +99,11 @@
       // @TODO redirection to overview
       ModuleService.addModule ( applicationName, imageName ).then(function (data) {
         $rootScope.$broadcast('application:addModule');
+        vm.errorAdding = null;
         return data;
-      } );
+      } ).catch(function(fallback) {
+        vm.errorAdding = fallback.data.message;
+      });
     }
   }
 }) ();

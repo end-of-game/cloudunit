@@ -1,5 +1,4 @@
-/* MODULE SCSS => ./scss2/_hints.scss
-*//*
+/*
  * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
  *     but CloudUnit is licensed too under a standard commercial license.
  *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
@@ -14,27 +13,15 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-.hint {
-  color: $color-muted;
-  font-size: 12px;
-}
+package fr.treeptik.cloudunit.servers;
 
-.hint.error {
-  color: $color-error;
-  position: relative;
+/**
+ * Created by nicolas on 18/09/15.
+ */
+public class Tomcat9ApplicationControllerTestIT extends AbstractApplicationControllerTestIT {
 
-  &.nolabel {
-  	left: -20px;
-  	&:after {
-  		left: -15px;
-  	}
-  }
-}
+    public Tomcat9ApplicationControllerTestIT() {
+        super.release = "tomcat-9";
+    }
 
-.hint.error:after {
-  font-family: "fontawesome";
-  content: "\f071";
-  position: absolute;
-  top: 0;
-  right: 0;
 }

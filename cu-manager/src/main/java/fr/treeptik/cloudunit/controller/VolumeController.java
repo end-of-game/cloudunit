@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.dto.VolumeResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,16 +53,17 @@ public class VolumeController implements Serializable {
 
 	// REQUEST BODY => * Name : String
 	@RequestMapping(method = RequestMethod.POST)
-	public @ResponseBody JsonResponse addVolume(@RequestBody Volume volume) throws ServiceException, CheckException {
-		volumeService.createNewVolume(volume);
-		return new HttpOk();
+	public @ResponseBody
+	ResponseEntity addVolume(@RequestBody VolumeResource request) throws ServiceException, CheckException {
+		Volume volume = volumeService.createNewVolume(request.getName());
+		VolumeResource volumeResource = new VolumeResource(volume);
+		return ResponseEntity.status(HttpStatus.CREATED).body(volumeResource);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public @ResponseBody JsonResponse updateVolume(@RequestBody Volume volume) throws ServiceException, CheckException {
 		volumeService.updateVolume(volume);
 		return new HttpOk();
-
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
