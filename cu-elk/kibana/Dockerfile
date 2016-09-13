@@ -21,4 +21,4 @@ COPY scripts /opt/cloudunit/scripts
 RUN chmod a+x /opt/cloudunit/scripts/*
 
 ENTRYPOINT ["/opt/cloudunit/scripts/docker-entrypoint.sh"]
-CMD ["kibana", "-e", "http://cuplatform_dnsdock_1.dnsdock.cloud.unit:9200", "-p", "0.0.0.0:5601", "-q"]
+CMD ["kibana", "-e", "http://192.168.50.4:9200", "-p", "0.0.0.0:5601", "-q"]

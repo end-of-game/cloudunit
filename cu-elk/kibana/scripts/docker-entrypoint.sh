@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+ELASTICSEARCH_URL=192.168.50.4
+
 # Add kibana as command if needed
 if [[ "$1" == -* ]]; then
 	set -- kibana "$@"

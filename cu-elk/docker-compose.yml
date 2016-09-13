@@ -16,8 +16,6 @@ services:
     environment:
       - "TZ=Europe/Paris"
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-    networks:
-      - default
   cu-kibana:
     build: 
       context: ./kibana
@@ -27,5 +25,3 @@ services:
     hostname: cu-kibana
     container_name: cu-kibana
     working_dir: /usr/share/kibana
-    networks:
-      - default
