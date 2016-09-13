@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
-import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.dto.HttpOk;

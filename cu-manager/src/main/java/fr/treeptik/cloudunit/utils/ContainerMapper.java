@@ -26,62 +26,65 @@ import java.io.Serializable;
 @Component
 public class ContainerMapper implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Assign docker's container properties to object handle by cloudunit
-	 * (servers, modules)
-	 *
-	 * @param dockerContainer
-	 * @param container
-	 * @return
-	 */
-	private Container mapDockerContainerToContainer(DockerContainer dockerContainer, Container container) {
-		container.setContainerID(dockerContainer.getId().substring(0, 12));
-		container.setContainerFullID(dockerContainer.getId());
-		container.setName(dockerContainer.getName().substring(1));
-		container.setVolumes(dockerContainer.getVolumes());
-		container.setContainerIP(dockerContainer.getNetworkSettings().getIPAddress());
-		return container;
+    /**
+     * Assign docker's container properties to object handle by cloudunit
+     * (servers, modules)
+     *
+     * @param dockerContainer
+     * @param container
+     * @return
+     */
+    private Container mapDockerContainerToContainer(DockerContainer dockerContainer, Container container) {
+        container.setContainerID(dockerContainer.getId().substring(0, 12));
+        container.setContainerFullID(dockerContainer.getId());
+        container.setName(dockerContainer.getName().substring(1));
+        container.setVolumes(dockerContainer.getVolumes());
+        container.setContainerIP(dockerContainer.getNetworkSettings().getIPAddress());
 
-	}
+        System.out.println(dockerContainer.getNetworkSettings().getPorts());
 
-	private Container mapDockerContainerToContainer(DockerContainer dockerContainer) {
+        return container;
 
-		Container container = new Container();
+    }
 
-		this.mapDockerContainerToContainer(dockerContainer, container);
+    private Container mapDockerContainerToContainer(DockerContainer dockerContainer) {
 
-		return container;
+        Container container = new Container();
 
-	}
+        this.mapDockerContainerToContainer(dockerContainer, container);
 
-	public Server mapDockerContainerToServer(DockerContainer dockerContainer) {
+        return container;
 
-		Server server = (Server) mapDockerContainerToContainer(dockerContainer);
+    }
 
-		return server;
+    public Server mapDockerContainerToServer(DockerContainer dockerContainer) {
 
-	}
+        Server server = (Server) mapDockerContainerToContainer(dockerContainer);
 
-	public Server mapDockerContainerToServer(DockerContainer dockerContainer, Server server) {
+        return server;
 
-		mapDockerContainerToContainer(dockerContainer, server);
+    }
 
-		return server;
+    public Server mapDockerContainerToServer(DockerContainer dockerContainer, Server server) {
 
-	}
+        mapDockerContainerToContainer(dockerContainer, server);
 
-	public Module mapDockerContainerToModule(DockerContainer dockerContainer) {
+        return server;
 
-		return (Module) mapDockerContainerToContainer(dockerContainer);
+    }
 
-	}
+    public Module mapDockerContainerToModule(DockerContainer dockerContainer) {
 
-	public Module mapDockerContainerToModule(DockerContainer dockerContainer, Module module) {
+        return (Module) mapDockerContainerToContainer(dockerContainer);
 
-		return (Module) mapDockerContainerToContainer(dockerContainer, module);
+    }
 
-	}
+    public Module mapDockerContainerToModule(DockerContainer dockerContainer, Module module) {
+
+        return (Module) mapDockerContainerToContainer(dockerContainer, module);
+
+    }
 
 }
