@@ -90,7 +90,7 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public void createDirectory(String applicationName, String containerId, String path) throws ServiceException {
 		try {
-			final String command = "mkdir -p " + convertDestPathFile(path);
+			final String command = "mkdir -p " + path;
 			dockerService.execCommand(containerId, command);
 		} catch (FatalDockerJSONException e) {
 			throw new ServiceException("Cannot create directory " + path + " for " + containerId, e);
@@ -225,7 +225,7 @@ public class FileServiceImpl implements FileService {
 						name = name.substring(0, name.length() - 1);
 					}
 					StringBuilder absolutePath = new StringBuilder(128);
-					absolutePath.append(path.replaceAll("__", "/").replaceAll("//", "/")).append(name);
+					absolutePath.append(path).append(name);
 
 					if (name.equalsIgnoreCase("."))
 						continue;
@@ -278,7 +278,6 @@ public class FileServiceImpl implements FileService {
 						fileName = fileName.replace(" ", "_");
 						file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + fileName);
 						fileUpload.transferTo(file);
-						destination = convertPathFromUI(destination);
 					}
 					// usecase : save the content file
 					else {
@@ -311,14 +310,6 @@ public class FileServiceImpl implements FileService {
 
 	}
 
-	private String convertPathFromUI(String path) {
-		if (path != null) {
-			path = path.replaceAll("____", "/");
-			path = path.replaceAll("__", "/");
-		}
-		return path;
-	}
-
 	/**
 	 * File Explorer feature
 	 * <p>
@@ -338,13 +329,6 @@ public class FileServiceImpl implements FileService {
 			msgError.append(", containerId=").append("=").append(containerId);
 			throw new ServiceException(msgError.toString(), e);
 		}
-	}
-
-	private String convertDestPathFile(String pathFile) {
-		pathFile = pathFile.replaceAll("__", "/") + "/";
-		if (!pathFile.startsWith("/"))
-			pathFile = "/" + pathFile;
-		return pathFile;
 	}
 
 	public String getLogDirectory(String containerId) throws ServiceException {

@@ -57,7 +57,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {CloudUnitApplicationContext.class, MockServletContext.class})
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
 public abstract class AbstractApplicationControllerTestIT {
 
@@ -125,7 +124,7 @@ public abstract class AbstractApplicationControllerTestIT {
      * @throws Exception
      */
     @Test
-    public void test011_FailCreateEmptyNameApplication()
+    public void test_failCreateEmptyNameApplication()
         throws Exception {
         logger.info("Create application with an empty name");
         final String jsonString = "{\"applicationName\":\"" + "" + "\", \"serverName\":\"" + release + "\"}";
@@ -143,7 +142,7 @@ public abstract class AbstractApplicationControllerTestIT {
      * @throws Exception
      */
     @Test(timeout = 30000)
-    public void test012_FailCreateWrongNameApplication()
+    public void test_failCreateWrongNameApplication()
         throws Exception {
         logger.info("Create application with a wrong syntax name");
         final String jsonString = "{\"applicationName\":\"" + "         " + "\", \"serverName\":\"" + release + "\"}";
@@ -154,7 +153,7 @@ public abstract class AbstractApplicationControllerTestIT {
 
 
     @Test
-    public void test013_CreateAccentNameApplication()
+    public void test_createAccentNameApplication()
             throws Exception {
 
         String accentName = "aeeioù";
@@ -179,7 +178,7 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     @Test()
-    public void test031_StartStopStartApplicationTest()
+    public void test_startStopStartApplicationTest()
             throws Exception {
 
         String jsonString =
@@ -208,9 +207,8 @@ public abstract class AbstractApplicationControllerTestIT {
 
     }
 
-
     @Test()
-    public void test040_ChangeJvmMemorySizeApplicationTest()
+    public void test_changeJvmMemorySizeApplicationTest()
             throws Exception {
 
         String jsonString =
@@ -238,7 +236,7 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     @Test(timeout = 30000)
-    public void test041_ChangeInvalidJvmMemorySizeApplicationTest()
+    public void test_changeInvalidJvmMemorySizeApplicationTest()
             throws Exception {
         String jsonString =
                 "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + release + "\"}";
@@ -270,7 +268,7 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     @Test(timeout = 60000)
-    public void test050_ChangeJvmOptionsApplicationTest()
+    public void test_changeJvmOptionsApplicationTest()
             throws Exception {
 
         logger.info("Change JVM Options !");
@@ -301,7 +299,7 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     @Test(timeout = 30000)
-    public void test051_ChangeFailWithXmsJvmOptionsApplicationTest()
+    public void test_changeFailWithXmsJvmOptionsApplicationTest()
             throws Exception {
 
         String jsonString =
@@ -325,7 +323,7 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     @Test()
-    public void test050_OpenAPort()
+    public void test_openAPort()
             throws Exception {
         logger.info("Open custom ports !");
 
