@@ -211,7 +211,7 @@ public class ModuleServiceImpl implements ModuleService {
 	 */
 	@Override
 	@Transactional(rollbackFor = ServiceException.class)
-	public Module publishPort(Integer id, Boolean publishPort, String applicationName, User user)
+	public Module publishPort(Integer id, Boolean publishPort, User user)
 			throws ServiceException, CheckException {
 
 		Module module = findById(id);
