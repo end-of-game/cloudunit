@@ -93,14 +93,10 @@ public class ModuleController implements Serializable {
 		try {
 			moduleService.create(imageName, application, user);
 			logger.info("--initModule " + imageName + " to " + applicationName + " successful--");
+		} finally {
 			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
-		} catch (Exception e) {
-			logger.error(input.toString(), e);
-			applicationEventPublisher.publishEvent(new ApplicationFailEvent(application));
-
 		}
-
 		return new HttpOk();
 	}
 
