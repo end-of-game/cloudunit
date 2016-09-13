@@ -49,13 +49,13 @@ public interface ModuleService {
 	void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
 			throws ServiceException, CheckException;
 
-	Module create(String imageName, String applicationName, User user) throws ServiceException, CheckException;
-
 	Module stopModule(String moduleName) throws ServiceException;
 
 	Module startModule(String moduleName) throws ServiceException;
 
 	Module publishPort(Integer id, Boolean publishPort, String applicationName, User user)
 			throws ServiceException, CheckException;
+
+	Module create(String imageName, Application application, User user) throws ServiceException, CheckException;
 
 }

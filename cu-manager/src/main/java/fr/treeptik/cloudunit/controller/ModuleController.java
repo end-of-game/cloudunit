@@ -15,14 +15,10 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Locale;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +28,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
+import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.dto.HttpOk;
@@ -89,15 +84,21 @@ public class ModuleController implements Serializable {
 		input.validateAddModule();
 
 		String applicationName = input.getApplicationName();
+
 		String imageName = input.getImageName();
 
 		User user = authentificationUtils.getAuthentificatedUser();
-
+		Application application = applicationService.findByNameAndUser(user, applicationName);
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 		try {
-			moduleService.create(imageName, applicationName, user);
+			moduleService.create(imageName, application, user);
 			logger.info("--initModule " + imageName + " to " + applicationName + " successful--");
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+
 		} catch (Exception e) {
 			logger.error(input.toString(), e);
+			applicationEventPublisher.publishEvent(new ApplicationFailEvent(application));
+
 		}
 
 		return new HttpOk();
@@ -172,36 +173,4 @@ public class ModuleController implements Serializable {
 		return new HttpOk();
 	}
 
-	@RequestMapping(value = "/{applicationName}/{moduleName}/initData", method = RequestMethod.POST, consumes = {
-			"multipart/form-data" })
-	@ResponseBody
-	public JsonResponse deploy(@RequestPart("file") MultipartFile fileUpload,
-			@PathVariable final String applicationName, @PathVariable final String moduleName,
-			HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServiceException, CheckException {
-
-		logger.info("initDb : applicationName = " + applicationName + ", moduleName = " + moduleName);
-
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, applicationName);
-
-		// We must be sure there is no running action before starting new one
-		this.authentificationUtils.canStartNewAction(user, application, locale);
-
-		File file = null;
-		try {
-
-			// Application occupée
-			applicationService.setStatus(application, Status.PENDING);
-
-			file = File.createTempFile("script-", fileUpload.getOriginalFilename());
-			fileUpload.transferTo(file);
-
-		} catch (IOException e) {
-			throw new ServiceException("initDb Error while creating file", e);
-		} finally {
-			applicationService.setStatus(application, Status.START);
-		}
-		return new HttpOk();
-	}
 }
