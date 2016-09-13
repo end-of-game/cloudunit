@@ -22,6 +22,13 @@
 .hint.error {
   color: $color-error;
   position: relative;
+
+  &.nolabel {
+  	left: -20px;
+  	&:after {
+  		left: -15px;
+  	}
+  }
 }
 
 .hint.error:after {
