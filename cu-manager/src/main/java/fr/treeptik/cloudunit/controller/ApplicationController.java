@@ -24,19 +24,23 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.EnvUnit;
 import fr.treeptik.cloudunit.dto.HttpErrorServer;
@@ -206,7 +210,6 @@ public class ApplicationController implements Serializable {
 	 * @throws InterruptedException
 	 */
 	@CloudUnitSecurable
-	@ResponseStatus(HttpStatus.ACCEPTED)
 	@ResponseBody
 	@RequestMapping(value = "/start", method = RequestMethod.POST)
 	public JsonResponse startApplication(@RequestBody JsonInput input)
@@ -248,7 +251,6 @@ public class ApplicationController implements Serializable {
 	 */
 	@CloudUnitSecurable
 	@ResponseBody
-	@ResponseStatus(HttpStatus.ACCEPTED)
 	@RequestMapping(value = "/stop", method = RequestMethod.POST)
 	public JsonResponse stopApplication(@RequestBody JsonInput input) throws ServiceException, CheckException {
 

@@ -90,6 +90,11 @@ public class ModuleController implements Serializable {
 
 		User user = authentificationUtils.getAuthentificatedUser();
 		Application application = applicationService.findByNameAndUser(user, applicationName);
+		
+		if (application == null) {
+		    throw new CheckException("Unknown application");
+		}
+		
 		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 		try {
 			moduleService.create(imageName, application, user);
