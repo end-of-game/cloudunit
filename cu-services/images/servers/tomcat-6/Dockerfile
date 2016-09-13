@@ -56,8 +56,13 @@ RUN cd $HOME \
     && rm apache-tomcat-$TOMCAT_VERSION.tar.gz \
     && rm -rf $CU_SOFTWARE/webapps/ROOT $CU_SOFTWARE/webapps/examples $CU_SOFTWARE/webapps/docs
 
+## CLOUDUNIT :: BEGINNING
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-1.61.0.jar \
+    && mv javamelody-1.61.0.jar $CU_SOFTWARE/lib/javamelody-1.61.0.jar
+COPY files/web.xml $CU_SOFTWARE/conf/web.xml
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
 COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
+## CLOUDUNIT :: END
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
