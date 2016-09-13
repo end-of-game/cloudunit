@@ -53,7 +53,7 @@ public interface ModuleService {
 
 	Module startModule(String moduleName) throws ServiceException;
 
-	Module publishPort(Integer id, Boolean publishPort, String applicationName, User user)
+	Module publishPort(Integer id, Boolean publishPort, User user)
 			throws ServiceException, CheckException;
 
 	Module create(String imageName, Application application, User user) throws ServiceException, CheckException;
