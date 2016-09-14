@@ -75,11 +75,11 @@
     vm.getFile = getFile;
     vm.addNewDirectory = addNewDirectory;
     vm.refresh = refresh;
-    
+
     vm.$onInit = function() {
-      displayContainersAndSelectCurrent(); 
+      displayContainersAndSelectCurrent();
     }
-     
+
     function displayContainersAndSelectCurrent ( containerIndex ) {
       // Display the list of containers
       getContainers ().then ( function onSuccess ( data ) {
@@ -111,7 +111,7 @@
       vm.currentPath = [];
       displayContainersAndSelectCurrent ( index );
     }
-    
+
     function addNewDirectory(containerId, path, newDirectoryName) {
       var slug = '/' + path.join ( '/' ) + '/' + newDirectoryName;
 
@@ -129,7 +129,7 @@
           $timeout ( function () {
             buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
           }, 1000 );
-        } ) 
+        } )
     }
 
     function deleteFile ( containerId, path, item ) {
@@ -152,7 +152,7 @@
     function unzipFile ( containerId, path, item ) {
 
       var slug = '/' + path.join ( '/' );
-      
+
       ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
         .then ( function onFileUnzip (data) {
           $timeout ( function () {
@@ -160,17 +160,17 @@
           }, 1000 );
         } )
     }
-    
+
     function getFile ( containerId, path, item ) {
 
       var slug = '/' + path.join ( '/' );
 
       ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
         .then ( function onFileUnzip (res) {
-          vm.fileContent = res.data; 
+          vm.fileContent = res.data;
         } )
     }
-    
+
     function editFile ( containerId, path, item, fileContent) {
       var slug = '/' + path.join ( '/' );
       ExplorerService.editFile ( containerId, $stateParams.name, slug, item.name, fileContent )
@@ -178,7 +178,7 @@
           vm.fileContent = res.data;
         } )
     }
-    
+
     function getContainers () {
       var deferred = $q.defer ();
       ApplicationService.listContainers ( $stateParams.name )
@@ -201,7 +201,7 @@
         slug = rootPath + path.replace ( ' ', '/' ) + '/';
       }
 
-      ExplorerService.buildTree ( vm.myContainer.id, slug ).then ( function onSuccess ( data ) {
+      ExplorerService.buildTree ( vm.myContainer.name, slug ).then ( function onSuccess ( data ) {
           deferred.resolve ( data );
           return vm[level] = data;
         } )
@@ -240,9 +240,9 @@
     uploader.onAfterAddingAll = function ( fileItem ) {
       vm.dropped = false;
       fileItem.forEach(function(element, index) {
-        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.id + '/application/' + $stateParams.name + '?path=/' + vm.currentPath.join ( '/' ) + '/';
+        fileItem[index].url = fileItem.url = '/file/container/' + vm.myContainer.name + '/application/' + $stateParams.name + '?path=/' + vm.currentPath.join ( '/' ) + '/';
       });
-      
+
       uploader.uploadAll ();
       vm.isUploading = true;
       vm.dropped = true;

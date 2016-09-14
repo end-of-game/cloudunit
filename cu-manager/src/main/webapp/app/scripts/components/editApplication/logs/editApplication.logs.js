@@ -84,7 +84,7 @@
     }
 
     function updateLogs () {
-      LogService.gatherNbRows ( $stateParams.name, vm.myContainer.id, vm.selectedSource, vm.myRows.value )
+      LogService.gatherNbRows ( $stateParams.name, vm.myContainer.name, vm.selectedSource, vm.myRows.value )
         .then ( function onComplete ( data ) {
             vm.userdata = data;
             vm.isLoading = false;
@@ -115,10 +115,10 @@
 
     function getSources () {
       var deferred = $q.defer ();
-      LogService.getSources ( $stateParams.name, vm.myContainer.id )
+      LogService.getSources ( $stateParams.name, vm.myContainer.name )
         .then ( function onGetSourceComplete ( sources ) {
           angular.forEach ( sources, function ( source ) {
-            if ( source.name === 'catalina.log' 
+            if ( source.name === 'catalina.log'
                   || source.name === 'server.log'
                   || source.name === 'error.log'
                   || source.name === 'access.log'
