@@ -17,7 +17,7 @@
           <a id="preview-link"
              class="icon-button"
              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"
-             data-ng-href="{{ editApp.application.location }}/monitoring"
+             data-ng-href="{{ editApp.application.location }}"
              target="_blank"
              tooltip=""
              data-title="Open in browser"
@@ -87,10 +87,10 @@
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
                   <a id="monitoring-tab" ui-sref="editApplication.monitoringContainers"><span>Containers</span></a>
                 </li>
-                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat">
-                  <a class="hint-disabled-parent" id="monitoring-tab" ui-sref="editApplication.monitoringApplication">
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat && editApp.application.deploymentStatus === 'ALREADY_DEPLOYED'">
+                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="{{ editApp.application.location }}/monitoring">
                     <span>Application</span>
-                    <div class="hint-disabled" ng-if="editApp.hasTomcatMonitoring">Cann't monitoring on this Tomcat's version</div>
+                    <!-- <div class="hint-disabled" ng-if="editApp.hasTomcatMonitoring">Cann't monitoring on this Tomcat's version</div> -->
                   </a>
                 </li>
               </ul>

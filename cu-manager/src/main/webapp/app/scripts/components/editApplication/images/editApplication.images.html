@@ -40,7 +40,7 @@
     </div>
 
     <div class="tile tile-sm module animate-module" data-ng-class="{disabled:image.isTemp}" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
-    data-ng-repeat="image in modules.moduleImages | filter:modules.typeImage:strict" style="animation-delay: {{ $index * 0.3 }}s" ng-if="modules.typeImage">
+    data-ng-repeat="image in modules.moduleImages | orderBy:id | filter:modules.typeImage:strict" style="animation-delay: {{ $index * 0.3 }}s" ng-if="modules.typeImage">
       <button
         class="tile-content"
         ripple=""
