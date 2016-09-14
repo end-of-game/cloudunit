@@ -55,8 +55,11 @@
     var vm = this;
     vm.monitoringRoute = false;
     vm.settingsRoute = false;
+    vm.currentServer;
     vm.dislayJolokia = CONFIG.dislayJolokia;
     vm.applicationService = ApplicationService;
+    vm.hasTomcat = false;
+    vm.hasTomcatMonitoring = false;
     
     function refreshRoute() {
       if (($state.current.name == "editApplication.monitoringContainers")
@@ -81,6 +84,8 @@
     
     vm.applicationService.init($stateParams.name).then(function() {
       vm.application = vm.applicationService.state;
+      vm.currentServer = vm.applicationService.state.server.image.displayName;
+      vm.monitoringApplicationMenu();
       $rootScope.$broadcast('application:ready', {
           app: vm.application,
         });
@@ -97,6 +102,19 @@
       setTimeout(function() {
         refreshRoute();
       }, 0);
+    }
+
+    vm.monitoringApplicationMenu = function() {
+      vm.hasTomcat = false;
+      vm.hasTomcatMonitoring = false;
+
+      if(vm.currentServer.indexOf('Tomcat') !== -1) {
+        vm.hasTomcat = true;
+      }
+
+      if(vm.currentServer.indexOf('Tomcat 7') !== -1 || vm.currentServer.indexOf('Tomcat 8') !== -1) {
+        vm.hasTomcatMonitoring = true;
+      }
     }
   }
 })();
