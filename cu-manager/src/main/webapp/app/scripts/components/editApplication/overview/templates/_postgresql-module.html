@@ -74,7 +74,7 @@
 
     <div>
         <label>Publish port</label>
-        <switch id="enabled" name="enabled" ng-model="enabled" ng-change="overview.changePort(module.id, module.name)"></switch>
+        <switch id="enabled" name="enabled" ng-model="module.publishPorts" ng-change="overview.changePort(module.id, module.name, module.publishPorts)"></switch>
     </div>
   </div>
 
