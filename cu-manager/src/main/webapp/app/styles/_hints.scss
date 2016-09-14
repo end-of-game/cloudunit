@@ -38,3 +38,12 @@
   top: 0;
   right: 0;
 }
+
+.hint-disabled-parent {
+  .hint-disabled {
+    background: #CC33FF;
+    color: white;
+    position: absolute;
+    top: 15px;
+  }
+}

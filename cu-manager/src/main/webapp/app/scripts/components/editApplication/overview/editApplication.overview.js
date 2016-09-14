@@ -47,6 +47,7 @@
     vm.removeModule = removeModule;
     vm.listEnvModule = [];
     vm.colapseModuleId;
+    $scope.colapseOverview = true;
 
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
