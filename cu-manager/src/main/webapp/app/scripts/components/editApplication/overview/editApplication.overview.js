@@ -65,7 +65,7 @@
           vm.app.env = data;
 
           angular.forEach(vm.app.modules, function(value, key) {
-              var urlLink = 'http://localhost:9000/application/' + $stateParams.name +'/container/' + value.name + '/env'
+              var urlLink = '/application/' + $stateParams.name +'/container/' + value.name + '/env'
               $http({
                 method: 'GET',
                 url: urlLink
