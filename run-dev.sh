@@ -4,6 +4,13 @@
 # ###############################################################################
 # ###############################################################################
 
+# ssh-keygen (create a 'vagrant' entry)
+# ssh-copy-id vagrant@192.168.50.4 (password: vagrant)
+
+# ###############################################################################
+# ###############################################################################
+# ###############################################################################
+
 function compile_and_install_parent {
     mvn clean install -DskipTests
 }
@@ -20,7 +27,7 @@ function run_tomcat {
 
 function reset_vagrant {
     cd $CLOUDUNIT_HOME/cu-vagrant
-    vagrant ssh -c "/home/vagrant/cloudunit/cu-platform/reset.sh -y"
+    ssh 'vagrant@192.168.50.4' "cd cloudunit/cu-platform && ./reset.sh -y"
 }
 
 function usage {
@@ -41,7 +48,7 @@ function check_env {
     then
         echo "You need to declare CLOUDUNIT_HOME as env variable"
         export CLOUDUNIT_HOME=`pwd`
-        echo "CLOUDUNIT_HOME value is maybe : " + $CLOUDUNIT_HOME
+        echo "CLOUDUNIT_HOME value is maybe : " $CLOUDUNIT_HOME
         sleep 2
     fi
 }
