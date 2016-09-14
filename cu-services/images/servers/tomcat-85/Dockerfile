@@ -34,6 +34,12 @@ ARG TOMCAT_VERSION
 ENV TOMCAT_TGZ_URL https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
 ENV PATH $CATALINA_HOME/bin:$PATH
 
+## Download beats agents
+RUN cd /opt/cloudunit/ \
+    && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/beats-agents.tar.gz \
+    && tar zxvf beats-agents.tar.gz \
+    && rm beats-agents.tar.gz
+    
 ## CLOUDUNIT :: BEGINNING
 ENV CU_SOFTWARE $CATALINA_HOME
 ENV CU_SERVER_MANAGER_PATH /manager/html?
