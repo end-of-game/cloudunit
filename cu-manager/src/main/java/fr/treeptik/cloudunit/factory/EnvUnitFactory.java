@@ -24,7 +24,6 @@ public class EnvUnitFactory {
         List<EnvUnit> envUnits = Stream.of(outputShell)
                 .map(line -> line.split("\\n"))
                 .flatMap(Arrays::stream)
-                .filter(line -> line.contains("CU_"))
                 .map(EnvUnitFactory::fromLine)
                 .sorted((k1, k2) -> k1.getKey().compareTo(k2.getKey()))
                 .collect(Collectors.toList());
