@@ -51,6 +51,7 @@
 
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
+      console.log("info publish ?", data.app.modules);
       if(vm.app.server.status === 'START') {
         refreshEnvVar();
       }
@@ -65,7 +66,7 @@
           vm.app.env = data;
 
           angular.forEach(vm.app.modules, function(value, key) {
-              var urlLink = '/application/' + $stateParams.name +'/container/' + value.name + '/env'
+              var urlLink = 'application/' + $stateParams.name +'/container/' + value.name + '/env'
               $http({
                 method: 'GET',
                 url: urlLink
@@ -93,12 +94,10 @@
       } )
     }
 
-    function changePort(idModule, imageName) {
+    function changePort(idModule, imageName, statPort) {
       var urlUpdate = '/module/' + idModule;
       var data = {
-        applicationName: $stateParams.name,
-        imageName: imageName,
-        publishPort: false
+        publishPort: statPort
       };
 
       $http({
