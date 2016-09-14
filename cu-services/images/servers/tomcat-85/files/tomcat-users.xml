@@ -7,6 +7,7 @@
 
     <role rolename="manager-gui"/>
     <role rolename="manager-script"/>
-    <user username="CU_USER" password="CU_PASSWORD" roles="manager-gui,manager-script"/>
+    <role rolename="manager-jmx"/>
+    <user username="CU_USER" password="CU_PASSWORD" roles="manager-gui,manager-script,manager-jmx"/>
 
 </tomcat-users>

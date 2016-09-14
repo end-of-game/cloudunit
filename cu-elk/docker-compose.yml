@@ -1,0 +1,27 @@
+version: '2'
+services:
+
+  cu-elasticsearch:
+    build: 
+      context: ./elasticsearch
+    image: cu-elasticsearch
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    hostname: cu-elasticsearch
+    container_name: cu-elasticsearch
+    working_dir: /usr/share/elasticsearch
+    environment:
+      - "TZ=Europe/Paris"
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+  cu-kibana:
+    build: 
+      context: ./kibana
+    image: cu-kibana
+    ports:
+      - "5601:5601"
+    hostname: cu-kibana
+    container_name: cu-kibana
+    working_dir: /usr/share/kibana
