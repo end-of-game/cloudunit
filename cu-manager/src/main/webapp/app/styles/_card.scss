@@ -59,6 +59,10 @@
       padding: 16px 0px;
       color: $color-muted;
       margin-bottom: 32px;
+
+      &.features-modules {
+        margin-bottom: 0;
+      }
     }
     .modules li {
       display: inline-block;

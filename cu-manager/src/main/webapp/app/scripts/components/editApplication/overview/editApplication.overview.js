@@ -47,33 +47,36 @@
     vm.removeModule = removeModule;
     vm.listEnvModule = [];
     vm.colapseModuleId;
+    vm.statPortPublish = [];
     $scope.colapseOverview = true;
 
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
-      console.log("info publish ?", data.app.modules);
       if(vm.app.server.status === 'START') {
-        refreshEnvVar();
+        initialiseEnvVar();
       }
     });
 
     $scope.$on ( 'application:addModule', refreshEnvVar);
 
     vm.$onInit = function() {
-      if(vm.app) {
+      
+    }
+
+    ///////////////////////////////////////////
+
+
+    function initialiseEnvVar() {
         ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
-          console.log(data);
           vm.app.env = data;
 
           angular.forEach(vm.app.modules, function(value, key) {
-              var urlLink = 'application/' + $stateParams.name +'/container/' + value.name + '/env'
+              vm.statPortPublish[value.id] = value.publishPorts;
+              var urlLink = '/application/' + $stateParams.name +'/container/' + value.name + '/env'
               $http({
                 method: 'GET',
                 url: urlLink
               }).then(function successCallback(response) {
-                  if (key === 0) {
-                    vm.colapseModuleId = value.id;
-                  }
                   vm.listEnvModule[value.id] = response.data;
               }, function errorCallback(response) {
                   console.log(response);
@@ -81,10 +84,7 @@
           });
 
         });
-      }
     }
-
-    ///////////////////////////////////////////
 
     function refreshEnvVar () {
       ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name)

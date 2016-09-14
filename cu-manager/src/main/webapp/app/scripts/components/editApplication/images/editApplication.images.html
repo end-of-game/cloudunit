@@ -15,9 +15,9 @@
 
 <div class="tab-pane card large vertical-spacing">
   <div class="content clearfix" ng-if="modules.typeImage">
+    <span ng-if="modules.errorAdding" class="alert alert-small alert-icon pull-right">{{ modules.errorAdding }}</span>
     <h3 class="title large">
       Add module <i>{{ modules.typeImage }}</i>
-      <span ng-if="modules.errorAdding" class="pull-right hint error nolabel">{{ modules.errorAdding }}</span>
     </h3>
 
     <div class="tile tile-sm module animate-module backcard" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}">

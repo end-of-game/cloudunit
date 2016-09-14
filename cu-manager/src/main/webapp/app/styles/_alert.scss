@@ -29,4 +29,15 @@
   &.alert-info {
     background-color: #84C6F5;
   }
+
+  &.alert-small {
+    margin: 0;
+    padding: 10px;
+  }
+
+  &.alert-icon:before {
+    font-family: "fontawesome";
+    content: "\f071";
+    margin-right: 7px;
+  }
 }

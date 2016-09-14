@@ -22,7 +22,7 @@
   <p class="status" data-ng-show="module.status === 'FAIL'">{{ module.status | formatAppStatus}} - Please contact
     support</p>
 
-  <div class="features">
+  <div class="features features-modules">
     <div class="readonly">
       <label for="database">Database: </label>
       <input class="blank clipboard"
@@ -49,45 +49,22 @@
              oneclickselect="">
     </div>
 
-    <div class="readonly">
-      <label for="username">User: </label>
-      <input class="clipboard"
-             id="username username-postgresql"
-             type="text"
-             value="{{module.moduleInfos.username}}"
-             readonly=""
-             data-title="Copy to clipboard"
-             tooltip=""
-             ngclipboard data-clipboard-target="#username-postgresql"
-             oneclickselect="">
-    </div>
-
-    <div class="readonly password">
-      <label for="password-{{$index}}">Password: </label>
-      <input id="password-{{$index}}"
-             type="text"
-             value="{{module.moduleInfos.password}}"
-             readonly=""
-             oneclickselect="">
-      <a href="" class="showPass-btn button-link" reveal-password=""><i class="icon-whhg eye-view"></i></a>
-    </div>
-
     <div>
         <label>Publish port</label>
-        <switch id="enabled" name="enabled" ng-model="module.publishPorts" ng-change="overview.changePort(module.id, module.name, module.publishPorts)"></switch>
+        <switch id="enabled" name="enabled" ng-model="overview.statPortPublish[module.id]" ng-change="overview.changePort(module.id, module.name, overview.statPortPublish[module.id])"></switch>
     </div>
   </div>
 
   <div>
       <label>
         <button class="server-btn icon-button secondary power"
-            data-ng-click="overview.colapseModuleId = module.id;"
+            data-ng-click="colapseEnvVar = !colapseEnvVar;"
             tooltip="">
-        <i class="icon-whhg" ng-class="{'minus-sign': overview.colapseModuleId == module.id, 'plus-sign': overview.colapseModuleId != module.id}"></i>
+        <i class="icon-whhg" ng-class="{'minus-sign': colapseEnvVar, 'plus-sign': !colapseEnvVar}"></i>
         </button>
         Environment variables ({{ overview.listEnvModule[module.id].length }}):
       </label>
-      <div class="colapse-reduct" ng-class="{'colapse-on' : overview.colapseModuleId != module.id}">
+      <div class="colapse-reduct" ng-class="{'colapse-on' : !colapseEnvVar}">
         <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.listEnvModule[module.id] track by $index">
           <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
             {{ env.key }}
