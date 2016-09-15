@@ -26,10 +26,13 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `displayName`, `prefixEnv`, `i
 
 INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariables`,`moduleEnvironmentVariables_KEY`,`Image_id`)
 VALUES
+    ("MYSQL_USER", "USER", 20),
+    ("MYSQL_PASSWORD", "PASSWORD", 20),
+    ("MYSQL_DATABASE", "NAME", 20),
 	("POSTGRES_USER", "USER", 50),
 	("POSTGRES_PASSWORD", "PASSWORD", 50),
 	("POSTGRES_DB", "NAME", 50);
-
+    
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
