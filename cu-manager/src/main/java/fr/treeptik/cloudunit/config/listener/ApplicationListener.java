@@ -2,22 +2,20 @@ package fr.treeptik.cloudunit.config.listener;
 
 import javax.inject.Inject;
 
-import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
-import fr.treeptik.cloudunit.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
+import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.service.ApplicationService;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by nicolas on 03/08/2016.

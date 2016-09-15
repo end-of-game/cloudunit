@@ -15,15 +15,14 @@
 
 package fr.treeptik.cloudunit.service;
 
+import java.util.List;
+
 import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
 import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
-
-import java.util.List;
 
 public interface ServerService {
 

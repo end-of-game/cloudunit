@@ -4,22 +4,25 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonResponse;
+import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.impl.ApplicationServiceImpl;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.service.CommandService;
+import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 
 @Controller
 @RequestMapping("/application")

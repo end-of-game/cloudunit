@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import fr.treeptik.cloudunit.dto.VolumeResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,8 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import fr.treeptik.cloudunit.dto.HttpOk;
-import fr.treeptik.cloudunit.dto.JsonResponse;
+import fr.treeptik.cloudunit.dto.VolumeResource;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Volume;
