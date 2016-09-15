@@ -40,6 +40,11 @@ public class ContainerUtils {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static Map<String, List<Map<String, String>>> buildPortBindingBody(Map<String, String> ports) {
+
+        if (ports == null) {
+            return null;
+        }
+
         Map finalMap = new HashMap();
         if (ports != null) {
             for (String port : ports.keySet()) {

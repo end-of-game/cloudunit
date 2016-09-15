@@ -306,8 +306,9 @@ public class DockerServiceImpl implements DockerService {
         logger.info("Volumes to add : " + volumes.toString());
 
         // map ports
-        Map<String, String> ports = new HashMap<>();
+        Map<String, String> ports = null;
         if (module.getPublishPorts()) {
+            ports = new HashMap<>();
             ports.put(String.format("%s/tcp", module.getImage().getExposedPort()), module.getForwardedPort());
         }
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
