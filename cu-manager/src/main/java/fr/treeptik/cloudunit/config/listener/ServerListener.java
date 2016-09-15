@@ -1,12 +1,13 @@
 package fr.treeptik.cloudunit.config.listener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
 
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.config.events.ServerStartEvent;
@@ -16,9 +17,7 @@ import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ServerService;
-
-import java.util.HashMap;
-import java.util.Map;
+import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 
 /**
  * Created by nicolas on 03/08/2016.

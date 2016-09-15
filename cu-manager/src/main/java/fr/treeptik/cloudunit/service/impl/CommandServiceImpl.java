@@ -1,23 +1,27 @@
 package fr.treeptik.cloudunit.service.impl;
 
-import fr.treeptik.cloudunit.dto.Command;
-import fr.treeptik.cloudunit.dto.ContainerUnit;
-import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.service.*;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import fr.treeptik.cloudunit.dto.Command;
+import fr.treeptik.cloudunit.dto.ContainerUnit;
+import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.CommandService;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.FileService;
 
 @Service
 public class CommandServiceImpl implements CommandService {
