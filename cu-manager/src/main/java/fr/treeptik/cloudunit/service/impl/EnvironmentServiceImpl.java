@@ -174,6 +174,37 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             applicationEventPublisher.publishEvent(new ServerStartEvent(server));
             applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
         }
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "env", allEntries = true)
+    public void delete(User user, List<EnvironmentVariable> envs, String applicationName, String containerName)
+            throws ServiceException {
+        Server server = null;
+        Application application = null;
+        try {
+            server = serverService.findByName(containerName);
+            application = applicationService.findByNameAndUser(user, applicationName);
+            stopAndRemoveContainer(containerName, application);
+            envs.stream().forEach(e -> environmentDAO.delete(e));
+            recreateAndMountVolumes(containerName, application);
+        } catch (CheckException e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append(", applicationName:[").append(applicationName).append("]");
+            msgError.append(", containerName:[").append(containerName).append("]");
+            logger.error(msgError.toString());
+            throw new CheckException(e.getMessage(), e);
+        } catch (ServiceException e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append(", applicationName:[").append(applicationName).append("]");
+            msgError.append(", containerName:[").append(containerName).append("]");
+            logger.error(msgError.toString());
+            throw new ServiceException(e.getMessage(), e);
+        } finally {
+            applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+            applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+        }
 
     }
 

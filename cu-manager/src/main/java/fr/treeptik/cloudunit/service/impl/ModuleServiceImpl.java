@@ -35,10 +35,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
-import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
 import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -159,14 +157,12 @@ public class ModuleServiceImpl implements ModuleService {
             List<EnvironmentVariable> exportedEnvironment = getExportedEnvironment(module, image, moduleEnvs);
             environmentService.save(user, exportedEnvironment, application.getName(),
                     application.getServer().getName());
-            applicationEventPublisher.publishEvent(new ServerStartEvent(application.getServer()));
-            applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
-
             dockerService.createModule(containerName, module, imagePath, user, internalEnvironment, true,
                     new ArrayList<>());
             module = dockerService.startModule(containerName, module);
             module = moduleDAO.save(module);
-            environmentService.createInDatabase(getInternalEnvironment(module, image, moduleEnvs), containerName, application);
+            environmentService.createInDatabase(getInternalEnvironment(module, image, moduleEnvs), containerName,
+                    application);
             applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
         } catch (PersistenceException e) {
             logger.error("ServerService Error : Create Server " + e);
@@ -275,10 +271,12 @@ public class ModuleServiceImpl implements ModuleService {
             throws ServiceException, CheckException {
 
         try {
-            Module module = this.findByName(moduleName);
+            Module module = findByName(moduleName);
             dockerService.removeContainer(module.getName(), true);
             moduleDAO.delete(module);
-
+            List<EnvironmentVariable> envs = environmentService
+                    .loadEnvironnmentsByContainer(module.getApplication().getServer().getName());
+            environmentService.delete(user, envs, module.getApplication().getName(), module.getApplication().getServer().getName());
             logger.info("Module successfully removed ");
         } catch (PersistenceException e) {
             logger.error("Error database :  " + moduleName + " : " + e);
@@ -389,6 +387,7 @@ public class ModuleServiceImpl implements ModuleService {
             logger.debug("findByName : " + moduleName);
             Module module = moduleDAO.findByName(moduleName);
             logger.debug("findByName : " + module);
+
             return module;
         } catch (PersistenceException e) {
             logger.error("Error ModuleService : error findName Method : " + e);

@@ -27,4 +27,7 @@ public interface EnvironmentService {
 
     void createInDatabase(List<EnvironmentVariable> environments, String containerName, Application application);
 
+    void delete(User user, List<EnvironmentVariable> envs, String applicationName, String containerName)
+            throws ServiceException;
+
 }
