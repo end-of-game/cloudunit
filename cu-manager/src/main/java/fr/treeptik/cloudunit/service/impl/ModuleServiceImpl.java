@@ -265,7 +265,6 @@ public class ModuleServiceImpl implements ModuleService {
 
 		try {
 			Module module = this.findByName(moduleName);
-
 			dockerService.removeContainer(module.getName(), true);
 			moduleDAO.delete(module);
 
