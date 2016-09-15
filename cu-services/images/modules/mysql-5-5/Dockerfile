@@ -1,4 +1,4 @@
-FROM cloudunit/base-16.04
+FROM cloudunit/base-jessie
 
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
