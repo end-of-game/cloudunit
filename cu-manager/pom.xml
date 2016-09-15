@@ -321,6 +321,14 @@
 			<version>0.1.50</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4.1210</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<!-- Mail -->
 		<!-- FreeMarker -->
 		<dependency>

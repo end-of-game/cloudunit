@@ -45,5 +45,9 @@ public class Tomcat7Mysql55ModuleControllerTestIT extends AbstractModuleControll
         super.managerPageContent = "phpMyAdmin";
     }
 
-    protected void assertPortIsReallyOpen() {}
+    @Override
+    protected void checkConnectionDatabase(String forwardedPort) {
+        new CheckDatabaseConnection().invoke(forwardedPort, "POSTGRES_USER",
+                "POSTGRES_PASSWORD", "POSTGRES_DB", "org.postgresql.Driver", "jdbc:postgresql://");
+    }
 }

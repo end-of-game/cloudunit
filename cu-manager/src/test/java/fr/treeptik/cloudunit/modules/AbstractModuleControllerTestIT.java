@@ -19,15 +19,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.List;
 import java.util.Random;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import com.fasterxml.jackson.core.type.TypeReference;
+import fr.treeptik.cloudunit.dto.EnvUnit;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,21 +82,24 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     protected WebApplicationContext context;
 
     protected MockMvc mockMvc;
-    
-    @Inject
-    protected ObjectMapper objectMapper;
 
     @Inject
-    protected AuthenticationManager authenticationManager;
+    private ObjectMapper objectMapper;
+
+    @Inject
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    protected Filter springSecurityFilterChain;
+    private Filter springSecurityFilterChain;
 
     @Inject
-    protected UserService userService;
+    private UserService userService;
 
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
+
+    @Value("${ip.box.vagrant}")
+    protected String ipVagrantBox;
 
     protected MockHttpSession session;
 
@@ -156,12 +161,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("teardown");
 
         logger.info("Delete application : " + applicationName);
-        
+        /*
         mockMvc.perform(delete("/application/" + applicationName)
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-
+        */
         SecurityContextHolder.clearContext();
         session.invalidate();
     }
@@ -328,7 +333,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .andExpect(jsonPath("$.modules[0].status").value("START"))
                 .andExpect(jsonPath("$.modules[0].name").value(module1));
     }
-    
+
     public ResultActions requestPublishPort(Integer id) throws Exception {
         ModuleResource request = ModuleResource.of()
                 .withPublishPort(true)
@@ -340,7 +345,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .content(jsonString))
             .andDo(print());
     }
-    
+
     public ResultActions requestAddModule() throws Exception {
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         return mockMvc.perform(post("/module")
@@ -349,7 +354,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .content(jsonString))
             .andDo(print());
     }
-    
+
     public ResultActions requestApplication() throws Exception {
         return mockMvc.perform(get("/application/" + applicationName)
                 .session(session)
@@ -357,30 +362,84 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .andDo(print());
     }
 
-    protected abstract void assertPortIsReallyOpen();
-
     @Test
     public void test_PublishPort() throws Exception {
         logger.info("Publish module port for external access");
-        
+
         requestAddModule()
         	.andExpect(status().isOk());
-        
-        SpyMatcherDecorator<Integer> responseIdSpy = new SpyMatcherDecorator<>();
-        
+
+        SpyMatcherDecorator<Integer> responseModuleIdSpy = new SpyMatcherDecorator<>();
+        SpyMatcherDecorator<String> forwardedPort = new SpyMatcherDecorator<>();
+
         requestApplication()
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].id", responseIdSpy));
-        
-        Integer id = responseIdSpy.getMatchedValue();
+            .andExpect(jsonPath("$.modules[0].id", responseModuleIdSpy));
 
-        requestPublishPort(id)
+        Integer moduleId = responseModuleIdSpy.getMatchedValue();
+        requestPublishPort(moduleId)
             .andExpect(status().isOk());
 
-        assertPortIsReallyOpen();
+        requestApplication()
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modules[0].forwardedPort", forwardedPort));
+
+        checkConnectionDatabase(forwardedPort.getMatchedValue());
     }
 
-    protected String getContainerName() {
+    protected abstract void checkConnectionDatabase(String forwardedPort);
+
+    private String getContainerName() {
         return "int-johndoe-"+applicationName+"-"+module;
     }
+
+    /**
+     * Inner class to check relational database connection
+     *
+     */
+    public class CheckDatabaseConnection {
+
+        public void invoke(String forwardedPort, String keyUser, String keyPassword,
+                           String keyDB, String driver, String jdbcUrlPrefix) {
+
+            String user = null;
+            String password = null;
+            String database = null;
+            Connection connection = null;
+
+            try {
+                String urlToCall = "/application/" + applicationName + "/container/"+getContainerName()+"/env";
+                ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
+                String contentResult = resultats.andReturn().getResponse().getContentAsString();
+                List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>(){});
+                user = envs.stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
+                password = envs.stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
+                database = envs.stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
+                //String urlJDBC = "jdbc:postgresql://"+ipVagrantBox+":"+forwardedPort+"/" + database;
+                String jdbcUrl = jdbcUrlPrefix+ipVagrantBox+":"+forwardedPort+"/" + database;
+                //Class.forName("org.postgresql.Driver");
+                Class.forName(driver);
+                int counter = 0;
+                boolean isRight = false;
+                while(counter++ < 5 && !isRight) {
+                    try {
+                        connection = DriverManager.getConnection(jdbcUrl, user, password);
+                        isRight = connection.isValid(1000);
+                    } catch (Exception e) {
+                    }
+                    Thread.sleep(1000);
+                }
+                if (counter >= 5) throw new RuntimeException("Cannot connect to database : " + jdbcUrl);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.fail();
+            } finally {
+                try {
+                    if (connection != null) { connection.close(); }
+                } catch (Exception ignore){}
+            }
+        }
+    }
+
+
 }

@@ -30,5 +30,8 @@ public class Tomcat8Mysql55ModuleControllerTestIT extends AbstractModuleControll
         super.managerPageContent = "phpMyAdmin";
     }
 
-    protected void assertPortIsReallyOpen() {}
-}
+    @Override
+    protected void checkConnectionDatabase(String forwardedPort) {
+        new CheckDatabaseConnection().invoke(forwardedPort, "MYSQL_USER",
+                "MYSQL_PASSWORD", "MYSQL_DB", "com.mysql.jdbc.Driver", "jdbc:mysql:");
+    }}

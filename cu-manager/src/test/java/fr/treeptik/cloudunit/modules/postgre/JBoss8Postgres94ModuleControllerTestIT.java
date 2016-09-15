@@ -60,5 +60,9 @@ public class JBoss8Postgres94ModuleControllerTestIT extends AbstractModuleContro
         super.managerPageContent = "phpPgAdmin";
     }
 
-    protected void assertPortIsReallyOpen() {}
+    @Override
+    protected void checkConnectionDatabase(String forwardedPort) {
+        new CheckDatabaseConnection().invoke(forwardedPort, "POSTGRES_USER",
+                "POSTGRES_PASSWORD", "POSTGRES_DB", "org.postgresql.Driver", "jdbc:postgresql://");
+    }
 }
