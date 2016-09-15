@@ -4,22 +4,27 @@ import java.util.List;
 
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.EnvironmentVariable;
 import fr.treeptik.cloudunit.model.User;
 
 public interface EnvironmentService {
-	EnvironmentVariable save(User user, EnvironmentVariable environmentVariableRequest, String applicationName,
-			String containerId) throws ServiceException, CheckException;
 
-	EnvironmentVariable loadEnvironnment(int id) throws ServiceException, CheckException;
+    EnvironmentVariable update(User user, EnvironmentVariable environmentVariable, String applicationName,
+            String containerName, Integer id) throws ServiceException;
 
-	List<EnvironmentVariable> loadEnvironnmentsByContainer(String containerId) throws ServiceException;
+    EnvironmentVariable loadEnvironnment(int id) throws ServiceException, CheckException;
 
-	EnvironmentVariable update(User user, EnvironmentVariable environmentVariableRequest, String applicationName,
-			String containerId, Integer id) throws ServiceException, CheckException;
+    List<EnvironmentVariable> loadEnvironnmentsByContainer(String containerName) throws ServiceException;
 
-	void delete(User user, int id, String containerName, String applicationName) throws ServiceException;
+    void delete(User user, int id, String applicationName, String containerName) throws ServiceException;
 
-	void save(User user, List<EnvironmentVariable> environment, String applicationName, String containerName)
-			throws ServiceException;
+    void save(User user, List<EnvironmentVariable> environments, String applicationName, String containerName)
+            throws ServiceException;
+
+    EnvironmentVariable save(User user, EnvironmentVariable environment, String applicationName, String containerName)
+            throws ServiceException;
+
+    void createInDatabase(List<EnvironmentVariable> environments, String containerName, Application application);
+
 }

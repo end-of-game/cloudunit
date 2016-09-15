@@ -115,6 +115,7 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     @Transactional
+    @CacheEvict("env")
     public Module create(String imageName, Application application, User user) throws ServiceException, CheckException {
 
         // General informations
@@ -154,11 +155,8 @@ public class ModuleServiceImpl implements ModuleService {
         try {
             Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs = getModuleEnvironmentVariables(image,
                     application.getName());
-
             List<String> internalEnvironment = getInternalEnvironment(moduleEnvs);
-
             List<EnvironmentVariable> exportedEnvironment = getExportedEnvironment(module, image, moduleEnvs);
-
             environmentService.save(user, exportedEnvironment, application.getName(),
                     application.getServer().getName());
             applicationEventPublisher.publishEvent(new ServerStartEvent(application.getServer()));
@@ -168,8 +166,8 @@ public class ModuleServiceImpl implements ModuleService {
                     new ArrayList<>());
             module = dockerService.startModule(containerName, module);
             module = moduleDAO.save(module);
+            environmentService.createInDatabase(getInternalEnvironment(module, image, moduleEnvs), containerName, application);
             applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
-
         } catch (PersistenceException e) {
             logger.error("ServerService Error : Create Server " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -193,20 +191,29 @@ public class ModuleServiceImpl implements ModuleService {
         List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
 
-			environmentVariable.setKeyEnv(String.format("CU_DATABASE_%s_%s",
-			        kv.getKey().toString(),
-			        image.getPrefixEnv().toUpperCase()));
-			environmentVariable.setValueEnv(kv.getValue().getValue());
-			return environmentVariable;
-		}).collect(Collectors.toList());
+            environmentVariable.setKeyEnv(
+                    String.format("CU_DATABASE_%s_%s", kv.getKey().toString(), image.getPrefixEnv().toUpperCase()));
+            environmentVariable.setValueEnv(kv.getValue().getValue());
+            return environmentVariable;
+        }).collect(Collectors.toList());
 
-		EnvironmentVariable environmentVariable = new EnvironmentVariable();
-		environmentVariable.setKeyEnv(String.format("CU_DATABASE_DNS_%s",
-		        image.getPrefixEnv().toUpperCase()));
-		environmentVariable.setValueEnv(module.getInternalDNSName());
-		environmentVariables.add(environmentVariable);
-		return environmentVariables;
-	}
+        EnvironmentVariable environmentVariable = new EnvironmentVariable();
+        environmentVariable.setKeyEnv(String.format("CU_DATABASE_DNS_%s", image.getPrefixEnv().toUpperCase()));
+        environmentVariable.setValueEnv(module.getInternalDNSName());
+        environmentVariables.add(environmentVariable);
+        return environmentVariables;
+    }
+
+    private List<EnvironmentVariable> getInternalEnvironment(Module module, Image image,
+            Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
+        List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
+            EnvironmentVariable environmentVariable = new EnvironmentVariable();
+            environmentVariable.setKeyEnv(kv.getKey().toString());
+            environmentVariable.setValueEnv(kv.getValue().getValue());
+            return environmentVariable;
+        }).collect(Collectors.toList());
+        return environmentVariables;
+    }
 
     /*
      * 
