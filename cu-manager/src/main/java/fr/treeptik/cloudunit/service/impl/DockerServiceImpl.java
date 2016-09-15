@@ -84,13 +84,13 @@ public class DockerServiceImpl implements DockerService {
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null,
-                volumes, envs, false);
+                volumes, envs, false, null);
         dockerCloudUnitClient.createContainer(container);
     }
 
     @Override
     public Server startServer(String containerName, Server server) throws DockerJSONException {
-        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null, false);
+        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, false);
         dockerCloudUnitClient.startContainer(container);
         container = dockerCloudUnitClient.findContainer(container);
         server = containerMapper.mapDockerContainerToServer(container, server);
@@ -99,19 +99,19 @@ public class DockerServiceImpl implements DockerService {
 
     @Override
     public void stopContainer(String containerName) throws DockerJSONException {
-        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null, false);
+        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, false);
         dockerCloudUnitClient.stopContainer(container);
     }
 
     @Override
     public void killServer(String containerName) throws DockerJSONException {
-        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null, false);
+        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, false);
         dockerCloudUnitClient.killContainer(container);
     }
 
     @Override
     public void removeContainer(String containerName, boolean removeVolume) throws DockerJSONException {
-        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null, false);
+        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, false);
         dockerCloudUnitClient.removeContainer(container);
         if (removeVolume) {
             dockerCloudUnitClient.removeVolume(containerName);
@@ -237,7 +237,7 @@ public class DockerServiceImpl implements DockerService {
             logger.info("VARIABLE=" + value);
             return (value.orElseThrow(() -> new ServiceException(variable + " is missing into DOCKERFILE.")));
         } catch (ContainerNotFoundException e) {
-            return null;
+            throw new FatalDockerJSONException(e.getLocalizedMessage(), e);
         } catch (Exception e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("containerId=").append(containerName);
@@ -304,18 +304,25 @@ public class DockerServiceImpl implements DockerService {
         }
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
+
+        // map ports
+        Map<String, String> ports = new HashMap<>();
+        if (module.getPublishPorts()) {
+            ports.put(String.format("%s/tcp", module.getImage().getExposedPort()), module.getForwardedPort());
+        }
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
-                envs, module.getPublishPorts());
+                envs, module.getPublishPorts(), ports);
         dockerCloudUnitClient.createContainer(container);
     }
 
     @Override
     public Module startModule(String containerName, Module module) throws DockerJSONException {
-        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null, null,
+        DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null,
                 module.getPublishPorts());
         dockerCloudUnitClient.startContainer(container);
         container = dockerCloudUnitClient.findContainer(container);
-        module = containerMapper.mapDockerContainerToModule(container, module);
+        module = containerMapper.mapDockerContainerToModule(container, module,
+                getEnv(container.getName(), "CU_MODULE_PORT"));
         return module;
     }
 

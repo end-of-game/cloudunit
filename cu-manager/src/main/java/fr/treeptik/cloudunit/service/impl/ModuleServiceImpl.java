@@ -29,6 +29,7 @@ import javax.persistence.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -205,12 +206,15 @@ public class ModuleServiceImpl implements ModuleService {
         return environmentVariables;
     }
 
-    /**
-     * Save app in just in DB, not create container use principally to charge
+    /*
+     * 
+     * Save app in just in DB, not create container use principally to charge*
      * status.PENDING of entity until it's really functionnal
      */
+
     @Override
     @Transactional(rollbackFor = ServiceException.class)
+    @CacheEvict("env")
     public Module publishPort(Integer id, Boolean publishPort, User user) throws ServiceException, CheckException {
 
         Module module = findById(id);
@@ -220,13 +224,13 @@ public class ModuleServiceImpl implements ModuleService {
         }
         module.setPublishPorts(publishPort);
         applicationEventPublisher.publishEvent(new ModuleStopEvent(module));
-        module = moduleDAO.saveAndFlush(module);
         List<String> envs = environmentService.loadEnvironnmentsByContainer(module.getName()).stream()
                 .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
         dockerService.removeContainer(module.getName(), false);
         dockerService.createModule(module.getName(), module, module.getImage().getPath(), user, envs, false,
                 new ArrayList<String>());
         module = dockerService.startModule(module.getName(), module);
+        module = moduleDAO.save(module);
         applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
 
         return module;
