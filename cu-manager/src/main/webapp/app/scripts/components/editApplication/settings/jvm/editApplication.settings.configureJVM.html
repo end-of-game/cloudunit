@@ -76,6 +76,12 @@
                  data-ng-disabled="configjvm.application.status === 'PENDING'"/>
           <label for="release-{{configjvm.jvmReleases[$index]}}">{{configjvm.jvmReleases[$index]}}</label>
         </div>
+
+        <div>
+          <label>Debug JMX</label>
+          <switch id="enabled" name="enabled" ng-model="enabled" ng-change="overview.changePort(module.id, module.name)"></switch>
+        </div>
+
         <div class="clearfix">
           <button class="config-jvm-btn button-effect primary pull-right"
                   data-ng-click="configjvm.saveConfigurationJVM(configjvm.application.name, configjvm.selectedJvmMemory, configjvm.jvmOptions, configjvm.selectedJvmRelease)">
@@ -83,10 +89,7 @@
           </button>
         </div>
 
-        <div>
-        <label>Debug JMX</label>
-          <switch id="enabled" name="enabled" ng-model="enabled" ng-change="overview.changePort(module.id, module.name)"></switch>
-        </div>
+        
       </div>
 
 

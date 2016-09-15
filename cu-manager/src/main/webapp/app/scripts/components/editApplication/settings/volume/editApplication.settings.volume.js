@@ -54,6 +54,7 @@
     vm.addErrorMsg = '';
     vm.manageNoticeMsg = '';
     vm.manageErrorMsg = '';
+    vm.actionPending = false;
 
     vm.predicate = 'name';
     vm.reverse = false;
@@ -91,6 +92,7 @@
             volumeName: vm.volumePicked
         };
         var urlLink = 'server/volume/';
+        vm.actionPending = true;
 
         $http({
             method: 'PUT',
@@ -98,8 +100,10 @@
             data: data
         }).then(function successCallback(response) {
             console.log(response);
+            vm.actionPending = false;
             vm.getLinkVolume();
         }, function errorCallback(response) {
+            vm.actionPending = false;
             vm.errorLinkCreate = response.data.message;
         });
     }
