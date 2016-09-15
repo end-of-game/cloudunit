@@ -193,18 +193,20 @@ public class ModuleServiceImpl implements ModuleService {
         List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
 
-            environmentVariable
-                    .setKeyEnv(String.format("CU_DATABASE_%s_%s", kv.getKey().toString(), image.getPrefixEnv()));
-            environmentVariable.setValueEnv(kv.getValue().getValue());
-            return environmentVariable;
-        }).collect(Collectors.toList());
+			environmentVariable.setKeyEnv(String.format("CU_DATABASE_%s_%s",
+			        kv.getKey().toString(),
+			        image.getPrefixEnv().toUpperCase()));
+			environmentVariable.setValueEnv(kv.getValue().getValue());
+			return environmentVariable;
+		}).collect(Collectors.toList());
 
-        EnvironmentVariable environmentVariable = new EnvironmentVariable();
-        environmentVariable.setKeyEnv("CU_DATABASE_DNS_POSTGRESQL");
-        environmentVariable.setValueEnv(module.getInternalDNSName());
-        environmentVariables.add(environmentVariable);
-        return environmentVariables;
-    }
+		EnvironmentVariable environmentVariable = new EnvironmentVariable();
+		environmentVariable.setKeyEnv(String.format("CU_DATABASE_DNS_%s",
+		        image.getPrefixEnv().toUpperCase()));
+		environmentVariable.setValueEnv(module.getInternalDNSName());
+		environmentVariables.add(environmentVariable);
+		return environmentVariables;
+	}
 
     /*
      * 

@@ -136,7 +136,7 @@
 
     function getTplUrl(tpl){
       var moduleName = $filter('truncatestringfilter')(tpl);
-      return 'scripts/components/editApplication/overview/templates/_' + moduleName + '-module.html';
+      return 'scripts/components/editApplication/overview/templates/_postgresql-module.html';
     }
 
     // Suppression d'un module
