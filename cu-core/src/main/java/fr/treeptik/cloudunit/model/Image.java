@@ -1,17 +1,17 @@
 package fr.treeptik.cloudunit.model;/*
-									* LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
-									* but CloudUnit is licensed too under a standard commercial license.
-									* Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
-									* If you are not sure whether the AGPL is right for you,
-									* you can always test our software under the AGPL and inspect the source code before you contact us
-									* about purchasing a commercial license.
-									*
-									* LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
-									* or promote products derived from this project without prior written permission from Treeptik.
-									* Products or services derived from this software may not be called "CloudUnit"
-									* nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
-									* For any questions, contact us : contact@treeptik.fr
-									*/
+                                    * LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
+                                    * but CloudUnit is licensed too under a standard commercial license.
+                                    * Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+                                    * If you are not sure whether the AGPL is right for you,
+                                    * you can always test our software under the AGPL and inspect the source code before you contact us
+                                    * about purchasing a commercial license.
+                                    *
+                                    * LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+                                    * or promote products derived from this project without prior written permission from Treeptik.
+                                    * Products or services derived from this software may not be called "CloudUnit"
+                                    * nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+                                    * For any questions, contact us : contact@treeptik.fr
+                                    */
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,170 +33,180 @@ import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 @Entity
 public class Image implements Serializable {
 
-	public final static Integer DISABLED = 0;
+    public final static Integer DISABLED = 0;
 
-	public final static Integer ENABLED = 1;
+    public final static Integer ENABLED = 1;
 
-	public final static String MODULE = "module";
+    public final static String MODULE = "module";
 
-	public final static String SERVER = "server";
+    public final static String SERVER = "server";
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
 
-	private String name;
+    private String name;
 
-	private String path;
+    private String path;
 
-	private String displayName;
+    private String displayName;
 
-	private Integer status;
+    private Integer status;
 
-	private String imageType;
+    private String imageType;
 
-	private String managerName;
+    private String managerName;
 
-	private String prefixEnv;
+    private String prefixEnv;
 
-	private Integer prefixId;
+    private String exposedPort;
 
-	@ElementCollection
-	@MapKeyEnumerated(EnumType.STRING)
-	private Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables;
+    private Integer prefixId;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "image")
-	private List<Module> modules;
+    @ElementCollection
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "image")
-	private List<Server> servers;
+    @JsonIgnore
+    @OneToMany(mappedBy = "image")
+    private List<Module> modules;
 
-	public Integer getId() {
-		return id;
-	}
+    @JsonIgnore
+    @OneToMany(mappedBy = "image")
+    private List<Server> servers;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public List<Module> getModules() {
-		return modules;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	public void setModules(List<Module> modules) {
-		this.modules = modules;
-	}
+    public List<Module> getModules() {
+        return modules;
+    }
 
-	public List<Server> getServers() {
-		return servers;
-	}
+    public void setModules(List<Module> modules) {
+        this.modules = modules;
+    }
 
-	public void setServers(List<Server> servers) {
-		this.servers = servers;
-	}
+    public List<Server> getServers() {
+        return servers;
+    }
 
-	public Integer getStatus() {
-		return status;
-	}
+    public void setServers(List<Server> servers) {
+        this.servers = servers;
+    }
 
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
+    public Integer getStatus() {
+        return status;
+    }
 
-	public String getImageType() {
-		return imageType;
-	}
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
-	public void setImageType(String imageType) {
-		this.imageType = imageType;
-	}
+    public String getImageType() {
+        return imageType;
+    }
 
-	public String getManagerName() {
-		return managerName;
-	}
+    public void setImageType(String imageType) {
+        this.imageType = imageType;
+    }
 
-	public void setManagerName(String managerName) {
-		this.managerName = managerName;
-	}
+    public String getManagerName() {
+        return managerName;
+    }
 
-	public String getDisplayName() {
-		return displayName;
-	}
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	public String getPrefixEnv() {
-		return prefixEnv;
-	}
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-	public void setPrefixEnv(String prefixEnv) {
-		this.prefixEnv = prefixEnv;
-	}
+    public String getPrefixEnv() {
+        return prefixEnv;
+    }
 
-	// do not remove prefixId use for splitting server by nature
-	public Integer getPrefixId() {
-		return prefixEnv.hashCode();
-	}
+    public void setPrefixEnv(String prefixEnv) {
+        this.prefixEnv = prefixEnv;
+    }
 
-	public Map<ModuleEnvironmentRole, String> getModuleEnvironmentVariables() {
-		return moduleEnvironmentVariables;
-	}
+    // do not remove prefixId use for splitting server by nature
+    public Integer getPrefixId() {
+        return prefixEnv.hashCode();
+    }
 
-	public void setModuleEnvironmentVariables(Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables) {
-		this.moduleEnvironmentVariables = moduleEnvironmentVariables;
-	}
+    public Map<ModuleEnvironmentRole, String> getModuleEnvironmentVariables() {
+        return moduleEnvironmentVariables;
+    }
 
-	@Override
-	public String toString() {
-		return "Image [id=" + id + ", name=" + name + ", path=" + path + ", status=" + status + ", imageType="
-				+ imageType + "]";
-	}
+    public void setModuleEnvironmentVariables(Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables) {
+        this.moduleEnvironmentVariables = moduleEnvironmentVariables;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
+    @Override
+    public String toString() {
+        return "Image [id=" + id + ", name=" + name + ", path=" + path + ", status=" + status + ", imageType="
+                + imageType + "]";
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Image other = (Image) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Image other = (Image) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
+
+    public String getExposedPort() {
+        return exposedPort;
+    }
+
+    public void setExposedPort(String exposedPort) {
+        this.exposedPort = exposedPort;
+    }
 
 }

@@ -38,10 +38,18 @@
     </div>
 </div>
 
-<div class="volume-card card col-lg-9">
+<div class="volume-card card col-lg-9" ng-class="{pending : vm.actionPending}">
     <div class="content clearfix">
 
         <h3 class="title large">Associating Volume</h3>
+
+        <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+        </div>
 
         <form id="add-volume"
         name="addvolumeVariable"
@@ -73,6 +81,7 @@
                 type="button"
                 data-title="Read only"
                 data-placement="top"
+                data-ng-disabled="vm.actionPending"
                 data-ng-click="volume.IReadOnly = !volume.IReadOnly">
                 <i class="icon-whhg" data-ng-class="{'rectangle': !volume.IReadOnly, 'check': volume.IReadOnly}"></i>
             </button>

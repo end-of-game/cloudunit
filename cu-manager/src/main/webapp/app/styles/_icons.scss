@@ -83,7 +83,7 @@
   content: "\f14a";
 }
 .icon-tech.redis:before {
-  content: "\f14f";
+  content: "\e915";
 }
 .icon-tech.mariadb:before {
   content: "\f130";
@@ -100,14 +100,17 @@
 .icon-tech.tomcat:before {
   content: "\e910";
 }
-.icon-tech.wildfly:before {
-  content: "\e914";
+.icon-tech.wildfly {
+  transform: scale(2.2);
+  -webkit-transform: scale(2.2);
+
+  &:before {
+    content: "\e914";
+  }
 }
 .icon-tech.fatjar:before {
   content: "\e91c";
 }
-
-
 
 .icon-whhg {
   font-family: 'webhostinghub-glyphs';

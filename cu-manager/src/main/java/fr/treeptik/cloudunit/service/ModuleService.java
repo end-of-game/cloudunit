@@ -26,36 +26,35 @@ import fr.treeptik.cloudunit.model.User;
 
 public interface ModuleService {
 
-	List<Module> findAll() throws ServiceException;
+    List<Module> findAll() throws ServiceException;
 
-	Module findById(Integer id) throws ServiceException;
+    Module findById(Integer id) throws ServiceException;
 
-	Module findByName(String moduleName) throws ServiceException;
+    Module findByName(String moduleName) throws ServiceException;
 
-	Module update(Module module) throws ServiceException;
+    Module update(Module module) throws ServiceException;
 
-	List<Module> findByAppAndUser(User user, String applicationName) throws ServiceException;
+    List<Module> findByAppAndUser(User user, String applicationName) throws ServiceException;
 
-	void checkImageExist(String moduleName) throws ServiceException;
+    void checkImageExist(String moduleName) throws ServiceException;
 
-	List<Module> findAllStatusStopModules() throws ServiceException;
+    List<Module> findAllStatusStopModules() throws ServiceException;
 
-	List<Module> findAllStatusStartModules() throws ServiceException;
+    List<Module> findAllStatusStartModules() throws ServiceException;
 
-	List<Module> findByApp(Application application) throws ServiceException;
+    List<Module> findByApp(Application application) throws ServiceException;
 
-	Module findByContainerID(String id) throws ServiceException;
+    Module findByContainerID(String id) throws ServiceException;
 
-	void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
-			throws ServiceException, CheckException;
+    void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
+            throws ServiceException, CheckException;
 
-	Module stopModule(String moduleName) throws ServiceException;
+    Module stopModule(String moduleName) throws ServiceException;
 
-	Module startModule(String moduleName) throws ServiceException;
+    Module startModule(String moduleName) throws ServiceException;
 
-	Module publishPort(Integer id, Boolean publishPort, User user)
-			throws ServiceException, CheckException;
+    Module create(String imageName, Application application, User user) throws ServiceException, CheckException;
 
-	Module create(String imageName, Application application, User user) throws ServiceException, CheckException;
+    Module publishPort(Integer id, Boolean publishPort, User user) throws ServiceException, CheckException;
 
 }

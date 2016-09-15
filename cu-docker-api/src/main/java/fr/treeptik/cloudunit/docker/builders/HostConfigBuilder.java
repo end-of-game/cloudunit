@@ -13,7 +13,7 @@ public class HostConfigBuilder {
     private Boolean publishAllPorts;
     private List<String> links;
     private List<String> binds;
-    private Map<String, List<Object>> portBindings;
+    private Map<String, List<Map<String, String>>> portBindings;
     private List<String> volumesFrom;
     private Long blkioWeight;
     private String capAdd;
@@ -65,7 +65,7 @@ public class HostConfigBuilder {
         return this;
     }
 
-    public HostConfigBuilder withPortBindings(Map<String, List<Object>> portBindings) {
+    public HostConfigBuilder withPortBindings(Map<String, List<Map<String, String>>> portBindings) {
         this.portBindings = portBindings;
         return this;
     }
@@ -181,7 +181,15 @@ public class HostConfigBuilder {
     }
 
     public HostConfigBuilder but() {
-        return aHostConfig().withPrivileged(privileged).withPublishAllPorts(publishAllPorts).withLinks(links).withBinds(binds).withPortBindings(portBindings).withVolumesFrom(volumesFrom).withBlkioWeight(blkioWeight).withCapAdd(capAdd).withCapDrop(capDrop).withContainerIDFile(containerIDFile).withCpusetCpus(cpusetCpus).withCpusetMems(cpusetMems).withCpuShares(cpuShares).withCpuPeriod(cpuPeriod).withDevices(devices).withDns(dns).withDnsSearch(dnsSearch).withExtraHosts(extraHosts).withIpcMode(ipcMode).withLxcConf(lxcConf).withMemory(memory).withMemorySwap(memorySwap).withOomKillDisable(oomKillDisable).withNetworkMode(networkMode).withReadonlyRootfs(readonlyRootfs).withSecurityOpt(securityOpt).withUlimits(ulimits);
+        return aHostConfig().withPrivileged(privileged).withPublishAllPorts(publishAllPorts).withLinks(links)
+                .withBinds(binds).withPortBindings(portBindings).withVolumesFrom(volumesFrom)
+                .withBlkioWeight(blkioWeight).withCapAdd(capAdd).withCapDrop(capDrop)
+                .withContainerIDFile(containerIDFile).withCpusetCpus(cpusetCpus).withCpusetMems(cpusetMems)
+                .withCpuShares(cpuShares).withCpuPeriod(cpuPeriod).withDevices(devices).withDns(dns)
+                .withDnsSearch(dnsSearch).withExtraHosts(extraHosts).withIpcMode(ipcMode).withLxcConf(lxcConf)
+                .withMemory(memory).withMemorySwap(memorySwap).withOomKillDisable(oomKillDisable)
+                .withNetworkMode(networkMode).withReadonlyRootfs(readonlyRootfs).withSecurityOpt(securityOpt)
+                .withUlimits(ulimits);
     }
 
     public HostConfig build() {

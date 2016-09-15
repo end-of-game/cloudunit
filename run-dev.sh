@@ -43,19 +43,13 @@ function check_env {
         echo "Needed to be executed outside the vagrant box. Please exit"
         exit 1
     fi
-
-    if [ $CLOUDUNIT_HOME -z ];
-    then
-        echo "You need to declare CLOUDUNIT_HOME as env variable"
-        export CLOUDUNIT_HOME=`pwd`
-        echo "CLOUDUNIT_HOME value is maybe : " $CLOUDUNIT_HOME
-        sleep 2
-    fi
 }
 
 # ###############################################################################
 # ###############################################################################
 # ###############################################################################
+
+export CLOUDUNIT_HOME=`pwd`
 
 check_env
 compile_and_install_parent
