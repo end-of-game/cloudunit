@@ -204,7 +204,7 @@ public class ModuleServiceImpl implements ModuleService {
             Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
         List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
-            environmentVariable.setKeyEnv(kv.getKey().toString());
+            environmentVariable.setKeyEnv(kv.getValue().getName());
             environmentVariable.setValueEnv(kv.getValue().getValue());
             return environmentVariable;
         }).collect(Collectors.toList());
@@ -274,9 +274,15 @@ public class ModuleServiceImpl implements ModuleService {
             Module module = findByName(moduleName);
             dockerService.removeContainer(module.getName(), true);
             moduleDAO.delete(module);
-            List<EnvironmentVariable> envs = environmentService
-                    .loadEnvironnmentsByContainer(module.getApplication().getServer().getName());
-            environmentService.delete(user, envs, module.getApplication().getName(), module.getApplication().getServer().getName());
+            if (isModuleRemoving) {
+                List<EnvironmentVariable> envs = environmentService
+                        .loadEnvironnmentsByContainer(module.getApplication().getServer().getName());
+                environmentService.delete(user, envs.stream()
+                        .filter(e -> e.getKeyEnv().toLowerCase()
+                                .contains(module.getImage().getPrefixEnv().toLowerCase()))
+                        .collect(Collectors.toList()), module.getApplication().getName(),
+                        module.getApplication().getServer().getName());
+            }
             logger.info("Module successfully removed ");
         } catch (PersistenceException e) {
             logger.error("Error database :  " + moduleName + " : " + e);
@@ -343,32 +349,6 @@ public class ModuleServiceImpl implements ModuleService {
             logger.error("Error ModuleService : error findAll Method : " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
-    }
-
-    @Override
-    public List<Module> findAllStatusStartModules() throws ServiceException {
-        List<Module> listModules = this.findAll();
-        List<Module> listStatusStartModules = new ArrayList<>();
-
-        for (Module module : listModules) {
-            if (Status.START == module.getStatus()) {
-                listStatusStartModules.add(module);
-            }
-        }
-        return listStatusStartModules;
-    }
-
-    @Override
-    public List<Module> findAllStatusStopModules() throws ServiceException {
-        List<Module> listModules = this.findAll();
-        List<Module> listStatusStopModules = new ArrayList<>();
-
-        for (Module module : listModules) {
-            if (Status.STOP == module.getStatus()) {
-                listStatusStopModules.add(module);
-            }
-        }
-        return listStatusStopModules;
     }
 
     @Override

@@ -38,10 +38,6 @@ public interface ModuleService {
 
     void checkImageExist(String moduleName) throws ServiceException;
 
-    List<Module> findAllStatusStopModules() throws ServiceException;
-
-    List<Module> findAllStatusStartModules() throws ServiceException;
-
     List<Module> findByApp(Application application) throws ServiceException;
 
     Module findByContainerID(String id) throws ServiceException;
