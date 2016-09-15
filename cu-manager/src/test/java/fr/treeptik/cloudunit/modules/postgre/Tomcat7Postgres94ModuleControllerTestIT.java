@@ -60,4 +60,5 @@ public class Tomcat7Postgres94ModuleControllerTestIT extends AbstractModuleContr
         super.managerPageContent = "phpPgAdmin";
     }
 
+    protected void assertPortIsReallyOpen() {}
 }

@@ -73,32 +73,32 @@ import junit.framework.TestCase;
 @ActiveProfiles("integration")
 public abstract class AbstractModuleControllerTestIT extends TestCase {
 
-    private final Logger logger = LoggerFactory
+    protected final Logger logger = LoggerFactory
         .getLogger(AbstractModuleControllerTestIT.class);
 
     @Autowired
-    private WebApplicationContext context;
+    protected WebApplicationContext context;
 
-    private MockMvc mockMvc;
+    protected MockMvc mockMvc;
     
     @Inject
-    private ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
     @Inject
-    private AuthenticationManager authenticationManager;
+    protected AuthenticationManager authenticationManager;
 
     @Autowired
-    private Filter springSecurityFilterChain;
+    protected Filter springSecurityFilterChain;
 
     @Inject
-    private UserService userService;
+    protected UserService userService;
 
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
-    private MockHttpSession session;
+    protected MockHttpSession session;
 
-    private static String applicationName;
+    protected static String applicationName;
 
     @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
@@ -357,6 +357,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .andDo(print());
     }
 
+    protected abstract void assertPortIsReallyOpen();
+
     @Test
     public void test_PublishPort() throws Exception {
         logger.info("Publish module port for external access");
@@ -374,5 +376,11 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         requestPublishPort(id)
             .andExpect(status().isOk());
+
+        assertPortIsReallyOpen();
+    }
+
+    protected String getContainerName() {
+        return "int-johndoe-"+applicationName+"-"+module;
     }
 }

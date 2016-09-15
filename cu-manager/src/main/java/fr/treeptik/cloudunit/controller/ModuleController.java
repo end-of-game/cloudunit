@@ -109,7 +109,7 @@ public class ModuleController implements Serializable {
 	/**
 	 * Add a module to an existing application
 	 *
-	 * @param input
+	 * @param id
 	 * @return
 	 * @throws ServiceException
 	 * @throws CheckException
@@ -124,7 +124,7 @@ public class ModuleController implements Serializable {
 		User user = authentificationUtils.getAuthentificatedUser();
 		Module module = moduleService.findById(id);
 		Application application = module.getApplication();
-		
+
 		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 		moduleService.publishPort(id, request.getPublishPort(), user);
 		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));

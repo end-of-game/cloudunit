@@ -60,4 +60,5 @@ public class JBoss8Postgres94ModuleControllerTestIT extends AbstractModuleContro
         super.managerPageContent = "phpPgAdmin";
     }
 
+    protected void assertPortIsReallyOpen() {}
 }

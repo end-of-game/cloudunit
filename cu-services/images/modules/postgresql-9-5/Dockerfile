@@ -1,14 +1,22 @@
+# vim:set ft=dockerfile:
 FROM cloudunit/base-jessie
 
-ENV DEBIAN_FRONTEND noninteractive
-
-ENV PG_MAJOR 9.5
-ENV PG_VERSION 9.5.3-1.pgdg80+1
-ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
-ENV PGDATA /var/lib/postgresql/data
-ENV LANG en_US.utf8
-
+# explicitly set user/group IDs
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
+
+## CLOUDUNIT :: BEGINNING
+
+ENV CU_MODULE_PORT 5432
+ENV CU_DEFAULT_LOG_FILE " "
+ENV CU_LOGS " "
+
+# add custom scripts
+ADD scripts /opt/cloudunit/scripts
+RUN chmod +x /opt/cloudunit/scripts/*
+
+## CLOUDUNIT :: END
+
+
 
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
@@ -27,39 +35,39 @@ RUN set -x \
 # make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
 RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
 	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
+
+RUN mkdir /docker-entrypoint-initdb.d
 
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
 
+ENV PG_MAJOR 9.5
+ENV PG_VERSION 9.5.4-1.pgdg80+1
+
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
-RUN apt-get update
 
-RUN apt-get -y -q install python-software-properties software-properties-common
-RUN apt-get -y -q install postgresql-common \
-                          postgresql-$PG_MAJOR=$PG_VERSION \
-                          postgresql-contrib-$PG_MAJOR=$PG_VERSION \
-                          phppgadmin \
-                  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+	&& apt-get install -y postgresql-common \
+	&& sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf \
+	&& apt-get install -y \
+		postgresql-$PG_MAJOR=$PG_VERSION \
+		postgresql-contrib-$PG_MAJOR=$PG_VERSION \
+	&& rm -rf /var/lib/apt/lists/*
 
-## On écoute sur toutes les IP. La sécurité est faite avant.
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.5/main/postgresql.conf
-
-## Suppression du fichier de configuration d'accès
-RUN rm /etc/postgresql/9.5/main/pg_hba.conf
-
-## Autorisation en mode 'md5' (password demandé) pour les IP autre que localhost
-RUN echo "local	all all trust"              >> /etc/postgresql/9.5/main/pg_hba.conf
-RUN echo "host	all all 127.0.0.1/32 trust" >> /etc/postgresql/9.5/main/pg_hba.conf
-RUN echo "host  all all ::1/128      md5" >> /etc/postgresql/9.5/main/pg_hba.conf
-RUN echo "host	all all 0.0.0.0/0    md5"   >> /etc/postgresql/9.5/main/pg_hba.conf
-
-# add custom scripts
-ADD scripts /cloudunit/scripts
-RUN chmod +x /cloudunit/scripts/*
+# make the sample config easier to munge (and "correct by default")
+RUN mv -v /usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample /usr/share/postgresql/ \
+	&& ln -sv ../postgresql.conf.sample /usr/share/postgresql/$PG_MAJOR/ \
+	&& sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql
 
+ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
+ENV PGDATA /var/lib/postgresql/data
 VOLUME /var/lib/postgresql/data
 
-EXPOSE 22
+COPY docker-entrypoint.sh /
 
-ENTRYPOINT ["/bin/bash", "/cloudunit/scripts/start-service.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+EXPOSE 5432
+CMD ["postgres"]

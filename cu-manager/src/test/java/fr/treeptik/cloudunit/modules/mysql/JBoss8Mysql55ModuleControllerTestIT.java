@@ -45,4 +45,5 @@ public class JBoss8Mysql55ModuleControllerTestIT extends AbstractModuleControlle
         super.managerPageContent = "phpMyAdmin";
     }
 
+    protected void assertPortIsReallyOpen() {}
 }
