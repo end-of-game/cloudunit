@@ -23,9 +23,20 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.treeptik.cloudunit.dto.*;
-import fr.treeptik.cloudunit.model.*;
-import org.omg.CORBA.Object;
+import fr.treeptik.cloudunit.dto.Command;
+import fr.treeptik.cloudunit.dto.ContainerUnit;
+import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.HttpErrorServer;
+import fr.treeptik.cloudunit.dto.LogUnit;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.EnvironmentVariable;
+import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.model.Message;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.Snapshot;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.Volume;
 
 public class JsonConverter {
 

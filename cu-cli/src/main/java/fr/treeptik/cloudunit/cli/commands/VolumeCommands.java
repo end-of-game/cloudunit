@@ -1,13 +1,12 @@
 package fr.treeptik.cloudunit.cli.commands;
 
-import fr.treeptik.cloudunit.cli.utils.ServerUtils;
-import jnr.ffi.Struct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.core.CommandMarker;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.cli.utils.ServerUtils;
 import fr.treeptik.cloudunit.cli.utils.VolumeService;
 
 @Component

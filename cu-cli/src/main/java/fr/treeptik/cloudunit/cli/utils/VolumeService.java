@@ -5,17 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.treeptik.cloudunit.cli.rest.JsonConverter;
-import fr.treeptik.cloudunit.model.EnvironmentVariable;
-import fr.treeptik.cloudunit.model.Volume;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
+import fr.treeptik.cloudunit.cli.rest.JsonConverter;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
+import fr.treeptik.cloudunit.model.Volume;
 
 @Component
 public class VolumeService {
