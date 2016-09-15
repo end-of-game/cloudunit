@@ -223,7 +223,6 @@ public class ModuleServiceImpl implements ModuleService {
             throw new CheckException("Module not found");
         }
         module.setPublishPorts(publishPort);
-        applicationEventPublisher.publishEvent(new ModuleStopEvent(module));
         List<String> envs = environmentService.loadEnvironnmentsByContainer(module.getName()).stream()
                 .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
         dockerService.removeContainer(module.getName(), false);
