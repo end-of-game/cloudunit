@@ -141,7 +141,7 @@ public class ModuleUtils {
 
     }
 
-    public String openExposedPort(String moduleName) {
+    public String managePort(String moduleName, final Boolean open) {
         String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
         if (checkResponse != null) {
             return checkResponse;
@@ -169,9 +169,10 @@ public class ModuleUtils {
 
                     restUtils.sendPutCommand(
                             authentificationUtils.finalHost + urlLoader.modulePrefix + "/" + module.getId(),
-                            authentificationUtils.getMap(), new HashMap() {
+                            authentificationUtils.getMap(), new HashMap<String, String>() {
+                                private static final long serialVersionUID = 1L;
                                 {
-                                    put("publishedPort", "true");
+                                    put("publishPort", open.toString());
                                 }
                             }).get("body");
                 } catch (ManagerResponseException e) {
