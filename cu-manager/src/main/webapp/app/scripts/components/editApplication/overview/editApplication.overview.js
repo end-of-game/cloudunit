@@ -72,6 +72,7 @@
 
           angular.forEach(vm.app.modules, function(value, key) {
               vm.statPortPublish[value.id] = value.publishPorts;
+              console.log(value);
               var urlLink = '/application/' + $stateParams.name +'/container/' + value.name + '/env'
               $http({
                 method: 'GET',
@@ -100,13 +101,17 @@
         publishPort: statPort
       };
 
+      vm.pendingModules = true; 
+
       $http({
           method: 'PUT',
           url: urlUpdate,
           data: data
       }).then(function successCallback(response) {
+          vm.pendingModules = false; 
           console.log(response);
       }, function errorCallback(response) {
+          vm.pendingModules = false; 
           console.log(response);
       }); 
     }

@@ -139,9 +139,9 @@
         </div>
       </div>
     </div>
-    <div id="{{module.name}}" class="service card medium {{module.status | lowercase}}"
+    <div id="{{module.name}}" class="service card medium {{module.status | lowercase}}" ng-class="{ pending : overview.pendingModules}"
          data-ng-repeat="module in overview.app.modules | filter: {image: {imageType: 'module'}} track by $index">
-      <ng-include src="overview.getTplUrl(module.image.name)"></ng-include>
+        <ng-include src="overview.getTplUrl(module.image.name)"></ng-include>
     </div>
   </div>
 </div>

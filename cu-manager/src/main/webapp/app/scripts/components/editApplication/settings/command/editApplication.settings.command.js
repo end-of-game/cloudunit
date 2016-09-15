@@ -26,6 +26,7 @@
                 application: '<app'
             },
             controller: [
+            '$scope',
             '$stateParams',
             '$q',
             'ApplicationService',
@@ -39,7 +40,7 @@
     }
 
 
-    function commandCtrl($stateParams, $q, ApplicationService, ErrorService, $resource, $http) {
+    function commandCtrl($scope, $stateParams, $q, ApplicationService, ErrorService, $resource, $http) {
         var commandRun = this;
 
         commandRun.getCommandList = getCommandList;
@@ -101,6 +102,8 @@
                 objectList.push(form[i]);
             }
 
+            $scope.actionPending = true;
+
             $http({
                 method: 'POST',
                 url: urlLink,
@@ -109,10 +112,9 @@
                     arguments: objectList
                 }
             }).then(function successCallback(response) {
-                vm.listVolumes = response.data;
-                console.log(response.data);
+                $scope.actionPending = false;
             }, function errorCallback(response) {
-                console.log(response);
+                $scope.actionPending = false;
             });
         }
 

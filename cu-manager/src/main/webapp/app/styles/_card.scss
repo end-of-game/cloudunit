@@ -188,6 +188,9 @@
 .app-creation .content,
 .fail .content,
 [data-status = 'pending'] .content {
+
+  opacity: 0.5;
+
   border-top: 0;
   color: $color-muted !important;
   & .subhead, & .headline {

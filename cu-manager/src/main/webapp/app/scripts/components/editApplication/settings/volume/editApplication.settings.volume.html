@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<div class="volume-card card col-lg-9" ng-class="{pending : vm.actionPending}">
+<div class="volume-card card col-lg-9" ng-class="{pending : volume.actionPending}">
     <div class="content clearfix">
 
         <h3 class="title large">Associating Volume</h3>
@@ -104,7 +104,7 @@
             <div class="secondary-actions pull-right">
                 <button type="submit"
                     class="addVolume-btn button-effect primary pull-right"
-                    data-ng-disabled="!volume.volumePicked || !volume.createLinkPath">
+                    data-ng-disabled="!volume.volumePicked || !volume.createLinkPath || volume.actionPending">
                     <span>Link volume</span>
                 </button>
             </div>
