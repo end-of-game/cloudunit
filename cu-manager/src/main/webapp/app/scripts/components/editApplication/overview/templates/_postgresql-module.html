@@ -84,13 +84,9 @@
       </label>
       <div class="colapse-reduct" ng-class="{'colapse-on' : !colapseEnvVar}">
         <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.listEnvModule[module.id] track by $index">
-          <span class="clipboard" id="env-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{$index}}">
-            {{ env.key }}
-          </span>
+          <span class="clipboard" id="env-key-{{env.key}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{env.key}}">{{ env.key }}</span>
           =
-          <span class="code clipboard" id="env-value-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{$index}}">
-            {{ env.value }}
-          </span>
+          <span class="code clipboard" id="env-value-{{env.value}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{env.value}}">{{ env.value }}</span>
         </li>
       </div>
   </div>
