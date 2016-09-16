@@ -127,8 +127,6 @@ public class MessageConverter {
 
         modulePorts.put("mysql-5-5", "3306");
         modulePorts.put("postgresql-9-3", "5432");
-        modulePorts.put("redis-3-0", "6379");
-        modulePorts.put("mongo-2-6", "27017");
 
         List<Module> modules = application.getModules();
         if (modules.size() < 1) {

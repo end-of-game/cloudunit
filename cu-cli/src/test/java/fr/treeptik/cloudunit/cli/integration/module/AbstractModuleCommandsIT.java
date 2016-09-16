@@ -35,11 +35,6 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
     }
 
     @Test
-    public void test02_shoudAddMongoModule() {
-        addModule("mongo-2-6");
-    }
-
-    @Test
     public void test03_shouldNotAddModuleBecauseImageDoesNotExist() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
         cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
@@ -74,7 +69,6 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
 
     }
 
-
     @Test
     public void test10_shoudAddAndRemoveMysqlModule() {
         addAndRemoveModule("mysql-5-5");
@@ -86,18 +80,14 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
     }
 
     @Test
-    public void test12_shoudAddAndRemoveMongoModule() {
-        addAndRemoveModule("mongo-2-6");
-    }
-
-    @Test
     public void test20_shouldListModules() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
         cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
         cr = getShell().executeCommand("use " + applicationName);
         cr = getShell().executeCommand("add-module --name mysql-5-5");
         String result = cr.getResult().toString();
-        String expectedResult = "Your module mysql-5-5 is currently being added to your application " + applicationName.toLowerCase();
+        String expectedResult = "Your module mysql-5-5 is currently being added to your application "
+                + applicationName.toLowerCase();
         Assert.assertEquals(expectedResult, result);
 
         cr = getShell().executeCommand("display-modules");
@@ -105,13 +95,11 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
         expectedResult = "1 modules found";
         Assert.assertEquals(expectedResult, result);
 
-
         cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
         result = cr.getResult().toString();
         expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
         Assert.assertEquals(expectedResult, result);
     }
-
 
     @Test
     public void test21_shouldNotListModulesBecauseApplicationNotSelected() {
@@ -131,14 +119,14 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
         Assert.assertTrue(result.contains(expectedResult));
     }
 
-
     private void addModule(String moduleName) {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
         cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
         cr = getShell().executeCommand("use " + applicationName);
         cr = getShell().executeCommand("add-module --name " + moduleName);
         String result = cr.getResult().toString();
-        String expectedResult = "Your module " + moduleName + " is currently being added to your application " + applicationName.toLowerCase();
+        String expectedResult = "Your module " + moduleName + " is currently being added to your application "
+                + applicationName.toLowerCase();
         Assert.assertEquals(expectedResult, result);
         cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
         result = cr.getResult().toString();
@@ -153,18 +141,18 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
         cr = getShell().executeCommand("use " + applicationName);
         cr = getShell().executeCommand("add-module --name " + moduleName);
         String result = cr.getResult().toString();
-        String expectedResult = "Your module " + moduleName + " is currently being added to your application " + applicationName.toLowerCase();
+        String expectedResult = "Your module " + moduleName + " is currently being added to your application "
+                + applicationName.toLowerCase();
         Assert.assertEquals(expectedResult, result);
         cr = getShell().executeCommand("rm-module --name " + moduleName + "-1");
         result = cr.getResult().toString();
-        expectedResult = "Your module " + moduleName + "-1"
-                + " is currently being removed from your application " + applicationName.toLowerCase();
+        expectedResult = "Your module " + moduleName + "-1" + " is currently being removed from your application "
+                + applicationName.toLowerCase();
         Assert.assertEquals(expectedResult, result);
         cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
         result = cr.getResult().toString();
         expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
         Assert.assertEquals(expectedResult, result);
     }
-
 
 }
