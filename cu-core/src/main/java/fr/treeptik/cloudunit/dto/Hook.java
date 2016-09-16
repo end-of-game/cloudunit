@@ -11,7 +11,6 @@ public class Hook {
     public Hook(String containerName, RemoteExecAction remoteExecAction) {
         this.remoteExecAction = remoteExecAction;
         this.containerName = containerName;
-
     }
 
     public String getContainerName() {

@@ -53,7 +53,6 @@ import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
-import fr.treeptik.cloudunit.service.HookService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
@@ -75,9 +74,6 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Inject
     private DockerService dockerService;
-
-    @Inject
-    private HookService hookService;
 
     @Value("${suffix.cloudunit.io}")
     private String suffixCloudUnitIO;
