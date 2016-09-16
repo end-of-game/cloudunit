@@ -37,8 +37,7 @@ public class HookServiceImpl implements HookService {
     public void call(String containerName, RemoteExecAction action) {
         logger.info("Calling " + action.toString() + " Hook...");
         String response = dockerService.execCommand(containerName, action.getCommand());
-        logger.info(action.toString() + " answers \"" + response + "\"");
-
+        logger.info(action.toString() + " answers " + response);
     }
 
 }

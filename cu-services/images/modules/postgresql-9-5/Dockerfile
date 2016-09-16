@@ -13,7 +13,6 @@ ENV CU_LOGS " "
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
-ADD hooks/module-post-creation-once.sh /opt/cloudunit/hooks/module-post-creation-once.sh
 
 ## CLOUDUNIT :: END
 

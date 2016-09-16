@@ -168,7 +168,7 @@ public class ModuleServiceImpl implements ModuleService {
                     application);
             applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
             applicationEventPublisher
-                    .publishEvent(new HookEvent(new Hook(containerName, RemoteExecAction.MODULE_POST_CREATION_ONCE)));
+                    .publishEvent(new HookEvent(new Hook(containerName, RemoteExecAction.MODULE_POST_CREATION)));
         } catch (PersistenceException e) {
             logger.error("ServerService Error : Create Server " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
@@ -302,12 +302,18 @@ public class ModuleServiceImpl implements ModuleService {
     public Module startModule(String moduleName) throws ServiceException {
         logger.info("Module : Starting module " + moduleName);
         Module module = null;
-
         try {
             module = findByName(moduleName);
             module = dockerService.startModule(moduleName, module);
             applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
-
+            if (!module.getIsInitialized()) {
+                module.setIsInitialized(true);
+                module = moduleDAO.save(module);
+                applicationEventPublisher
+                        .publishEvent(new HookEvent(new Hook(moduleName, RemoteExecAction.MODULE_POST_START_ONCE)));
+            }
+            applicationEventPublisher
+                    .publishEvent(new HookEvent(new Hook(moduleName, RemoteExecAction.MODULE_POST_START)));
         } catch (PersistenceException e) {
             logger.error("ModuleService Error : fail to start Module" + moduleName);
             throw new ServiceException(e.getLocalizedMessage(), e);

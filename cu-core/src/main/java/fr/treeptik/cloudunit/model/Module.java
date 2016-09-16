@@ -43,11 +43,15 @@ public class Module extends Container implements Serializable {
 
     private String forwardedPort;
 
+    private Boolean isInitialized;
+
     @ManyToOne
     @JsonIgnore
     private Application application;
 
     public Module() {
+        publishPorts = false;
+        isInitialized = false;
         this.image = new Image();
     }
 
@@ -132,6 +136,14 @@ public class Module extends Container implements Serializable {
 
     public void setForwardedPort(String forwardedPort) {
         this.forwardedPort = forwardedPort;
+    }
+
+    public Boolean getIsInitialized() {
+        return isInitialized;
+    }
+
+    public void setIsInitialized(Boolean isInitialized) {
+        this.isInitialized = isInitialized;
     }
 
 }
