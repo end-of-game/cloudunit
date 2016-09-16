@@ -35,25 +35,10 @@ public class HookServiceImpl implements HookService {
 
     @Override
     public void call(String containerName, RemoteExecAction action) {
-        try {
-            logger.info("Calling " + action.toString() + " Hook...");
-            int counter = 0;
-            boolean started = false;
-            do {
-                String command = RemoteExecAction.CHECK_RUNNING.getCommand();
-                String exec = dockerService.execCommand(containerName, command);
-                exec = exec.replaceAll(System.getProperty("line.separator"), "");
-                if ("0".equalsIgnoreCase(exec.trim())) {
-                    started = true;
-                    break;
-                }
-                Thread.sleep(1000);
-            } while (counter++ < 30 && !started);
-            String response = dockerService.execCommand(containerName, action.getCommand());
-            logger.info(action.toString() + " answers \"" + response + "\"");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        logger.info("Calling " + action.toString() + " Hook...");
+        String response = dockerService.execCommand(containerName, action.getCommand());
+        logger.info(action.toString() + " answers \"" + response + "\"");
+
     }
 
 }

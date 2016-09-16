@@ -35,9 +35,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.treeptik.cloudunit.config.events.HookEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
+import fr.treeptik.cloudunit.dto.Hook;
 import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -169,7 +171,8 @@ public class ModuleServiceImpl implements ModuleService {
             environmentService.createInDatabase(getInternalEnvironment(module, image, moduleEnvs), containerName,
                     application);
             applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
-            hookService.call(containerName, RemoteExecAction.MODULE_POST_CREATION_ONCE);
+            applicationEventPublisher
+                    .publishEvent(new HookEvent(new Hook(containerName, RemoteExecAction.MODULE_POST_CREATION_ONCE)));
         } catch (PersistenceException e) {
             logger.error("ServerService Error : Create Server " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
