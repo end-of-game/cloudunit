@@ -16,6 +16,7 @@ public enum RemoteExecAction {
     ADD_ENV("Add env variable", "/opt/cloudunit/scripts/add-env.sh CU_KEY CU_VALUE"),
     CHANGE_JAVA_VERSION("Change Server Configuration", "/opt/cloudunit/scripts/change-java-version.sh MEMORY_VALUE JVM_OPTIONS"),
     MODULE_PRE_CREATION("Module pre creation", "/opt/cloudunit/hooks/module-pre-creation.sh"),
+    MODULE_POST_CREATION_ONCE("Module pre creation executed just one time (after creation)", "/opt/cloudunit/hooks/module-post-creation-once.sh"),
     MODULE_POST_CREATION("Module pre creation", "/opt/cloudunit/hooks/module-post-creation.sh"),
     APPLICATION_PRE_FIRST_DEPLOY("Application pre first deploy", "/opt/cloudunit/hooks/application-pre-first-deploy.sh"),
     APPLICATION_POST_FIRST_DEPLOY("Application post first deploy", "/opt/cloudunit/hooks/application-post-first-deploy.sh"),

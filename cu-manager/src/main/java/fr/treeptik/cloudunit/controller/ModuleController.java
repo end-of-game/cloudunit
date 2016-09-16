@@ -51,128 +51,129 @@ import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 @RequestMapping("/module")
 public class ModuleController implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	Locale locale = Locale.ENGLISH;
+    Locale locale = Locale.ENGLISH;
 
-	private Logger logger = LoggerFactory.getLogger(ModuleController.class);
+    private Logger logger = LoggerFactory.getLogger(ModuleController.class);
 
-	@Inject
-	private ModuleService moduleService;
+    @Inject
+    private ModuleService moduleService;
 
-	@Inject
-	private ApplicationService applicationService;
+    @Inject
+    private ApplicationService applicationService;
 
-	@Inject
-	private AuthentificationUtils authentificationUtils;
+    @Inject
+    private AuthentificationUtils authentificationUtils;
 
-	@Inject
-	private ApplicationEventPublisher applicationEventPublisher;
+    @Inject
+    private ApplicationEventPublisher applicationEventPublisher;
 
-	/**
-	 * Add a module to an existing application
-	 *
-	 * @param input
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@CloudUnitSecurable
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	public JsonResponse addModule(@RequestBody JsonInput input) throws ServiceException, CheckException {
-		// validate the input
-		input.validateAddModule();
+    /**
+     * Add a module to an existing application
+     *
+     * @param input
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @CloudUnitSecurable
+    @RequestMapping(method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse addModule(@RequestBody JsonInput input) throws ServiceException, CheckException {
+        // validate the input
+        input.validateAddModule();
 
-		String applicationName = input.getApplicationName();
+        String applicationName = input.getApplicationName();
 
-		String imageName = input.getImageName();
+        String imageName = input.getImageName();
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, applicationName);
-		
-		if (application == null) {
-		    throw new CheckException("Unknown application");
-		}
-		
-		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-		try {
-			moduleService.create(imageName, application, user);
-			logger.info("--initModule " + imageName + " to " + applicationName + " successful--");
-		} finally {
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
 
-		}
-		return new HttpOk();
-	}
+        if (application == null) {
+            throw new CheckException("Unknown application");
+        }
 
-	/**
-	 * Add a module to an existing application
-	 *
-	 * @param id
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@CloudUnitSecurable
-	@RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-	@ResponseBody
-	public JsonResponse publishPort(@PathVariable("id") Integer id, @RequestBody ModuleResource request)
-			throws ServiceException, CheckException {
-		request.validatePublishPort();
+        applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		Module module = moduleService.findById(id);
-		Application application = module.getApplication();
+        try {
+            moduleService.create(imageName, application, user);
+            logger.info("--initModule " + imageName + " to " + applicationName + " successful--");
+        } finally {
+            applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
-		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-		moduleService.publishPort(id, request.getPublishPort(), user);
-		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
-		return new HttpOk();
-	}
+        }
+        return new HttpOk();
+    }
 
-	/**
-	 * Remove a module to an existing application
-	 *
-	 * @param jsonInput
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@CloudUnitSecurable
-	@RequestMapping(value = "/{applicationName}/{moduleName}", method = RequestMethod.DELETE)
-	@ResponseBody
-	public JsonResponse removeModule(JsonInput jsonInput) throws ServiceException, CheckException {
+    /**
+     * Add a module to an existing application
+     *
+     * @param id
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @CloudUnitSecurable
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @ResponseBody
+    public JsonResponse publishPort(@PathVariable("id") Integer id, @RequestBody ModuleResource request)
+            throws ServiceException, CheckException {
+        request.validatePublishPort();
 
-		// validate the input
-		jsonInput.validateRemoveModule();
+        User user = authentificationUtils.getAuthentificatedUser();
+        Module module = moduleService.findById(id);
+        Application application = module.getApplication();
 
-		String applicationName = jsonInput.getApplicationName();
-		String moduleName = jsonInput.getModuleName();
+        applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+        moduleService.publishPort(id, request.getPublishPort(), user);
+        applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+        return new HttpOk();
+    }
 
-		User user = authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, applicationName);
+    /**
+     * Remove a module to an existing application
+     *
+     * @param jsonInput
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @CloudUnitSecurable
+    @RequestMapping(value = "/{applicationName}/{moduleName}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public JsonResponse removeModule(JsonInput jsonInput) throws ServiceException, CheckException {
 
-		// We must be sure there is no running action before starting new one
-		authentificationUtils.canStartNewAction(user, application, locale);
+        // validate the input
+        jsonInput.validateRemoveModule();
 
-		Status previousApplicationStatus = application.getStatus();
-		try {
-			// Application occupée
-			applicationService.setStatus(application, Status.PENDING);
+        String applicationName = jsonInput.getApplicationName();
+        String moduleName = jsonInput.getModuleName();
 
-			moduleService.remove(user, moduleName, true, previousApplicationStatus);
+        User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
 
-			logger.info("-- removeModule " + applicationName + " to " + moduleName + " successful-- ");
+        // We must be sure there is no running action before starting new one
+        authentificationUtils.canStartNewAction(user, application, locale);
 
-		} catch (Exception e) {
-			// Application en erreur
-			logger.error(applicationName + " // " + moduleName, e);
-		} finally {
-			applicationService.setStatus(application, previousApplicationStatus);
-		}
+        Status previousApplicationStatus = application.getStatus();
+        try {
+            // Application occupée
+            applicationService.setStatus(application, Status.PENDING);
 
-		return new HttpOk();
-	}
+            moduleService.remove(user, moduleName, true, previousApplicationStatus);
+
+            logger.info("-- removeModule " + applicationName + " to " + moduleName + " successful-- ");
+
+        } catch (Exception e) {
+            // Application en erreur
+            logger.error(applicationName + " // " + moduleName, e);
+        } finally {
+            applicationService.setStatus(application, previousApplicationStatus);
+        }
+
+        return new HttpOk();
+    }
 
 }

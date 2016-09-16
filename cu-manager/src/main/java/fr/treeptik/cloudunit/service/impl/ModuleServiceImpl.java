@@ -39,6 +39,7 @@ import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
 import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -50,6 +51,7 @@ import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
+import fr.treeptik.cloudunit.service.HookService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
@@ -71,6 +73,9 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Inject
     private DockerService dockerService;
+
+    @Inject
+    private HookService hookService;
 
     @Value("${suffix.cloudunit.io}")
     private String suffixCloudUnitIO;
@@ -164,6 +169,7 @@ public class ModuleServiceImpl implements ModuleService {
             environmentService.createInDatabase(getInternalEnvironment(module, image, moduleEnvs), containerName,
                     application);
             applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
+            hookService.call(containerName, RemoteExecAction.MODULE_POST_CREATION_ONCE);
         } catch (PersistenceException e) {
             logger.error("ServerService Error : Create Server " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
