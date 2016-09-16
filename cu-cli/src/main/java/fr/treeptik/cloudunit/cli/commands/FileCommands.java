@@ -65,6 +65,8 @@ public class FileCommands implements CommandMarker {
 			@CliOption(key = {
 					"parent" }, mandatory = false, help = "Return at the parent directory", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean parent)
 			throws ManagerResponseException {
+
+        if (directoryName == null || directoryName.trim().length() == 0) { return "Need an directory as argument."; }
 		String[] pathArray = directoryName.split("/");
 		List<String> pathList = new ArrayList<String>();
 		for (String s : pathArray) {

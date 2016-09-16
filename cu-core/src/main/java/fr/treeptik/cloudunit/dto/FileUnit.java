@@ -15,11 +15,14 @@
 
 package fr.treeptik.cloudunit.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.function.Predicate;
 
 /**
  * Created by nicolas on 20/05/15.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileUnit {
 
 	public static Predicate<FileUnit> edition() {
@@ -68,7 +71,13 @@ public class FileUnit {
 
 	private boolean exec;
 
-	private boolean isRemovable;
+    private boolean editable;
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    private boolean isRemovable;
 
 	private String breadcrumb;
 
@@ -139,6 +148,9 @@ public class FileUnit {
 
 	public String getBreadcrump() {
 		return breadcrumb;
+	}
+
+	public FileUnit() {
 	}
 
 	@Override

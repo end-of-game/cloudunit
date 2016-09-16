@@ -25,7 +25,7 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
     }
 
     @Test
-    public void test_enter_into_container() {
+    public void test_enter_into_container_and_upload_file() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015 ");
         cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
         Assert.assertTrue("Create Application", cr.isSuccess());
@@ -38,6 +38,27 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
 
         cr = getShell().executeCommand("upload-file --path " + "/Users/nicolas/software/cloudunit-cli/src/test/java/fr/treeptik/cloudunit/cli/integration/files/my-beautiful-file.txt");
         Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+    }
 
+    @Test
+    public void test_enter_into_container_and_list_files() {
+        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015 ");
+        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
+        Assert.assertTrue("Create Application", cr.isSuccess());
+
+        cr = getShell().executeCommand("use " + applicationName);
+        Assert.assertTrue("Use Application", cr.isSuccess());
+
+        cr = getShell().executeCommand("open-explorer --containerName dev-johndoe-" + applicationName + "-tomcat-8");
+        Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+
+        cr = getShell().executeCommand("list-files");
+        Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+
+        cr = getShell().executeCommand("enter-directory /etc");
+        Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+
+        cr = getShell().executeCommand("list-files");
+        Assert.assertTrue("Entering into containerFS", cr.isSuccess());
     }
 }

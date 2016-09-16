@@ -161,12 +161,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("teardown");
 
         logger.info("Delete application : " + applicationName);
-        /*
+
         mockMvc.perform(delete("/application/" + applicationName)
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        */
+
         SecurityContextHolder.clearContext();
         session.invalidate();
     }

@@ -21,7 +21,7 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
 
     @BeforeClass
     public static void generateApplication() {
-        applicationName = "App" + new Random().nextInt(10000);
+        applicationName = "app" + new Random().nextInt(10000);
     }
 
     @Test
@@ -34,7 +34,6 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
         String expectedResult = "Your java version has been successfully changed";
         Assert.assertEquals(expectedResult, result);
     }
-
 
     @Test
     public void test01_shouldNotChangeJavaVersionBecauseApplicationNotSelected() {

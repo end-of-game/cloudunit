@@ -112,8 +112,10 @@ public class ApplicationUtils {
         }
 
         try {
+            String url = authentificationUtils.finalHost + urlLoader.actionApplication + applicationName;
+            log.info("url : " + url);
             json = restUtils
-                    .sendGetCommand(authentificationUtils.finalHost + urlLoader.actionApplication + applicationName,
+                    .sendGetCommand(url,
                             authentificationUtils.getMap())
                     .get("body");
         } catch (ManagerResponseException e) {

@@ -159,9 +159,7 @@ public class FileUtils {
 			return null;
 		}
 
-		currentPath = currentPath.replace("/", "__");
-		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "/path/"
-				+ currentPath;
+		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path="+ currentPath;
 		log.info(command);
 		json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
 		statusCommand.setExitStatut(0);
@@ -196,8 +194,7 @@ public class FileUtils {
 		if (!path.startsWith("/"))
 			path = "/" + path;
 		path = currentPath + path;
-		path = path.replace("/", "__");
-		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "/path/" + path;
+		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path/" + path;
 		json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
 		if (json.equals("[]")) {
 			return "This directory does not exist";
@@ -232,38 +229,19 @@ public class FileUtils {
 		 */
 
 		if (parent && (directoryName == null) || directoryName.equalsIgnoreCase("")) {
-			currentPath = currentPath.substring(0, currentPath.lastIndexOf("__"));
-
 			clPromptProvider.setPrompt(
 					clPromptProvider.getPrompt().substring(0, clPromptProvider.getPrompt().lastIndexOf("/")) + " ");
 			statusCommand.setExitStatut(0);
 			return null;
 		}
 
-		currentPath = currentPath.replace("/", "__");
-		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "/path/"
-				+ currentPath;
+		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path=" + currentPath;
 
 		json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
 
 		List<FileUnit> fileUnits = JsonConverter.getFileUnits(json);
-		boolean dirExists = false;
-		for (FileUnit fileUnit : fileUnits) {
-			if (fileUnit.getName().equalsIgnoreCase(directoryName)) {
-				if (!fileUnit.isDir()) {
-					log.log(Level.SEVERE, "This file is not a directory");
-					return null;
-				}
-				dirExists = true;
-			}
-		}
 
-		if (!dirExists) {
-			log.log(Level.SEVERE, "This directory does not exist");
-			return null;
-		}
-
-		currentPath = currentPath + "__" + directoryName;
+		currentPath = currentPath + "/" + directoryName;
 		clPromptProvider.setPrompt(clPromptProvider.getPrompt().trim() + "/" + directoryName + " ");
 
 		listFiles();
@@ -293,12 +271,10 @@ public class FileUtils {
 
 		for (String path : pathList) {
 			if (path.equals("..")) {
-				currentPath = currentPath.substring(0, currentPath.lastIndexOf("__"));
-
+				currentPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
 				clPromptProvider.setPrompt(
 						clPromptProvider.getPrompt().substring(0, clPromptProvider.getPrompt().lastIndexOf("/")) + " ");
 			} else {
-				currentPath = currentPath + "__" + path;
 				clPromptProvider.setPrompt(clPromptProvider.getPrompt().trim() + "/" + path + " ");
 			}
 		}
@@ -329,11 +305,8 @@ public class FileUtils {
 			return null;
 		}
 
-		currentPath = currentPath.replace("/", "__");
-		if (currentPath.startsWith("____"))
-			currentPath = currentPath.substring(2);
 		String command = authentificationUtils.finalHost + "/file/unzip/container/" + currentContainer + "/application/"
-				+ applicationUtils.getApplication().getName() + "/path/" + currentPath + "/fileName/" + fileName;
+				+ applicationUtils.getApplication().getName() + "?path=" + currentPath + "/fileName/" + fileName;
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("applicationName", applicationUtils.getApplication().getName());
 		try {
@@ -415,7 +388,7 @@ public class FileUtils {
 		boolean fileExists = false;
 
 		String json = restUtils.sendGetCommand(
-				authentificationUtils.finalHost + "/file/container/" + currentContainer + "/path/" + currentPath,
+				authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path=" + currentPath,
 				authentificationUtils.getMap()).get("body");
 
 		List<FileUnit> fileUnits = JsonConverter.getFileUnits(json);
