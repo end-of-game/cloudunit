@@ -139,7 +139,7 @@ public class MessageConverter {
 
                 int moduleIndex = 0;
 
-                String[][] tab = new String[8][2];
+                String[][] tab = new String[4][2];
 
                 tab[0][0] = "MODULE NAME";
                 tab[1][0] = "TYPE";
