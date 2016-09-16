@@ -67,26 +67,7 @@ public class FileCommands implements CommandMarker {
 			throws ManagerResponseException {
 
         if (directoryName == null || directoryName.trim().length() == 0) { return "Need an directory as argument."; }
-		String[] pathArray = directoryName.split("/");
-		List<String> pathList = new ArrayList<String>();
-		for (String s : pathArray) {
-			if (s != null && s.length() > 0) {
-				pathList.add(s);
-			}
-		}
-		if (pathList.size() > 1) {
-			String exists = checkPath(directoryName);
-			if (exists.equals("This directory exist")) {
-				return fileUtils.enterPathDirectory(pathList);
-			}
-			return exists;
-		} else {
-			if (directoryName != null && directoryName.equalsIgnoreCase("..")) {
-				parent = true;
-				directoryName = null;
-			}
-			return fileUtils.enterDirectory(directoryName, parent);
-		}
+		return fileUtils.enterDirectory(directoryName);
 	}
 
 	@CliCommand(value = "upload-file", help = "Upload a file into the current directory")

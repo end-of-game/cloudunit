@@ -140,6 +140,7 @@ public class FileUtils {
 	}
 
 	public String listFiles() throws ManagerResponseException {
+
 		String json = null;
 		if (authentificationUtils.getMap().isEmpty()) {
 			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
@@ -203,10 +204,9 @@ public class FileUtils {
 		return "This directory exist";
 	}
 
-	public String enterDirectory(String directoryName, boolean parent) throws ManagerResponseException {
+	public String enterDirectory(String directoryName) throws ManagerResponseException {
 
 		String json = null;
-
 		if (authentificationUtils.getMap().isEmpty()) {
 			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
 			statusCommand.setExitStatut(1);
@@ -224,27 +224,15 @@ public class FileUtils {
 			statusCommand.setExitStatut(1);
 			return null;
 		}
-		/*
-		 * bloc pour remonter d'un niveau
-		 */
-
-		if (parent && (directoryName == null) || directoryName.equalsIgnoreCase("")) {
-			clPromptProvider.setPrompt(
-					clPromptProvider.getPrompt().substring(0, clPromptProvider.getPrompt().lastIndexOf("/")) + " ");
-			statusCommand.setExitStatut(0);
-			return null;
-		}
 
 		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path=" + currentPath;
-
 		json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
 
 		List<FileUnit> fileUnits = JsonConverter.getFileUnits(json);
+		currentPath = directoryName;
+        System.out.println("currentPath : " + currentPath);
 
-		currentPath = currentPath + "/" + directoryName;
-		clPromptProvider.setPrompt(clPromptProvider.getPrompt().trim() + "/" + directoryName + " ");
-
-		listFiles();
+        listFiles();
 		statusCommand.setExitStatut(0);
 		return null;
 	}
@@ -351,7 +339,7 @@ public class FileUtils {
 			params.put("file", resource);
 			params.putAll(authentificationUtils.getMap());
 			restUtils.sendPostForUpload(authentificationUtils.finalHost + "/file/container/" + currentContainer
-					+ "/application/" + applicationUtils.getApplication().getName() + "/path/" + currentPath, params);
+					+ "/application/" + applicationUtils.getApplication().getName() + "?path=" + currentPath, params);
 			statusCommand.setExitStatut(0);
 
 		} catch (IOException e) {
@@ -414,7 +402,7 @@ public class FileUtils {
 		Map<String, Object> params = new HashMap<>();
 		params.putAll(authentificationUtils.getMap());
 		restUtils.sendGetFileCommand(authentificationUtils.finalHost + "/file/container/" + currentContainer
-				+ "/application/" + applicationUtils.getApplication().getName() + "/path/" + currentPath + "/fileName/"
+				+ "/application/" + applicationUtils.getApplication().getName() + "?path=" + currentPath + "/fileName/"
 				+ fileName, destFileName, params);
 		statusCommand.setExitStatut(0);
 		return "File correctly send in this default location : " + destFileName;

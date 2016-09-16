@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.springframework.shell.core.CommandResult;
 
+import java.io.File;
 import java.util.Random;
 
 /**
@@ -36,12 +37,21 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
         cr = getShell().executeCommand("open-explorer --containerName dev-johndoe-" + applicationName + "-tomcat-8");
         Assert.assertTrue("Entering into containerFS", cr.isSuccess());
 
-        cr = getShell().executeCommand("upload-file --path " + "/Users/nicolas/software/cloudunit-cli/src/test/java/fr/treeptik/cloudunit/cli/integration/files/my-beautiful-file.txt");
+        cr = getShell().executeCommand("enter-directory /opt");
+        Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+
+        File local = new File(".");
+        String pathFileToUpload = local.getAbsolutePath()+"/src/test/java/fr/treeptik/cloudunit/cli/integration/files/my-beautiful-file.txt";
+        cr = getShell().executeCommand("upload-file --path " + pathFileToUpload);
+        Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+
+        cr = getShell().executeCommand("list-files");
         Assert.assertTrue("Entering into containerFS", cr.isSuccess());
     }
 
     @Test
     public void test_enter_into_container_and_list_files() {
+
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015 ");
         cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
         Assert.assertTrue("Create Application", cr.isSuccess());
@@ -60,5 +70,12 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
 
         cr = getShell().executeCommand("list-files");
         Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+
+        cr = getShell().executeCommand("enter-directory /opt");
+        Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+
+        cr = getShell().executeCommand("list-files");
+        Assert.assertTrue("Entering into containerFS", cr.isSuccess());
+
     }
 }
