@@ -147,11 +147,6 @@ public class ApplicationController implements Serializable {
 		User user = authentificationUtils.getAuthentificatedUser();
 		authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
-		// GITLAB + JENKINS
-		//gitlabService.createProject(input.getApplicationName());
-		//String repository = gitlabService.getGitRepository(input.getApplicationName());
-		//jenkinsService.createProject(input.getApplicationName(), repository);
-
 		// CREATE AN APP
 		applicationService.create(input.getApplicationName(), input.getLogin(), input.getServerName(), null, null);
 

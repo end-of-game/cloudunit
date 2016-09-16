@@ -60,6 +60,10 @@ import fr.treeptik.cloudunit.cli.utils.AuthentificationUtils;
 @Component
 public class RestUtils {
 
+    public static final String CONTENT_TYPE = "content-type";
+    public static final String STATUS_CODE = "statusCode";
+    public static final String BODY = "body";
+
     public HttpClientContext localContext;
     @Autowired
     private AuthentificationUtils authentificationUtils;
@@ -74,13 +78,12 @@ public class RestUtils {
         localContext = HttpClientContext.create();
         localContext.setCookieStore(new BasicCookieStore());
         HttpPost httpPost = new HttpPost(url);
-
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
             CloseableHttpResponse httpResponse = httpclient.execute(httpPost, localContext);
             ResponseHandler<String> handler = new CustomResponseErrorHandler();
             String body = handler.handleResponse(httpResponse);
-            response.put("body", body);
+            response.put(BODY, body);
             httpResponse.close();
         } catch (Exception e) {
             authentificationUtils.getMap().clear();
@@ -106,7 +109,7 @@ public class RestUtils {
             CloseableHttpResponse httpResponse = httpclient.execute(httpget, localContext);
             ResponseHandler<String> handler = new CustomResponseErrorHandler();
             String body = handler.handleResponse(httpResponse);
-            response.put("body", body);
+            response.put(BODY, body);
             httpResponse.close();
 
         } catch (Exception e) {
@@ -198,7 +201,6 @@ public class RestUtils {
             throws ManagerResponseException {
         Map<String, Object> response = new HashMap<String, Object>();
         CloseableHttpClient httpclient = HttpClients.createDefault();
-
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
@@ -208,7 +210,7 @@ public class RestUtils {
             CloseableHttpResponse httpResponse = httpclient.execute(httpPost, localContext);
             ResponseHandler<String> handler = new CustomResponseErrorHandler();
             String body = handler.handleResponse(httpResponse);
-            response.put("body", body);
+            response.put(BODY, body);
             httpResponse.close();
         } catch (Exception e) {
             throw new ManagerResponseException(e.getMessage(), e);
@@ -241,7 +243,8 @@ public class RestUtils {
             CloseableHttpResponse httpResponse = httpclient.execute(httpPut, localContext);
             ResponseHandler<String> handler = new CustomResponseErrorHandler();
             String body = handler.handleResponse(httpResponse);
-            response.put("body", body);
+            response.put(BODY, body);
+
             httpResponse.close();
         } catch (Exception e) {
             throw new ManagerResponseException(e.getMessage(), e);
@@ -277,9 +280,9 @@ public class RestUtils {
         String body = result.getBody().toString();
         MediaType contentType = result.getHeaders().getContentType();
         HttpStatus statusCode = result.getStatusCode();
-        response.put("content-type", contentType);
-        response.put("statusCode", statusCode);
-        response.put("body", body);
+        response.put(CONTENT_TYPE, contentType);
+        response.put(STATUS_CODE, statusCode);
+        response.put(BODY, body);
 
         return response;
 

@@ -376,7 +376,7 @@ public class MessageConverter {
         }
     }
 
-    public static void buildListFileUnit(List<FileUnit> fileUnits) {
+    public static String buildListFileUnit(List<FileUnit> fileUnits) {
         StringBuilder builder = new StringBuilder();
         for (FileUnit fileUnit : fileUnits) {
             if (fileUnit.getName().equalsIgnoreCase(".")) {
@@ -385,6 +385,7 @@ public class MessageConverter {
             builder.append("\t" + fileUnit.getName() + "\t");
         }
         logger.log(Level.INFO, builder.toString());
+        return builder.toString();
     }
 
     public static void buildListCommands(List<Command> commands) {
