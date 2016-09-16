@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>cu-manager</artifactId>
 	<packaging>war</packaging>
-	<name>CloudUnit</name>
+	<name>CloudUnit API</name>
 
 	<properties>
 
@@ -516,23 +516,6 @@
 						<version>2.5</version>
 						<configuration>
 							<failOnMissingWebXml>false</failOnMissingWebXml>
-							<packagingExcludes>Gruntfile.js,app/**,bower.json,
-								protractor.conf.js,
-								bower_components/**, node_modules/**,dist/**
-							</packagingExcludes>
-							<warSourceExcludes>build.sh, Gruntfile.js, protractor.conf.js,
-								*.json,
-								bower_components/**,node_modules/**,test/**,.*,npm-debug.log,
-								.htaccess,.tmp/**,.sass-cache/**
-							</warSourceExcludes>
-							<webResources>
-								<resource>
-									<directory>src/main/webapp/dist</directory>
-									<includes>
-										<include>**/*</include>
-									</includes>
-								</resource>
-							</webResources>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -568,26 +551,6 @@
 		</testResources>
 
 		<plugins>
-
-			<plugin>
-				<groupId>org.codehaus.groovy.maven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<source>
-								project.properties["cloudunit.manager.ip"] =
-								InetAddress.getLocalHost().getHostAddress()
-							</source>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<!-- Used for unit tests and IT tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

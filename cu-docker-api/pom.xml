@@ -4,8 +4,8 @@
 
     <artifactId>cu-docker-api</artifactId>
     <packaging>jar</packaging>
-    <name>cu-docker-api</name>
-    <description>Another docker client</description>
+    <name>CloudUnit Docker API Client</name>
+    <description>Another Docker client</description>
     <url>https://github.com/treeptik/cloudunit</url>
 
     <parent>

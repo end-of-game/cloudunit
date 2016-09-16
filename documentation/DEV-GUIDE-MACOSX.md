@@ -98,12 +98,12 @@ Follow these instructions
 
 ```
 cd $HOME && git clone https://github.com/Treeptik/cloudUnit.git
-cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install grunt -g
-cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install grunt-cli -g
-cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install bower -g
-cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo npm install -g n
-cd $HOME/cloudUnit/cu-manager/src/main/webapp && sudo n stable
-cd $HOME/cloudUnit/cu-manager/src/main/webapp && bower install
+cd $HOME/cloudUnit/cu-manager-ui && sudo npm install grunt -g
+cd $HOME/cloudUnit/cu-manager-ui && sudo npm install grunt-cli -g
+cd $HOME/cloudUnit/cu-manager-ui && sudo npm install bower -g
+cd $HOME/cloudUnit/cu-manager-ui && sudo npm install -g n
+cd $HOME/cloudUnit/cu-manager-ui && sudo n stable
+cd $HOME/cloudUnit/cu-manager-ui && bower install
 ```
 
 ## How to install Vagrant plugins
@@ -127,7 +127,7 @@ cd cloudunit/cu-platform && ./reset.sh -y
 2 - Run the UI for development (http://0.0.0.0:9000) from Mac
 
 ```
-$ cd $HOME/cloudUnit/cu-manager/src/main/webapp && grunt serve
+$ cd $HOME/cloudUnit/cu-manager-ui && grunt serve
 ```
 >! **Issue** if you have the following issue
 ```
@@ -168,6 +168,6 @@ First of all, you have to you have to install Google Chrome.
 Then, start the application in parallel.
 
 ```
-cd $HOME/cloudunit/cu-manager
+cd $HOME/cloudunit/cu-manager-ui
 grunt test
 ```

@@ -84,8 +84,8 @@ cd %HOMEPATH% && git clone https://github.com/Treeptik/cloudunit.git
 Open a command prompt (Windows+R then cmd)
 ```
 npm install -g grunt grunt-cli bower 
-cd %HOMEPATH%/cloudunit/cu-manager/src/main/webapp && npm install
-cd %HOMEPATH%/cloudunit/cu-manager/src/main/webapp && bower install
+cd %HOMEPATH%/cloudunit/cu-manager-ui && npm install
+cd %HOMEPATH%/cloudunit/cu-manager-ui && bower install
 ```
 
 ### Step 6 - How to build the vagrant box
@@ -163,6 +163,6 @@ First of all, you have to install Google Chrome.
 Then, you have to start the application in parallel.
 
 ```
-cd $HOME/cloudunit/cu-manager
+cd $HOME/cloudunit/cu-manager-ui
 grunt test
 ```

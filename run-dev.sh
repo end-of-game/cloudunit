@@ -16,7 +16,7 @@ function compile_and_install_parent {
 }
 
 function run_webui {
-    cd $CLOUDUNIT_HOME/cu-manager/src/main/webapp
+    cd $CLOUDUNIT_HOME/cu-manager-ui
     grunt serve
 }
 

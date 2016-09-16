@@ -256,4 +256,6 @@
 		</profile>
 	</profiles>
 
+	<name>CloudUnit CLI</name>
+	<description>CloudUnit command line interface</description>
 </project>

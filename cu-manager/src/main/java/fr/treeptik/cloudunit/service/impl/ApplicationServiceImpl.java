@@ -114,9 +114,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Value("${java.version.default}")
 	private String javaVersionDefault;
 
-	@Value("${cloudunit.manager.ip}")
-	private String restHost;
-
 	@Value("${cloudunit.instance.name}")
 	private String cuInstanceName;
 
@@ -274,7 +271,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 			application = applicationDAO.save(application);
 			application.setManagerIp(dockerManagerIp);
 
-			application.setRestHost(restHost);
 			logger.info(application.getManagerIp());
 
 			// BLOC SERVER

@@ -307,4 +307,5 @@
 			</properties>
 		</profile>
 	</profiles>
+	<name>CloudUnit Monitor</name>
 </project>

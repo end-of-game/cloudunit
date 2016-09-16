@@ -264,14 +264,6 @@ public class Application implements Serializable {
 		this.managerPort = managerPort;
 	}
 
-	public String getRestHost() {
-		return restHost;
-	}
-
-	public void setRestHost(String restHost) {
-		this.restHost = restHost;
-	}
-
 	public String getLocation() {
 		location = "http://" + name + "-" + user.getLogin() + "-" + user.getOrganization() + suffixCloudUnitIO;
 		return location;
