@@ -8,28 +8,25 @@ import org.springframework.shell.core.CommandResult;
 
 import java.util.Random;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AbstractVolumesCommandsIT extends AbstractShellIntegrationTest {
+public class VolumesCommandsIT extends AbstractShellIntegrationTest {
+
     private static String applicationName;
     private static String volumeName;
-    protected String serverType;
     private CommandResult cr;
 
-    @Before
-    public void generateApplication() {
+    @BeforeClass
+    public static void generateApplication() {
         applicationName = "App" + new Random().nextInt(10000);
-    }
-    @Before
-    public void generateVolume() {
         volumeName = "Volume" + new Random().nextInt(10000);
     }
+
     @Before
     public void initEnv() {
         cr = getShell().executeCommand("connect --login johndoe --password abc2015 ");
     }
 
     @Test
-    public void test00_createAndRemoveVolume() {
+    public void test_createAndRemoveVolume() {
         createVolume(volumeName);
         String filesTxt = listVolumes();
         Assert.assertTrue("Volume is right created", filesTxt.contains("1"));
@@ -37,22 +34,22 @@ public class AbstractVolumesCommandsIT extends AbstractShellIntegrationTest {
     }
 
     @Test(expected = ComparisonFailure.class)
-    public void test01_shouldNotCreateUnconsistentName() {
+    public void test_shouldNotCreateUnconsistentName() {
         createVolume(volumeName + "/2");
     }
 
     @Test(expected = NullPointerException.class)
-    public void test02_shouldNotCreateEmptyName() {
+    public void test_shouldNotCreateEmptyName() {
         createVolume("");
     }
 
     @Test(expected = ComparisonFailure.class)
-    public void test03_shouldNotRemoveNonExistantName() {
+    public void test_shouldNotRemoveNonExistantName() {
         removeVolume(volumeName);
     }
 
     @Test(expected = NullPointerException.class)
-    public void test04_shouldNotRemoveEmptyName() {
+    public void test_shouldNotRemoveEmptyName() {
         removeVolume("");
     }
 
