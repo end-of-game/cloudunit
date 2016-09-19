@@ -26,19 +26,34 @@ import java.util.function.Predicate;
 public class FileUnit {
 
 	public static Predicate<FileUnit> edition() {
-		return f -> f.getName().toLowerCase().endsWith(".xml") || f.getName().toLowerCase().endsWith(".yml")
-				|| f.getName().toLowerCase().endsWith(".toml") || f.getName().toLowerCase().endsWith(".sh")
-				|| f.getName().toLowerCase().endsWith(".md") || f.getName().toLowerCase().endsWith(".conf")
-				|| f.getName().toLowerCase().endsWith(".policy") || f.getName().toLowerCase().endsWith(".jsp")
-				|| f.getName().toLowerCase().endsWith(".js") || f.getName().toLowerCase().endsWith(".xsl")
-				|| f.getName().toLowerCase().endsWith(".xsd") || f.getName().toLowerCase().endsWith(".html")
-				|| f.getName().toLowerCase().endsWith(".htm") || f.getName().toLowerCase().endsWith(".php")
-				|| f.getName().toLowerCase().endsWith(".json") || f.getName().toLowerCase().endsWith(".py")
-				|| f.getName().toLowerCase().endsWith(".ini") || f.getName().toLowerCase().endsWith(".cf")
-				|| f.getName().toLowerCase().endsWith(".cnf") || f.getName().toLowerCase().endsWith(".conf")
-				|| f.getName().toLowerCase().endsWith(".config") || f.getName().toLowerCase().endsWith(".properties")
-				|| f.getName().toLowerCase().endsWith(".txt");
+		return f -> fileEndsWith(".xml").or(fileEndsWith("yml"))
+                .or(fileEndsWith(".toml"))
+                .or(fileEndsWith(".sh"))
+                .or(fileEndsWith(".md"))
+                .or(fileEndsWith(".conf"))
+                .or(fileEndsWith(".policy"))
+                .or(fileEndsWith(".jsp"))
+                .or(fileEndsWith(".js"))
+                .or(fileEndsWith(".xsl"))
+                .or(fileEndsWith(".xsd"))
+                .or(fileEndsWith(".html"))
+                .or(fileEndsWith(".htm"))
+                .or(fileEndsWith(".php"))
+                .or(fileEndsWith(".json"))
+                .or(fileEndsWith(".py"))
+                .or(fileEndsWith(".ini"))
+                .or(fileEndsWith(".cf"))
+                .or(fileEndsWith(".cnf"))
+                .or(fileEndsWith(".conf"))
+                .or(fileEndsWith(".config"))
+                .or(fileEndsWith(".properties"))
+                .or(fileEndsWith(".txt"))
+                .test(f);
 	};
+
+    private static Predicate<FileUnit> fileEndsWith(String extension) {
+        return f -> f.getName().toLowerCase().endsWith(extension);
+    }
 
 	public static Predicate<String> tar() {
 		return s -> s.toLowerCase().endsWith(".tar.gz") || s.toLowerCase().endsWith(".tar")
@@ -70,12 +85,6 @@ public class FileUnit {
 	private boolean dir;
 
 	private boolean exec;
-
-    private boolean editable;
-
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-    }
 
     private boolean isRemovable;
 

@@ -316,10 +316,9 @@ public class FileController {
 	 */
 	@RequestMapping(value = "/content/container/{containerId}/application/{applicationName}", method = RequestMethod.GET)
 	public void displayContentFile(@PathVariable final String applicationName, @PathVariable final String containerId,
-			@RequestParam("path") String path, @RequestParam("fileName") final String fileName,
+			@RequestParam("path") final String path, @RequestParam("fileName") final String fileName,
 			HttpServletRequest request, HttpServletResponse response)
 			throws ServiceException, CheckException, IOException {
-
 		downloadOrEditFile(applicationName, containerId, path, fileName, request, response, true);
 	}
 

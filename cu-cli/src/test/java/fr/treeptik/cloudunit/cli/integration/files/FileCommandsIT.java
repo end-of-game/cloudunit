@@ -73,7 +73,18 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
 
     @Test
     public void test_unzip() {
-        Assert.fail();
+        useApplication();
+        openExplorer();
+        listFiles();
+        changeDirectory("/opt/cloudunit");
+        File local = new File(".");
+        String pathFileToUpload = local.getAbsolutePath()
+                +"/src/test/java/fr/treeptik/cloudunit/cli/integration/files/compressed.tar";
+        uploadPath(pathFileToUpload);
+        unzip("/opt/cloudunit/compressed.tar");
+        String filesTxt = listFiles();
+        Assert.assertTrue("File is right unziped", filesTxt.contains("my-beautiful-file.txt"));
+        closeExplorer();
     }
 
     @Test
@@ -97,6 +108,11 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
         return cr.getResult().toString();
     }
 
+    private void unzip(String remotePathFile) {
+        cr = getShell().executeCommand("unzip --file " + remotePathFile);
+        Assert.assertTrue("Create Application", cr.isSuccess());
+    }
+
     private void createApplication() {
         cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
         Assert.assertTrue("Create Application", cr.isSuccess());
@@ -113,7 +129,7 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
     }
 
     private void createDirectory(String path) {
-        cr = getShell().executeCommand("create-directory " + path);
+        cr = getShell().executeCommand("create-directory --path " + path);
         Assert.assertTrue("Create directory", cr.isSuccess());
     }
 
