@@ -30,13 +30,14 @@
         'ImageService',
         'ModuleService',
         '$stateParams',
+        '$state',
         ModulesCtrl
       ],
       controllerAs: 'modules',
     };
   }
 
-  function ModulesCtrl ( $rootScope, ImageService, ModuleService, $stateParams) {
+  function ModulesCtrl ( $rootScope, ImageService, ModuleService, $stateParams, $state) {
     var vm = this;
     vm.moduleImages = [];
     vm.categorieImage = [];
@@ -114,9 +115,9 @@
 
     // Ajout d'un module
     function addModule ( applicationName, imageName ) {
-      // @TODO redirection to overview
       ModuleService.addModule ( applicationName, imageName ).then(function (data) {
         vm.errorAdding = null;
+        $state.go('editApplication.overview');
         return data;
       } ).catch(function(fallback) {
         vm.errorAdding = fallback.data.message;
