@@ -41,6 +41,9 @@ import fr.treeptik.cloudunit.utils.ContainerMapper;
 import fr.treeptik.cloudunit.utils.ContainerUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 
+import static com.spotify.docker.client.DockerClient.LogsParam.stderr;
+import static com.spotify.docker.client.DockerClient.LogsParam.stdout;
+
 /**
  * Created by guillaume on 01/08/16.
  */
@@ -328,4 +331,16 @@ public class DockerServiceImpl implements DockerService {
         return module;
     }
 
+    @Override
+    public String logs(String container) throws DockerJSONException {
+        try {
+            LogStream stream = dockerClient.logs(container, DockerClient.LogsParam.stdout(), DockerClient.LogsParam.stderr());
+            String logs = stream.readFully();
+            logger.debug(logs);
+            return logs;
+        } catch (Exception e) {
+            logger.error(container, e);
+            return null;
+        }
+    }
 }

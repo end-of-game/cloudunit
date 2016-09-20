@@ -33,5 +33,5 @@ public class Tomcat8Mysql55ModuleControllerTestIT extends AbstractModuleControll
     @Override
     protected void checkConnectionDatabase(String forwardedPort) {
         new CheckDatabaseConnection().invoke(forwardedPort, "MYSQL_USER",
-                "MYSQL_PASSWORD", "MYSQL_DB", "com.mysql.jdbc.Driver", "jdbc:mysql:");
+                "MYSQL_PASSWORD", "MYSQL_DATABASE", "com.mysql.jdbc.Driver", "jdbc:mysql://");
     }}

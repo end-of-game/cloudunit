@@ -3,12 +3,12 @@ package fr.treeptik.cloudunit.dto;
 /**
  * Created by nicolas on 25/08/2014.
  */
-final public class LogLine {
+final public class LogResource {
 
     private final String source;
     private final String message;
 
-    public LogLine(String source, String message) {
+    public LogResource(String source, String message) {
         if (source == null) {
             throw new IllegalArgumentException("Source cannot be null");
         }
@@ -36,7 +36,7 @@ final public class LogLine {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        LogLine logLine = (LogLine) o;
+        LogResource logLine = (LogResource) o;
 
         if (!source.equals(logLine.source)) return false;
         return message.equals(logLine.message);

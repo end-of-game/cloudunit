@@ -69,4 +69,5 @@ public interface DockerService {
 
 	void stopContainer(String containerName) throws DockerJSONException;
 
+	String logs(String container) throws FatalDockerJSONException;
 }

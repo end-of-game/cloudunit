@@ -6,22 +6,22 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.treeptik.cloudunit.dto.LogLine;
+import fr.treeptik.cloudunit.dto.LogResource;
 
 /**
  * Created by nicolas on 04/01/2016.
  */
 public class LogsFilterTest {
 
-    private List<LogLine> logs;
+    private List<LogResource> logs;
 
     @Before
     public void init() {
         logs = new ArrayList<>();
-        LogLine line1 = new LogLine("catalina.out", "Hello, I am a log stackstrace!");
-        LogLine line2 = new LogLine("catalina.out", "Goodbye, I am an another message!");
-        LogLine line3 = new LogLine("localhost.txt", "Goodbye, I am an wrong message!");
-        LogLine line4 = new LogLine("localhost.txt", "Goodbye, I am an empty message!");
+        LogResource line1 = new LogResource("catalina.out", "Hello, I am a log stackstrace!");
+        LogResource line2 = new LogResource("catalina.out", "Goodbye, I am an another message!");
+        LogResource line3 = new LogResource("localhost.txt", "Goodbye, I am an wrong message!");
+        LogResource line4 = new LogResource("localhost.txt", "Goodbye, I am an empty message!");
 
         logs = new ArrayList() {
             {
@@ -35,7 +35,7 @@ public class LogsFilterTest {
 
     @Test
     public void testFilterSource() {
-        List<LogLine> logsFiltered = LogsFilter.bySource.apply("catalina.out", logs);
+        List<LogResource> logsFiltered = LogsFilter.bySource.apply("catalina.out", logs);
         Assert.assertEquals(2, logsFiltered.size());
 
         logsFiltered = LogsFilter.bySource.apply("NO FILE", logs);
@@ -44,7 +44,7 @@ public class LogsFilterTest {
 
     @Test
     public void testFilterMessage() {
-        List<LogLine> logsFiltered = LogsFilter.byMessage.apply("stackstrace", logs);
+        List<LogResource> logsFiltered = LogsFilter.byMessage.apply("stackstrace", logs);
         Assert.assertEquals(1, logsFiltered.size());
 
         logsFiltered = LogsFilter.byMessage.apply("GOODB", logs);

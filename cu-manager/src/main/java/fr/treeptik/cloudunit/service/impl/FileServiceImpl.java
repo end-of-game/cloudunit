@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.LogLine;
+import fr.treeptik.cloudunit.dto.LogResource;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -140,23 +140,17 @@ public class FileServiceImpl implements FileService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows) throws ServiceException {
-		List<LogLine> files = new ArrayList<>();
+	public String tailFileForNLines(String containerId, String file, Integer nbRows) throws ServiceException {
+		String execOutput = "";
 		try {
 			String logDir = getLogDirectory(containerId);
 			if (!logDir.endsWith("/")) {
 				logDir = logDir + "/";
 			}
 			final String command = "tail -n " + nbRows + " " + logDir + file;
-			String execOutput = dockerService.execCommand(containerId, command);
+			execOutput = dockerService.execCommand(containerId, command);
 			if (execOutput != null && execOutput.contains("cannot access") == false) {
-				StringTokenizer lignes = new StringTokenizer(execOutput, "\n");
-				while (lignes.hasMoreTokens()) {
-					String line = lignes.nextToken();
-					LogLine logLine = new LogLine(file, line);
-					files.add(logLine);
-				}
-				Collections.reverse(files);
+				return execOutput;
 			}
 		} catch (FatalDockerJSONException e) {
 			StringBuilder builder = new StringBuilder(256);
@@ -165,7 +159,7 @@ public class FileServiceImpl implements FileService {
 			builder.append(",nbRows=").append(nbRows);
 			throw new ServiceException(builder.toString(), e);
 		}
-		return files;
+		return execOutput;
 	}
 
 	/**

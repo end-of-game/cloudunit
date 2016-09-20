@@ -38,9 +38,22 @@ VALUES
     ("MYSQL_PASSWORD", "PASSWORD", 22),
     ("MYSQL_DATABASE", "NAME", 22),
 
-	("POSTGRES_USER", "USER", 50),
-	("POSTGRES_PASSWORD", "PASSWORD", 50),
-	("POSTGRES_DB", "NAME", 50);
+    ("POSTGRES_USER", "USER", 50),
+    ("POSTGRES_PASSWORD", "PASSWORD", 50),
+    ("POSTGRES_DB", "NAME", 50),
+
+    ("POSTGRES_USER", "USER", 51),
+    ("POSTGRES_PASSWORD", "PASSWORD", 51),
+    ("POSTGRES_DB", "NAME", 51),
+
+    ("POSTGRES_USER", "USER", 52),
+    ("POSTGRES_PASSWORD", "PASSWORD", 52),
+    ("POSTGRES_DB", "NAME", 52),
+
+    ("POSTGRES_USER", "USER", 53),
+    ("POSTGRES_PASSWORD", "PASSWORD", 53),
+    ("POSTGRES_DB", "NAME", 53);
+
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES

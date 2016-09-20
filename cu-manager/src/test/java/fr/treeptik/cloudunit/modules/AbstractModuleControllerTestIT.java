@@ -334,33 +334,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .andExpect(jsonPath("$.modules[0].name").value(module1));
     }
 
-    public ResultActions requestPublishPort(Integer id) throws Exception {
-        ModuleResource request = ModuleResource.of()
-                .withPublishPort(true)
-                .build();
-        String jsonString = objectMapper.writeValueAsString(request);
-        return mockMvc.perform(put("/module/" + id)
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
-            .andDo(print());
-    }
 
-    public ResultActions requestAddModule() throws Exception {
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
-        return mockMvc.perform(post("/module")
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
-            .andDo(print());
-    }
-
-    public ResultActions requestApplication() throws Exception {
-        return mockMvc.perform(get("/application/" + applicationName)
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andDo(print());
-    }
 
     @Test
     public void test_PublishPort() throws Exception {
@@ -415,9 +389,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 user = envs.stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
                 password = envs.stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
                 database = envs.stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
-                //String urlJDBC = "jdbc:postgresql://"+ipVagrantBox+":"+forwardedPort+"/" + database;
                 String jdbcUrl = jdbcUrlPrefix+ipVagrantBox+":"+forwardedPort+"/" + database;
-                //Class.forName("org.postgresql.Driver");
                 Class.forName(driver);
                 int counter = 0;
                 boolean isRight = false;
@@ -441,5 +413,32 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         }
     }
 
+    private ResultActions requestPublishPort(Integer id) throws Exception {
+        ModuleResource request = ModuleResource.of()
+                .withPublishPort(true)
+                .build();
+        String jsonString = objectMapper.writeValueAsString(request);
+        return mockMvc.perform(put("/module/" + id)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andDo(print());
+    }
+
+    private ResultActions requestAddModule() throws Exception {
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        return mockMvc.perform(post("/module")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andDo(print());
+    }
+
+    private ResultActions requestApplication() throws Exception {
+        return mockMvc.perform(get("/application/" + applicationName)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
 
 }

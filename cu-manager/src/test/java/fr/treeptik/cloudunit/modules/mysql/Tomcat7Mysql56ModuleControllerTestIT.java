@@ -47,7 +47,7 @@ public class Tomcat7Mysql56ModuleControllerTestIT extends AbstractModuleControll
 
     @Override
     protected void checkConnectionDatabase(String forwardedPort) {
-        new CheckDatabaseConnection().invoke(forwardedPort, "POSTGRES_USER",
-                "POSTGRES_PASSWORD", "POSTGRES_DB", "org.postgresql.Driver", "jdbc:postgresql://");
+        new CheckDatabaseConnection().invoke(forwardedPort, "MYSQL_USER",
+                "MYSQL_PASSWORD", "MYSQL_DATABASE", "com.mysql.jdbc.Driver", "jdbc:mysql://");
     }
 }

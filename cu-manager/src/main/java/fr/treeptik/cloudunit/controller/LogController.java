@@ -15,18 +15,24 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
+import fr.treeptik.cloudunit.factory.EnvUnitFactory;
+import fr.treeptik.cloudunit.factory.LogResourceFactory;
+import fr.treeptik.cloudunit.logs.GatheringStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import fr.treeptik.cloudunit.dto.LogLine;
+import fr.treeptik.cloudunit.dto.LogResource;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -41,60 +47,63 @@ public class LogController {
 
 	private Logger logger = LoggerFactory.getLogger(LogController.class);
 
-	@Autowired
-	private FileService fileService;
+    @Autowired
+    Map<String, GatheringStrategy> gatheringStrategies = new HashMap();
+
+    @Autowired
+    private FileService fileService;
 
 	/**
-	 * Retourne les n-dernières lignes de logs d'une application
+	 * Returns the n-last lines for an application / container
 	 *
 	 * @param applicationName
-	 * @param containerId
+	 * @param container
 	 * @param nbRows
 	 * @return
 	 * @throws ServiceException
 	 * @throws CheckException
 	 */
-	@RequestMapping(value = "/{applicationName}/container/{containerId}/source/{source}/rows/{nbRows}", method = RequestMethod.GET)
-	public @ResponseBody List<LogLine> findByApplication(@PathVariable String applicationName,
-			@PathVariable String containerId, @PathVariable String source, @PathVariable Integer nbRows)
+	@RequestMapping(value = "/{applicationName}/container/{container}/source/{source}/rows/{nbRows}", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<List<LogResource>> findByApplication(
+            @PathVariable String applicationName, @PathVariable String container,
+            @PathVariable String source, @PathVariable Integer nbRows)
 			throws ServiceException, CheckException {
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("applicationName:" + applicationName);
 			logger.debug("source:" + source);
-			logger.debug("containerId:" + containerId);
+			logger.debug("containerId:" + container);
 			logger.debug("nbRows:" + nbRows);
 		}
 
-		if (nbRows < 1 || nbRows > 1000) {
-			logger.info("Number of rows must be between 1 and 1000");
-			nbRows = 500;
-		}
-		return fileService.catFileForNLines(containerId, source, nbRows);
+        // We could expect stdout as strategy
+        GatheringStrategy gatheringStrategy = gatheringStrategies.get(source);
+        if (gatheringStrategy == null) {
+            gatheringStrategy = gatheringStrategies.get("tail");
+        }
+
+        String logs = (String)gatheringStrategy.gather(container, source, nbRows);
+        List<LogResource> logResources =LogResourceFactory.fromOutput(logs);
+        return ResponseEntity.status(HttpStatus.OK).body(logResources);
 	}
 
 	/**
-	 * retourne la liste des fichers possibles (les sources) nécessaires pour la
-	 * panneau de logs
+	 * Return the list of possible list files
 	 */
 	@RequestMapping(value = "/sources/{applicationName}/container/{containerId}", method = RequestMethod.GET)
-	public @ResponseBody List<SourceUnit> findByApplication(@PathVariable String applicationName,
-			@PathVariable String containerId) throws ServiceException, CheckException {
-
+	public @ResponseBody ResponseEntity<List<SourceUnit>> findByApplication(
+            @PathVariable String applicationName, @PathVariable String containerId)
+            throws ServiceException, CheckException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("applicationName:" + applicationName);
 			logger.debug("containerId:" + containerId);
 		}
-
 		List<SourceUnit> sources = fileService.listLogsFilesByContainer(containerId);
-		// needed by UI to call the next url
 		if (sources.size() == 0) {
 			String defaultFile = fileService.getLogDirectory(containerId);
 			sources.add(new SourceUnit(defaultFile));
 		}
-		logger.debug("" + sources);
-
-		return sources;
+        return ResponseEntity.status(HttpStatus.OK).body(sources);
 	}
 
 }

@@ -256,9 +256,7 @@ public abstract class AbstractApplicationControllerTestIT {
     @Test(timeout = 30000)
     public void test_changeFailWithXmsJvmOptionsApplicationTest()
             throws Exception {
-
         createApplication(applicationName);
-
         logger.info("Change JVM With Xms : not allowed");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
@@ -266,16 +264,13 @@ public abstract class AbstractApplicationControllerTestIT {
         ResultActions resultats =
                 mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
-
         deleteApplication(applicationName);
     }
 
     @Test()
     public void test_openAPort()
             throws Exception {
-
         createApplication(applicationName);
-
         logger.info("Open custom ports !");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
@@ -283,7 +278,6 @@ public abstract class AbstractApplicationControllerTestIT {
         ResultActions resultats =
                 this.mockMvc.perform(post("/server/ports/open").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
-
         logger.info("Close custom ports !");
         jsonString =
                 "{\"applicationName\":\"" + applicationName
@@ -291,23 +285,21 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats =
                 this.mockMvc.perform(post("/server/ports/close").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
-
         deleteApplication(applicationName);
-
     }
 
     private void stopApplication() throws Exception {
         logger.info("Stop the application : " + applicationName);
         final String jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
         ResultActions resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isAccepted());
+        resultats.andExpect(status().isOk());
     }
 
     private void startApplication() throws Exception {
         logger.info("Start the application : " + applicationName);
         final String jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
         ResultActions resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isAccepted());
+        resultats.andExpect(status().isOk());
     }
 
     private void deleteApplication(String applicationName) throws Exception {

@@ -56,13 +56,14 @@ import java.util.*;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"fr.treeptik.cloudunit.controller",
-    "fr.treeptik.cloudunit.dao", "fr.treeptik.cloudunit.docker",
-    "fr.treeptik.cloudunit.docker.model", "fr.treeptik.cloudunit.config",
-    "fr.treeptik.cloudunit.exception", "fr.treeptik.cloudunit.model",
-    "fr.treeptik.cloudunit.service", "fr.treeptik.cloudunit.service.impl",
-    "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
-    "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl",
-    "fr.treeptik.cloudunit.monitor", "fr.treeptik.cloudunit.monitor.tasks"
+        "fr.treeptik.cloudunit.dao", "fr.treeptik.cloudunit.docker",
+        "fr.treeptik.cloudunit.docker.model", "fr.treeptik.cloudunit.config",
+        "fr.treeptik.cloudunit.exception", "fr.treeptik.cloudunit.model",
+        "fr.treeptik.cloudunit.service", "fr.treeptik.cloudunit.service.impl",
+        "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
+        "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl",
+        "fr.treeptik.cloudunit.monitor", "fr.treeptik.cloudunit.monitor.tasks",
+        "fr.treeptik.cloudunit.logs"
 })
 @PropertySource({"classpath:/application.properties"})
 @PropertySource({"classpath:/maven.properties"})
