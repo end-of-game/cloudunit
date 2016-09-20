@@ -196,8 +196,10 @@ public class FileUtils {
 			statusCommand.setExitStatut(1);
 			return null;
 		}
+        String currentPath = fileName.substring(0, fileName.lastIndexOf("/"));
+        fileName = fileName.substring(fileName.lastIndexOf("/")+1);
 		String command = authentificationUtils.finalHost + "/file/unzip/container/" + currentContainer + "/application/"
-				+ applicationUtils.getApplication().getName() + "?path=" + currentPath + "/fileName/" + fileName;
+				+ applicationUtils.getApplication().getName() + "?path=" + currentPath + "&fileName=" + fileName;
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("applicationName", applicationUtils.getApplication().getName());
 		try {

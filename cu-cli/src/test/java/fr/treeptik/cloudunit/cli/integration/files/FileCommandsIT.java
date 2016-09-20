@@ -87,16 +87,6 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
         closeExplorer();
     }
 
-    @Test
-    public void test_edit_and_save() {
-        Assert.fail();
-    }
-
-    @Test
-    public void test_download() {
-        Assert.fail();
-    }
-
     private void useApplication() {
         cr = getShell().executeCommand("use " + applicationName);
         Assert.assertTrue("Use Application", cr.isSuccess());
