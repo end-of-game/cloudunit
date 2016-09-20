@@ -16,8 +16,8 @@ public class VolumesCommandsIT extends AbstractShellIntegrationTest {
 
     @BeforeClass
     public static void generateApplication() {
-        applicationName = "App" + new Random().nextInt(10000);
-        volumeName = "Volume" + new Random().nextInt(10000);
+        applicationName = "App" + new Random().nextInt(100000);
+        volumeName = "Volume" + new Random().nextInt(100000);
     }
 
     @Before
@@ -27,44 +27,69 @@ public class VolumesCommandsIT extends AbstractShellIntegrationTest {
 
     @Test
     public void test_createAndRemoveVolume() {
+        // Create volume
         createVolume(volumeName);
-        String filesTxt = listVolumes();
-        Assert.assertTrue("Volume is right created", filesTxt.contains("1"));
+        String volumeNameCreated = cr.getResult().toString();
+        Assert.assertTrue("Volume created : ", cr.isSuccess());
+        Assert.assertEquals(volumeName, volumeNameCreated);
+        // List volumes and check
+        String listVolumes = listVolumes();
+        Assert.assertTrue("List of volumes contains " + volumeName, listVolumes.contains(volumeName));
+        // Remove volume
         removeVolume(volumeName);
     }
 
-    @Test(expected = ComparisonFailure.class)
+    @Test
+    public void test_two_identical_volumes() {
+        // Create volume
+        createVolume(volumeName);
+        createVolume(volumeName);
+        String volumeNameCreated = cr.getResult().toString();
+        Assert.assertTrue("Volume created : ", cr.isSuccess());
+        Assert.assertTrue(volumeNameCreated.contains("This name already exists"));
+        removeVolume(volumeName);
+    }
+
+
+    @Test
     public void test_shouldNotCreateUnconsistentName() {
+        // Create volume with wrong name
         createVolume(volumeName + "/2");
+        String volumeNameCreated = cr.getResult().toString();
+        Assert.assertFalse("Volume not created : ", volumeNameCreated.equalsIgnoreCase(volumeName + "/2"));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void test_shouldNotCreateEmptyName() {
-        createVolume("");
-    }
-
-    @Test(expected = ComparisonFailure.class)
+    @Test
     public void test_shouldNotRemoveNonExistantName() {
         removeVolume(volumeName);
+        String result = cr.getResult().toString();
+        String expectedResult = ANSIConstants.ANSI_RED + false + ANSIConstants.ANSI_RESET;
+        Assert.assertEquals(expectedResult, result);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
+    public void test_shouldNotCreateEmptyName() {
+        createVolume("");
+        Assert.assertTrue("Command syntax incorrect: ", !cr.isSuccess());
+        createVolume("  ");
+        Assert.assertTrue("Command syntax incorrect: ", !cr.isSuccess());
+    }
+
+    @Test
     public void test_shouldNotRemoveEmptyName() {
         removeVolume("");
+        Assert.assertTrue("Command syntax incorrect: ", !cr.isSuccess());
+        removeVolume("  ");
+        Assert.assertTrue("Command syntax incorrect: ", !cr.isSuccess());
     }
+
 
     private void createVolume(String name) {
         cr = getShell().executeCommand("create-volume --name " + name);
-        String result = cr.getResult().toString();
-        String expectedResult = "The volume " + name + " was been successfully created";
-        Assert.assertEquals(expectedResult, result);
     }
 
     private void removeVolume(String name) {
         cr = getShell().executeCommand("rm-volume --name " + name);
-        String result = cr.getResult().toString();
-        String expectedResult = "This volume has successful been deleted";
-        Assert.assertEquals(expectedResult, result);
     }
 
     private String listVolumes() {

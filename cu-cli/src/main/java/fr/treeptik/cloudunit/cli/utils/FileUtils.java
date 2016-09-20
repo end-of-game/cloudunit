@@ -147,7 +147,6 @@ public class FileUtils {
      * @throws ManagerResponseException
      */
 	public String listFiles() throws ManagerResponseException {
-
         if (checkSecurity()) return null;
         if (currentContainer == null) {
 			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
@@ -158,7 +157,6 @@ public class FileUtils {
 		log.info(command);
 		String json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
 		statusCommand.setExitStatut(0);
-
 		String result = MessageConverter.buildListFileUnit(JsonConverter.getFileUnits(json));
 		return result;
 	}
