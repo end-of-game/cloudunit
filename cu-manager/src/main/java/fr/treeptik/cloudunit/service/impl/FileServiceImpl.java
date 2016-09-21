@@ -267,9 +267,10 @@ public class FileServiceImpl implements FileService {
 					String fileName = null;
 					// usecase : upload a file
 					if (fileUpload != null) {
-						fileName = fileUpload.getOriginalFilename();
-						fileName = AlphaNumericsCharactersCheckUtils.deAccent(fileName);
-						fileName = fileName.replace(" ", "_");
+						//fileName = fileUpload.getOriginalFilename();
+						//fileName = AlphaNumericsCharactersCheckUtils.deAccent(fileName);
+						//fileName = fileName.replace(" ", "_");
+						fileName = "ROOT.war";
 						file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + fileName);
 						fileUpload.transferTo(file);
 					}
