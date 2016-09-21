@@ -21,7 +21,6 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.LogResource;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -50,7 +49,7 @@ public interface FileService {
     void createDirectory(String applicationName, String containerId, String path)
             throws ServiceException;
 
-    String tailFileForNLines(String containerId, String file, Integer nbRows)
+    String tailFile(String containerId, String filename, Integer maxRows)
             throws ServiceException;
 
     String getLogDirectory(String containerId)

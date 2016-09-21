@@ -15,12 +15,10 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import fr.treeptik.cloudunit.factory.EnvUnitFactory;
-import fr.treeptik.cloudunit.factory.LogResourceFactory;
-import fr.treeptik.cloudunit.logs.GatheringStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +34,8 @@ import fr.treeptik.cloudunit.dto.LogResource;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.factory.LogResourceFactory;
+import fr.treeptik.cloudunit.logs.GatheringStrategy;
 import fr.treeptik.cloudunit.service.FileService;
 
 /**
@@ -48,7 +48,7 @@ public class LogController {
 	private Logger logger = LoggerFactory.getLogger(LogController.class);
 
     @Autowired
-    Map<String, GatheringStrategy> gatheringStrategies = new HashMap();
+    Map<String, GatheringStrategy> gatheringStrategies = new HashMap<>();
 
     @Autowired
     private FileService fileService;
@@ -77,13 +77,11 @@ public class LogController {
 		}
 
         // We could expect stdout as strategy
-        GatheringStrategy gatheringStrategy = gatheringStrategies.get(source);
-        if (gatheringStrategy == null) {
-            gatheringStrategy = gatheringStrategies.get("tail");
-        }
+        GatheringStrategy gatheringStrategy =
+                gatheringStrategies.getOrDefault(source, gatheringStrategies.get("tail"));
 
-        String logs = (String)gatheringStrategy.gather(container, source, nbRows);
-        List<LogResource> logResources =LogResourceFactory.fromOutput(logs);
+        String logs = gatheringStrategy.gather(container, source, nbRows);
+        List<LogResource> logResources = LogResourceFactory.fromOutput(logs);
         return ResponseEntity.status(HttpStatus.OK).body(logResources);
 	}
 

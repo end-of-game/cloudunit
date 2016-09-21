@@ -140,14 +140,14 @@ public class FileServiceImpl implements FileService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public String tailFileForNLines(String containerId, String file, Integer nbRows) throws ServiceException {
+	public String tailFile(String containerId, String filename, Integer maxRows) throws ServiceException {
 		String execOutput = "";
 		try {
 			String logDir = getLogDirectory(containerId);
 			if (!logDir.endsWith("/")) {
 				logDir = logDir + "/";
 			}
-			final String command = "tail -n " + nbRows + " " + logDir + file;
+			final String command = "tail -n " + maxRows + " " + logDir + filename;
 			execOutput = dockerService.execCommand(containerId, command);
 			if (execOutput != null && execOutput.contains("cannot access") == false) {
 				return execOutput;
@@ -155,8 +155,8 @@ public class FileServiceImpl implements FileService {
 		} catch (FatalDockerJSONException e) {
 			StringBuilder builder = new StringBuilder(256);
 			builder.append("containerId=").append(containerId);
-			builder.append(",file=").append(file);
-			builder.append(",nbRows=").append(nbRows);
+			builder.append(",file=").append(filename);
+			builder.append(",nbRows=").append(maxRows);
 			throw new ServiceException(builder.toString(), e);
 		}
 		return execOutput;
