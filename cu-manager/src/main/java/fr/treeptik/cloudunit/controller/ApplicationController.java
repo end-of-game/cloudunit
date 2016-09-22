@@ -24,9 +24,13 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.treeptik.cloudunit.dto.*;
+import fr.treeptik.cloudunit.model.PortToOpen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,12 +45,6 @@ import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
-import fr.treeptik.cloudunit.dto.ContainerUnit;
-import fr.treeptik.cloudunit.dto.EnvUnit;
-import fr.treeptik.cloudunit.dto.HttpErrorServer;
-import fr.treeptik.cloudunit.dto.HttpOk;
-import fr.treeptik.cloudunit.dto.JsonInput;
-import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
@@ -299,11 +297,8 @@ public class ApplicationController implements Serializable {
 			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 
 			logger.info("delete application :" + applicationName);
-
 			applicationService.remove(application, user);
-			// jenkinsService.deleteProject(applicationName);
-			// gitlabService.listBranches(applicationName);
-			// gitlabService.deleteProject(applicationName);
+
 		} catch (ServiceException e) {
 			// set the application in pending mode
 			applicationEventPublisher.publishEvent(new ApplicationFailEvent(application));
@@ -509,7 +504,7 @@ public class ApplicationController implements Serializable {
 	@CloudUnitSecurable
 	@ResponseBody
 	@RequestMapping(value = "/ports", method = RequestMethod.POST)
-	public JsonResponse addPort(@RequestBody JsonInput input) throws ServiceException, CheckException {
+	public ResponseEntity<PortResource> addPort(@RequestBody JsonInput input) throws ServiceException, CheckException {
 
 		if (logger.isDebugEnabled()) {
 			logger.debug(input.toString());
@@ -526,9 +521,9 @@ public class ApplicationController implements Serializable {
 		CheckUtils.validateNatureForOpenPortFeature(input.getPortNature(), application);
 
 		Integer port = Integer.parseInt(input.getPortToOpen());
-		applicationService.addPort(application, nature, port);
-
-		return new HttpOk();
+		PortToOpen portToOpen= applicationService.addPort(application, nature, port);
+		PortResource portResource = new PortResource(portToOpen);
+		return ResponseEntity.status(HttpStatus.OK).body(portResource);
 	}
 
 	/**

@@ -338,10 +338,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 				removeAlias(application, alias);
 			}
 
-			for (PortToOpen portToOpen : application.getPortsToOpen()) {
-				removePort(application, portToOpen.getPort());
-			}
-
 			// Delete all servers
 			Server server = application.getServer();
 			serverService.remove(server.getName());
@@ -620,7 +616,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional
 	@Override
-	public void addPort(Application application, String nature, Integer port) throws ServiceException {
+	public PortToOpen addPort(Application application, String nature, Integer port) throws ServiceException {
 		PortToOpen portToOpen = new PortToOpen();
 		portToOpen.setNature(nature);
 		portToOpen.setPort(port);
@@ -644,6 +640,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		} catch (DataAccessException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
+		return portToOpen;
 	}
 
 	public void updatePortAlias(PortToOpen portToOpen, Application application) {

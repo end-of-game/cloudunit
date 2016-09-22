@@ -49,12 +49,6 @@ ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
 
 RUN mkdir -p $CATALINA_HOME
 
-## Download beats agents
-RUN cd /opt/cloudunit/ \
-    && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/beats-agents.tar.gz \
-    && tar zxvf beats-agents.tar.gz \
-    && rm beats-agents.tar.gz
-
 RUN cd $HOME \
     && wget $TOMCAT_TGZ_URL \
     && tar xvf apache-tomcat-$TOMCAT_VERSION.tar.gz  \
@@ -63,6 +57,10 @@ RUN cd $HOME \
     && rm -rf $CU_SOFTWARE/webapps/ROOT $CU_SOFTWARE/webapps/examples $CU_SOFTWARE/webapps/docs
 
 ## CLOUDUNIT :: BEGINNING
+RUN cd /opt/cloudunit/ \
+    && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/beats-agents.tar.gz \
+    && tar zxvf beats-agents.tar.gz \
+    && rm beats-agents.tar.gz
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-1.61.0.jar \
     && mv javamelody-1.61.0.jar $CU_SOFTWARE/lib/javamelody-1.61.0.jar
 COPY files/web.xml $CU_SOFTWARE/conf/web.xml
