@@ -491,7 +491,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			// get app with all its components
 			String containerId = application.getServer().getContainerID();
 			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
-			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
+			fileService.sendFileToContainer(containerId, tempDirectory, file, "ROOT.war", null);
 			Map<String, String> kvStore = new HashMap<String, String>() {
 				private static final long serialVersionUID = 1L;
 				{

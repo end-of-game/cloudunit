@@ -202,7 +202,6 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats.andExpect(jsonPath("$.server.jvmMemory").value(1024));
 
         deleteApplication(applicationName);
-
     }
 
     @Test(timeout = 30000)
