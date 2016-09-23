@@ -382,13 +382,6 @@ public class ApplicationController implements Serializable {
 		return applicationService.listContainers(applicationName);
 	}
 
-	/*
-	 * ********************************************************** / /* ALIAS
-	 */
-	/*
-	 * ********************************************************** /
-	 * 
-	 */
 	/**
 	 * Return the list of aliases for an application
 	 *
