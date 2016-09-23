@@ -75,7 +75,7 @@ public class DockerServiceImpl implements DockerService {
 
     @Override
     public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
-            boolean createMainVolume, List<String> volumes) throws DockerJSONException {
+                             boolean createMainVolume, List<String> volumes) throws DockerJSONException {
         List<String> volumesFrom = Arrays.asList("java");
         if (volumes == null) {
             volumes = new ArrayList<>();
@@ -122,23 +122,31 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public String execCommand(String containerName, String command, boolean privileged)
+    public String execCommand(String containerName, String command, boolean privileged) throws FatalDockerJSONException {
+        return execCommand(containerName, command, privileged, false);
+    }
+
+    @Override
+    public String execCommand(String containerName, String command, boolean privileged, boolean detached)
             throws FatalDockerJSONException {
         final String[] commands = { "bash", "-c", command };
         String execId = null;
         try {
             if (privileged) {
                 execId = dockerClient.execCreate(containerName, commands,
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.detach(detached),
                         com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
                         com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr(),
                         com.spotify.docker.client.DockerClient.ExecCreateParam.user("root"));
             } else {
                 execId = dockerClient.execCreate(containerName, commands,
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.detach(detached),
                         com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
                         com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
             }
             try (final LogStream stream = dockerClient.execStart(execId)) {
                 final String output = stream.readFully();
+                logger.debug(output);
                 return output;
             }
         } catch (DockerException | InterruptedException e) {
