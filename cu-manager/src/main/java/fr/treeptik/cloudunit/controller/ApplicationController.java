@@ -131,13 +131,6 @@ public class ApplicationController implements Serializable {
 	public JsonResponse createApplication(@RequestBody JsonInput input)
 			throws ServiceException, CheckException, InterruptedException {
 
-		// replace accent characters
-
-		/* **** Check accent in server side **** */
-		// String applicationName =
-		// AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
-		// input.setApplicationName(applicationName);
-
 		// validate the input
 		input.validateCreateApp();
 

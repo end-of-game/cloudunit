@@ -157,7 +157,7 @@ public class Application implements Serializable {
 		name = name.toLowerCase();
 		name = Normalizer.normalize(name, Normalizer.Form.NFD);
 		name = name.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-		this.name = name.replaceAll("[^a-z0-9]", "");
+		this.name = name.replaceAll("[^-_.a-z0-9]", "");
 	}
 
 	public String getDisplayName() {

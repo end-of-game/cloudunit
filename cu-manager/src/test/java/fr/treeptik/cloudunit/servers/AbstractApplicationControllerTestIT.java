@@ -157,11 +157,10 @@ public abstract class AbstractApplicationControllerTestIT {
     public void test_createAccentNameApplication()
             throws Exception {
 
-        String accentName = "aeeioù";
-        String deAccentName = "aeeiou";
+        String accentName = "a-eei_où";
+        String deAccentName = "a-eei_ou";
 
         createApplication(accentName);
-
         deleteApplication(deAccentName);
 
     }

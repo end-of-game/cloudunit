@@ -108,12 +108,10 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup( context ).addFilters( springSecurityFilterChain ).build();
         User user = null;
-        try
-        {
+        try {
             user = userService.findByLogin( "johndoe" );
         }
-        catch ( ServiceException e )
-        {
+        catch ( ServiceException e ){
             logger.error( e.getLocalizedMessage() );
         }
 
@@ -128,7 +126,14 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
         session.setAttribute( HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext );
     }
 
-    @Test( timeout = 2400000 )
+    @After
+    public void teardown() throws Exception {
+        logger.info("teardown");
+        SecurityContextHolder.clearContext();
+        session.invalidate();
+    }
+
+    @Test
     public void test_deploySimpleApplicationTest()
         throws Exception {
         createApplication();
@@ -139,43 +144,42 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
         deleteApplication();
     }
 
-    @Test( timeout = 2400000 )
-    public void test020_DeployMysql55_BasedApplicationTest()
+    @Test
+    public void test_deployMysql55_BasedApplicationTest()
         throws Exception {
         deployApplicationWithModule( "mysql-5-5", "pizzashop-mysql", "Pizzas" );
     }
 
-    @Test( timeout = 2400000 )
-    public void test020_DeployMysql56_BasedApplicationTest()
+    @Test
+    public void test_deployMysql56_BasedApplicationTest()
             throws Exception
     {
         deployApplicationWithModule( "mysql-5-6", "pizzashop-mysql", "Pizzas" );
     }
 
-    @Test( timeout = 2400000 )
-    public void test020_DeployMysql57_BasedApplicationTest()
+    @Test
+    public void test_deployMysql57_BasedApplicationTest()
             throws Exception
     {
         deployApplicationWithModule( "mysql-5-7", "pizzashop-mysql", "Pizzas" );
     }
 
-
-    @Test( timeout = 2400000 )
-    public void test030_DeployPostGres93BasedApplicationTest()
+    @Test
+    public void test_deployPostGres93BasedApplicationTest()
         throws Exception
     {
         deployApplicationWithModule( "postgresql-9-3", "pizzashop-postgres", "Pizzas" );
     }
 
-    @Test( timeout = 2400000 )
-    public void test030_DeployPostGres94BasedApplicationTest()
+    @Test
+    public void test_deployPostGres94BasedApplicationTest()
             throws Exception
     {
         deployApplicationWithModule( "postgresql-9-4", "pizzashop-postgres", "Pizzas" );
     }
 
-    @Test( timeout = 2400000 )
-    public void test030_DeployPostGres95BasedApplicationTest()
+    @Test
+    public void test_deployPostGres95BasedApplicationTest()
             throws Exception
     {
         deployApplicationWithModule( "postgresql-9-5", "pizzashop-postgres", "Pizzas" );
