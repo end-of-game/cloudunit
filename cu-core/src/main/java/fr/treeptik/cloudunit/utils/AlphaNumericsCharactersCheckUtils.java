@@ -13,7 +13,6 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-
 package fr.treeptik.cloudunit.utils;
 
 import org.slf4j.Logger;
@@ -32,33 +31,20 @@ public class AlphaNumericsCharactersCheckUtils {
     private static Logger logger = LoggerFactory
         .getLogger(AlphaNumericsCharactersCheckUtils.class);
 
-    public static String convertToAlphaNumerics(String value)
-        throws UnsupportedEncodingException {
+    public static String convertToAlphaNumerics(String value) {
         logger.debug("Before : " + value);
-
-        value = new String(value.getBytes("ISO-8859-1"), "UTF-8");
         value = Normalizer.normalize(value, Form.NFD);
-        value = value.replaceAll("[^\\p{ASCII}]", "")
-            .replaceAll("[^a-zA-Z0-9\\s]", "").replace(" ", "");
-
-        if (value.equalsIgnoreCase("")) {
-            value = "default";
-        }
-
+        value = value.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        value = value.replaceAll("[^-_a-zA-Z0-9\\s]", "").replace(" ", "");
         logger.debug("After : " + value);
-
         return value;
-
     }
-
 
     public static String deAccent(String value) {
         logger.debug("Before : " + value);
-
-        String nfdNormalizedString = Normalizer.normalize(value, Normalizer.Form.NFD);
+        String nfdNormalizedString = Normalizer.normalize(value, Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         value = pattern.matcher(nfdNormalizedString).replaceAll("");
-
         logger.debug("After : " + value);
         return value;
     }

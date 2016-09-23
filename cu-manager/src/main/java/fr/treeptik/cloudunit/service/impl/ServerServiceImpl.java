@@ -149,15 +149,10 @@ public class ServerServiceImpl implements ServerService {
 		User user = server.getApplication().getUser();
 
 		// Build a custom container
-		String containerName = "";
-		try {
-			containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
+		String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
 					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
 					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(server.getApplication().getName()) + "-"
 					+ server.getName();
-		} catch (UnsupportedEncodingException e2) {
-			throw new ServiceException("Error rename Server", e2);
-		}
 
 		String imagePath = server.getImage().getPath() + tagName;
 		logger.debug("imagePath:" + imagePath);

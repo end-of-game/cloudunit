@@ -41,6 +41,7 @@ import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "name", "cuInstanceName" }))
@@ -155,9 +156,7 @@ public class Application implements Serializable {
 
 	public void setName(String name) {
 		name = name.toLowerCase();
-		name = Normalizer.normalize(name, Normalizer.Form.NFD);
-		name = name.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-		this.name = name.replaceAll("[^-_.a-z0-9]", "");
+		this.name = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(name);
 	}
 
 	public String getDisplayName() {

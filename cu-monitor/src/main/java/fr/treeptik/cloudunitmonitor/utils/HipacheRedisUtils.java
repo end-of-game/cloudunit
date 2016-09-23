@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -539,7 +540,6 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
                 + AlphaNumericsCharactersCheckUtils
                 .convertToAlphaNumerics(application.getUser()
                         .getOrganization());
-
         return subNameSpace;
 
     }

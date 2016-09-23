@@ -132,15 +132,10 @@ public class ModuleServiceImpl implements ModuleService {
         module.setPublishPorts(false);
 
         // Build a custom container
-        String containerName = "";
-        try {
-            containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
+        String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
                     + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
                     + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(module.getApplication().getName()) + "-"
                     + module.getName();
-        } catch (UnsupportedEncodingException e2) {
-            throw new ServiceException("Error rename Server", e2);
-        }
         String imagePath = module.getImage().getPath();
         logger.debug("imagePath:" + imagePath);
 
