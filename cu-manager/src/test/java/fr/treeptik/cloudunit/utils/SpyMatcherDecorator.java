@@ -1,8 +1,8 @@
 package fr.treeptik.cloudunit.utils;
 
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
 public class SpyMatcherDecorator<T> extends TypeSafeMatcher<T> {
@@ -10,8 +10,8 @@ public class SpyMatcherDecorator<T> extends TypeSafeMatcher<T> {
     
     private Matcher<T> decoratedMatcher;
     
-    public SpyMatcherDecorator() {
-        this(CoreMatchers.anything());
+    public SpyMatcherDecorator(Class<T> type) {
+        this(Matchers.any(type));
     }
     
     public SpyMatcherDecorator(Matcher<T> decoratedMatcher) {

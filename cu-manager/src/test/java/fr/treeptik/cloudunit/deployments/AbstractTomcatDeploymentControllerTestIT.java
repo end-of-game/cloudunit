@@ -1,25 +1,24 @@
 package fr.treeptik.cloudunit.deployments;
 
-import static fr.treeptik.cloudunit.utils.TestUtils.downloadAndPrepareFileToDeploy;
-import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static fr.treeptik.cloudunit.utils.TestUtils.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.TestUtils;
+import java.util.Random;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.Filter;
+
+import org.hamcrest.Matchers;
+import org.hamcrest.core.StringContains;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +42,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Random;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.servlet.Filter;
-import javax.validation.Valid;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @WebAppConfiguration
@@ -138,9 +135,15 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
         throws Exception {
         createApplication();
         logger.info( "Deploy an helloworld application" );
-        deployArchive("helloworld.war",
-                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war",
-                "CloudUnit PaaS");
+        deployArchive(
+                "helloworld.war",
+                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war");
+        
+        String urlToCall = String.format("http://%s-johndoe-admin%s/",
+                applicationName.toLowerCase(),
+                domain);
+        Assert.assertThat(getUrlContentPage(urlToCall), Matchers.containsString("CloudUnit PaaS"));
+
         deleteApplication();
     }
 
@@ -225,14 +228,13 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
         resultats.andExpect( status().isOk() );
     }
 
-    private void deployArchive(String nameArchive, String urlArchive, String keyword) throws Exception {
+    private ResultActions deployArchive(String nameArchive, String urlArchive) throws Exception {
         ResultActions resultats =
                 mockMvc.perform( MockMvcRequestBuilders.fileUpload( "/application/" + applicationName + "/deploy" )
                         .file( downloadAndPrepareFileToDeploy(nameArchive,urlArchive) ).
                                 session( session ).contentType( MediaType.MULTIPART_FORM_DATA ) ).andDo( print() );
         resultats.andExpect( status().is2xxSuccessful() );
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-admin" + domain;
-        Assert.assertTrue( getUrlContentPage( urlToCall ).contains(keyword) );
+        return resultats;
     }
 
     private void deleteApplication()

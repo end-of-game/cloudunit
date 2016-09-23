@@ -343,8 +343,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         requestAddModule()
         	.andExpect(status().isOk());
 
-        SpyMatcherDecorator<Integer> responseModuleIdSpy = new SpyMatcherDecorator<>();
-        SpyMatcherDecorator<String> forwardedPort = new SpyMatcherDecorator<>();
+        SpyMatcherDecorator<Integer> responseModuleIdSpy = new SpyMatcherDecorator<>(Integer.class);
+        SpyMatcherDecorator<String> forwardedPort = new SpyMatcherDecorator<>(String.class);
 
         requestApplication()
             .andExpect(status().isOk())
