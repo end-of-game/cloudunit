@@ -4,6 +4,14 @@ FROM cloudunit/base-14.04
 
 ENV ACTIVEMQ_VERSION "5.13.3"
 
+## java installation
+
+RUN apt-get install -y software-properties-common python-software-properties debconf-utils && \
+    add-apt-repository -y ppa:webupd8team/java && \
+    apt-get update && \
+    echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections && \
+    apt-get install -y oracle-java8-installer
+
 ## CLOUDUNIT :: BEGINNING
 
 ENV CU_MODULE_PORT 8161
