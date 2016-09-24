@@ -22,7 +22,8 @@ INSERT IGNORE INTO `Image` (`id`, `name`, `path`, `displayName`, `prefixEnv`, `i
   (61, 'wildfly-9', 'cloudunit/wildfly-9', 'WildFly 9.0.2', 'wildfly', 'server', '', ''),
   (62, 'wildfly-10', 'cloudunit/wildfly-10', 'WildFly 10.0.0', 'wildfly', 'server', '', ''),
   (70, 'fatjar', 'cloudunit/fatjar', 'FatJar', 'fatjar', 'server', '', ''),
-  (80, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', '', '');
+  (80, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', '', ''),
+  (90, 'activemq-5.13.2', 'cloudunit/activemq-5.13.2', 'ActiveMQ 5.13.2', 'activemq', 'module', '', '8161');
 
 INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariables`,`moduleEnvironmentVariables_KEY`,`Image_id`)
 VALUES
@@ -52,7 +53,11 @@ VALUES
 
     ("POSTGRES_USER", "USER", 53),
     ("POSTGRES_PASSWORD", "PASSWORD", 53),
-    ("POSTGRES_DB", "NAME", 53);
+    ("POSTGRES_DB", "NAME", 53),
+
+    ("ACTIVEMQ_ADMIN_LOGIN", "USER", 90),
+    ("ACTIVEMQ_ADMIN_PASSWORD", "PASSWORD", 90),
+    ("ACTIVEMQ_NAME", "NAME", 90);
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES

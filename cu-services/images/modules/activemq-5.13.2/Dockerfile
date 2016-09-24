@@ -2,7 +2,7 @@ FROM cloudunit/base-14.04
 
 ## Externalise activemq version and dir
 
-ENV ACTIVEMQ_VERSION "5.13.3"
+ENV ACTIVEMQ_VERSION "5.13.2"
 
 ## java installation
 
