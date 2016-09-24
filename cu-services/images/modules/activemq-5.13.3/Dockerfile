@@ -32,7 +32,7 @@ RUN apt-get update && \
 # Lauch app install
 COPY assets/setup/ /app/setup/
 RUN chmod +x /app/setup/install
-RUN /app/setup/install 5.13.3
+RUN /app/setup/install ${ACTIVEMQ_VERSION}
 
 
 # Copy the app setting
