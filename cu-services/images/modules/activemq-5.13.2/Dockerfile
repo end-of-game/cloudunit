@@ -14,6 +14,7 @@ RUN apt-get install -y software-properties-common python-software-properties deb
 
 ## CLOUDUNIT :: BEGINNING
 
+ENV ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT true
 ENV CU_MODULE_PORT 8161
 ENV CU_DEFAULT_LOG_FILE " "
 ENV CU_LOGS "/var/log/activemq"
