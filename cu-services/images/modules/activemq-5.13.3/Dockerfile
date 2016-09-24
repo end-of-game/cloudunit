@@ -1,16 +1,12 @@
 FROM cloudunit/base-14.04
 
-## Externalise activemq version
+## Externalise activemq version and dir
 
 ENV ACTIVEMQ_VERSION "5.13.3"
-ENV ACTIVEMQ_HOME "/opt/activemq"
-ENV SETUP_DIR "/app/setup"
-ENV LOG_DIR "/var/log"
-ENV DATA_DIR "/data"
 
 ## CLOUDUNIT :: BEGINNING
 
-ENV CU_MODULE_PORT 3306
+ENV CU_MODULE_PORT 8161
 ENV CU_DEFAULT_LOG_FILE " "
 ENV CU_LOGS "/var/log/activemq"
 
@@ -36,7 +32,7 @@ RUN apt-get update && \
 # Lauch app install
 COPY assets/setup/ /app/setup/
 RUN chmod +x /app/setup/install
-RUN /app/setup/install
+RUN /app/setup/install 5.13.3
 
 
 # Copy the app setting
