@@ -1,5 +1,12 @@
 FROM cloudunit/base-14.04
 
+## Externalise activemq version
+
+ENV ACTIVEMQ_VERSION "5.13.3"
+ENV ACTIVEMQ_HOME "/opt/activemq"
+ENV SETUP_DIR "/app/setup"
+ENV LOG_DIR "/var/log"
+ENV DATA_DIR "/data"
 
 ## CLOUDUNIT :: BEGINNING
 

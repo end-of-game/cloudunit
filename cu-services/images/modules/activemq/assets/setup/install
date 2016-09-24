@@ -1,13 +1,6 @@
 #!/bin/bash
 set -e
 
-
-ACTIVEMQ_VERSION="5.13.3"
-ACTIVEMQ_HOME="/opt/activemq"
-SETUP_DIR="/app/setup"
-LOG_DIR="/var/log"
-DATA_DIR="/data"
-
 # Start install
 mkdir -p ${ACTIVEMQ_HOME}
 cd /usr/src
