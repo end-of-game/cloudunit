@@ -17,17 +17,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MapKeyEnumerated;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import fr.treeptik.cloudunit.enums.ImageSubType;
 import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 
 @Entity
@@ -64,6 +58,9 @@ public class Image implements Serializable {
     private String exposedPort;
 
     private Integer prefixId;
+
+    @Enumerated(EnumType.STRING)
+    private ImageSubType imageSubType;
 
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
@@ -151,6 +148,14 @@ public class Image implements Serializable {
 
     public String getPrefixEnv() {
         return prefixEnv;
+    }
+
+    public ImageSubType getImageSubType() {
+        return imageSubType;
+    }
+
+    public void setImageSubType(ImageSubType imageSubType) {
+        this.imageSubType = imageSubType;
     }
 
     public void setPrefixEnv(String prefixEnv) {

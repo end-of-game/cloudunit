@@ -15,26 +15,6 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.persistence.PersistenceException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import fr.treeptik.cloudunit.config.events.HookEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
@@ -45,18 +25,30 @@ import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.EnvironmentVariable;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ModuleServiceImpl implements ModuleService {
@@ -188,13 +180,15 @@ public class ModuleServiceImpl implements ModuleService {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
 
             environmentVariable.setKeyEnv(
-                    String.format("CU_DATABASE_%s_%s", kv.getKey().toString(), image.getPrefixEnv().toUpperCase()));
+                    String.format("CU_%s_%s_%s", image.getImageSubType(),
+                            kv.getKey().toString(), image.getPrefixEnv().toUpperCase()));
             environmentVariable.setValueEnv(kv.getValue().getValue());
             return environmentVariable;
         }).collect(Collectors.toList());
 
         EnvironmentVariable environmentVariable = new EnvironmentVariable();
-        environmentVariable.setKeyEnv(String.format("CU_DATABASE_DNS_%s", image.getPrefixEnv().toUpperCase()));
+        environmentVariable.setKeyEnv(String.format("CU_%s_DNS_%s",
+                image.getImageSubType(), image.getPrefixEnv().toUpperCase()));
         environmentVariable.setValueEnv(module.getInternalDNSName());
         environmentVariables.add(environmentVariable);
         return environmentVariables;
