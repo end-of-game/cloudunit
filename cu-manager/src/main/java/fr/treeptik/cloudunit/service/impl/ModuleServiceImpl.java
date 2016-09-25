@@ -44,10 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,7 +118,15 @@ public class ModuleServiceImpl implements ModuleService {
         module.setApplication(application);
         module.setStatus(Status.PENDING);
         module.setStartDate(new Date());
-        module.setPublishPorts(false);
+
+        //initialise module exposable ports
+        final List<Port> ports = new ArrayList<>();
+        final Module m = module;
+        image.getExposedPorts().keySet().stream()
+                .forEach(p->{
+                        ports.add(new Port(p, image.getExposedPorts().get(p), null, false, m));
+                });
+        module.setPorts(ports);
 
         // Build a custom container
         String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
@@ -221,7 +226,7 @@ public class ModuleServiceImpl implements ModuleService {
         if (module == null) {
             throw new CheckException("Module not found");
         }
-        module.setPublishPorts(publishPort);
+//        module.setPublishPorts(publishPort);
         List<String> envs = environmentService.loadEnvironnmentsByContainer(module.getName()).stream()
                 .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
         dockerService.removeContainer(module.getName(), false);

@@ -79,11 +79,11 @@ public class ContainerMapper implements Serializable {
 
     public Module mapDockerContainerToModule(DockerContainer dockerContainer, Module module, String exposedPort) {
         module = (Module) mapDockerContainerToContainer(dockerContainer, module);
-        if (exposedPort != null
-                && dockerContainer.getNetworkSettings().getPorts().get(String.format("%s/tcp", exposedPort)) != null) {
-            module.setForwardedPort(dockerContainer.getNetworkSettings().getPorts()
-                    .get(String.format("%s/tcp", exposedPort)).stream().findFirst().get().get("HostPort"));
-        }
+        module.getPorts().stream().forEach(p -> {
+            p.setHostValue(dockerContainer.getNetworkSettings().getPorts()
+                    .get(String.format("%s/tcp", p.getContainerValue())).stream()
+                    .findFirst().get().get("HostPort"));
+        });
         return module;
 
     }

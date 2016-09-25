@@ -15,11 +15,10 @@
 package fr.treeptik.cloudunit.model;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.PostLoad;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,9 +38,8 @@ public class Module extends Container implements Serializable {
 
     private String managerLocation;
 
-    private Boolean publishPorts;
-
-    private String forwardedPort;
+    @OneToMany(mappedBy = "module")
+    private List<Port> ports;
 
     private Boolean isInitialized;
 
@@ -50,7 +48,6 @@ public class Module extends Container implements Serializable {
     private Application application;
 
     public Module() {
-        publishPorts = false;
         isInitialized = false;
         this.image = new Image();
     }
@@ -122,20 +119,13 @@ public class Module extends Container implements Serializable {
         return Long.parseLong((name.substring(name.lastIndexOf("-") + 1)));
     }
 
-    public Boolean getPublishPorts() {
-        return publishPorts;
+
+    public List<Port> getPorts() {
+        return ports;
     }
 
-    public void setPublishPorts(Boolean publishPorts) {
-        this.publishPorts = publishPorts;
-    }
-
-    public String getForwardedPort() {
-        return forwardedPort;
-    }
-
-    public void setForwardedPort(String forwardedPort) {
-        this.forwardedPort = forwardedPort;
+    public void setPorts(List<Port> ports) {
+        this.ports = ports;
     }
 
     public Boolean getIsInitialized() {

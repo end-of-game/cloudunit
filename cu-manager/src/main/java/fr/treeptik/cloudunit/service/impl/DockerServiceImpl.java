@@ -87,7 +87,7 @@ public class DockerServiceImpl implements DockerService {
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null,
-                volumes, envs, false, null);
+                volumes, envs, null);
         dockerCloudUnitClient.createContainer(container);
     }
 
@@ -309,21 +309,21 @@ public class DockerServiceImpl implements DockerService {
         logger.info("Volumes to add : " + volumes.toString());
 
         // map ports
-        Map<String, String> ports = null;
-        if (module.getPublishPorts() && module.getForwardedPort() != null) {
-            ports = new HashMap<>();
-            ports.put(String.format("%s/tcp", module.getImage().getExposedPort()), module.getForwardedPort());
-            module.setPublishPorts(false);
-        }
+        final Map<String, String> ports =  new HashMap<>();
+        module.getPorts().stream()
+                .filter(p -> p.getOpened())
+                .forEach(p->{
+                         ports.put(String.format("%s/tcp", p.getContainerValue()), p.getHostValue());
+                });
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
-                envs, module.getPublishPorts(), ports);
+                envs, ports);
         dockerCloudUnitClient.createContainer(container);
     }
 
     @Override
     public Module startModule(String containerName, Module module) throws DockerJSONException {
         DockerContainer container = ContainerUtils.newStartInstance(containerName, null, null,
-                module.getPublishPorts());
+                null);
         dockerCloudUnitClient.startContainer(container);
         container = dockerCloudUnitClient.findContainer(container);
         module = containerMapper.mapDockerContainerToModule(container, module,

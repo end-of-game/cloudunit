@@ -13,16 +13,15 @@ package fr.treeptik.cloudunit.model;/*
                                     * For any questions, contact us : contact@treeptik.fr
                                     */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import fr.treeptik.cloudunit.enums.ImageSubType;
+import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
+import fr.treeptik.cloudunit.enums.PortType;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import fr.treeptik.cloudunit.enums.ImageSubType;
-import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 
 @Entity
 public class Image implements Serializable {
@@ -55,7 +54,9 @@ public class Image implements Serializable {
 
     private String prefixEnv;
 
-    private String exposedPort;
+    @ElementCollection
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<PortType, String> exposedPorts;
 
     private Integer prefixId;
 
@@ -175,6 +176,14 @@ public class Image implements Serializable {
         this.moduleEnvironmentVariables = moduleEnvironmentVariables;
     }
 
+    public Map<PortType, String> getExposedPorts() {
+        return exposedPorts;
+    }
+
+    public void setExposedPorts(Map<PortType, String> exposedPorts) {
+        this.exposedPorts = exposedPorts;
+    }
+
     @Override
     public String toString() {
         return "Image [id=" + id + ", name=" + name + ", path=" + path + ", status=" + status + ", imageType="
@@ -204,14 +213,6 @@ public class Image implements Serializable {
         } else if (!name.equals(other.name))
             return false;
         return true;
-    }
-
-    public String getExposedPort() {
-        return exposedPort;
-    }
-
-    public void setExposedPort(String exposedPort) {
-        this.exposedPort = exposedPort;
     }
 
 }

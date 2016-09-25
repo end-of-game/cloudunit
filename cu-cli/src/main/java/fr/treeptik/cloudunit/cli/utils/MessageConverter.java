@@ -153,8 +153,6 @@ public class MessageConverter {
                 tab[0][moduleIndex + 1] = module.getName().substring(indexName + application.getName().length() + 1);
                 tab[1][moduleIndex + 1] = module.getImage().getName();
                 tab[2][moduleIndex + 1] = module.getInternalDNSName();
-                tab[3][moduleIndex + 1] = module.getForwardedPort();
-
                 moduleIndex++;
 
                 printer.print(tab);

@@ -18,10 +18,10 @@ import fr.treeptik.cloudunit.docker.model.HostConfig;
 public class ContainerUtils {
 
     public static DockerContainer newCreateInstance(String name, String image, List<String> volumesFrom,
-            List<String> args, List<String> rawVolumes, List<String> envs, Boolean publishPorts,
+            List<String> args, List<String> rawVolumes, List<String> envs,
             Map<String, String> ports) {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withVolumesFrom(volumesFrom).withBinds(rawVolumes)
-                .withPublishAllPorts(publishPorts).withPortBindings(buildPortBindingBody(ports)).build();
+                .withPublishAllPorts(false).withPortBindings(buildPortBindingBody(ports)).build();
         Config config = ConfigBuilder.aConfig().withAttachStdin(Boolean.FALSE).withAttachStdout(Boolean.TRUE)
                 .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(image).withHostConfig(hostConfig).withMemory(0L)
                 .withMemorySwap(0L).withEnv(envs).build();
@@ -40,13 +40,10 @@ public class ContainerUtils {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static Map<String, List<Map<String, String>>> buildPortBindingBody(Map<String, String> ports) {
-
         if (ports == null) {
             return null;
         }
-
         Map finalMap = new HashMap();
-        if (ports != null) {
             for (String port : ports.keySet()) {
                 Map<String, String> mapForHostPort = new HashMap() {
                     private static final long serialVersionUID = 1L;
@@ -57,7 +54,6 @@ public class ContainerUtils {
                 List<Map<String, String>> params = Arrays.asList(mapForHostPort);
                 finalMap.put(port, params);
             }
-        }
         return finalMap;
 
     }
