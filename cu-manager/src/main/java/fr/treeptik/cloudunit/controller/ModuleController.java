@@ -127,7 +127,7 @@ public class ModuleController implements Serializable {
         Application application = module.getApplication();
 
         applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-        moduleService.publishPort(id, request.getPublishPort(), user);
+        moduleService.publishPort(id, request.getPublishPort(), request.getPort(), user);
         applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
         return new HttpOk();
     }

@@ -19,6 +19,7 @@ import fr.treeptik.cloudunit.config.events.HookEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
 import fr.treeptik.cloudunit.dao.ModuleDAO;
+import fr.treeptik.cloudunit.dao.PortDAO;
 import fr.treeptik.cloudunit.dto.Hook;
 import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
@@ -54,6 +55,9 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Inject
     private ModuleDAO moduleDAO;
+
+    @Inject
+    private PortDAO portDAO;
 
     @Inject
     private EnvironmentService environmentService;
@@ -219,19 +223,25 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     @CacheEvict("env")
-    public Module publishPort(Integer id, Boolean publishPort, User user) throws ServiceException, CheckException {
-
+    public Module publishPort(Integer id, Boolean publishPort, String port, User user) throws ServiceException, CheckException {
         Module module = findById(id);
-
+        Optional<Port> optionalPort = module.getPorts().stream()
+                .filter(p -> p.getContainerValue().equals(port)).findAny();
+        if(optionalPort.isPresent())
+        {
+            Port portToBind = optionalPort.get();
+            portToBind.setOpened(publishPort);
+            portDAO.save(portToBind);
+        }
+        module = findById(id);
         if (module == null) {
             throw new CheckException("Module not found");
         }
-//        module.setPublishPorts(publishPort);
         List<String> envs = environmentService.loadEnvironnmentsByContainer(module.getName()).stream()
                 .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
         dockerService.removeContainer(module.getName(), false);
         dockerService.createModule(module.getName(), module, module.getImage().getPath(), user, envs, false,
-                new ArrayList<String>());
+               new ArrayList<>());
         module = dockerService.startModule(module.getName(), module);
         module = moduleDAO.save(module);
         applicationEventPublisher.publishEvent(new ModuleStartEvent(module));

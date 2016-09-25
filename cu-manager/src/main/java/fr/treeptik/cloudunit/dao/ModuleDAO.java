@@ -28,8 +28,19 @@ public interface ModuleDAO extends JpaRepository<Module, Integer> {
     @Query("Select m from Module m " + "left join fetch m.image " + "where m.containerID=:containerID")
     Module findByContainerID(@Param("containerID") String id) throws DataAccessException;
 
-    @Query("Select m from Module m " + "left join fetch m.image left join fetch m.application " + "where m.name=:name ")
+    @Query("Select m from Module m " +
+            "left join fetch m.image" +
+            " left join fetch m.application " +
+            "left join fetch m.ports "
+            + "where m.name=:name ")
     Module findByName(@Param("name") String name) throws DataAccessException;
+
+    @Query("Select m from Module m " +
+            "left join fetch m.image " +
+            "left join fetch m.application " +
+            "left join fetch m.ports "
+            + "where m.id=:id ")
+    Module findById(@Param("id") Long id) throws DataAccessException;
 
     @Query("Select m " + "from Module m " + "left join fetch m.image " + "where m.application.name=:applicationName "
             + "and m.application.user.id=:userId " + "and m.application.cuInstanceName=:cuInstanceName "

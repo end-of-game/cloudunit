@@ -51,6 +51,6 @@ public interface ModuleService {
 
     Module create(String imageName, Application application, User user) throws ServiceException, CheckException;
 
-    Module publishPort(Integer id, Boolean publishPort, User user) throws ServiceException, CheckException;
+    Module publishPort(Integer id, Boolean publishPort, String port, User user) throws ServiceException, CheckException;
 
 }
