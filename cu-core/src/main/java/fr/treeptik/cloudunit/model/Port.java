@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.treeptik.cloudunit.enums.PortType;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class Port implements Serializable {
     private Boolean opened;
 
     @ManyToOne
+    @JsonIgnore
     private Module module;
 
     public Port() {
