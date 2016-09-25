@@ -96,7 +96,7 @@ available as modules, with a single script named `postgre.sh` building all three
 The final step that will allow CloudUnit to see your module is to add the necessary information to the database. This
 database is initialized by a SQL script found at `cu-manager/src/main/resources/db.init.sql`.
 
-There are two tables that must contain information about the module:
+There are three tables that must contain information about the module:
 
 - `Image` contains general information about the module's image:
   * `id` a unique identifier that is the table's primary key. It is assigned manually. For your module, pick one that
@@ -107,8 +107,9 @@ There are two tables that must contain information about the module:
   * `prefixEnv` a prefix that is used to group multiple versions of the same module. Bear in mind that applications may
     not contain multiple instances of a modules of the same prefix.
   * `imageType` always contains the value `module` for modules.
+  * `imageSubType` must be contain module image subType (DATABASE, DATAGRID, MESSAGE_BROKER) or null if the type is not
+  created yet
   * `managername` is obsolete.
-  * `exposedPort` contains the number of the port that the module exposes.
 - `Image_moduleEnvironmentVariables` contains one line for each of the environment variables that are required when the
   image is run
   * `moduleEnvironmentVariables` contains the name of the variable
@@ -117,13 +118,17 @@ There are two tables that must contain information about the module:
     password that must be associated with that user, or `NAME` if the variable must contain the name of the
     application.
   * `Image_id` is a foreign key referencing the `Image` table.
+- `Image_exposedPorts` contains all ports which can be opened by the manager
+  * `exposedPorts` contain the port value you want to expose (must exists into the Dockerfile under EXPOSE instruction)
+  * `exposedPorts_KEY` contain the port key. It's a mandatory field. Values must be : TCP, UDP, JMX, OPENWIRE,
+   AMQP, STOMP, WEBCONSOLE, MQTT, WEBSERVICES
 
 When a module is added, CloudUnit will generate a random username and password. Whenever the module is run, these
 credentials will be provided to the module's container using the environment variable names configured in the
 `Image_moduleEnvironmentVariables` table. They will also be injected into the application's server as environment
-variables. The following naming convention is used: `CU_DATABASE_<module prefix>_<variable role>`. For example, if the
+variables. The following naming convention is used: `CU_<port_type>_<module prefix>_<variable role>`. For example, if the
 PostgreSQL module is present in an application, the database username is injected into the server as an environment
-variable named `CU_DATABASE_POSTGRESQL_USER`. In addition, the a variable named `CU_DATABASE_DNS_<module prefix>`
+variable named `CU_<port_type>_POSTGRESQL_USER`. In addition, the a variable named `CU_<port_type>_DNS_<module prefix>`
 will be set to the hostname of the module. These variables can then be used to configure the application that is
 deployed.
 
