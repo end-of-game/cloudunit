@@ -38,7 +38,7 @@ public class Module extends Container implements Serializable {
 
     private String managerLocation;
 
-    @OneToMany(mappedBy = "module")
+    @OneToMany(mappedBy = "module", cascade = { CascadeType.REMOVE, CascadeType.PERSIST })
     private List<Port> ports;
 
     private Boolean isInitialized;

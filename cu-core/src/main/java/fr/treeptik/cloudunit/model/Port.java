@@ -27,7 +27,10 @@ public class Port implements Serializable {
     @ManyToOne
     private Module module;
 
-    public Port(PortType portType, String containerValue, String hostValue,  Boolean opened, Module module) {
+    public Port() {
+    }
+
+    public Port(PortType portType, String containerValue, String hostValue, Boolean opened, Module module) {
         this.portType = portType;
         this.hostValue = hostValue;
         this.containerValue = containerValue;

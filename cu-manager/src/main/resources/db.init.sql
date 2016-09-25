@@ -15,10 +15,10 @@ INSERT IGNORE INTO `Image`
   (30, 'mongo-2-6', 'cloudunit/mongo-2-6', 'Mongo 2.6', 'mongo', 'module', 'mms', 'DATABASE'),
   (40, 'redis-2-8', 'cloudunit/redis-2-8', 'Redis 2.8.24', 'redis', 'module', 'redmin', 'DATAGRID'),
   (41, 'redis-3-0', 'cloudunit/redis-3-0', 'Redis 3.0.7', 'redis', 'module', 'redmin', 'DATAGRID'),
-  (50, 'postgresql-9-3', 'cloudunit/postgresql-9-3', 'PostgreSQL 9.3.12', 'postgresql', 'module', 'phppgadmin', '5432', 'DATABASE'),
-  (51, 'postgresql-9-4', 'cloudunit/postgresql-9-4', 'PostgreSQL 9.4.7', 'postgresql', 'module', 'phppgadmin', '5432', 'DATABASE'),
-  (52, 'postgresql-9-5', 'cloudunit/postgresql-9-5', 'PostgreSQL 9.5.2', 'postgresql', 'module', 'phppgadmin', '5432', 'DATABASE'),
-  (53, 'postgis-2-2', 'cloudunit/postgis-2-2', 'PostGIS 2.2.1 (9.4)', 'postgresql', 'module', 'phppgadmin', '5432', 'DATABASE'),
+  (50, 'postgresql-9-3', 'cloudunit/postgresql-9-3', 'PostgreSQL 9.3.12', 'postgresql', 'module', 'phppgadmin', 'DATABASE'),
+  (51, 'postgresql-9-4', 'cloudunit/postgresql-9-4', 'PostgreSQL 9.4.7', 'postgresql', 'module', 'phppgadmin', 'DATABASE'),
+  (52, 'postgresql-9-5', 'cloudunit/postgresql-9-5', 'PostgreSQL 9.5.2', 'postgresql', 'module', 'phppgadmin', 'DATABASE'),
+  (53, 'postgis-2-2', 'cloudunit/postgis-2-2', 'PostGIS 2.2.1 (9.4)', 'postgresql', 'module', 'phppgadmin','DATABASE'),
   (60, 'wildfly-8', 'cloudunit/wildfly-8', 'WildFly 8.2.1', 'wildfly', 'server', '',null),
   (61, 'wildfly-9', 'cloudunit/wildfly-9', 'WildFly 9.0.2', 'wildfly', 'server', '', null),
   (62, 'wildfly-10', 'cloudunit/wildfly-10', 'WildFly 10.0.0', 'wildfly', 'server', '',null),
@@ -61,7 +61,7 @@ VALUES
     ("ACTIVEMQ_NAME", "NAME", 90);
 
 
-INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`exposedPorts`,`exposedPorts_KEY`,`Image_id`)
+INSERT IGNORE INTO `Image_exposedPorts` (`exposedPorts`,`exposedPorts_KEY`,`Image_id`)
 VALUES
 -- mysql ports values --
 
