@@ -142,7 +142,7 @@ public class MessageConverter {
                 tab[0][0] = "MODULE NAME";
                 tab[1][0] = "TYPE";
                 tab[2][0] = "DOMAIN NAME";
-                tab[3][0] = "FORWARDED PORT";
+                tab[3][0] = "PORTS";
 
                 if (!module.getImage().getImageType().equalsIgnoreCase(Image.MODULE)) {
                     continue;
@@ -153,6 +153,15 @@ public class MessageConverter {
                 tab[0][moduleIndex + 1] = module.getName().substring(indexName + application.getName().length() + 1);
                 tab[1][moduleIndex + 1] = module.getImage().getName();
                 tab[2][moduleIndex + 1] = module.getInternalDNSName();
+                StringBuilder builder = new StringBuilder();
+                module.getPorts().stream().forEach(p -> {
+                    builder.append(p.getPortType())
+                            .append(" port : ")
+                            .append(p.getContainerValue())
+                            .append(p.getHostValue() == null ? " Non exposed" : String.format(" on %s", p.getHostValue()))
+                            .append(" | ");
+                });
+                tab[3][moduleIndex + 1] = builder.toString();
                 moduleIndex++;
 
                 printer.print(tab);
