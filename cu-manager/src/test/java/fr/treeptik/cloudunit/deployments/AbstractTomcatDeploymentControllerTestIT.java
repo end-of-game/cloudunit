@@ -1,9 +1,11 @@
 package fr.treeptik.cloudunit.deployments;
 
 import static fr.treeptik.cloudunit.utils.TestUtils.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Random;
 
@@ -11,8 +13,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
-import org.hamcrest.Matchers;
-import org.hamcrest.core.StringContains;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -139,10 +139,11 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
                 "helloworld.war",
                 "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war");
         
-        String urlToCall = String.format("http://%s-johndoe-admin%s/",
+        String urlToCall = String.format("http://int-%s-johndoe-admin%s/helloworld",
                 applicationName.toLowerCase(),
                 domain);
-        Assert.assertThat(getUrlContentPage(urlToCall), Matchers.containsString("CloudUnit PaaS"));
+        String content = getUrlContentPage(urlToCall);
+        assertThat(content, containsString("CloudUnit PaaS"));
 
         deleteApplication();
     }

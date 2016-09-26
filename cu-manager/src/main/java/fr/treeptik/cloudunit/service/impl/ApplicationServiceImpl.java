@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -485,18 +487,30 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException {
 		try {
 			// get app with all its components
+		    String filename = file.getOriginalFilename();
 			String containerId = application.getServer().getContainerID();
 			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
 			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
-			Map<String, String> kvStore = new HashMap<String, String>() {
-				private static final long serialVersionUID = 1L;
+			@SuppressWarnings("serial")
+            Map<String, String> kvStore = new HashMap<String, String>() {
 				{
 					put("CU_USER", application.getUser().getLogin());
 					put("CU_PASSWORD", application.getUser().getPassword());
+                    put("CU_FILE", filename);
+					put("CU_CONTEXT_PATH", "/" + FilenameUtils.getBaseName(filename));
 				}
 			};
-			dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
+			String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
+			logger.debug("Deploy command {}", result);
 			deploymentService.create(application, Type.WAR);
+			
+			@SuppressWarnings("serial")
+            HashMap<String, String> kvStore2 = new HashMap<String, String>() {
+			    {
+			        put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
+			    }
+			};
+            dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
 		} catch (Exception e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
