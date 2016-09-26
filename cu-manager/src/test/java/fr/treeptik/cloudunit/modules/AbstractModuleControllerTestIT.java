@@ -55,7 +55,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.treeptik.cloudunit.dto.ModuleResource;
+import fr.treeptik.cloudunit.dto.ModulePortResource;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
@@ -414,7 +414,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     private ResultActions requestPublishPort(Integer id) throws Exception {
-        ModuleResource request = ModuleResource.of()
+        ModulePortResource request = ModulePortResource.of()
                 .withPublishPort(true)
                 .build();
         String jsonString = objectMapper.writeValueAsString(request);

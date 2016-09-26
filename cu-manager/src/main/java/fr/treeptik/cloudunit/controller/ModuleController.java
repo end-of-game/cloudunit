@@ -36,7 +36,7 @@ import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonInput;
 import fr.treeptik.cloudunit.dto.JsonResponse;
-import fr.treeptik.cloudunit.dto.ModuleResource;
+import fr.treeptik.cloudunit.dto.ModulePortResource;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
@@ -116,9 +116,11 @@ public class ModuleController implements Serializable {
      * @throws CheckException
      */
     @CloudUnitSecurable
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @RequestMapping(method = RequestMethod.PUT, value = "/{id}/ports/{number}")
     @ResponseBody
-    public JsonResponse publishPort(@PathVariable("id") Integer id, @RequestBody ModuleResource request)
+    public JsonResponse publishPort(@PathVariable("id") Integer id,
+        @PathVariable("number") String number,
+    @RequestBody ModulePortResource request)
             throws ServiceException, CheckException {
         request.validatePublishPort();
 
@@ -127,7 +129,7 @@ public class ModuleController implements Serializable {
         Application application = module.getApplication();
 
         applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-        moduleService.publishPort(id, request.getPublishPort(), request.getPort(), user);
+        moduleService.publishPort(id, request.getPublishPort(), number, user);
         applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
         return new HttpOk();
     }
