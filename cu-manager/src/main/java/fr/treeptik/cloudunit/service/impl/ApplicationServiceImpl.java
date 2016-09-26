@@ -21,10 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +126,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		return this.applicationDAO;
 	}
 
-	/**
+    /**
 	 * Test if the user can create new applications because we limit the number
 	 * per user
 	 *
@@ -387,7 +390,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		try {
 			logger.debug("start : Methods parameters : " + application);
 
-
 			application.getModules().stream().forEach(m -> {
 				try {
 					moduleService.startModule(m.getName());
@@ -497,7 +499,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 					put("CU_USER", application.getUser().getLogin());
 					put("CU_PASSWORD", application.getUser().getPassword());
                     put("CU_FILE", filename);
-					put("CU_CONTEXT_PATH", "/" + FilenameUtils.getBaseName(filename));
+					put("CU_CONTEXT_PATH", NamingUtils.getContext.apply(filename));
 				}
 			};
 			String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
