@@ -105,5 +105,10 @@
         vm.errorAdding = fallback.data.message;
       });
     }
+
+    // Checking icon image module existing
+    function checkIconModule(module) {
+      console.log("hello module " + module);
+    }
   }
 }) ();
