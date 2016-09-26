@@ -64,3 +64,15 @@ table.terminal {
     }
   }
 }
+
+.portTable {
+  td {
+    padding: 5px;
+
+    .icon-whhg {
+      position: relative;
+      top: 3px;
+      margin-right: 5px;
+    }
+  }
+}

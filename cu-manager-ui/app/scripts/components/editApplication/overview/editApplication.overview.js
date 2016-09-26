@@ -71,7 +71,7 @@
           vm.app.env = data;
 
           angular.forEach(vm.app.modules, function(value, key) {
-              vm.portList[value.id] = value.ports[0];
+              vm.portList[value.id] = value.ports;
               console.log(value);
               var urlLink = '/application/' + $stateParams.name +'/container/' + value.name + '/env'
               $http({

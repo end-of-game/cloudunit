@@ -59,21 +59,25 @@
     <div>
         <label>
             Publish port :
-            <i ng-bind="overview.portList[module.id].portType"></i> 
         </label>
-        <switch id="enabled" name="enabled" ng-model="overview.portList[module.id].opened" ng-change="overview.changePort(module.id, module.name, overview.portList[module.id].opened, module.ports[0].containerValue)" ng-disabled="overview.pendingModules"></switch>
     </div>
+    <table class="portTable">
+      <tr ng-repeat="port in overview.portList[module.id]">
+        <td> Port {{ port.portType }} : <strong>{{ port.containerValue}}</strong></td>
+        <td>
+          <switch id="enabled" name="enabled" ng-model="port.opened" ng-change="overview.changePort(module.id, module.name, port.opened, port.containerValue)" ng-disabled="overview.pendingModules"></switch>
+        </td>
 
-    <div ng-if="module.forwardedPort && overview.statPortPublish[module.id]" class="alert alert-info">
-        <h5>
-          Port open to
-          <span class="clipboard" id="key-{{module.id}}"
-                  data-title="Copy to clipboard"
-                  tooltip="Copy port"
-                  ngclipboard data-clipboard-target="#key-{{module.id}}">{{ module.forwardedPort }}</span>
-              </span>
-        </h5>
-    </div>
+        <td>
+          <span ng-if="port.opened">
+            <i class="icon-whhg arrow-right"></i>
+            Port open to <span ng-bind="port.hostValue"></span>
+          </span>
+        </td>
+      </tr> 
+    </table>
+
+    
   </div>
 
   <div>
