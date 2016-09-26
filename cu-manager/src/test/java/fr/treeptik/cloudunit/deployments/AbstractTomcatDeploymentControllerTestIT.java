@@ -139,7 +139,7 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
                 "helloworld.war",
                 "https://github.com/Treeptik/CloudUnit/releases/download/1.0/helloworld.war");
         
-        String urlToCall = String.format("http://int-%s-johndoe-admin%s/helloworld",
+        String urlToCall = String.format("http://%s-johndoe-admin%s/helloworld",
                 applicationName.toLowerCase(),
                 domain);
         String content = getUrlContentPage(urlToCall);
