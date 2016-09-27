@@ -77,6 +77,23 @@
           isTemp: true
         });
 
+        vm.moduleImages.push({
+          displayName:"Unknow module",
+          exposedPorts:null,
+          id:9997,
+          imageSubType:null,
+          imageType:"server",
+          managerName:"",
+          moduleEnvironmentVariables:null,
+          name:"tomcat-7",
+          path:"cloudunit/tomcat-7",
+          prefixEnv:"Nothing",
+          prefixId:-864949268,
+          status:null
+        });
+
+        console.log(vm.moduleImages);
+
         if(vm.typeImage === '') {
           // @TODO foreach
           for(var i=0 ; i < vm.moduleImages.length - 1 ; i++) {
@@ -85,6 +102,10 @@
             }
           }
         }
+
+        //vm.categorieImage.push('Nothing')
+
+        
         
         return vm.moduleImages;
       }

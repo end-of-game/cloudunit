@@ -83,7 +83,7 @@
   content: "\f14a";
 }
 .icon-tech.redis:before {
-  content: "\e915";
+  content: "\f150";
 }
 .icon-tech.mariadb:before {
   content: "\f130";
@@ -113,7 +113,11 @@
 }
 
 .icon-tech.activemq:before {
-  content: "\e900";
+  content: "\e901";
+}
+
+.icon-tech.nothing:before {
+  content: "\e902"
 }
 
 .icon-whhg {
