@@ -44,15 +44,23 @@ public class ModuleCommands implements CommandMarker {
     }
 
     @CliCommand(value = "expose-port", help = "Expose the default module port")
-    public String exposePort(@CliOption(key = {
-            "name" }, mandatory = true, help = "Name of the module. Use show-modules command to get all modules of this application") String moduleName) {
-        return moduleUtils.managePort(moduleName, true);
+    public String exposePort(@CliOption(key = {"name" },
+                                        mandatory = true,
+                                        help = "Name of the module. Use show-modules command to get all modules of this application") String moduleName,
+                             @CliOption(key = {"port" },
+                                     mandatory = true,
+                                     help = "Port to open value") String port) {
+        return moduleUtils.managePort(moduleName, port, true);
     }
 
     @CliCommand(value = "close-port", help = "Expose the default module port")
-    public String closePort(@CliOption(key = {
-            "name" }, mandatory = true, help = "Name of the module. Use show-modules command to get all modules of this application") String moduleName) {
-        return moduleUtils.managePort(moduleName, false);
+    public String closePort(@CliOption(key = {"name" },
+                                       mandatory = true,
+                                       help = "Name of the module. Use show-modules command to get all modules of this application") String moduleName,
+                            @CliOption(key = {"port" },
+                                    mandatory = true,
+                                    help = "Port to close value") String port) {
+        return moduleUtils.managePort(moduleName, port, false);
     }
 
     @CliCommand(value = "display-modules", help = "Display informations about all modules of the current application")

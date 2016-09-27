@@ -15,17 +15,24 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.persistence.PersistenceException;
-
+import fr.treeptik.cloudunit.config.events.HookEvent;
+import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
+import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
+import fr.treeptik.cloudunit.dao.ModuleDAO;
+import fr.treeptik.cloudunit.dao.PortDAO;
+import fr.treeptik.cloudunit.dto.Hook;
+import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.DockerJSONException;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.EnvironmentService;
+import fr.treeptik.cloudunit.service.ImageService;
+import fr.treeptik.cloudunit.service.ModuleService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
+import fr.treeptik.cloudunit.utils.ModuleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,28 +42,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.treeptik.cloudunit.config.events.HookEvent;
-import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
-import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
-import fr.treeptik.cloudunit.dao.ModuleDAO;
-import fr.treeptik.cloudunit.dto.Hook;
-import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.DockerJSONException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.EnvironmentVariable;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.DockerService;
-import fr.treeptik.cloudunit.service.EnvironmentService;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.ModuleUtils;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ModuleServiceImpl implements ModuleService {
@@ -65,6 +55,9 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Inject
     private ModuleDAO moduleDAO;
+
+    @Inject
+    private PortDAO portDAO;
 
     @Inject
     private EnvironmentService environmentService;
@@ -129,7 +122,15 @@ public class ModuleServiceImpl implements ModuleService {
         module.setApplication(application);
         module.setStatus(Status.PENDING);
         module.setStartDate(new Date());
-        module.setPublishPorts(false);
+
+        //initialise module exposable ports
+        final List<Port> ports = new ArrayList<>();
+        final Module m = module;
+        image.getExposedPorts().keySet().stream()
+                .forEach(p->{
+                        ports.add(new Port(p, image.getExposedPorts().get(p), null, false, m));
+                });
+        module.setPorts(ports);
 
         // Build a custom container
         String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
@@ -188,13 +189,15 @@ public class ModuleServiceImpl implements ModuleService {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
 
             environmentVariable.setKeyEnv(
-                    String.format("CU_DATABASE_%s_%s", kv.getKey().toString(), image.getPrefixEnv().toUpperCase()));
+                    String.format("CU_%s_%s_%s", image.getImageSubType(),
+                            kv.getKey().toString(), image.getPrefixEnv().toUpperCase()));
             environmentVariable.setValueEnv(kv.getValue().getValue());
             return environmentVariable;
         }).collect(Collectors.toList());
 
         EnvironmentVariable environmentVariable = new EnvironmentVariable();
-        environmentVariable.setKeyEnv(String.format("CU_DATABASE_DNS_%s", image.getPrefixEnv().toUpperCase()));
+        environmentVariable.setKeyEnv(String.format("CU_%s_DNS_%s",
+                image.getImageSubType(), image.getPrefixEnv().toUpperCase()));
         environmentVariable.setValueEnv(module.getInternalDNSName());
         environmentVariables.add(environmentVariable);
         return environmentVariables;
@@ -220,19 +223,25 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     @CacheEvict("env")
-    public Module publishPort(Integer id, Boolean publishPort, User user) throws ServiceException, CheckException {
-
+    public Module publishPort(Integer id, Boolean publishPort, String port, User user) throws ServiceException, CheckException {
         Module module = findById(id);
-
+        Optional<Port> optionalPort = module.getPorts().stream()
+                .filter(p -> p.getContainerValue().equals(port)).findAny();
+        if(optionalPort.isPresent())
+        {
+            Port portToBind = optionalPort.get();
+            portToBind.setOpened(publishPort);
+            portDAO.save(portToBind);
+        }
+        module = findById(id);
         if (module == null) {
             throw new CheckException("Module not found");
         }
-        module.setPublishPorts(publishPort);
         List<String> envs = environmentService.loadEnvironnmentsByContainer(module.getName()).stream()
                 .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
         dockerService.removeContainer(module.getName(), false);
         dockerService.createModule(module.getName(), module, module.getImage().getPath(), user, envs, false,
-                new ArrayList<String>());
+               new ArrayList<>());
         module = dockerService.startModule(module.getName(), module);
         module = moduleDAO.save(module);
         applicationEventPublisher.publishEvent(new ModuleStartEvent(module));

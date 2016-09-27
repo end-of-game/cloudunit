@@ -47,7 +47,7 @@
     vm.removeModule = removeModule;
     vm.listEnvModule = [];
     vm.colapseModuleId;
-    vm.statPortPublish = [];
+    vm.portList = [];
     $scope.colapseOverview = true;
 
     $scope.$on ( 'application:ready', function ( e, data ) {
@@ -71,7 +71,7 @@
           vm.app.env = data;
 
           angular.forEach(vm.app.modules, function(value, key) {
-              vm.statPortPublish[value.id] = value.publishPorts;
+              vm.portList[value.id] = value.ports;
               console.log(value);
               var urlLink = '/application/' + $stateParams.name +'/container/' + value.name + '/env'
               $http({
@@ -95,8 +95,11 @@
       } )
     }
 
-    function changePort(idModule, imageName, statPort) {
-      var urlUpdate = '/module/' + idModule;
+    function changePort(idModule, imageName, statPort, portInContainer) {
+      var urlUpdate = '/module/' + idModule + '/ports/' + portInContainer;
+
+      console.log("port in container", portInContainer);
+
       var data = {
         publishPort: statPort
       };

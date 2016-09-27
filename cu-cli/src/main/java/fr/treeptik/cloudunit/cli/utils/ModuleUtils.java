@@ -141,7 +141,7 @@ public class ModuleUtils {
 
     }
 
-    public String managePort(String moduleName, final Boolean open) {
+    public String managePort(String moduleName, final String port, final Boolean open) {
         String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
         if (checkResponse != null) {
             return checkResponse;
@@ -173,6 +173,7 @@ public class ModuleUtils {
                                 private static final long serialVersionUID = 1L;
                                 {
                                     put("publishPort", open.toString());
+                                    put("port", port);
                                 }
                             }).get("body");
                 } catch (ManagerResponseException e) {

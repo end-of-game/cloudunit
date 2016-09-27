@@ -4,5 +4,6 @@
 ./wildfly.sh
 ./postgre.sh
 ./mysql.sh
+./activemq.sh
 
 

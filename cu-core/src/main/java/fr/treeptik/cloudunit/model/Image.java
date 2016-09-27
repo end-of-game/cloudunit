@@ -13,22 +13,15 @@ package fr.treeptik.cloudunit.model;/*
                                     * For any questions, contact us : contact@treeptik.fr
                                     */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import fr.treeptik.cloudunit.enums.ImageSubType;
+import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
+import fr.treeptik.cloudunit.enums.PortType;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MapKeyEnumerated;
-import javax.persistence.OneToMany;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
 
 @Entity
 public class Image implements Serializable {
@@ -61,9 +54,14 @@ public class Image implements Serializable {
 
     private String prefixEnv;
 
-    private String exposedPort;
+    @ElementCollection
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<PortType, String> exposedPorts;
 
     private Integer prefixId;
+
+    @Enumerated(EnumType.STRING)
+    private ImageSubType imageSubType;
 
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
@@ -153,6 +151,14 @@ public class Image implements Serializable {
         return prefixEnv;
     }
 
+    public ImageSubType getImageSubType() {
+        return imageSubType;
+    }
+
+    public void setImageSubType(ImageSubType imageSubType) {
+        this.imageSubType = imageSubType;
+    }
+
     public void setPrefixEnv(String prefixEnv) {
         this.prefixEnv = prefixEnv;
     }
@@ -168,6 +174,14 @@ public class Image implements Serializable {
 
     public void setModuleEnvironmentVariables(Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables) {
         this.moduleEnvironmentVariables = moduleEnvironmentVariables;
+    }
+
+    public Map<PortType, String> getExposedPorts() {
+        return exposedPorts;
+    }
+
+    public void setExposedPorts(Map<PortType, String> exposedPorts) {
+        this.exposedPorts = exposedPorts;
     }
 
     @Override
@@ -199,14 +213,6 @@ public class Image implements Serializable {
         } else if (!name.equals(other.name))
             return false;
         return true;
-    }
-
-    public String getExposedPort() {
-        return exposedPort;
-    }
-
-    public void setExposedPort(String exposedPort) {
-        this.exposedPort = exposedPort;
     }
 
 }
