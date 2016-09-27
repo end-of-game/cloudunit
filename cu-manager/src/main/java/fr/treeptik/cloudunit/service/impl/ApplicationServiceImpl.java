@@ -21,14 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.model.*;
 import fr.treeptik.cloudunit.utils.NamingUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,14 +46,6 @@ import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.PortToOpen;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.Type;
-import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DeploymentService;
 import fr.treeptik.cloudunit.service.DockerService;
@@ -493,18 +483,19 @@ public class ApplicationServiceImpl implements ApplicationService {
 			String containerId = application.getServer().getContainerID();
 			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
 			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
+			String contextPath = NamingUtils.getContext.apply(filename);
 			@SuppressWarnings("serial")
             Map<String, String> kvStore = new HashMap<String, String>() {
 				{
 					put("CU_USER", application.getUser().getLogin());
 					put("CU_PASSWORD", application.getUser().getPassword());
                     put("CU_FILE", filename);
-					put("CU_CONTEXT_PATH", NamingUtils.getContext.apply(filename));
+					put("CU_CONTEXT_PATH", contextPath);
 				}
 			};
 			String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
 			logger.info ("Deploy command {}", result);
-			deploymentService.create(application, Type.WAR);
+			deploymentService.create(application, DeploymentType.from(filename), contextPath);
 			
 			@SuppressWarnings("serial")
             HashMap<String, String> kvStore2 = new HashMap<String, String>() {

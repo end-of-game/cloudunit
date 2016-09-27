@@ -19,7 +19,7 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Deployment;
-import fr.treeptik.cloudunit.model.Type;
+import fr.treeptik.cloudunit.model.DeploymentType;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public interface DeploymentService {
     List<Deployment> findByApp(Application application)
         throws ServiceException;
 
-    Deployment create(Application application, Type deploymentType)
+    Deployment create(Application application, DeploymentType deploymentType, String contextPath)
         throws ServiceException, CheckException;
 
 }

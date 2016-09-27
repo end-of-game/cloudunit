@@ -23,7 +23,7 @@ HISTFILESIZE=2000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-# If set, the pattern "**" used in a pathname expansion context will
+# If set, the pattern "**" used in a pathname expansion contextPath will
 # match all files and zero or more directories and subdirectories.
 #shopt -s globstar
 

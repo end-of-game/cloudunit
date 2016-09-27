@@ -64,7 +64,7 @@ public class Message
         this.date = new Date();
     }
 
-    public Message(Type type) {
+    public Message(DeploymentType type) {
         this.date = new Date();
 
         this.type = type.name();

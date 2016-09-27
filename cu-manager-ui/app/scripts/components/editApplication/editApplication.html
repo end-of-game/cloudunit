@@ -17,7 +17,7 @@
           <a id="preview-link"
              class="icon-button"
              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"
-             data-ng-href="{{ editApp.application.location }}"
+             data-ng-href="{{ editApp.application.location }}{{ editApp.application.contextPath }}"
              target="_blank"
              tooltip=""
              data-title="Open in browser"

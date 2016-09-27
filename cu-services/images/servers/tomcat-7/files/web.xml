@@ -60,7 +60,7 @@
   <!--   output              Output buffer size (in bytes) when writing     -->
   <!--                       resources to be served.  [2048]                -->
   <!--                                                                      -->
-  <!--   readonly            Is this context "read only", so HTTP           -->
+  <!--   readonly            Is this contextPath "read only", so HTTP           -->
   <!--                       commands like PUT and DELETE are               -->
   <!--                       rejected?  [true]                              -->
   <!--                                                                      -->
@@ -85,7 +85,7 @@
   <!--                                                                      -->
   <!--   contextXsltFile     Make directory listings an XML doc and         -->
   <!--                       pass the result to this style sheet which is   -->
-  <!--                       relative to the context root. This overrides   -->
+  <!--                       relative to the contextPath root. This overrides   -->
   <!--                       globalXsltFile[null]                           -->
   <!--                                                                      -->
   <!--   globalXsltFile      Site wide configuration version of             -->
@@ -286,7 +286,7 @@
   <!--                                                                      -->
   <!--   isVirtualWebappRelative                                            -->
   <!--                       Should "virtual" paths be interpreted as       -->
-  <!--                       relative to the context root, instead of       -->
+  <!--                       relative to the contextPath root, instead of       -->
   <!--                       the server root? [false]                       -->
   <!--                                                                      -->
   <!--   inputEncoding       The encoding to assume for SSI resources if    -->
@@ -510,7 +510,7 @@
   <!--                                                                      -->
   <!--   isVirtualWebappRelative                                            -->
   <!--                       Should "virtual" paths be interpreted as       -->
-  <!--                       relative to the context root, instead of       -->
+  <!--                       relative to the contextPath root, instead of       -->
   <!--                       the server root? [false]                       -->
   <!--                                                                      -->
   <!--   allowExec           Is use of the exec command enabled? [false]    -->

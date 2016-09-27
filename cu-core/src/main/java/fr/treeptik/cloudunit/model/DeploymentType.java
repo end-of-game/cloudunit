@@ -13,6 +13,25 @@ package fr.treeptik.cloudunit.model;/*
  * For any questions, contact us : contact@treeptik.fr
  */
 
-public enum Type {
-    WAR
+import org.apache.commons.io.FilenameUtils;
+
+import java.util.EnumSet;
+
+public enum DeploymentType {
+    WAR("war"),
+    EAR("ear"),
+    JAR("jar");
+
+    private String extension;
+
+    DeploymentType(String extension) {
+        this.extension = extension;
+    }
+
+    public static DeploymentType from(String name) {
+        return EnumSet.allOf(DeploymentType.class).stream()
+                .filter(t -> FilenameUtils.getExtension(name).equalsIgnoreCase(t.extension))
+                .findFirst()
+                .orElse(DeploymentType.JAR);
+    }
 }

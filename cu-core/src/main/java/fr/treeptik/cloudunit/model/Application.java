@@ -14,7 +14,6 @@ package fr.treeptik.cloudunit.model;/*
 									*/
 
 import java.io.Serializable;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -114,6 +113,16 @@ public class Application implements Serializable {
 	private String restHost;
 
 	private String deploymentStatus;
+
+	public String getContextPath() {
+		return contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
+	}
+
+	private String contextPath;
 
 	private boolean isAClone;
 
