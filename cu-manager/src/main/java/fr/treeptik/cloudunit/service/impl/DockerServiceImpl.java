@@ -41,9 +41,6 @@ import fr.treeptik.cloudunit.utils.ContainerMapper;
 import fr.treeptik.cloudunit.utils.ContainerUtils;
 import fr.treeptik.cloudunit.utils.FilesUtils;
 
-import static com.spotify.docker.client.DockerClient.LogsParam.stderr;
-import static com.spotify.docker.client.DockerClient.LogsParam.stdout;
-
 /**
  * Created by guillaume on 01/08/16.
  */
