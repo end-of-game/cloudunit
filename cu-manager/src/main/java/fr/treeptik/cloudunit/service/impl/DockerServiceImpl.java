@@ -131,11 +131,11 @@ public class DockerServiceImpl implements DockerService {
                 execId = dockerClient.execCreate(containerName, commands,
                         com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
                         com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr(),
-                        com.spotify.docker.client.DockerClient.ExecCreateParam.user("root"));
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.user("root")).id();
             } else {
                 execId = dockerClient.execCreate(containerName, commands,
                         com.spotify.docker.client.DockerClient.ExecCreateParam.attachStdout(),
-                        com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr());
+                        com.spotify.docker.client.DockerClient.ExecCreateParam.attachStderr()).id();
             }
             try (final LogStream stream = dockerClient.execStart(execId)) {
                 final String output = stream.readFully();

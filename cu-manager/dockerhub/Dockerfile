@@ -58,9 +58,9 @@ RUN cd /usr/lib/node_modules/npm \
   && sed -i -e s/graceful-fs/fs-extra/ -e s/fs\.move/fs.rename/ ./lib/utils/rename.js
 
 RUN npm install -g grunt grunt-cli bower
-RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && npm install
-RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && bower --allow-root install
-RUN cd /home/cloudunit/app/CloudUnit/cu-manager/src/main/webapp && grunt build
+RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && npm install
+RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && bower --allow-root install
+RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && grunt build
 
 RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault -Pproduction
 
@@ -88,6 +88,7 @@ RUN groupadd -r tomcat && \
 WORKDIR /opt/tomcat
 RUN rm -rf /opt/tomcat/webapps/*
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war /opt/tomcat/webapps
+RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager-ui/dist /opt/tomcat/webapps/ROOT
 RUN chown -R tomcat /opt/tomcat
 
 EXPOSE 8080
