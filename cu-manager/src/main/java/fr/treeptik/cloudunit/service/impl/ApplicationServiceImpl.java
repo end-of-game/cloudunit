@@ -503,7 +503,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 				}
 			};
 			String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
-			logger.debug("Deploy command {}", result);
+			logger.info ("Deploy command {}", result);
 			deploymentService.create(application, Type.WAR);
 			
 			@SuppressWarnings("serial")

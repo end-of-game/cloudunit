@@ -38,12 +38,12 @@ public enum RemoteExecAction {
     }
 
     public String getCommand() {
-        return command;
+        return new String(command);
     }
 
     public String getCommand(Map<String, String> kvStore) {
-        kvStore.entrySet().stream().forEach(e -> command = command.replaceAll(e.getKey(), e.getValue()));
-        return command;
+        return kvStore.entrySet().stream()
+                .reduce(getCommand(), (a, kv) -> a.replaceAll(kv.getKey(), kv.getValue()), String::concat);
     }
 
     public String[] getCommandBash() {

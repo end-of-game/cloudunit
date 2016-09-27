@@ -92,15 +92,10 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
         }
     }
 
-    @BeforeClass
-    public static void initEnv() {
-        applicationName = "App" + new Random().nextInt(100000);
-    }
-
     @Before
     public void setup() {
         logger.info("setup");
-
+        applicationName = "App" + new Random().nextInt(100000);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(springSecurityFilterChain).build();
         User user = null;
         try {
@@ -207,10 +202,9 @@ public abstract class AbstractTomcatDeploymentControllerTestIT
         createApplication();
         try {
             logger.info("Deploy an helloworld application");
-            deployArchive(
+            ResultActions resultActions = deployArchive(
                     archiveName,
                     "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + archiveName);
-
             String urlToCall = String.format("http://%s-johndoe-admin%s/%s",
                     applicationName.toLowerCase(),
                     domain, context);
