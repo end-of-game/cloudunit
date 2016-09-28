@@ -13,50 +13,27 @@ services:
     ports:
       - "8080:8080"
 
-  hipache:
-      image: tutum/hipache:0.3.1
-      ports:
-          - "80:80"
-      links:
-          - redis:redis
-      volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-
-  redis:
-      image: redis:3.0.1
-      command: redis-server --appendonly yes
-      volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-
-  mysql:
-      image: mysql:5.7.4
-      ports:
-          - "3306:3306"
-      environment:
-          - MYSQL_ROOT_PASSWORD
-          - MYSQL_DATABASE=cloudunit
-      volumes_from:
-          - mysqldata
-      volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-
-  mysqldata:
-      image: ubuntu:14.04
-      volumes:
-          - /var/lib/mysql
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-
   dnsdock:
-      image: tonistiigi/dnsdock:v1.10.0
-      volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      ports:
-         - "172.17.42.1:53:53/udp"
-      command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
+    image: tonistiigi/dnsdock:v1.10.0
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+    ports:
+       - "172.17.42.1:53:53/udp"
+    command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
 
+  nginx:
+    image: nginx:1.9.0
+    ports:
+       - "443:443"
+    links:
+       - tomcat:tomcat
+    volumes:
+       - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+       - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
+       - ./nginx/log:/var/log/nginx
+       - ./nginx/www:/var/www
+       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+       - /etc/localtime:/etc/localtime:ro
+       - /etc/timezone:/etc/timezone:ro
