@@ -68,7 +68,7 @@ RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-
 COPY files/web.xml $CU_SOFTWARE/conf/web.xml
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
 COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
-COPY files/contextPath.xml $CU_SOFTWARE/webapps/manager/META-INF/context.xml
+COPY files/context.xml $CU_SOFTWARE/webapps/manager/META-INF/context.xml
 ## CLOUDUNIT :: END
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
