@@ -15,9 +15,8 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-    depends_on:
-        - dnsdock
-        - redis
+      depends_on:
+          - dnsdock
 
   redis:
       image: redis:3.0.1
@@ -25,24 +24,22 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      depends_on:
-          - dnsdock
 
   mysql:
       image: mysql:5.7.4
       ports:
-          - "3306:3306"
+           - "3306:3306"
       environment:
           - MYSQL_ROOT_PASSWORD
           - MYSQL_DATABASE=cloudunit
       volumes_from:
-          - mysqldata
+           - mysqldata
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-    depends_on:
-        - dnsdock
-        - mysqldata
+            - /etc/localtime:/etc/localtime:ro
+            - /etc/timezone:/etc/timezone:ro
+      depends_on:
+          - dnsdock
+          - mysqldata
 
   mysqldata:
       image: ubuntu:14.04
@@ -64,10 +61,10 @@ services:
       command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
 
   nginx:
-    image: nginx:1.9.0
-    ports:
+      image: nginx:1.9.0
+      ports:
           - "443:443"
-    volumes:
+      volumes:
           - ./nginx/sites-enabled:/etc/nginx/sites-enabled
           - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
           - ./nginx/log:/var/log/nginx
@@ -75,21 +72,21 @@ services:
           - ./nginx/nginx.conf:/etc/nginx/nginx.conf
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-    depends_on:
+      depends_on:
           - dnsdock
 
   tomcat:
-    image: cloudunit/manager
-    ports:
+      image: cloudunit/manager
+      ports:
           - "8080:8080"
-    volumes:
+      volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
           - /home/admincu/.cloudunit:/root/.cloudunit
-    environment:
+      environment:
           - CU_SUB_DOMAIN
           - CU_KVM
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - MYSQL_ROOT_PASSWORD
-    depends_on:
+      depends_on:
           - dnsdock
