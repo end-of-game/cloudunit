@@ -8,6 +8,16 @@ services:
     image: cloudunit/postgre-9-3
     image: cloudunit/java
 
+  dnsdock:
+      image: tonistiigi/dnsdock:v1.10.0
+      volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /etc/localtime:/etc/localtime:ro
+          - /etc/timezone:/etc/timezone:ro
+      ports:
+          - "172.17.42.1:53:53/udp"
+      command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
+
   hipache:
       image: tutum/hipache:0.3.1
       ports:
@@ -50,16 +60,6 @@ services:
       depends_on:
           - dnsdock
 
-  dnsdock:
-      image: tonistiigi/dnsdock:v1.10.0
-      volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      ports:
-          - "172.17.42.1:53:53/udp"
-      command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
-
   nginx:
       image: nginx:1.9.0
       ports:
@@ -74,6 +74,7 @@ services:
           - /etc/timezone:/etc/timezone:ro
       depends_on:
           - dnsdock
+          - tomcat
 
   tomcat:
       image: cloudunit/manager
@@ -85,8 +86,10 @@ services:
           - /home/admincu/.cloudunit:/root/.cloudunit
       environment:
           - CU_SUB_DOMAIN
-          - CU_KVM
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - MYSQL_ROOT_PASSWORD
       depends_on:
           - dnsdock
+          - mysql
+
+
