@@ -84,7 +84,7 @@ RUN chmod +x $CATALINA_HOME/scripts/*.sh
 RUN groupadd -r tomcat && \
 	useradd -g tomcat -d ${CATALINA_HOME} -s /sbin/nologin  -c "Tomcat user" tomcat && \
 	chown -R tomcat:tomcat ${CATALINA_HOME}
-x
+
 WORKDIR /opt/tomcat
 RUN rm -rf /opt/tomcat/webapps/*
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war /opt/tomcat/webapps
