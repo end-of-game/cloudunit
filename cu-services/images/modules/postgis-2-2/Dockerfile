@@ -52,8 +52,6 @@ RUN apt-get update \
 	&& apt-get install -y \
 		postgresql-$PG_MAJOR=$PG_VERSION \
 		postgresql-contrib-$PG_MAJOR=$PG_VERSION \
-		postgresql-9.4-postgis-2.1 \
-		postgis-2.1 \
 	&& rm -rf /var/lib/apt/lists/*
 
 # make the sample config easier to munge (and "correct by default")
