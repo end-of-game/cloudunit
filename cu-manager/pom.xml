@@ -405,9 +405,6 @@
 			<artifactId>java-gitlab-api</artifactId>
 			<version>1.2.5</version>
 		</dependency>
-
-
-
 	</dependencies>
 
 	<!-- PROFILES -->
@@ -579,6 +576,25 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>2.5</version>
+			</plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-dependency-plugin</artifactId>
+			    <version>2.10</version>
+			    <executions>
+			        <execution>
+			            <id>copy-cli</id>
+			            <phase>prepare-package</phase>
+			            <goals>
+			                <goal>get</goal>
+			            </goals>
+			            <configuration>
+			                <artifact>fr.treeptik:cu-cli:1.0</artifact>
+			                <transitive>false</transitive>
+			                <destination>${project.build.directory}/${project.build.finalName}/resources/CloudUnitCLI.jar</destination>
+			            </configuration>
+			        </execution>
+			    </executions>
 			</plugin>
 			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-checkstyle-plugin</artifactId> 
 				<version>2.13</version> <executions> <execution> <id>validate</id> <phase>validate</phase> 
