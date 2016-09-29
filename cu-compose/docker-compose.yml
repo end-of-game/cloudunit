@@ -9,6 +9,7 @@ services:
     image: cloudunit/java
 
   dnsdock:
+      container_name: cuplatform_dnsdock_1
       image: tonistiigi/dnsdock:v1.10.0
       volumes:
           - /var/run/docker.sock:/var/run/docker.sock
@@ -19,6 +20,7 @@ services:
       command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
 
   hipache:
+      container_name: cuplatform_hipache_1
       image: tutum/hipache:0.3.1
       ports:
           - "80:80"
@@ -29,6 +31,7 @@ services:
           - dnsdock
 
   redis:
+      container_name: cuplatform_redis_1
       image: redis:3.0.1
       command: redis-server --appendonly yes
       volumes:
@@ -36,6 +39,7 @@ services:
           - /etc/timezone:/etc/timezone:ro
 
   mysql:
+      container_name: cuplatform_mysql_1
       image: mysql:5.7.4
       ports:
            - "3306:3306"
@@ -52,6 +56,7 @@ services:
           - mysqldata
 
   mysqldata:
+      container_name: cuplatform_mysqldata_1
       image: ubuntu:14.04
       volumes:
           - /var/lib/mysql
@@ -61,6 +66,7 @@ services:
           - dnsdock
 
   nginx:
+      container_name: cuplatform_nginx_1
       image: nginx:1.9.0
       ports:
           - "443:443"
@@ -83,7 +89,6 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-          - /home/admincu/.cloudunit:/opt/tomcat/.cloudunit
       environment:
           - CU_SUB_DOMAIN
           - CATALINA_OPTS="-Dspring.profiles.active=production"
@@ -91,5 +96,4 @@ services:
       depends_on:
           - dnsdock
           - mysql
-
 
