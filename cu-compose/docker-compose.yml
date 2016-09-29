@@ -98,3 +98,20 @@ services:
       depends_on:
           - dnsdock
           - mysql
+
+  cadvisor:
+      container_name: cuplatform_advisor_1
+      image: google/cadvisor:0.14.0
+      environment:
+          - DB_USER=root
+          - DB_PASS=root
+          - DB_NAME=cadvisor
+      volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:rw
+          - /sys:/sys:ro
+          - /var/lib/docker:/var/lib/docker:ro
+          - /etc/localtime:/etc/localtime:ro
+          - /etc/timezone:/etc/timezone:ro
+      command: --housekeeping_interval=5s
+
