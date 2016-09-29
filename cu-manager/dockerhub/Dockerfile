@@ -91,7 +91,7 @@ WORKDIR /opt/tomcat
 RUN rm -rf /opt/tomcat/webapps/*
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war /opt/tomcat/webapps
 RUN ls -la /opt/tomcat/webapps
-RUN cd /opt/tomcat/webapps && unzip /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war
+RUN unzip /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war -d /opt/tomcat/webapps/ROOT
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager-ui/dist/* /opt/tomcat/webapps/ROOT
 RUN chown -R tomcat /opt/tomcat
 
