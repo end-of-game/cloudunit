@@ -180,6 +180,20 @@
   @include make-lg-column(12, 1rem);
 }
 
+.application:not(.start) {
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: white;
+    opacity: 0.6;
+    z-index: 10;
+  }
+}
+
 .start.pending .content,
 .stop.pending .content,
 .pending.stop .content,
@@ -188,15 +202,12 @@
 .app-creation .content,
 .fail .content,
 [data-status = 'pending'] .content {
-
-  opacity: 0.6;
-
   border-top: 0;
   color: $color-muted !important;
   & .subhead, & .headline {
     color: $color-muted;
   }
-  & .button, & .icon-button {
+  & .button:not(.allowed), & .icon-button:not(.allowed) {
     background-color: $color-bg-muted;
     color: $color-disabled;
     pointer-events: none;
@@ -207,11 +218,6 @@
     }
     & .spinner {
       color: $color-muted;
-    }
-    
-    &.allowed {
-      pointer-events: auto;
-      cursor:  pointer;
     }
   }
 
@@ -224,6 +230,10 @@
 
   .check.radio input[type="radio"] + label:before {
     content: '\f111';
+  }
+
+  .allowed {
+    z-index: 15;
   }
 }
 
