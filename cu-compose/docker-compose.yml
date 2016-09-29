@@ -83,12 +83,14 @@ services:
           - tomcat
 
   tomcat:
+      container_name: cuplatform_tomcat_1
       image: cloudunit/manager
       ports:
           - "8080:8080"
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
+          - /home/admincu/.cloudunit:/root/.cloudunit
       environment:
           - CU_SUB_DOMAIN
           - CATALINA_OPTS="-Dspring.profiles.active=production"
@@ -96,4 +98,3 @@ services:
       depends_on:
           - dnsdock
           - mysql
-

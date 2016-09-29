@@ -84,7 +84,7 @@ RUN chmod +x $CATALINA_HOME/scripts/*.sh
 
 # Create tomcat user
 RUN groupadd -r tomcat && \
-	useradd -g tomcat -d ${CATALINA_HOME} -s /sbin/nologin  -c "Tomcat user" tomcat && \
+	useradd -g tomcat -d ${CATALINA_HOME} tomcat && \
 	chown -R tomcat:tomcat ${CATALINA_HOME}
 
 WORKDIR /opt/tomcat
@@ -99,4 +99,5 @@ EXPOSE 8080
 EXPOSE 8009
 
 USER tomcat
+
 CMD ["tomcat.sh"]
