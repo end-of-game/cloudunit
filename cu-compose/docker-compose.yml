@@ -83,7 +83,7 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-          - /home/admincu/.cloudunit:/root/.cloudunit
+          - /home/admincu/.cloudunit:/opt/tomcat/.cloudunit
       environment:
           - CU_SUB_DOMAIN
           - CATALINA_OPTS="-Dspring.profiles.active=production"
