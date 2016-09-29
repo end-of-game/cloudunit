@@ -43,7 +43,7 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.TestUtils;
 
-public class AbstractDeploymentControllerIT {
+public abstract class AbstractDeploymentControllerIT {
 
     protected static String applicationName;
     protected final Logger logger = LoggerFactory.getLogger(AbstractDeploymentControllerIT.class);
