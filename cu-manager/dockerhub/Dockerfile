@@ -28,6 +28,7 @@ RUN apt-get install -y curl
 RUN apt-get install -y git
 RUN apt-get install -y wget
 RUN apt-get install -y git-core
+RUN apt-get install -y unzip
 
 # Fix pour permettre de tirer correctement certaines dépendances
 RUN git config --global url."https://".insteadOf git://
@@ -60,9 +61,10 @@ RUN cd /usr/lib/node_modules/npm \
 RUN npm install -g grunt grunt-cli bower
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && npm install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && bower --allow-root install
-RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && grunt build
+RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && grunt build -f 
 
-RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault -Pproduction
+# Build Maven with profiles
+RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean package -DskipTests -Pdefault -Pproduction
 
 ENV CATALINA_HOME /opt/tomcat
 ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/scripts
@@ -88,6 +90,8 @@ RUN groupadd -r tomcat && \
 WORKDIR /opt/tomcat
 RUN rm -rf /opt/tomcat/webapps/*
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war /opt/tomcat/webapps
+RUN ls -la /opt/tomcat/webapps
+RUN cd /opt/tomcat/webapps && unzip /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager-ui/dist /opt/tomcat/webapps/ROOT
 RUN chown -R tomcat /opt/tomcat
 
