@@ -25,6 +25,7 @@ docker-compose up -d redis
 docker-compose up -d gitlab
 docker-compose up -d jenkins
 docker-compose up -d tomcat
+docker-compose up -d java
 sleep 60
 docker-compose up -d nginx
 docker-compose logs -f
