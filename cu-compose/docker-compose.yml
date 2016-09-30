@@ -84,6 +84,8 @@ services:
           - /etc/timezone:/etc/timezone:ro
       depends_on:
           - dnsdock
+          - tomcat
+          - gitlab
 
   tomcat:
       container_name: cuplatform_tomcat_1
