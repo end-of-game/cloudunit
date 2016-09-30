@@ -43,7 +43,7 @@ public class JBoss8Mysql55ModuleControllerTestIT extends AbstractModuleControlle
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
         super.managerPageContent = "phpMyAdmin";
-    }
+        super.testScriptPath = "src/test/resources/mysql/test.sql";    }
 
     @Override
     protected void checkConnectionDatabase(String forwardedPort) {

@@ -17,6 +17,8 @@ package fr.treeptik.cloudunit.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
@@ -52,5 +54,7 @@ public interface ModuleService {
     Module create(String imageName, Application application, User user) throws ServiceException, CheckException;
 
     Module publishPort(Integer id, Boolean publishPort, String port, User user) throws ServiceException, CheckException;
+
+    String runScript(String moduleName, MultipartFile file) throws ServiceException;
 
 }

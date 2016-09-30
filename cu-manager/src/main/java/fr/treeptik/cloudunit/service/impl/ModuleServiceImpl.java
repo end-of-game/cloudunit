@@ -15,6 +15,28 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import fr.treeptik.cloudunit.config.events.HookEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStartEvent;
 import fr.treeptik.cloudunit.config.events.ModuleStopEvent;
@@ -26,27 +48,20 @@ import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.EnvironmentVariable;
+import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.Port;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
+import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.persistence.PersistenceException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ModuleServiceImpl implements ModuleService {
@@ -96,6 +111,9 @@ public class ModuleServiceImpl implements ModuleService {
     private ApplicationEventPublisher applicationEventPublisher;
 
     private boolean isHttpMode;
+
+    @Inject
+    private FileService fileService;
 
     @PostConstruct
     public void initDockerEndPointMode() {
@@ -409,7 +427,28 @@ public class ModuleServiceImpl implements ModuleService {
             logger.error("Error ModuleService : error findByAppAndUser Method : " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
-
+    }
+    
+    @Override
+    public String runScript(String moduleName, MultipartFile file) throws ServiceException {
+        try {
+            Module module = findByName(moduleName);
+            
+            String filename = file.getOriginalFilename();
+            String containerId = module.getContainerID();
+            String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
+            fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
+            
+            @SuppressWarnings("serial")
+            Map<String, String> kvStore = new HashMap<String, String>() {
+                {
+                    put("CU_FILE", filename);
+                }
+            };
+            return dockerService.execCommand(containerId, RemoteExecAction.RUN_SCRIPT.getCommand(kvStore));
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
     }
 
     public boolean isHttpMode() {
