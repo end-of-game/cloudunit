@@ -287,7 +287,7 @@ public class AliasControllerTestIT {
     }
 
     @Test
-    public void test_CreationThenDelete() throws Exception {
+    public void test30_CreationThenDelete() throws Exception {
 
         logger.info("*********************************************************");
         logger.info("Create an alias then delete it");
