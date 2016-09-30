@@ -4,6 +4,7 @@ services:
   java:
       container_name: java
       image: cloudunit/java
+      network_mode: bridge
 
   dnsdock:
       container_name: cuplatform_dnsdock_1
@@ -15,6 +16,7 @@ services:
       ports:
           - "172.17.42.1:53:53/udp"
       command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
+      network_mode: bridge
 
   hipache:
       container_name: cuplatform_hipache_1
@@ -26,6 +28,7 @@ services:
           - /etc/timezone:/etc/timezone:ro
       depends_on:
           - dnsdock
+      network_mode: bridge
 
   redis:
       container_name: cuplatform_redis_1
@@ -36,6 +39,7 @@ services:
           - /etc/timezone:/etc/timezone:ro
       depends_on:
           - dnsdock
+      network_mode: bridge
 
   mysql:
       container_name: cuplatform_mysql_1
@@ -53,6 +57,7 @@ services:
       depends_on:
           - dnsdock
           - mysqldata
+      network_mode: bridge
 
   mysqldata:
       container_name: cuplatform_mysqldata_1
@@ -63,6 +68,7 @@ services:
           - /etc/timezone:/etc/timezone:ro
       depends_on:
           - dnsdock
+      network_mode: bridge
 
   nginx:
       container_name: cuplatform_nginx_1
@@ -81,6 +87,7 @@ services:
           - dnsdock
           - tomcat
           - gitlab
+      network_mode: bridge
 
   tomcat:
       container_name: cuplatform_tomcat_1
@@ -99,6 +106,7 @@ services:
           - dnsdock
           - mysql
           - redis
+      network_mode: bridge
 
   cadvisor:
       container_name: cuplatform_advisor_1
@@ -115,6 +123,7 @@ services:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
+      network_mode: bridge
 
   gitlab:
       container_name: cuplatform_gitlab_1
@@ -126,9 +135,12 @@ services:
           - /srv/gitlab/logs:/var/log/gitlab
           - /srv/gitlab/data:/var/opt/gitlab
       hostname: 'gitlab-g2c.cloudunit.io'
+      network_mode: bridge
 
   jenkins:
       container_name: cuplatform_jenkins_1
       image: jenkinsci/jenkins:2.21
       volumes:
           - /home/admincu/jenkins_home:/var/jenkins_home
+      network_mode: bridge
+
