@@ -101,10 +101,8 @@ services:
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - MYSQL_ROOT_PASSWORD
       depends_on:
-          - gitlab
           - dnsdock
           - mysql
-          - java
 
   cadvisor:
       container_name: cuplatform_advisor_1
@@ -126,9 +124,11 @@ services:
       container_name: cuplatform_gitlab_1
       image: gitlab/gitlab-ce:latest
       volumes:
-          - /home/admincu/gitlab_home/config:/etc/gitlab
-          - /home/admincu/gitlab_home/logs:/var/log/gitlab
-          - /home/admincu/gitlab_home/data:/var/opt/gitlab
+          - /etc/localtime:/etc/localtime:ro
+          - /etc/timezone:/etc/timezone:ro
+          - /srv/gitlab/config:/etc/gitlab
+          - /srv/gitlab/logs:/var/log/gitlab
+          - /srv/gitlab/data:/var/opt/gitlab
       hostname: 'gitlab-g2c.cloudunit.io'
       environment:
         GITLAB_OMNIBUS_CONFIG: |
