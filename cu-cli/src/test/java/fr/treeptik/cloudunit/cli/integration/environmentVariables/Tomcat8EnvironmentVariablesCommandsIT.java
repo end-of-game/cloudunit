@@ -2,6 +2,6 @@ package fr.treeptik.cloudunit.cli.integration.environmentVariables;
 
 public class Tomcat8EnvironmentVariablesCommandsIT extends AbstractEnvironmentVariablesCommandsIT {
     public Tomcat8EnvironmentVariablesCommandsIT() {
-        super.serverType = "tomcat-8";
+        super("tomcat-8");
     }
 }

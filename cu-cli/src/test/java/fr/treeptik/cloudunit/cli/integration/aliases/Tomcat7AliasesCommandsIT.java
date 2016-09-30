@@ -6,6 +6,6 @@ package fr.treeptik.cloudunit.cli.integration.aliases;
 public class Tomcat7AliasesCommandsIT extends AbstractAliasesCommandsIT {
 
     public Tomcat7AliasesCommandsIT() {
-        super.serverType = "tomcat-8";
+        super("tomcat-8");
     }
 }

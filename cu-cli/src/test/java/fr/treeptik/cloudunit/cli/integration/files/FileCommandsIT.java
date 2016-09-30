@@ -1,141 +1,124 @@
 package fr.treeptik.cloudunit.cli.integration.files;
 
-import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
-import org.junit.*;
-import org.junit.runners.MethodSorters;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.shell.core.CommandResult;
 
-import java.io.File;
-import java.util.Random;
+import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
 
 /**
  * Created by Nicolas
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FileCommandsIT extends AbstractShellIntegrationTest {
 
-    private static String applicationName;
-    protected String serverType = "tomcat-8";
-    private CommandResult cr = null;
-
-    @BeforeClass
-    public static void generateApplication() {
-        applicationName = "app" + new Random().nextInt(10000);
+    public FileCommandsIT() {
+        super("tomcat-8");
     }
 
     @Before
-    public void initEnv() {
-        cr = getShell().executeCommand("connect --login johndoe --password abc2015 ");
+    public void setUp() {
+        connect();
         createApplication();
     }
 
     @After
     public void tearDown() {
-        deleteApplication();
+        removeApplication();
     }
 
     @Test
     public void test_create_directory() {
-        useApplication();
+        useApplication(applicationName);
         openExplorer();
-        createDirectory("/opt/cloudunit/temporary");
-        changeDirectory("/opt/cloudunit");
-        String filesTxt = listFiles();
-        Assert.assertTrue("Directory is right created", filesTxt.contains("temporary"));
-        closeExplorer();
+        try {
+            createDirectory("/opt/cloudunit/temporary");
+            changeDirectory("/opt/cloudunit");
+            CommandResult result = listFiles();
+            
+            assertThat("Directory is created", result.getResult().toString(), containsString("temporary"));
+        } finally {
+            closeExplorer();
+        }
     }
 
     @Test
     public void test_enter_into_container_and_upload_file() {
-        useApplication();
+        useApplication(applicationName);
         openExplorer();
-        changeDirectory("/opt");
-        File local = new File(".");
-        String pathFileToUpload = local.getAbsolutePath()
-                +"/src/test/java/fr/treeptik/cloudunit/cli/integration/files/my-beautiful-file.txt";
-        uploadPath(pathFileToUpload);
-        String filesTxt = listFiles();
-        Assert.assertTrue("File is right uploaded", filesTxt.contains("my-beautiful-file.txt"));
-        closeExplorer();
+        try {
+            changeDirectory("/opt");
+            uploadPath("src/test/resources/my-beautiful-file.txt");
+            CommandResult result = listFiles();
+            
+            assertThat("File is uploaded", result.getResult().toString(), containsString("my-beautiful-file.txt"));
+        } finally {
+            closeExplorer();
+        }
     }
 
     @Test
     public void test_enter_into_container_and_list_files() {
-        useApplication();
+        useApplication(applicationName);
         openExplorer();
-        listFiles();
-        changeDirectory("/etc");
-        listFiles();
-        changeDirectory("/opt");
-        listFiles();
-        closeExplorer();
+        try {
+            listFiles();
+            changeDirectory("/etc");
+            listFiles();
+            changeDirectory("/opt");
+            listFiles();
+        } finally {
+            closeExplorer();
+        }
+        
     }
 
     @Test
     public void test_unzip() {
-        useApplication();
+        useApplication(applicationName);
         openExplorer();
-        listFiles();
-        changeDirectory("/opt/cloudunit");
-        File local = new File(".");
-        String pathFileToUpload = local.getAbsolutePath()
-                +"/src/test/java/fr/treeptik/cloudunit/cli/integration/files/compressed.tar";
-        uploadPath(pathFileToUpload);
-        unzip("/opt/cloudunit/compressed.tar");
-        String filesTxt = listFiles();
-        Assert.assertTrue("File is right unziped", filesTxt.contains("my-beautiful-file.txt"));
-        closeExplorer();
+        try {
+            listFiles();
+            changeDirectory("/opt/cloudunit");
+            uploadPath("src/test/resources/compressed.tar");
+            unzip("/opt/cloudunit/compressed.tar");
+            CommandResult result = listFiles();
+            
+            assertThat("File is unzipped", result.getResult().toString(), containsString("my-beautiful-file.txt"));
+        } finally {
+            closeExplorer();
+        }
     }
 
-    private void useApplication() {
-        cr = getShell().executeCommand("use " + applicationName);
-        Assert.assertTrue("Use Application", cr.isSuccess());
+    private CommandResult listFiles() {
+        return getShell().executeCommand("list-files");
     }
 
-    private String listFiles() {
-        cr = getShell().executeCommand("list-files");
-        Assert.assertTrue("List files", cr.isSuccess());
-        return cr.getResult().toString();
+    private CommandResult unzip(String remotePathFile) {
+        return getShell().executeCommand("unzip --file " + remotePathFile);
     }
 
-    private void unzip(String remotePathFile) {
-        cr = getShell().executeCommand("unzip --file " + remotePathFile);
-        Assert.assertTrue("Create Application", cr.isSuccess());
+    private CommandResult changeDirectory(String path) {
+        return getShell().executeCommand("change-directory " + path);
     }
 
-    private void createApplication() {
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        Assert.assertTrue("Create Application", cr.isSuccess());
+    private CommandResult createDirectory(String path) {
+        return getShell().executeCommand("create-directory --path " + path);
     }
 
-    private void deleteApplication() {
-        cr = getShell().executeCommand("rm-app --scriptUsage");
-        Assert.assertTrue("Delete application", cr.isSuccess());
+    private CommandResult uploadPath(String pathFileToUpload) {
+        return getShell().executeCommand("upload-file --path " + pathFileToUpload);
     }
 
-    private void changeDirectory(String path) {
-        cr = getShell().executeCommand("change-directory " + path);
-        Assert.assertTrue("Change directory", cr.isSuccess());
+    private CommandResult openExplorer() {
+        return getShell().executeCommand("open-explorer --containerName dev-johndoe-" + applicationName + "-tomcat-8");
     }
 
-    private void createDirectory(String path) {
-        cr = getShell().executeCommand("create-directory --path " + path);
-        Assert.assertTrue("Create directory", cr.isSuccess());
-    }
-
-    private void uploadPath(String pathFileToUpload) {
-        cr = getShell().executeCommand("upload-file --path " + pathFileToUpload);
-        Assert.assertTrue("Upload File", cr.isSuccess());
-    }
-
-    private void openExplorer() {
-        cr = getShell().executeCommand("open-explorer --containerName dev-johndoe-" + applicationName + "-tomcat-8");
-        Assert.assertTrue("Open explorer", cr.isSuccess());
-    }
-
-    private void closeExplorer() {
-        cr = getShell().executeCommand("close-explorer");
-        Assert.assertTrue("Close explorer", cr.isSuccess());
+    private CommandResult closeExplorer() {
+        return getShell().executeCommand("close-explorer");
     }
 
 }

@@ -6,6 +6,6 @@ package fr.treeptik.cloudunit.cli.integration.application;
 public class WildFly8ApplicationCommandsIT extends AbstractApplicationCommandsIT {
 
     public WildFly8ApplicationCommandsIT() {
-        super.serverType = "wildfly-8";
+        super("wildfly-8");
     }
 }

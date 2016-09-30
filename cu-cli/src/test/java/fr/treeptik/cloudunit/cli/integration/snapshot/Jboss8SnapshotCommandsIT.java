@@ -6,7 +6,7 @@ package fr.treeptik.cloudunit.cli.integration.snapshot;
 public class Jboss8SnapshotCommandsIT extends AbstractSnapshotCommandsIT {
 
     public Jboss8SnapshotCommandsIT() {
-        super.serverType = "jboss-8";
+        super("jboss-8");
     }
 
 }
