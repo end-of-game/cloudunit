@@ -41,6 +41,8 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
+      depends_on:
+          - dnsdock
 
   mysql:
       container_name: cuplatform_mysql_1
@@ -103,6 +105,7 @@ services:
       depends_on:
           - dnsdock
           - mysql
+          - redis
 
   cadvisor:
       container_name: cuplatform_advisor_1
