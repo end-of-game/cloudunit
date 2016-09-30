@@ -27,7 +27,7 @@ if [ -z "$RETURN" ]; then
                 --restart always \
                 -v /home/$USER/jenkins_home:/var/jenkins_home \
                 jenkinsci/jenkins:$JK_MAJOR
- 	    docker-compose -f docker-compose-prod.yml rm -f nginx
+ 	        docker-compose -f docker-compose-prod.yml rm -f nginx
             docker-compose -f docker-compose-prod.yml up -d nginx	 
     fi
 

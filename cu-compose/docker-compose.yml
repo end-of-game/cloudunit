@@ -1,13 +1,6 @@
 version: '2'
 services:
 
-  cu-images:
-    image: cloudunit/base-12.04
-    image: cloudunit/base-14.04
-    image: cloudunit/tomcat-8
-    image: cloudunit/postgre-9-3
-    image: cloudunit/java
-
   java:
       container_name: java
       image: cloudunit/java
@@ -133,3 +126,9 @@ services:
           - /srv/gitlab/logs:/var/log/gitlab
           - /srv/gitlab/data:/var/opt/gitlab
       hostname: 'gitlab-g2c.cloudunit.io'
+
+  jenkins:
+      container_name: cuplatform_jenkins_1
+      image: jenkinsci/jenkins:2.21
+      volumes:
+          - /srv/jenkins/jenkins_home:/var/jenkins_home
