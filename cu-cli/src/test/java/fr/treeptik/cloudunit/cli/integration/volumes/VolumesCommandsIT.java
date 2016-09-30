@@ -1,22 +1,29 @@
 package fr.treeptik.cloudunit.cli.integration.volumes;
 
-import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
-import fr.treeptik.cloudunit.cli.utils.ANSIConstants;
-import org.junit.*;
-import org.junit.runners.MethodSorters;
-import org.springframework.shell.core.CommandResult;
+import static org.hamcrest.Matchers.*;
 
 import java.util.Random;
 
-public class VolumesCommandsIT extends AbstractShellIntegrationTest {
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.shell.core.CommandResult;
 
-    private static String applicationName;
+import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
+import fr.treeptik.cloudunit.cli.integration.ShellMatchers;
+import fr.treeptik.cloudunit.cli.utils.ANSIConstants;
+
+public class VolumesCommandsIT extends AbstractShellIntegrationTest {
     private static String volumeName;
     private CommandResult cr;
 
+    protected VolumesCommandsIT(String serverType) {
+        super(serverType);
+    }
+
     @BeforeClass
-    public static void generateApplication() {
-        applicationName = "App" + new Random().nextInt(100000);
+    public static void generateVolumeName() {
         volumeName = "Volume" + new Random().nextInt(100000);
     }
 
@@ -30,11 +37,12 @@ public class VolumesCommandsIT extends AbstractShellIntegrationTest {
         // Create volume
         createVolume(volumeName);
         String volumeNameCreated = cr.getResult().toString();
-        Assert.assertTrue("Volume created : ", cr.isSuccess());
+        
+        Assert.assertThat("Volume created : ", cr, ShellMatchers.isSuccessfulCommand());
         Assert.assertEquals(volumeName, volumeNameCreated);
         // List volumes and check
         String listVolumes = listVolumes();
-        Assert.assertTrue("List of volumes contains " + volumeName, listVolumes.contains(volumeName));
+        Assert.assertThat("List of volumes contains " + volumeName, listVolumes, containsString(volumeName));
         // Remove volume
         removeVolume(volumeName);
     }
@@ -46,7 +54,7 @@ public class VolumesCommandsIT extends AbstractShellIntegrationTest {
         createVolume(volumeName);
         String volumeNameCreated = cr.getResult().toString();
         Assert.assertTrue("Volume created : ", cr.isSuccess());
-        Assert.assertTrue(volumeNameCreated.contains("This name already exists"));
+        Assert.assertThat(volumeNameCreated, containsString("This name already exists"));
         removeVolume(volumeName);
     }
 
