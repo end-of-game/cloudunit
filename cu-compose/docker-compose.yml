@@ -26,8 +26,6 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      depends_on:
-          - dnsdock
       network_mode: bridge
 
   redis:
@@ -37,8 +35,6 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      depends_on:
-          - dnsdock
       network_mode: bridge
 
   mysql:
@@ -54,9 +50,6 @@ services:
       volumes:
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
-      depends_on:
-          - dnsdock
-          - mysqldata
       network_mode: bridge
 
   mysqldata:
@@ -66,8 +59,6 @@ services:
           - /var/lib/mysql
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      depends_on:
-          - dnsdock
       network_mode: bridge
 
   nginx:
@@ -83,10 +74,6 @@ services:
           - ./nginx/nginx.conf:/etc/nginx/nginx.conf
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      depends_on:
-          - dnsdock
-          - tomcat
-          - gitlab
       network_mode: bridge
 
   tomcat:
@@ -99,13 +86,10 @@ services:
           - /etc/timezone:/etc/timezone:ro
           - /home/admincu/.cloudunit:/root/.cloudunit
       environment:
+          - CU_KVM
           - CU_SUB_DOMAIN
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - MYSQL_ROOT_PASSWORD
-      depends_on:
-          - dnsdock
-          - mysql
-          - redis
       network_mode: bridge
 
   cadvisor:
