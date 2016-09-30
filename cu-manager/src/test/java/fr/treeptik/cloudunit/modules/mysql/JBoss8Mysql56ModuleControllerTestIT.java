@@ -40,6 +40,7 @@ public class JBoss8Mysql56ModuleControllerTestIT extends AbstractModuleControlle
     public JBoss8Mysql56ModuleControllerTestIT() {
         super.server = "wildfly-8";
         super.module = "mysql-5-6";
+        super.numberPort = "3306";
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
         super.managerPageContent = "phpMyAdmin";

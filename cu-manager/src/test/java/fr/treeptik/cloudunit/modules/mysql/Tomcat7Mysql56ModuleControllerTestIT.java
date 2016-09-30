@@ -40,6 +40,7 @@ public class Tomcat7Mysql56ModuleControllerTestIT extends AbstractModuleControll
     public Tomcat7Mysql56ModuleControllerTestIT() {
         super.server = "tomcat-7";
         super.module = "mysql-5-6";
+        super.numberPort = "3306";
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
         super.managerPageContent = "phpMyAdmin";

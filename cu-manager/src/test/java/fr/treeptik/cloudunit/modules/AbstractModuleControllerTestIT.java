@@ -113,6 +113,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     protected String server;
     protected String module;
+    protected String numberPort;
     protected String managerPrefix;
     protected String managerSuffix;
     protected String managerPageContent;
@@ -334,8 +335,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .andExpect(jsonPath("$.modules[0].name").value(module1));
     }
 
-
-
     @Test
     public void test_PublishPort() throws Exception {
         logger.info("Publish module port for external access");
@@ -351,12 +350,13 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .andExpect(jsonPath("$.modules[0].id", responseModuleIdSpy));
 
         Integer moduleId = responseModuleIdSpy.getMatchedValue();
-        requestPublishPort(moduleId)
+        requestPublishPort(moduleId, numberPort)
             .andExpect(status().isOk());
 
         requestApplication()
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.modules[0].forwardedPort", forwardedPort));
+                .andDo(print())
+                .andExpect(jsonPath("$.modules[0].ports[0].hostValue", forwardedPort));
 
         checkConnectionDatabase(forwardedPort.getMatchedValue());
     }
@@ -413,12 +413,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         }
     }
 
-    private ResultActions requestPublishPort(Integer id) throws Exception {
+    private ResultActions requestPublishPort(Integer id, String number) throws Exception {
         ModulePortResource request = ModulePortResource.of()
                 .withPublishPort(true)
                 .build();
         String jsonString = objectMapper.writeValueAsString(request);
-        return mockMvc.perform(put("/module/" + id)
+        return mockMvc.perform(put("/module/" + id + "/ports/" + number)
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString))

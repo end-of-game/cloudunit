@@ -55,6 +55,7 @@ public class JBoss8Postgres94ModuleControllerTestIT extends AbstractModuleContro
     public JBoss8Postgres94ModuleControllerTestIT() {
         super.server = "wildfly-8";
         super.module = "postgresql-9-4";
+        super.numberPort = "5432";
         super.managerPrefix = "phppgadmin";
         super.managerSuffix = "phppgadmin";
         super.managerPageContent = "phpPgAdmin";

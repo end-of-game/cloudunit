@@ -25,6 +25,7 @@ public class Tomcat8Mysql55ModuleControllerTestIT extends AbstractModuleControll
     public Tomcat8Mysql55ModuleControllerTestIT() {
         super.server = "tomcat-8";
         super.module = "mysql-5-5";
+        super.numberPort = "3306";
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
         super.managerPageContent = "phpMyAdmin";
@@ -34,4 +35,5 @@ public class Tomcat8Mysql55ModuleControllerTestIT extends AbstractModuleControll
     protected void checkConnectionDatabase(String forwardedPort) {
         new CheckDatabaseConnection().invoke(forwardedPort, "MYSQL_USER",
                 "MYSQL_PASSWORD", "MYSQL_DATABASE", "com.mysql.jdbc.Driver", "jdbc:mysql://");
-    }}
+    }
+}

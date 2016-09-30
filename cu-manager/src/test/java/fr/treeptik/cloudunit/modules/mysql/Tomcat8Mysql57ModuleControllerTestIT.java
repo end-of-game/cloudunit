@@ -25,6 +25,7 @@ public class Tomcat8Mysql57ModuleControllerTestIT extends AbstractModuleControll
     public Tomcat8Mysql57ModuleControllerTestIT() {
         super.server = "tomcat-8";
         super.module = "mysql-5-7";
+        super.numberPort = "3306";
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
         super.managerPageContent = "phpMyAdmin";

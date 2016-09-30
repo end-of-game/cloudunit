@@ -5,5 +5,6 @@
 ./postgre.sh
 ./mysql.sh
 ./activemq.sh
+./apache.sh
 
 

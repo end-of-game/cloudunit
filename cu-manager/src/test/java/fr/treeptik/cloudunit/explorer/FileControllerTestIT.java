@@ -70,7 +70,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     CloudUnitApplicationContext.class,
     MockServletContext.class
 })
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
 public class FileControllerTestIT {
 
@@ -184,6 +183,7 @@ public class FileControllerTestIT {
         resultActions.andExpect(status().isOk());
         String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
         Assert.assertTrue("File contains keyword 'Context'", contentAsString.contains("Context"));
+        deleteApplication();
     }
 
     @Test

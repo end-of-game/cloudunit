@@ -25,6 +25,7 @@ public class Tomcat8Postgres93ModuleControllerTestIT extends AbstractModuleContr
     public Tomcat8Postgres93ModuleControllerTestIT() {
         super.server = "tomcat-8";
         super.module = "postgresql-9-3";
+        super.numberPort = "5432";
         super.managerPrefix = "phppgadmin";
         super.managerSuffix = "phppgadmin";
         super.managerPageContent = "phpPgAdmin";
