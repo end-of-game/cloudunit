@@ -84,7 +84,6 @@ services:
           - /etc/timezone:/etc/timezone:ro
       depends_on:
           - dnsdock
-          - tomcat
 
   tomcat:
       container_name: cuplatform_tomcat_1
@@ -100,6 +99,7 @@ services:
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - MYSQL_ROOT_PASSWORD
       depends_on:
+          - gitlab
           - dnsdock
           - mysql
           - java
