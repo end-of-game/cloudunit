@@ -14,7 +14,6 @@
 #!/usr/bin/env bash
 
 docker rm -vf $(docker ps -aq)
-docker run -d --name java cloudunit/java
 docker-compose up -d
 docker-compose logs -f
 

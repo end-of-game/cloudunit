@@ -8,6 +8,10 @@ services:
     image: cloudunit/postgre-9-3
     image: cloudunit/java
 
+  java:
+      container_name: java
+      image: cloudunit/java
+
   dnsdock:
       container_name: cuplatform_dnsdock_1
       image: tonistiigi/dnsdock:v1.10.0
@@ -98,6 +102,7 @@ services:
       depends_on:
           - dnsdock
           - mysql
+          - java
 
   cadvisor:
       container_name: cuplatform_advisor_1
@@ -115,3 +120,10 @@ services:
           - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
 
+  gitlab:
+      container_name: cuplatform_gitlab_1
+      image: gitlab/gitlab-ce:8.8.3-ce.0
+      volumes:
+          - /home/admincu/gitlab_home/config:/etc/gitlab
+          - /home/admincu/gitlab_home/logs:/var/log/gitlab
+          - /home/admincu/gitlab_home/data:/var/opt/gitlab
