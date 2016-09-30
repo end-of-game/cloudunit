@@ -79,7 +79,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         CloudUnitApplicationContext.class,
         MockServletContext.class
 })
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:sql/beforeAliasTest.sql")
 public class AliasControllerTestIT {
@@ -195,7 +194,7 @@ public class AliasControllerTestIT {
     }
 
     @Test(timeout = 120000)
-    public void test00_createAliasTest() throws Exception {
+    public void test_createAliasTest() throws Exception {
         logger.info("*********************************************************");
         logger.info("create an alias for the application : " + applicationName1);
         logger.info("*********************************************************");
@@ -242,23 +241,12 @@ public class AliasControllerTestIT {
         resultats.andExpect(status().is4xxClientError());
     }
 
-    @Test(timeout = 60000)
-    public void test10_CreationWithWrongSyntax() throws Exception {
+    @Test
+    public void test_CreationWithWrongSyntax() throws Exception {
+
         creationWithWrongSyntax("http://");
-    }
-
-    @Test(timeout = 60000)
-    public void test11_CreationWithWrongSyntax() throws Exception {
         creationWithWrongSyntax("https://");
-    }
-
-    @Test(timeout = 60000)
-    public void test12_CreationWithWrongSyntax() throws Exception {
         creationWithWrongSyntax("ftp://");
-    }
-
-    @Test(timeout = 60000)
-    public void test20_CreationWithWrongSyntax() throws Exception {
 
         String wrongAlias = "hello://" + alias;
         String jsonString = "{\"applicationName\":\"" + applicationName1 + "\",\"alias\":\"" + wrongAlias + "\"}";
@@ -298,8 +286,8 @@ public class AliasControllerTestIT {
 
     }
 
-    @Test(timeout = 60000)
-    public void test30_CreationThenDelete() throws Exception {
+    @Test
+    public void test_CreationThenDelete() throws Exception {
 
         logger.info("*********************************************************");
         logger.info("Create an alias then delete it");
