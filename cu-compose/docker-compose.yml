@@ -124,8 +124,12 @@ services:
 
   gitlab:
       container_name: cuplatform_gitlab_1
-      image: gitlab/gitlab-ce:8.8.3-ce.0
+      image: gitlab/gitlab-ce:latest
       volumes:
           - /home/admincu/gitlab_home/config:/etc/gitlab
           - /home/admincu/gitlab_home/logs:/var/log/gitlab
           - /home/admincu/gitlab_home/data:/var/opt/gitlab
+      hostname: 'gitlab-g2c.cloudunit.io'
+      environment:
+        GITLAB_OMNIBUS_CONFIG: |
+          external_url 'https://gitlab-g2c.cloudunit.io'
