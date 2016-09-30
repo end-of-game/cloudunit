@@ -6,6 +6,6 @@ package fr.treeptik.cloudunit.cli.integration.application;
 public class Tomcat7ApplicationCommandsIT extends AbstractApplicationCommandsIT {
 
     public Tomcat7ApplicationCommandsIT() {
-        super.serverType = "tomcat-7";
+        super("tomcat-7");
     }
 }

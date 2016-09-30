@@ -1,27 +1,25 @@
 package fr.treeptik.cloudunit.cli.integration.server;
 
-import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
-import fr.treeptik.cloudunit.dto.Command;
-import org.junit.*;
-import org.junit.runners.MethodSorters;
+import java.util.Random;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ComparisonFailure;
+import org.junit.Test;
 import org.springframework.shell.core.CommandResult;
 
-import java.util.Random;
+import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
 
 /**
  * Created by guillaume on 16/10/15.
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationTest {
-
-    private static String applicationName;
     private static String volumeName;
-    protected String serverType;
     private CommandResult cr;
 
-    @BeforeClass
-    public static void generateApplication() {
-        applicationName = "app" + new Random().nextInt(10000);
+    protected AbstractServerCommandsIT(String serverType) {
+        super(serverType);
     }
 
     @Before
@@ -38,7 +36,7 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
 
     @Test
     public void test00_shouldChangeJavaVersion() {
-        useApplication();
+        useApplication(applicationName);
         changeJavaVersion("jdk1.8.0_25");
     }
 
@@ -54,18 +52,18 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
         cr = getShell().executeCommand("change-java-version --javaVersion jdk1.8.0_25");
         String result = cr.getResult().toString();
         String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+        Assert.assertThat(result, Matchers.containsString(expectedResult));
     }*/
 
     @Test(expected = ComparisonFailure.class)
     public void test03_shouldNotChangeJavaVersionBecauseJDKValueDoesNotExist() {
-        useApplication();
+        useApplication(applicationName);
         changeJavaVersion("jdk1.XXX");
     }
 
     @Test
     public void test10_shouldChangeMemory() {
-        useApplication();
+        useApplication(applicationName);
         changeJavaMemory(1024);
     }
 
@@ -81,19 +79,19 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
         cr = getShell().executeCommand("change-jvm-memory --size 1024");
         String result = cr.getResult().toString();
         String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+        Assert.assertThat(result, Matchers.containsString(expectedResult));
 
     }*/
 
     @Test(expected = ComparisonFailure.class)
     public void test10_shouldNotChangeMemoryBecauseJVMSizeIsNotAuthorized() {
-        useApplication();
+        useApplication(applicationName);
         changeJavaMemory(128);
     }
 
     @Test
     public void test20_shouldChangeJavaOpts() {
-        useApplication();
+        useApplication(applicationName);
         addJVMOption("-Dkey=value");
     }
 
@@ -103,28 +101,9 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
         addJVMOption("-Dkey=value");
     }
 
-    /*@Test
-    public void test22_shouldNotChangeJavaOptsBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("add-jvm-option \"-Dkey=value\"");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-    @Test
-    public void test90_cleanEnv() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
-        String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
-        Assert.assertEquals(expectedResult, result);
-    }*/
-
-
     @Test
     public void test30_mountAndUnmountVolumeOnApplication() {
-        useApplication();
+        useApplication(applicationName);
         createVolume(volumeName);
         mountVolume("/cloudunit/", volumeName);
         unmountVolume("dev-johndoe-" + applicationName + "-" +
@@ -134,7 +113,7 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
 
     @Test(expected = NullPointerException.class)
     public void test31_shouldNotMountVolumeOnApplicationPathEmpty() {
-        useApplication();
+        useApplication(applicationName);
         createVolume(volumeName);
         mountVolume("", volumeName);
         removeVolume(volumeName);
@@ -142,14 +121,14 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
 
     @Test(expected = NullPointerException.class)
     public void test32_shouldNotMountVolumeOnApplicationVolumeNameEmpty() {
-        useApplication();
+        useApplication(applicationName);
         mountVolume("/cloudunit/", "");
         removeVolume(volumeName);
     }
 
     @Test(expected = ComparisonFailure.class)
     public void test33_shouldNotMountVolumeOnApplicationPathUnconsistent() {
-        useApplication();
+        useApplication(applicationName);
         createVolume(volumeName);
         mountVolume(".", volumeName);
         removeVolume(volumeName);
@@ -157,14 +136,14 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
 
     @Test(expected = ComparisonFailure.class)
     public void test34_shouldNotMountVolumeOnApplicationVolumeNameNonExistant() {
-        useApplication();
+        useApplication(applicationName);
         mountVolume("/cloudunit/", "volumeTest");
         removeVolume(volumeName);
     }
 
     @Test(expected = NullPointerException.class)
     public void test41_shouldNotUnmountVolumeOnApplicationContainerNameEmpty() {
-        useApplication();
+        useApplication(applicationName);
         createVolume(volumeName);
         mountVolume("/cloudunit/", volumeName);
         unmountVolume("", volumeName);
@@ -173,7 +152,7 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
 
     @Test(expected = ComparisonFailure.class)
     public void test42_shouldNotUnmountVolumeOnApplicationVolumeNameEmpty() {
-        useApplication();
+        useApplication(applicationName);
         mountVolume("/cloudunit/", volumeName);
         unmountVolume("dev-johndoe-" + applicationName + "-" +
                 serverType, "");
@@ -182,21 +161,11 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
 
     @Test(expected = ComparisonFailure.class)
     public void test43_shouldNotUnmountVolumeOnApplicationVolumeNameNotExistant() {
-        useApplication();
+        useApplication(applicationName);
         mountVolume("/cloudunit/", volumeName);
         unmountVolume("dev-johndoe-" + applicationName + "-" +
                 serverType, "volumeTest");
         removeVolume(volumeName);
-    }
-
-    private void useApplication() {
-        cr = getShell().executeCommand("use " + applicationName);
-        Assert.assertTrue("Use Application", cr.isSuccess());
-    }
-
-    private void createApplication() {
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        Assert.assertTrue("Create Application", cr.isSuccess());
     }
 
     private void deleteApplication() {

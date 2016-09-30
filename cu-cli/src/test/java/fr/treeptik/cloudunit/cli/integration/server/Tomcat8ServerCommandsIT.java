@@ -6,6 +6,6 @@ package fr.treeptik.cloudunit.cli.integration.server;
 public class Tomcat8ServerCommandsIT extends AbstractServerCommandsIT {
 
     public Tomcat8ServerCommandsIT() {
-        super.serverType = "tomcat-8";
+        super("tomcat-8");
     }
 }
