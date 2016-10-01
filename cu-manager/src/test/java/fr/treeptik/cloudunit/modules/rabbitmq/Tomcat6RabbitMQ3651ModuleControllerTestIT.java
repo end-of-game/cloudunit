@@ -13,20 +13,19 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules.activemq;
+package fr.treeptik.cloudunit.modules.rabbitmq;
 
 import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
-import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
 
 /**
- * Created by nicolas on 04/10/15.
+ * Created by guillaume on 01/10/16.
  */
-public class Tomcat6ActiveMQ5132ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Tomcat6RabbitMQ3651ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat6ActiveMQ5132ModuleControllerTestIT() {
+    public Tomcat6RabbitMQ3651ModuleControllerTestIT() {
         super.server = "tomcat-8";
-        super.module = "activemq-5.13.2";
-        super.numberPort = "61616";
+        super.module = "rabbitmq-3.6.5-1";
+        super.numberPort = "5672";
         super.managerPrefix = "";
         super.managerSuffix = "";
         super.managerPageContent = "";
@@ -34,7 +33,7 @@ public class Tomcat6ActiveMQ5132ModuleControllerTestIT extends AbstractModuleCon
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseBroker().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
-                "ACTIVEMQ_ADMIN_PASSWORD", "ACTIVEMQ_NAME");
+        new CheckDatabaseBroker().invoke(forwardedPort, "RABBITMQ_DEFAULT_USER",
+                "RABBITMQ_DEFAULT_PASS", "RABBITMQ_DEFAULT_VHOST", "AMQP");
     }
 }

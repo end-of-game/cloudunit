@@ -402,6 +402,12 @@
 			<version>5.13.3</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+			<version>1.6.3.RELEASE</version>
+		</dependency>
+
 	</dependencies>
 
 	<!-- PROFILES -->

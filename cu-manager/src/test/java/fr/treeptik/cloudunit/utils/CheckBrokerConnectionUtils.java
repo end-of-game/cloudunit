@@ -2,6 +2,10 @@ package fr.treeptik.cloudunit.utils;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -30,6 +34,31 @@ public class CheckBrokerConnectionUtils {
         });
         TextMessage receivedMessage = (TextMessage) jmsTemplate.receive(destination);
         return receivedMessage.getText();
+    }
+
+    public String checkRabbitMQAMQPProtocol(String messageAsString,
+                                            String url,
+                                            String user,
+                                            String password,
+                                            String vhost) throws Exception {
+        org.springframework.amqp.rabbit.connection.CachingConnectionFactory cf =
+                new org.springframework.amqp.rabbit.connection.CachingConnectionFactory();
+        cf.setHost(url);
+        cf.setUsername(user);
+        cf.setPassword(password);
+        cf.setVirtualHost(vhost);
+        RabbitAdmin admin = new RabbitAdmin(cf);
+        org.springframework.amqp.core.Queue queue = new org.springframework.amqp.core.Queue("myQueue");
+        admin.declareQueue(queue);
+        TopicExchange exchange = new TopicExchange("myExchange");
+        admin.declareExchange(exchange);
+        admin.declareBinding(
+                BindingBuilder.bind(queue).to(exchange).with("foo.*"));
+        RabbitTemplate template = new RabbitTemplate(cf);
+        template.convertAndSend("myExchange", "foo.bar", messageAsString);
+        String receivedMessage = template.receiveAndConvert("myQueue").toString();
+        System.out.println(receivedMessage);
+        return receivedMessage;
     }
 
 }

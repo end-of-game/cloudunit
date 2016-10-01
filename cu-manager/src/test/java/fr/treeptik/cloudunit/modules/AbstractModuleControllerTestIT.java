@@ -451,7 +451,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
      */
     public class CheckDatabaseBroker {
         public void invoke(String forwardedPort, String keyUser, String keyPassword,
-                           String keyDB) {
+                           String keyDB, String protocol) {
             String user = null;
             String password = null;
             String vhost = null;
@@ -480,7 +480,21 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                         .getValue();
                 String brokerURL = ipVagrantBox+":"+forwardedPort;
                 String message = "Hello world!";
-                Assert.assertEquals(message, checkBrokerConnectionUtils.checkActiveMQJMSProtocol(message, brokerURL));
+
+                switch(protocol){
+                    case "JMS" :
+                        Assert.assertEquals(message,
+                                checkBrokerConnectionUtils.checkActiveMQJMSProtocol(message, brokerURL));
+                        break;
+                    case "AMQP" :
+                        Assert.assertEquals(message,
+                                checkBrokerConnectionUtils.checkRabbitMQAMQPProtocol(message, brokerURL, user, password, vhost));
+                        break;
+                    default:
+                        throw new RuntimeException("Protocol " + keyDB + " not supported yet");
+                }
+
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.fail();
