@@ -1,6 +1,18 @@
 # vim:set ft=dockerfile:
 FROM cloudunit/base-jessie
 
+## CLOUDUNIT :: BEGINNING
+
+ENV CU_MODULE_PORT 15672
+ENV CU_DEFAULT_LOG_FILE " "
+ENV CU_LOGS " "
+
+# add custom scripts
+ADD scripts /opt/cloudunit/scripts
+RUN chmod +x /opt/cloudunit/scripts/*
+
+## CLOUDUNIT :: END
+
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r rabbitmq && useradd -r -d /var/lib/rabbitmq -m -g rabbitmq rabbitmq
 
@@ -50,5 +62,5 @@ RUN ln -sf /var/lib/rabbitmq/.erlang.cookie /root/
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-EXPOSE 4369 5671 5672 25672
+EXPOSE 4369 5671 5672 25672 15672
 CMD ["rabbitmq-server"]
