@@ -23,8 +23,8 @@ And for modules :
 
 * SQL databases : Mysql, PostGreSQL, PostGis.
 * NoSQL databases : MongoDB
-* Datagrid : Redis
-* Message broker : ActiveMQ, RabbitMQ
+* Datagrids : Redis
+* Message brokers : ActiveMQ, RabbitMQ
 
 Each module in different major releases.
 
