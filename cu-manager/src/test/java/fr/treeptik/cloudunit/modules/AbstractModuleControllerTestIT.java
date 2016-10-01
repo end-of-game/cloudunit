@@ -382,23 +382,26 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     @Test
     public void test_runScript() throws Exception {
         requestAddModule();
-        
         String filename = FilenameUtils.getName(testScriptPath);
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                filename,
-                "application/sql",
-                new FileInputStream(testScriptPath));
-        
-        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
-        
-        ResultActions result = mockMvc.perform(
-                fileUpload("/module/{moduleName}/run-script", genericModule)
-                .file(file)
-                .session(session)
-                .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andDo(print());
-        result.andExpect(status().isOk());
+        if(filename == null){
+            logger.info("No script found - test escape");
+        } else {
+            MockMultipartFile file = new MockMultipartFile(
+                    "file",
+                    filename,
+                    "application/sql",
+                    new FileInputStream(testScriptPath));
+
+            String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
+
+            ResultActions result = mockMvc.perform(
+                    fileUpload("/module/{moduleName}/run-script", genericModule)
+                            .file(file)
+                            .session(session)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
+                    .andDo(print());
+            result.andExpect(status().isOk());
+        }
     }
 
     /**
@@ -409,8 +412,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         public void invoke(String forwardedPort, String keyUser, String keyPassword,
                            String keyDB, String driver, String jdbcUrlPrefix) {
-
-
             try {
                 String urlToCall = "/application/" + applicationName + "/container/"+getContainerName()+"/env";
                 ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
