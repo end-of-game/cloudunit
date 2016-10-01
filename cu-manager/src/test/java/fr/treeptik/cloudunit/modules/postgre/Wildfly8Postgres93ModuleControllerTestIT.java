@@ -50,9 +50,9 @@ import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 /**
  * Created by nicolas on 04/10/15.
  */
-public class JBoss8Postgres93ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Wildfly8Postgres93ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public JBoss8Postgres93ModuleControllerTestIT() {
+    public Wildfly8Postgres93ModuleControllerTestIT() {
         super.server = "wildfly-8";
         super.module = "postgresql-9-3";
         super.numberPort = "5432";
@@ -62,7 +62,7 @@ public class JBoss8Postgres93ModuleControllerTestIT extends AbstractModuleContro
     }
 
     @Override
-    protected void checkConnectionDatabase(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) {
         new CheckDatabaseConnection().invoke(forwardedPort, "POSTGRES_USER",
                 "POSTGRES_PASSWORD", "POSTGRES_DB", "org.postgresql.Driver", "jdbc:postgresql://");
     }

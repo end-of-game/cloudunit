@@ -387,6 +387,21 @@
 			<artifactId>java-gitlab-api</artifactId>
 			<version>1.2.5</version>
 		</dependency>
+
+		<!-- Libraries for tests -->
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+			<version>5.13.3</version>
+		</dependency>
+
 	</dependencies>
 
 	<!-- PROFILES -->

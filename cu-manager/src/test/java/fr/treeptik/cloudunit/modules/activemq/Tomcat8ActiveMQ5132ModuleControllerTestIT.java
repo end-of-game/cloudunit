@@ -13,28 +13,27 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules.mysql;
+package fr.treeptik.cloudunit.modules.activemq;
 
 import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 
 /**
  * Created by nicolas on 04/10/15.
  */
-public class Tomcat8Mysql56ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Tomcat8ActiveMQ5132ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat8Mysql56ModuleControllerTestIT() {
-        super.server = "tomcat-8";
-        super.module = "mysql-5-6";
-        super.numberPort = "3306";
-        super.managerPrefix = "phpmyadmin";
-        super.managerSuffix = "phpmyadmin";
-        super.managerPageContent = "phpMyAdmin";
-        super.testScriptPath = "src/test/resources/mysql/test.sql";
+    public Tomcat8ActiveMQ5132ModuleControllerTestIT() {
+        super.server = "tomcat-6";
+        super.module = "activemq-5.13.2";
+        super.numberPort = "61616";
+        super.managerPrefix = "";
+        super.managerSuffix = "";
+        super.managerPageContent = "";
     }
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseConnection().invoke(forwardedPort, "MYSQL_USER",
-                "MYSQL_PASSWORD", "MYSQL_DATABASE", "com.mysql.jdbc.Driver", "jdbc:mysql://");
+        new CheckDatabaseBroker().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
+                "ACTIVEMQ_ADMIN_PASSWORD", "ACTIVEMQ_NAME");
     }
 }

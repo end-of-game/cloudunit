@@ -15,25 +15,19 @@
 
 package fr.treeptik.cloudunit.modules;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.io.FileInputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.List;
-import java.util.Random;
-
-import javax.inject.Inject;
-import javax.servlet.Filter;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.treeptik.cloudunit.dto.EnvUnit;
+import fr.treeptik.cloudunit.dto.ModulePortResource;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
+import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
+import junit.framework.TestCase;
 import org.apache.commons.io.FilenameUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,17 +52,19 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import java.io.FileInputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.List;
+import java.util.Random;
 
-import fr.treeptik.cloudunit.dto.EnvUnit;
-import fr.treeptik.cloudunit.dto.ModulePortResource;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
-import junit.framework.TestCase;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 /**
  * Tests for Module lifecycle
@@ -117,6 +113,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
     private String subdomain;
+
+    @Inject
+    private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
 
     protected String server;
     protected String module;
@@ -351,7 +350,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         	.andExpect(status().isOk());
 
         SpyMatcherDecorator<Integer> responseModuleIdSpy = new SpyMatcherDecorator<>(Integer.class);
-        SpyMatcherDecorator<String> forwardedPort = new SpyMatcherDecorator<>(String.class);
+        SpyMatcherDecorator<List> forwardedPort = new SpyMatcherDecorator<>(List.class);
 
         requestApplication()
             .andExpect(status().isOk())
@@ -363,13 +362,16 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         requestApplication()
                 .andExpect(status().isOk())
+                .andDo(print());
+        requestApplication()
+                .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.modules[0].ports[0].hostValue", forwardedPort));
-
-        checkConnectionDatabase(forwardedPort.getMatchedValue());
+                .andExpect(jsonPath(String.format("$.modules[0].ports[?(@.containerValue == %s)].hostValue", numberPort)
+                        , forwardedPort));
+        checkConnection(forwardedPort.getMatchedValue().stream().findFirst().get().toString());
     }
 
-    protected abstract void checkConnectionDatabase(String forwardedPort);
+    protected abstract void checkConnection(String forwardedPort);
 
     private String getContainerName() {
         return "int-johndoe-"+applicationName+"-"+module;
@@ -441,6 +443,51 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 } catch (Exception ignore){}
             }
         }
+    }
+
+    /**
+     * Inner class to check message broker
+     *
+     */
+    public class CheckDatabaseBroker {
+        public void invoke(String forwardedPort, String keyUser, String keyPassword,
+                           String keyDB) {
+            String user = null;
+            String password = null;
+            String vhost = null;
+            String urlToCall = "/application/" + applicationName + "/container/" + getContainerName() + "/env";
+            String contentResult = null;
+            try {
+                ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
+                contentResult = resultats.andReturn().getResponse().getContentAsString();
+                List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>() {
+                });
+                contentResult = resultats.andReturn().getResponse().getContentAsString();
+                user = envs.stream()
+                        .filter(e -> e.getKey().equals(keyUser))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Missing " + keyUser))
+                        .getValue();
+                password = envs.stream()
+                        .filter(e -> e.getKey().equals(keyPassword))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Missing " + keyPassword))
+                        .getValue();
+                vhost = envs.stream()
+                        .filter(e -> e.getKey().equals(keyDB))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Missing " + keyDB))
+                        .getValue();
+                String brokerURL = ipVagrantBox+":"+forwardedPort;
+                String message = "Hello world!";
+                Assert.assertEquals(message, checkBrokerConnectionUtils.checkActiveMQJMSProtocol(message, brokerURL));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.fail();
+            }
+
+        }
+
     }
 
     private ResultActions requestPublishPort(Integer id, String number) throws Exception {
