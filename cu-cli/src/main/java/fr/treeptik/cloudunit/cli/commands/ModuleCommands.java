@@ -14,12 +14,15 @@
  */
 package fr.treeptik.cloudunit.cli.commands;
 
-import fr.treeptik.cloudunit.cli.utils.ModuleUtils;
+import java.io.File;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.core.CommandMarker;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
+
+import fr.treeptik.cloudunit.cli.utils.ModuleUtils;
 
 @Component
 public class ModuleCommands implements CommandMarker {
@@ -66,6 +69,14 @@ public class ModuleCommands implements CommandMarker {
     @CliCommand(value = "display-modules", help = "Display informations about all modules of the current application")
     public String getApplication() {
         return moduleUtils.getListModules();
+    }
+    
+    @CliCommand(value = "run-script", help = "Run a script inside a module of the current application")
+    public String runScript(
+            @CliOption(key = "name", mandatory = true, help = "Name of the module") String moduleName,
+            @CliOption(key = "path", mandatory = true, help = "Path of the script") File file
+            ) {
+        return moduleUtils.runScript(moduleName, file);
     }
 
 }

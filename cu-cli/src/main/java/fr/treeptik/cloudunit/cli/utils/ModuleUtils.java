@@ -16,11 +16,15 @@
 package fr.treeptik.cloudunit.cli.utils;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
@@ -198,6 +202,28 @@ public class ModuleUtils {
 
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
+    }
+
+    public String runScript(String moduleName, File file) {
+        Optional<Module> module = applicationUtils.getApplication().getModules().stream()
+            .filter(m -> m.getName().endsWith(moduleName))
+            .findAny();
+        
+        if (!module.isPresent()) {
+            throw new IllegalArgumentException(
+                    MessageFormat.format("The application {0} doesn't have the specified module.", applicationName));
+        }
+        
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("file", new FileSystemResource(file));
+        parameters.putAll(authentificationUtils.getMap());
+        String url = String.format("%s%s%s/run-script",
+            authentificationUtils.finalHost,
+            urlLoader.modulePrefix,
+            module.get().getName());
+        log.log(Level.INFO, url);
+        restUtils.sendPostForUpload(url, parameters);
+        return "The script has been run.";
     }
 
 }

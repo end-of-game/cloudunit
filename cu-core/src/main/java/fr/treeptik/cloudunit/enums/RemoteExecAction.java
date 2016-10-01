@@ -11,6 +11,7 @@ public enum RemoteExecAction {
     ADD_USER("Add user for admin console", "/opt/cloudunit/scripts/add-user.sh CU_USER CU_PASSWORD"),
     CHANGE_CU_RIGHTS("Change rights for user CloudUnit", "chown -R cloudunit:cloudunit /opt/cloudunit"),
     CHECK_RUNNING("Check running", "/opt/cloudunit/scripts/check-running.sh CU_USER CU_PASSWORD"),
+    RUN_SCRIPT("Run script", "/opt/cloudunit/scripts/run-script.sh CU_FILE"),
     CHMOD_PLUSX("Check running", "chmod +x"),
     DEPLOY("Deploy application", "/opt/cloudunit/scripts/deploy.sh CU_USER CU_PASSWORD CU_FILE CU_CONTEXT_PATH"),
     CLEAN_DEPLOY("Clean temporary deployment files", "rm CU_TARGET"),

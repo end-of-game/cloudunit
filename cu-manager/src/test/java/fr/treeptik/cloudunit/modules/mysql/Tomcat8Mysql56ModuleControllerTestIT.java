@@ -29,6 +29,7 @@ public class Tomcat8Mysql56ModuleControllerTestIT extends AbstractModuleControll
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
         super.managerPageContent = "phpMyAdmin";
+        super.testScriptPath = "src/test/resources/mysql/test.sql";
     }
 
     @Override

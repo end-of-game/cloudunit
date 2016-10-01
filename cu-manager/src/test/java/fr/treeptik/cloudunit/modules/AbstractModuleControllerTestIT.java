@@ -16,9 +16,10 @@
 package fr.treeptik.cloudunit.modules;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.List;
@@ -27,9 +28,12 @@ import java.util.Random;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import fr.treeptik.cloudunit.dto.EnvUnit;
-import org.junit.*;
+import org.apache.commons.io.FilenameUtils;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,8 +58,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.treeptik.cloudunit.dto.EnvUnit;
 import fr.treeptik.cloudunit.dto.ModulePortResource;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
@@ -117,6 +124,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     protected String managerPrefix;
     protected String managerSuffix;
     protected String managerPageContent;
+    protected String testScriptPath;
 
     @BeforeClass
     public static void initEnv() {
@@ -365,6 +373,28 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     private String getContainerName() {
         return "int-johndoe-"+applicationName+"-"+module;
+    }
+    
+    @Test
+    public void test_runScript() throws Exception {
+        requestAddModule();
+        
+        String filename = FilenameUtils.getName(testScriptPath);
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                filename,
+                "application/sql",
+                new FileInputStream(testScriptPath));
+        
+        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
+        
+        ResultActions result = mockMvc.perform(
+                fileUpload("/module/{moduleName}/run-script", genericModule)
+                .file(file)
+                .session(session)
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print());
+        result.andExpect(status().isOk());
     }
 
     /**
