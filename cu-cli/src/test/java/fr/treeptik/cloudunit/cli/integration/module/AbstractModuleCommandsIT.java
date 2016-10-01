@@ -108,6 +108,22 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
         assertThat(result, containsString(expected));
     }
 
+    @Test
+    public void test_shouldRunScript() {
+        String moduleName = "mysql-5-7";
+        
+        connect();
+        createApplication();
+        addModule(moduleName);
+        try {
+            CommandResult result = runScript(moduleName, "src/test/resources/test.sql");
+            
+            assertThat(result, isSuccessfulCommand());
+        } finally {
+            removeApplication();
+        }
+    }
+
     private void test_addModule(String moduleName) {
         connect();
         createApplication();
@@ -121,22 +137,25 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
             removeApplication();
         }
     }
-
+    
     private void test_addAndRemoveModule(String moduleName) {
         connect();
         createApplication();
         try {
-            CommandResult cr = addModule(moduleName);
-            assumeThat(cr, isSuccessfulCommand());
+            CommandResult result = addModule(moduleName);
+            assumeThat(result, isSuccessfulCommand());
             
-            cr = removeModule(moduleName);
-            String result = cr.getResult().toString();
-            String expectedResult = String.format("Your module %s-1 is currently being removed from your application %s",
+            result = removeModule(moduleName);
+            String expected = String.format("Your module %s is currently being removed from your application %s",
                     moduleName,
                     applicationName.toLowerCase());
-            assertEquals(expectedResult, result);
+            assertEquals(expected, result.getResult().toString());
         } finally {
             removeApplication();
         }
+    }
+
+    private CommandResult runScript(String moduleName, String scriptPath) {
+        return getShell().executeCommand(String.format("run-script --name %s --path %s", moduleName, scriptPath));
     }
 }
