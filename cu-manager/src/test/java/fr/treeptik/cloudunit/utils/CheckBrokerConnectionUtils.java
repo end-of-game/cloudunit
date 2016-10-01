@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import java.net.URI;
+import java.net.URL;
 
 /**
  * Created by guillaume on 01/10/16.
@@ -43,7 +45,9 @@ public class CheckBrokerConnectionUtils {
                                             String vhost) throws Exception {
         org.springframework.amqp.rabbit.connection.CachingConnectionFactory cf =
                 new org.springframework.amqp.rabbit.connection.CachingConnectionFactory();
-        cf.setHost(url);
+        URL formattedUrl = new URL("http://" + url);
+        cf.setHost(formattedUrl.getHost());
+        cf.setPort(formattedUrl.getPort());
         cf.setUsername(user);
         cf.setPassword(password);
         cf.setVirtualHost(vhost);
@@ -57,7 +61,6 @@ public class CheckBrokerConnectionUtils {
         RabbitTemplate template = new RabbitTemplate(cf);
         template.convertAndSend("myExchange", "foo.bar", messageAsString);
         String receivedMessage = template.receiveAndConvert("myQueue").toString();
-        System.out.println(receivedMessage);
         return receivedMessage;
     }
 
