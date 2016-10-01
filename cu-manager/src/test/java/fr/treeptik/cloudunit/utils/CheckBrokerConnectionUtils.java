@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
-import java.net.URI;
 import java.net.URL;
 
 /**
