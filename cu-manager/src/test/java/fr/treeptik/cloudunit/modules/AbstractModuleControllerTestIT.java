@@ -59,7 +59,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -408,39 +410,27 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         public void invoke(String forwardedPort, String keyUser, String keyPassword,
                            String keyDB, String driver, String jdbcUrlPrefix) {
 
-            String user = null;
-            String password = null;
-            String database = null;
-            Connection connection = null;
 
             try {
                 String urlToCall = "/application/" + applicationName + "/container/"+getContainerName()+"/env";
                 ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
                 String contentResult = resultats.andReturn().getResponse().getContentAsString();
                 List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>(){});
-                user = envs.stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
-                password = envs.stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
-                database = envs.stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
-                String jdbcUrl = jdbcUrlPrefix+ipVagrantBox+":"+forwardedPort+"/" + database;
+                final String user = envs.stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
+                final String password = envs.stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
+                final String database = envs.stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
+                final String jdbcUrl = jdbcUrlPrefix+ipVagrantBox+":"+forwardedPort+"/" + database;
                 Class.forName(driver);
-                int counter = 0;
-                boolean isRight = false;
-                while(counter++ < 5 && !isRight) {
-                    try {
-                        connection = DriverManager.getConnection(jdbcUrl, user, password);
-                        isRight = connection.isValid(1000);
-                    } catch (Exception e) {
-                    }
-                    Thread.sleep(1000);
-                }
-                if (counter >= 5) throw new RuntimeException("Cannot connect to database : " + jdbcUrl);
+                await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
+                       .and().ignoreExceptions()
+                       .until(() -> {
+                           try(final Connection connection = DriverManager.getConnection(jdbcUrl, user, password)){
+                               return  connection.isValid(1000);
+                           }
+                       });
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.fail();
-            } finally {
-                try {
-                    if (connection != null) { connection.close(); }
-                } catch (Exception ignore){}
             }
         }
     }
