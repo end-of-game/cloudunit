@@ -53,37 +53,34 @@
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
       if(vm.app.server.status === 'START') {
-        initialiseEnvVar();
+        initializeEnvVar();
       }
     });
 
-    $scope.$on ( 'application:addModule', refreshEnvVar);
-
     vm.$onInit = function() {
-      
+      if(vm.app) {
+        initializeEnvVar();
+      }
     }
 
     ///////////////////////////////////////////
 
 
-    function initialiseEnvVar() {
+    function initializeEnvVar() {
+      console.log('initializeEnvVar');
         ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
           vm.app.env = data;
 
           angular.forEach(vm.app.modules, function(value, key) {
               vm.portList[value.id] = value.ports;
-              console.log(value);
-              var urlLink = '/application/' + $stateParams.name +'/container/' + value.name + '/env'
-              $http({
-                method: 'GET',
-                url: urlLink
-              }).then(function successCallback(response) {
-                  vm.listEnvModule[value.id] = response.data;
+              ApplicationService.getVariableEnvironment($stateParams.name, value.name)
+              .then(function successCallback(response) {
+                vm.listEnvModule[value.id] = response;
               }, function errorCallback(response) {
-                  console.log(response);
+                console.log('error');
+                console.log(response);
               });
           });
-
         });
     }
 
@@ -91,8 +88,7 @@
       ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name)
       .then ( function (data) {
         vm.app.env = data;
-
-      } )
+      });
     }
 
     function changePort(idModule, imageName, statPort, portInContainer) {
@@ -112,10 +108,8 @@
           data: data
       }).then(function successCallback(response) {
           vm.pendingModules = false; 
-          console.log(response);
       }, function errorCallback(response) {
-          vm.pendingModules = false; 
-          console.log(response);
+          vm.pendingModules = false;
       }); 
     }
 

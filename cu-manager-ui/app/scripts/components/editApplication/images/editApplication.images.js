@@ -119,7 +119,6 @@
     function addModule ( applicationName, imageName ) {
       // @TODO redirection to overview
       ModuleService.addModule ( applicationName, imageName ).then(function (data) {
-        $rootScope.$broadcast('application:addModule');
         vm.errorAdding = null;
         return data;
       } ).catch(function(fallback) {
