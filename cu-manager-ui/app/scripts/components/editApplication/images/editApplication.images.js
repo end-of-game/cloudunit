@@ -61,20 +61,20 @@
         vm.moduleImages = images;
 
 
-        vm.moduleImages.push({
-          displayName:"RabbitMQ",
-          exposedPorts:null,
-          id:9995,
-          imageSubType:null,
-          imageType:"module",
-          managerName:"",
-          moduleEnvironmentVariables:null,
-          name:"rabbitmq",
-          path:"cloudunit/rabbitmq",
-          prefixEnv:"rabbitmq",
-          prefixId:764949268,
-          status:null
-        });
+        // vm.moduleImages.push({
+        //   displayName:"RabbitMQ",
+        //   exposedPorts:null,
+        //   id:9995,
+        //   imageSubType:null,
+        //   imageType:"module",
+        //   managerName:"",
+        //   moduleEnvironmentVariables:null,
+        //   name:"rabbitmq",
+        //   path:"cloudunit/rabbitmq",
+        //   prefixEnv:"rabbitmq",
+        //   prefixId:764949268,
+        //   status:null
+        // });
 
         vm.moduleImages.push({
           displayName:"Unknow module",

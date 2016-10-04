@@ -67,7 +67,6 @@
 
 
     function initializeEnvVar() {
-      console.log('initializeEnvVar');
         ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
           vm.app.env = data;
 
