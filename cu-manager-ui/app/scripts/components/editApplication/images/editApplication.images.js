@@ -59,22 +59,21 @@
 
         // isTemp Key for gray card
         vm.moduleImages = images;
+
+
         vm.moduleImages.push({
-          id: 9999,
-          name: "influxdb",
-          path: "cloudunit/influxdb",
-          displayName: "Influxdb",
-          status: null,
-          isTemp: true
-        });
-        
-        vm.moduleImages.push({
-          id: 9998,
-          name: "mongo-3-2",
-          path: "cloudunit/mongo-3-2",
-          displayName: "Mongo 3.2",
-          status: null,
-          isTemp: true
+          displayName:"RabbitMQ",
+          exposedPorts:null,
+          id:9995,
+          imageSubType:null,
+          imageType:"module",
+          managerName:"",
+          moduleEnvironmentVariables:null,
+          name:"rabbitmq",
+          path:"cloudunit/rabbitmq",
+          prefixEnv:"rabbitmq",
+          prefixId:764949268,
+          status:null
         });
 
         vm.moduleImages.push({
@@ -91,8 +90,6 @@
           prefixId:-864949268,
           status:null
         });
-
-        console.log(vm.moduleImages);
 
         if(vm.typeImage === '') {
           // @TODO foreach
