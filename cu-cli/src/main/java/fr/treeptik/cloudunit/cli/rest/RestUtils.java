@@ -39,11 +39,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
@@ -263,10 +265,14 @@ public class RestUtils {
      * @throws ClientProtocolException
      */
     public Map<String, Object> sendPostForUpload(String url, Map<String, Object> parameters) {
-        RestTemplate restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setBufferRequestBody(false);
+        
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
         List<HttpMessageConverter<?>> mc = restTemplate.getMessageConverters();
         mc.add(new MappingJackson2HttpMessageConverter());
         restTemplate.setMessageConverters(mc);
+        
         MultiValueMap<String, Object> postParams = new LinkedMultiValueMap<String, Object>();
         postParams.setAll(parameters);
         Map<String, Object> response = new HashMap<String, Object>();
@@ -274,8 +280,7 @@ public class RestUtils {
         headers.set("Content-Type", "multipart/form-data");
         headers.set("Accept", "application/json");
         headers.add("Cookie", "JSESSIONID=" + localContext.getCookieStore().getCookies().get(0).getValue());
-        org.springframework.http.HttpEntity<Object> request = new org.springframework.http.HttpEntity<Object>(
-                postParams, headers);
+        HttpEntity<Object> request = new HttpEntity<Object>(postParams, headers);
         ResponseEntity<?> result = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
         String body = result.getBody().toString();
         MediaType contentType = result.getHeaders().getContentType();
