@@ -121,6 +121,9 @@ services:
           - /srv/gitlab/logs:/var/log/gitlab
           - /srv/gitlab/data:/var/opt/gitlab
       hostname: 'gitlab-g2c.cloudunit.io'
+      environment:
+          GITLAB_OMNIBUS_CONFIG: |
+              external_url 'https://gitlab-g2c.cloudunit.io'
       network_mode: bridge
 
   jenkins:
