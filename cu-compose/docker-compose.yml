@@ -23,6 +23,8 @@ services:
       image: tutum/hipache:0.3.1
       ports:
           - "80:80"
+      links:
+          - redis:redis
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro

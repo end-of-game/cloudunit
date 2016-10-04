@@ -5,6 +5,7 @@
 ./postgre.sh
 ./mysql.sh
 ./activemq.sh
+./rabbitmq.sh
 ./apache.sh
 
 
