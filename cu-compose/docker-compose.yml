@@ -113,7 +113,7 @@ services:
 
   gitlab:
       container_name: cuplatform_gitlab_1
-      image: gitlab/gitlab-ce:latest
+      image: gitlab/gitlab-ce:8.12.3-ce.0
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
