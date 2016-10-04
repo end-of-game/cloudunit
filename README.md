@@ -19,7 +19,14 @@ Today we have many servers :
 * JBoss / WildFly 10 in progress
 * FatJar for SpringBoot, Vertx, PlayFramework...
 
-And for modules : Mysql, Redis, Mongo, PostGreSQL, PostGis. Each module in different major release.
+And for modules :
+
+* SQL databases : Mysql, PostGreSQL, PostGis.
+* NoSQL databases : MongoDB
+* Datagrids : Redis
+* Message brokers : ActiveMQ, RabbitMQ
+
+Each module in different major releases.
 
 ![Jenkins2 Logo](documentation/img/cloudunitv2.png "Devops Plateforme")
 

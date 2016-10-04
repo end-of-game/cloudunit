@@ -13,28 +13,27 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules.mysql;
+package fr.treeptik.cloudunit.modules.rabbitmq;
 
 import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 
 /**
- * Created by nicolas on 04/10/15.
+ * Created by guillaume on 01/10/16.
  */
-public class Tomcat8Mysql56ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Tomcat8RabbitMQ3651ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat8Mysql56ModuleControllerTestIT() {
-        super.server = "tomcat-8";
-        super.module = "mysql-5-6";
-        super.numberPort = "3306";
-        super.managerPrefix = "phpmyadmin";
-        super.managerSuffix = "phpmyadmin";
-        super.managerPageContent = "phpMyAdmin";
-        super.testScriptPath = "src/test/resources/mysql/test.sql";
+    public Tomcat8RabbitMQ3651ModuleControllerTestIT() {
+        super.server = "tomcat-6";
+        super.module = "rabbitmq-3.6.5-1";
+        super.numberPort = "5672";
+        super.managerPrefix = "";
+        super.managerSuffix = "";
+        super.managerPageContent = "";
     }
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseConnection().invoke(forwardedPort, "MYSQL_USER",
-                "MYSQL_PASSWORD", "MYSQL_DATABASE", "com.mysql.jdbc.Driver", "jdbc:mysql://");
+        new CheckDatabaseBroker().invoke(forwardedPort, "RABBITMQ_DEFAULT_USER",
+                "RABBITMQ_DEFAULT_PASS", "RABBITMQ_DEFAULT_VHOST", "AMQP");
     }
 }

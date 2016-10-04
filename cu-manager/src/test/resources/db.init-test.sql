@@ -24,7 +24,8 @@ INSERT IGNORE INTO `Image`
   (62, 'wildfly-10', 'cloudunit/wildfly-10', 'WildFly 10.0.0', 'wildfly', 'server', '',null),
   (70, 'fatjar', 'cloudunit/fatjar', 'FatJar', 'fatjar', 'server', '',null),
   (80, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', '', null),
-  (90, 'activemq-5.13.2', 'cloudunit/activemq-5.13.2', 'ActiveMQ 5.13.2', 'activemq', 'module', '', 'MESSAGE_BROKER');
+  (90, 'activemq-5.13.2', 'cloudunit/activemq-5.13.2', 'ActiveMQ 5.13.2', 'activemq', 'module', '', 'MESSAGE_BROKER'),
+  (100, 'rabbitmq-3.6.5-1', 'cloudunit/rabbitmq-3.6.5-1', 'RabbitMQ 3.6.5-1', 'rabbitmq', 'module', '', 'MESSAGE_BROKER');
 
 INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariables`,`moduleEnvironmentVariables_KEY`,`Image_id`)
 VALUES
@@ -58,7 +59,11 @@ VALUES
 
     ("ACTIVEMQ_ADMIN_LOGIN", "USER", 90),
     ("ACTIVEMQ_ADMIN_PASSWORD", "PASSWORD", 90),
-    ("ACTIVEMQ_NAME", "NAME", 90);
+    ("ACTIVEMQ_NAME", "NAME", 90),
+
+    ("RABBITMQ_DEFAULT_USER", "USER", 100),
+    ("RABBITMQ_DEFAULT_PASS", "PASSWORD", 100),
+    ("RABBITMQ_DEFAULT_VHOST", "NAME", 100);
 
 
 INSERT IGNORE INTO `Image_exposedPorts` (`exposedPorts`,`exposedPorts_KEY`,`Image_id`)
@@ -83,7 +88,12 @@ VALUES
 ("5672", "AMQP", 90),
 ("1883", "MQTT", 90),
 ("61613", "STOMP", 90),
-("61614", "WEBSERVICES", 90);
+("61614", "WEBSERVICES", 90),
+
+-- rabbitmq ports values --
+
+("15672", "WEBCONSOLE", 100),
+("5672", "AMQP", 100);
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
