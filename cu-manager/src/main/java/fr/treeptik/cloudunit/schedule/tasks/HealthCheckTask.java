@@ -15,23 +15,34 @@
 
 package fr.treeptik.cloudunit.schedule.tasks;
 
+import fr.treeptik.cloudunit.service.HealthCheckService;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * Created by nicolas on 27/11/2015.
  */
 @Component
-public class MonitorTask {
+public class HealthCheckTask {
 
-	public void run() {
-		System.out.println("Monitoring cloudunit containers");
+	@Inject
+	private HealthCheckService healthCheckService;
+
+    /*
+    Schedule default delay : 5 min
+    */
+	@Scheduled(fixedDelayString = "${healthcheck.delay:300000}")
+	public void monitor() {
+		run();
 	}
 
-	// Each minute
-	@Scheduled(fixedDelay = 60000)
-	private void monitor() {
-		run();
+	@Async
+	public void run() {
+		healthCheckService.checkAndRebootApplications();
 	}
 
 }

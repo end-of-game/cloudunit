@@ -27,7 +27,8 @@ import fr.treeptik.cloudunit.model.User;
 /**
  * Created by Nicolas MULLER on 03/05/16.
  */
-public interface DockerService {
+public interface
+DockerService {
 
 	void addEnv(String containerId, String key, String value) throws FatalDockerJSONException;
 
