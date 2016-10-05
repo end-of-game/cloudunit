@@ -5,18 +5,12 @@ FROM cloudunit/base-jessie
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 
 ## CLOUDUNIT :: BEGINNING
-
 ENV CU_MODULE_PORT 5432
 ENV CU_DEFAULT_LOG_FILE " "
 ENV CU_LOGS " "
-
-# add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
-
 ## CLOUDUNIT :: END
-
-
 
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
@@ -43,6 +37,7 @@ RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys B97B0AFCAA1A4
 
 ENV PG_MAJOR 9.4
 ENV PG_VERSION 9.4.9-1.pgdg80+1
+ENV POSTGIS_MAJOR 2.1
 
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
 
@@ -52,6 +47,8 @@ RUN apt-get update \
 	&& apt-get install -y \
 		postgresql-$PG_MAJOR=$PG_VERSION \
 		postgresql-contrib-$PG_MAJOR=$PG_VERSION \
+		postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
+        postgis-$POSTGIS_MAJOR \
 	&& rm -rf /var/lib/apt/lists/*
 
 # make the sample config easier to munge (and "correct by default")
