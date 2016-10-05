@@ -13,11 +13,25 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.monitor;
+package fr.treeptik.cloudunit.schedule.tasks;
+
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by nicolas on 27/11/2015.
  */
-public interface Task {
-    public void run();
+@Component
+public class MonitorTask {
+
+	public void run() {
+		System.out.println("Monitoring cloudunit containers");
+	}
+
+	// Each minute
+	@Scheduled(fixedDelay = 60000)
+	private void monitor() {
+		run();
+	}
+
 }
