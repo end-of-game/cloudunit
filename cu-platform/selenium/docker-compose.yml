@@ -1,20 +1,30 @@
 version: "2"
 services:
   hub:
+    container_name: selenium-hub
     image: selenium/hub
     ports:
       - "4444:4444"
+    network_mode: bridge
   firefox:
-    image: selenium/node-firefox
+    container_name: selenium-firefox
+    image: selenium/node-firefox-debug
     environment:
-      - HUB_PORT_4444_TCP_ADDR=hub
+      - HUB_PORT_4444_TCP_ADDR=selenium-hub.hub.cloud.unit
       - HUB_PORT_4444_TCP_PORT=4444
+    ports:
+      - "5900:5900"
+    network_mode: bridge
     depends_on:
       - hub
   chrome:
-    image: selenium/node-chrome
+    container_name: selenium-chrome
+    image: selenium/node-chrome-debug
     environment:
-      - HUB_PORT_4444_TCP_ADDR=hub
+      - HUB_PORT_4444_TCP_ADDR=selenium-hub.hub.cloud.unit
       - HUB_PORT_4444_TCP_PORT=4444
+    ports:
+      - "5901:5900"
+    network_mode: bridge
     depends_on:
       - hub
