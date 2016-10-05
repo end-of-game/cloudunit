@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.treeptik.cloudunit.utils.StaticSpringApplicationContext;
 import org.apache.log4j.Logger;
 
 import fr.treeptik.cloudunitmonitor.docker.DockerContainerJSON;
 import fr.treeptik.cloudunitmonitor.exception.DockerJSONException;
-import fr.treeptik.cloudunitmonitor.utils.StaticSpringApplicationContext;
 
 public class DockerContainer {
 

@@ -14,17 +14,17 @@
 		<redis.port>6379</redis.port>
 		<version.java>1.8</version.java>
 		<maven.compiler.plugin>2.5.1</maven.compiler.plugin>
-		<spring.version>4.0.0.RELEASE</spring.version>
-		<spring.security.version>3.2.0.RELEASE</spring.security.version>
-		<hibernate.version>4.3.11.Final</hibernate.version>
-		<codahale.metrics.version>3.0.1</codahale.metrics.version>
+        <spring.version>4.3.0.RELEASE</spring.version>
+        <spring.security.version>3.2.6.RELEASE</spring.security.version>
+        <hibernate.version>5.1.0.Final</hibernate.version>
+        <codahale.metrics.version>3.0.1</codahale.metrics.version>
 		<mail.apiKey>154644e23e0a831f5d0e87554e5a8e33</mail.apiKey>
 		<mail.secretKey>85f4801030f3296738e232935570fc50</mail.secretKey>
 		<mail.emailFrom>support@cloudunit.fr</mail.emailFrom>
 		<mail.smtpHost>in.mailjet.com</mail.smtpHost>
 		<mail.socketFactoryPort>587</mail.socketFactoryPort>
 		<mail.smtpPort>587</mail.smtpPort>
-		<support.email>c.wahl@treeptik.fr</support.email>
+		<support.email>n.muller@treeptik.fr</support.email>
 		<mysql.url.prefix>jdbc:mysql://</mysql.url.prefix>
 		<mysql.url.suffix>:3306/cloudunit?useUnicode=true&amp;characterEncoding=UTF-8&amp;useFastDateParsing=false
 		</mysql.url.suffix>
@@ -41,6 +41,12 @@
 			<artifactId>cu-core</artifactId>
 			<version>1.0</version>
 		</dependency>
+
+        <dependency>
+            <groupId>fr.treeptik</groupId>
+            <artifactId>cu-docker-api</artifactId>
+            <version>1.0</version>
+        </dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>

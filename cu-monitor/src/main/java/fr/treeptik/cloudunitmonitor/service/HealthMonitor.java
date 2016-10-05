@@ -13,13 +13,13 @@ import javax.mail.MessagingException;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunitmonitor.docker.model.DockerContainer;
+import fr.treeptik.cloudunitmonitor.docker.model.DockerContainerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import fr.treeptik.cloudunitmonitor.docker.model.DockerContainer;
-import fr.treeptik.cloudunitmonitor.docker.model.DockerContainerBuilder;
 import fr.treeptik.cloudunitmonitor.exception.DockerJSONException;
 import fr.treeptik.cloudunitmonitor.exception.ServiceException;
 import fr.treeptik.cloudunit.model.ErrorMessage;
