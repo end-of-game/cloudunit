@@ -46,10 +46,12 @@ var DashboardPage = (function () {
          
           self.dropdownToggle.sendKeys(protractor.Key.ENTER);
           for(var i = 0; i < serverChoice; i++) {
+
             self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
           }
 
           self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+
           browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
           // self.createBtn.click();
           //var selectorAppNameQuery = '#application-' + appName;
@@ -57,19 +59,30 @@ var DashboardPage = (function () {
           //var EC = protractor.ExpectedConditions;
           browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
           //button.click();
+
+
+          self.createBtn.click().then(function () {
+            
+            // element(by.css('.pending')).isPresent().then(function(result) {
+            //     if ( result ) {
+            //       browser.wait(element(by.css('.pending')).getWebElement(), browser.params.sleep.large);
+            //     }
+            // });
+          });
+
       });
-      
     }
      this.createAppWithoutWaiting = function (appName, serverChoice) {
       var self = this;
       self.setApplicationName(appName);
       self.dropdownToggle.click().then(function () {
-          self.dropdownToggle.sendKeys(protractor.Key.ENTER);
+
           for(var i = 0; i < serverChoice; i++) {
             self.dropdownToggle.sendKeys(protractor.Key.ARROW_DOWN);  
           }
           self.dropdownToggle.sendKeys(protractor.Key.ENTER);
-          browser.driver.actions().sendKeys(protractor.Key.ENTER).perform();
+
+          self.createBtn.click();
       });
     }
     this.createAppByName = function (appName, serverName) {

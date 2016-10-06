@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -55,6 +56,7 @@ import fr.treeptik.cloudunit.model.VolumeAssociationId;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.VolumeAssociationService;
 import fr.treeptik.cloudunit.service.VolumeService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
@@ -100,6 +102,9 @@ public class ServerServiceImpl implements ServerService {
 	@Inject
 	private VolumeService volumeService;
 
+	@Inject
+	private VolumeAssociationService volumeAssociationService;
+	
 	@Inject
 	private EnvironmentService environmentService;
 
@@ -503,6 +508,11 @@ public class ServerServiceImpl implements ServerService {
 		checkVolumeFormat(volumeAssociationDTO);
 		Server server = findByName(volumeAssociationDTO.getContainerName());
 		Volume volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
+		
+		if(volumeAssociationService.checkVolumeAssociationPathAlreadyPresent(volumeAssociationDTO.getPath(), application.getServer().getId()) > 0) {
+			throw new CheckException("This path is already use !");
+		}
+		
 		volumeService.saveAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume),
 				volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode()));
 		stopAndRemoveServer(server, application);
