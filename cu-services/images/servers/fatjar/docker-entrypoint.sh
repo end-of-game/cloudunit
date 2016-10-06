@@ -9,6 +9,7 @@ if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
 	mv /opt/cloudunit/tmp/$file /opt/cloudunit/fatjar/boot.jar
   fi
   eval "exec java -jar /opt/cloudunit/fatjar/boot.jar  \"\$@\""
+fi
 
 # As argument is not fatjar, assume user want to run his own process, for sample a `bash` shell to explore this image
 exec "$@"
