@@ -1,5 +1,11 @@
 FROM cloudunit/base-14.04
 
+# Add Tini
+ENV TINI_VERSION v0.10.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+ENTRYPOINT ["/tini", "--"]
+
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
@@ -20,6 +26,7 @@ ENV CU_LOGS STDOUT
 ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
 ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
+ENV PATH $PATH:$JAVA_HOME/bin
 ## CLOUDUNIT :: END
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
@@ -28,7 +35,9 @@ USER cloudunit
 
 VOLUME /opt/cloudunit
 
-CMD ["java -jar /opt/cloudunit/fatjar/boot.jar"]
+COPY docker-entrypoint.sh /
+
+ENTRYPOINT ["/tini", "--", "/docker-entrypoint.sh"]
 
 
 
