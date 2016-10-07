@@ -58,7 +58,7 @@ services:
       container_name: cuplatform_mysqldata_1
       image: ubuntu:14.04
       volumes:
-          - /var/lib/mysql
+          - /home/admincu/mysql_home:/var/lib/mysql
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
       network_mode: bridge

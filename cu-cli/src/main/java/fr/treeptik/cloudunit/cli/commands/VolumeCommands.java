@@ -30,7 +30,7 @@ public class VolumeCommands implements CommandMarker {
 		return volumeService.removeVolume(name);
 	}
 
-	@CliCommand(value = "mount-volume", help = "Update a volume")
+	@CliCommand(value = "mount-volume", help = "Mount the volume into the container")
 	public String mountVolume(
 			@CliOption(key = {"volume-name"}, mandatory = true, help = "Name of the volume") String name,
 			@CliOption(key = {"path"}, mandatory = true, help = "Path in the container") String path,
@@ -40,7 +40,7 @@ public class VolumeCommands implements CommandMarker {
 		return serverUtils.mountVolume(name, path, mode, containerName, applicationName);
 	}
 
-	@CliCommand(value = "unmount-volume", help = "Update a volume")
+	@CliCommand(value = "unmount-volume", help = "Unmount the volume from the container")
 	public String mountVolume(
 			@CliOption(key = {"volume-name"}, mandatory = true, help = "Name of the volume") String name,
 			@CliOption(key = {"container-name"}, mandatory = true, help = "Container for the volume") String containerName) {
