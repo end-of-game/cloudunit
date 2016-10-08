@@ -90,6 +90,8 @@ public class DatabaseConfiguration {
         config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         config.addDataSourceProperty("url", databaseUrl);
         config.addDataSourceProperty("user", databaseUser);
+        config.setInitializationFailFast(false);
+        config.setIdleTimeout(60000);
 
         String forcePassword = System.getenv("MYSQL_ROOT_PASSWORD");
         // coming from environnment host
