@@ -1,1 +1,4 @@
 network.host: 0.0.0.0
+path:
+  logs: /usr/share/elasticsearch/logs
+  data: /usr/share/elasticsearch/data
