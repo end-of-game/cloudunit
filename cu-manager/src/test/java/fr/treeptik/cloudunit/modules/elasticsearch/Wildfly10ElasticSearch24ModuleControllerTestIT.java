@@ -13,19 +13,19 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules.rabbitmq;
+package fr.treeptik.cloudunit.modules.elasticsearch;
 
 import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 
 /**
  * Created by guillaume on 01/10/16.
  */
-public class Tomcat6RabbitMQ3651ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Wildfly10ElasticSearch24ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat6RabbitMQ3651ModuleControllerTestIT() {
-        super.server = "tomcat-10";
-        super.module = "rabbitmq-3.6.5-1";
-        super.numberPort = "5672";
+    public Wildfly10ElasticSearch24ModuleControllerTestIT() {
+        super.server = "wildfly-10";
+        super.module = "elasticsearch-2.4";
+        super.numberPort = "9200";
         super.managerPrefix = "";
         super.managerSuffix = "";
         super.managerPageContent = "";
@@ -33,7 +33,7 @@ public class Tomcat6RabbitMQ3651ModuleControllerTestIT extends AbstractModuleCon
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseBroker().invoke(forwardedPort, "RABBITMQ_DEFAULT_USER",
-                "RABBITMQ_DEFAULT_PASS", "RABBITMQ_DEFAULT_VHOST", "AMQP");
+        new CheckDatabaseBroker().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
+                "ACTIVEMQ_ADMIN_PASSWORD", "ACTIVEMQ_NAME", "JMS");
     }
 }

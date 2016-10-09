@@ -20,10 +20,10 @@ import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 /**
  * Created by guillaume on 01/10/16.
  */
-public class Tomcat6RabbitMQ3651ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Wildfly9RabbitMQ3651ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat6RabbitMQ3651ModuleControllerTestIT() {
-        super.server = "tomcat-10";
+    public Wildfly9RabbitMQ3651ModuleControllerTestIT() {
+        super.server = "wildfly-9";
         super.module = "rabbitmq-3.6.5-1";
         super.numberPort = "5672";
         super.managerPrefix = "";
