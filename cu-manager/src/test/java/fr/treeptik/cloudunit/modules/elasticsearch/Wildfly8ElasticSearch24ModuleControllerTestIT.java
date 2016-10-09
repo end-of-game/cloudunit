@@ -33,7 +33,6 @@ public class Wildfly8ElasticSearch24ModuleControllerTestIT extends AbstractModul
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseBroker().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
-                "ACTIVEMQ_ADMIN_PASSWORD", "ACTIVEMQ_NAME", "JMS");
+        new CheckElasticSearchConnection().invoke(forwardedPort);
     }
 }
