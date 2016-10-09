@@ -7,5 +7,6 @@
 ./activemq.sh
 ./rabbitmq.sh
 ./apache.sh
+./elasticsearch.sh
 
 
