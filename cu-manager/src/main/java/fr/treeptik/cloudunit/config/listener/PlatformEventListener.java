@@ -25,7 +25,7 @@ public class PlatformEventListener {
     @Autowired
     private ApplicationContext appContext;
 
-    @Value("${admin.email:}")
+    @Value("${admin.email}")
     private String adminEmail;
 
 

@@ -15,24 +15,19 @@
 
 package fr.treeptik.cloudunit.initializer;
 
-import java.io.File;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import javax.annotation.PostConstruct;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificates;
+import com.spotify.docker.client.DockerClient;
+import fr.treeptik.cloudunit.config.EmailActiveCondition;
+import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
+import fr.treeptik.cloudunit.docker.core.SimpleDockerDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
@@ -40,6 +35,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.View;
@@ -54,14 +51,14 @@ import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerCertificates;
-import com.spotify.docker.client.DockerClient;
-
-import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
-import fr.treeptik.cloudunit.docker.core.SimpleDockerDriver;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
 
 @EnableAspectJAutoProxy
 @Configuration
@@ -233,6 +230,29 @@ public class CloudUnitApplicationContext
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
         dockerCloudUnitClient.setDriver(new SimpleDockerDriver(dockerManagerIp, certPathDirectory, isTLS));
         return dockerCloudUnitClient;
+    }
+
+    @Bean
+    @Conditional(value = EmailActiveCondition.class)
+    public JavaMailSender mailSender(@Value("${email.host}") String host,
+                                     @Value("${email.port}") Integer port,
+                                     @Value("${email.protocol}") String protocol,
+                                     @Value("${email.username}") String username,
+                                     @Value("${email.password}") String password) throws IOException {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setProtocol(protocol);
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
+        mailSender.setJavaMailProperties(javaMailProperties());
+        return mailSender;
+    }
+
+
+    private Properties javaMailProperties() throws IOException {
+        Properties properties = new Properties();
+        return properties;
     }
 
     @Bean
