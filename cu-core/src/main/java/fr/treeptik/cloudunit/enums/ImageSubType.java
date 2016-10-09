@@ -5,5 +5,5 @@ package fr.treeptik.cloudunit.enums;
  */
 public enum ImageSubType {
 
-    DATABASE, MESSAGE_BROKER, DATAGRID
+    DATABASE, MESSAGE_BROKER, DATAGRID, SEARCH_ENGINE
 }
