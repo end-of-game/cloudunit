@@ -25,8 +25,19 @@ import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
 import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
+import fr.treeptik.cloudunit.utils.TestUtils;
 import junit.framework.TestCase;
 import org.apache.commons.io.FilenameUtils;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.cluster.node.DiscoveryNode;
+import org.elasticsearch.common.collect.ImmutableList;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -55,6 +66,8 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.List;
@@ -492,7 +505,31 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             }
 
         }
+    }
 
+    /**
+     * Inner class to check elasticsearch connection
+     *
+     */
+    public class CheckElasticSearchConnection {
+        public void invoke(String forwardedPort) {
+            String url = String.format("http://%s:%s", ipVagrantBox, forwardedPort);
+            try {
+                await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
+                        .and().ignoreExceptions()
+                        .until(()-> {
+                            try {
+
+                                "elasticsearch".contains(TestUtils.getUrlContentPage(url));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+            } catch (Exception e) {
+                Assert.fail();
+                e.printStackTrace();
+            }
+        }
     }
 
     private ResultActions requestPublishPort(Integer id, String number) throws Exception {
