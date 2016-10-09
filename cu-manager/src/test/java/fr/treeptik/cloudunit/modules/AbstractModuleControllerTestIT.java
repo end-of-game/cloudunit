@@ -51,6 +51,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -493,6 +497,23 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         }
 
+    }
+
+    /**
+     * Inner class to check redis connection
+     *
+     */
+    public class CheckRedisConnection {
+
+        public void invoke(String forwardedPort) {
+            try(JedisPool pool = new JedisPool(
+                    new JedisPoolConfig(), ipVagrantBox, Integer.parseInt(forwardedPort), 3000)){
+                Jedis jedis = pool.getResource();
+            } catch (JedisConnectionException e) {
+                Assert.fail();
+                e.printStackTrace();
+            }
+        }
     }
 
     private ResultActions requestPublishPort(Integer id, String number) throws Exception {

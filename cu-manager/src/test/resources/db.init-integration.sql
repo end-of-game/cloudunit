@@ -82,7 +82,7 @@ VALUES
 
 -- redis port --
 
-("6379", "TCP", 120),
+("6379", "TCP", 40),
 
 -- activemq ports values --
 
