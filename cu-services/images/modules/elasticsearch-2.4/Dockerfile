@@ -1,5 +1,5 @@
 # vim:set ft=dockerfile:
-FROM cloudunit/base-jessie
+FROM cloudunit/base-14.04
 
 ## java installation
 
