@@ -17,8 +17,6 @@ import java.util.Properties;
 @Configuration
 public class MailConfiguration {
 
-
-
     @Bean
     @Conditional(value = EmailActiveCondition.class)
     public JavaMailSender mailSender(@Value("${email.host}") String host,
