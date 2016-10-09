@@ -1,6 +1,7 @@
 package fr.treeptik.cloudunit.config.listener;
 
 import fr.treeptik.cloudunit.config.events.DatabaseConnectionFailEvent;
+import fr.treeptik.cloudunit.config.events.UnexpectedContainerStatusEvent;
 import fr.treeptik.cloudunit.service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +41,9 @@ public class PlatformEventListener {
 
     @EventListener
     @Async
-    public void onUnexpectedContainerState(DatabaseConnectionFailEvent databaseConnectionFailEvent){
-        String subject = "Some containers are in inconsistent state";
-        String message = (String) databaseConnectionFailEvent.getSource();
+    public void onUnexpectedContainerState(UnexpectedContainerStatusEvent unexpectedContainerStatusEvent){
+        String subject = "A container is in inconsistent state";
+        String message = (String) unexpectedContainerStatusEvent.getSource();
         logger.error("A platform error has occured : " + message);
         sendEmailToAdmin(subject, message);
     }

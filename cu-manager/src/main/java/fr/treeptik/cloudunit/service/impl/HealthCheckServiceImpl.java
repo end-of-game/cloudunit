@@ -1,5 +1,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
+import fr.treeptik.cloudunit.config.events.DatabaseConnectionFailEvent;
+import fr.treeptik.cloudunit.config.events.UnexpectedContainerStatusEvent;
 import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
 import fr.treeptik.cloudunit.docker.model.State;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -12,6 +14,7 @@ import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.utils.ContainerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -37,7 +40,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     @Inject
     private ModuleService moduleService;
 
-
+    @Inject
+    private ApplicationEventPublisher publisher;
 
     @Override
     public void checkAndRebootApplications(){
@@ -68,6 +72,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
                     .getState();
             if(!moduleState.getRunning()){
                 logger.warn("Module container is not started... Trying to restart it." );
+                publisher.publishEvent(
+                        new UnexpectedContainerStatusEvent(String.format("This module is stopped but should be started : %s", m.getName())));
                 try {
                     moduleService.startModule(m.getName());
                 } catch (ServiceException e) {
@@ -84,6 +90,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
                     .getState();
             if(moduleState.getRunning()){
                 logger.warn("Module container is not stopped... Trying to stop it." );
+                publisher.publishEvent(
+                        new UnexpectedContainerStatusEvent(String.format("This module is started but should be stopped : %s", m.getName())));
                 try {
                     moduleService.stopModule(m.getName());
                 } catch (ServiceException e) {
@@ -100,6 +108,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
                 .getState();
         if(!serverState.getRunning()){
            logger.warn("Server container is not started... Trying to restart it." );
+            publisher.publishEvent(
+                    new UnexpectedContainerStatusEvent(String.format("This server is stopped but should be started : %s", a.getServer().getName())));
            try {
                serverService.startServer(a.getServer());
            } catch (ServiceException e) {
@@ -116,6 +126,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
 
         if(serverState.getRunning()){
             logger.warn("Server container is not stopped... Trying to stop it." );
+            publisher.publishEvent(
+                    new UnexpectedContainerStatusEvent(String.format("This server is started but should be stopped : %s", a.getServer().getName())));
             try {
                 serverService.stopServer(a.getServer());
             } catch (ServiceException e) {
