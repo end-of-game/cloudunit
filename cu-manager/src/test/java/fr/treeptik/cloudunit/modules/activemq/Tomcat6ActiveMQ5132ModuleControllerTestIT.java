@@ -24,7 +24,7 @@ import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
 public class Tomcat6ActiveMQ5132ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
     public Tomcat6ActiveMQ5132ModuleControllerTestIT() {
-        super.server = "tomcat-8";
+        super.server = "tomcat-6";
         super.module = "activemq-5.13.2";
         super.numberPort = "61616";
         super.managerPrefix = "";
