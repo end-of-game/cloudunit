@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.treeptik.cloudunit.dto.AboutResource;
 import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.FileUnit;
@@ -433,6 +434,19 @@ public class MessageConverter {
             }
             printer.print(tab);
         }
+    }
+    
+    public static String buildAbout(String version, String timestamp) {
+        return String.format("CloudUnit CLI version %s (build timestamp %s)",
+                version,
+                timestamp);
+    }
+
+    public static String buildAbout(String version, String timestamp, AboutResource aboutApi) {
+        return String.format("%s%nCloudUnit Manager API version %s (build timestamp %s)",
+                buildAbout(version, timestamp),
+                aboutApi.getVersion(),
+                aboutApi.getTimestamp());
     }
 
 }

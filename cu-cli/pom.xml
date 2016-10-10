@@ -27,8 +27,9 @@
 
 		<cloudunit.ip>localhost</cloudunit.ip>
 		<cloudunit.port>8080</cloudunit.port>
-		<cloudunit.version>1.0</cloudunit.version>
-		<cli.version>1.0</cli.version>
+		<cloudunit.version>${project.version}</cloudunit.version>
+		<cli.version>${project.version}</cli.version>
+		<cli.timestamp>${maven.build.timestamp}</cli.timestamp>
 		<api.version>0</api.version>
 
 	</properties>

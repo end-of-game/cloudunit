@@ -123,6 +123,12 @@
             <i class="icon-whhg useralt"></i>
           </a>
         </li>
+        <li class="button-container">
+          <button id="about-btn" class="icon-button secondary" data-toggle="modal" data-target="#about" ripple="" tooltip=""
+                  data-title="About" data-placement="bottom">
+            <i class="icon-whhg info-sign"></i>
+          </button>
+        </li>
         <li>
           <button id="logout-btn" class="icon-button secondary" data-ng-click="main.logout()" ripple="" tooltip=""
                   data-title="Logout" data-placement="bottom">
@@ -132,6 +138,25 @@
       </ul>
     </div>
   </header>
+
+  <div class="modal" id="about">
+    <div class="modal-inner">
+      <div class="content clearfix">
+        <h3>About CloudUnit Manager</h3>
+        <div class="readonly">
+          <label for="about-version">API Version</label>
+          <input id="about-version" type="text" value="{{ main.about.version }}" readonly/>
+        </div>
+        <div class="readonly">
+          <label for="about-timestamp">API Build Timestamp</label>
+          <input id="about-timestamp" type="text" value="{{ main.about.timestamp }}" readonly/>
+        </div>
+        <div class="actions pull-right">
+          <button type="button" class="button secondary" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="main">
     <div data-ui-view></div>
