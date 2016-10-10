@@ -29,7 +29,6 @@
         'ApplicationService',
         'ModuleService',
         '$filter',
-        '$http',
         '$stateParams',
         OverviewCtrl
       ],
@@ -37,12 +36,12 @@
     };
   }
 
-  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter, $http, $stateParams){
+  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter, $stateParams){
 
     var vm = this;
 
     vm.toggleServer = toggleServer;
-    vm.changePort = changePort;
+    vm.openPort = openPort;
     vm.removeModule = removeModule;
     vm.listEnvModule = [];
     vm.colapseModuleId;
@@ -66,7 +65,6 @@
 
 
     function initializeEnvVar() {
-      console.log("initializeEnvVar");
       ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
         vm.app.env = data;
 
@@ -87,25 +85,15 @@
       });
     }
 
-    function changePort(idModule, imageName, statPort, portInContainer) {
-      var urlUpdate = '/module/' + idModule + '/ports/' + portInContainer;
-
-      var data = {
-        publishPort: statPort
-      };
-
-      vm.pendingModules = true; 
-
-      $http({
-          method: 'PUT',
-          url: urlUpdate,
-          data: data
-      }).then(function successCallback(response) {
-          initializeEnvVar();
-          vm.pendingModules = false; 
-      }, function errorCallback(response) {
+    function openPort(idModule, statePort, portInContainer) {
+      vm.pendingModules = true;
+      ApplicationService.openPort(idModule, statePort, portInContainer)
+      .then ( function (data) {
           vm.pendingModules = false;
-      }); 
+          initializeEnvVar();
+      }, function (response) {
+          vm.pendingModules = false;
+      });
     }
 
     function toggleServer(application) {

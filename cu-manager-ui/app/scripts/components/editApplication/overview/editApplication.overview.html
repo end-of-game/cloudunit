@@ -13,7 +13,6 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 <div class="tab-pane active vertical-spacing">
-
     <div id="{{overview.app.name}}-server" class="card medium application overview {{overview.app.status | lowercase}}">
       <div class="content">
         <div class="status">
@@ -127,7 +126,6 @@
         </div>
       </div>
     </div>
-
   <div id="{{overview.app.name}}-modules" class="modules-list clearfix">
     <div class="card small blank" data-ng-hide="overview.app.modules.length > 0">
       <div class="content clearfix">
@@ -195,7 +193,7 @@
               <tr ng-repeat="port in overview.portList[module.id]">
                 <td> Port {{ port.portType }} : <strong>{{ port.containerValue }}</strong></td>
                 <td>
-                  <switch id="enabled" name="enabled" ng-model="port.opened" ng-change="overview.changePort(module.id, module.name, port.opened, port.containerValue)" ng-disabled="overview.pendingModules"></switch>
+                  <switch id="enabled" name="enabled" ng-model="port.opened" ng-change="overview.openPort(module.id, port.opened, port.containerValue)" ng-disabled="overview.pendingModules"></switch>
                 </td>
 
                 <td>

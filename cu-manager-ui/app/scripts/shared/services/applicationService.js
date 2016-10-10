@@ -53,6 +53,7 @@ function ApplicationService ( $resource, $http, $interval ) {
         removeAlias: removeAlias,
         createPort: createPort,
         removePort: removePort,
+        openPort: openPort,
         restart: restart,
         init: init,
         state: {},
@@ -212,6 +213,30 @@ function createPort ( applicationName, number, nature ) {
 
 function removePort ( applicationName, number ) {
     return $http.delete ( 'application/' + applicationName + '/ports/' + number );
+}
+
+ function openPort(moduleID, statePort, portInContainer) {
+    var data = {
+        publishPort: statePort
+    };
+
+    var dir = $resource ( '/module/:moduleID/ports/:portInContainer' ,
+    { 
+        moduleID: moduleID,
+        portInContainer: portInContainer
+    },
+    { 
+        'update': { 
+            method: 'PUT',
+            transformResponse: function ( data, headers ) {
+                var response = {};
+                response = JSON.parse(data);
+                return response;
+            }
+        }
+    }
+    );
+    return dir.update( { }, data ).$promise;
 }
 
 // Gestion des variables environnement
