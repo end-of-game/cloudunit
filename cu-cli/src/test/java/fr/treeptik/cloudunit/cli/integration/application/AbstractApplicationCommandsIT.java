@@ -387,20 +387,18 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         }
     }
 
-
-    @Test
-    public void test_shouldNotRemoveApplicationWithArgsBecauseUserIsNotLogged() {
-        CommandResult result = removeApplication();
-        
-        assertThat(result, isFailedCommand());
-        assertThat(result.getException().getMessage(), containsString("You are not connected"));
-    }
-
     @Test
     public void test_shouldNotRemoveApplicationWithArgsBecauseItDoesNotExist() {
         connect();
         try {
+            // ignore error if app doesn't exist
             CommandResult result = removeApplication("dzqmodzq");
+            assertThat(result, isSuccessfulCommand());
+
+            result = removeApplication("dzqmodzq", false);
+            assertThat(result, isSuccessfulCommand());
+
+            result = removeApplication("dzqmodzq", true);
             assertThat(result, isFailedCommand());
             assertThat(result.getException(), instanceOf(CloudUnitCliException.class));
             assertThat(result.getException().getMessage(),

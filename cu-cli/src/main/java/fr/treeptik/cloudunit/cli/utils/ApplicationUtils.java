@@ -177,13 +177,18 @@ public class ApplicationUtils {
         return response;
     }
 
-    public String rmApp(String applicationName, Boolean scriptUsage) {
+    public String rmApp(String applicationName, Boolean scriptUsage, Boolean errorIfNotExists) {
 
         // Check if application is eligble
         String checkResponse = checkAndRejectIfError(applicationName);
         if (checkResponse != null) {
-            statusCommand.setExitStatut(1);
-            throw new CloudUnitCliException(checkResponse);
+            if (errorIfNotExists) {
+                statusCommand.setExitStatut(1);
+                throw new CloudUnitCliException(checkResponse);
+            } else {
+                statusCommand.setExitStatut(0);
+                return "Warning, no way to delete because " + applicationName + " doesn't exist";
+            }
         }
 
         // Enter the non interactive mode (for script)
@@ -234,7 +239,7 @@ public class ApplicationUtils {
                 break;
             default:
                 log.log(Level.SEVERE, "Confirmation response is (yes/y) or (no/n) ");
-                return rmApp(applicationName, scriptUsage);
+                return rmApp(applicationName, scriptUsage, errorIfNotExists);
             }
         } catch (ResourceAccessException e) {
             statusCommand.setExitStatut(1);

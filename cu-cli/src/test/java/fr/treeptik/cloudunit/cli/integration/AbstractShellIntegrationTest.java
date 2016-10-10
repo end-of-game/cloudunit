@@ -70,7 +70,11 @@ public class AbstractShellIntegrationTest {
     }
 
     protected CommandResult removeApplication() {
-        return getShell().executeCommand(String.format("rm-app --name %s --scriptUsage", applicationName));
+        return removeApplication(false);
+    }
+
+    protected CommandResult removeApplication(boolean errorIfNotExists) {
+        return getShell().executeCommand(String.format("rm-app --name %s --scriptUsage --errorIfNotExists %s", applicationName, errorIfNotExists));
     }
     
     protected CommandResult removeModule(String moduleName) {
@@ -94,7 +98,11 @@ public class AbstractShellIntegrationTest {
     }
 
     protected CommandResult removeApplication(String app) {
-        return getShell().executeCommand(String.format("rm-app --name %s --scriptUsage ", app));
+        return removeApplication(app, false);
+    }
+
+    protected CommandResult removeApplication(String app, boolean errorIfNotExists) {
+        return getShell().executeCommand(String.format("rm-app --name %s --scriptUsage --errorIfNotExists %s", app, errorIfNotExists));
     }
 
     protected CommandResult startApplication() {
