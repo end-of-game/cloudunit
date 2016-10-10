@@ -42,7 +42,6 @@
     var vm = this;
 
     vm.toggleServer = toggleServer;
-    vm.getTplUrl = getTplUrl;
     vm.changePort = changePort;
     vm.removeModule = removeModule;
     vm.listEnvModule = [];
@@ -67,20 +66,18 @@
 
 
     function initializeEnvVar() {
-        ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
-          vm.app.env = data;
+      console.log("initializeEnvVar");
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
+        vm.app.env = data;
 
-          angular.forEach(vm.app.modules, function(value, key) {
-              vm.portList[value.id] = value.ports;
-              ApplicationService.getVariableEnvironment($stateParams.name, value.name)
-              .then(function successCallback(response) {
-                vm.listEnvModule[value.id] = response;
-              }, function errorCallback(response) {
-                console.log('error');
-                console.log(response);
-              });
-          });
+        angular.forEach(vm.app.modules, function(value, key) {
+            vm.portList[value.id] = value.ports;
+            ApplicationService.getVariableEnvironment($stateParams.name, value.name)
+            .then(function successCallback(response) {
+              vm.listEnvModule[value.id] = response;
+            });
         });
+      });
     }
 
     function refreshEnvVar () {
@@ -92,8 +89,6 @@
 
     function changePort(idModule, imageName, statPort, portInContainer) {
       var urlUpdate = '/module/' + idModule + '/ports/' + portInContainer;
-
-      console.log("port in container", portInContainer);
 
       var data = {
         publishPort: statPort
@@ -134,11 +129,6 @@
     function stopApplication(applicationName) {
       ApplicationService.stop(applicationName);
       $scope.$emit('workInProgress', {delay: 3000});
-    }
-
-    function getTplUrl(tpl){
-      var moduleName = $filter('truncatestringfilter')(tpl);
-      return 'scripts/components/editApplication/overview/templates/_postgresql-module.html';
     }
 
     // Suppression d'un module

@@ -144,20 +144,17 @@
 
 .volume-card.card .content,
 .environment-card.card .content {
-  min-height: 180px;
-
-  &.height-ajustation {
-    min-height: 222px;
-  }
+  min-height: 220px;
 }
 
-.card.overview {
+.card.overview, .card.service {
   .content {
-    overflow: auto;
+    min-height: 310px;
+    overflow: visible;
   }
 }
 
-.template.card {
+.template.card, .card.overview, .card.service {
   .features {
     margin-bottom: 0;
   }
@@ -178,20 +175,6 @@
 
 .card.large {
   @include make-lg-column(12, 1rem);
-}
-
-.application:not(.start) {
-  &:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: white;
-    opacity: 0.6;
-    z-index: 10;
-  }
 }
 
 .start.pending .content,
