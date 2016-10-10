@@ -27,9 +27,10 @@
     'UserService',
     '$interval',
     '$state',
+    'ApplicationService'
   ];
 
-  function MainCtrl($rootScope, UserService, $interval, $state) {
+  function MainCtrl($rootScope, UserService, $interval, $state, ApplicationService) {
 
     var vm = this;
     var timer;
@@ -40,9 +41,11 @@
     vm.logout = logout;
     vm.browserOutdated = false;
     vm.CUEnv = '';
+    vm.about = '';
 
     getUserRole();
     getCUEnv();
+    getAbout();
 
     $rootScope.$on(':loginSuccess', function() {
       //reset error message
@@ -111,6 +114,12 @@
     function getCUEnv() {
       return UserService.getCUEnv().then(function success(response) {
         vm.CUEnv = response.cuInstanceName;
+      });
+    }
+
+    function getAbout() {
+      ApplicationService.about().then(function (response) {
+        vm.about = response;
       });
     }
 

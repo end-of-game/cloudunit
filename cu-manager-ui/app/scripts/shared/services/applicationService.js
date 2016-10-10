@@ -41,6 +41,7 @@ function ApplicationService ( $resource, $http, $interval ) {
 
 
     return {
+        about: about,
         list: list,
         create: create,
         start: start,
@@ -88,6 +89,13 @@ function assignObject(target) {
     }
     return target;
 };
+
+// A propos du manager
+function about () {
+    return $http.get ( 'about' ).then ( function ( response ) {
+        return angular.copy ( response.data );
+    } )
+}
 
 // Liste des applications
 function list () {
