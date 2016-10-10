@@ -23,6 +23,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.treeptik.cloudunit.dto.AboutResource;
 import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.FileUnit;
@@ -276,4 +277,17 @@ public class JsonConverter {
 		}
 		return commands;
 	}
+
+    public static AboutResource getAbout(String response) {
+        AboutResource about = new AboutResource();
+        ObjectMapper mapper = new ObjectMapper();
+        
+        try {
+            about = mapper.readValue(response, AboutResource.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return about;
+    }
 }
