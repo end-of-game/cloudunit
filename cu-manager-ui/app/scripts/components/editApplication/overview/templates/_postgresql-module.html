@@ -63,7 +63,7 @@
     </div>
     <table class="portTable">
       <tr ng-repeat="port in overview.portList[module.id]">
-        <td> Port {{ port.portType }} : <strong>{{ port.containerValue}}</strong></td>
+        <td> Port {{ port.portType }} : <strong>{{ port.containerValue }}</strong></td>
         <td>
           <switch id="enabled" name="enabled" ng-model="port.opened" ng-change="overview.changePort(module.id, module.name, port.opened, port.containerValue)" ng-disabled="overview.pendingModules"></switch>
         </td>

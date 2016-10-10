@@ -106,6 +106,7 @@
           url: urlUpdate,
           data: data
       }).then(function successCallback(response) {
+          initializeEnvVar();
           vm.pendingModules = false; 
       }, function errorCallback(response) {
           vm.pendingModules = false;
