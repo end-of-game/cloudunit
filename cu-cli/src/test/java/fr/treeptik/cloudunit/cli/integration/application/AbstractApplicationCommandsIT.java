@@ -4,6 +4,7 @@ import static fr.treeptik.cloudunit.cli.integration.ShellMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import org.junit.Test;
 import org.springframework.shell.core.CommandResult;
 
@@ -113,7 +114,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         connect();
         try {
             CommandResult result = useApplication("zqdmokdzq");
-            
+
             assertThat(result, isFailedCommand());
             String expected = "This application does not exist on this account";
             assertThat(result.getException().getMessage(), containsString(expected));
@@ -400,10 +401,10 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         connect();
         try {
             CommandResult result = removeApplication("dzqmodzq");
-            
             assertThat(result, isFailedCommand());
+            assertThat(result.getException(), instanceOf(CloudUnitCliException.class));
             assertThat(result.getException().getMessage(),
-                    containsString("This application does not exist on this account"));
+                    containsString("doesn't exist"));
         } finally {
             disconnect();
         }

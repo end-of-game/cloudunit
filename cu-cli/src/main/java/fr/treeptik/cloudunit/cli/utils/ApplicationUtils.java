@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jnr.ffi.Runtime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
@@ -48,6 +49,8 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.EnvironmentVariable;
 import fr.treeptik.cloudunit.model.Module;
 import jline.console.ConsoleReader;
+
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 
 @Component
 public class ApplicationUtils {
@@ -123,10 +126,14 @@ public class ApplicationUtils {
         }
         statusCommand.setExitStatut(0);
 
-        moduleUtils.setApplicationName(applicationName);
-        setApplication(JsonConverter.getApplication(json));
-        clPromptProvider.setApplicationName("-" + applicationName);
-        return "Current application : " + getApplication().getName();
+        if (json != null && json.trim().length() > 0) {
+            moduleUtils.setApplicationName(applicationName);
+            setApplication(JsonConverter.getApplication(json));
+            clPromptProvider.setApplicationName("-" + applicationName);
+            return "Current application : " + getApplication().getName();
+        } else {
+            return "Error : " + applicationName + " doesn't exist";
+        }
     }
 
     public String createApp(String applicationName, String serverName) {
@@ -176,7 +183,7 @@ public class ApplicationUtils {
         String checkResponse = checkAndRejectIfError(applicationName);
         if (checkResponse != null) {
             statusCommand.setExitStatut(1);
-            return checkResponse;
+            throw new CloudUnitCliException(checkResponse);
         }
 
         // Enter the non interactive mode (for script)
@@ -483,10 +490,7 @@ public class ApplicationUtils {
         String result = "";
         if (applicationName != null) {
             log.log(Level.INFO, applicationName);
-            result = useApplication(applicationName);
-            if (result.contains("This application does not exist on this account")) {
-                return result;
-            }
+            return useApplication(applicationName);
         }
 
         return null;

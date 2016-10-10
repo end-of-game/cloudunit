@@ -52,10 +52,8 @@ public class ApplicationCommands implements CommandMarker {
 
 	@CliCommand(value = "rm-app", help = "Remove an application")
 	public String rmApp(
-			@CliOption(key = {
-					"name" }, mandatory = false, help = "Application name to remove ") String applicationName,
-			@CliOption(key = {
-					"scriptUsage" }, mandatory = false, help = "Non-interactive mode", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean scriptUsage) {
+			@CliOption(key = { "name" }, mandatory = false, help = "Application name to remove ") String applicationName,
+			@CliOption(key = { "scriptUsage" }, mandatory = false, help = "Non-interactive mode", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean scriptUsage) {
 		return applicationUtils.rmApp(applicationName, scriptUsage);
 	}
 
