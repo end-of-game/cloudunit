@@ -43,6 +43,7 @@ describe('E2E: Edit Application config JVM', function () {
         configJVM = new ConfigJVMSection();
         editApp = components.EditApplicationPage;
         dashboard = components.DashboardPage;
+        browser.ignoreSynchronization = true;
     });
 
     it('should display the config JVM card in settings url', function () {
@@ -53,7 +54,11 @@ describe('E2E: Edit Application config JVM', function () {
     });
 
     it('should have a default value : 512 Mo', function () {
-        browser.get('/#/editApplication/testJVM/settings');
+
+        browser.get('/#/dashboard');
+        browser.driver.sleep(browser.params.sleep.small);
+        browser.get('/#/editApplication/testJVM/settingsJVM');
+
         expect(element(by.css('input[name="selectedJvmMemory"]:checked')).getAttribute('value')).toBe('512');
     });
 
