@@ -90,7 +90,9 @@
       ApplicationService.openPort(idModule, statePort, portInContainer)
       .then ( function (data) {
           vm.pendingModules = false;
-          initializeEnvVar();
+          setTimeout(function() {
+            initializeEnvVar();  
+          }, 1000);          
       }, function (response) {
           vm.pendingModules = false;
       });
