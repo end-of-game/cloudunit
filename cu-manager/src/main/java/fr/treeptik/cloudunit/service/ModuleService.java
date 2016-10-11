@@ -47,6 +47,9 @@ public interface ModuleService {
     void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
             throws ServiceException, CheckException;
 
+    void remove(User user, Module module, Boolean isModuleRemoving, Status previousApplicationStatus)
+            throws ServiceException, CheckException;
+
     Module stopModule(String moduleName) throws ServiceException;
 
     Module startModule(String moduleName) throws ServiceException;

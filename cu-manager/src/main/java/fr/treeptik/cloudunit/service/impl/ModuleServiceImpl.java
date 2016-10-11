@@ -34,6 +34,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -145,16 +146,16 @@ public class ModuleServiceImpl implements ModuleService {
         final List<Port> ports = new ArrayList<>();
         final Module m = module;
         image.getExposedPorts().keySet().stream()
-                .forEach(p->{
-                        ports.add(new Port(p, image.getExposedPorts().get(p), null, false, m));
+                .forEach(p -> {
+                    ports.add(new Port(p, image.getExposedPorts().get(p), null, false, m));
                 });
         module.setPorts(ports);
 
         // Build a custom container
         String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
-                    + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
-                    + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(module.getApplication().getName()) + "-"
-                    + module.getName();
+                + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
+                + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(module.getApplication().getName()) + "-"
+                + module.getName();
         String imagePath = module.getImage().getPath();
         logger.debug("imagePath:" + imagePath);
 
@@ -202,7 +203,7 @@ public class ModuleServiceImpl implements ModuleService {
     }
 
     private List<EnvironmentVariable> getExportedEnvironment(Module module, Image image,
-            Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
+                                                             Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
         List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
 
@@ -222,7 +223,7 @@ public class ModuleServiceImpl implements ModuleService {
     }
 
     private List<EnvironmentVariable> getInternalEnvironment(Module module, Image image,
-            Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
+                                                             Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
         List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
             environmentVariable.setKeyEnv(kv.getValue().getName());
@@ -245,8 +246,7 @@ public class ModuleServiceImpl implements ModuleService {
         Module module = findById(id);
         Optional<Port> optionalPort = module.getPorts().stream()
                 .filter(p -> p.getContainerValue().equals(port)).findAny();
-        if(optionalPort.isPresent())
-        {
+        if (optionalPort.isPresent()) {
             Port portToBind = optionalPort.get();
             portToBind.setOpened(publishPort);
             portDAO.save(portToBind);
@@ -259,7 +259,7 @@ public class ModuleServiceImpl implements ModuleService {
                 .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
         dockerService.removeContainer(module.getName(), false);
         dockerService.createModule(module.getName(), module, module.getImage().getPath(), user, envs, false,
-               new ArrayList<>());
+                new ArrayList<>());
         module = dockerService.startModule(module.getName(), module);
         module = moduleDAO.save(module);
         applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
@@ -296,26 +296,36 @@ public class ModuleServiceImpl implements ModuleService {
     @Transactional
     public void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
             throws ServiceException, CheckException {
+        Module module = findByName(moduleName);
+        remove(user, module, isModuleRemoving, previousApplicationStatus);
+    }
+
+    @Override
+    @Transactional
+    public void remove(User user, Module module, Boolean isModuleRemoving, Status previousApplicationStatus)
+            throws ServiceException, CheckException {
 
         try {
-            Module module = findByName(moduleName);
             dockerService.removeContainer(module.getName(), true);
+            Application application = module.getApplication();
+            application.removeModule(module);
             moduleDAO.delete(module);
             if (isModuleRemoving) {
                 List<EnvironmentVariable> envs = environmentService
-                        .loadEnvironnmentsByContainer(module.getApplication().getServer().getName());
-                environmentService.delete(user, envs.stream()
+                        .loadEnvironnmentsByContainer(application.getServer().getName());
+
+                        environmentService.delete(user, envs.stream()
                         .filter(e -> e.getKeyEnv().toLowerCase()
                                 .contains(module.getImage().getPrefixEnv().toLowerCase()))
-                        .collect(Collectors.toList()), module.getApplication().getName(),
-                        module.getApplication().getServer().getName());
+                        .collect(Collectors.toList()), application.getName(),
+                        application.getServer().getName());
             }
             logger.info("Module successfully removed ");
         } catch (PersistenceException e) {
-            logger.error("Error database :  " + moduleName + " : " + e);
+            logger.error("Error database :  " + module.getName() + " : " + e);
             throw new ServiceException("Error database :  " + e.getLocalizedMessage(), e);
         } catch (DockerJSONException e) {
-            logger.error(moduleName, e);
+            logger.error(module.toString(), e);
         }
     }
 

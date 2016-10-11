@@ -43,7 +43,7 @@ public class Server extends Container implements Serializable {
 	private String managerLocation;
 
 	@JsonIgnore
-	@OneToOne(mappedBy = "server", fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	private Application application;
 
 	@JsonIgnore

@@ -317,7 +317,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			List<Module> listModules = application.getModules();
 			for (Module module : listModules) {
 				try {
-					moduleService.remove(user, module.getName(), false, application.getStatus());
+					moduleService.remove(user, module, false, application.getStatus());
 				} catch (ServiceException | CheckException e) {
 					application.setStatus(Status.FAIL);
 					logger.error("ApplicationService Error : failed to remove module " + module.getName()
@@ -333,11 +333,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 				removeAlias(application, alias);
 			}
 
-			// Delete all servers
 			Server server = application.getServer();
 			serverService.remove(server.getName());
+
+			application.removeServer();
+			applicationDAO.delete(application);
+
 			hipacheRedisUtils.removeRedisAppKey(application);
-			applicationDAO.delete(server.getApplication());
 
 			logger.info("ApplicationService : Application successfully removed ");
 

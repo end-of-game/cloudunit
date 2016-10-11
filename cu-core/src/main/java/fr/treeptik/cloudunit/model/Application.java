@@ -1,17 +1,19 @@
-package fr.treeptik.cloudunit.model;/*
-									* LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
-									* but CloudUnit is licensed too under a standard commercial license.
-									* Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
-									* If you are not sure whether the AGPL is right for you,
-									* you can always test our software under the AGPL and inspect the source code before you contact us
-									* about purchasing a commercial license.
-									*
-									* LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
-									* or promote products derived from this project without prior written permission from Treeptik.
-									* Products or services derived from this software may not be called "CloudUnit"
-									* nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
-									* For any questions, contact us : contact@treeptik.fr
-									*/
+package fr.treeptik.cloudunit.model;
+
+/*
+* LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
+* but CloudUnit is licensed too under a standard commercial license.
+* Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+* If you are not sure whether the AGPL is right for you,
+* you can always test our software under the AGPL and inspect the source code before you contact us
+* about purchasing a commercial license.
+*
+* LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+* or promote products derived from this project without prior written permission from Treeptik.
+* Products or services derived from this software may not be called "CloudUnit"
+* nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+* For any questions, contact us : contact@treeptik.fr
+*/
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -81,10 +83,10 @@ public class Application implements Serializable {
 	private User user;
 
 	@OrderBy("id asc")
-	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY)
 	private Set<Module> modules;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "application", fetch = FetchType.LAZY)
 	private Server server;
 
 	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
@@ -200,6 +202,11 @@ public class Application implements Serializable {
 		this.server = server;
 	}
 
+	public void removeServer() {
+		server.setApplication(null);
+		this.server = null;
+	}
+
 	public Status getStatus() {
 		return status;
 	}
@@ -226,6 +233,11 @@ public class Application implements Serializable {
 
 	public void setModules(List<Module> modules) {
 		this.modules = new HashSet<>(modules);
+	}
+
+	public void removeModule(Module module) {
+		module.setApplication(null);
+		modules.remove(module);
 	}
 
 	public Date getDate() {
@@ -366,5 +378,7 @@ public class Application implements Serializable {
 
 		return this.portsToOpen;
 	}
+
+
 
 }
