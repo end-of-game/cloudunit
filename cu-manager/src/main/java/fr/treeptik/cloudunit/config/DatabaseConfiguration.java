@@ -80,7 +80,6 @@ public class DatabaseConfiguration {
 
     @Bean
     public DataSource dataSource() {
-
         logger.debug("Configuring Datasource");
         String databaseUrl = String.format("jdbc:mysql://%s:%s/%s?%s",
                 databaseHostname, databasePort, databaseSchema, databaseOptions);
@@ -90,14 +89,14 @@ public class DatabaseConfiguration {
         config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         config.addDataSourceProperty("url", databaseUrl);
         config.addDataSourceProperty("user", databaseUser);
-
+        config.setInitializationFailFast(false);
+        config.setIdleTimeout(60000);
         String forcePassword = System.getenv("MYSQL_ROOT_PASSWORD");
         // coming from environnment host
         if (forcePassword != null) {
             logger.info("Force the mysql password from host env");
             databasePassword = forcePassword;
         }
-
         logger.info("URL : " + databaseUrl + " password : " + databasePassword);
         config.addDataSourceProperty("password", databasePassword);
         return new HikariDataSource(config);
