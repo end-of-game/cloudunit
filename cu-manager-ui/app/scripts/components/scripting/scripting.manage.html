@@ -13,6 +13,14 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
+<div class="page-header">
+    <div class="page-title">
+        <h2 class="title">
+        Scripting
+        </h2>
+    </div>
+</div>
+
 <div class="card large clear" id="manage-scripting">
   <div class="content">
 
@@ -29,11 +37,6 @@
       <small class="help-block">Manage a script. <a ui-sref="scriptingCreate">Create a script</a>
       </small>
     </header>
-
-    <div class="no-data" ng-if="!scripting.scripts.length">
-      <h3 class="title">No script created</h3>
-      <p>Create a script before <a ui-sref="scriptingCreate">Create a script</a></p>
-    </div>
     
     <table class="table" ng-if="scripting.scripts.length">
       <thead>
