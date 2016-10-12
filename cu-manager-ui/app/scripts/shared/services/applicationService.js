@@ -63,11 +63,13 @@ function ApplicationService ( $resource, $http, $interval ) {
         addEnvironmentVariable: addEnvironmentVariable,
         editEnvironmentVariable: editEnvironmentVariable,
         deleteEnvironmentVariable: deleteEnvironmentVariable,
-        getListSettingsVolume: getListSettingsVolume,
-        getSettingsVolume: getSettingsVolume,
+        getLinkVolume: getLinkVolume,
+        getListVolume: getListVolume,
         addVolume: addVolume,
         editVolume: editVolume,
-        deleteVolume: deleteVolume
+        deleteVolume: deleteVolume,
+        linkVolume: linkVolume,
+        unLinkVolume: unLinkVolume
 
     };
 
@@ -291,28 +293,16 @@ function getVariableEnvironment ( applicationName, containerName ) {
 
 // Gestion des volumes
 
-function getListSettingsVolume(applicationName, containerName) {
+function getLinkVolume( containerName ) {
     var dir = $resource('server/volume/containerName/:containerName');
     return dir.query({
         containerName: containerName
     }).$promise;      
 }
 
-//function getListSettingsVolume ( applicationName, containerName ) {
-//   var dir = $resource ( 'application/:applicationName/container/:containerName/volumes' );
-//   return dir.query ( {
-//     applicationName: applicationName,
-//     containerName: containerName
-//   } ).$promise;      
-// }
-
-function getSettingsVolume ( applicationName, containerName, volumeID ) {
-    var dir = $resource ( 'application/:applicationName/container/:containerName/volumes/:id' );
-    return dir.get ( {
-        applicationName: applicationName,
-        containerName: containerName,
-        id: volumeID
-    } ).$promise;
+function getListVolume ( ) {
+  var dir = $resource ( 'volume' );
+  return dir.query ( { } ).$promise;      
 }
 
 function addVolume ( applicationName, containerName, volumeName, volumePath ) {
@@ -361,6 +351,40 @@ function deleteVolume ( applicationName, containerName, volumeID ) {
         applicationName: applicationName,
         containerName: containerName,
         id: volumeID
+    }, {} ).$promise; 
+}
+
+
+function linkVolume ( applicationName, containerName, path, mode, volumeName ) {
+    var data = {
+        applicationName: applicationName,
+        containerName: containerName,
+        path: path,
+        mode: mode,
+        volumeName: volumeName
+    };
+
+    var dir = $resource ( 'server/volume' , { },
+    { 
+        'update': { 
+            method: 'PUT',
+            transformResponse: function ( data, headers ) {
+                var response = {};
+                response = JSON.parse(data);
+                return response;
+            }
+        }
+    }
+    );
+    return dir.update( { }, data ).$promise; 
+}
+
+
+function unLinkVolume ( containerName, volumeName ) {
+    var dir = $resource ( 'server/volume/:volumeName/container/:containerName' );
+    return dir.delete ( { 
+        volumeName: volumeName,
+        containerName: containerName
     }, {} ).$promise; 
 }
 
