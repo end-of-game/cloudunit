@@ -6,6 +6,7 @@ import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
 import fr.treeptik.cloudunit.docker.model.State;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.HealthCheckService;
@@ -111,7 +112,9 @@ public class HealthCheckServiceImpl implements HealthCheckService {
             publisher.publishEvent(
                     new UnexpectedContainerStatusEvent(String.format("This server is stopped but should be started : %s", a.getServer().getName())));
            try {
-               serverService.startServer(a.getServer());
+               Server server = a.getServer();
+               server.setApplication(a);
+               serverService.startServer(server);
            } catch (ServiceException e) {
                logger.error("An error occures when check and reboot started apps : "
                        + e.getLocalizedMessage());
