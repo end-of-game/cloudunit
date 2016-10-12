@@ -20,10 +20,10 @@ import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 /**
  * Created by guillaume on 01/10/16.
  */
-public class Tomcat8ActiveMQ5132ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Wildfly9ActiveMQ5132ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat8ActiveMQ5132ModuleControllerTestIT() {
-        super.server = "tomcat-8";
+    public Wildfly9ActiveMQ5132ModuleControllerTestIT() {
+        super.server = "wildfly-9";
         super.module = "activemq-5.13.2";
         super.numberPort = "61616";
         super.managerPrefix = "";

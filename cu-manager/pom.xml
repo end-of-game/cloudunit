@@ -412,6 +412,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>0.90.9</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<!-- PROFILES -->

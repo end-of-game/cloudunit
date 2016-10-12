@@ -108,10 +108,14 @@ public class FileServiceImpl implements FileService {
 		List<SourceUnit> files = new ArrayList<>();
 		try {
 			String logDirectory = getLogDirectory(containerId);
+			// if logs directory is stdout, we don't need to search the files list
+			if (logDirectory.equalsIgnoreCase("stdout")) { files.add(new SourceUnit("stdout")); return files; }
+
 			String containerName = dockerService.getContainerNameFromId(containerId);
 			final String command = "find " + logDirectory + " -type f ! -size 0 ";
 			String execOutput = dockerService.execCommand(containerName, command);
-			if (execOutput != null && execOutput.contains("cannot access") == false) {
+			if (execOutput != null
+					&& execOutput.contains("cannot access") == false) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(execOutput);
 				}

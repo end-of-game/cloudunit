@@ -5,6 +5,6 @@ package fr.treeptik.cloudunit.enums;
  */
 public enum PortType {
 
-    TCP, UDP, JMX, OPENWIRE, AMQP, STOMP, WEBCONSOLE, MQTT, WEBSERVICES
+    TCP, UDP, JMX, OPENWIRE, AMQP, STOMP, WEBCONSOLE, MQTT, WEBSERVICES, HTTP, HTTPS
 
 }

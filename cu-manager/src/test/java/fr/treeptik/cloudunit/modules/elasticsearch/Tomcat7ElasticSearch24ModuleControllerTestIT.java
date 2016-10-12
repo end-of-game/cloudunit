@@ -13,19 +13,19 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules.activemq;
+package fr.treeptik.cloudunit.modules.elasticsearch;
 
 import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 
 /**
  * Created by guillaume on 01/10/16.
  */
-public class Tomcat8ActiveMQ5132ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Tomcat7ElasticSearch24ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Tomcat8ActiveMQ5132ModuleControllerTestIT() {
-        super.server = "tomcat-8";
-        super.module = "activemq-5.13.2";
-        super.numberPort = "61616";
+    public Tomcat7ElasticSearch24ModuleControllerTestIT() {
+        super.server = "tomcat-7";
+        super.module = "elasticsearch-2.4";
+        super.numberPort = "9200";
         super.managerPrefix = "";
         super.managerSuffix = "";
         super.managerPageContent = "";
@@ -33,7 +33,6 @@ public class Tomcat8ActiveMQ5132ModuleControllerTestIT extends AbstractModuleCon
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseBroker().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
-                "ACTIVEMQ_ADMIN_PASSWORD", "ACTIVEMQ_NAME", "JMS");
+        new CheckElasticSearchConnection().invoke(forwardedPort);
     }
 }
