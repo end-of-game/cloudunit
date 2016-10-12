@@ -13,8 +13,7 @@ INSERT IGNORE INTO `Image`
   (21, 'mysql-5-6', 'cloudunit/mysql-5-6', 'MySQL 5.6.30', 'mysql', 'module', 'phpmyadmin', 'DATABASE'),
   (22, 'mysql-5-7', 'cloudunit/mysql-5-7', 'MySQL 5.7.12', 'mysql', 'module', 'phpmyadmin', 'DATABASE'),
   (30, 'mongo-2-6', 'cloudunit/mongo-2-6', 'Mongo 2.6', 'mongo', 'module', 'mms', 'DATABASE'),
-  (40, 'redis-2-8', 'cloudunit/redis-2-8', 'Redis 2.8.24', 'redis', 'module', 'redmin', 'DATAGRID'),
-  (41, 'redis-3-0', 'cloudunit/redis-3-0', 'Redis 3.0.7', 'redis', 'module', 'redmin', 'DATAGRID'),
+  (40, 'redis-3-2', 'cloudunit/redis-3-2', 'Redis 3.2', 'redis', 'module', 'redmin', 'DATAGRID'),
   (50, 'postgresql-9-3', 'cloudunit/postgresql-9-3', 'PostgreSQL 9.3.12', 'postgresql', 'module', 'phppgadmin', 'DATABASE'),
   (51, 'postgresql-9-4', 'cloudunit/postgresql-9-4', 'PostgreSQL 9.4.7', 'postgresql', 'module', 'phppgadmin', 'DATABASE'),
   (52, 'postgresql-9-5', 'cloudunit/postgresql-9-5', 'PostgreSQL 9.5.2', 'postgresql', 'module', 'phppgadmin', 'DATABASE'),
@@ -80,6 +79,10 @@ VALUES
 ("5432", "TCP", 51),
 ("5432", "TCP", 52),
 ("5432", "TCP", 53),
+
+-- redis port --
+
+("6379", "TCP", 40),
 
 -- activemq ports values --
 
