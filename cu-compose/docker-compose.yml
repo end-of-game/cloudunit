@@ -120,10 +120,11 @@ services:
           - /srv/gitlab/config:/etc/gitlab
           - /srv/gitlab/logs:/var/log/gitlab
           - /srv/gitlab/data:/var/opt/gitlab
-      hostname: 'gitlab-g2c.cloudunit.io'
+      # Define the GITLAB_HOSTNAME into /etc/environment
+      hostname: '${GITLAB_HOSTNAME}'
       #environment:
       #    GITLAB_OMNIBUS_CONFIG: |
-      #        external_url 'https://gitlab-g2c.cloudunit.io'
+      #        external_url 'https://${GITLAB_HOSTNAME}'
       network_mode: bridge
 
   jenkins:
