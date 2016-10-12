@@ -115,19 +115,23 @@
             dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by env.id"
             data-current-page="environment.currentPage">
             <td>
-              <span  e-name="key" e-form="rowform"  e-required>
-                <span class="clipboard" id="key-{{env.id}}"
+              <span>
+                <span class="clipboard" 
                   data-title="Copy to clipboard"
-                  tooltip=""
-                  ngclipboard data-clipboard-target="#key-{{env.id}}">{{ env.keyEnv }}</span>
+                  e-name="key" e-form="rowform"
+                  editable-text="env.keyEnv">
+                    <span ngclipboard data-clipboard-target="#value-{{env.id}}" id="key-{{env.id}}">{{ env.keyEnv }}</span>
+                  </span>
               </span>
             </td>
             <td>
-              <span e-name="value" e-form="rowform" e-required>
-                <span class="clipboard" id="value-{{env.id}}"
+              <span e-form="rowform" e-required>
+                <span class="clipboard" 
                   data-title="Copy to clipboard"
-                  tooltip=""
-                  ngclipboard data-clipboard-target="#value-{{env.id}}">{{ env.valueEnv }}</span>
+                  e-name="value" e-form="rowform" 
+                  editable-text="env.valueEnv">
+                      <span ngclipboard data-clipboard-target="#value-{{env.id}}" id="value-{{env.id}}">{{ env.valueEnv }}</span>
+                  </span>
               </span>
             </td>
             <td>
@@ -175,7 +179,7 @@
                     </div>
                   </div>
                 </div>
-
+                <!--
                 <button class="icon-button"
                   ripple=""
                   tooltip=""
@@ -184,6 +188,7 @@
                   ng-click="rowform.$show()">
                 <i class="icon-whhg edit"></i>
                 </button>
+                -->
               </div>  
             </td>
           </tr>
