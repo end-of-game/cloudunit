@@ -31,13 +31,14 @@
         'ModuleService',
         '$stateParams',
         '$state',
+        'ErrorService',
         ModulesCtrl
       ],
       controllerAs: 'modules',
     };
   }
 
-  function ModulesCtrl ( $rootScope, ImageService, ModuleService, $stateParams, $state) {
+  function ModulesCtrl ( $rootScope, ImageService, ModuleService, $stateParams, $state, ErrorService) {
     var vm = this;
     vm.moduleImages = [];
     vm.categorieImage = [];
@@ -50,70 +51,23 @@
     }
     
     function getModulesImages () {
-      return ImageService.findEnabledModule ()
-        .then ( success )
-        .catch ( error );
+      ImageService.findEnabledModule ()
+        .then ( function ( images ) {
+          vm.moduleImages = images;
 
-      function success ( images ) {
-        var imagesPicked;
-        var listingCategorie =  [];
-
-        // isTemp Key for gray card
-        vm.moduleImages = images;
-
-
-        // vm.moduleImages.push({
-        //   displayName:"RabbitMQ",
-        //   exposedPorts:null,
-        //   id:9995,
-        //   imageSubType:null,
-        //   imageType:"module",
-        //   managerName:"",
-        //   moduleEnvironmentVariables:null,
-        //   name:"rabbitmq",
-        //   path:"cloudunit/rabbitmq",
-        //   prefixEnv:"rabbitmq",
-        //   prefixId:764949268,
-        //   status:null
-        // });
-
-        vm.moduleImages.push({
-          displayName:"Unknow module",
-          exposedPorts:null,
-          id:9997,
-          imageSubType:null,
-          imageType:"server",
-          managerName:"",
-          moduleEnvironmentVariables:null,
-          name:"tomcat-7",
-          path:"cloudunit/tomcat-7",
-          prefixEnv:"Nothing",
-          prefixId:-864949268,
-          status:null
-        });
-
-        if(vm.typeImage === '') {
-          // @TODO foreach
-          for(var i=0 ; i < vm.moduleImages.length - 1 ; i++) {
-            if (!(vm.categorieImage.indexOf(vm.moduleImages[i].prefixEnv) != -1 || vm.moduleImages[i].prefixEnv == undefined)) {
-              vm.categorieImage.push(vm.moduleImages[i].prefixEnv);
-            }
+          if(vm.typeImage === '') {
+            angular.forEach(vm.moduleImages, function(image) {
+              if (!(vm.categorieImage.indexOf(image.prefixEnv) != -1 || image.prefixEnv == undefined)) {
+                vm.categorieImage.push(image.prefixEnv);
+              }
+            });
           }
-        }
-
-        //vm.categorieImage.push('Nothing')
-
-        
-        
-        return vm.moduleImages;
-      }
-
-      function error () {
-        console.log ( 'cannot get modules images' );
-      }
+        })
+        .catch ( function (response) {
+        ErrorService.handle(response);
+        });
     }
 
-    // Ajout d'un module
     function addModule ( applicationName, imageName ) {
       ModuleService.addModule ( applicationName, imageName ).then(function (data) {
         vm.errorAdding = null;
@@ -122,11 +76,6 @@
       } ).catch(function(fallback) {
         vm.errorAdding = fallback.data.message;
       });
-    }
-
-    // Checking icon image module existing
-    function checkIconModule(module) {
-      console.log("hello module " + module);
     }
   }
 }) ();

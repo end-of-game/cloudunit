@@ -58,6 +58,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+.icon-tech.icon-tech-default:before {
+  content: "\e902"
+}
 .icon-tech.hornetq:before {
   content: "\e901";
 }
@@ -117,7 +121,7 @@
 }
 
 .icon-tech.nothing:before {
-  content: "\e902"
+  content: "\f14a"
 }
 
 .icon-whhg {
