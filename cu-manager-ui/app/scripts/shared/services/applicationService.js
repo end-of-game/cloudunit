@@ -66,7 +66,6 @@ function ApplicationService ( $resource, $http, $interval ) {
         getLinkVolume: getLinkVolume,
         getListVolume: getListVolume,
         addVolume: addVolume,
-        editVolume: editVolume,
         deleteVolume: deleteVolume,
         linkVolume: linkVolume,
         unLinkVolume: unLinkVolume
@@ -305,51 +304,18 @@ function getListVolume ( ) {
   return dir.query ( { } ).$promise;      
 }
 
-function addVolume ( applicationName, containerName, volumeName, volumePath ) {
-    console.log(containerName);
+function addVolume ( volumeName ) {
     var data = {
-        name: volumeName,
-        path: volumePath
+        name: volumeName
     };
 
-    var dir = $resource ( 'application/:applicationName/container/:containerName/volumes' );
-    return dir.save ( {
-        applicationName: applicationName,
-        containerName: containerName
-    }, data ).$promise;
+    var dir = $resource ( 'volume' );
+    return dir.save ( { }, data ).$promise;
 }
 
-function editVolume ( applicationName, containerName, volumeID, volumeName, volumePath ) {
-    var data = {
-        name: volumeName,
-        path: volumePath
-    };
-
-    var dir = $resource ( 'application/:applicationName/container/:containerName/volumes/:id' ,
-    { 
-        applicationName: applicationName,
-        containerName: containerName,
-        id: volumeID
-    },
-    { 
-        'update': { 
-            method: 'PUT',
-            transformResponse: function ( data, headers ) {
-                var response = {};
-                response = JSON.parse(data);
-                return response;
-            }
-        }
-    }
-    );
-    return dir.update( { }, data ).$promise; 
-}
-
-function deleteVolume ( applicationName, containerName, volumeID ) {
-    var dir = $resource ( 'application/:applicationName/container/:containerName/volumes/:id' );
-    return dir.delete ( { 
-        applicationName: applicationName,
-        containerName: containerName,
+function deleteVolume ( volumeID ) {
+    var dir = $resource ( 'volume/:id' );
+    return dir.delete ( {
         id: volumeID
     }, {} ).$promise; 
 }

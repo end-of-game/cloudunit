@@ -33,7 +33,7 @@
             <span class="bar"></span>
             <label class="label-effect">Volume name</label>
 
-            <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right" ng-click="editVolume.addVolume()">Create volume</button>
+            <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right" ng-click="editVolume.addVolume(editVolume.newVolumeName)">Create volume</button>
         </div>
 
         <p class="hint error" data-ng-if="editVolume.errorVolumeCreate != ''" ng-bind="editVolume.errorVolumeCreate">
