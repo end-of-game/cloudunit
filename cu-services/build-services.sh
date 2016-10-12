@@ -8,4 +8,5 @@
 ./rabbitmq.sh
 ./apache.sh
 
+./redis.sh
 
