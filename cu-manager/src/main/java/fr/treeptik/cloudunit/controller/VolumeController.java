@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.controller;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -20,10 +21,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import fr.treeptik.cloudunit.dto.VolumeAssociationResource;
 import fr.treeptik.cloudunit.dto.VolumeResource;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Volume;
+import fr.treeptik.cloudunit.model.VolumeAssociation;
 import fr.treeptik.cloudunit.service.VolumeService;
 
 @Controller
@@ -51,6 +54,14 @@ public class VolumeController implements Serializable {
 		Volume volume = volumeService.loadVolume(id);
 		VolumeResource volumeResource = new VolumeResource(volume);
 		return ResponseEntity.status(HttpStatus.OK).body(volumeResource);
+	}
+
+	@RequestMapping(value = "/{id}/associations", method = RequestMethod.GET)
+	public ResponseEntity<?> loadVolumeAssociation(@PathVariable int id) throws ServiceException, CheckException {
+		Set<VolumeAssociation> volumeAssociations = volumeService.loadVolumeAssociations(id);
+		List<VolumeAssociationResource> resources = volumeAssociations.stream()
+				.map(VolumeAssociationResource::new).collect(Collectors.toList());
+		return ResponseEntity.ok(resources);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

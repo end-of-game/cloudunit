@@ -18,14 +18,14 @@ package fr.treeptik.cloudunit.controller;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
-import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,17 +34,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonInput;
 import fr.treeptik.cloudunit.dto.JsonResponse;
 import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
+import fr.treeptik.cloudunit.dto.VolumeResource;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.model.Volume;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.VolumeService;
@@ -115,9 +117,12 @@ public class ServerController implements Serializable {
 	}
 
 	@RequestMapping(value = "/volume/containerName/{containerName}", method = RequestMethod.GET)
-	public @ResponseBody List<Volume> getVolume(@PathVariable("containerName") String containerName)
+	public ResponseEntity<?> getVolume(@PathVariable("containerName") String containerName)
 			throws ServiceException, CheckException {
-		return volumeService.loadAllByContainerName(containerName);
+		List<VolumeResource> resource = volumeService.loadAllByContainerName(containerName).stream()
+						.map(VolumeResource::new)
+						.collect(Collectors.toList());
+		return ResponseEntity.ok(resource);
 	}
 
 	@CloudUnitSecurable

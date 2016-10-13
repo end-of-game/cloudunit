@@ -1,6 +1,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -112,6 +113,12 @@ public class VolumeServiceImpl implements VolumeService {
 	@Override
 	public void removeAssociation(VolumeAssociation volumeAssociation) {
 		volumeAssociationDAO.delete(volumeAssociation);
+	}
+
+	@Override
+	@Transactional
+	public Set<VolumeAssociation> loadVolumeAssociations(int id) {
+		return loadVolume(id).getVolumeAssociations();
 	}
 
 }
