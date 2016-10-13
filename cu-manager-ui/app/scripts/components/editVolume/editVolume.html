@@ -70,6 +70,7 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Application</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -77,6 +78,11 @@
         <tr ng-repeat="volume in editVolume.volumes">
           <td>
             <p ng-bind="volume.name"></p>
+          </td>
+          <td>
+            <span ng-repeat="volumeAssociation in volume.volumeAssociations">
+              {{volumeAssociation}}
+            </span>
           </td>
           <td>
             <button class="toggle-modal icon-button secondary allowed danger"

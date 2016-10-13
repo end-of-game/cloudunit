@@ -90,11 +90,24 @@
     ////////////////////////////////////////////////////
 
     function getListVolumes() {
+      console.log('getListVolumes');
         var dir = $resource('volume');
 
         var volumesList = dir.query().$promise;
         volumesList.then(function(response) {
             editVolume.volumes = response;
+            console.log(response);
+            angular.forEach(editVolume.volumes, function(volume, index) {
+              
+              var dir = $resource('volume/' + volume.id + '/associations');
+
+              dir.query().$promise.then(function(response) {
+                  console.log(response.data);
+                  editVolume.volumes[index].applicationName = response;
+
+              });
+
+            });
         });
     }
   }
