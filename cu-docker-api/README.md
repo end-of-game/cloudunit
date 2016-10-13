@@ -9,7 +9,7 @@ for your own projects using Docker
 
 ## Requirements
 
-- Docker engine 1.6.2
+- Docker engine 1.12
 - Maven 3.X +
 
 ## How it works
@@ -36,6 +36,4 @@ mvn clean install -DskipTests
 
 ## What's next?
 
-- Supports all available commands
-- Upgrade to Docker Engine 1.8
-
+- Supports network commands

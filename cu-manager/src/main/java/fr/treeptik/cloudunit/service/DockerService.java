@@ -20,13 +20,15 @@ import java.util.List;
 
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
+import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
 
 /**
  * Created by Nicolas MULLER on 03/05/16.
  */
-public interface DockerService {
+public interface
+DockerService {
 
 	void addEnv(String containerId, String key, String value) throws FatalDockerJSONException;
 
@@ -35,11 +37,9 @@ public interface DockerService {
 
 	Server startServer(String containerName, Server server) throws DockerJSONException;
 
-	void stopServer(String containerName) throws DockerJSONException;
-
 	void killServer(String containerName) throws DockerJSONException;
 
-	void removeServer(String containerName, boolean removeVolume) throws DockerJSONException;
+	void removeContainer(String containerName, boolean removeVolume) throws DockerJSONException;
 
 	String execCommand(String containerName, String command) throws FatalDockerJSONException;
 
@@ -63,4 +63,12 @@ public interface DockerService {
 	void sendFileToContainer(String containerId, String localPathFile, String originalName, String destination)
 			throws FatalDockerJSONException;
 
+	void createModule(String containerName, Module module, String imagePath, User user, List<String> envs,
+			boolean createMainVolume, List<String> volumes) throws DockerJSONException;
+
+	Module startModule(String containerName, Module module) throws DockerJSONException;
+
+	void stopContainer(String containerName) throws DockerJSONException;
+
+	String logs(String container) throws FatalDockerJSONException;
 }

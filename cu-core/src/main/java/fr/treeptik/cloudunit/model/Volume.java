@@ -1,10 +1,14 @@
 package fr.treeptik.cloudunit.model;
 
-import javax.persistence.*;
-
-import fr.treeptik.cloudunit.dto.VolumeRequest;
-
 import java.io.Serializable;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Volume implements Serializable {
@@ -17,12 +21,18 @@ public class Volume implements Serializable {
 
 	private String name;
 
-	private String path;
+	public Volume() {
 
-	@ManyToOne
-	private Application application;
+	}
 
-	private String containerName;
+	public Volume(Integer id, String name, Set<VolumeAssociation> volumeAssociations) {
+		this.id = id;
+		this.name = name;
+		this.volumeAssociations = volumeAssociations;
+	}
+
+	@OneToMany(mappedBy = "volumeAssociationId.volume", fetch = FetchType.LAZY)
+	private Set<VolumeAssociation> volumeAssociations;
 
 	public Integer getId() {
 		return id;
@@ -40,42 +50,17 @@ public class Volume implements Serializable {
 		this.name = name;
 	}
 
-	public String getPath() {
-		return path;
+	public Set<VolumeAssociation> getVolumeAssociations() {
+		return volumeAssociations;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public Application getApplication() {
-		return application;
-	}
-
-	public void setApplication(Application application) {
-		this.application = application;
-	}
-
-	public String getContainerName() {
-		return containerName;
-	}
-
-	public void setContainerName(String containerName) {
-		this.containerName = containerName;
-	}
-
-	public VolumeRequest mapToVolume() {
-		VolumeRequest volumeRequest = new VolumeRequest();
-		volumeRequest.setId(id);
-		volumeRequest.setName(name);
-		volumeRequest.setPath(path);
-		return volumeRequest;
+	public void setVolumeAssociations(Set<VolumeAssociation> volumeAssociations) {
+		this.volumeAssociations = volumeAssociations;
 	}
 
 	@Override
 	public String toString() {
-		return "Volume [id=" + id + ", name=" + name + ", path=" + path + ", application=" + application
-				+ ", containerName=" + containerName + "]";
+		return "Volume [id=" + id + ", name=" + name + "]";
 	}
 
 }

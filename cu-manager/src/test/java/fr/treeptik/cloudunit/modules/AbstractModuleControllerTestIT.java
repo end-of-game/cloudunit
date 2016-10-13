@@ -15,34 +15,38 @@
 
 package fr.treeptik.cloudunit.modules;
 
-import static fr.treeptik.cloudunit.utils.TestUtils.getUrlContentPage;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Random;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.servlet.Filter;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.treeptik.cloudunit.dto.EnvUnit;
+import fr.treeptik.cloudunit.dto.ModulePortResource;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
+import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
+import fr.treeptik.cloudunit.utils.TestUtils;
+import junit.framework.TestCase;
+import org.apache.commons.io.FilenameUtils;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.cluster.node.DiscoveryNode;
+import org.elasticsearch.common.collect.ImmutableList;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,12 +62,28 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.UserService;
-import junit.framework.TestCase;
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 /**
  * Tests for Module lifecycle
@@ -74,17 +94,19 @@ import junit.framework.TestCase;
     CloudUnitApplicationContext.class,
     MockServletContext.class
 })
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @ActiveProfiles("integration")
 public abstract class AbstractModuleControllerTestIT extends TestCase {
 
-    private final Logger logger = LoggerFactory
+    protected final Logger logger = LoggerFactory
         .getLogger(AbstractModuleControllerTestIT.class);
 
     @Autowired
-    private WebApplicationContext context;
+    protected WebApplicationContext context;
 
-    private MockMvc mockMvc;
+    protected MockMvc mockMvc;
+
+    @Inject
+    private ObjectMapper objectMapper;
 
     @Inject
     private AuthenticationManager authenticationManager;
@@ -98,9 +120,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
-    private MockHttpSession session;
+    @Value("${ip.box.vagrant}")
+    protected String ipVagrantBox;
 
-    private static String applicationName;
+    protected MockHttpSession session;
+
+    protected static String applicationName;
 
     @Value("${suffix.cloudunit.io}")
     private String domainSuffix;
@@ -108,22 +133,16 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
     private String subdomain;
 
-    private String domain;
-
-    @PostConstruct
-    public void init () {
-        if (subdomain != null) {
-            domain = subdomain + domainSuffix;
-        } else {
-            domain = domainSuffix;
-        }
-    }
+    @Inject
+    private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
 
     protected String server;
     protected String module;
+    protected String numberPort;
     protected String managerPrefix;
     protected String managerSuffix;
     protected String managerPageContent;
+    protected String testScriptPath;
 
     @BeforeClass
     public static void initEnv() {
@@ -157,8 +176,11 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // create an application server
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
-        ResultActions resultats = mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
-        resultats.andExpect(status().isOk());
+        mockMvc.perform(post("/application")
+        		.session(session)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonString))
+        	.andExpect(status().isOk());
     }
 
     @After
@@ -166,8 +188,11 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("teardown");
 
         logger.info("Delete application : " + applicationName);
-        ResultActions resultats = mockMvc.perform(delete("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
+
+        mockMvc.perform(delete("/application/" + applicationName)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         SecurityContextHolder.clearContext();
         session.invalidate();
@@ -181,7 +206,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().is5xxServerError());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -192,7 +217,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().is5xxServerError());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -203,7 +228,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().is5xxServerError());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -214,7 +239,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().is5xxServerError());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -234,8 +259,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
+        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -243,17 +267,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(genericModule))
-            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected));
-
-        String contentPage = getUrlContentPage(managerExpected);
-        int counter = 0;
-        while (!contentPage.contains(managerPageContent) || counter++ < 10) {
-            contentPage = getUrlContentPage(managerExpected);
-            Thread.sleep(1000);
-        }
-
-        Assert.assertTrue(contentPage.contains(managerPageContent));
+            .andExpect(jsonPath("$.modules[0].name").value(genericModule));
 
         // remove a module
         resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + genericModule)
@@ -270,7 +284,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     @Test
-    public void test20_CreateServerThenAddTwoModule() throws Exception {
+    public void test20_FailCreateServerThenAddTwoModule() throws Exception {
         logger.info("Create an application, add two " + module + " modules, stop them then delete all");
 
         // verify if app exists
@@ -286,8 +300,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
+        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -295,20 +308,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(module1))
-            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1));
-
-        String contentPage = getUrlContentPage(managerExpected1);
-
-        int counter = 0;
-        while (!contentPage.contains(managerPageContent) || counter++ < 20) {
-            contentPage = getUrlContentPage(managerExpected1);
-            Thread.sleep(1000);
-        }
-
-        System.out.println(contentPage);
-        System.out.println(managerPageContent);
-        Assert.assertTrue(contentPage.contains(managerPageContent));
+            .andExpect(jsonPath("$.modules[0].name").value(module1));
 
         // add a second module
         jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
@@ -316,41 +316,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
-        resultats.andExpect(status().isOk());
-
-        // Expected values
-        String module2 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-2";
-        String managerExpected2 = "http://" + managerPrefix + "2-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
-
-        // get the detail of the applications to verify modules addition
-        resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats
-            .andExpect(status().isOk())
-
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(module1))
-            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1))
-
-            .andExpect(jsonPath("$.modules[1].status").value("START"))
-            .andExpect(jsonPath("$.modules[1].name").value(module2))
-            .andExpect(jsonPath("$.modules[1].managerLocation").value(managerExpected2));
-
-        // remove the first module 
-        resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + module1)
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(status().isOk());
-
-        // we must verify the first module disappared and second one replaced it
-        resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(module2))
-            .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected2))
-            .andExpect(jsonPath("$.modules[1]").doesNotExist());
+        resultats.andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -367,31 +333,252 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             .session(session)
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonString));
+        resultats.andDo(print());
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module + "-1";
-        String managerExpected1 = "http://" + managerPrefix + "1-" + applicationName.toLowerCase() + "-johndoe-admin"+domain+"/" + managerSuffix;
+        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
 
         // Stop the application
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
         resultats = mockMvc.perform(post("/application/stop").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andDo(print());
         resultats.andExpect(status().isOk());
 
         // Start the application
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
         resultats = mockMvc.perform(post("/application/start").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
+        resultats.andDo(print());
         resultats.andExpect(status().isOk());
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
                 .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+        resultats.andDo(print());
         resultats
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.modules[0].status").value("START"))
-                .andExpect(jsonPath("$.modules[0].name").value(module1))
-                .andExpect(jsonPath("$.modules[0].managerLocation").value(managerExpected1));
+                .andExpect(jsonPath("$.modules[0].name").value(module1));
     }
 
+    @Test
+    public void test_PublishPort() throws Exception {
+        logger.info("Publish module port for external access");
+
+        requestAddModule()
+        	.andExpect(status().isOk());
+
+        SpyMatcherDecorator<Integer> responseModuleIdSpy = new SpyMatcherDecorator<>(Integer.class);
+        SpyMatcherDecorator<List> forwardedPort = new SpyMatcherDecorator<>(List.class);
+
+        requestApplication()
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.modules[0].id", responseModuleIdSpy));
+
+        Integer moduleId = responseModuleIdSpy.getMatchedValue();
+        requestPublishPort(moduleId, numberPort)
+            .andExpect(status().isOk());
+
+        requestApplication()
+                .andExpect(status().isOk())
+                .andDo(print());
+        requestApplication()
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath(String.format("$.modules[0].ports[?(@.containerValue == %s)].hostValue", numberPort)
+                        , forwardedPort));
+        checkConnection(forwardedPort.getMatchedValue().stream().findFirst().get().toString());
+    }
+
+    protected abstract void checkConnection(String forwardedPort);
+
+    private String getContainerName() {
+        return "int-johndoe-"+applicationName+"-"+module;
+    }
+    
+    @Test
+    public void test_runScript() throws Exception {
+        requestAddModule();
+        String filename = FilenameUtils.getName(testScriptPath);
+        if(filename == null){
+            logger.info("No script found - test escape");
+        } else {
+            MockMultipartFile file = new MockMultipartFile(
+                    "file",
+                    filename,
+                    "application/sql",
+                    new FileInputStream(testScriptPath));
+
+            String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
+
+            ResultActions result = mockMvc.perform(
+                    fileUpload("/module/{moduleName}/run-script", genericModule)
+                            .file(file)
+                            .session(session)
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
+                    .andDo(print());
+            result.andExpect(status().isOk());
+        }
+    }
+
+    /**
+     * Inner class to check relational database connection
+     *
+     */
+    public class CheckDatabaseConnection {
+
+        public void invoke(String forwardedPort, String keyUser, String keyPassword,
+                           String keyDB, String driver, String jdbcUrlPrefix) {
+            try {
+                String urlToCall = "/application/" + applicationName + "/container/"+getContainerName()+"/env";
+                ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
+                String contentResult = resultats.andReturn().getResponse().getContentAsString();
+                List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>(){});
+                final String user = envs.stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
+                final String password = envs.stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
+                final String database = envs.stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
+                final String jdbcUrl = jdbcUrlPrefix+ipVagrantBox+":"+forwardedPort+"/" + database;
+                Class.forName(driver);
+                await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
+                       .and().ignoreExceptions()
+                       .until(() -> {
+                           try(final Connection connection = DriverManager.getConnection(jdbcUrl, user, password)){
+                               return  connection.isValid(1000);
+                           }
+                       });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.fail();
+            }
+        }
+    }
+
+    /**
+     * Inner class to check message broker
+     *
+     */
+    public class CheckDatabaseBroker {
+        public void invoke(String forwardedPort, String keyUser, String keyPassword,
+                           String keyDB, String protocol) {
+            String user = null;
+            String password = null;
+            String vhost = null;
+            String urlToCall = "/application/" + applicationName + "/container/" + getContainerName() + "/env";
+            String contentResult = null;
+            try {
+                ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
+                contentResult = resultats.andReturn().getResponse().getContentAsString();
+                List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>() {
+                });
+                contentResult = resultats.andReturn().getResponse().getContentAsString();
+                user = envs.stream()
+                        .filter(e -> e.getKey().equals(keyUser))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Missing " + keyUser))
+                        .getValue();
+                password = envs.stream()
+                        .filter(e -> e.getKey().equals(keyPassword))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Missing " + keyPassword))
+                        .getValue();
+                vhost = envs.stream()
+                        .filter(e -> e.getKey().equals(keyDB))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Missing " + keyDB))
+                        .getValue();
+                String brokerURL = ipVagrantBox+":"+forwardedPort;
+                String message = "Hello world!";
+
+                switch(protocol){
+                    case "JMS" :
+                        Assert.assertEquals(message,
+                                checkBrokerConnectionUtils.checkActiveMQJMSProtocol(message, brokerURL));
+                        break;
+                    case "AMQP" :
+                        Assert.assertEquals(message,
+                                checkBrokerConnectionUtils.checkRabbitMQAMQPProtocol(message, brokerURL, user, password, vhost));
+                        break;
+                    default:
+                        throw new RuntimeException("Protocol " + keyDB + " not supported yet");
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.fail();
+            }
+
+        }
+    }
+
+    /**
+     * Inner class to check elasticsearch connection
+     *
+     */
+    public class CheckElasticSearchConnection {
+        public void invoke(String forwardedPort) {
+            String url = String.format("http://%s:%s", ipVagrantBox, forwardedPort);
+            try {
+                await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
+                        .and().ignoreExceptions()
+                        .until(()-> {
+                            try {
+
+                                "elasticsearch".contains(TestUtils.getUrlContentPage(url));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+            } catch (Exception e) {
+                Assert.fail();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Inner class to check redis connection
+     *
+     */
+    public class CheckRedisConnection {
+
+        public void invoke(String forwardedPort) {
+            try(JedisPool pool = new JedisPool(
+                    new JedisPoolConfig(), ipVagrantBox, Integer.parseInt(forwardedPort), 3000)){
+                Jedis jedis = pool.getResource();
+            } catch (JedisConnectionException e) {
+                Assert.fail();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private ResultActions requestPublishPort(Integer id, String number) throws Exception {
+        ModulePortResource request = ModulePortResource.of()
+                .withPublishPort(true)
+                .build();
+        String jsonString = objectMapper.writeValueAsString(request);
+        return mockMvc.perform(put("/module/" + id + "/ports/" + number)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andDo(print());
+    }
+
+    private ResultActions requestAddModule() throws Exception {
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        return mockMvc.perform(post("/module")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andDo(print());
+    }
+
+    private ResultActions requestApplication() throws Exception {
+        return mockMvc.perform(get("/application/" + applicationName)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
 
 }

@@ -1,0 +1,200 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="environment-card card col-lg-3">
+  <div class="content clearfix">
+    <h3 class="title large">Environment variables</h3>
+    
+    <p class="hint">Choose a container</p>
+
+    <div class="dropdown dropdown--small" dropdown>
+      <a class="dropdown-toggle"
+          dropdown-toggle=""
+          selectbox="">
+        {{ environment.myContainer.name }}
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+        <li data-ng-repeat="container in environment.containers">
+          <a ng-href=""
+              data-ng-click="environment.myContainer = container; environment.getContainers(environment.myContainer)">
+            {{container.name}}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="environment-card card col-lg-9">
+  <div class="content clearfix">
+
+    <h3 class="title large">Add Variable</h3>
+
+    <form id="add-env"
+          name="addEnvironmentVariable"
+          class="clearfix" novalidate=""
+          data-ng-submit="environment.addEnv(environment.environmentVariableKey, environment.environmentVariableValue)">
+      <div class="input-group-inline col-lg-5">
+            <input type="text"
+              name="key"
+              class="input-effect col-xs-12" 
+              data-ng-model="environment.environmentVariableKey"
+              required="">
+          <span class="bar"></span>
+          <label class="label-effect">Key</label>
+      </div>
+      <div class="input-group-inline col-lg-5">
+            <input type="text"
+              name="key"
+              class="input-effect col-xs-12" 
+              data-ng-model="environment.environmentVariableValue"
+              required="">
+          <span class="bar"></span>
+          <label class="label-effect">Value</label>
+      </div>
+      <div class="actions clearfix col-lg-12">
+        <div class="secondary-actions pull-right">
+          <button type="submit"
+                  class="alias-btn button-effect primary pull-right"
+                  data-ng-disabled="!environment.environmentVariableKey || !environment.environmentVariableValue">
+            <span>Add variable</span>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div class="alert alert-danger" data-ng-show="environment.addErrorMsg">
+      <button type="button"
+              class="close"
+              ng-click="environment.addErrorMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{environment.addErrorMsg}}</p>
+    </div>
+    <div class="alert alert-info" data-ng-show="environment.addNoticeMsg">
+      <button type="button"
+              class="close"
+              ng-click="environment.addNoticeMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{environment.addNoticeMsg}}</p>
+    </div>
+  </div>
+</div>
+
+<div class="environment-card card col-lg-12">
+  <div class="content clearfix" id="settings-environment">
+    <h3 class="title large">Manage Variable</h3>
+
+    <div class="no-data" ng-if="!environment.env.length">
+      <p>No environment variables has been created yet !</p>
+    </div>
+
+    <table class="table" ng-if="environment.env.length">
+        <thead>
+        <tr>
+          <th ng-click="environment.order('key')"><i class="icon-whhg"  ng-show="environment.predicate == 'key'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i> Key</th>
+          <th ng-click="environment.order('value')"><i class="icon-whhg"  ng-show="environment.predicate == 'value'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i>  Value</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr 
+            dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by env.id"
+            data-current-page="environment.currentPage">
+            <td>
+              <span  e-name="key" e-form="rowform"  e-required>
+                <span class="clipboard" id="key-{{env.id}}"
+                  data-title="Copy to clipboard"
+                  tooltip=""
+                  ngclipboard data-clipboard-target="#key-{{env.id}}">{{ env.keyEnv }}</span>
+              </span>
+            </td>
+            <td>
+              <span e-name="value" e-form="rowform" e-required>
+                <span class="clipboard" id="value-{{env.id}}"
+                  data-title="Copy to clipboard"
+                  tooltip=""
+                  ngclipboard data-clipboard-target="#value-{{env.id}}">{{ env.valueEnv }}</span>
+              </span>
+            </td>
+            <td>
+              <form editable-form name="rowform" onbeforesave="environment.editEnv(env.id, $data.key, $data.value)" ng-show="rowform.$visible">
+                <div class="action">
+                  <button type="submit" class="button primary raised"
+                  ng-disabled="rowform.$waiting">
+                  Edit
+                  </button>
+                  <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="button secondary">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+
+              <div class="buttons" ng-show="!rowform.$visible">
+                <button class="icon-button danger"
+                  ripple=""
+                  tooltip=""
+                  data-title="Delete"
+                  data-placement="bottom"
+                  sweetalert
+                  sweet-options="{'title':'Removal confirmation required for env {{env.key}}',
+                  'text':'Caution, this is a permanent action.',
+                  'type':'warning',
+                  'showCancelButton':true,
+                  'confirmButtonText':'PERMANENTLY DELETE!',
+                  'cancelButtonText':'CANCEL',
+                  'closeOnConfirm':false,
+                  'closeOnCancel':false,
+                  'animation': 'slide-from-top'}"
+                  sweet-confirm-option="{'title':'Deleted!','text':'Your environment variable has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-cancel-option="{'title':'Cancelled!','text':'Your environment variable is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-on-confirm="environment.deleteEnv(env)">
+                <i class="icon-whhg trash"></i>
+                </button>
+
+                <button class="icon-button"
+                  ripple=""
+                  tooltip=""
+                  data-title="Edit"
+                  data-placement="bottom"
+                  ng-click="rowform.$show()">
+                <i class="icon-whhg edit"></i>
+                </button>
+              </div>  
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <dir-pagination-controls ng-if="environment.env.length"></dir-pagination-controls>
+      
+      <div class="alert alert-danger" data-ng-show="environment.manageErrorMsg">
+        <button type="button"
+                class="close"
+                ng-click="environment.manageErrorMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{environment.manageErrorMsg}}</p>
+      </div>
+      <div class="alert alert-info" data-ng-show="environment.manageNoticeMsg">
+        <button type="button"
+                class="close"
+                ng-click="environment.manageNoticeMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{environment.manageNoticeMsg}}</p>
+      </div>
+  </div>
+</div>

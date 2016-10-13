@@ -32,7 +32,7 @@ package fr.treeptik.cloudunit.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -128,7 +128,7 @@ public class DatabaseConfigurationTest {
     public EntityManagerFactory entityManagerFactory() {
         logger.debug("Configuring EntityManager");
         LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
-        lcemfb.setPersistenceProvider(new HibernatePersistence());
+        lcemfb.setPersistenceProvider(new HibernatePersistenceProvider());
         lcemfb.setPersistenceUnitName("persistenceUnit");
         lcemfb.setDataSource(dataSource());
         lcemfb.setJpaDialect(new HibernateJpaDialect());

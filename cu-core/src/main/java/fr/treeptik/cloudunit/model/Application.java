@@ -1,20 +1,21 @@
-package fr.treeptik.cloudunit.model;/*
-									* LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
-									* but CloudUnit is licensed too under a standard commercial license.
-									* Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
-									* If you are not sure whether the AGPL is right for you,
-									* you can always test our software under the AGPL and inspect the source code before you contact us
-									* about purchasing a commercial license.
-									*
-									* LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
-									* or promote products derived from this project without prior written permission from Treeptik.
-									* Products or services derived from this software may not be called "CloudUnit"
-									* nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
-									* For any questions, contact us : contact@treeptik.fr
-									*/
+package fr.treeptik.cloudunit.model;
+
+/*
+* LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
+* but CloudUnit is licensed too under a standard commercial license.
+* Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+* If you are not sure whether the AGPL is right for you,
+* you can always test our software under the AGPL and inspect the source code before you contact us
+* about purchasing a commercial license.
+*
+* LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+* or promote products derived from this project without prior written permission from Treeptik.
+* Products or services derived from this software may not be called "CloudUnit"
+* nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+* For any questions, contact us : contact@treeptik.fr
+*/
 
 import java.io.Serializable;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "name", "cuInstanceName" }))
@@ -81,10 +83,10 @@ public class Application implements Serializable {
 	private User user;
 
 	@OrderBy("id asc")
-	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY)
 	private Set<Module> modules;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "application", fetch = FetchType.LAZY)
 	private Server server;
 
 	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
@@ -114,6 +116,16 @@ public class Application implements Serializable {
 
 	private String deploymentStatus;
 
+	public String getContextPath() {
+		return contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
+	}
+
+	private String contextPath;
+
 	private boolean isAClone;
 
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
@@ -121,10 +133,7 @@ public class Application implements Serializable {
 	private Set<PortToOpen> portsToOpen;
 
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
-	private Set<Environment> environments;
-
-	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
-	private Set<Volume> volumes;
+	private Set<EnvironmentVariable> environmentVariables;
 
 	private String location;
 
@@ -158,9 +167,7 @@ public class Application implements Serializable {
 
 	public void setName(String name) {
 		name = name.toLowerCase();
-		name = Normalizer.normalize(name, Normalizer.Form.NFD);
-		name = name.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-		this.name = name.replaceAll("[^a-z0-9]", "");
+		this.name = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(name);
 	}
 
 	public String getDisplayName() {
@@ -195,6 +202,11 @@ public class Application implements Serializable {
 		this.server = server;
 	}
 
+	public void removeServer() {
+		server.setApplication(null);
+		this.server = null;
+	}
+
 	public Status getStatus() {
 		return status;
 	}
@@ -223,6 +235,11 @@ public class Application implements Serializable {
 		this.modules = new HashSet<>(modules);
 	}
 
+	public void removeModule(Module module) {
+		module.setApplication(null);
+		modules.remove(module);
+	}
+
 	public Date getDate() {
 		return date;
 	}
@@ -242,6 +259,8 @@ public class Application implements Serializable {
 	public void setDeployments(List<Deployment> deployments) {
 		this.deployments = new HashSet<>(deployments);
 	}
+
+	public void addDeployment(Deployment deployment) { this.deployments.add(deployment); }
 
 	public String getSuffixCloudUnitIO() {
 		return suffixCloudUnitIO;
@@ -265,14 +284,6 @@ public class Application implements Serializable {
 
 	public void setManagerPort(String managerPort) {
 		this.managerPort = managerPort;
-	}
-
-	public String getRestHost() {
-		return restHost;
-	}
-
-	public void setRestHost(String restHost) {
-		this.restHost = restHost;
 	}
 
 	public String getLocation() {
@@ -370,19 +381,6 @@ public class Application implements Serializable {
 		return this.portsToOpen;
 	}
 
-	public void setPortsToOpen(Set<PortToOpen> portsToOpen) {
-		this.portsToOpen = portsToOpen;
-	}
 
-	public Set<Environment> getEnvironments() {
-		return environments;
-	}
 
-	public void setEnvironments(Set<Environment> environments) {
-		this.environments = environments;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
 }

@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.shell.core.CommandMarker;
 import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
@@ -31,7 +30,7 @@ import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
 
 @Component
-public class ServerUtils implements CommandMarker {
+public class ServerUtils {
 
 	@InjectLogger
 	private Logger log;
@@ -236,6 +235,62 @@ public class ServerUtils implements CommandMarker {
 
 		return "The port " + portToOpen + " was been successfully closed on "
 				+ applicationUtils.getApplication().getName();
+	}
+
+	public String mountVolume(String name, String path, Boolean mode, String containerName, String applicationName) {
+		if(containerName == null)
+		{
+			if(applicationUtils.getApplication() == null) {
+				statusCommand.setExitStatut(1);
+				return ANSIConstants.ANSI_RED
+						+ "No application is currently selected by the following command line : use <application name>"
+						+ ANSIConstants.ANSI_RESET;
+			}
+			containerName = applicationUtils.getApplication().getServer().getName();
+		}
+
+		if(applicationName == null) {
+			if(applicationUtils.getApplication() == null) {
+				statusCommand.setExitStatut(1);
+				return ANSIConstants.ANSI_RED
+						+ "No application is currently selected by the following command line : use <application name>"
+						+ ANSIConstants.ANSI_RESET;
+			}
+			applicationName = applicationUtils.getApplication().getName();
+		}
+		try {
+			Map<String, String> parameters = new HashMap<>();
+			parameters.put("containerName", containerName);
+			parameters.put("path", path);
+
+			if(mode.equals(true)) parameters.put("mode", "ro");
+			else parameters.put("mode", "rw");
+
+			parameters.put("volumeName", name);
+			parameters.put("applicationName", applicationName);
+			restUtils.sendPutCommand(authentificationUtils.finalHost + "/server/volume", authentificationUtils.getMap(), parameters);
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
+
+		statusCommand.setExitStatut(0);
+
+		return "This volume has successful been mounted";
+	}
+
+	public String unmountVolume(String name, String containerName) {
+		try {
+			restUtils.sendDeleteCommand(authentificationUtils.finalHost + "/server/volume/" + name + "/container/" +
+					containerName, authentificationUtils.getMap());
+		} catch (ManagerResponseException e) {
+			statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		}
+
+		statusCommand.setExitStatut(0);
+
+		return "This volume has successful been unmounted";
 	}
 
 }

@@ -17,8 +17,6 @@ package fr.treeptik.cloudunit.cli.commands;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.core.CommandMarker;
@@ -55,36 +53,19 @@ public class FileCommands implements CommandMarker {
 		return fileUtils.listFiles();
 	}
 
-	@CliCommand(value = "check-path", help = "Check if path exists")
-	public String checkPath(@CliOption(key = { "", "path" }) String path) throws ManagerResponseException {
-		return fileUtils.checkPath(path);
+	@CliCommand(value = {"create-directory", "mkdir"}, help = "Create directory")
+	public String createDirectory(@CliOption(key = { "", "path" }) String path) throws ManagerResponseException {
+		return fileUtils.createDirectory(path);
 	}
 
-	@CliCommand(value = "enter-directory", help = "Enter into a directory")
+	@CliCommand(value = {"change-directory", "cd"}, help = "Enter into a directory")
 	public String enterDirectory(@CliOption(key = { "", "directoryName" }) String directoryName,
 			@CliOption(key = {
 					"parent" }, mandatory = false, help = "Return at the parent directory", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean parent)
 			throws ManagerResponseException {
-		String[] pathArray = directoryName.split("/");
-		List<String> pathList = new ArrayList<String>();
-		for (String s : pathArray) {
-			if (s != null && s.length() > 0) {
-				pathList.add(s);
-			}
-		}
-		if (pathList.size() > 1) {
-			String exists = checkPath(directoryName);
-			if (exists.equals("This directory exist")) {
-				return fileUtils.enterPathDirectory(pathList);
-			}
-			return exists;
-		} else {
-			if (directoryName != null && directoryName.equalsIgnoreCase("..")) {
-				parent = true;
-				directoryName = null;
-			}
-			return fileUtils.enterDirectory(directoryName, parent);
-		}
+
+        if (directoryName == null || directoryName.trim().length() == 0) { return "Need an directory as argument."; }
+		return fileUtils.changeDirectory(directoryName);
 	}
 
 	@CliCommand(value = "upload-file", help = "Upload a file into the current directory")

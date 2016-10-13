@@ -1,0 +1,76 @@
+/* MODULE SCSS => ./scss2/_forms.scss
+*//*
+ * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.form {
+  @include make-lg-column(4, 16px);
+  padding-top: 8px;
+  padding-bottom: 8px;
+  .content {
+    border: 3px dashed #bdbdbd;
+    color: #bdbdbd;
+    padding: 16px;
+    border-radius: 2px;
+    min-height: 256px;
+    box-shadow: none;
+    position: relative;
+    .title {
+      margin: 0;
+    }
+    .spinner {
+      width: 100%;
+      left: 0;
+      text-align: center;
+      z-index: 1;
+      @include v-center();
+    }
+    .button {
+      margin-top: 16px;
+      color: $color-muted !important;
+    }
+  }
+}
+
+.form.smaller {
+  @include make-lg-column(3, 16px);  
+}
+
+.app-creation .form .content {
+  box-shadow: none;
+}
+
+.app-creation .form:hover .content {
+  border: 3px dashed #bdbdbd;
+  background: transparent;
+  padding: 16px;
+  box-shadow: none;
+}
+
+.form:hover .content, .form.ngdirty .content {
+  background-color: #fff;
+  border: none;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+  padding: 19px;
+  .button {
+    color: $color-primary !important;
+  }
+  .button:disabled, .button.disabled {
+    color: $color-muted !important;
+  }
+}
+
+.form-group {
+  overflow: hidden;
+}

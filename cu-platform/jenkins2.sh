@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export JK_MAJOR=2.14
+export JK_MAJOR=2.21
 
 docker images |grep jenkinsci/jenkins |grep $JK_MAJOR
 if [ "$?" == "1" ]; then
@@ -27,7 +27,7 @@ if [ -z "$RETURN" ]; then
                 --restart always \
                 -v /home/$USER/jenkins_home:/var/jenkins_home \
                 jenkinsci/jenkins:$JK_MAJOR
- 	    docker-compose -f docker-compose-prod.yml rm -f nginx
+ 	        docker-compose -f docker-compose-prod.yml rm -f nginx
             docker-compose -f docker-compose-prod.yml up -d nginx	 
     fi
 

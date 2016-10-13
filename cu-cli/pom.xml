@@ -14,8 +14,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.shell.version>1.1.0.RELEASE</spring.shell.version>
 		<log4j.version>1.2.17</log4j.version>
-		<compiler.source.version>1.7</compiler.source.version>
-		<compiler.target.version>1.7</compiler.target.version>
+		<compiler.source.version>1.8</compiler.source.version>
+		<compiler.target.version>1.8</compiler.target.version>
 		<maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
 		<maven.dependency.plugin.version>2.5.1</maven.dependency.plugin.version>
 		<maven.jar.plugin.version>2.4</maven.jar.plugin.version>
@@ -27,8 +27,9 @@
 
 		<cloudunit.ip>localhost</cloudunit.ip>
 		<cloudunit.port>8080</cloudunit.port>
-		<cloudunit.version>1.0</cloudunit.version>
-		<cli.version>1.0</cli.version>
+		<cloudunit.version>${project.version}</cloudunit.version>
+		<cli.version>${project.version}</cli.version>
+		<cli.timestamp>${maven.build.timestamp}</cli.timestamp>
 		<api.version>0</api.version>
 
 	</properties>
@@ -208,6 +209,16 @@
 									<mainClass>org.springframework.shell.Bootstrap</mainClass>
 								</transformer>
 							</transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
 						</configuration>
 					</execution>
 				</executions>
@@ -246,4 +257,6 @@
 		</profile>
 	</profiles>
 
+	<name>CloudUnit CLI</name>
+	<description>CloudUnit command line interface</description>
 </project>

@@ -23,47 +23,38 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ModuleDAO
-    extends JpaRepository<Module, Integer> {
+public interface ModuleDAO extends JpaRepository<Module, Integer> {
+
+    @Query("Select m from Module m " + "left join fetch m.image " + "where m.containerID=:containerID")
+    Module findByContainerID(@Param("containerID") String id) throws DataAccessException;
 
     @Query("Select m from Module m " +
-        "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
-        "left join fetch m.image " +
-        "where m.containerID=:containerID")
-    Module findByContainerID(@Param("containerID") String id)
-        throws DataAccessException;
+            "left join fetch m.image" +
+            " left join fetch m.application " +
+            "left join fetch m.ports "
+            + "where m.name=:name ")
+    Module findByName(@Param("name") String name) throws DataAccessException;
 
     @Query("Select m from Module m " +
-        "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
-        "left join fetch m.image " +
-        "where m.name=:name ")
-    Module findByName(@Param("name") String name)
-        throws DataAccessException;
+            "left join fetch m.image " +
+            "left join fetch m.application " +
+            "left join fetch m.ports "
+            + "where m.id=:id ")
+    Module findById(@Param("id") Long id) throws DataAccessException;
 
-    @Query("Select m " +
-        "from Module m " +
-        "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
-        "left join fetch m.image " +
-        "where m.application.name=:applicationName " +
-        "and m.application.user.id=:userId " +
-        "and m.application.cuInstanceName=:cuInstanceName " +
-        "order by m.name ASC")
-    List<Module> findByAppAndUser(@Param("userId") Integer userId,
-                                  @Param("applicationName") String applicationName,
-                                  @Param("cuInstanceName") String cuInstanceName)
-        throws DataAccessException;
+    @Query("Select m " + "from Module m " + "left join fetch m.image " + "where m.application.name=:applicationName "
+            + "and m.application.user.id=:userId " + "and m.application.cuInstanceName=:cuInstanceName "
+            + "order by m.name ASC")
+    List<Module> findByAppAndUser(@Param("userId") Integer userId, @Param("applicationName") String applicationName,
+            @Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
 
-    @Query("Select m from Module m " +
-        "left join fetch m.moduleInfos " +
-        "left join fetch m.listPorts " +
-        "left join fetch m.image " +
-        "where m.application.name=:applicationName " +
-        "and m.application.cuInstanceName=:cuInstanceName")
+    @Query("Select m from Module m " + "left join fetch m.image " + "where m.application.name=:applicationName "
+            + "and m.application.cuInstanceName=:cuInstanceName")
     List<Module> findByApp(@Param("applicationName") String applicationName,
-                           @Param("cuInstanceName") String cuInstanceName)
-        throws DataAccessException;
+            @Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
 
+    @Query("select count(m) from Module m " + "left join m.image i " + "left join m.application a "
+            + "where a.id=:applicationId " + "and i.prefixEnv=:imagePrefixEnv")
+    Long countModuleNameByApplication(@Param("imagePrefixEnv") String imagePrefixEnv,
+            @Param("applicationId") Integer applicationId);
 }

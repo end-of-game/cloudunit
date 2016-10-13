@@ -16,12 +16,7 @@ package fr.treeptik.cloudunit.model;/*
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -43,7 +38,8 @@ public class Deployment implements Serializable {
 	@ManyToOne
 	private Application application;
 
-	private Type type;
+	@Enumerated(EnumType.STRING)
+	private DeploymentType type;
 
 	public Integer getId() {
 		return id;
@@ -69,11 +65,11 @@ public class Deployment implements Serializable {
 		this.application = application;
 	}
 
-	public Type getType() {
+	public DeploymentType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(DeploymentType type) {
 		this.type = type;
 	}
 

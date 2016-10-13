@@ -87,8 +87,8 @@ Installation Node 5.x :
 
 ```
 sudo npm install -g grunt grunt-cli bower 
-cd $HOME/cloudunit/cu-manager/src/main/webapp && sudo npm install
-cd $HOME/cloudunit/cu-manager/src/main/webapp && bower install
+cd $HOME/cloudunit/cu-manager-ui && npm install
+cd $HOME/cloudunit/cu-manager-ui && bower install
 ```
 
 ### Step 5 - How to build the vagrant box
@@ -108,7 +108,7 @@ vagrant provision
 ```
 cd $HOME/cloudunit/cu-vagrant 
 vagrant up (if not running)
-vagrant ssh 
+vagrant ssh
 cd cloudunit/cu-platform && ./reset.sh -y
 ```
 
@@ -124,7 +124,7 @@ mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 3 - Run the UI for development (http://0.0.0.0:9000) from Linux
 
 ```
-cd $HOME/cloudunit/cu-manager/src/main/webapp && grunt serve
+cd $HOME/cloudunit/cu-manager-ui && grunt serve
 ```
 You can use default password and login
 ```
@@ -192,7 +192,7 @@ First of all, you have to install Google Chrome.
 Then, start the application ([see step 6](#step6)) in parallel.
 
 ```
-cd $HOME/cloudunit/cu-manager
+cd $HOME/cloudunit/cu-manager-ui
 grunt test
 ```
 

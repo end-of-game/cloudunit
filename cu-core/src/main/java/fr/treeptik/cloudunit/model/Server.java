@@ -17,13 +17,13 @@ package fr.treeptik.cloudunit.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -43,12 +43,12 @@ public class Server extends Container implements Serializable {
 	private String managerLocation;
 
 	@JsonIgnore
-	@OneToOne(mappedBy = "server", fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	private Application application;
 
 	@JsonIgnore
-	@ElementCollection
-	private List<String> links;
+	@OneToMany(mappedBy = "volumeAssociationId.server", fetch = FetchType.LAZY)
+	private Set<VolumeAssociation> volumeAssociations;
 
 	public Server(Integer id, Date startDate, String name, String containerID, Long memorySize, String containerIP,
 			Status status, Image image, Map<String, String> listPorts) {
@@ -111,6 +111,14 @@ public class Server extends Container implements Serializable {
 
 	public void setApplication(Application application) {
 		this.application = application;
+	}
+
+	public Set<VolumeAssociation> getVolumeAssociations() {
+		return volumeAssociations;
+	}
+
+	public void setVolumeAssociations(Set<VolumeAssociation> volumeAssociations) {
+		this.volumeAssociations = volumeAssociations;
 	}
 
 }

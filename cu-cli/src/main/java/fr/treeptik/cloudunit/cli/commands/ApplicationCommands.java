@@ -52,11 +52,10 @@ public class ApplicationCommands implements CommandMarker {
 
 	@CliCommand(value = "rm-app", help = "Remove an application")
 	public String rmApp(
-			@CliOption(key = {
-					"name" }, mandatory = false, help = "Application name to remove ") String applicationName,
-			@CliOption(key = {
-					"scriptUsage" }, mandatory = false, help = "Non-interactive mode", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean scriptUsage) {
-		return applicationUtils.rmApp(applicationName, scriptUsage);
+			@CliOption(key = { "name" }, mandatory = false, help = "Application name to remove ") String applicationName,
+			@CliOption(key = { "errorIfNotExists" }, mandatory = false, help = "Throw an error if not exists ", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean errorIfNotExists,
+			@CliOption(key = { "scriptUsage" }, mandatory = false, help = "Non-interactive mode", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean scriptUsage) {
+		return applicationUtils.rmApp(applicationName, scriptUsage, errorIfNotExists);
 	}
 
 	@CliCommand(value = "start", help = "Start the current application and  all its services")
@@ -108,4 +107,39 @@ public class ApplicationCommands implements CommandMarker {
 		return applicationUtils.removeAlias(applicationName, alias);
 	}
 
+	@CliCommand(value = "create-var-env", help = "Create a new environment variable")
+	public String createEnvironmentVariable(
+			@CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName,
+			@CliOption(key = {"", "key"}, mandatory = true, help = "Key to the environment variable") String key,
+			@CliOption(key = {"", "value"}, mandatory = true, help = "Value to the environment variable") String value) {
+		return applicationUtils.createEnvironmentVariable(applicationName, key, value);
+	}
+
+    @CliCommand(value = "rm-var-env", help = "Create a new environment variable")
+    public String removeEnvironmentVariable(
+            @CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName,
+            @CliOption(key = {"", "key"}, mandatory = true, help = "Key to the environment variable") String key) {
+        return applicationUtils.removeEnvironmentVariable(applicationName, key);
+    }
+
+	@CliCommand(value = "update-var-env", help = "Update a existing environment variable")
+	public String updateEnvironmentVariable(
+			@CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName,
+			@CliOption(key = {"", "old-key"}, mandatory = true, help = "Old key to the environment variable") String oldKey,
+			@CliOption(key = {"", "new-key"}, mandatory = true, help = "New key to the environment variable") String newKey,
+			@CliOption(key = {"", "value"}, mandatory = true, help = "New value to the environment variable") String value) {
+		return applicationUtils.updateEnvironmentVariable(applicationName, oldKey, newKey, value);
+	}
+
+    @CliCommand(value = "list-var-env", help = "List all environment variables")
+    public String listEnvironmentVariables(
+            @CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName) {
+        return applicationUtils.listAllEnvironmentVariables(applicationName);
+    }
+
+    @CliCommand(value = "list-containers", help = "List all containers")
+	public String listContainers(
+			@CliOption(key = {"name"}, mandatory = false, help = "Application name to remove ") String applicationName) {
+    	return applicationUtils.listContainers(applicationName);
+	}
 }

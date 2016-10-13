@@ -21,7 +21,7 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Deployment;
-import fr.treeptik.cloudunit.model.Type;
+import fr.treeptik.cloudunit.model.DeploymentType;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DeploymentService;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class DeploymentServiceImpl
 
     @Override
     @Transactional
-    public Deployment create(Application application, Type deploymentType)
+    public Deployment create(Application application, DeploymentType deploymentType, String contextPath)
             throws ServiceException, CheckException {
         try {
             Deployment deployment = new Deployment();
@@ -54,7 +54,8 @@ public class DeploymentServiceImpl
             application = applicationService.findByNameAndUser(application
                     .getUser(), application.getName());
             application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
-            application = applicationService.saveInDB(application);
+            application.setContextPath(contextPath);
+            applicationService.saveInDB(application);
             return deploymentDAO.save(deployment);
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);

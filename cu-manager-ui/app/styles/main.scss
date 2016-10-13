@@ -1,0 +1,67 @@
+/* MODULE SCSS => ./scss2/main.scss
+*//*
+ * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+//bootstrap
+@import "../../bower_components/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
+@import "../../bower_components/angular-timeline/src/angular-timeline.scss";
+@import "../../bower_components/chartist/dist/scss/chartist.scss";
+
+// fonts
+@import "fonts";
+// icon fonts
+@import "icons";
+// webui variables
+@import "variables";
+// webui components
+@import "utils";
+@import "input";
+@import "button";
+@import "app-bar";
+@import "page-header";
+@import "page-menu";
+@import "subheader";
+@import "login";
+@import "ng-table-pagination";
+@import "tile";
+@import "dropdown";
+@import "alert";
+@import "feed";
+@import "card";
+@import "switches";
+@import "lockscreen";
+@import "gravatar";
+@import "logs";
+@import "upload";
+@import "hints";
+@import "forms";
+@import "dialog";
+@import "page";
+@import "type";
+@import "animate";
+@import "error";
+@import "monitoring";
+@import "label";
+@import "table";
+@import "text-editor";
+@import "timeline";
+@import "popover";
+@import "lists";
+@import "tags";
+@import "charts";
+@import "main-timeline";
+@import "selectize";
+@import "tooltip";
+@import "switches";

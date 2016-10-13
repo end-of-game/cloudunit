@@ -24,8 +24,13 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fr.treeptik.cloudunit.dto.*;
+import fr.treeptik.cloudunit.model.PortToOpen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,12 +41,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
-import fr.treeptik.cloudunit.dto.ContainerUnit;
-import fr.treeptik.cloudunit.dto.EnvUnit;
-import fr.treeptik.cloudunit.dto.HttpErrorServer;
-import fr.treeptik.cloudunit.dto.HttpOk;
-import fr.treeptik.cloudunit.dto.JsonInput;
-import fr.treeptik.cloudunit.dto.JsonResponse;
+import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
@@ -84,6 +87,9 @@ public class ApplicationController implements Serializable {
 	@Inject
 	private DockerService dockerService;
 
+	@Inject
+	private ApplicationEventPublisher applicationEventPublisher;
+
 	/**
 	 * To verify if an application exists or not.
 	 *
@@ -125,24 +131,12 @@ public class ApplicationController implements Serializable {
 	public JsonResponse createApplication(@RequestBody JsonInput input)
 			throws ServiceException, CheckException, InterruptedException {
 
-		// replace accent characters
-
-		/* **** Check accent in server side **** */
-		// String applicationName =
-		// AlphaNumericsCharactersCheckUtils.deAccent(input.getApplicationName());
-		// input.setApplicationName(applicationName);
-
 		// validate the input
 		input.validateCreateApp();
 
 		// We must be sure there is no running action before starting new one
 		User user = authentificationUtils.getAuthentificatedUser();
 		authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
-
-		// GITLAB + JENKINS
-		gitlabService.createProject(input.getApplicationName());
-		String repository = gitlabService.getGitRepository(input.getApplicationName());
-		jenkinsService.createProject(input.getApplicationName(), repository);
 
 		// CREATE AN APP
 		applicationService.create(input.getApplicationName(), input.getLogin(), input.getServerName(), null, null);
@@ -222,7 +216,13 @@ public class ApplicationController implements Serializable {
 		// We must be sure there is no running action before starting new one
 		authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
+		// set the application in pending mode
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
 		applicationService.start(application);
+
+		// wait for modules and servers starting
+		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
 		return new HttpOk();
 	}
@@ -251,8 +251,13 @@ public class ApplicationController implements Serializable {
 		// We must be sure there is no running action before starting new one
 		authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
+		// set the application in pending mode
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
 		// stop the application
 		applicationService.stop(application);
+
+		applicationEventPublisher.publishEvent(new ApplicationStopEvent(application));
 
 		return new HttpOk();
 	}
@@ -281,17 +286,15 @@ public class ApplicationController implements Serializable {
 
 		try {
 			// Application busy
-			applicationService.setStatus(application, Status.PENDING);
+			// set the application in pending mode
+			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 
 			logger.info("delete application :" + applicationName);
-
 			applicationService.remove(application, user);
-			// jenkinsService.deleteProject(applicationName);
-			// gitlabService.listBranches(applicationName);
-			// gitlabService.deleteProject(applicationName);
+
 		} catch (ServiceException e) {
-			logger.error(application.toString(), e);
-			applicationService.setStatus(application, Status.FAIL);
+			// set the application in pending mode
+			applicationEventPublisher.publishEvent(new ApplicationFailEvent(application));
 		}
 
 		logger.info("Application " + applicationName + " is deleted.");
@@ -356,7 +359,18 @@ public class ApplicationController implements Serializable {
 		// We must be sure there is no running action before starting new one
 		authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
-		applicationService.deploy(fileUpload, application);
+        application = applicationService.deploy(fileUpload, application);
+
+		String needRestart = dockerService.getEnv(application.getServer().getContainerID(),
+				"CU_SERVER_RESTART_POST_DEPLOYMENT");
+		if ("true".equalsIgnoreCase(needRestart)){
+            // set the application in pending mode
+            applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+            applicationService.stop(application);
+			applicationService.start(application);
+            // wait for modules and servers starting
+            applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+		}
 
 		logger.info("--DEPLOY APPLICATION WAR ENDED--");
 		return new HttpOk();
@@ -379,13 +393,6 @@ public class ApplicationController implements Serializable {
 		return applicationService.listContainers(applicationName);
 	}
 
-	/*
-	 * ********************************************************** / /* ALIAS
-	 */
-	/*
-	 * ********************************************************** /
-	 * 
-	 */
 	/**
 	 * Return the list of aliases for an application
 	 *
@@ -494,7 +501,7 @@ public class ApplicationController implements Serializable {
 	@CloudUnitSecurable
 	@ResponseBody
 	@RequestMapping(value = "/ports", method = RequestMethod.POST)
-	public JsonResponse addPort(@RequestBody JsonInput input) throws ServiceException, CheckException {
+	public ResponseEntity<PortResource> addPort(@RequestBody JsonInput input) throws ServiceException, CheckException {
 
 		if (logger.isDebugEnabled()) {
 			logger.debug(input.toString());
@@ -511,9 +518,9 @@ public class ApplicationController implements Serializable {
 		CheckUtils.validateNatureForOpenPortFeature(input.getPortNature(), application);
 
 		Integer port = Integer.parseInt(input.getPortToOpen());
-		applicationService.addPort(application, nature, port);
-
-		return new HttpOk();
+		PortToOpen portToOpen= applicationService.addPort(application, nature, port);
+		PortResource portResource = new PortResource(portToOpen);
+		return ResponseEntity.status(HttpStatus.OK).body(portResource);
 	}
 
 	/**
@@ -550,25 +557,24 @@ public class ApplicationController implements Serializable {
 	 * Display env variables for a container
 	 *
 	 * @param applicationName
-	 * @param containerId
 	 * @return
 	 * @throws ServiceException
 	 * @throws CheckException
 	 */
 	@CloudUnitSecurable
 	@ResponseBody
-	@RequestMapping(value = "/{applicationName}/container/{containerId}/env", method = RequestMethod.GET)
-	public List<EnvUnit> displayEnv(@PathVariable String applicationName, @PathVariable String containerId)
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/env", method = RequestMethod.GET)
+	public List<EnvUnit> displayEnv(@PathVariable String applicationName, @PathVariable String containerName)
 			throws ServiceException, CheckException {
 		List<EnvUnit> envUnits = null;
 		try {
 			User user = this.authentificationUtils.getAuthentificatedUser();
-			String content = dockerService.execCommand(containerId,
+			String content = dockerService.execCommand(containerName,
 					RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
 			logger.debug(content);
 			envUnits = EnvUnitFactory.fromOutput(content);
 		} catch (FatalDockerJSONException e) {
-			throw new ServiceException(applicationName + ", " + containerId, e);
+			throw new ServiceException(applicationName + ", " + containerName, e);
 		}
 		return envUnits;
 	}

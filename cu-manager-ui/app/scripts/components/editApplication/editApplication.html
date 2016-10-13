@@ -1,0 +1,178 @@
+<section data-ng-cloak="" id="configure-{{editApp.application.name}}" freeze="">
+  <header>
+    <div class="page-header">
+      <div class="page-title">
+        <a class="go-back-link icon-button primary"
+           href="#dashboard"
+           ripple=""
+           tooltip=""
+           data-title="Retour"
+           data-placement="bottom">
+          <i class="icon-whhg pageback"></i>
+        </a>
+
+        <h2 class="title">
+          Application
+          {{editApp.application.displayName}}
+          <a id="preview-link"
+             class="icon-button"
+             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"
+             data-ng-href="{{ editApp.application.location }}{{ editApp.application.contextPath }}"
+             target="_blank"
+             tooltip=""
+             data-title="Open in browser"
+             data-placement="bottom">
+            <span><i class="icon-whhg preview"></i></span>
+          </a>
+        </h2>
+      </div>
+      <div class="page-menu">
+        <ul class="tabs">
+          <li ng-click="editApp.updateRoute();"
+            ui-sref-active="active"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+            <a id="overview-tab" ui-sref="editApplication.overview"
+               ripple="">
+              <span>Overview</span>
+            </a>
+          </li>
+          <!--
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+            <a id="add-service-tab" ui-sref="editApplication.addServer({ typeImage: '' })" ripple="">
+              <span>
+                <span class="icon-whhg plus-sign icon-nav"></span>
+                Server
+              </span>
+            </a>
+          </li>
+          -->
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+            <a id="add-service-tab" ui-sref="editApplication.addModule({ typeImage: '' })" ripple="">
+              <span>
+                <span class="icon-whhg plus-sign icon-nav"></span>
+                Module
+              </span>
+            </a>
+          </li>
+          <li ng-click="editApp.updateRoute();"
+            ui-sref-active="active"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="deploy-tab" ui-sref="editApplication.deploy" ripple="">
+              <span>Deploy</span>
+            </a>
+          </li>
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="explorer-tab" ui-sref="editApplication.explorer" ripple="">
+              <span>Explorer</span>
+            </a>
+          </li>
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a class="mainLink" id="logs-tab" ui-sref="editApplication.logs" ripple="">
+              <span>Logs</span>
+            </a>
+          </li>
+          <!-- ng-class="{ 'active': editApp.state.current.name  == 'editApplication.monitoringContainers' || editApp.state.current.name  == 'editApplication.monitoringApplication' }" -->
+          <li ng-click="editApp.updateRoute();"
+            ng-class="{ 'active': editApp.monitoringRoute }"
+            ng-if="editApp.dislayJolokia"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <div class="dropdown" dropdown>
+              <a class="dropdown-toggle mainLink" dropdown-toggle>Monitoring</a>
+              <ul class="dropdown-menu" role="menu">
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="monitoring-tab" ui-sref="editApplication.monitoringContainers"><span>Containers</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat && editApp.application.deploymentStatus === 'ALREADY_DEPLOYED'">
+                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="{{ editApp.application.location }}/monitoring">
+                    <span>Application</span>
+                    <!-- <div class="hint-disabled" ng-if="editApp.hasTomcatMonitoring">Cann't monitoring on this Tomcat's version</div> -->
+                  </a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat && editApp.application.deploymentStatus === 'ALREADY_DEPLOYED'">
+                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="{{ editApp.application.location }}/monitoring?part=mbeans">
+                    <span>MBEANS</span>
+                    <!-- <div class="hint-disabled" ng-if="editApp.hasTomcatMonitoring">Cann't monitoring on this Tomcat's version</div> -->
+                  </a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat && editApp.application.deploymentStatus === 'ALREADY_DEPLOYED'">
+                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="{{ editApp.application.location }}/monitoring?part=sessions">
+                    <span>SESSIONS</span>
+                    <!-- <div class="hint-disabled" ng-if="editApp.hasTomcatMonitoring">Cann't monitoring on this Tomcat's version</div> -->
+                  </a>
+                </li>
+              </ul>
+            </div>
+            
+           <li ng-if="!editApp.dislayJolokia" ui-sref-active="active"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="monitoring-tab" ui-sref="editApplication.monitoringContainers" ripple="">
+              <span>Monitoring</span>
+            </a>
+          </li>
+            <!--<a id="monitoring-tab" ui-sref="editApplication.monitoring" ripple="">
+              <div class="dropdown">
+                <button class="dropbtn">Monitoring</button>
+                <div class="dropdown-content">
+                  <a href="#">Monitoring 1</a>
+                  <a href="#">Monitoring 2</a>
+                </div>
+              </div>
+            </a>-->
+          </li>
+
+          <li ng-click="editApp.updateRoute();"
+              ui-sref-active="active"
+              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <a id="snapshot-tab" ui-sref="editApplication.snapshot" ripple="">
+              <span>Create template</span>
+            </a>
+          </li>
+          <li ng-click="editApp.updateRoute();"
+            ng-class="{ 'active': editApp.settingsRoute }"
+            data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}">
+            <div class="dropdown" dropdown>
+              <a class="dropdown-toggle mainLink" dropdown-toggle>Settings</a>
+              <ul class="dropdown-menu" role="menu">
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsJVM"><span>JVM Configuration</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsAlias"><span>DNS Alias</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsPort"><span>Port to expose</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsEnvironment"><span>Variables Environment</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsVolume"><span>Volume Association</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="settings-tab" ui-sref="editApplication.settingsCommand"><span>Command Run</span></a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="page full {{ editApp.application.status | lowercase }}"
+       id="application-{{ editApp.application.name }}">
+
+    <div class="tab-content">
+      <div ui-view=""></div>
+    </div>
+  </div>
+
+</section>

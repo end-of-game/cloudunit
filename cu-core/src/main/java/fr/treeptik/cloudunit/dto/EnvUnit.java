@@ -8,7 +8,7 @@ public class EnvUnit {
     private String key;
     private String value;
 
-    public EnvUnit(String line) {
+    public EnvUnit() {
     }
 
     public EnvUnit(String key, String value) {

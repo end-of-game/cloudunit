@@ -23,17 +23,21 @@ import java.util.Map;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.treeptik.cloudunit.dto.AboutResource;
+import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.FileUnit;
 import fr.treeptik.cloudunit.dto.HttpErrorServer;
 import fr.treeptik.cloudunit.dto.LogUnit;
 import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.EnvironmentVariable;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Snapshot;
 import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.Volume;
 
 public class JsonConverter {
 
@@ -214,6 +218,18 @@ public class JsonConverter {
 		return containerUnits;
 	}
 
+	public static List<EnvironmentVariable> getEnvironmentVariables(String response) {
+		List<EnvironmentVariable> environmentVariables = new ArrayList<>();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			environmentVariables = mapper.readValue(response, new TypeReference<List<EnvironmentVariable>>() {
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return environmentVariables;
+	}
+
 	public static List<String> getAliases(String response) {
 		List<String> tags = new ArrayList<>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -237,4 +253,41 @@ public class JsonConverter {
 		}
 		return fileUnits;
 	}
+
+	public static List<Volume> getVolumes(String response) {
+		List<Volume> volumes = new ArrayList<Volume>();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			volumes = mapper.readValue(response, new TypeReference<List<Volume>>() {
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return volumes;
+	}
+
+	public static List<Command> getCommands(String response) {
+		List<Command> commands = new ArrayList<>();
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			commands = mapper.readValue(response, new TypeReference<List<Command>>() {
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return commands;
+	}
+
+    public static AboutResource getAbout(String response) {
+        AboutResource about = new AboutResource();
+        ObjectMapper mapper = new ObjectMapper();
+        
+        try {
+            about = mapper.readValue(response, AboutResource.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        return about;
+    }
 }

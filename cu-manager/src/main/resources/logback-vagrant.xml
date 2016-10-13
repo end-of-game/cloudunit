@@ -26,10 +26,15 @@
     <logger name="fr.treeptik.cloudunit.service.impl.ServerServiceImpl" level="debug" />
     <logger name="fr.treeptik.cloudunit.service.impl.ModuleServiceImpl" level="debug" />
 	<logger name="fr.treeptik.cloudunit.service.impl.FileServiceImpl" level="debug" />
+	<logger name="fr.treeptik.cloudunit.service.impl.HookServiceImpl" level="debug" />
+
 
 	<logger name="org.springframework" level="warn" />
-
-	<!-- <logger name="org.hibernate.SQL" level="debug" /> -->
+	<!--
+	<logger name="org.springframework.orm.jpa.JpaTransactionManager" level="debug" />
+	<logger name="org.hibernate.SQL" level="debug" />
+	<logger name="org.hibernate.transaction" level="debug" />
+	-->
 
 	<root level="warn">
 		<appender-ref ref="console" />

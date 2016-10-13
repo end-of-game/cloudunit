@@ -15,16 +15,17 @@
 
 package fr.treeptik.cloudunit.service;
 
+import java.util.List;
+
+import fr.treeptik.cloudunit.model.PortToOpen;
+import org.springframework.web.multipart.MultipartFile;
+
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.util.List;
 
 public interface ApplicationService {
 
@@ -67,7 +68,7 @@ public interface ApplicationService {
 	Application create(String applicationName, String login, String serverName, String tagName, String origin)
 			throws ServiceException, CheckException;
 
-	void addPort(Application application, String nature, Integer port) throws ServiceException;
+	PortToOpen addPort(Application application, String nature, Integer port) throws ServiceException;
 
 	void removePort(Application application, Integer port) throws CheckException, ServiceException;
 
@@ -76,6 +77,6 @@ public interface ApplicationService {
 
 	boolean isStarted(String name);
 
-	public boolean isStopped(String name);
+	boolean isStopped(String name);
 
 }

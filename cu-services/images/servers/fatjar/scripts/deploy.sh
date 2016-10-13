@@ -1,15 +1,18 @@
 #!/bin/bash
 
+# DO NOTHING
+
+# Ancient Greek philosophy about fatjar is to do nothing.
+# Just replace the jar and restart.
+# We cannot update the jar with application server without playing with signal traps...
+# and we don't want.
+
 set -x
 
 CU_USER=$1
 CU_PASSWORD=$2
+CU_FILE=$3
+CU_CONTEXT_PATH=$4
 
-FILETODEPLOY=`ls $CU_TMP`
-
-rm -rf $CU_SOFTWARE/deployments/*
-
-mv $CU_TMP/$FILETODEPLOY $CU_SOFTWARE/deployments
-
-$JAVA_HOME/bin/java -jar $CU_SOFTWARE/deployments/$FILETODEPLOY > $CU_LOGS/system.out &
+mv /opt/cloudunit/tmp/$CU_FILE /opt/cloudunit/tmp/boot.jar
 

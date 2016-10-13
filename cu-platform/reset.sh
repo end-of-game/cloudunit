@@ -41,10 +41,9 @@ docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
 
 # delete all volumes
-#docker volume rm  $(docker volume ls -q -f dangling=true)
+docker volume rm  $(docker volume ls -q)
 
-echo -e "\nChanging directory\n"
-cd /home/vagrant/cloudunit/cu-platform
+docker rm -f $(docker ps -aq --filter "label=origin=cloudunit")
 
 echo -e "\nStarting the platform\n"
 /home/vagrant/cloudunit/cu-platform/start-platform-dev.sh reset

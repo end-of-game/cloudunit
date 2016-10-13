@@ -1,170 +1,161 @@
 package fr.treeptik.cloudunit.cli.integration.module;
 
-import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
+import static fr.treeptik.cloudunit.cli.integration.ShellMatchers.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
+
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.shell.core.CommandResult;
 
-import java.util.Random;
+import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
 
 /**
  * Created by guillaume on 16/10/15.
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationTest {
-
-    private static String applicationName;
-    protected String serverType;
-
-    @BeforeClass
-    public static void generateApplication() {
-        applicationName = "App" + new Random().nextInt(10000);
+    protected AbstractModuleCommandsIT(String serverType) {
+        super(serverType);
     }
 
     @Test
-    public void test00_shoudAddMysqlModule() {
-        addModule("mysql-5-5");
+    public void test00_shouldAddMysqlModule() {
+        test_addModule("mysql-5-5");
     }
 
     @Test
-    public void test01_shoudAddPostGresModule() {
-        addModule("postgresql-9-3");
+    public void test01_shouldAddPostGresModule() {
+        test_addModule("postgresql-9-3");
     }
 
     @Test
-    public void test02_shoudAddMongoModule() {
-        addModule("mongo-2-6");
+    public void test10_shouldAddAndRemoveMysqlModule() {
+        test_addAndRemoveModule("mysql-5-5");
+    }
+
+    @Test
+    public void test11_shouldAddAndRemovePostGresModule() {
+        test_addAndRemoveModule("postgresql-9-3");
     }
 
     @Test
     public void test03_shouldNotAddModuleBecauseImageDoesNotExist() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("add-module --name monmodule");
-        String result = cr.getResult().toString();
-        String expectedResult = "this module does not exist";
-        Assert.assertEquals(expectedResult, result);
-        cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
-        result = cr.getResult().toString();
-        expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
-        Assert.assertEquals(expectedResult, result);
+        connect();
+        createApplication();
+        try {
+            CommandResult result = addModule("mymodule");
+            
+            assertThat(result, isFailedCommand());
+            
+            String expected = "this module does not exist";
+            assertEquals(expected, result.getResult().toString());
+        } finally {
+            removeApplication();
+        }
     }
 
     @Test
     public void test04_shouldNotAddModuleBecauseApplicationNotSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("add-module --name mysql-5-5");
-        String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
+        connect();
+        CommandResult result = addModule("mysql-5-5");
+        
+        assertThat(result, isFailedCommand());
+        
+        String expected = "No application is currently selected by the following command line : use <application name>";
+        assertThat(result.getResult().toString(), containsString(expected));
     }
 
     @Test
     public void test05_shouldNotAddModuleBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("add-module --name mysql-5-5");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
-
-    }
-
-
-    @Test
-    public void test10_shoudAddAndRemoveMysqlModule() {
-        addAndRemoveModule("mysql-5-5");
-    }
-
-    @Test
-    public void test11_shoudAddAndRemovePostGresModule() {
-        addAndRemoveModule("postgresql-9-3");
-    }
-
-    @Test
-    public void test12_shoudAddAndRemoveMongoModule() {
-        addAndRemoveModule("mongo-2-6");
+        CommandResult result = addModule("mysql-5-5");
+        
+        assertThat(result, isFailedCommand());
+        
+        String expected = "You are not connected to CloudUnit host! Please use connect command";
+        assertThat(result.getResult().toString(), containsString(expected));
     }
 
     @Test
     public void test20_shouldListModules() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("add-module --name mysql-5-5");
-        String result = cr.getResult().toString();
-        String expectedResult = "Your module mysql-5-5 is currently being added to your application " + applicationName.toLowerCase();
-        Assert.assertEquals(expectedResult, result);
-
-        cr = getShell().executeCommand("display-modules");
-        result = cr.getResult().toString();
-        expectedResult = "1 modules found";
-        Assert.assertEquals(expectedResult, result);
-
-
-        cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
-        result = cr.getResult().toString();
-        expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
-        Assert.assertEquals(expectedResult, result);
+        connect();
+        createApplication();
+        try {
+            String result = addModule("mysql-5-5").getResult().toString();
+            String expectedResult = String.format("Your module mysql-5-5 is currently being added to your application %s",
+                    applicationName.toLowerCase());
+            assertEquals(expectedResult, result);
+            
+            result = displayModules().getResult().toString();
+            expectedResult = "1 modules found";
+            assertEquals(expectedResult, result);
+        } finally {
+            removeApplication();
+        }        
     }
-
 
     @Test
     public void test21_shouldNotListModulesBecauseApplicationNotSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("display-modules");
-        String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
-
+        connect();
+        String result = displayModules().getResult().toString();
+        String expected = "No application is currently selected by the following command line : use <application name>";
+        assertTrue(result.contains(expected));
     }
 
     @Test
     public void test22_shouldNotListModulesBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("display-modules");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+        String result = displayModules().getResult().toString();
+        String expected = "You are not connected to CloudUnit host! Please use connect command";
+        assertThat(result, containsString(expected));
     }
 
-
-    private void addModule(String moduleName) {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("add-module --name " + moduleName);
-        String result = cr.getResult().toString();
-        String expectedResult = "Your module " + moduleName + " is currently being added to your application " + applicationName.toLowerCase();
-        Assert.assertEquals(expectedResult, result);
-        cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
-        result = cr.getResult().toString();
-        expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
-        Assert.assertEquals(expectedResult, result);
-
+    @Test
+    public void test_shouldRunScript() {
+        String moduleName = "mysql-5-7";
+        
+        connect();
+        createApplication();
+        addModule(moduleName);
+        try {
+            CommandResult result = runScript(moduleName, "src/test/resources/test.sql");
+            
+            assertThat(result, isSuccessfulCommand());
+        } finally {
+            removeApplication();
+        }
     }
 
-    private void addAndRemoveModule(String moduleName) {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("add-module --name " + moduleName);
-        String result = cr.getResult().toString();
-        String expectedResult = "Your module " + moduleName + " is currently being added to your application " + applicationName.toLowerCase();
-        Assert.assertEquals(expectedResult, result);
-        cr = getShell().executeCommand("rm-module --name " + moduleName + "-1");
-        result = cr.getResult().toString();
-        expectedResult = "Your module " + moduleName + "-1"
-                + " is currently being removed from your application " + applicationName.toLowerCase();
-        Assert.assertEquals(expectedResult, result);
-        cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
-        result = cr.getResult().toString();
-        expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
-        Assert.assertEquals(expectedResult, result);
+    private void test_addModule(String moduleName) {
+        connect();
+        createApplication();
+        try {
+            String result = addModule(moduleName).getResult().toString();
+            String expected = String.format("Your module %s is currently being added to your application %s",
+                    moduleName,
+                    applicationName.toLowerCase());
+            assertEquals(expected, result);
+        } finally {
+            removeApplication();
+        }
+    }
+    
+    private void test_addAndRemoveModule(String moduleName) {
+        connect();
+        createApplication();
+        try {
+            CommandResult result = addModule(moduleName);
+            assumeThat(result, isSuccessfulCommand());
+            
+            result = removeModule(moduleName);
+            String expected = String.format("Your module %s is currently being removed from your application %s",
+                    moduleName,
+                    applicationName.toLowerCase());
+            assertEquals(expected, result.getResult().toString());
+        } finally {
+            removeApplication();
+        }
     }
 
-
+    private CommandResult runScript(String moduleName, String scriptPath) {
+        return getShell().executeCommand(String.format("run-script --name %s --path %s", moduleName, scriptPath));
+    }
 }

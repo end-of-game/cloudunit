@@ -16,11 +16,15 @@
 package fr.treeptik.cloudunit.cli.utils;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
@@ -32,121 +36,194 @@ import fr.treeptik.cloudunit.model.Module;
 @Component
 public class ModuleUtils {
 
-	@Autowired
-	private ApplicationUtils applicationUtils;
+    @Autowired
+    private ApplicationUtils applicationUtils;
 
-	@Autowired
-	private AuthentificationUtils authentificationUtils;
+    @Autowired
+    private AuthentificationUtils authentificationUtils;
 
-	@Autowired
-	private CheckUtils checkUtils;
+    @Autowired
+    private CheckUtils checkUtils;
 
-	@Autowired
-	private UrlLoader urlLoader;
+    @Autowired
+    private UrlLoader urlLoader;
 
-	@InjectLogger
-	private Logger log;
+    @InjectLogger
+    private Logger log;
 
-	@Autowired
-	private ShellStatusCommand statusCommand;
+    @Autowired
+    private ShellStatusCommand statusCommand;
 
-	@Autowired
-	private RestUtils restUtils;
+    @Autowired
+    private RestUtils restUtils;
 
-	private String applicationName;
+    private String applicationName;
 
-	public String getListModules() {
-		String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
-		if (checkResponse != null) {
-			return checkResponse;
-		}
-		String dockerManagerIP = applicationUtils.getApplication().getManagerIp();
-		statusCommand.setExitStatut(0);
-		MessageConverter.buildLightModuleMessage(applicationUtils.getApplication(), dockerManagerIP);
+    public String getListModules() {
+        String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
+        if (checkResponse != null) {
+            return checkResponse;
+        }
+        String dockerManagerIP = applicationUtils.getApplication().getManagerIp();
+        statusCommand.setExitStatut(0);
+        MessageConverter.buildLightModuleMessage(applicationUtils.getApplication(), dockerManagerIP);
 
-		return applicationUtils.getApplication().getModules().size() + " modules found";
-	}
+        return applicationUtils.getApplication().getModules().size() + " modules found";
+    }
 
-	public String addModule(final String imageName, final File script) {
-		String response = null;
-		String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
-		if (checkResponse != null) {
-			return checkResponse;
-		}
-		Map<String, String> parameters = new HashMap<>();
-		parameters.put("imageName", imageName);
-		parameters.put("applicationName", applicationName);
-		try {
-			if (checkUtils.checkImageNoExist(imageName)) {
-				return "this module does not exist";
-			}
-			restUtils.sendPostCommand(authentificationUtils.finalHost + urlLoader.modulePrefix,
-					authentificationUtils.getMap(), parameters).get("body");
-		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-		}
-		statusCommand.setExitStatut(0);
-		applicationName = applicationUtils.getApplication().getName();
-		applicationUtils.useApplication(applicationName);
-		response = "Your module " + imageName + " is currently being added to your application "
-				+ applicationUtils.getApplication().getName();
+    public String addModule(final String imageName, final File script) {
+        String response = null;
+        String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
+        if (checkResponse != null) {
+            return checkResponse;
+        }
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("imageName", imageName);
+        parameters.put("applicationName", applicationName);
+        try {
+            if (checkUtils.checkImageNoExist(imageName)) {
+                return "this module does not exist";
+            }
+            restUtils.sendPostCommand(authentificationUtils.finalHost + urlLoader.modulePrefix,
+                    authentificationUtils.getMap(), parameters).get("body");
+        } catch (ManagerResponseException e) {
+            statusCommand.setExitStatut(1);
+            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+        }
+        statusCommand.setExitStatut(0);
+        applicationName = applicationUtils.getApplication().getName();
+        applicationUtils.useApplication(applicationName);
+        response = "Your module " + imageName + " is currently being added to your application "
+                + applicationUtils.getApplication().getName();
 
-		return response;
+        return response;
 
-	}
+    }
 
-	public String removeModule(String moduleName) {
-		String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
-		if (checkResponse != null) {
-			return checkResponse;
-		}
+    public String removeModule(String moduleName) {
+        String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
+        if (checkResponse != null) {
+            return checkResponse;
+        }
 
-		if (applicationUtils.getApplication().getModules().size() == 0) {
-			return "The application " + applicationUtils.getApplication().getName() + " doesn't have any module.";
-		}
+        if (applicationUtils.getApplication().getModules().size() == 0) {
+            return "The application " + applicationUtils.getApplication().getName() + " doesn't have any module.";
+        }
 
-		Boolean exists = false;
-		for (Module module : applicationUtils.getApplication().getModules()) {
-			if (module.getName().endsWith(moduleName)) {
-				exists = true;
-			}
-		}
+        Boolean exists = false;
+        for (Module module : applicationUtils.getApplication().getModules()) {
+            if (module.getName().endsWith(moduleName)) {
+                exists = true;
+            }
+        }
 
-		if (exists == false) {
-			return "The application " + applicationUtils.getApplication().getName() + " doesn't have this module.";
-		}
+        if (exists == false) {
+            return "The application " + applicationUtils.getApplication().getName() + " doesn't have this module.";
+        }
 
-		for (Module module : applicationUtils.getApplication().getModules()) {
+        for (Module module : applicationUtils.getApplication().getModules()) {
 
-			if (module.getName().endsWith(moduleName)) {
-				try {
-					restUtils.sendDeleteCommand(
-							authentificationUtils.finalHost + urlLoader.modulePrefix
-									+ applicationUtils.getApplication().getName() + "/" + module.getName(),
-							authentificationUtils.getMap()).get("body");
-				} catch (ManagerResponseException e) {
-					statusCommand.setExitStatut(1);
-					return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-				}
-			}
-		}
+            if (module.getName().endsWith(moduleName)) {
+                try {
+                    restUtils.sendDeleteCommand(
+                            authentificationUtils.finalHost + urlLoader.modulePrefix
+                                    + applicationUtils.getApplication().getName() + "/" + module.getName(),
+                            authentificationUtils.getMap()).get("body");
+                } catch (ManagerResponseException e) {
+                    statusCommand.setExitStatut(1);
+                    return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+                }
+            }
+        }
 
-		// update the current application
-		applicationName = applicationUtils.getApplication().getName();
-		applicationUtils.useApplication(applicationName);
+        // update the current application
+        applicationName = applicationUtils.getApplication().getName();
+        applicationUtils.useApplication(applicationName);
 
-		return "Your module " + moduleName + " is currently being removed from your application "
-				+ applicationUtils.getApplication().getName();
+        return "Your module " + moduleName + " is currently being removed from your application "
+                + applicationUtils.getApplication().getName();
 
-	}
+    }
 
-	public String getApplicationName() {
-		return applicationName;
-	}
+    public String managePort(String moduleName, final String port, final Boolean open) {
+        String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
+        if (checkResponse != null) {
+            return checkResponse;
+        }
 
-	public void setApplicationName(String applicationName) {
-		this.applicationName = applicationName;
-	}
+        if (applicationUtils.getApplication().getModules().size() == 0) {
+            return "The application " + applicationUtils.getApplication().getName() + " doesn't have any module.";
+        }
+
+        Boolean exists = false;
+        for (Module module : applicationUtils.getApplication().getModules()) {
+            if (module.getName().endsWith(moduleName)) {
+                exists = true;
+            }
+        }
+
+        if (exists == false) {
+            return "The application " + applicationUtils.getApplication().getName() + " doesn't have this module.";
+        }
+
+        for (Module module : applicationUtils.getApplication().getModules()) {
+
+            if (module.getName().endsWith(moduleName)) {
+                try {
+
+                    restUtils.sendPutCommand(
+                            authentificationUtils.finalHost + urlLoader.modulePrefix + "/" + module.getId(),
+                            authentificationUtils.getMap(), new HashMap<String, String>() {
+                                private static final long serialVersionUID = 1L;
+                                {
+                                    put("publishPort", open.toString());
+                                    put("port", port);
+                                }
+                            }).get("body");
+                } catch (ManagerResponseException e) {
+                    statusCommand.setExitStatut(1);
+                    return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+                }
+            }
+        }
+
+        // update the current application
+        applicationName = applicationUtils.getApplication().getName();
+        applicationUtils.useApplication(applicationName);
+
+        return "Your module " + moduleName + " is currently being removed from your application "
+                + applicationUtils.getApplication().getName();
+
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
+
+    public String runScript(String moduleName, File file) {
+        Optional<Module> module = applicationUtils.getApplication().getModules().stream()
+            .filter(m -> m.getName().endsWith(moduleName))
+            .findAny();
+        
+        if (!module.isPresent()) {
+            throw new IllegalArgumentException(
+                    MessageFormat.format("The application {0} doesn't have the specified module.", applicationName));
+        }
+        
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("file", new FileSystemResource(file));
+        parameters.putAll(authentificationUtils.getMap());
+        String url = String.format("%s%s%s/run-script",
+            authentificationUtils.finalHost,
+            urlLoader.modulePrefix,
+            module.get().getName());
+        log.log(Level.INFO, url);
+        restUtils.sendPostForUpload(url, parameters);
+        return "The script has been run.";
+    }
 
 }

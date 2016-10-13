@@ -15,9 +15,13 @@
 
 package fr.treeptik.cloudunit.config;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.hibernate.ejb.HibernatePersistence;
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.SharedCacheMode;
+import javax.sql.DataSource;
+
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,10 +42,8 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.SharedCacheMode;
-import javax.sql.DataSource;
-import java.util.Properties;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @EnableJpaRepositories("fr.treeptik.cloudunit.dao")
@@ -78,7 +80,6 @@ public class DatabaseConfiguration {
 
     @Bean
     public DataSource dataSource() {
-
         logger.debug("Configuring Datasource");
         String databaseUrl = String.format("jdbc:mysql://%s:%s/%s?%s",
                 databaseHostname, databasePort, databaseSchema, databaseOptions);
@@ -88,14 +89,14 @@ public class DatabaseConfiguration {
         config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         config.addDataSourceProperty("url", databaseUrl);
         config.addDataSourceProperty("user", databaseUser);
-
+        config.setInitializationFailFast(false);
+        config.setIdleTimeout(60000);
         String forcePassword = System.getenv("MYSQL_ROOT_PASSWORD");
         // coming from environnment host
         if (forcePassword != null) {
             logger.info("Force the mysql password from host env");
             databasePassword = forcePassword;
         }
-
         logger.info("URL : " + databaseUrl + " password : " + databasePassword);
         config.addDataSourceProperty("password", databasePassword);
         return new HikariDataSource(config);
@@ -121,7 +122,7 @@ public class DatabaseConfiguration {
     public EntityManagerFactory entityManagerFactory() {
         logger.debug("Configuring EntityManager");
         LocalContainerEntityManagerFactoryBean lcemfb = new LocalContainerEntityManagerFactoryBean();
-        lcemfb.setPersistenceProvider(new HibernatePersistence());
+        lcemfb.setPersistenceProvider(new HibernatePersistenceProvider());
         lcemfb.setPersistenceUnitName("persistenceUnit");
         lcemfb.setDataSource(dataSource());
         lcemfb.setJpaDialect(new HibernateJpaDialect());

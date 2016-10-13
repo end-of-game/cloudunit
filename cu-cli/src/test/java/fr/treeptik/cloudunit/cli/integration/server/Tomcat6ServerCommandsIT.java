@@ -6,6 +6,6 @@ package fr.treeptik.cloudunit.cli.integration.server;
 public class Tomcat6ServerCommandsIT extends AbstractServerCommandsIT {
 
     public Tomcat6ServerCommandsIT() {
-        super.serverType = "tomcat-6";
+        super("tomcat-6");
     }
 }

@@ -1,133 +1,122 @@
 package fr.treeptik.cloudunit.service.impl;
 
-import fr.treeptik.cloudunit.dao.CommandDAO;
-import fr.treeptik.cloudunit.dto.CommandRequest;
-import fr.treeptik.cloudunit.dto.ContainerUnit;
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Command;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.service.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import fr.treeptik.cloudunit.dto.Command;
+import fr.treeptik.cloudunit.dto.ContainerUnit;
+import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.CommandService;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.FileService;
 
 @Service
 public class CommandServiceImpl implements CommandService {
 
-    @Inject
-    private CommandDAO commandDAO;
+	@Inject
+	private ApplicationService applicationService;
 
-    @Inject
-    private ApplicationService applicationService;
+	@Inject
+	private FileService fileService;
 
-    @Inject
-    private ModuleService moduleService;
+	@Inject
+	private DockerService dockerService;
 
-    @Inject
-    private ServerService serverService;
+	private Logger logger = LoggerFactory.getLogger(CommandServiceImpl.class);
 
-    @Inject
-    private ImageService imageService;
+	@Override
+	public List<Command> listCommandByContainer(String applicationName, String containerName) throws ServiceException {
+		if (containerName == null)
+			throw new ServiceException("The container name is empty");
+		List<FileUnit> fileUnits = fileService.listByContainerIdAndPath(
+				applicationService.listContainers(applicationName).stream()
+						.filter(v -> v.getName().equals(containerName)).findFirst().get().getName(),
+				dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom_scripts/");
+		List<Command> commands = new ArrayList<>();
+		BufferedReader bf = null;
+		try {
+			for (FileUnit fileUnit : fileUnits) {
+				List<String> arguments = new ArrayList<>();
+				Integer number = 0;
+				String content = dockerService.execCommand(containerName, "cat " + fileUnit.getBreadcrump());
+				bf = new BufferedReader(new StringReader(content));
+				String line;
+				int c = 0;
+				while ((line = bf.readLine()) != null) {
+					c++;
+					if (!line.equals("") && Character.isUpperCase(line.charAt(0))) {
+						arguments.add(line.split("=")[0]);
+						number = Character.getNumericValue(line.split("=")[1].charAt(1));
+					}
+					if (line.equals("") && c > 2)
+						break;
+				}
+				Command command = fileUnitToCommand(fileUnit, number, arguments);
+				commands.add(command);
+			}
+		} catch (Exception e) {
+			StringBuilder msgError = new StringBuilder(128);
+			msgError.append(containerName);
+			msgError.append(",").append(applicationName);
+			logger.error(msgError.toString(), e);
+		} finally {
+			if (bf != null) try {
+				bf.close();
+			} catch (IOException e) {
+			}
+		}
+		return commands;
+	}
 
-    @Override
-    @Transactional
-    public void addCommand(CommandRequest commandRequest, String containerId, String applicationName) throws ServiceException {
-        if(commandRequest.getValue() == null)
-            throw new ServiceException("The value is empty");
+	@Override
+	public String execCommand(Command command, String containerName, String applicationName) throws ServiceException {
+		if (command.getName() == null)
+			throw new ServiceException("The filename is empty");
 
-        if(commandRequest.getDescription() == null)
-            throw new ServiceException("The description is empty");
+		if (containerName == null)
+			throw new ServiceException("The container name is empty");
 
-        List<Command> commandList = commandDAO.findAll();
-        Optional<Command> value = commandList.stream().filter(v ->
-                v.getValue().equals(commandRequest.getValue()))
-                .findFirst();
+		String output =  null;
+		try {
+			List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
+			String containerId = containerUnits.stream().filter(v -> v.getName().equals(containerName)).findFirst().get().getId();
 
-        if(value.isPresent())
-            throw new CheckException("This value already exists");
+			String customScriptPathFiles = dockerService.getEnv(containerName, "CU_SCRIPTS") + "/custom_scripts/";
+			List<FileUnit> fileUnits = fileService.listByContainerIdAndPath(containerId,customScriptPathFiles);
+			String commandLine = fileUnits.stream().filter(v -> v.getName().equals(command.getName())).findFirst().get().getBreadcrump();
+			commandLine = commandLine + " " + command.getArguments().stream().map(v -> v + " ").collect(Collectors.joining());
 
-        List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
-        String type = containerUnits.stream().filter(v -> v.getId().equals(containerId)).findFirst().get().getType();
-        Integer imageId = type.equals("server") ? serverService.findByContainerID(containerId).getImage().getId() :
-                moduleService.findByContainerID(containerId).getImage().getId();
-        Image image = imageService.findById(imageId);
+			// Warning : do not forget * at the end of the command
+			dockerService.execCommand(containerName, RemoteExecAction.CHMOD_PLUSX.getCommand() + " " + customScriptPathFiles + "*", true);
 
+			// Execute the raw commad through the chosen file with its arguments
+			output = dockerService.execCommand(containerName, commandLine);
 
-        Command command = new Command();
-        command.setValue(commandRequest.getValue());
-        command.setDescription(commandRequest.getDescription());
-        command.setArguments(commandRequest.getArguments());
-        command.setImage(image);
-        commandDAO.save(command);
-    }
+		} catch (Exception e) {
+			StringBuilder msgError = new StringBuilder(128);
+			msgError.append(command);
+			msgError.append(",").append(containerName);
+			msgError.append(",").append(applicationName);
+			logger.error(msgError.toString(), e);
+		}
+		return output;
+	}
 
-    @Override
-    @Transactional
-    public void deleteCommand(Integer id) throws ServiceException {
-        if(id == null)
-            throw new ServiceException("Id is null");
-
-        commandDAO.delete(id);
-    }
-
-    @Override
-    @Transactional
-    public void updateCommand(CommandRequest commandRequest, String containerId, String applicationName, Integer id) throws ServiceException {
-        if(commandRequest.getValue() == null)
-            throw new ServiceException("The value is empty");
-
-        if(commandRequest.getDescription() == null)
-            throw new ServiceException("The description is empty");
-
-        Command oldCommand = commandDAO.findById(id);
-        List<Command> commandList = commandDAO.findAll();
-        Optional<Command> value = commandList.stream().filter(v ->
-                v.getValue().equals(commandRequest.getValue()) && !v.getValue().equals(oldCommand.getValue()))
-                .findFirst();
-
-        if(value.isPresent())
-            throw new CheckException("This value already exists");
-
-        List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
-        String type = containerUnits.stream().filter(v -> v.getId().equals(containerId)).findFirst().get().getType();
-        Integer imageId = type.equals("server") ? serverService.findByContainerID(containerId).getImage().getId() :
-                moduleService.findByContainerID(containerId).getImage().getId();
-        Image image = imageService.findById(imageId);
-
-        Command command = new Command();
-        command.setId(commandRequest.getId());
-        command.setValue(commandRequest.getValue());
-        command.setDescription(commandRequest.getDescription());
-        command.setArguments(commandRequest.getArguments());
-        command.setImage(image);
-        commandDAO.save(command);
-    }
-
-    @Override
-    public CommandRequest getCommand(Integer id) throws ServiceException {
-        if(id == null)
-            throw new ServiceException("The id is empty");
-
-        return commandDAO.findById(id).mapToRequest();
-    }
-
-    @Override
-    public List<CommandRequest> listCommandByImage(String applicationName, String containerId) throws ServiceException {
-        if (containerId == null)
-            throw new ServiceException("The container id is empty");
-
-        List<ContainerUnit> containerUnits = applicationService.listContainers(applicationName);
-        String type = containerUnits.stream().filter(v -> v.getId().equals(containerId)).findFirst().get().getType();
-        Integer imageId = type.equals("server") ? serverService.findByContainerID(containerId).getImage().getId() :
-                moduleService.findByContainerID(containerId).getImage().getId();
-        List<CommandRequest> commandRequestList = commandDAO.findByImage(imageId).stream()
-                .map(v -> v.mapToRequest()).collect(Collectors.toList());
-
-        return commandRequestList;
-    }
+	public Command fileUnitToCommand(FileUnit fileUnit, Integer number, List<String> names) {
+		Command command = new Command(fileUnit.getName(), number, names);
+		return command;
+	}
 }

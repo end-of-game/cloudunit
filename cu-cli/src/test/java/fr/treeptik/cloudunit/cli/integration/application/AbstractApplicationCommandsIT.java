@@ -1,294 +1,424 @@
 package fr.treeptik.cloudunit.cli.integration.application;
 
-import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
+import static fr.treeptik.cloudunit.cli.integration.ShellMatchers.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.shell.core.CommandResult;
 
-import java.util.Random;
+import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
 
 /**
  * Created by guillaume on 16/10/15.
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegrationTest {
 
-    private static String applicationName;
-    protected String serverType;
-
-    @BeforeClass
-    public static void generateApplicationName() {
-        applicationName = "App" + new Random().nextInt(10000);
+    protected AbstractApplicationCommandsIT(String serverType) {
+        super(serverType);
     }
 
     @Test
-    public void test00_shouldCreateApplication() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName + " is currently being installed";
-        Assert.assertEquals(expectedResult, result);
+    public void test_shouldCreateApplication() {
+        connect();
+        CommandResult result = createApplication();
+        
+        assertThat(result, isSuccessfulCommand());
+        
+        removeCurrentApplication();
+        disconnect();
     }
 
     @Test
-    public void test01_shouldNotCreateApplicationBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("create-app --name " + applicationName + " --type myserver");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotCreateApplicationBecauseUserIsNotLogged() {
+        CommandResult result = createApplication();
+        
+        assertThat(result, isFailedCommand());
+        assertThat(result.getException().getMessage(), containsString("You are not connected"));
     }
 
     @Test
-    public void test02_shouldNotCreateApplicationBecauseNameAlreadyInUse() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        String result = cr.getResult().toString();
-        String expectedResult = "This application name already exists";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotCreateApplicationBecauseNameAlreadyInUse() {
+        connect();
+        createApplication();
+        try {
+            CommandResult result = createApplication();
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("This application name already exists"));
+        } finally {
+            removeApplication();
+            disconnect();
+        }
     }
 
     @Test
-    public void test03_shouldNotCreateApplicationBecauseServerDoesNotExists() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type myserver");
-        String result = cr.getResult().toString();
-        String expectedResult = "This server image does not exist";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotCreateApplicationBecauseServerDoesNotExists() {
+        connect();
+        try {
+            CommandResult result = createApplication(applicationName, "xxx");
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("This server image does not exist"));
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
-    public void test04_shouldNotCreateApplicationNonAlphaNumericCharsBecauseApplicationAlreadyExists() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + "&~~ --type " + serverType);
-        String result = cr.getResult().toString();
-        String expectedResult = "This application name already exists";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotCreateApplicationNonAlphaNumericCharsBecauseApplicationAlreadyExists() {
+        connect();
+        createApplication(applicationName);
+        try {
+            CommandResult result = createApplication(applicationName+"&~~");
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("This application name already exists"));
+        } finally {
+            removeApplication();
+            disconnect();
+        }
     }
 
     @Test
-    public void test10_shouldSelectAnApplication() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName);
-        String result = cr.getResult().toString();
-        String expectedResult = "Current application : " + applicationName.toLowerCase();
-        Assert.assertEquals(expectedResult, result);
+    public void test_shouldSelectAnApplication() {
+        connect();
+        createApplication();
+        try {
+            disconnect();
+            
+            connect();
+            CommandResult result = useApplication(applicationName);
+            
+            String expected = String.format("Current application : %s", applicationName.toLowerCase());
+            assertEquals(expected, result.getResult().toString());
+        } finally {
+            connect();
+            removeApplication();
+            disconnect();
+        }
     }
 
     @Test
-    public void test11_shouldNotSelectAnApplicationBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("use " + applicationName);
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotSelectAnApplicationBecauseUserIsNotLogged() {
+        CommandResult result = useApplication(applicationName);
+        
+        assertThat(result, isFailedCommand());
+        String expected = "You are not connected";
+        assertThat(result.getException().getMessage(), containsString(expected));
     }
 
     @Test
-    public void test12_shouldNotSelectAnApplicationBecauseDoesNotExist() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName + "shadow");
-        String result = cr.getResult().toString();
-        String expectedResult = "This application does not exist on this account";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotSelectAnApplicationBecauseDoesNotExist() {
+        connect();
+        try {
+            CommandResult result = useApplication("zqdmokdzq");
+
+            assertThat(result, isFailedCommand());
+            String expected = "This application does not exist on this account";
+            assertThat(result.getException().getMessage(), containsString(expected));
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
-    public void test20_shouldStopAnApplication() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("stop");
-        String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being stopped";
-        Assert.assertEquals(expectedResult, result);
+    public void test_shouldStopAnApplication() {
+        connect();
+        createApplication();
+        try {
+            CommandResult result = getShell().executeCommand("stop");
+            
+            String expected = String.format("Your application %s is currently being stopped",
+                    applicationName.toLowerCase());
+            assertEquals(expected, result.getResult().toString());
+        } finally {
+            removeApplication();
+            disconnect();
+        }
     }
 
     @Test
-    public void test20bis_shouldStopAnApplicatioWithArgs() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("stop --name " + applicationName);
-        String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being stopped";
-        Assert.assertEquals(expectedResult, result);
+    public void test_shouldStopAnApplicatioWithArgs() {
+        connect();
+        createApplication();
+        disconnect();
+        connect();
+        try {
+            CommandResult result = stopApplication();
+            
+            String expected = String.format("Your application %s is currently being stopped",
+                    applicationName.toLowerCase());
+            assertEquals(expected, result.getResult().toString());
+        } finally {
+            removeApplication();
+            disconnect();
+        }
     }
 
     @Test
-    public void test21_shouldNotStopAnApplicationBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("stop");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-
-    @Test
-    public void test22_shouldNotStopAnApplicationBecauseNoApplicationSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("stop");
-        String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-    @Test
-    public void test23_shouldNotStopAnApplicationBecauseApplicationDoesNotExist() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("stop --name " + applicationName + "shadow");
-        String result = cr.getResult().toString();
-        String expectedResult = "This application does not exist on this account";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotStopAnApplicationBecauseUserIsNotLogged() {
+        connect();
+        createApplication();
+        disconnect();
+        try {
+            CommandResult result = stopCurrentApplication();
+            
+            assertThat(result, isFailedCommand());
+            String expected = "You are not connected to CloudUnit host! Please use connect command";
+            assertThat(result.getException().getMessage(), containsString(expected));
+        } finally {
+            connect();
+            removeApplication();
+            disconnect();
+        }
     }
 
     @Test
-    public void test30_shouldStartAnApplication() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("start");
-        String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being started";
-        Assert.assertEquals(expectedResult, result);
+    public void test_shouldNotStopAnApplicationBecauseNoApplicationSelected() {
+        connect();
+        createApplication();
+        disconnect();
+        connect();
+        try {
+            CommandResult result = stopCurrentApplication();
+            
+            assertThat(result, isFailedCommand());
+            String expected = "No application is currently selected by the following command line : use <application name>";
+            assertThat(result.getException().getMessage(), containsString(expected));
+        } finally {
+            removeApplication();
+            disconnect();
+        }
     }
 
     @Test
-    public void test30bis_shouldStartAnApplicatioWithArgs() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("start --name " + applicationName);
-        String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being started";
-        Assert.assertEquals(expectedResult, result);
+    public void test_shouldNotStopAnApplicationBecauseApplicationDoesNotExist() {
+        connect();
+        String name = "qmozkdmqozkd";
+        CommandResult result = stopApplication(name);
+        
+        assertThat(result, isFailedCommand());
+        assertThat(result.getException().getMessage(), containsString("This application does not exist on this account"));
     }
 
     @Test
-    public void test31_shouldNotStartAnApplicationBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("start");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-
-    @Test
-    public void test32_shouldNotStartAnApplicationBecauseNoApplicationSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("start");
-        String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-    @Test
-    public void test33_shouldNotStartAnApplicationBecauseApplicationDoesNotExist() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("start --name " + applicationName + "shadow");
-        String result = cr.getResult().toString();
-        String expectedResult = "This application does not exist on this account";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-
-    @Test
-    public void test40_shouldListApplications() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("list-apps");
-        String result = cr.getResult().toString();
-        String expectedResult = "found";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldStartAnApplication() {
+        connect();
+        createApplication();
+        stopCurrentApplication();
+        try {
+            CommandResult result = startCurrentApplication();
+            
+            String expected = String.format("Your application %s is currently being started",
+                    applicationName.toLowerCase());
+            assertEquals(expected, result.getResult().toString());
+        } finally {
+            removeApplication();
+            disconnect();
+        }
     }
 
     @Test
-    public void test41_shouldNotListApplicationsBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("list-apps");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldStartAnApplicatioWithArgs() {
+        connect();
+        createApplication();
+        stopCurrentApplication();
+        try {
+            CommandResult result = startApplication();
+            
+            String expected = String.format("Your application %s is currently being started",
+                    applicationName.toLowerCase());
+            assertEquals(expected, result.getResult().toString());
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
-    public void test50_shouldDisplayApplicationInformations() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("informations");
-        String result = cr.getResult().toString();
-        String expectedResult = "Terminated";
-        Assert.assertEquals(expectedResult, result);
-    }
-
-    @Test
-    public void test51_shouldNotDisplayApplicationInformationsBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("informations");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-    @Test
-    public void test52_shouldNotDisplayApplicationInformationsBecauseNoApplicationSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("informations");
-        String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-    @Test
-    public void test60_shouldRemoveApplicationWithArgs() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
-        String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
-        Assert.assertTrue(result.contains(expectedResult));
-    }
-
-    @Test
-    public void test61_shouldRemoveApplication() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("rm-app --scriptUsage");
-        String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
-        Assert.assertEquals(expectedResult, result);
+    public void test_shouldNotStartAnApplicationBecauseUserIsNotLogged() {
+        CommandResult result = startCurrentApplication();
+        
+        assertThat(result, isFailedCommand());
+        String expected = "You are not connected to CloudUnit host! Please use connect command";
+        assertThat(result.getException().getMessage(), containsString(expected));
     }
 
 
     @Test
-    public void test62_shouldNotRemoveApplicationsBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("rm-app");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotStartAnApplicationBecauseNoApplicationSelected() {
+        connect();
+        try {
+            CommandResult result = startCurrentApplication();
+            
+            assertThat(result, isFailedCommand());
+            String expected = "No application is currently selected by the following command line : use <application name>";
+            assertThat(result.getException().getMessage(), containsString(expected));
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
-    public void test63_shouldNotRemoveApplicationBecauseNoApplicationSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("rm-app");
-        String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotStartAnApplicationBecauseApplicationDoesNotExist() {
+        connect();
+        try {
+            CommandResult result = getShell().executeCommand("start --name " + applicationName + "shadow");
+            
+            assertThat(result, isFailedCommand());
+            String expected = "This application does not exist on this account";
+            assertThat(result.getException().getMessage(), containsString(expected));
+        } finally {
+            disconnect();
+        }
+    }
+
+    @Test
+    public void test_shouldListApplications() {
+        connect();
+        createApplication();
+        try {
+            CommandResult result = listApplications();
+            
+            assertThat(result.getResult().toString(), containsString("found"));
+        } finally {
+            removeApplication();
+            disconnect();
+        }
+    }
+
+    @Test
+    public void test_shouldNotListApplicationsBecauseUserIsNotLogged() {
+        CommandResult result = listApplications();
+        
+        assertThat(result, isFailedCommand());
+        assertThat(result.getException().getMessage(), containsString("You are not connected"));
+    }
+
+    @Test
+    public void test_shouldDisplayApplicationInformation() {
+        connect();
+        createApplication();
+        try {
+            CommandResult result = information();
+            
+            assertEquals("Terminated", result.getResult().toString());
+        } finally {
+            removeApplication();
+            disconnect();
+        }
+    }
+
+    @Test
+    public void test_shouldNotDisplayApplicationInformationBecauseUserIsNotLogged() {
+        CommandResult result = information();
+        
+        assertThat(result, isFailedCommand());
+        assertThat(result.getException().getMessage(), containsString("You are not connected"));
+    }
+
+    @Test
+    public void test_shouldNotDisplayApplicationInformationBecauseNoApplicationSelected() {
+        connect();
+        try {
+            CommandResult result = information();
+            
+            assertThat(result, isFailedCommand());
+            String expected = "No application is currently selected";
+            assertThat(result.getException().getMessage(), containsString(expected));
+        } finally {
+            disconnect();
+        }
+    }
+
+    @Test
+    public void test_shouldRemoveApplicationWithArgs() {
+        connect();
+        createApplication();
+        disconnect();
+        connect();
+        try {
+            CommandResult result = removeApplication();
+            
+            String expected = String.format("Your application %s is currently being removed",
+                    applicationName.toLowerCase());
+            assertThat(result.getResult().toString(), containsString(expected));
+        } finally {
+            disconnect();
+        }
+    }
+
+    @Test
+    public void test_shouldRemoveApplication() {
+        connect();
+        createApplication();
+        try {
+            CommandResult result = removeCurrentApplication();
+            
+            String expected = String.format("Your application %s is currently being removed",
+                    applicationName.toLowerCase());
+            assertEquals(expected, result.getResult().toString());
+        } finally {
+            disconnect();
+        }
     }
 
 
     @Test
-    public void test64_shouldNotRemoveApplicationWithArgsBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
-        String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotRemoveApplicationsBecauseUserIsNotLogged() {
+        CommandResult result = removeCurrentApplication();
+        
+        assertThat(result, isFailedCommand());
+        String expected = "You are not connected";
+        assertThat(result.getException().getMessage(), containsString(expected));
     }
 
     @Test
-    public void test65_shouldNotRemoveApplicationWithArgsBecauseItDoesNotExist() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("rm-app --name " + applicationName + "shadow" + " --scriptUsage");
-        String result = cr.getResult().toString();
-        String expectedResult = "This application does not exist on this account";
-        Assert.assertTrue(result.contains(expectedResult));
+    public void test_shouldNotRemoveApplicationBecauseNoApplicationSelected() {
+        connect();
+        try {
+            CommandResult result = removeCurrentApplication();
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("No application is currently selected"));
+        } finally {
+            disconnect();
+        }
     }
 
+    @Test
+    public void test_shouldNotRemoveApplicationWithArgsBecauseItDoesNotExist() {
+        connect();
+        try {
+            // ignore error if app doesn't exist
+            CommandResult result = removeApplication("dzqmodzq");
+            assertThat(result, isSuccessfulCommand());
+
+            result = removeApplication("dzqmodzq", false);
+            assertThat(result, isSuccessfulCommand());
+
+            result = removeApplication("dzqmodzq", true);
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException(), instanceOf(CloudUnitCliException.class));
+            assertThat(result.getException().getMessage(),
+                    containsString("doesn't exist"));
+        } finally {
+            disconnect();
+        }
+    }
+
+    @Test
+    public void test_shouldListContainers() {
+        connect();
+        createApplication();
+        try {
+            CommandResult result = listContainers();
+            
+            assertThat(result.getResult().toString(), containsString("found"));
+        } finally {
+            removeApplication();
+            disconnect();
+        }
+    }
 }

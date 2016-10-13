@@ -1,0 +1,143 @@
+/* MODULE SCSS => ./scss2/_app-bar.scss
+*//*
+ * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.app-bar {
+  position: relative;
+  border: 1px solid transparent;
+  background-color: $appbar-bg;
+  height: $app-bar-height;
+  @include box-shadow(0 2px 5px 0 rgba(0, 0, 0, 0.26));
+  @include clearfix();
+}
+
+.app-bar-header {
+
+  @include clearfix();
+
+  @media (min-width: $grid-float-breakpoint) {
+    float: left;
+  }
+}
+
+.app-bar-brand {
+  float: left;
+  font-family: "Source Sans Pro";
+  font-weight: bold;
+  font-size: 24px;
+  margin: 0;
+  padding: $navbar-padding-vertical 16px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.logo {
+  height: 26px;
+  width: auto;
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+.brand {
+  color: $color-default;
+  display: inline-block;
+  &:hover,
+  &:focus {
+    text-decoration: none;
+    color: $color-default;
+  }
+  > .muted {
+    opacity: $color-muted;
+    font-weight: 300;
+    font-size: 16px;
+  }
+}
+.app-bar-cli {
+  margin: 0px !important;
+  padding-top: 7px;
+  padding-left: 15px;
+  padding-right: 15px;
+  @media (min-width: $grid-float-breakpoint) {
+    background-color: $color-primary;
+  }
+  & a {
+    margin-bottom: 0px;
+  }
+}
+/*.app-bar-cli {
+  @media (min-width: $grid-float-breakpoint) {
+    float: right;
+    & > a:last-child {
+      font-size: 14px;
+    }
+  }
+  float: left;
+  height: 100%;
+  //background-color: #cfd8dc;
+  & > a:last-child {
+    display: inline-block;
+    height: 100%;
+    padding: 10px;
+    //background-color: #cfd8dc;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.54);
+    line-height: 3em;
+  }
+}
+*/
+.app-bar-header .primary-links {
+  float: left;
+  width: auto;
+  & > li {
+    display: inline-block;
+    margin-top: 23px;
+    font-size: 16px;
+    margin-right: 16px;
+  }
+
+  & > li > a:not(.dropdown-toggle) {
+    padding: 8px 8px 18px 8px;
+    border-bottom: 2px solid;
+    border-color: transparent;
+    transition: border-color 0.3s ease-in-out;
+  }
+
+  & > li > a:hover {
+    border-color: $link-color;
+  }
+
+  & .dropdown-toggle {
+    border-bottom: none;
+    cursor: pointer;
+    line-height: 6px;
+  }
+
+  & .dropdown-toggle:after {
+    top: 8px;
+  }
+}
+
+.app-bar-icons {
+  @include clearfix();
+  float: right;
+}
+
+.icon-bar {
+  height: $app-bar-height;
+  padding: $navbar-padding-vertical $navbar-padding-horizontal;
+  > li {
+    display: inline-block;
+  }
+}

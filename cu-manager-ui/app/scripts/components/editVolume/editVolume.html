@@ -1,0 +1,91 @@
+<!--
+~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+~     but CloudUnit is licensed too under a standard commercial license.
+~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+~     If you are not sure whether the GPL is right for you,
+~     you can always test our software under the GPL and inspect the source code before you contact us
+~     about purchasing a commercial license.
+~
+~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+~     or promote products derived from this project without prior written permission from Treeptik.
+~     Products or services derived from this software may not be called "CloudUnit"
+~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+~     For any questions, contact us : contact@treeptik.fr
+-->
+
+<div class="page-header">
+  <div class="page-title">
+    <h2 class="title">
+    Manage volumes
+    </h2>
+  </div>
+</div>
+
+<div class="volume-card card col-lg-4">
+  <div class="content clearfix">
+    <h3 class="title large">Add volume</h3>
+    
+    <form id="add-ports"
+          name="addPortsForm"
+          class="clearfix" novalidate=""
+          data-ng-submit="editVolume.addVolume()">
+
+      <div class="input-group-inline col-xs-12">
+        <input type="text"
+            name="port"
+            class="input-effect col-xs-12" 
+            data-ng-model="editVolume.newVolumeName"
+            required="">
+        <span class="bar"></span>
+        <label class="label-effect">Volume name</label>
+      </div>
+
+      <div class="actions">
+        <div class="secondary-actions pull-right">
+          <button type="submit"
+                  class="ports-btn button-effect primary pull-right"
+                  data-ng-disabled="!editVolume.newVolumeName">
+            <span>Create volume</span>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div class="alert alert-danger" data-ng-show="editVolume.errorVolumeCreate">
+      <button type="button"
+              class="close"
+              ng-click="editVolume.errorVolumeCreate = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{editVolume.errorVolumeCreate}}</p>
+    </div>
+  </div>
+</div>
+
+<div class="volume-card card col-lg-8">
+	<div class="content clearfix">
+	  <h3 class="title large">List Volume</h3>
+		
+		<table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="volume in editVolume.volumes">
+          <td>
+            <p ng-bind="volume.name"></p>
+          </td>
+          <td>
+            <button class="toggle-modal icon-button secondary allowed danger"
+                ng-click="editVolume.deleteVolume(volume.id)">
+              <i class="icon-whhg trash"></i>
+            </button> 
+          </td>
+        </tr>
+      </tbody>
+		</table>
+	</div>
+</div>

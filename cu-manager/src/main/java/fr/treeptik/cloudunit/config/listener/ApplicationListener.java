@@ -2,17 +2,17 @@ package fr.treeptik.cloudunit.config.listener;
 
 import javax.inject.Inject;
 
-import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
-import fr.treeptik.cloudunit.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
+import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.service.ApplicationService;
@@ -29,7 +29,6 @@ public class ApplicationListener {
 	private ApplicationService applicationService;
 
 	@EventListener
-	@Async
 	public void onApplicationStart(ApplicationStartEvent applicationStartEvent) {
 		Application application = (Application) applicationStartEvent.getSource();
 		try {
@@ -52,7 +51,6 @@ public class ApplicationListener {
 	}
 
 	@EventListener
-	@Async
 	public void onApplicationStop(ApplicationStopEvent applicationStopEvent) {
 		Application application = (Application) applicationStopEvent.getSource();
 		try {

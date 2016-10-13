@@ -15,11 +15,10 @@
 
 package fr.treeptik.cloudunit.service;
 
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import java.util.List;
+
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Script;
-
-import java.util.List;
 
 public interface ScriptingService {
 

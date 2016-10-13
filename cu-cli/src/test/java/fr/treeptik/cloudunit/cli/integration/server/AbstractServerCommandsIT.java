@@ -1,145 +1,224 @@
 package fr.treeptik.cloudunit.cli.integration.server;
 
-import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
+import java.util.Random;
+
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
+import org.junit.Before;
+import org.junit.ComparisonFailure;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.shell.core.CommandResult;
 
-import java.util.Random;
+import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
 
 /**
  * Created by guillaume on 16/10/15.
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationTest {
+    private static String volumeName;
+    private CommandResult cr;
 
-    private static String applicationName;
-    protected String serverType;
+    protected AbstractServerCommandsIT(String serverType) {
+        super(serverType);
+    }
 
-    @BeforeClass
-    public static void generateApplication() {
-        applicationName = "App" + new Random().nextInt(10000);
+    @Before
+    public void initEnv() {
+        volumeName = "volume" + new Random().nextInt(10000);
+        cr = getShell().executeCommand("connect --login johndoe --password abc2015 ");
+        createApplication();
+    }
+
+    @After
+    public void tearDown() {
+        deleteApplication();
     }
 
     @Test
     public void test00_shouldChangeJavaVersion() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("create-app --name " + applicationName + " --type " + serverType);
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("change-java-version --javaVersion jdk1.8.0_25");
-        String result = cr.getResult().toString();
-        String expectedResult = "Your java version has been successfully changed";
-        Assert.assertEquals(expectedResult, result);
+        useApplication(applicationName);
+        changeJavaVersion("jdk1.8.0_25");
     }
 
-
-    @Test
+    @Test(expected = ComparisonFailure.class)
     public void test01_shouldNotChangeJavaVersionBecauseApplicationNotSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("change-java-version --javaVersion jdk1.8.0_25");
-        String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
+        deleteApplication();
+        changeJavaVersion("jdk1.8.0_25");
     }
 
-    @Test
+    /*@Test
     public void test02_shouldNotChangeJavaVersionBecauseUserIsNotLogged() {
         CommandResult cr = getShell().executeCommand("use " + applicationName);
         cr = getShell().executeCommand("change-java-version --javaVersion jdk1.8.0_25");
         String result = cr.getResult().toString();
         String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+        Assert.assertThat(result, Matchers.containsString(expectedResult));
+    }*/
 
-    }
-
-    @Test
+    @Test(expected = ComparisonFailure.class)
     public void test03_shouldNotChangeJavaVersionBecauseJDKValueDoesNotExist() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("change-java-version --javaVersion jdk1.XXX");
-        String result = cr.getResult().toString();
-        String expectedResult = "The specified java version is not available";
-        Assert.assertTrue(result.contains(expectedResult));
+        useApplication(applicationName);
+        changeJavaVersion("jdk1.XXX");
     }
 
     @Test
     public void test10_shouldChangeMemory() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("change-jvm-memory --size 1024");
-        String result = cr.getResult().toString();
-        String expectedResult = "Change memory on " + applicationName.toLowerCase() + " successful";
-        Assert.assertEquals(expectedResult, result);
-
+        useApplication(applicationName);
+        changeJavaMemory(1024);
     }
 
-    @Test
+    @Test(expected = ComparisonFailure.class)
     public void test11_shouldNotChangeMemoryBecauseApplicationNotSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("change-jvm-memory --size 1024");
-        String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
+        deleteApplication();
+        changeJavaMemory(1024);
     }
 
-    @Test
+    /*@Test
     public void test12_shouldNotChangeMemoryBecauseUserIsNotLogged() {
         CommandResult cr = getShell().executeCommand("use " + applicationName);
         cr = getShell().executeCommand("change-jvm-memory --size 1024");
         String result = cr.getResult().toString();
         String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+        Assert.assertThat(result, Matchers.containsString(expectedResult));
 
-    }
+    }*/
 
-    @Test
+    @Test(expected = ComparisonFailure.class)
     public void test10_shouldNotChangeMemoryBecauseJVMSizeIsNotAuthorized() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("change-jvm-memory --size 128");
-        String result = cr.getResult().toString();
-        String expectedResult = "The memory value you have put is not authorized (512, 1024, 2048, 3072)";
-        Assert.assertTrue(result.contains(expectedResult));
+        useApplication(applicationName);
+        changeJavaMemory(128);
     }
 
     @Test
     public void test20_shouldChangeJavaOpts() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("add-jvm-option \"-Dkey=value\"");
+        useApplication(applicationName);
+        addJVMOption("-Dkey=value");
+    }
+
+    @Test(expected = ComparisonFailure.class)
+    public void test21_shouldNotChangeJavaOptsBecauseApplicationNotSelected() {
+        deleteApplication();
+        addJVMOption("-Dkey=value");
+    }
+
+    @Test
+    public void test30_mountAndUnmountVolumeOnApplication() {
+        useApplication(applicationName);
+        createVolume(volumeName);
+        mountVolume("/cloudunit/", volumeName);
+        unmountVolume("dev-johndoe-" + applicationName + "-" +
+                serverType, volumeName);
+        removeVolume(volumeName);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void test31_shouldNotMountVolumeOnApplicationPathEmpty() {
+        useApplication(applicationName);
+        createVolume(volumeName);
+        mountVolume("", volumeName);
+        removeVolume(volumeName);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void test32_shouldNotMountVolumeOnApplicationVolumeNameEmpty() {
+        useApplication(applicationName);
+        mountVolume("/cloudunit/", "");
+        removeVolume(volumeName);
+    }
+
+    @Test(expected = ComparisonFailure.class)
+    public void test33_shouldNotMountVolumeOnApplicationPathUnconsistent() {
+        useApplication(applicationName);
+        createVolume(volumeName);
+        mountVolume(".", volumeName);
+        removeVolume(volumeName);
+    }
+
+    @Test(expected = ComparisonFailure.class)
+    public void test34_shouldNotMountVolumeOnApplicationVolumeNameNonExistant() {
+        useApplication(applicationName);
+        mountVolume("/cloudunit/", "volumeTest");
+        removeVolume(volumeName);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void test41_shouldNotUnmountVolumeOnApplicationContainerNameEmpty() {
+        useApplication(applicationName);
+        createVolume(volumeName);
+        mountVolume("/cloudunit/", volumeName);
+        unmountVolume("", volumeName);
+        removeVolume(volumeName);
+    }
+
+    @Test(expected = ComparisonFailure.class)
+    public void test42_shouldNotUnmountVolumeOnApplicationVolumeNameEmpty() {
+        useApplication(applicationName);
+        mountVolume("/cloudunit/", volumeName);
+        unmountVolume("dev-johndoe-" + applicationName + "-" +
+                serverType, "");
+        removeVolume(volumeName);
+    }
+
+    @Test(expected = ComparisonFailure.class)
+    public void test43_shouldNotUnmountVolumeOnApplicationVolumeNameNotExistant() {
+        useApplication(applicationName);
+        mountVolume("/cloudunit/", volumeName);
+        unmountVolume("dev-johndoe-" + applicationName + "-" +
+                serverType, "volumeTest");
+        removeVolume(volumeName);
+    }
+
+    private void deleteApplication() {
+        cr = getShell().executeCommand("rm-app --scriptUsage");
+        Assert.assertTrue("Delete application", cr.isSuccess());
+    }
+
+    private void changeJavaVersion(String version) {
+        cr = getShell().executeCommand("change-java-version --javaVersion " + version);
+        String result = cr.getResult().toString();
+        String expectedResult = "Your java version has been successfully changed";
+        Assert.assertEquals(expectedResult, result);
+    }
+
+    private void changeJavaMemory(int memory) {
+        cr = getShell().executeCommand("change-jvm-memory --size " + memory);
+        String result = cr.getResult().toString();
+        String expectedResult = "Change memory on " + applicationName.toLowerCase() + " successful";
+        Assert.assertEquals(expectedResult, result);
+    }
+
+    private void addJVMOption(String option) {
+        cr = getShell().executeCommand("add-jvm-option " + option);
         String result = cr.getResult().toString();
         String expectedResult = "Add java options to " + applicationName.toLowerCase() + " application successfully";
         Assert.assertEquals(expectedResult, result);
-
     }
 
-    @Test
-    public void test21_shouldNotChangeJavaOptsBecauseApplicationNotSelected() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("add-jvm-option \"-Dkey=value\"");
+    private void createVolume(String name) {
+        cr = getShell().executeCommand("create-volume --name " + name);
         String result = cr.getResult().toString();
-        String expectedResult = "No application is currently selected by the following command line : use <application name>";
-        Assert.assertTrue(result.contains(expectedResult));
+        String expectedResult = "The volume " + name + " was been successfully created";
+        Assert.assertEquals(expectedResult, result);
     }
 
-    @Test
-    public void test22_shouldNotChangeJavaOptsBecauseUserIsNotLogged() {
-        CommandResult cr = getShell().executeCommand("use " + applicationName);
-        cr = getShell().executeCommand("add-jvm-option \"-Dkey=value\"");
+    private void removeVolume(String name) {
+        cr = getShell().executeCommand("rm-volume --name " + name);
         String result = cr.getResult().toString();
-        String expectedResult = "You are not connected to CloudUnit host! Please use connect command";
-        Assert.assertTrue(result.contains(expectedResult));
+        String expectedResult = "This volume has successful been deleted";
+        Assert.assertEquals(expectedResult, result);
     }
 
-    @Test
-    public void test90_cleanEnv() {
-        CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
-        cr = getShell().executeCommand("rm-app --name " + applicationName + " --scriptUsage");
+    private void mountVolume(String path, String name) {
+        cr = getShell().executeCommand("mount-volume --path " + path + " --volume-name " + name);
         String result = cr.getResult().toString();
-        String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
+        String expectedResult = "This volume has successful been mounted";
+        Assert.assertEquals(expectedResult, result);
+    }
+
+    private void unmountVolume(String containerName, String name) {
+        cr = getShell().executeCommand("unmount-volume --container-name " + containerName + " --volume-name " + name);
+        String result = cr.getResult().toString();
+        String expectedResult = "This volume has successful been unmounted";
         Assert.assertEquals(expectedResult, result);
     }
 }

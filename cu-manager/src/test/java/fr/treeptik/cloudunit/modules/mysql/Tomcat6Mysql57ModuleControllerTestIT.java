@@ -40,9 +40,15 @@ public class Tomcat6Mysql57ModuleControllerTestIT extends AbstractModuleControll
     public Tomcat6Mysql57ModuleControllerTestIT() {
         super.server = "tomcat-6";
         super.module = "mysql-5-7";
+        super.numberPort = "3306";
         super.managerPrefix = "phpmyadmin";
         super.managerSuffix = "phpmyadmin";
         super.managerPageContent = "phpMyAdmin";
-    }
+        super.testScriptPath = "src/test/resources/mysql/test.sql";    }
 
+    @Override
+    protected void checkConnection(String forwardedPort) {
+        new CheckDatabaseConnection().invoke(forwardedPort, "MYSQL_USER",
+                "MYSQL_PASSWORD", "MYSQL_DATABASE", "com.mysql.jdbc.Driver", "jdbc:mysql://");
+    }
 }

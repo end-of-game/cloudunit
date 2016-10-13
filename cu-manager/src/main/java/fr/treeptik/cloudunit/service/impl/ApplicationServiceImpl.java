@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +25,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
+import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,23 +38,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.PortToOpen;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.Type;
-import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DeploymentService;
 import fr.treeptik.cloudunit.service.DockerService;
@@ -116,9 +109,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Value("${java.version.default}")
 	private String javaVersionDefault;
 
-	@Value("${cloudunit.manager.ip}")
-	private String restHost;
-
 	@Value("${cloudunit.instance.name}")
 	private String cuInstanceName;
 
@@ -126,7 +116,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		return this.applicationDAO;
 	}
 
-	/**
+    /**
 	 * Test if the user can create new applications because we limit the number
 	 * per user
 	 *
@@ -276,7 +266,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 			application = applicationDAO.save(application);
 			application.setManagerIp(dockerManagerIp);
 
-			application.setRestHost(restHost);
 			logger.info(application.getManagerIp());
 
 			// BLOC SERVER
@@ -328,7 +317,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			List<Module> listModules = application.getModules();
 			for (Module module : listModules) {
 				try {
-					moduleService.remove(application, user, module, false, application.getStatus());
+					moduleService.remove(user, module, false, application.getStatus());
 				} catch (ServiceException | CheckException e) {
 					application.setStatus(Status.FAIL);
 					logger.error("ApplicationService Error : failed to remove module " + module.getName()
@@ -344,15 +333,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 				removeAlias(application, alias);
 			}
 
-			for (PortToOpen portToOpen : application.getPortsToOpen()) {
-				removePort(application, portToOpen.getPort());
-			}
-
-			// Delete all servers
 			Server server = application.getServer();
 			serverService.remove(server.getName());
+
+			application.removeServer();
+			applicationDAO.delete(application);
+
 			hipacheRedisUtils.removeRedisAppKey(application);
-			applicationDAO.delete(server.getApplication());
 
 			logger.info("ApplicationService : Application successfully removed ");
 
@@ -395,17 +382,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 		try {
 			logger.debug("start : Methods parameters : " + application);
 
-			// set the application in pending mode
-			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-
-			List<Module> modules = application.getModules();
-			for (Module module : modules) {
+			application.getModules().stream().forEach(m -> {
 				try {
-					module = moduleService.startModule(module);
+					moduleService.startModule(m.getName());
 				} catch (ServiceException e) {
-					logger.error("failed to start " + application.toString(), e);
+					e.printStackTrace();
 				}
-			}
+			});
 			Server server = application.getServer();
 			logger.info("old server ip : " + server.getContainerIP());
 			server = serverService.startServer(server);
@@ -415,9 +398,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 			}
 
 			application.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, application));
-
-			// wait for modules and servers starting
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
 			logger.info("ApplicationService : Application successfully started ");
 		} catch (PersistenceException e) {
@@ -432,20 +412,16 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 		try {
 
-			// set the application in pending mode
-			applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-
 			Server server = application.getServer();
 			server = serverService.stopServer(server);
-			List<Module> modules = application.getModules();
-			for (Module module : modules) {
+			application.getModules().stream().forEach(m -> {
 				try {
-					module = moduleService.stopModule(module);
+					moduleService.stopModule(m.getName());
 				} catch (ServiceException e) {
-					logger.error("ApplicationService Error : failed to stop " + application.getName() + " : " + e);
+					e.printStackTrace();
 				}
-			}
-			applicationEventPublisher.publishEvent(new ApplicationStopEvent(application));
+			});
+
 			logger.info("ApplicationService : Application successfully stopped ");
 		} catch (PersistenceException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
@@ -505,18 +481,37 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException {
 		try {
 			// get app with all its components
+		    String filename = file.getOriginalFilename();
 			String containerId = application.getServer().getContainerID();
 			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
 			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
-			Map<String, String> kvStore = new HashMap<String, String>() {
-				private static final long serialVersionUID = 1L;
+			String contextPath = NamingUtils.getContext.apply(filename);
+			@SuppressWarnings("serial")
+            Map<String, String> kvStore = new HashMap<String, String>() {
 				{
 					put("CU_USER", application.getUser().getLogin());
 					put("CU_PASSWORD", application.getUser().getPassword());
+                    put("CU_FILE", filename);
+					put("CU_CONTEXT_PATH", contextPath);
 				}
 			};
-			dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
-			deploymentService.create(application, Type.WAR);
+			String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
+			logger.info ("Deploy command {}", result);
+			Deployment deployment = deploymentService.create(application, DeploymentType.from(filename), contextPath);
+			application.addDeployment(deployment);
+			application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
+
+			// If application is anything else than .jar or ROOT.war
+			// we need to clean for the next deployment.
+			if (!"/".equalsIgnoreCase(contextPath)) {
+				@SuppressWarnings("serial")
+				HashMap<String, String> kvStore2 = new HashMap<String, String>() {
+					{
+						put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
+					}
+				};
+				dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
+			}
 		} catch (Exception e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
@@ -636,7 +631,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional
 	@Override
-	public void addPort(Application application, String nature, Integer port) throws ServiceException {
+	public PortToOpen addPort(Application application, String nature, Integer port) throws ServiceException {
 		PortToOpen portToOpen = new PortToOpen();
 		portToOpen.setNature(nature);
 		portToOpen.setPort(port);
@@ -660,6 +655,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		} catch (DataAccessException e) {
 			throw new ServiceException(e.getMessage(), e);
 		}
+		return portToOpen;
 	}
 
 	public void updatePortAlias(PortToOpen portToOpen, Application application) {
@@ -703,7 +699,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public boolean isStarted(String name) {
 		int serversNotStarted = applicationDAO.countServersNotStatus(name, Status.START);
-		int modulesNotStarted = applicationDAO.countServersNotStatus(name, Status.START);
+		int modulesNotStarted = applicationDAO.countModulesNotStatus(name, Status.START);
 		logger.debug("serversNotStarted=" + serversNotStarted);
 		logger.debug("modulesNotStarted=" + modulesNotStarted);
 		return (serversNotStarted + modulesNotStarted) == 0;
@@ -712,7 +708,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public boolean isStopped(String name) {
 		int serversNotStopped = applicationDAO.countServersNotStatus(name, Status.STOP);
-		int modulesNotStopped = applicationDAO.countServersNotStatus(name, Status.STOP);
+		int modulesNotStopped = applicationDAO.countModulesNotStatus(name, Status.STOP);
 		logger.debug("serversNotStarted=" + serversNotStopped);
 		logger.debug("modulesNotStarted=" + modulesNotStopped);
 		return (serversNotStopped + modulesNotStopped) == 0;

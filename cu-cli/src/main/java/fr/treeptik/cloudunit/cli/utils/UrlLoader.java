@@ -20,9 +20,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UrlLoader {
-
+    // About Rest URL
+    @Value("${about.prefix}")
+    public String aboutPrefix;
+    
     // Application Rest Url
-
     @Value("${application.actions}")
     public String actionApplication;
 

@@ -10,23 +10,21 @@ public enum RemoteExecAction {
     CLEAN_LOGS("Add user for admin console", "/opt/cloudunit/scripts/clean-logs.sh"),
     ADD_USER("Add user for admin console", "/opt/cloudunit/scripts/add-user.sh CU_USER CU_PASSWORD"),
     CHANGE_CU_RIGHTS("Change rights for user CloudUnit", "chown -R cloudunit:cloudunit /opt/cloudunit"),
-    CHECK_RUNNING("Check running", "/opt/cloudunit/scripts/check-running.sh"),
-    DEPLOY("Deploy application", "/opt/cloudunit/scripts/deploy.sh CU_USER CU_PASSWORD"),
+    CHECK_RUNNING("Check running", "/opt/cloudunit/scripts/check-running.sh CU_USER CU_PASSWORD"),
+    RUN_SCRIPT("Run script", "/opt/cloudunit/scripts/run-script.sh CU_FILE"),
+    CHMOD_PLUSX("Check running", "chmod +x"),
+    DEPLOY("Deploy application", "/opt/cloudunit/scripts/deploy.sh CU_USER CU_PASSWORD CU_FILE CU_CONTEXT_PATH"),
+    CLEAN_DEPLOY("Clean temporary deployment files", "rm CU_TARGET"),
     ADD_ENV("Add env variable", "/opt/cloudunit/scripts/add-env.sh CU_KEY CU_VALUE"),
-    CHANGE_JAVA_VERSION("Change Server Configuration", "/opt/cloudunit/scripts/change-java-version.sh MEMORY_VALUE JVM_OPTIONS"),
-    MODULE_PRE_CREATION("Module pre creation", "/opt/cloudunit/hooks/module-pre-creation.sh"),
     MODULE_POST_CREATION("Module pre creation", "/opt/cloudunit/hooks/module-post-creation.sh"),
-    APPLICATION_PRE_FIRST_DEPLOY("Application pre first deploy", "/opt/cloudunit/hooks/application-pre-first-deploy.sh"),
-    APPLICATION_POST_FIRST_DEPLOY("Application post first deploy", "/opt/cloudunit/hooks/application-post-first-deploy.sh"),
-    APPLICATION_PRE_START("Application pre start", "/opt/cloudunit/application-pre-start.sh"),
-    APPLICATION_POST_START("Application post start", "/opt/cloudunit/hooks/application-post-start.sh"),
-    APPLICATION_PRE_STOP("Application pre stop", "/opt/cloudunit/hooks/application-pre-stop.sh"),
-    APPLICATION_POST_STOP("Application post stop", "/opt/cloudunit/hooks/application-post-stop.sh"),
-    SNAPSHOT_PRE_ACTION("Before Snapshot", "/opt/cloudunit/hooks/snapshot-pre-action.sh"),
-    SNAPSHOT_POST_ACTION("After Snapshot", "/opt/cloudunit/hooks/snapshot-post-action.sh"),
+    MODULE_POST_START_ONCE("Module post start", "/opt/cloudunit/hooks/module-post-start-once.sh"),
+    MODULE_POST_START("Module post start just one time", "/opt/cloudunit/hooks/module-post-start.sh"),
     CLONE_PRE_ACTION("Before restoring an application", "/opt/cloudunit/hooks/clone-pre-action.sh"),
     CLONE_POST_ACTION("After restoring an application", "/opt/cloudunit/hooks/clone-post-action.sh"),
-    GATHER_CU_ENV("Gather CU env variables", "/opt/cloudunit/scripts/env.sh");
+    GATHER_CU_ENV("Gather CU env variables", "/opt/cloudunit/scripts/env.sh"),
+    ELK_CONFIG_PROXYBEAT_YAML("Configure yaml template", "/opt/cloudunit/scripts/elk_config.sh IP_ELK"),
+    ELK_RUN_PROXYBEAT("Run ProxyBeat", "/opt/cloudunit/scripts/elk_run_proxybeat.sh"),
+    ELK_UPDATE_KIBANA("Update Kibana", "/opt/cloudunit/scripts/elk_update_kibana.sh CONTAINER");
 
     private final String label;
     private String command;
@@ -41,12 +39,12 @@ public enum RemoteExecAction {
     }
 
     public String getCommand() {
-        return command;
+        return new String(command);
     }
 
     public String getCommand(Map<String, String> kvStore) {
-        kvStore.entrySet().stream().forEach(e -> command = command.replaceAll(e.getKey(), e.getValue()));
-        return command;
+        return kvStore.entrySet().stream()
+                .reduce(getCommand(), (a, kv) -> a.replaceAll(kv.getKey(), kv.getValue()), String::concat);
     }
 
     public String[] getCommandBash() {

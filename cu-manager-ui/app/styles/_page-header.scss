@@ -1,0 +1,42 @@
+/* MODULE SCSS => ./scss2/_page-header.scss
+*//*
+ * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.page-header {
+  @include clearfix();
+  border: 0;
+  margin: 0;
+  padding: 0;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  .page-title {
+    padding: $navbar-padding-vertical $navbar-padding-horizontal;
+    height: $page-header-height;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    justify-content: flex-start;
+    .title {
+      font-size: 34px;
+      line-height: 40px;
+      margin-top: 0;
+      margin-bottom: 0;
+      font-weight: normal;
+    }
+    .icon-button {
+      margin: 0 24px;
+    }
+  }
+}

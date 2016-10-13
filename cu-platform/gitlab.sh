@@ -7,7 +7,7 @@ if [ "$?" == "1" ]; then
     docker pull gitlab/gitlab-ce:$GL_MAJOR
 fi
 
-ETURN=`docker ps | grep gitlab`
+RETURN=`docker ps | grep gitlab`
 
 # If jenkins is not running
 if [ -z "$RETURN" ]; then

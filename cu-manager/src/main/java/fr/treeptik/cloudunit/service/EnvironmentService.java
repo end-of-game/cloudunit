@@ -1,25 +1,33 @@
 package fr.treeptik.cloudunit.service;
 
-import fr.treeptik.cloudunit.dto.EnvironmentVariableRequest;
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Environment;
-import fr.treeptik.cloudunit.model.User;
-
 import java.util.List;
 
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.EnvironmentVariable;
+import fr.treeptik.cloudunit.model.User;
+
 public interface EnvironmentService {
-    EnvironmentVariableRequest save(User user, EnvironmentVariableRequest environmentVariableRequest,
-                                    String applicationName, String containerId)
-            throws ServiceException, CheckException;
 
-    EnvironmentVariableRequest loadEnvironnment(int id) throws ServiceException, CheckException;
+    EnvironmentVariable update(User user, EnvironmentVariable environmentVariable, String applicationName,
+            String containerName, Integer id) throws ServiceException;
 
-    List<EnvironmentVariableRequest> loadEnvironnmentsByContainer(String containerId) throws ServiceException;
+    EnvironmentVariable loadEnvironnment(int id) throws ServiceException, CheckException;
 
-    void delete(int id) throws ServiceException, CheckException;
+    List<EnvironmentVariable> loadEnvironnmentsByContainer(String containerName) throws ServiceException;
 
-    EnvironmentVariableRequest update(User user, EnvironmentVariableRequest environmentVariableRequest,
-                                      String applicationName, String containerId, Integer id)
-            throws ServiceException, CheckException;
+    void delete(User user, int id, String applicationName, String containerName) throws ServiceException;
+
+    void save(User user, List<EnvironmentVariable> environments, String applicationName, String containerName)
+            throws ServiceException;
+
+    EnvironmentVariable save(User user, EnvironmentVariable environment, String applicationName, String containerName)
+            throws ServiceException;
+
+    void createInDatabase(List<EnvironmentVariable> environments, String containerName, Application application);
+
+    void delete(User user, List<EnvironmentVariable> envs, String applicationName, String containerName)
+            throws ServiceException;
+
 }

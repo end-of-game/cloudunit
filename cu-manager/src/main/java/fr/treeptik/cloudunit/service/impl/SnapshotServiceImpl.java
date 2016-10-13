@@ -341,8 +341,6 @@ public class SnapshotServiceImpl implements SnapshotService {
 				moduleService.checkImageExist(snapshot.getAppConfig().get(key).getName());
 				module.getImage().setName(snapshot.getAppConfig().get(key).getName());
 				module.setName(snapshot.getAppConfig().get(key).getName());
-				module = moduleService.initModule(application, module, snapshot.getFullTag());
-
 				Map<String, String> properties = new HashMap<>();
 				properties.put("username", snapshot.getAppConfig().get(key).getProperties()
 						.get("username-" + module.getImage().getName()));
@@ -350,8 +348,7 @@ public class SnapshotServiceImpl implements SnapshotService {
 						.get("password-" + module.getImage().getName()));
 				properties.put("database", snapshot.getAppConfig().get(key).getProperties()
 						.get("database-" + module.getImage().getName()));
-				module.setModuleInfos(properties);
-				module = moduleService.saveInDB(module);
+				// module.setModuleInfos(properties);
 
 				if (tag != null) {
 					restoreDataModule(module);

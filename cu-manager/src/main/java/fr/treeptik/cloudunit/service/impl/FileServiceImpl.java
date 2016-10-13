@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -90,7 +88,7 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public void createDirectory(String applicationName, String containerId, String path) throws ServiceException {
 		try {
-			final String command = "mkdir -p " + convertDestPathFile(path);
+			final String command = "mkdir -p " + path;
 			dockerService.execCommand(containerId, command);
 		} catch (FatalDockerJSONException e) {
 			throw new ServiceException("Cannot create directory " + path + " for " + containerId, e);
@@ -110,10 +108,14 @@ public class FileServiceImpl implements FileService {
 		List<SourceUnit> files = new ArrayList<>();
 		try {
 			String logDirectory = getLogDirectory(containerId);
+			// if logs directory is stdout, we don't need to search the files list
+			if (logDirectory.equalsIgnoreCase("stdout")) { files.add(new SourceUnit("stdout")); return files; }
+
 			String containerName = dockerService.getContainerNameFromId(containerId);
 			final String command = "find " + logDirectory + " -type f ! -size 0 ";
 			String execOutput = dockerService.execCommand(containerName, command);
-			if (execOutput != null && execOutput.contains("cannot access") == false) {
+			if (execOutput != null
+					&& execOutput.contains("cannot access") == false) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(execOutput);
 				}
@@ -140,30 +142,26 @@ public class FileServiceImpl implements FileService {
 	 * @return
 	 * @throws ServiceException
 	 */
-	public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows) throws ServiceException {
-		List<LogLine> files = new ArrayList<>();
+	public String tailFile(String containerId, String filename, Integer maxRows) throws ServiceException {
+		String execOutput = "";
 		try {
 			String logDir = getLogDirectory(containerId);
-			if (!logDir.endsWith("/")) { logDir = logDir + "/"; }
-			final String command = "tail -n " + nbRows + " " + logDir + file;
-			String execOutput = dockerService.execCommand(containerId, command);
+			if (!logDir.endsWith("/")) {
+				logDir = logDir + "/";
+			}
+			final String command = "tail -n " + maxRows + " " + logDir + filename;
+			execOutput = dockerService.execCommand(containerId, command);
 			if (execOutput != null && execOutput.contains("cannot access") == false) {
-				StringTokenizer lignes = new StringTokenizer(execOutput, "\n");
-				while (lignes.hasMoreTokens()) {
-					String line = lignes.nextToken();
-					LogLine logLine = new LogLine(file, line);
-					files.add(logLine);
-				}
-				Collections.reverse(files);
+				return execOutput;
 			}
 		} catch (FatalDockerJSONException e) {
 			StringBuilder builder = new StringBuilder(256);
 			builder.append("containerId=").append(containerId);
-			builder.append(",file=").append(file);
-			builder.append(",nbRows=").append(nbRows);
+			builder.append(",file=").append(filename);
+			builder.append(",nbRows=").append(maxRows);
 			throw new ServiceException(builder.toString(), e);
 		}
-		return files;
+		return execOutput;
 	}
 
 	/**
@@ -177,7 +175,6 @@ public class FileServiceImpl implements FileService {
 	 * @throws ServiceException
 	 */
 	public List<FileUnit> listByContainerIdAndPath(String containerId, String path) throws ServiceException {
-
 		List<FileUnit> files = new ArrayList<>();
 		try {
 			final String command = "ls -laF " + path;
@@ -224,7 +221,7 @@ public class FileServiceImpl implements FileService {
 						name = name.substring(0, name.length() - 1);
 					}
 					StringBuilder absolutePath = new StringBuilder(128);
-					absolutePath.append(path.replaceAll("__", "/").replaceAll("//", "/")).append(name);
+					absolutePath.append(path).append(name);
 
 					if (name.equalsIgnoreCase("."))
 						continue;
@@ -272,12 +269,15 @@ public class FileServiceImpl implements FileService {
 					String fileName = null;
 					// usecase : upload a file
 					if (fileUpload != null) {
-						fileName = fileUpload.getOriginalFilename();
-						fileName = AlphaNumericsCharactersCheckUtils.deAccent(fileName);
-						fileName = fileName.replace(" ", "_");
+						if (contentFileName == null) {
+							fileName = fileUpload.getOriginalFilename();
+							fileName = AlphaNumericsCharactersCheckUtils.deAccent(fileName);
+							fileName = fileName.replace(" ", "_");
+						} else {
+							fileName = contentFileName;
+						}
 						file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + fileName);
 						fileUpload.transferTo(file);
-						destination = convertPathFromUI(destination);
 					}
 					// usecase : save the content file
 					else {
@@ -310,14 +310,6 @@ public class FileServiceImpl implements FileService {
 
 	}
 
-	private String convertPathFromUI(String path) {
-		if (path != null) {
-			path = path.replaceAll("____", "/");
-			path = path.replaceAll("__", "/");
-		}
-		return path;
-	}
-
 	/**
 	 * File Explorer feature
 	 * <p>
@@ -337,13 +329,6 @@ public class FileServiceImpl implements FileService {
 			msgError.append(", containerId=").append("=").append(containerId);
 			throw new ServiceException(msgError.toString(), e);
 		}
-	}
-
-	private String convertDestPathFile(String pathFile) {
-		pathFile = pathFile.replaceAll("__", "/") + "/";
-		if (!pathFile.startsWith("/"))
-			pathFile = "/" + pathFile;
-		return pathFile;
 	}
 
 	public String getLogDirectory(String containerId) throws ServiceException {

@@ -6,7 +6,7 @@ package fr.treeptik.cloudunit.cli.integration.snapshot;
 public class Tomcat8SnapshotCommandsIT extends AbstractSnapshotCommandsIT {
 
     public Tomcat8SnapshotCommandsIT() {
-        super.serverType = "tomcat-8";
+        super("tomcat-8");
     }
 
 }

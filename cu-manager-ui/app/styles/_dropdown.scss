@@ -1,0 +1,98 @@
+/* MODULE SCSS => ./scss2/_dropdown.scss
+*//*
+ * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.dropdown {
+  &.dropdown--small {
+    max-width: 288px;
+  }
+  .dropdown-toggle {
+    position: relative;
+    display: block;
+    color: $color-muted;
+    font-size: 16px;
+    padding-right: 24px;
+    line-height: 18px;
+    min-height: 28px;
+  }
+  .dropdown-toggle:after {
+    position: absolute;
+    font-family: "fontawesome";
+    content: "\f0d7";
+    color: #777;
+    font-size: 14px;
+    right: 0;
+
+  }
+  .dropdown-menu {
+    outline: none;
+    z-index: 12;
+    width: auto;
+    box-sizing: border-box;
+    max-height: 471px;
+    max-width: 1462.96875px;
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+    padding-top: 8px;
+    overflow-y: auto;
+
+    /* animation */
+    display: block;
+    transition: all 0.3s ease;
+    transform: scale(0);
+    transform-origin: 0 0;
+
+    .input-group.stack & {
+      top: 24px;
+    }
+    .input-group.inline & {
+      top: -12px;
+    }
+  }
+  .dropdown-menu > li {
+    display: block;
+    position: relative;
+    font-size: 16px;
+    @include user-select(none);
+    box-sizing: border-box;
+    height: 48px;
+    white-space: nowrap;
+    color: $color-default;
+  }
+
+  .dropdown-menu > .no-data {
+    padding: 8px;
+    color: $color-muted;
+  }
+
+  .dropdown-menu > li a {
+    cursor: pointer;
+  }
+
+  .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+    text-decoration: none;
+    color: #262626;
+    background-color: #E6EDEF;
+  }
+  &.open .dropdown-menu {
+    transform: scale(1);
+  }
+}
+
+.has-input .dropdown.open .dropdown-menu {
+  top: 12px;
+}

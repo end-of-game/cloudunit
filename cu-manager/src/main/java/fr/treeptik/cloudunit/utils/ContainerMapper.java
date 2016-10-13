@@ -13,7 +13,6 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-
 package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
@@ -25,8 +24,7 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 
 @Component
-public class ContainerMapper
-    implements Serializable {
+public class ContainerMapper implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -38,20 +36,16 @@ public class ContainerMapper
      * @param container
      * @return
      */
-    private Container mapDockerContainerToContainer(
-        DockerContainer dockerContainer, Container container) {
+    private Container mapDockerContainerToContainer(DockerContainer dockerContainer, Container container) {
         container.setContainerID(dockerContainer.getId().substring(0, 12));
         container.setContainerFullID(dockerContainer.getId());
         container.setName(dockerContainer.getName().substring(1));
         container.setVolumes(dockerContainer.getVolumes());
         container.setContainerIP(dockerContainer.getNetworkSettings().getIPAddress());
-
         return container;
-
     }
 
-    private Container mapDockerContainerToContainer(
-        DockerContainer dockerContainer) {
+    private Container mapDockerContainerToContainer(DockerContainer dockerContainer) {
 
         Container container = new Container();
 
@@ -69,8 +63,7 @@ public class ContainerMapper
 
     }
 
-    public Server mapDockerContainerToServer(DockerContainer dockerContainer,
-                                             Server server) {
+    public Server mapDockerContainerToServer(DockerContainer dockerContainer, Server server) {
 
         mapDockerContainerToContainer(dockerContainer, server);
 
@@ -84,10 +77,16 @@ public class ContainerMapper
 
     }
 
-    public Module mapDockerContainerToModule(DockerContainer dockerContainer,
-                                             Module module) {
-
-        return (Module) mapDockerContainerToContainer(dockerContainer, module);
+    public Module mapDockerContainerToModule(DockerContainer dockerContainer, Module module, String exposedPort) {
+        module = (Module) mapDockerContainerToContainer(dockerContainer, module);
+        module.getPorts().stream()
+                .filter(p -> p.getOpened())
+                .forEach(p -> {
+                            p.setHostValue(dockerContainer.getNetworkSettings().getPorts()
+                                    .get(String.format("%s/tcp", p.getContainerValue())).stream()
+                                    .findFirst().get().get("HostPort"));
+                            });
+        return module;
 
     }
 

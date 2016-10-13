@@ -1,0 +1,147 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="tab-pane vertical-spacing"
+     data-ng-class="{pending: monitoring.isLoading}">
+    <div class="card">
+      <div class="content clearfix">
+        <h3 class="title large">Monitoring</h3>
+
+        <p class="hint">Choose a component</p>
+
+        <div class="dropdown dropdown--small" dropdown>
+          <a class="dropdown-toggle"
+             dropdown-toggle=""
+             selectbox="">
+            {{ monitoring.myContainer.name }}
+          </a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+            <li data-ng-repeat="container in monitoring.containers">
+              <a ng-href=""
+                 data-ng-click="monitoring.myContainer = container; monitoring.getContainers(monitoring.myContainer)">
+                {{container.name}}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <div id="monitoring" class="monitoring-container">
+    <!--<iframe data-media="{{monitoring.myContainer.name}}" src="scripts/components/editApplication/monitoring/cadvisor.html"
+            id="{{monitoring.myContainer.name}}" frameBorder="0" reload-chart=""/>-->
+
+
+    <div class="monitor-group">
+      <div class="card">
+        <div class="content clearfix">
+          <h3 class="card-title">CPU</h3>
+
+          <div class="chart">
+            <h4>Total Usage (Cores)</h4>
+
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.cpuTotalUsage"
+                      chartist-chart-type="Line"></chartist>
+            <ul class="ct-legend">
+              <li ng-repeat="serie in monitoring.stats.cpuTotalUsage.legends" class="ct-series-{{$index}}">{{monitoring.stats.cpuTotalUsage.legends[$index]}}</li>
+            </ul>
+
+            <h4>Usage per Core</h4>
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.cpuPerCoreUsage"
+                      chartist-chart-type="Line"></chartist>
+            <ul class="ct-legend">
+              <li ng-repeat="serie in monitoring.stats.cpuPerCoreUsage.legends" class="ct-series-{{$index}}">{{monitoring.stats.cpuPerCoreUsage.legends[$index]}}</li>
+            </ul>
+
+            <h4>Usage Breakdown (Cores)</h4>
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.cpuUsageBreakdown"
+                      chartist-chart-type="Line"></chartist>
+            <ul class="ct-legend">
+              <li ng-repeat="serie in monitoring.stats.cpuUsageBreakdown.legends" class="ct-series-{{$index}}">{{monitoring.stats.cpuUsageBreakdown.legends[$index]}}</li>
+            </ul>
+            <h4>CPU load (%)</h4>
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.cpuLoad"
+                      chartist-chart-type="Line"></chartist>
+            <ul class="ct-legend">
+              <li ng-repeat="serie in monitoring.stats.cpuLoad.legends" class="ct-series-{{$index}}">{{monitoring.stats.cpuLoad.legends[$index]}}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="monitor-group">
+      <div class="card">
+        <div class="content clearfix">
+          <h3 class="card-title">Memory</h3>
+
+          <div class="chart clearfix">
+            <h4>Total Usage (Megabytes)</h4>
+
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.memoryUsage"
+                      chartist-chart-type="Line"></chartist>
+            <ul class="ct-legend">
+              <li ng-repeat="serie in monitoring.stats.memoryUsage.legends" class="ct-series-{{$index}}">{{monitoring.stats.memoryUsage.legends[$index]}}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="content clearfix">
+          <h3 class="card-title">Network</h3>
+
+          <div class="chart">
+            <h4>Throughput (Bytes/sec)</h4>
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.networkUsage"
+                      chartist-chart-type="Line"></chartist>
+            <ul class="ct-legend">
+              <li ng-repeat="serie in monitoring.stats.networkUsage.legends" class="ct-series-{{$index}}">{{monitoring.stats.networkUsage.legends[$index]}}</li>
+            </ul>
+
+            <h4>Errors (Errors/sec)</h4>
+
+            <chartist class="ct-chart ct-double-octave" chartist-data="monitoring.stats.networkErrors"
+                      chartist-chart-type="Line"></chartist>
+            <ul class="ct-legend">
+              <li ng-repeat="serie in monitoring.stats.networkErrors.legends" class="ct-series-{{$index}}">{{monitoring.stats.networkErrors.legends[$index]}}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="content clearfix">
+
+          <h3 class="card-title">Isolation</h3>
+          <div class="chart">
+            <h4>CPU</h4>
+            <ul>
+              <li><span class="stat-label">Shares: </span> 1024 <span class="unit-label">shares</span>
+              </li>
+              <li><span class="stat-label">Allowed Cores: </span> <span class="active-cpu">0</span></li>
+            </ul>
+            <h4>Memory</h4>
+            <ul>
+              <li><span class="stat-label">Limit: </span> unlimited <span class="unit-label"></span>
+              </li>
+              <li><span class="stat-label">Swap Limit: </span> unlimited <span
+                class="unit-label"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

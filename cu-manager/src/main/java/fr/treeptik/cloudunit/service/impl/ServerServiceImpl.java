@@ -16,11 +16,11 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -34,10 +34,13 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ServerStartEvent;
 import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
+import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
@@ -47,8 +50,13 @@ import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.Volume;
+import fr.treeptik.cloudunit.model.VolumeAssociation;
+import fr.treeptik.cloudunit.model.VolumeAssociationId;
 import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.VolumeAssociationService;
 import fr.treeptik.cloudunit.service.VolumeService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
@@ -93,6 +101,12 @@ public class ServerServiceImpl implements ServerService {
 
 	@Inject
 	private VolumeService volumeService;
+
+	@Inject
+	private VolumeAssociationService volumeAssociationService;
+	
+	@Inject
+	private EnvironmentService environmentService;
 
 	public ServerDAO getServerDAO() {
 		return this.serverDAO;
@@ -140,15 +154,10 @@ public class ServerServiceImpl implements ServerService {
 		User user = server.getApplication().getUser();
 
 		// Build a custom container
-		String containerName = "";
-		try {
-			containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
+		String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
 					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
 					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(server.getApplication().getName()) + "-"
 					+ server.getName();
-		} catch (UnsupportedEncodingException e2) {
-			throw new ServiceException("Error rename Server", e2);
-		}
 
 		String imagePath = server.getImage().getPath() + tagName;
 		logger.debug("imagePath:" + imagePath);
@@ -166,27 +175,27 @@ public class ServerServiceImpl implements ServerService {
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 
-			logger.info(dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
-			logger.info(dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+			logger.info(dockerService.getEnv(server.getName(), "CU_SERVER_PORT"));
+			logger.info(dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 			logger.info(application.getLocation());
 
 			hipacheRedisUtils.createRedisAppKey(server.getApplication(), server.getContainerIP(),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 
 			// Update server with all its informations
 			server.setManagerLocation("http://manager-" + application.getLocation().substring(7)
-					+ dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PATH"));
+					+ dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH"));
 			server.setStatus(Status.START);
 			server.setJvmMemory(512L);
-			server.setJvmRelease(dockerService.getEnv(server.getContainerID(), "CU_DEFAULT_JAVA_RELEASE"));
+			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
 
 			server = this.update(server);
 
 			addCredentialsForServerManagement(server, user);
-			String needToRestart = dockerService.getEnv(server.getContainerID(), "CU_SERVER_RESTART_POST_CREDENTIALS");
+			String needToRestart = dockerService.getEnv(server.getName(), "CU_SERVER_RESTART_POST_CREDENTIALS");
 			if ("true".equalsIgnoreCase(needToRestart)) {
-				dockerService.stopServer(server.getName());
+				dockerService.stopContainer(server.getName());
 				dockerService.startServer(server.getName(), server);
 			}
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
@@ -211,15 +220,20 @@ public class ServerServiceImpl implements ServerService {
 	}
 
 	@Override
-	public void addCredentialsForServerManagement(Server server, final User user) throws FatalDockerJSONException {
-		Map<String, String> kvStore = new HashMap<String, String>() {
-			private static final long serialVersionUID = 1L;
-			{
-				put("CU_USER", user.getLogin());
-				put("CU_PASSWORD", user.getPassword());
-			}
-		};
-		dockerService.execCommand(server.getContainerID(), RemoteExecAction.ADD_USER.getCommand(kvStore));
+	public void addCredentialsForServerManagement(Server server, final User user) throws ServiceException {
+		try {
+			Map<String, String> kvStore = new HashMap<String, String>() {
+				private static final long serialVersionUID = 1L;
+				{
+					put("CU_USER", user.getLogin());
+					put("CU_PASSWORD", user.getPassword());
+				}
+			};
+			dockerService.execCommand(server.getName(), RemoteExecAction.ADD_USER.getCommand(kvStore));
+		} catch (FatalDockerJSONException fex) {
+			fex.printStackTrace();
+			throw new ServiceException(fex.getMessage());
+		}
 	}
 
 	/**
@@ -258,13 +272,13 @@ public class ServerServiceImpl implements ServerService {
 
 		logger.info("ServerService : Starting updating Server " + server.getName());
 		try {
-			server = serverDAO.save(server);
+			serverDAO.save(server);
 
 			Application application = server.getApplication();
 
 			hipacheRedisUtils.updateServerAddress(application, server.getContainerIP(),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_MANAGER_PORT"));
+					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 
 		} catch (PersistenceException | FatalDockerJSONException e) {
 			logger.error("ServerService Error : update Server" + e);
@@ -284,17 +298,13 @@ public class ServerServiceImpl implements ServerService {
 		try {
 			server = this.findByName(serverName);
 
-			// check if there is no action currently on the entity
-			if (this.checkStatusPENDING(server)) {
-				return null;
-			}
 			Application application = server.getApplication();
+			cleanServerDependencies(server.getName(), application.getUser(), application.getName());
 
-			dockerService.removeServer(server.getName(), true);
+			dockerService.removeContainer(server.getName(), true);
 
 			// Remove server on cloudunit :
 			hipacheRedisUtils.removeServerAddress(application);
-
 			serverDAO.delete(server);
 
 			logger.info("ServerService : Server successfully removed ");
@@ -368,8 +378,8 @@ public class ServerServiceImpl implements ServerService {
 	@Transactional
 	public Server stopServer(Server server) throws ServiceException {
 		try {
-			dockerService.execCommand(server.getContainerID(), RemoteExecAction.CLEAN_LOGS.getCommand());
-			dockerService.stopServer(server.getName());
+			dockerService.execCommand(server.getName(), RemoteExecAction.CLEAN_LOGS.getCommand());
+			dockerService.stopContainer(server.getName());
 			applicationEventPublisher.publishEvent(new ServerStopEvent(server));
 		} catch (PersistenceException e) {
 			throw new ServiceException(server.toString(), e);
@@ -427,8 +437,9 @@ public class ServerServiceImpl implements ServerService {
 		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
 
 		try {
-			List<String> envs = new ArrayList<>();
-			String currentJvmMemory = dockerService.getEnv(server.getContainerID(), "JAVA_OPTS");
+			List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
+					.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
+			String currentJvmMemory = dockerService.getEnv(server.getName(), "JAVA_OPTS");
 			currentJvmMemory = currentJvmMemory.replaceAll(previousJvmMemory, jvmMemory);
 			currentJvmMemory = currentJvmMemory.substring(currentJvmMemory.lastIndexOf("-Xms"));
 			currentJvmMemory = jvmOptions + " " + currentJvmMemory;
@@ -437,10 +448,12 @@ public class ServerServiceImpl implements ServerService {
 			// Add the jmv env variable to set the jvm release
 			envs.add("JAVA_HOME=/opt/cloudunit/java/" + jvmRelease);
 
-			dockerService.stopServer(server.getName());
-			dockerService.removeServer(server.getName(), false);
-			List<String> volumes = volumeService.loadVolumeByContainer(server.getContainerID()).stream()
-					.map(t -> t.getName()).collect(Collectors.toList());
+			dockerService.stopContainer(server.getName());
+			dockerService.removeContainer(server.getName(), false);
+			List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
+					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
+							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
+					.collect(Collectors.toList());
 			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
@@ -485,7 +498,94 @@ public class ServerServiceImpl implements ServerService {
 		} catch (Exception e) {
 			throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
 		}
+	}
 
+	@Override
+	@Transactional
+	@CacheEvict(value = "env", allEntries = true)
+	public void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO)
+			throws ServiceException, CheckException {
+		checkVolumeFormat(volumeAssociationDTO);
+		Server server = findByName(volumeAssociationDTO.getContainerName());
+		Volume volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
+		
+		if(volumeAssociationService.checkVolumeAssociationPathAlreadyPresent(volumeAssociationDTO.getPath(), application.getServer().getId()) > 0) {
+			throw new CheckException("This path is already use !");
+		}
+		
+		volumeService.saveAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume),
+				volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode()));
+		stopAndRemoveServer(server, application);
+		recreateAndMountVolumes(server, application);
+	}
+
+	@Override
+	@Transactional
+	@CacheEvict(value = "env", allEntries = true)
+	public void removeVolume(String containerName, String volumeName) throws ServiceException {
+		Server server = null;
+		try {
+			server = findByName(containerName);
+			Volume volume = volumeService.findByName(volumeName);
+			volumeService.removeAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume), null, null));
+			stopAndRemoveServer(server, server.getApplication());
+			recreateAndMountVolumes(server, server.getApplication());
+		} catch (CheckException e) {
+			e.printStackTrace();
+			throw new CheckException(e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ServiceException(e.getMessage());
+		} finally {
+			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(server.getApplication()));
+		}
+	}
+
+	private void stopAndRemoveServer(Server server, Application application) throws ServiceException {
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+		applicationEventPublisher.publishEvent(new ServerStopEvent(server));
+		dockerService.removeContainer(server.getName(), false);
+	}
+
+	private void recreateAndMountVolumes(Server server, Application application) throws ServiceException {
+
+		List<String> volumes = volumeService.loadAllByContainerName(server.getName())
+				.stream().map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath()
+						+ ":" + v.getVolumeAssociations().stream().findFirst().get().getMode())
+				.collect(Collectors.toList());
+		List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
+				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
+		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+				server.getApplication().getUser(), envs, false, volumes);
+		server = startServer(server);
+		addCredentialsForServerManagement(server, server.getApplication().getUser());
+	}
+
+	private void checkVolumeFormat(VolumeAssociationDTO volume) throws ServiceException {
+		if (volume.getVolumeName() == null || volume.getVolumeName().isEmpty())
+			throw new CheckException("This name is not consistent !");
+		if (volume.getApplicationName() == null || volume.getApplicationName().isEmpty())
+			throw new CheckException("Application name is not consistent !");
+		if (volume.getContainerName() == null || volume.getContainerName().isEmpty())
+			throw new CheckException("Application name is not consistent !");
+		if (volume.getPath() == null || volume.getPath().isEmpty() || !volume.getPath().startsWith("/")
+				|| !volume.getPath().replaceAll("/", "").matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This path is not consistent !");
+		if (!volume.getVolumeName().matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This name is not consistent : " + volume.getVolumeName());
+		if (!volumeService.loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getVolumeName())).findAny()
+				.isPresent()) {
+			throw new CheckException("This volume does not exist");
+		}
+		if (!(volume.getMode().equalsIgnoreCase("ro") || volume.getMode().equalsIgnoreCase("rw"))) {
+			throw new CheckException("Authorized mode value : ro (readOnly) or rw (read-write)");
+		}
+	}
+
+	private void cleanServerDependencies(String name, User user, String applicationName) throws ServiceException {
+		volumeService.loadAllByContainerName(name).stream()
+				.forEach(v -> volumeService.removeAssociation(v.getVolumeAssociations().stream().findFirst().get()));
 	}
 
 }

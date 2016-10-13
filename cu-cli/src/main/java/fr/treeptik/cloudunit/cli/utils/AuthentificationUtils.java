@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
@@ -58,6 +59,16 @@ public class AuthentificationUtils {
 	private FileUtils fileUtils;
 	private Integer loop = 0;
 
+	public void checkConnected() {
+	    if (!isConnected()) {
+	        throw new CloudUnitCliException("You are not connected to a CloudUnit host. Use the 'connect' command first.");
+	    }
+	}
+	
+	public boolean isConnected() {
+	    return !map.isEmpty();
+	}
+	
 	/**
 	 * Methode de connexion
 	 *

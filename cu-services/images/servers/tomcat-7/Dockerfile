@@ -30,11 +30,12 @@ RUN mkdir -p /opt/cloudunit/tomcat &&  \
 
 ENV CATALINA_HOME /opt/cloudunit/tomcat
 ENV TOMCAT_MAJOR 7
-ENV TOMCAT_VERSION 7.0.70
-ENV TOMCAT_TGZ_URL https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
+ARG TOMCAT_VERSION
+ENV TOMCAT_TGZ_URL https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
 ENV PATH $CATALINA_HOME/bin:$PATH
 
 ## CLOUDUNIT :: BEGINNING
+ENV CU_SERVER_RESTART_POST_DEPLOYMENT false
 ENV CU_SOFTWARE $CATALINA_HOME
 ENV CU_SERVER_MANAGER_PATH /manager/html?
 ENV CU_SERVER_MANAGER_PORT 8080
@@ -49,6 +50,12 @@ ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
 
 RUN mkdir -p $CATALINA_HOME
 
+## Download beats agents
+RUN cd /opt/cloudunit/ \
+    && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/beats-agents.tar.gz \
+    && tar zxvf beats-agents.tar.gz \
+    && rm beats-agents.tar.gz
+    
 RUN cd $HOME \
     && wget $TOMCAT_TGZ_URL \
     && tar xvf apache-tomcat-$TOMCAT_VERSION.tar.gz  \
@@ -56,8 +63,13 @@ RUN cd $HOME \
     && rm apache-tomcat-$TOMCAT_VERSION.tar.gz \
     && rm -rf $CU_SOFTWARE/webapps/ROOT $CU_SOFTWARE/webapps/examples $CU_SOFTWARE/webapps/docs
 
+## CLOUDUNIT :: BEGINNING
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-1.61.0.jar \
+    && mv javamelody-1.61.0.jar $CU_SOFTWARE/lib/javamelody-1.61.0.jar
+COPY files/web.xml $CU_SOFTWARE/conf/web.xml
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
 COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
+## CLOUDUNIT :: END
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
 RUN chown -R cloudunit:cloudunit /opt/cloudunit

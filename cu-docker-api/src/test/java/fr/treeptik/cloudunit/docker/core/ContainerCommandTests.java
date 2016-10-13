@@ -18,6 +18,7 @@ import fr.treeptik.cloudunit.docker.builders.HostConfigBuilder;
 import fr.treeptik.cloudunit.docker.model.Config;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.HostConfig;
+import fr.treeptik.cloudunit.docker.model.Mounts;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.utils.ContainerUtils;
 
@@ -46,7 +47,6 @@ public class ContainerCommandTests {
             isTLS = false;
         }
 
-
         dockerCloudUnitClient = new DockerCloudUnitClient();
         dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS));
     }
@@ -54,33 +54,20 @@ public class ContainerCommandTests {
     @Before
     public void setup() throws Exception {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig()
-                .withBinds(Arrays.asList("/etc/localtime:/etc/localtime:ro"))
-                .build();
-        Config config = ConfigBuilder.aConfig()
-                .withAttachStdin(Boolean.FALSE)
-                .withAttachStdout(Boolean.TRUE)
+                .withBinds(Arrays.asList("/etc/localtime:/etc/localtime:ro")).build();
+        Config config = ConfigBuilder.aConfig().withAttachStdin(Boolean.FALSE).withAttachStdout(Boolean.TRUE)
                 .withAttachStderr(Boolean.TRUE)
                 .withCmd(Arrays.asList("/bin/bash", "/cloudunit/scripts/start-service.sh", "johndoe", "abc2015",
-                        "192.168.2.116", "172.17.0.221", "aaaa",
-                        "AezohghooNgaegh8ei2jabib2nuj9yoe", "main"))
-                .withImage("cloudunit/tomcat-8:latest")
-                .withHostConfig(hostConfig)
-                .withExposedPorts(new HashMap<>())
-                .withMemory(0L)
-                .withMemorySwap(0L)
-                .build();
-        container = ContainerBuilder.aContainer()
-                .withName(CONTAINER_NAME)
-                .withConfig(config)
-                .build();
+                        "192.168.2.116", "172.17.0.221", "aaaa", "AezohghooNgaegh8ei2jabib2nuj9yoe", "main"))
+                .withImage("cloudunit/tomcat-8:latest").withHostConfig(hostConfig).withExposedPorts(new HashMap<>())
+                .withMemory(0L).withMemorySwap(0L).build();
+        container = ContainerBuilder.aContainer().withName(CONTAINER_NAME).withConfig(config).build();
         dockerCloudUnitClient.createContainer(container);
     }
 
     @After
     public void tearDown() throws Exception {
-        DockerContainer container = ContainerBuilder.aContainer()
-                .withName(CONTAINER_NAME)
-                .build();
+        DockerContainer container = ContainerBuilder.aContainer().withName(CONTAINER_NAME).build();
         dockerCloudUnitClient.removeContainer(container);
     }
 
@@ -91,7 +78,7 @@ public class ContainerCommandTests {
 
         dockerCloudUnitClient.findContainer(container);
 
-        container = ContainerUtils.newStartInstance(container.getName(), null, null, null);
+        container = ContainerUtils.newStartInstance(container.getName(), null, null, false);
 
         dockerCloudUnitClient.startContainer(container);
 
@@ -108,23 +95,18 @@ public class ContainerCommandTests {
 
     @Test
     public void test30_createContainerWithVolumes() throws DockerJSONException {
-        container = ContainerUtils.newStartInstance(container.getName(),
-                null, null, null);
+        container = ContainerUtils.newStartInstance(container.getName(), null, null, false);
         dockerCloudUnitClient.startContainer(container);
-        List mounts = dockerCloudUnitClient.findContainer(container).getMounts();
+        List<Mounts> mounts = dockerCloudUnitClient.findContainer(container).getMounts();
         Assert.assertTrue(mounts.toString().contains("localtime"));
     }
 
     @Test
     public void test40_startContainerWithPorts() throws DockerJSONException {
-        container = ContainerUtils.newStartInstance(container.getName(),
-                new HashMap() {{
-                    put("22/tcp", "22");
-                }}, null,
-                null);
+        container = ContainerUtils.newStartInstance(container.getName(), null, null, false);
         dockerCloudUnitClient.startContainer(container);
-        Assert.assertTrue((dockerCloudUnitClient.findContainer(container)
-                .getNetworkSettings().getPorts().toString().contains("22")));
+        Assert.assertTrue((dockerCloudUnitClient.findContainer(container).getNetworkSettings().getPorts().toString()
+                .contains("22")));
 
     }
 }

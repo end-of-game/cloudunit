@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jline.internal.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
@@ -64,42 +65,49 @@ public class FileUtils {
 
 	private String currentPath;
 
-	public String openExplorer(String containerName) {
+    public String createDirectory(String path) {
+        if (checkSecurity()) return null;
+        String url = authentificationUtils.finalHost + "/file/container/" + currentContainer
+                + "/application/" + applicationUtils.getApplication().getName();
+        try {
+            Map<String, Object> results = restUtils.sendPostCommand(url + "?path=" + path, authentificationUtils.getMap(), "");
+            statusCommand.setExitStatut(0);
+        } catch (Exception e) {
+            statusCommand.setExitStatut(1);
+            return "error";
+        }
+        return "created";
+    }
 
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
+    private boolean checkSecurity() {
+        if (authentificationUtils.getMap().isEmpty()) {
+            log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
+            statusCommand.setExitStatut(1);
+            return true;
+        }
+        if (applicationUtils.getApplication() == null) {
+            log.log(Level.SEVERE,
+                    "No application is currently selected by the followind command line : use <application name>");
+            statusCommand.setExitStatut(1);
+            return true;
+        }
+        return false;
+    }
 
-		if (currentContainer != null) {
-			log.log(Level.SEVERE,
-					"You are already into a container file explorer. Please exit it with close-explorer command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
 
+    public String openExplorer(String containerName) {
+        if (checkSecurity()) return null;
 		Application application = applicationUtils.getApplication();
 		Server server = application.getServer();
-
 		if (server.getName().equalsIgnoreCase(containerName)) {
 			currentContainer = server.getContainerID();
-
 		}
-
 		for (Module module : application.getModules()) {
 			if (module.getName().equalsIgnoreCase(containerName)) {
 				currentContainer = module.getContainerID();
 				break;
 			}
 		}
-
 		if (currentContainer == null) {
 			log.log(Level.SEVERE,
 					"This container name doesn't exist. Please choose one of following container name : ");
@@ -110,25 +118,18 @@ public class FileUtils {
 
 		clPromptProvider.setPrompt("cloudunit>[" + containerName + "] ");
 		currentPath = "/";
-
-		return null;
+		return "";
 	}
 
+    /**
+     * Close explorer
+     *
+     * @return
+     * @throws ManagerResponseException
+     */
 	public String closeExplorer() throws ManagerResponseException {
-
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (currentContainer != null) {
+        if (checkSecurity()) return null;
+        if (currentContainer != null) {
 			currentContainer = null;
 			currentPath = null;
 			clPromptProvider.setPrompt("cloudunit> ");
@@ -139,201 +140,66 @@ public class FileUtils {
 		return "File explorer closed!";
 	}
 
+    /**
+     * List the files for current directory
+     *
+     * @return
+     * @throws ManagerResponseException
+     */
 	public String listFiles() throws ManagerResponseException {
-		String json = null;
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (currentContainer == null) {
+        if (checkSecurity()) return null;
+        if (currentContainer == null) {
 			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
 			statusCommand.setExitStatut(1);
 			return null;
 		}
-
-		currentPath = currentPath.replace("/", "__");
-		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "/path/"
-				+ currentPath;
+		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path="+ currentPath;
 		log.info(command);
-		json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
+		String json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
 		statusCommand.setExitStatut(0);
-
-		MessageConverter.buildListFileUnit(JsonConverter.getFileUnits(json));
-
-		return null;
+		String result = MessageConverter.buildListFileUnit(JsonConverter.getFileUnits(json));
+		return result;
 	}
 
-	public String checkPath(String path) throws ManagerResponseException {
-
-		String json = null;
-
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (currentContainer == null) {
+    /**
+     * Change directory
+     *
+     * @param directoryName
+     * @return
+     * @throws ManagerResponseException
+     */
+	public String changeDirectory(String directoryName) throws ManagerResponseException {
+        if (checkSecurity()) return null;
+        if (currentContainer == null) {
 			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
 			statusCommand.setExitStatut(1);
 			return null;
 		}
-
-		if (!path.startsWith("/"))
-			path = "/" + path;
-		path = currentPath + path;
-		path = path.replace("/", "__");
-		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "/path/" + path;
-		json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
-		if (json.equals("[]")) {
-			return "This directory does not exist";
-		}
-
-		return "This directory exist";
-	}
-
-	public String enterDirectory(String directoryName, boolean parent) throws ManagerResponseException {
-
-		String json = null;
-
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (currentContainer == null) {
-			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		/*
-		 * bloc pour remonter d'un niveau
-		 */
-
-		if (parent && (directoryName == null) || directoryName.equalsIgnoreCase("")) {
-			currentPath = currentPath.substring(0, currentPath.lastIndexOf("__"));
-
-			clPromptProvider.setPrompt(
-					clPromptProvider.getPrompt().substring(0, clPromptProvider.getPrompt().lastIndexOf("/")) + " ");
-			statusCommand.setExitStatut(0);
-			return null;
-		}
-
-		currentPath = currentPath.replace("/", "__");
-		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "/path/"
-				+ currentPath;
-
-		json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
-
+		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path=" + currentPath;
+		String json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
 		List<FileUnit> fileUnits = JsonConverter.getFileUnits(json);
-		boolean dirExists = false;
-		for (FileUnit fileUnit : fileUnits) {
-			if (fileUnit.getName().equalsIgnoreCase(directoryName)) {
-				if (!fileUnit.isDir()) {
-					log.log(Level.SEVERE, "This file is not a directory");
-					return null;
-				}
-				dirExists = true;
-			}
-		}
-
-		if (!dirExists) {
-			log.log(Level.SEVERE, "This directory does not exist");
-			return null;
-		}
-
-		currentPath = currentPath + "__" + directoryName;
-		clPromptProvider.setPrompt(clPromptProvider.getPrompt().trim() + "/" + directoryName + " ");
-
-		listFiles();
+		currentPath = directoryName;
 		statusCommand.setExitStatut(0);
-		return null;
+		return "current directory is now : " + directoryName;
 	}
 
-	public String enterPathDirectory(List<String> pathList) throws ManagerResponseException {
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (currentContainer == null) {
-			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		for (String path : pathList) {
-			if (path.equals("..")) {
-				currentPath = currentPath.substring(0, currentPath.lastIndexOf("__"));
-
-				clPromptProvider.setPrompt(
-						clPromptProvider.getPrompt().substring(0, clPromptProvider.getPrompt().lastIndexOf("/")) + " ");
-			} else {
-				currentPath = currentPath + "__" + path;
-				clPromptProvider.setPrompt(clPromptProvider.getPrompt().trim() + "/" + path + " ");
-			}
-		}
-
-		listFiles();
-		statusCommand.setExitStatut(0);
-		return null;
-	}
-
+    /**
+     * Unzip a file
+     *
+     * @param fileName
+     * @return
+     */
 	public String unzip(String fileName) {
-
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
+        if (checkSecurity()) return null;
 		if (currentContainer == null) {
 			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
 			statusCommand.setExitStatut(1);
 			return null;
 		}
-
-		currentPath = currentPath.replace("/", "__");
-		if (currentPath.startsWith("____"))
-			currentPath = currentPath.substring(2);
+        String currentPath = fileName.substring(0, fileName.lastIndexOf("/"));
+        fileName = fileName.substring(fileName.lastIndexOf("/")+1);
 		String command = authentificationUtils.finalHost + "/file/unzip/container/" + currentContainer + "/application/"
-				+ applicationUtils.getApplication().getName() + "/path/" + currentPath + "/fileName/" + fileName;
+				+ applicationUtils.getApplication().getName() + "?path=" + currentPath + "&fileName=" + fileName;
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("applicationName", applicationUtils.getApplication().getName());
 		try {
@@ -343,32 +209,17 @@ public class FileUtils {
 			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
 		}
 		applicationUtils.useApplication(applicationUtils.getApplication().getName());
-
 		return null;
 	}
 
 	public String uploadFile(File path) {
-
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (currentContainer == null) {
+        if (checkSecurity()) return null;
+        if (currentContainer == null) {
 			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
 			statusCommand.setExitStatut(1);
 			return null;
 		}
-
 		File file = path;
-
 		try {
 			FileInputStream fileInputStream = new FileInputStream(file);
 			fileInputStream.available();
@@ -378,44 +229,34 @@ public class FileUtils {
 			params.put("file", resource);
 			params.putAll(authentificationUtils.getMap());
 			restUtils.sendPostForUpload(authentificationUtils.finalHost + "/file/container/" + currentContainer
-					+ "/application/" + applicationUtils.getApplication().getName() + "/path/" + currentPath, params);
+					+ "/application/" + applicationUtils.getApplication().getName() + "?path=" + currentPath, params);
 			statusCommand.setExitStatut(0);
-
 		} catch (IOException e) {
-
 			log.log(Level.SEVERE, "File not found! Check the path file");
 			statusCommand.setExitStatut(1);
 		}
-
 		return null;
 	}
 
+    /**
+     * Download a file
+     *
+     * @param fileName
+     * @param destination
+     * @return
+     * @throws ManagerResponseException
+     */
 	public String downloadFile(String fileName, String destination) throws ManagerResponseException {
 
-		if (authentificationUtils.getMap().isEmpty()) {
-			log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		if (applicationUtils.getApplication() == null) {
-			log.log(Level.SEVERE,
-					"No application is currently selected by the followind command line : use <application name>");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-
-		if (currentContainer == null) {
+        if (checkSecurity()) return null;
+        if (currentContainer == null) {
 			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
 			statusCommand.setExitStatut(1);
 			return null;
 		}
-		/*
-		 * check si c'est un fichier ou un directory (interdiction)
-		 */
 		boolean fileExists = false;
-
-		String json = restUtils.sendGetCommand(
-				authentificationUtils.finalHost + "/file/container/" + currentContainer + "/path/" + currentPath,
+        String json = restUtils.sendGetCommand(
+				authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path=" + currentPath,
 				authentificationUtils.getMap()).get("body");
 
 		List<FileUnit> fileUnits = JsonConverter.getFileUnits(json);
@@ -441,7 +282,7 @@ public class FileUtils {
 		Map<String, Object> params = new HashMap<>();
 		params.putAll(authentificationUtils.getMap());
 		restUtils.sendGetFileCommand(authentificationUtils.finalHost + "/file/container/" + currentContainer
-				+ "/application/" + applicationUtils.getApplication().getName() + "/path/" + currentPath + "/fileName/"
+				+ "/application/" + applicationUtils.getApplication().getName() + "?path=" + currentPath + "/fileName/"
 				+ fileName, destFileName, params);
 		statusCommand.setExitStatut(0);
 		return "File correctly send in this default location : " + destFileName;

@@ -15,17 +15,15 @@
 
 package fr.treeptik.cloudunit.service;
 
+import java.io.OutputStream;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.LogLine;
 import fr.treeptik.cloudunit.dto.SourceUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.util.List;
 
 /**
  * Created by nicolas on 20/05/15.
@@ -51,7 +49,7 @@ public interface FileService {
     void createDirectory(String applicationName, String containerId, String path)
             throws ServiceException;
 
-    List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
+    String tailFile(String containerId, String filename, Integer maxRows)
             throws ServiceException;
 
     String getLogDirectory(String containerId)

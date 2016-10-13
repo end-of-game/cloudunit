@@ -19,7 +19,14 @@ Today we have many servers :
 * JBoss / WildFly 10 in progress
 * FatJar for SpringBoot, Vertx, PlayFramework...
 
-And for modules : Mysql, Redis, Mongo, PostGreSQL, PostGis. Each module in different major release.
+And for modules :
+
+* SQL databases : Mysql, PostGreSQL, PostGis.
+* NoSQL databases : MongoDB
+* Datagrids : Redis
+* Message brokers : ActiveMQ, RabbitMQ
+
+Each module in different major releases.
 
 ![Jenkins2 Logo](documentation/img/cloudunitv2.png "Devops Plateforme")
 
@@ -37,13 +44,14 @@ You can test the common platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Server installation guide](documentation/SERVER-GUIDE.md)
+* [Server installation guide](documentation/SERVER-GUIDE.md) (TO BE UPDATED)
 * [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
 * [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
+* [Add new module](documentation/MODULE-GUIDE.md)
 
 ## Go further
     
-* [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit-cli/blob/dev/README.md)
+* [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit/blob/migration-112/documentation/CLI-GUIDE.md)
 * [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit-maven-plugin/blob/master/README.md)
 * [CloudUnit with Jenkins2/GitLab](documentation/CI-CD.md) [SOON UPDATED]
 
@@ -99,7 +107,7 @@ There are many installation guides
 		</tr>
 		<!-- IE -->
 		<tr>
-			<td>IE<sup>1</sup></td>
+			<td>IE<sup>11</sup></td>
 			<td>✓</td>
 			<td>-</td>
 			<td>-</td>
@@ -136,4 +144,15 @@ For any questions, contact us : contact@treeptik.fr
 Else ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
 
 Copyright 2016 Treeptik
+
+![Github downloads](https://img.shields.io/github/downloads/Treeptik/cloudunit/total.svg?style=flat-square)
+![Github contributors](https://img.shields.io/github/contributors/Treeptik/cloudunit.svg?style=flat-square)
+![Github stars](https://img.shields.io/github/stars/Treeptik/cloudunit.svg?style=flat-square)
+![Github forks](https://img.shields.io/github/forks/Treeptik/cloudunit.svg?style=flat-square)
+
+![Github issues opened](https://img.shields.io/github/issues/Treeptik/cloudunit.svg?style=flat-square)
+![Github issues closed](https://img.shields.io/github/issues-closed/Treeptik/cloudunit.svg?style=flat-square)
+![Github pr opened](https://img.shields.io/github/issues-pr/Treeptik/cloudunit.svg?style=flat-square)
+![Github pr closed](https://img.shields.io/github/issues-pr-closed/Treeptik/cloudunit.svg?style=flat-square)
+
 
