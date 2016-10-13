@@ -497,15 +497,21 @@ public class ApplicationServiceImpl implements ApplicationService {
 			};
 			String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
 			logger.info ("Deploy command {}", result);
-			deploymentService.create(application, DeploymentType.from(filename), contextPath);
-			
-			@SuppressWarnings("serial")
-            HashMap<String, String> kvStore2 = new HashMap<String, String>() {
-			    {
-			        put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
-			    }
-			};
-            dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
+			Deployment deployment = deploymentService.create(application, DeploymentType.from(filename), contextPath);
+			application.addDeployment(deployment);
+			application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
+
+			// If application is anything else than .jar or ROOT.war
+			// we need to clean for the next deployment.
+			if (!"/".equalsIgnoreCase(contextPath)) {
+				@SuppressWarnings("serial")
+				HashMap<String, String> kvStore2 = new HashMap<String, String>() {
+					{
+						put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
+					}
+				};
+				dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
+			}
 		} catch (Exception e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}

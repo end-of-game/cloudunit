@@ -359,7 +359,18 @@ public class ApplicationController implements Serializable {
 		// We must be sure there is no running action before starting new one
 		authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
 
-		applicationService.deploy(fileUpload, application);
+        application = applicationService.deploy(fileUpload, application);
+
+		String needRestart = dockerService.getEnv(application.getServer().getContainerID(),
+				"CU_SERVER_RESTART_POST_DEPLOYMENT");
+		if ("true".equalsIgnoreCase(needRestart)){
+            // set the application in pending mode
+            applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+            applicationService.stop(application);
+			applicationService.start(application);
+            // wait for modules and servers starting
+            applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+		}
 
 		logger.info("--DEPLOY APPLICATION WAR ENDED--");
 		return new HttpOk();
