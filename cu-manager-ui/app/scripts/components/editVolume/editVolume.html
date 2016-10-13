@@ -80,7 +80,19 @@
           </td>
           <td>
             <button class="toggle-modal icon-button secondary allowed danger"
-                ng-click="editVolume.deleteVolume(volume.id)">
+                sweetalert
+                sweet-options="{'title':'Removal confirmation required for {{volume.name}}',
+                'text':'Caution, this is a permanent action. Once you delete a volume, you cannot get it back. This volume will no longer be available.',
+                'type':'warning',
+                'showCancelButton':true,
+                'confirmButtonText':'PERMANENTLY DELETE!',
+                'cancelButtonText':'CANCEL',
+                'closeOnConfirm':false,
+                'closeOnCancel':false,
+                'animation': 'slide-from-top'}"
+                sweet-confirm-option="{'title':'Deleted!','text':'Your volume has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+                sweet-cancel-option="{'title':'Cancelled!','text':'Your volume is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+                sweet-on-confirm="editVolume.deleteVolume(volume.id)">
               <i class="icon-whhg trash"></i>
             </button> 
           </td>
