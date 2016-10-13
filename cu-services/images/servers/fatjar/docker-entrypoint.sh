@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
-if [ -z "/opt/cloudunit/tmp/boot.jar" ]; then
-    mv /opt/cloudunit/tmp/boot.jar /opt/cloudunit/fatjar/boot.jar
+set -x
+
+if [ -f "/opt/cloudunit/tmp/boot.jar" ]; then
+    echo "Update application"
+    ls -la /opt/cloudunit/fatjar/
+    mv -f /opt/cloudunit/tmp/boot.jar /opt/cloudunit/fatjar/boot.jar
+    ls -la /opt/cloudunit/fatjar/
 fi
 
 # if `docker run` first argument start with `--` the user is passing fatjar launcher arguments

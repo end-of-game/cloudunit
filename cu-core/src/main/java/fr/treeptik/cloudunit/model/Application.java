@@ -260,6 +260,8 @@ public class Application implements Serializable {
 		this.deployments = new HashSet<>(deployments);
 	}
 
+	public void addDeployment(Deployment deployment) { this.deployments.add(deployment); }
+
 	public String getSuffixCloudUnitIO() {
 		return suffixCloudUnitIO;
 	}
