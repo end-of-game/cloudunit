@@ -27,7 +27,8 @@
     
     <form id="add-ports"
           name="addPortsForm"
-          class="clearfix" novalidate="">
+          class="clearfix" novalidate=""
+          data-ng-submit="editVolume.addVolume(editVolume.newVolumeName)">
 
       <div class="input-group-inline col-xs-12">
         <input type="text"
@@ -37,7 +38,7 @@
             required="">
         <span class="bar"></span>
         <label class="label-effect">Volume name</label>
-        <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right" ng-click="editVolume.addVolume(editVolume.newVolumeName)">Create volume</button>
+        <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right">Create volume</button>
       </div>
     </form>
 

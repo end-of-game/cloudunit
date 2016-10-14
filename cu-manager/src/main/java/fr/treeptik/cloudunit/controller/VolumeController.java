@@ -70,11 +70,6 @@ public class VolumeController implements Serializable {
 	@RequestMapping(method = RequestMethod.POST)
 	public @ResponseBody
 	ResponseEntity<VolumeResource> addVolume(@RequestBody VolumeResource request) throws ServiceException, CheckException {
-		
-		System.out.println("##################################");
-		System.out.println(request);
-		System.out.println(request.getName());
-		System.out.println("##################################");
 		Volume volume = volumeService.createNewVolume(request.getName());
 		VolumeResource volumeResource = new VolumeResource(volume);
 		return ResponseEntity.status(HttpStatus.CREATED).body(volumeResource);
