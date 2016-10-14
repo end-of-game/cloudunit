@@ -30,3 +30,6 @@ VOLUME /opt/cloudunit
 
 ENTRYPOINT ["/opt/cloudunit/scripts/start.sh"]
 
+LABEL origin application
+LABEL application-type fatjar
+LABEL application-version ????

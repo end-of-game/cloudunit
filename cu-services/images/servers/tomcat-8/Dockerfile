@@ -44,7 +44,7 @@ ENV CU_DEFAULT_LOG_FILE catalina.log
 ENV CU_LOGS $CATALINA_HOME/logs
 ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
 ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
-ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
+ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 ## CLOUDUNIT :: END
 
 RUN mkdir -p $CATALINA_HOME
@@ -57,10 +57,6 @@ RUN cd $HOME \
     && rm -rf $CU_SOFTWARE/webapps/ROOT $CU_SOFTWARE/webapps/examples $CU_SOFTWARE/webapps/docs
 
 ## CLOUDUNIT :: BEGINNING
-RUN cd /opt/cloudunit/ \
-    && wget https://github.com/Treeptik/cloudunit/releases/download/1.0/beats-agents.tar.gz \
-    && tar zxvf beats-agents.tar.gz \
-    && rm beats-agents.tar.gz
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-1.61.0.jar \
     && mv javamelody-1.61.0.jar $CU_SOFTWARE/lib/javamelody-1.61.0.jar
 COPY files/web.xml $CU_SOFTWARE/conf/web.xml
@@ -76,4 +72,6 @@ VOLUME /opt/cloudunit
 
 CMD ["catalina.sh", "run"]
 
-
+LABEL origin application
+LABEL application-type tomcat
+LABEL application-version $TOMCAT_VERSION

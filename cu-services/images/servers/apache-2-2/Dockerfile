@@ -95,4 +95,6 @@ RUN chmod +x /opt/cloudunit/scripts/*
 EXPOSE 80
 CMD ["httpd-foreground"]
 
-
+LABEL origin application
+LABEL application-type apache
+LABEL application-version 2-2
