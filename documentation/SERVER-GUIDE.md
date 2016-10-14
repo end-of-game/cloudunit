@@ -59,14 +59,21 @@ database.password=changeit
 #email.password=
 ```
 
+Add into ```/etc/environment``` with the correct URL 
+
+```
+CU_GITLAB_URL=https://gitlab-demo.cloudunit.io
+CU_JENKINS_URL=https://jenkins-demo.cloudunit.io
+CU_SUB_DOMAIN=.demo
+MYSQL_ROOT_PASSWORD=changeit
+```
+
 ### Database password [ OPTIONAL ]
 
 You have to change MYSQL root password (*changeit* by default)
 To do it, you have to change the 
 * /home/admincu/.cloudunit/configuration.properties
 * /etc/profile
-
-Run `/home/admincu/cloudunit/cu-platform/reset-prod.sh -y`
 
 ## Domain Name and SSL Certificates
 
