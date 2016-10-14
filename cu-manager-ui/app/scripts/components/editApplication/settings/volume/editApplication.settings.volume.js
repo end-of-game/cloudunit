@@ -91,14 +91,14 @@
     }
 
     function getListVolume() {
-        ApplicationService.getListVolume ( )
+        VolumeService.getListVolume ( )
         .then ( function(response) {
           vm.volumes = response;
         });
     }
 
     function setLinkVolume() {
-        ApplicationService.linkVolume ( $stateParams.name, vm.myContainer.name, vm.createLinkPath, vm.IReadOnly, vm.volumePicked )
+        VolumeService.linkVolume ( $stateParams.name, vm.myContainer.name, vm.createLinkPath, vm.IReadOnly, vm.volumePicked )
         .then ( function(response) {
             cleanMessage();
             vm.getLinkVolume();
@@ -117,7 +117,7 @@
     }
 
     function breakLink(volume) {
-        ApplicationService.unLinkVolume ( vm.myContainer.name, volume.name )
+        VolumeService.unLinkVolume ( vm.myContainer.name, volume.name )
         .then ( function(response) {
             vm.getLinkVolume();
             cleanMessage();
@@ -133,7 +133,7 @@
     }
 
     function getLinkVolume() {
-        ApplicationService.getLinkVolume ( vm.myContainer.name)
+        VolumeService.getLinkVolume ( vm.myContainer.name)
         .then ( function(response) {
             vm.listVolumes = response;
             

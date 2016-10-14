@@ -64,14 +64,7 @@ function ApplicationService ( $resource, $http, $interval ) {
         getSettingsEnvironmentVariable: getSettingsEnvironmentVariable,
         addEnvironmentVariable: addEnvironmentVariable,
         editEnvironmentVariable: editEnvironmentVariable,
-        deleteEnvironmentVariable: deleteEnvironmentVariable,
-        getLinkVolume: getLinkVolume,
-        getListVolume: getListVolume,
-        addVolume: addVolume,
-        deleteVolume: deleteVolume,
-        linkVolume: linkVolume,
-        unLinkVolume: unLinkVolume
-
+        deleteEnvironmentVariable: deleteEnvironmentVariable
     };
 
 
@@ -321,70 +314,6 @@ function getVariableEnvironment ( applicationName, containerName ) {
         applicationName: applicationName,
         containerName: containerName
     } ).$promise;      
-}
-
-// Gestion des volumes
-
-function getLinkVolume( containerName ) {
-    var dir = $resource('server/volume/containerName/:containerName');
-    return dir.query({
-        containerName: containerName
-    }).$promise;      
-}
-
-function getListVolume ( ) {
-  var dir = $resource ( 'volume' );
-  return dir.query ( { } ).$promise;      
-}
-
-function addVolume ( volumeName ) {
-    var data = {
-        name: volumeName
-    };
-
-    var dir = $resource ( 'volume' );
-    return dir.save ( { }, data ).$promise;
-}
-
-function deleteVolume ( volumeID ) {
-    var dir = $resource ( 'volume/:id' );
-    return dir.delete ( {
-        id: volumeID
-    }, {} ).$promise; 
-}
-
-
-function linkVolume ( applicationName, containerName, path, mode, volumeName ) {
-    var data = {
-        applicationName: applicationName,
-        containerName: containerName,
-        path: path,
-        mode: mode,
-        volumeName: volumeName
-    };
-
-    var dir = $resource ( 'server/volume' , { },
-    { 
-        'update': { 
-            method: 'PUT',
-            transformResponse: function ( data, headers ) {
-                var response = {};
-                response = JSON.parse(data);
-                return response;
-            }
-        }
-    }
-    );
-    return dir.update( { }, data ).$promise; 
-}
-
-
-function unLinkVolume ( containerName, volumeName ) {
-    var dir = $resource ( 'server/volume/:volumeName/container/:containerName' );
-    return dir.delete ( { 
-        volumeName: volumeName,
-        containerName: containerName
-    }, {} ).$promise; 
 }
 
 }

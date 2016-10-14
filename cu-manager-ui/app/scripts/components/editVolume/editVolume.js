@@ -61,7 +61,7 @@
     ////////////////////////////////////////////////////
 
     function addVolume ( volumeName ) {
-      ApplicationService.addVolume ( volumeName )
+      VolumeService.addVolume ( volumeName )
         .then ( function(response) {
           vm.newVolumeName = "";
           vm.errorVolumeCreate = '';
@@ -73,7 +73,7 @@
     }
 
     function deleteVolume (id) {
-      ApplicationService.deleteVolume ( id )
+      VolumeService.deleteVolume ( id )
         .then ( function(response) {
           getListVolumes();
         }); 
@@ -88,8 +88,7 @@
             VolumeService.getLinkVolumeAssociation ( volume.id )
               .then(function(response) {
                 vm.volumes[volumeIndex].applications = [];
-                angular.forEach(response, function(application, applicationIndex) {
-                  
+                angular.forEach(response, function(application, applicationIndex) { 
                   ApplicationService.findByName( application.application ).then(function(response) {
                       vm.volumes[volumeIndex].applications.push(response);
                   });
