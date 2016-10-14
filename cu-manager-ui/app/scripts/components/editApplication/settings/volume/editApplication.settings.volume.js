@@ -29,6 +29,7 @@
         '$stateParams',
         '$q',
         'ApplicationService',
+        'VolumeService',
         'ErrorService',
         volumeCtrl
       ],
@@ -36,7 +37,7 @@
     }
   }
 
-  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService) {
+  function volumeCtrl($stateParams, $q, ApplicationService, VolumeService, ErrorService) {
 
     var vm = this;
     vm.volumes = [];
@@ -135,6 +136,13 @@
         ApplicationService.getLinkVolume ( vm.myContainer.name)
         .then ( function(response) {
             vm.listVolumes = response;
+            
+            angular.forEach(vm.listVolumes, function(volume, index) {
+              VolumeService.getLinkVolumeAssociation ( volume.id )
+                .then ( function(response) {
+                  vm.listVolumes[index].volumeAssociation = response[response.map(function(x) {return x.application; }).indexOf($stateParams.name)];
+                });
+            });
         });
     }
 

@@ -37,14 +37,16 @@
       controller: [
         'FeedService',
         'ApplicationService',
+        'VolumeService',
         'ErrorService',
+        '$resource',
         EditVolumeCtrl
       ],
       controllerAs: 'editVolume',
     };
   }
 
-  function EditVolumeCtrl (FeedService, ApplicationService, ErrorService) {
+  function EditVolumeCtrl (FeedService, ApplicationService, VolumeService, ErrorService, $resource) {
 
     var vm = this;
     vm.errorVolumeCreate = "";
@@ -78,36 +80,23 @@
     }
 
     function getListVolumes() {
-      console.log('getListVolumes');
-        var dir = $resource('volume');
-
-        var volumesList = dir.query().$promise;
-        volumesList.then(function(response) {
-            editVolume.volumes = response;
-            console.log(response);
-            angular.forEach(editVolume.volumes, function(volume, index) {
-              
-              var dir = $resource('volume/' + volume.id + '/associations');
-
-              dir.query().$promise.then(function(response) {
-                  console.log(response);
-                  editVolume.volumes[index].applications = [];
-                  angular.forEach(response, function(application, index) {
-                    var dir = $resource('/application/' + application.application);
-                    
-                    dir.get().$promise.then(function(response) {
-                        console.log(response);
-                        editVolume.volumes[index].applications.push(response);
-                    });
+      VolumeService.getListVolume ( )
+        .then(function(response) {
+          vm.volumes = response;
+          angular.forEach(vm.volumes, function(volume, volumeIndex) {
+            
+            VolumeService.getLinkVolumeAssociation ( volume.id )
+              .then(function(response) {
+                vm.volumes[volumeIndex].applications = [];
+                angular.forEach(response, function(application, applicationIndex) {
+                  
+                  ApplicationService.findByName( application.application ).then(function(response) {
+                      vm.volumes[volumeIndex].applications.push(response);
                   });
-                  console.log(editVolume.volumes[index].applications);
-              });
-
+                });
             });
-//       ApplicationService.getListVolume ( )
-//         .then ( function(response) {
-//           vm.volumes = response;
-        });
+          });
+      });      
     }
   }
 }) ();

@@ -33,6 +33,9 @@ public class VolumeServiceImpl implements VolumeService {
 	@Transactional
 	public Volume createNewVolume(String name) {
 		try {
+			System.out.println("##################################");
+			System.out.println(name);
+			System.out.println("##################################");
 			checkVolumeFormat(name);
 			dockerCloudUnitClient.createVolume(name, "runtime");
 			Volume volume = new Volume();
@@ -87,11 +90,11 @@ public class VolumeServiceImpl implements VolumeService {
 
 	private void checkVolumeFormat(String name) {
 		if (name == null || name.isEmpty())
-			throw new CheckException("This name is not consistent !");
+			throw new CheckException("This name is not #####consistent !");
 		if (!name.matches("^[-a-zA-Z0-9_]*$"))
 			throw new CheckException("This name is not consistent : " + name);
 		if (loadAllVolumes().stream().filter(v -> v.getName().equals(name)).findAny().isPresent()) {
-			throw new CheckException("This name already exists");
+			throw new CheckException("This name ####already exists");
 		}
 	}
 

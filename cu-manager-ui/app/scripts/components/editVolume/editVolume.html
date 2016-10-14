@@ -66,12 +66,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="volume in editVolume.volumes">
+        <tr ng-repeat="volume in editVolume.volumes track by $index">
           <td>
             <p ng-bind="volume.name"></p>
           </td>
           <td>
-            <a ui-sref="editApplication.settingsVolume({ name: application.name })" ng-repeat="application in volume.applications">
+            <a ui-sref="editApplication.settingsVolume({ name: application.name })" ng-repeat="application in volume.applications track by $index">
               <span>{{application.displayName}}</span>  
             </a>
             <span ng-if="volume.applications.length === 0">
