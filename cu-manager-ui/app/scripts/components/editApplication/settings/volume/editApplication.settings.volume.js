@@ -30,39 +30,33 @@
         '$q',
         'ApplicationService',
         'ErrorService',
-        '$resource',
-        '$http',
         volumeCtrl
       ],
       controllerAs: 'volume',
     }
   }
 
-  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService, $resource, $http) {
+  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService) {
 
     var vm = this;
     vm.volumes = [];
     vm.containers = [];
     vm.myContainer = {};
     vm.isLoading = true;
+    vm.listVolumes = '';
+    vm.IReadOnly = 'rw';
     vm.pageSize = 5;
     vm.currentPage = 1;
-    vm.volumeName = '';
-    vm.listVolumes = '';
-    vm.volumePath = '';
+
     vm.addNoticeMsg = '';
     vm.addErrorMsg = '';
     vm.manageNoticeMsg = '';
     vm.manageErrorMsg = '';
-    vm.actionPending = false;
 
     vm.predicate = 'name';
     vm.reverse = false;
     vm.order = order;
     
-    vm.addVolume = addVolume;
-    vm.editVolume = editVolume;
-    vm.deleteVolume = deleteVolume;
     vm.setLinkVolume = setLinkVolume;
     vm.getLinkVolume = getLinkVolume;
     vm.breakLink = breakLink;
@@ -78,75 +72,6 @@
     }
 
     ////////////////////////////////////////////////
-
-    function setLinkVolume() {
-        var mode = 'rw';
-        if (vm.IReadOnly === true) {
-            mode = 'ro'
-        }
-        var data = {
-            applicationName: $stateParams.name,
-            containerName: vm.myContainer.name,
-            path: vm.createLinkPath,
-            mode: mode,
-            volumeName: vm.volumePicked
-        };
-        var urlLink = 'server/volume/';
-        vm.actionPending = true;
-
-        $http({
-            method: 'PUT',
-            url: urlLink,
-            data: data
-        }).then(function successCallback(response) {
-            console.log(response);
-            vm.actionPending = false;
-            vm.getLinkVolume();
-        }, function errorCallback(response) {
-            vm.actionPending = false;
-            vm.errorLinkCreate = response.data.message;
-        });
-    }
-
-    function getLinkVolume() {
-        var urlLink = 'server/volume/containerName/' + vm.myContainer.name;
-
-        $http({
-            method: 'GET',
-            url: urlLink
-        }).then(function successCallback(response) {
-            vm.listVolumes = response.data;
-            console.log(response.data);
-        }, function errorCallback(response) {
-            console.log(response);
-        });
-    }
-
-    function getListVolume() {
-        var dir = $resource('volume');
-
-        var volumesList = dir.query().$promise;
-        volumesList.then(function(response) {
-            vm.volumes = response;
-        })
-    }
-
-    function breakLink(volume) {
-        var data = {
-            "applicationName": $stateParams.name,
-            "containerName": vm.myContainer.name,
-            "volumeName": volume.name
-        };
-        var urlLink = 'server/volume/'+volume.name+'/container/'+vm.myContainer.name;
-
-        $http.delete(urlLink).then(function successCallback(response) {
-            console.log(response);
-            vm.getLinkVolume();
-        }, function errorCallback(response) {
-            console.log(response);
-        });
-
-    }
 
     function getContainers (selectedContainer) {
       var deferred = $q.defer ();
@@ -164,57 +89,53 @@
         return deferred.promise;
     }
 
-    function deleteVolume (volume) {
-      ApplicationService.deleteVolume (  $stateParams.name, vm.myContainer.name, volume.id )
-        .then ( function() {
-          cleanMessage();
-          getListVolume();
-          vm.manageNoticeMsg = 'The volume has been removed!'
-        } )
-        .catch (errorManageVolume);
-    }
-    
-    function editVolume (volumeID, volumeName, volumePath) {
-      ApplicationService.editVolume ( $stateParams.name, vm.myContainer.name, volumeID, volumeName, volumePath )
-        .then(function(volume) {
-          cleanMessage();
-          getListVolume();
-          vm.manageNoticeMsg = 'The volume has been edited!'
-        })
-        .catch ( function(response) {
-          getListVolume();
-          errorManageVolume(response);
-        } );
+    function getListVolume() {
+        ApplicationService.getListVolume ( )
+        .then ( function(response) {
+          vm.volumes = response;
+        });
     }
 
-    function addVolume (volumeName, volumePath) {
-      ApplicationService.addVolume (  $stateParams.name, vm.myContainer.name, volumeName, volumePath )
-        .then ( function(volume) {
+    function setLinkVolume() {
+        ApplicationService.linkVolume ( $stateParams.name, vm.myContainer.name, vm.createLinkPath, vm.IReadOnly, vm.volumePicked )
+        .then ( function(response) {
+            cleanMessage();
+            vm.getLinkVolume();
+            vm.createLinkPath = '';
+            vm.volumePicked = '';
+            vm.IReadOnly = 'rw';
+            vm.addNoticeMsg = 'volume successfully linked !';
+        }).catch (function(response) {
+            cleanMessage();
+            if(response.data.message) {
+              vm.addErrorMsg = response.data.message;
+            } else {
+              vm.addErrorMsg = 'An error has been encountered !';
+            };    
+        });
+    }
+
+    function breakLink(volume) {
+        ApplicationService.unLinkVolume ( vm.myContainer.name, volume.name )
+        .then ( function(response) {
+            vm.getLinkVolume();
+            cleanMessage();
+            vm.manageNoticeMsg = 'volume successfully unlinked !';
+        }).catch (function(response) {
           cleanMessage();
-          getListVolume();
-          vm.volumeName = '';
-          vm.volumePath = '';
-          vm.addNoticeMsg = 'volume successfully created !';
-        } )
-        .catch (errorAddVolume);
+          if(response.data.message) {
+            vm.manageErrorMsg = response.data.message;
+          } else {
+            vm.manageErrorMsg = 'An error has been encountered !';
+          };  
+        });
     }
 
-    function errorAddVolume (res) {
-      cleanMessage();
-      if(res.data.message) {
-        vm.addErrorMsg = res.data.message;
-      } else {
-        vm.addErrorMsg = 'An error has been encountered !';
-      }
-    }
-
-    function errorManageVolume (res) {
-      cleanMessage();
-      if(res.data.message) {
-        vm.manageErrorMsg = res.data.message;
-      } else {
-        vm.manageErrorMsg = 'An error has been encountered !';
-      };
+    function getLinkVolume() {
+        ApplicationService.getLinkVolume ( vm.myContainer.name)
+        .then ( function(response) {
+            vm.listVolumes = response;
+        });
     }
 
     function cleanMessage() {
