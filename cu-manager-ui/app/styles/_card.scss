@@ -144,20 +144,17 @@
 
 .volume-card.card .content,
 .environment-card.card .content {
-  min-height: 180px;
-
-  &.height-ajustation {
-    min-height: 222px;
-  }
+  min-height: 220px;
 }
 
-.card.overview {
+.card.overview, .card.service {
   .content {
+    min-height: 310px;
     overflow: auto;
   }
 }
 
-.template.card {
+.template.card, .card.overview, .card.service {
   .features {
     margin-bottom: 0;
   }

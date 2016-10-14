@@ -29,7 +29,6 @@
         'ApplicationService',
         'ModuleService',
         '$filter',
-        '$http',
         '$stateParams',
         OverviewCtrl
       ],
@@ -37,13 +36,12 @@
     };
   }
 
-  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter, $http, $stateParams){
+  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter, $stateParams){
 
     var vm = this;
 
     vm.toggleServer = toggleServer;
-    vm.getTplUrl = getTplUrl;
-    vm.changePort = changePort;
+    vm.openPort = openPort;
     vm.removeModule = removeModule;
     vm.listEnvModule = [];
     vm.colapseModuleId;
@@ -67,20 +65,17 @@
 
 
     function initializeEnvVar() {
-        ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
-          vm.app.env = data;
+      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
+        vm.app.env = data;
 
-          angular.forEach(vm.app.modules, function(value, key) {
-              vm.portList[value.id] = value.ports;
-              ApplicationService.getVariableEnvironment($stateParams.name, value.name)
-              .then(function successCallback(response) {
-                vm.listEnvModule[value.id] = response;
-              }, function errorCallback(response) {
-                console.log('error');
-                console.log(response);
-              });
-          });
+        angular.forEach(vm.app.modules, function(value, key) {
+            vm.portList[value.id] = value.ports;
+            ApplicationService.getVariableEnvironment($stateParams.name, value.name)
+            .then(function successCallback(response) {
+              vm.listEnvModule[value.id] = response;
+            });
         });
+      });
     }
 
     function refreshEnvVar () {
@@ -90,26 +85,17 @@
       });
     }
 
-    function changePort(idModule, imageName, statPort, portInContainer) {
-      var urlUpdate = '/module/' + idModule + '/ports/' + portInContainer;
-
-      console.log("port in container", portInContainer);
-
-      var data = {
-        publishPort: statPort
-      };
-
-      vm.pendingModules = true; 
-
-      $http({
-          method: 'PUT',
-          url: urlUpdate,
-          data: data
-      }).then(function successCallback(response) {
-          vm.pendingModules = false; 
-      }, function errorCallback(response) {
+    function openPort(idModule, statePort, portInContainer) {
+      vm.pendingModules = true;
+      ApplicationService.openPort(idModule, statePort, portInContainer)
+      .then ( function (data) {
           vm.pendingModules = false;
-      }); 
+          setTimeout(function() {
+            initializeEnvVar();  
+          }, 1000);          
+      }, function (response) {
+          vm.pendingModules = false;
+      });
     }
 
     function toggleServer(application) {
@@ -133,11 +119,6 @@
     function stopApplication(applicationName) {
       ApplicationService.stop(applicationName);
       $scope.$emit('workInProgress', {delay: 3000});
-    }
-
-    function getTplUrl(tpl){
-      var moduleName = $filter('truncatestringfilter')(tpl);
-      return 'scripts/components/editApplication/overview/templates/_postgresql-module.html';
     }
 
     // Suppression d'un module

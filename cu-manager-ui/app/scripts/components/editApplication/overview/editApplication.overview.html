@@ -13,8 +13,7 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 <div class="tab-pane active vertical-spacing">
-  <div id="{{overview.app.name}}-server" class="clearfix col-lg-6">
-    <div class="card large application overview {{overview.app.status | lowercase}}">
+    <div id="{{overview.app.name}}-server" class="card medium application overview {{overview.app.status | lowercase}}">
       <div class="content">
         <div class="status">
           <p class="headline">
@@ -127,7 +126,6 @@
         </div>
       </div>
     </div>
-  </div>
   <div id="{{overview.app.name}}-modules" class="modules-list clearfix">
     <div class="card small blank" data-ng-hide="overview.app.modules.length > 0">
       <div class="content clearfix">
@@ -141,7 +139,131 @@
     </div>
     <div id="{{module.name}}" class="service card medium {{module.status | lowercase}}" ng-class="{ pending : overview.pendingModules}"
          data-ng-repeat="module in overview.app.modules | filter: {image: {imageType: 'module'}} track by $index">
-        <ng-include src="overview.getTplUrl(module.image.name)"></ng-include>
+        <!--<ng-include src="overview.getTplUrl(module.image.name)"></ng-include>-->
+
+        <div class="content">
+          <div class="spinner">
+              <div class="rect1"></div>
+              <div class="rect2"></div>
+              <div class="rect3"></div>
+              <div class="rect4"></div>
+              <div class="rect5"></div>
+          </div>
+          <div class="lock"></div>
+          <h3 class="title">{{module.image.name}}</h3>
+
+          <p class="subhead">{{module.name}}</p>
+
+          <p class="status" data-ng-show="module.status === 'FAIL'">{{ module.status | formatAppStatus}} - Please contact
+            support</p>
+
+          <div class="features features-modules">
+            <div class="readonly">
+              <label for="database">Database: </label>
+              <input class="blank clipboard"
+                    id="database database-postgresql"
+                    type="text"
+                    value="{{module.moduleInfos.database}}"
+                    readonly=""
+                    data-title="Copy to clipboard"
+                    tooltip=""
+                    ngclipboard data-clipboard-target="#database-postgresql"
+                    oneclickselect="">
+            </div>
+
+            <div class="readonly">
+              <label for="host">Host: </label>
+              <input class="large clipboard"
+                    id="host host-postgresql"
+                    type="text"
+                    value="{{module.internalDNSName}}"
+                    readonly=""
+                    data-title="Copy to clipboard"
+                    tooltip=""
+                    ngclipboard data-clipboard-target="#host-postgresql"
+                    oneclickselect="">
+            </div>
+
+            <div>
+                <label>
+                    Publish port :
+                </label>
+            </div>
+            <table class="portTable">
+              <tr ng-repeat="port in overview.portList[module.id]">
+                <td> Port {{ port.portType }} : <strong>{{ port.containerValue }}</strong></td>
+                <td>
+                  <switch id="enabled" name="enabled" ng-model="port.opened" ng-change="overview.openPort(module.id, port.opened, port.containerValue)" ng-disabled="overview.pendingModules"></switch>
+                </td>
+
+                <td>
+                  <span ng-if="port.opened">
+                    <i class="icon-whhg arrow-right"></i>
+                    Port open to <span ng-bind="port.hostValue"></span>
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div>
+              <label>
+                <button class="server-btn icon-button secondary power"
+                    data-ng-click="colapseEnvVar = !colapseEnvVar;"
+                    tooltip="">
+                <i class="icon-whhg" ng-class="{'minus-sign': colapseEnvVar, 'plus-sign': !colapseEnvVar}"></i>
+                </button>
+                Environment variables ({{ overview.listEnvModule[module.id].length }}):
+              </label>
+              <div class="colapse-reduct" ng-class="{'colapse-on' : !colapseEnvVar}">
+                <li class="label-like quiet-list col-xs-12" ng-repeat="env in overview.listEnvModule[module.id] track by $index">
+                  <span class="clipboard" id="env-key-{{env.key}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-key-{{env.key}}">{{ env.key }}</span>
+                  =
+                  <span class="code clipboard" id="env-value-{{env.value}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#env-value-{{env.value}}">{{ env.value }}</span>
+                </li>
+              </div>
+          </div>
+
+          <div class="action">
+            <div class="secondary-action">
+              <button class="toggle-modal icon-button secondary pull-left danger"
+                      data-toggle="modal"
+                      data-target="#delete-{{module.name}}"
+                      data-keyboard="true"
+                      ripple=""
+                      tooltip=""
+                      data-title="Delete"
+                      data-placement="bottom">
+                <i class="icon-whhg trash"></i>
+              </button>
+
+            </div>
+          </div>
+          <div class="modal"
+              id="delete-{{module.name}}"
+              modaldismiss="">
+            <div class="modal-inner">
+              <div class="content clearfix">
+                <h3 class="title">Removal confirmation required for {{module.name}}</h3>
+
+                <p class="alert">Caution, <strong> this is a permanent action</strong>. Once you
+                  delete a module, you cannot get it back. This module will no longer be available.
+                </p>
+
+                <div class="actions pull-right">
+                  <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                  </button>
+                  <button type="button" class="remove-btn button primary"
+                          data-ng-click="overview.removeModule(overview.app.name, module.name)"
+                          data-dismiss="modal">
+                    I understand, permanently delete this module
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
     </div>
   </div>
 </div>

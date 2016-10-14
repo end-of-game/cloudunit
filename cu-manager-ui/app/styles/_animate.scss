@@ -152,8 +152,10 @@
 
 .colapse-reduct {
   transition: .3s;
+  line-height: 20px;
 
   &.colapse-on {
+    line-height: 0px;
     transform: scale(0);
     -webkit-transform: scale(0);
     width: 0;
