@@ -13,54 +13,65 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 ## Installation
 
 We hope to provide a simple installation following KISS principles.
-So you just need to run this command as *ROOT* :
-
+So you just need to run this command as *ROOT* to create *admincu* user.
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
+useradd -m -s /bin/bash admincu
+usermod admincu -aG sudo
 ```
 
-After installation, you need to set a password for *admincu* user account. 
+After installation, you need to set a password for *admincu* user account.
+Else recopy your private keys to access it.
 
 ## Configuration
 
 ### CloudUnit properties.
 
-The default configuration files is `/home/admincu/.docker/application.properties`
-The template is 
+The default configuration file is `/home/admincu/.cloudunit/configuration.properties`
+
+The template is :  
 
 ```
-# cloudunit.max.apps=100
+# ################################################################################ #
+#                                                                                  #
+#      >>  FILE TO PUT INTO ${USER.HOME}/.cloudunit/configuration.properties       #
+#                                                                                  #
+# ################################################################################ #
 
-# mail.apiKey=
-# mail.emailFrom=
-# mail.secretKey=
-# mail.smtpHost=smtp.gmail.com
-# mail.socketFactoryPort=587
-# mail.smtpPort=587
-
+# label for UI
 cloudunit.instance.name=PROD
 
-# database password must be the same in /etc/environment
+# database password
+database.password=changeit
+
+# database password must be the same in cu-platform/docker-compose.yml
 # database.hostname=cuplatform_mysql_1.mysql.cloud.unit
 # database.port=3306
 # database.schema=cloudunit
 # database.user=root
-# database.password=changeit
 
+#mail server configuration :
+#admin.email=g.martial@treeptik.fr
+#email.active=true
+#email.host=smtp.gmail.com
+#email.port=587
+#email.protocol=smtp
+#email.username=support.cloudunit@treeptik.fr
+#email.password=
 ```
 
-### Database password 
+### Database password [ OPTIONAL ]
 
 You have to change MYSQL root password (*changeit* by default)
 To do it, you have to change the 
-* /home/admincu/.docker/application.properties
+* /home/admincu/.cloudunit/configuration.properties
 * /etc/profile
 
 Run `/home/admincu/cloudunit/cu-platform/reset-prod.sh -y`
 
 ## Domain Name and SSL Certificates
 
-In order to customize your Cloudunit installation with your own domain name and SSL certificates, please follow these instructions.
+In order to customize your Cloudunit installation with your own domain name and SSL certificates,
+please follow these instructions.
 
 ### NGINX config files
 
@@ -69,21 +80,22 @@ NGINX is the entrypoint of the Cloudunit PAAS frontend and is provided as docker
 SSL certificates directory location:
 
 ```
-/home/admincu/cloudunit/cu-production/nginx/DOMAIN_NAME/
+/home/admincu/cloudunit/cu-compose/nginx/DOMAIN_NAME/
 ```
 
 NGINX global configuration for domain wildcard:
 
 ```
-/home/admincu/cloudunit/cu-production/nginx/nginx.conf
+/home/admincu/cloudunit/cu-compose/nginx/nginx.conf
 ```
 
 NGINX domain configuration for apps (gitlab, jenkins, admin...):
 Please rename the following file with your domain name and customize it.
 
 ```
-/home/admincu/cloudunit/cu-production/nginx/sites-enabled/cloudunit.io.conf
+/home/admincu/cloudunit/cu-compose/nginx/sites-enabled/cloudunit.io.conf
 ```
+
 ### SSL Certificates
 
 The number of certificates to list per Nginx server name depends on your SSL Provider.
@@ -91,13 +103,12 @@ Extensions also could be differ from a provider to another.
 
 As an example Globalsign gives, in addition, an intermediate certificate. Some others aggregate and encrypt certificates in PKCS / P7B format. In this case, you have to split the file in multiple standard certificates.
 
-
 # FAQ
 
 ## How to reset Environment Production
 
 ```
-/home/admincu/cloudunit/cu-platform/reset-prod.sh -y
+/home/admincu/cloudunit/cu-compose/reset-prod.sh -y
 ```
 
 

@@ -1,11 +1,6 @@
 version: '2'
 services:
 
-  dockerhub:
-      image: cloudunit/mysql-5-5
-      image: cloudunit/mysql-5-6
-      image: cloudunit/mysql-5-7
-
   java:
       container_name: java
       image: cloudunit/java
@@ -47,6 +42,7 @@ services:
   mysql:
       container_name: cuplatform_mysql_1
       image: mysql:5.7.4
+      depends_on: mysql_data
       ports:
            - "3306:3306"
       environment:
@@ -71,6 +67,7 @@ services:
   nginx:
       container_name: cuplatform_nginx_1
       image: nginx:1.9.0
+      depends_on: nginx
       ports:
           - "443:443"
       volumes:
@@ -86,6 +83,7 @@ services:
   tomcat:
       container_name: cuplatform_tomcat_1
       image: cloudunit/manager
+      depends_on: nginx
       ports:
           - "8080:8080"
       volumes:
@@ -119,6 +117,7 @@ services:
   gitlab:
       container_name: cuplatform_gitlab_1
       image: gitlab/gitlab-ce:8.12.3-ce.0
+      depends_on: nginx
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
@@ -135,6 +134,7 @@ services:
   jenkins:
       container_name: cuplatform_jenkins_1
       image: jenkinsci/jenkins:2.21
+      depends_on: nginx
       volumes:
           - /home/admincu/jenkins_home:/var/jenkins_home
       network_mode: bridge
