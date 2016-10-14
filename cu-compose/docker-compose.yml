@@ -1,6 +1,11 @@
 version: '2'
 services:
 
+  images:
+      image:cloudunit/mysql-5-5
+      image:cloudunit/mysql-5-6
+      image:cloudunit/mysql-5-7
+
   java:
       container_name: java
       image: cloudunit/java

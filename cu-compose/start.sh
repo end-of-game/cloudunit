@@ -13,21 +13,7 @@
 
 #!/usr/bin/env bash
 
-docker-compose up -d dnsdock
-sleep 10
-docker-compose up -d mysqldata
-docker-compose up -d mysql
-sleep 10
-docker-compose up -d cadvisor
-docker-compose up -d hipache
-docker-compose up -d redis
-docker-compose up -d gitlab
-docker-compose up -d jenkins
-docker-compose up -d tomcat
-docker-compose up -d java
-sleep 60
-docker-compose up -d nginx
-docker-compose logs -f
+docker-compose up -d
 
 
 
