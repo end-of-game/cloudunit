@@ -61,7 +61,7 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Application</th>
+          <th>Application linked</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -71,13 +71,17 @@
             <p ng-bind="volume.name"></p>
           </td>
           <td>
-            <span ng-repeat="volumeAssociation in volume.volumeAssociations">
-              {{volumeAssociation}}
+            <a ui-sref="editApplication.settingsVolume({ name: application.name })" ng-repeat="application in volume.applications">
+              <span>{{application.displayName}}</span>  
+            </a>
+            <span ng-if="volume.applications.length === 0">
+              No application linked
             </span>
           </td>
           <td>
             <button class="toggle-modal icon-button secondary allowed danger"
-                ng-click="editVolume.deleteVolume(volume.id)">
+                ng-click="editVolume.deleteVolume(volume.id)"
+                ng-disabled="volume.applications.length > 0">
               <i class="icon-whhg trash"></i>
             </button> 
           </td>

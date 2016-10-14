@@ -90,9 +90,17 @@
               var dir = $resource('volume/' + volume.id + '/associations');
 
               dir.query().$promise.then(function(response) {
-                  console.log(response.data);
-                  editVolume.volumes[index].applicationName = response;
-
+                  console.log(response);
+                  editVolume.volumes[index].applications = [];
+                  angular.forEach(response, function(application, index) {
+                    var dir = $resource('/application/' + application.application);
+                    
+                    dir.get().$promise.then(function(response) {
+                        console.log(response);
+                        editVolume.volumes[index].applications.push(response);
+                    });
+                  });
+                  console.log(editVolume.volumes[index].applications);
               });
 
             });
