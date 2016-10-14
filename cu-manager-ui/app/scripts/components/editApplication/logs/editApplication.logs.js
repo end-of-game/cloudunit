@@ -119,10 +119,11 @@
         .then ( function onGetSourceComplete ( sources ) {
           angular.forEach ( sources, function ( source ) {
             if ( source.name === 'catalina.log'
-                  || source.name === 'server.log'
-                  || source.name === 'error.log'
-                  || source.name === 'access.log'
-                  || source.name === 'system.out' ) {
+              || source.name === 'server.log'
+              || source.name === 'error.log'
+              || source.name === 'access.log'
+              || source.name === 'system.out'
+              || source.name === 'stdout') {
               vm.selectedSource = source.name;
             }
           } );

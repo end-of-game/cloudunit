@@ -23,7 +23,7 @@ import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 public class Tomcat8RabbitMQ3651ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
     public Tomcat8RabbitMQ3651ModuleControllerTestIT() {
-        super.server = "tomcat-6";
+        super.server = "tomcat-8";
         super.module = "rabbitmq-3.6.5-1";
         super.numberPort = "5672";
         super.managerPrefix = "";

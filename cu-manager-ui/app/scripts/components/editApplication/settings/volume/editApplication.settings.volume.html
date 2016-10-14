@@ -14,7 +14,7 @@
 -->
 
 <div class="volume-card card col-lg-3">
-    <div class="content clearfix height-ajustation">
+    <div class="content clearfix">
         <h3 class="title large">Container</h3>
 
         <p class="hint">Choose a container</p>
@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<div class="volume-card card col-lg-9" ng-class="{pending : volume.actionPending}">
+<div class="volume-card card col-lg-9" >
     <div class="content clearfix">
 
         <h3 class="title large">Associating Volume</h3>
@@ -81,9 +81,8 @@
                 type="button"
                 data-title="Read only"
                 data-placement="top"
-                data-ng-disabled="vm.actionPending"
-                data-ng-click="volume.IReadOnly = !volume.IReadOnly">
-                <i class="icon-whhg" data-ng-class="{'rectangle': !volume.IReadOnly, 'check': volume.IReadOnly}"></i>
+                data-ng-click="volume.IReadOnly = (volume.IReadOnly === 'ro') ? 'rw' : 'ro'">
+                <i class="icon-whhg" data-ng-class="{'rectangle': volume.IReadOnly === 'rw', 'check': volume.IReadOnly === 'ro'}"></i>
             </button>
         </label>
 
@@ -96,113 +95,119 @@
             <span class="bar"></span>
             <label class="label-effect">Path</label>
         </div>
-
-        <p class="hint error" data-ng-if="volume.errorLinkCreate" ng-bind="editVolume.errorLinkCreate">
         </p>
 
         <div class="actions">
             <div class="secondary-actions pull-right">
                 <button type="submit"
                     class="addVolume-btn button-effect primary pull-right"
-                    data-ng-disabled="!volume.volumePicked || !volume.createLinkPath || volume.actionPending">
+                    data-ng-disabled="!volume.volumePicked || !volume.createLinkPath || volume.application.status === 'PENDING'">
                     <span>Link volume</span>
                 </button>
             </div>
         </div>
     </form>
 
-<div class="alert alert-danger" data-ng-show="volume.addErrorMsg">
-    <button type="button"
-    class="close"
-    ng-click="volume.addErrorMsg = ''">
-    <span>&times;</span>
-</button>
-<p>{{volume.addErrorMsg}}</p>
-</div>
-<div class="alert alert-info" data-ng-show="volume.addNoticeMsg">
-    <button type="button"
-    class="close"
-    ng-click="volume.addNoticeMsg = ''">
-    <span>&times;</span>
-</button>
-<p>{{volume.addNoticeMsg}}</p>
-</div>
-</div>
+    <div class="alert alert-danger" data-ng-show="volume.addErrorMsg">
+      <button type="button"
+        class="close"
+        ng-click="volume.addErrorMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{volume.addErrorMsg}}</p>
+    </div>
+    <div class="alert alert-info" data-ng-show="volume.addNoticeMsg">
+      <button type="button"
+        class="close"
+        ng-click="volume.addNoticeMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{volume.addNoticeMsg}}</p>
+    </div>
+  </div>
 </div>
 
 <div class="volume-card card col-lg-12">
-    <div class="content clearfix lol" id="settings-volume">
-        <h3 class="title large">Manage Volume</h3>
+  <div class="content clearfix lol" id="settings-volume">
 
-        <div class="no-data" ng-if="!volume.volumes.length">
-            <p>No volume has been created yet !</p>
-        </div>
+    <h3 class="title large">Manage Volume</h3>
 
-        <table class="table" ng-if="volume.volumes.length">
-            <thead>
-                <tr>
-                    <th ng-click="volume.order('name')"><i class="icon-whhg"  ng-show="volume.predicate == 'name'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> name</th>
-                    <th ng-click="volume.order('path')"><i class="icon-whhg"  ng-show="volume.predicate == 'path'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> path</th>
-                    <th>Mode(RW/RO)</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr 
-                dir-paginate="vol in volume.listVolumes | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by vol.id"
-                data-current-page="volume.currentPage">
-                <td>
-                    <span editable-text="vol.name" e-name="name" e-form="rowform"  e-required>
-                        <span class="clipboard" id="name-{{vol.id}}"
-                        data-title="Copy to clipboard"
-                        tooltip=""
-                        ngclipboard data-clipboard-target="#name-{{vol.id}}">{{ vol.name }}</span>
-                    </span>
-                </td>
-                <td>
-                    <span editable-text="vol.path" e-name="path" e-form="rowform" e-required>
-                        <span class="clipboard" id="path-{{vol.id}}"
-                        data-title="Copy to clipboard"
-                        tooltip=""
-                        ngclipboard data-clipboard-target="#path-{{vol.id}}">{{ vol.volumeAssociations[0].path }}</span>
-                    </span>
-                </td>
-                <td>
-                    <span e-form="rowform" e-required>
-                        <span tooltip="">{{ vol.volumeAssociations[0].mode }}</span>
-                    </span>
-                </td>
-                <td>
-                    <!-- ASSOCIATING WITH VOLUME -->
-                    <button class="icon-button"
-                    ripple=""
-                    tooltip=""
-                    data-title="Unlink volume"
-                    data-placement="bottom"
-                    ng-click="volume.breakLink(vol)">
-                    <i class="icon-whhg brokenlink"></i>
-                </button> 
-            </td>
+    <div class="spinner">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+
+    <div class="no-data" ng-if="!volume.volumes.length">
+        <p>No volume has been created yet !</p>
+    </div>
+
+    <table class="table" ng-if="volume.volumes.length">
+      <thead>
+        <tr>
+          <th ng-click="volume.order('name')"><i class="icon-whhg"  ng-show="volume.predicate == 'name'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> name</th>
+          <th ng-click="volume.order('path')"><i class="icon-whhg"  ng-show="volume.predicate == 'path'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> path</th>
+          <th ng-click="volume.order('mode')"><i class="icon-whhg"  ng-show="volume.predicate == 'mode'" ng-class="{ 'arrow-down': !volume.reverse, 'arrow-up': volume.reverse }"></i> mode(RW/RO)</th>
+          <th>Actions</th>
         </tr>
-    </tbody>
-</table>
-<dir-pagination-controls ng-if="volume.volumes.length"></dir-pagination-controls>
+      </thead>
+      <tbody>
+        <tr 
+        dir-paginate="vol in volume.listVolumes | orderBy:volume.predicate:volume.reverse | itemsPerPage: volume.pageSize track by vol.id"
+        data-current-page="volume.currentPage">
+          <td>
+            <span editable-text="vol.name" e-name="name" e-form="rowform"  e-required>
+              <span class="clipboard" id="name-{{vol.id}}"
+              data-title="Copy to clipboard"
+              tooltip=""
+              ngclipboard data-clipboard-target="#name-{{vol.id}}">{{ vol.name }}</span>
+            </span>
+          </td>
+          <td>
+            <span editable-text="vol.path" e-name="path" e-form="rowform" e-required>
+              <span class="clipboard" id="path-{{vol.id}}"
+              data-title="Copy to clipboard"
+              tooltip=""
+              ngclipboard data-clipboard-target="#path-{{vol.id}}">{{ vol.volumeAssociations[0].path }}</span>
+            </span>
+          </td>
+          <td>
+            <span e-form="rowform" e-required>
+              <span tooltip="">{{ vol.volumeAssociations[0].mode }}</span>
+            </span>
+          </td>
+          <td>
+            <button class="icon-button"
+            ripple=""
+            tooltip=""
+            data-title="Unlink volume"
+            data-placement="bottom"
+            ng-click="volume.breakLink(vol)">
+              <i class="icon-whhg brokenlink"></i>
+            </button> 
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <dir-pagination-controls ng-if="volume.volumes.length"></dir-pagination-controls>
 
-<div class="alert alert-danger" data-ng-show="volume.manageErrorMsg">
-    <button type="button"
-    class="close"
-    ng-click="volume.manageErrorMsg = ''">
-    <span>&times;</span>
-</button>
-<p>{{volume.manageErrorMsg}}</p>
-</div>
-<div class="alert alert-info" data-ng-show="volume.manageNoticeMsg">
-    <button type="button"
-    class="close"
-    ng-click="volume.manageNoticeMsg = ''">
-    <span>&times;</span>
-</button>
-<p>{{volume.manageNoticeMsg}}</p>
-</div>
-</div>
+    <div class="alert alert-danger" data-ng-show="volume.manageErrorMsg">
+        <button type="button"
+        class="close"
+        ng-click="volume.manageErrorMsg = ''">
+        <span>&times;</span>
+    </button>
+    <p>{{volume.manageErrorMsg}}</p>
+    </div>
+    <div class="alert alert-info" data-ng-show="volume.manageNoticeMsg">
+      <button type="button"
+        class="close"
+        ng-click="volume.manageNoticeMsg = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{volume.manageNoticeMsg}}</p>
+    </div>
+  </div>
 </div>

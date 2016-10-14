@@ -109,6 +109,9 @@
     }
     
     function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
+      console.log('ID', environmentVariableID);
+      console.log('KEY', environmentVariableKey);
+      console.log('VALUE', environmentVariableValue);
       ApplicationService.editEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableID, environmentVariableKey,
       environmentVariableValue)
         .then(function(env) {

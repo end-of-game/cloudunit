@@ -55,7 +55,7 @@ public class DeploymentServiceImpl
                     .getUser(), application.getName());
             application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
             application.setContextPath(contextPath);
-            application = applicationService.saveInDB(application);
+            applicationService.saveInDB(application);
             return deploymentDAO.save(deployment);
         } catch (PersistenceException e) {
             throw new ServiceException(e.getLocalizedMessage(), e);

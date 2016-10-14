@@ -38,16 +38,7 @@
             required="">
         <span class="bar"></span>
         <label class="label-effect">Volume name</label>
-      </div>
-
-      <div class="actions">
-        <div class="secondary-actions pull-right">
-          <button type="submit"
-                  class="ports-btn button-effect primary pull-right"
-                  data-ng-disabled="!editVolume.newVolumeName">
-            <span>Create volume</span>
-          </button>
-        </div>
+        <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right" ng-click="editVolume.addVolume(editVolume.newVolumeName)">Create volume</button>
       </div>
     </form>
 
