@@ -33,7 +33,7 @@ public class Tomcat8ActiveMQ5132ModuleControllerTestIT extends AbstractModuleCon
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseBroker().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
+        new CheckBrokerConnection().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
                 "ACTIVEMQ_ADMIN_PASSWORD", "ACTIVEMQ_NAME", "JMS");
     }
 }

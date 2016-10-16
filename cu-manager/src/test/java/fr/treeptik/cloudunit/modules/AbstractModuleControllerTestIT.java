@@ -17,6 +17,7 @@ package fr.treeptik.cloudunit.modules;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
 import fr.treeptik.cloudunit.dto.EnvUnit;
 import fr.treeptik.cloudunit.dto.ModulePortResource;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -28,16 +29,6 @@ import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
 import fr.treeptik.cloudunit.utils.TestUtils;
 import junit.framework.TestCase;
 import org.apache.commons.io.FilenameUtils;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.node.DiscoveryNode;
-import org.elasticsearch.common.collect.ImmutableList;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -71,10 +62,11 @@ import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -457,7 +449,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
      * Inner class to check message broker
      *
      */
-    public class CheckDatabaseBroker {
+    public class CheckBrokerConnection {
         public void invoke(String forwardedPort, String keyUser, String keyPassword,
                            String keyDB, String protocol) {
             String user = null;
@@ -549,6 +541,24 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             } catch (JedisConnectionException e) {
                 Assert.fail();
                 e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Inner class to check redis connection
+     *
+     */
+    public class CheckMongoConnection {
+        public void invoke(String forwardedPort) {
+            MongoClient mongo = null;
+            try{
+                mongo = new MongoClient(ipVagrantBox, Integer.parseInt(forwardedPort));
+            } catch (UnknownHostException e) {
+                Assert.fail();
+                e.printStackTrace();
+            } finally {
+                mongo.close();
             }
         }
     }

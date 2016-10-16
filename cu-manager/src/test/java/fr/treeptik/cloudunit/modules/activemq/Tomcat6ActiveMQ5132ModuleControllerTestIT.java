@@ -16,7 +16,6 @@
 package fr.treeptik.cloudunit.modules.activemq;
 
 import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
-import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
 
 /**
  * Created by guillaume on 01/10/16.
@@ -34,7 +33,7 @@ public class Tomcat6ActiveMQ5132ModuleControllerTestIT extends AbstractModuleCon
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseBroker().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
+        new CheckBrokerConnection().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
                 "ACTIVEMQ_ADMIN_PASSWORD", "ACTIVEMQ_NAME", "JMS");
     }
 }
