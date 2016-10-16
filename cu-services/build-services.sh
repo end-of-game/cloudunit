@@ -30,6 +30,8 @@ docker build --rm --no-cache -t cloudunit/rabbitmq-3.6.5-1 images/modules/rabbit
 docker build --rm --no-cache -t cloudunit/elasticsearch-2.4 images/modules/elasticsearch-2.4
 docker build --rm --no-cache -t cloudunit/redis-3-2 images/modules/redis-3-2
 
+docker build --rm --no-cache -t cloudunit/mongo-2-6 images/modules/mongo-2-6
+
 docker build --rm --no-cache -t cloudunit/fatjar images/tools/java
 
 ./check_build_images.sh
