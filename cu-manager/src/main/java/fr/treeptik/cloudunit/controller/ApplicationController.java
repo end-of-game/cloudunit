@@ -509,7 +509,8 @@ public class ApplicationController implements Serializable {
 
 		String applicationName = input.getApplicationName();
 		String nature = input.getPortNature();
-
+		Boolean isQuickAccess = input.getPortQuickAccess();
+		
 		User user = this.authentificationUtils.getAuthentificatedUser();
 		Application application = applicationService.findByNameAndUser(user, applicationName);
 
@@ -518,7 +519,7 @@ public class ApplicationController implements Serializable {
 		CheckUtils.validateNatureForOpenPortFeature(input.getPortNature(), application);
 
 		Integer port = Integer.parseInt(input.getPortToOpen());
-		PortToOpen portToOpen= applicationService.addPort(application, nature, port);
+		PortToOpen portToOpen= applicationService.addPort(application, nature, port, isQuickAccess);
 		PortResource portResource = new PortResource(portToOpen);
 		return ResponseEntity.status(HttpStatus.OK).body(portResource);
 	}
