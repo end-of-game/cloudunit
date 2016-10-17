@@ -13,6 +13,7 @@ services:
     environment:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
+
   kibana:
     build:
       context: ./kibana

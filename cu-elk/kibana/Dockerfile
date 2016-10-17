@@ -44,9 +44,13 @@ ENV KIBANA_VERSION 5.0.0-rc1
 RUN echo 'deb https://artifacts.elastic.co/packages/5.x-prerelease/apt stable main' > /etc/apt/sources.list.d/kibana.list
 # TODO figure out what's going on here and what it'll settle to for 5.0 GA
 
+ENV PATH /usr/share/kibana/node/bin:$PATH
+ENV PATH /usr/share/kibana/bin:$PATH
+
 RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends kibana=$KIBANA_VERSION \
+	&& npm install -g elasticdump \
 	&& rm -rf /var/lib/apt/lists/* \
 	\
 # ensure the default configuration is useful when using --link
@@ -55,11 +59,12 @@ RUN set -x \
   && sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/' /etc/kibana/kibana.yml \
   && sed -i 's/#logging.quiet: false/logging.quiet: true/' /etc/kibana/kibana.yml
 
-ENV PATH /usr/share/kibana/bin:$PATH
+COPY file /opt/cloudunit/file
 
 COPY docker-entrypoint.sh /
 
-EXPOSE 5601
+WORKDIR /opt/cloudunit/
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["kibana"]
 
