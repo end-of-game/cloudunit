@@ -23,16 +23,17 @@
       <form id="add-ports"
             name="addPortsForm"
             class="clearfix" novalidate=""
-            data-ng-submit="ports.createPort(ports.application.name, ports.number, ports.myNature.value)">
+            data-ng-submit="ports.createPort(ports.application.name, ports.number, ports.myNature.value, ports.isQuickAccess)">
 
-        <div class="input-group-inline col-lg-5">
-          <input type="text"
+        <div class="input-group-inline col-lg-3">
+          <input type="number"
+              min="0"
               name="port"
               class="input-effect col-xs-12" 
               data-ng-model="ports.number"
               required="">
           <span class="bar"></span>
-          <label class="label-effect">Domain name</label>
+          <label class="label-effect">Port number</label>
         </div>
         <div class="input-group-inline align-margin col-lg-5">
           <div class="dropdown" dropdown="">
@@ -50,6 +51,18 @@
               </li>
             </ul>
           </div> 
+        </div>
+        <div data-ng-click="ports.isQuickAccess = (ports.isQuickAccess) ? false : true" class="input-group-inline align-margin col-lg-3">
+          <label>
+              Quick Access
+              <button class="icon-button"
+                  tooltip=""
+                  type="button"
+                  data-title="Quick access"
+                  data-placement="top">
+                  <i class="icon-whhg" data-ng-class="{'rectangle': ports.isQuickAccess === false, 'check': ports.isQuickAccess === true}"></i>
+              </button>
+          </label>
         </div>
         <div class="actions">
           <div class="secondary-actions pull-right">
