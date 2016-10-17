@@ -2,12 +2,18 @@
 
 set -e
 
-echo 'Waiting for Tomcat Up and Running'
-until $(curl --output /dev/null --silent --head --fail http://cuplatform_tomcat_1:8080); do
-  sleep 2s
-done
-sleep 1s
+function waitFor ( ) {
+  echo "Waiting for" $1 "Up and Running"
+  until $(curl --output /dev/null --silent --head --fail $2); do
+    sleep 2s
+  done
+  sleep 1s
+}
+
+waitFor Tomcat  http://cuplatform_tomcat_1.manager.cloud.unit:8080
+waitFor Jenkins http://cuplatform_jenkins.jenkins.cloud.unit:8080
+waitFor Gitlab  http://cuplatform_gitlab_1.gitlab.cloud.unit
 
 echo "Starting nginx..."
-exec "$@" "-c /etc/nginx/nginx.conf -g daemon off;"
+exec nginx -g "daemon off;"
 
