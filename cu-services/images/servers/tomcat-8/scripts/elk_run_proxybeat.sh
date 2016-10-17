@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
-/opt/cloudunit/beats-agents/jmxproxybeat/jmxproxybeat &
+echo "Start proxybeat JMX agent"
+/opt/cloudunit/beats-agents/jmxproxybeat/jmxproxybeat
+
+echo $RETURN
+

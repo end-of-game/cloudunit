@@ -45,6 +45,8 @@ DockerService {
 
 	String execCommand(String containerName, String command, boolean privileged) throws FatalDockerJSONException;
 
+	String execCommand(String containerName, String command, boolean privileged, boolean detached) throws FatalDockerJSONException;
+
 	String getContainerId(String containerName) throws FatalDockerJSONException;
 
 	Boolean isRunning(String containerName) throws FatalDockerJSONException;

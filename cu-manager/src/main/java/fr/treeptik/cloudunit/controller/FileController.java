@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -90,15 +91,14 @@ public class FileController {
 	 */
 	@RequestMapping(value = "/container/{containerId}", method = RequestMethod.GET)
 	@ResponseBody
-	@ResponseStatus(HttpStatus.OK)
-	public List<FileUnit> listByContainerIdAndPath(@PathVariable String containerId, @RequestParam("path") String path)
+	public ResponseEntity<List<FileUnit>> listByContainerIdAndPath(@PathVariable String containerId, @RequestParam("path") String path)
 			throws ServiceException, CheckException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("containerId:" + containerId);
 			logger.debug("path:" + path);
 		}
 		List<FileUnit> fichiers = fileService.listByContainerIdAndPath(containerId, path);
-		return fichiers;
+		return ResponseEntity.status(HttpStatus.OK).body(fichiers);
 	}
 
 	/**
