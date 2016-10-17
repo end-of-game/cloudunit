@@ -9,7 +9,7 @@ services:
       - "9200:9200"
     hostname: cu-elasticsearch
     volumes:
-      - /srv/elasticsearch:/usr/share/elasticsearch/data
+      - /srv/cu-elk/elasticsearch:/usr/share/elasticsearch/data
     environment:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
@@ -33,7 +33,6 @@ services:
     hostname: cu-dockbeat
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /srv/cu-monitoring/dockbeat/:/opt/cloudunit/beats-agents/dockbeat/conf
     command: -e
     depends_on:
       - elasticsearch
