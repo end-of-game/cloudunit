@@ -73,7 +73,7 @@ services:
       ports:
           - "443:443"
       environment:
-          - CU_URL_ADMIN:${CU_URL_ADMIN}
+          - CU_PORTAL_URL:${CU_PORTAL_URL}
       volumes:
           - ./nginx/sites-enabled:/etc/nginx/sites-enabled
           - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
