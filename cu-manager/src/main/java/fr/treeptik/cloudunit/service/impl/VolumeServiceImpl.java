@@ -65,6 +65,9 @@ public class VolumeServiceImpl implements VolumeService {
 	public void delete(int id) {
 		try {
 			Volume volume = loadVolume(id);
+			if(volume.getVolumeAssociations().size() != 0) {
+				throw new CheckException("Volume couldn't be remove because it's currently linked whith application");
+			}
 			volumeDAO.delete(id);
 			dockerCloudUnitClient.removeVolume(volume.getName());
 		} catch (CheckException e) {

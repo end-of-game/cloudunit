@@ -50,6 +50,7 @@
 
     var vm = this;
     vm.errorVolumeCreate = "";
+    vm.errorVolumeDelete = "";
 
     vm.addVolume = addVolume;
     vm.deleteVolume = deleteVolume;
@@ -65,16 +66,24 @@
         .then ( function(response) {
           vm.newVolumeName = "";
           vm.errorVolumeCreate = '';
+          vm.errorVolumeDelete = "";
           getListVolumes();
         })
         .catch(function(response) {
+          vm.errorVolumeDelete = "";
           vm.errorVolumeCreate = response.data.message;
+          getListVolumes();
         });  
     }
 
     function deleteVolume (id) {
       VolumeService.deleteVolume ( id )
         .then ( function(response) {
+          getListVolumes();
+        })
+        .catch(function(response) {
+          vm.errorVolumeCreate = "";
+          vm.errorVolumeDelete = response.data.message;
           getListVolumes();
         }); 
     }

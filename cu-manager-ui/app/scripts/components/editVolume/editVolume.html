@@ -88,5 +88,13 @@
         </tr>
       </tbody>
 		</table>
+    <div class="alert alert-danger" data-ng-show="editVolume.errorVolumeDelete">
+      <button type="button"
+              class="close"
+              ng-click="editVolume.errorVolumeDelete = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{editVolume.errorVolumeDelete}}</p>
+    </div>
 	</div>
 </div>
