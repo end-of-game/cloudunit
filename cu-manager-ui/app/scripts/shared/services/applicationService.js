@@ -61,9 +61,7 @@ function ApplicationService ( $resource, $http, $interval ) {
         stopPolling: stopPolling,
         getVariableEnvironment: getVariableEnvironment,
         getListSettingsEnvironmentVariable: getListSettingsEnvironmentVariable,
-        getSettingsEnvironmentVariable: getSettingsEnvironmentVariable,
         addEnvironmentVariable: addEnvironmentVariable,
-        editEnvironmentVariable: editEnvironmentVariable,
         deleteEnvironmentVariable: deleteEnvironmentVariable,
         getLinkVolume: getLinkVolume,
         getListVolume: getListVolume,
@@ -258,15 +256,6 @@ function getListSettingsEnvironmentVariable ( applicationName, containerName ) {
     } ).$promise;      
 }
 
-function getSettingsEnvironmentVariable ( applicationName, containerName, environmentVariableID ) {
-    var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables/:id' );
-    return dir.get ( {
-        applicationName: applicationName,
-        containerName: containerName,
-        id: environmentVariableID
-    } ).$promise;
-}
-
 function addEnvironmentVariable ( applicationName, containerName, environmentVariableKey, environmentVariableValue ) {
     var data = {
         keyEnv: environmentVariableKey,
@@ -278,32 +267,6 @@ function addEnvironmentVariable ( applicationName, containerName, environmentVar
         applicationName: applicationName,
         containerName: containerName
     }, data ).$promise;
-}
-
-function editEnvironmentVariable ( applicationName, containerName, environmentVariableID, environmentVariableKey, environmentVariableValue ) {
-    var data = {
-        keyEnv: environmentVariableKey,
-        valueEnv: environmentVariableValue
-    };
-
-    var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables/:id' ,
-    { 
-        applicationName: applicationName,
-        containerName: containerName,
-        id: environmentVariableID
-    },
-    { 
-        'update': { 
-            method: 'PUT',
-            transformResponse: function ( data, headers ) {
-                var response = {};
-                response = JSON.parse(data);
-                return response;
-            }
-        }
-    }
-    );
-    return dir.update( { }, data ).$promise; 
 }
 
 function deleteEnvironmentVariable ( applicationName, containerName, environmentVariableID ) {

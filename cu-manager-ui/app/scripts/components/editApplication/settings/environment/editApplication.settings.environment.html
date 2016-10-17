@@ -28,7 +28,7 @@
       <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
         <li data-ng-repeat="container in environment.containers">
           <a ng-href=""
-              data-ng-click="environment.myContainer = container; environment.getContainers(environment.myContainer)">
+              data-ng-click="environment.myContainer = container; environment.refreshListEnvironmentVariable()">
             {{container.name}}
           </a>
         </li>
@@ -39,8 +39,15 @@
 
 <div class="environment-card card col-lg-9">
   <div class="content clearfix">
-
     <h3 class="title large">Add Variable</h3>
+
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
 
     <form id="add-env"
           name="addEnvironmentVariable"
@@ -98,6 +105,14 @@
   <div class="content clearfix" id="settings-environment">
     <h3 class="title large">Manage Variable</h3>
 
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+
     <div class="no-data" ng-if="!environment.env.length">
       <p>No environment variables has been created yet !</p>
     </div>
@@ -105,8 +120,8 @@
     <table class="table" ng-if="environment.env.length">
         <thead>
         <tr>
-          <th ng-click="environment.order('key')"><i class="icon-whhg"  ng-show="environment.predicate == 'key'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i> Key</th>
-          <th ng-click="environment.order('value')"><i class="icon-whhg"  ng-show="environment.predicate == 'value'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i>  Value</th>
+          <th ng-click="environment.order('keyEnv')"><i class="icon-whhg"  ng-show="environment.predicate == 'keyEnv'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i> Key</th>
+          <th ng-click="environment.order('valueEnv')"><i class="icon-whhg"  ng-show="environment.predicate == 'valueEnv'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i>  Value</th>
           <th>Actions</th>
         </tr>
         </thead>
@@ -135,18 +150,6 @@
               </span>
             </td>
             <td>
-              <form editable-form name="rowform" onbeforesave="environment.editEnv(env.id, $data.key, $data.value)" ng-show="rowform.$visible">
-                <div class="action">
-                  <button type="submit" class="button primary raised"
-                  ng-disabled="rowform.$waiting">
-                  Edit
-                  </button>
-                  <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="button secondary">
-                    Cancel
-                  </button>
-                </div>
-              </form>
-
               <div class="buttons" ng-show="!rowform.$visible">
                 <button class="icon-button danger"
                   ripple=""
@@ -179,16 +182,6 @@
                     </div>
                   </div>
                 </div>
-                <!--
-                <button class="icon-button"
-                  ripple=""
-                  tooltip=""
-                  data-title="Edit"
-                  data-placement="bottom"
-                  ng-click="rowform.$show()">
-                <i class="icon-whhg edit"></i>
-                </button>
-                -->
               </div>  
             </td>
           </tr>
