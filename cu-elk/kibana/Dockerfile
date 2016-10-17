@@ -59,7 +59,7 @@ RUN set -x \
   && sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/' /etc/kibana/kibana.yml \
   && sed -i 's/#logging.quiet: false/logging.quiet: true/' /etc/kibana/kibana.yml
 
-COPY file /opt/cloudunit/file
+COPY /opt/cloudunit/file
 
 COPY docker-entrypoint.sh /
 
