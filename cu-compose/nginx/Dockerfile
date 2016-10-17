@@ -1,6 +1,7 @@
 FROM debian:jessie
 
 MAINTAINER NGINX Docker Maintainers "docker-maint@nginx.com"
+MAINTAINER CLOUDUNIT Docker Maintainers "n.muller@treeptik.fr"
 
 ENV NGINX_VERSION 1.9
 
@@ -20,6 +21,4 @@ EXPOSE 80 443
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx"]
-
-CMD ["nginx", "-g", "daemon off;"]
 
