@@ -37,6 +37,17 @@ Open a new session with **admincu** on the server.
 cd /home/admincu/cloudunit/cu-service && ./build-services.sh all
 ```
 
+You can check the image if you want with 
+
+```
+cd /home/admincu/cloudunit/cu-service && ./check_build_images.sh
+```
+
+To finish you have to run the (re)init processus for the platform
+
+```
+cd /home/admincu/cloudunit/cu-compose && ./re-init.sh
+```
 
 ## Configuration
 
