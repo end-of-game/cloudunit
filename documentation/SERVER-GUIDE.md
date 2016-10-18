@@ -18,26 +18,35 @@ A virtual or baremetal server with
 
 ### As `root` 
 
-Just run this command as `root` to create `admincu` user and install Docker.
+Run the command below as `root` to create `admincu` user and install Docker.
 The installation script requires a branch to be selected.
 Branch `master` contains the latest stable version, whereas `dev` has the latest features.
 
 ```
-export GIT_BRANCH=master
-curl https://raw.githubusercontent.com/Treeptik/cloudunit/$GIT_BRANCH/cu-production/bootstrap.sh > bootstrap.sh
-sh bootstrap.sh $GIT_BRANCH
+export BRANCH=master
+curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
+sh bootstrap.sh $BRANCH
 ```
 
-After installation, you need to set a password for *admincu* user account.
-Else recopy your private keys to access it.
+After installation, you need to set a password for `admincu`.
+Otherwise set up ssh keys for authentication.
+
+Configure your access URLs by appending following environment variables to `/etc/environment`.
+
+```
+CU_SUB_DOMAIN=.demo
+CU_MANAGER_URL=https://manager-demo.cloudunit.io
+CU_GITLAB_URL=https://gitlab-demo.cloudunit.io
+CU_JENKINS_URL=https://jenkins-demo.cloudunit.io
+CU_KIBANA_URL=https://kibana-demo.cloudunit.io
+```
 
 ### As `admincu`
 
 #### Configuration
 
-The default configuration file is `/home/admincu/.cloudunit/configuration.properties`
-
-The template is :  
+Create a configuration file at `/home/admincu/.cloudunit/configuration.properties`.
+You may use the following template:
 
 ```
 # ################################################################################ #
@@ -68,15 +77,7 @@ database.password=changeit
 #email.password=
 ```
 
-Add into ```/etc/environment``` *your* URLs
 
-```
-CU_MANAGER_URL=https://manager-demo.cloudunit.io
-CU_GITLAB_URL=https://gitlab-demo.cloudunit.io
-CU_JENKINS_URL=https://jenkins-demo.cloudunit.io
-CU_KIBANA_URL=https://kibana-demo.cloudunit.io
-CU_SUB_DOMAIN=.demo
-```
 
 #### Finish the installation
 
