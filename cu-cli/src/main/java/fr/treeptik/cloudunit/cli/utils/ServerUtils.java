@@ -36,7 +36,7 @@ public class ServerUtils {
 	private Logger log;
 
 	@Autowired
-	private AuthentificationUtils authentificationUtils;
+	private AuthenticationUtils authentificationUtils;
 
 	@Autowired
 	private ApplicationUtils applicationUtils;

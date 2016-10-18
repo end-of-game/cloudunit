@@ -21,29 +21,26 @@ import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
-import fr.treeptik.cloudunit.cli.utils.AuthentificationUtils;
+import fr.treeptik.cloudunit.cli.utils.AuthenticationUtils;
 
 @Component
 public class UserCommands implements CommandMarker {
-
 	@Autowired
-	private AuthentificationUtils authentificationUtils;
+	private AuthenticationUtils authenticationUtils;
 
-	@CliCommand(value = "connect", help = "Connect to CloudUnit Host")
-	public String connect(@CliOption(key = { "login" }, mandatory = true, help = "Your login") String login,
-			@CliOption(key = {
-					"password" }, mandatory = false, help = "User password", unspecifiedDefaultValue = "") String password,
-			@CliOption(key = {
-					"host" }, mandatory = false, help = "Host for Cloudunit Platform", unspecifiedDefaultValue = "") String host) {
-		return authentificationUtils.connect(login, password, host);
+	@CliCommand(value = "connect", help = "Connect to CloudUnit Manager")
+	public String connect(
+	        @CliOption(key = "login", mandatory = true, help = "Login") String login,
+			@CliOption(key = "password", mandatory = false, help = "Password",
+			    unspecifiedDefaultValue = "") String password,
+			@CliOption(key = "host", mandatory = false, help = "URL for Cloudunit Manager",
+			    unspecifiedDefaultValue = "") String host) {
+		return authenticationUtils.connect(login, password, host, new CliPrompter());
 	}
 
-	@CliCommand(value = "disconnect", help = "Disconnect from your current account")
+	@CliCommand(value = "disconnect", help = "Disconnect")
 	public String disconnect() {
-		if (authentificationUtils.getMap().isEmpty()) {
-			return "Failed! You are not connected.";
-		}
-		return authentificationUtils.disconnect();
+		return authenticationUtils.disconnect();
 	}
 
 }

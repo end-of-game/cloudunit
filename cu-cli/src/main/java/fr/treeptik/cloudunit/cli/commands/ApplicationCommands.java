@@ -28,8 +28,17 @@ import fr.treeptik.cloudunit.cli.utils.ApplicationUtils;
 
 @Component
 public class ApplicationCommands implements CommandMarker {
+	private static final String HELP_APPLICATION_NAME =
+	        "Application name. Use list-apps to show all available apps on this account";
 
-	@Autowired
+    private static final String HELP_SERVER_TYPE = "Server type: \n"
+	        + " Available servers are the following:\n"
+	        + " - Wildfly 8: --type wildfly-8\n"
+	        + " - Apache Tomcat 6: --type tomcat-6\n"
+	        + " - Apache Tomcat 7: --type tomcat-7\n"
+	        + " - Apache Tomcat 8: --type tomcat-8";
+	
+    @Autowired
 	private ApplicationUtils applicationUtils;
 
 	@CliCommand(value = "informations", help = "Display informations about the current application")
@@ -38,35 +47,37 @@ public class ApplicationCommands implements CommandMarker {
 	}
 
 	@CliCommand(value = "use", help = "Take control of an application")
-	public String useApp(@CliOption(key = { "",
-			"name" }, mandatory = true, help = "Application name. Use list-apps to show all available apps on this account") String name) {
+	public String useApp(
+	        @CliOption(key = {"","name"}, mandatory = true, help = HELP_APPLICATION_NAME) String name) {
 		return applicationUtils.useApplication(name);
 	}
 
-	@CliCommand(value = "create-app", help = "Take control of an application")
-	public String createApp(@CliOption(key = { "name" }, mandatory = true, help = "Application name") String name,
-			@CliOption(key = {
-					"type" }, mandatory = true, help = "Server type : \n Available servers are the following : \n - JBoss 8 : -type jboss-8 \n - Apache Tomcat 6 : -type tomcat-6 \n - Apache Tomcat 7 : -type tomcat-7 \n - Apache Tomcat 8 : -type tomcat-8") String serverName) {
+	@CliCommand(value = "create-app", help = "Create an application")
+	public String createApp(
+	        @CliOption(key = "name", mandatory = true, help = "Application name") String name,
+			@CliOption(key = "type", mandatory = true, help = HELP_SERVER_TYPE) String serverName) {
 		return applicationUtils.createApp(name, serverName);
 	}
 
 	@CliCommand(value = "rm-app", help = "Remove an application")
 	public String rmApp(
-			@CliOption(key = { "name" }, mandatory = false, help = "Application name to remove ") String applicationName,
-			@CliOption(key = { "errorIfNotExists" }, mandatory = false, help = "Throw an error if not exists ", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean errorIfNotExists,
-			@CliOption(key = { "scriptUsage" }, mandatory = false, help = "Non-interactive mode", specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean scriptUsage) {
-		return applicationUtils.rmApp(applicationName, scriptUsage, errorIfNotExists);
+			@CliOption(key = "name", mandatory = false, help = HELP_APPLICATION_NAME) String applicationName,
+			@CliOption(key = "errorIfNotExists", mandatory = false, help = "Throw an error if not exists",
+			    specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean errorIfNotExists,
+			@CliOption(key = "scriptUsage", mandatory = false, help = "Non-interactive mode",
+			    specifiedDefaultValue = "true", unspecifiedDefaultValue = "false") Boolean scriptUsage) {
+		return applicationUtils.rmApp(applicationName, errorIfNotExists, scriptUsage ? null : new CliPrompter());
 	}
 
-	@CliCommand(value = "start", help = "Start the current application and  all its services")
-	public String startApp(@CliOption(key = {
-			"name" }, mandatory = false, help = "Application name to start ") String applicationName) {
+	@CliCommand(value = "start", help = "Start the current application and all its services")
+	public String startApp(
+	        @CliOption(key = "name", mandatory = false, help = HELP_APPLICATION_NAME) String applicationName) {
 		return applicationUtils.startApp(applicationName);
 	}
 
 	@CliCommand(value = "stop", help = "Stop the current application and all its services")
-	public String stopApp(@CliOption(key = {
-			"name" }, mandatory = false, help = "Application name to stop ") String applicationName) {
+	public String stopApp(
+	        @CliOption(key = "name", mandatory = false, help = HELP_APPLICATION_NAME) String applicationName) {
 		return applicationUtils.stopApp(applicationName);
 	}
 
@@ -76,11 +87,11 @@ public class ApplicationCommands implements CommandMarker {
 	}
 
 	@CliCommand(value = "deploy", help = "Deploy an archive ear/war on the app servers")
-	public String deploy(@CliOption(key = { "path" }, mandatory = true, help = "Path of the archive file") File path,
-			@CliOption(key = {
-					"openBrowser" }, mandatory = false, help = "Open a browser to location", unspecifiedDefaultValue = "true") boolean openBrowser)
+	public String deploy(
+	        @CliOption(key = "path", mandatory = true, help = "Path of the archive file") File path,
+			@CliOption(key = "openBrowser", mandatory = false, help = "Open a browser to location",
+			    unspecifiedDefaultValue = "true") boolean openBrowser)
 			throws URISyntaxException, MalformedURLException {
-
 		if (path.exists() == true && path.isFile() == true) {
 			return applicationUtils.deployFromAWar(path, openBrowser);
 		}
@@ -89,20 +100,20 @@ public class ApplicationCommands implements CommandMarker {
 
 	@CliCommand(value = "list-aliases", help = "Display all application aliases")
 	public String listAlias(
-			@CliOption(key = { "", "name" }, mandatory = false, help = "Application name") String applicationName) {
+			@CliOption(key = { "", "name" }, mandatory = false, help = HELP_APPLICATION_NAME) String applicationName) {
 		return applicationUtils.listAllAliases(applicationName);
 	}
 
 	@CliCommand(value = "add-alias", help = "Add a new alias")
 	public String addAlias(
-			@CliOption(key = { "" }, mandatory = false, help = "Application name") String applicationName,
+			@CliOption(key = { "" }, mandatory = false, help = HELP_APPLICATION_NAME) String applicationName,
 			@CliOption(key = { "alias" }, mandatory = true, help = "Alias to access to your apps") String alias) {
 		return applicationUtils.addNewAlias(applicationName, alias);
 	}
 
 	@CliCommand(value = "rm-alias", help = "Remove an existing alias")
 	public String rmAlias(
-			@CliOption(key = { "", "name" }, mandatory = false, help = "Application name") String applicationName,
+			@CliOption(key = { "", "name" }, mandatory = false, help = HELP_APPLICATION_NAME) String applicationName,
 			@CliOption(key = { "alias" }, mandatory = true, help = "Alias to access to your apps") String alias) {
 		return applicationUtils.removeAlias(applicationName, alias);
 	}

@@ -20,21 +20,22 @@ public abstract class AbstractAliasesCommandsIT extends AbstractShellIntegration
     }
 
     @Test
-    public void test00_shouldAddAnAlias() {
+    public void test_shouldAddAnAlias() {
         connect();
         createApplication();
         try {
             CommandResult result = addAlias();
-            String expected = "An alias has been successfully added to " + applicationName.toLowerCase();
-            
-            assertEquals(expected, result.getResult().toString());
+
+            assertThat(result.getResult().toString(), containsString("added"));
+            assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
             removeApplication();
+            disconnect();
         }
     }
 
     @Test
-    public void test01_shouldAliasRemovingForbiddenExpression() {
+    public void test_shouldAliasRemovingForbiddenExpression() {
         connect();
         createApplication();
         
@@ -43,78 +44,93 @@ public abstract class AbstractAliasesCommandsIT extends AbstractShellIntegration
             CommandResult result = addAlias(alias);
             
             assertThat(result, isSuccessfulCommand());
-            String expected = "An alias has been successfully added to " + applicationName.toLowerCase();
-            assertEquals(expected, result.getResult().toString());
+            assertThat(result.getResult().toString(), containsString("added"));
+            assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
             removeApplication();
+            disconnect();
         }        
     }
 
     @Test
-    public void test02_shouldNotAddAnAliasBecauseApplicationNotSelected() {
+    public void test_shouldNotAddAnAliasBecauseApplicationNotSelected() {
         connect();
         
-        CommandResult result = addAlias();
-        
-        assertThat(result, isFailedCommand());
-        String expected = "No application is currently selected by the following command line : use <application name>";
-        assertThat(result.getException().getMessage(), containsString(expected));
+        try {
+            CommandResult result = addAlias();
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("not selected"));
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
-    public void test03_shouldNotAddAnAliasBecauseUserIsNotLogged() {
+    public void test_shouldNotAddAnAliasBecauseUserIsNotLogged() {
         CommandResult result = addAlias();
         
         assertThat(result, isFailedCommand());
-        String expected = "You are not connected to CloudUnit host! Please use connect command";
-        assertThat(result.getException().getMessage(), containsString(expected));
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     @Test
-    public void test10_shouldListAlias() {
+    public void test_shouldListAlias() {
+        connect();
+        createApplication();
+        try {
+            addAlias();
+            CommandResult result = listAliasesCurrentApplication();
+            
+            assertThat(result, isSuccessfulCommand());
+            assertThat(result.getResult().toString(), containsString("1"));
+            assertThat(result.getResult().toString(), containsString("found"));
+        } finally {
+            removeApplication();
+            disconnect();
+        }
+    }
+
+    @Test
+    public void test_shouldListAliasWithArgs() {
         connect();
         createApplication();
         try {
             addAlias();
             CommandResult result = listAliases();
             
-            assertEquals("1 aliases found!", result.getResult().toString());
+            assertThat(result, isSuccessfulCommand());
+            assertThat(result.getResult().toString(), containsString("1"));
+            assertThat(result.getResult().toString(), containsString("found"));
         } finally {
             removeApplication();
+            disconnect();
         }
     }
 
     @Test
-    public void test11_shouldListAliasWithArgs() {
+    public void test_shouldNotListAliasBecauseUserIsNotLogged() {
+        CommandResult result = listAliasesCurrentApplication();
+        
+        assertThat(result, isFailedCommand());
+        assertThat(result.getException().getMessage(), containsString("not connected"));
+    }
+
+    @Test
+    public void test_shouldNotListAliasBecauseApplicationNotSelected() {
         connect();
-        CommandResult result = listAliasesForApplication();
-        
-        assertEquals("2 aliases found!", result.getResult().toString());
-    }
-
-    private CommandResult listAliasesForApplication() {
-        return getShell().executeCommand("list-aliases --name " + applicationName);
-    }
-
-    @Test
-    public void test12_shoudNotListAliasBecauseUserIsNotLogged() {
-        CommandResult result = listAliases();
-        
-        assertThat(result.getResult().toString(),
-                containsString("You are not connected to CloudUnit host! Please use connect command"));
+        try {
+            CommandResult result = listAliasesCurrentApplication();
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("not selected"));
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
-    public void test12_shoudNotListAliasBecauseApplicationNotSelected() {
-        connect();
-        CommandResult result = listAliases();
-        
-        assertThat(result.getResult().toString(),
-                containsString("No application is currently selected"));
-    }
-
-    @Test
-    public void test20_shouldRemoveAliasWithArgs() {
+    public void test_shouldRemoveAliasWithArgs() {
         CommandResult result;
         
         connect();
@@ -123,39 +139,34 @@ public abstract class AbstractAliasesCommandsIT extends AbstractShellIntegration
         try {
             result = removeAlias();
             assertEquals("This alias has successful been deleted", result.getResult().toString());
-            result = listAliasesForApplication();
+            result = listAliases();
             assertEquals("1 aliases found!", result.getResult().toString());
         } finally {
             removeApplication();
+            disconnect();
         }
     }
 
     @Test
-    public void test21_shouldNotRemoveAliasBecauseApplicationNotSelected() {
+    public void test_shouldNotRemoveAliasBecauseApplicationNotSelected() {
         CommandResult result;
         
         connect();
-        createApplication();
         try {
             result = removeAlias(ALIAS);
             
-            assertThat(result.getResult().toString(), containsString("No application is currently selected"));
-            
-            result = listAliasesForApplication();
-            
-            assertEquals("1 aliases found!", result.getResult().toString());
+            assertThat(result.getException().getMessage(), containsString("not selected"));
         } finally {
-            removeApplication();
+            disconnect();
         }
     }
 
     @Test
-    public void test22_shouldNotRemoveAliasBecauseUserIsNotLogged() {
+    public void test_shouldNotRemoveAliasBecauseUserIsNotLogged() {
         CommandResult result = removeAlias();
+        
         assertThat(result, isFailedCommand());
-        assertThat(
-                result.getResult().toString(),
-                containsString("You are not connected to CloudUnit host! Please use connect command"));
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     private CommandResult addAlias() {
@@ -174,7 +185,11 @@ public abstract class AbstractAliasesCommandsIT extends AbstractShellIntegration
         return getShell().executeCommand(String.format("rm-alias --alias %s", alias));
     }
 
-    private CommandResult listAliases() {
+    private CommandResult listAliasesCurrentApplication() {
         return getShell().executeCommand("list-aliases");
+    }
+    
+    private CommandResult listAliases() {
+        return getShell().executeCommand(String.format("list-aliases --name %s", applicationName));
     }
 }

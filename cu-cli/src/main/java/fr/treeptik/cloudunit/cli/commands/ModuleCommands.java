@@ -27,55 +27,57 @@ import fr.treeptik.cloudunit.cli.utils.ModuleUtils;
 @Component
 public class ModuleCommands implements CommandMarker {
 
+    private static final String HELP_MODULE_NAME =
+            "Name of the module. Use show-modules command to get all modules of this application";
+
+    private static final String HELP_MODULE_TYPE = "Module type \n "
+            + " MYSQL 5.5 : -name mysql-5-5\n"
+            + " MYSQL 5.6 : -name mysql-5-6\n"
+            + " MYSQL 5.7 : -name mysql-5-7\n"
+            + " POSTGRES 9.3 : -name postgresql-9-3\n"
+            + " POSTGRES 9.4 : -name postgresql-9-4\n"
+            + " POSTGRES 9.5 : -name postgresql-9-5\n"
+            + " REDIS 3.0 : -name redis-3-0\n"
+            + " Mongo 2.6 : -name mongo-2-6";
+    
     @Autowired
     private ModuleUtils moduleUtils;
 
     @CliCommand(value = "add-module", help = "Add a new module to the current application")
-    public String addModule(@CliOption(key = { "name" }, mandatory = true, help = "Module type "
-            + "\n MYSQL 5.5 : -name mysql-5-5 " + "\n MYSQL 5.6 : -name mysql-5-6 " + "\n MYSQL 5.7 : -name mysql-5-7 "
-            + "\n POSTGRES 9.3 : -name postgresql-9-3 " + "\n POSTGRES 9.4 : -name postgresql-9-4 "
-            + "\n POSTGRES 9.5 : -name postgresql-9-5 " + "\n REDIS 3.0 : -name redis-3-0 "
-            + "\nMongo 2.6 : -name mongo-2-6") String moduleName) {
-
+    public String addModule(
+            @CliOption(key = "name", mandatory = true, help = HELP_MODULE_TYPE) String moduleName) {
         return moduleUtils.addModule(moduleName, null);
     }
 
     @CliCommand(value = "rm-module", help = "Remove a module from the current application")
-    public String removeModule(@CliOption(key = {
-            "name" }, mandatory = true, help = "Name of the module. Use show-modules command to get all modules of this application") String moduleName) {
+    public String removeModule(
+            @CliOption(key = "name", mandatory = true, help = HELP_MODULE_NAME) String moduleName) {
         return moduleUtils.removeModule(moduleName);
     }
 
     @CliCommand(value = "expose-port", help = "Expose the default module port")
-    public String exposePort(@CliOption(key = {"name" },
-                                        mandatory = true,
-                                        help = "Name of the module. Use show-modules command to get all modules of this application") String moduleName,
-                             @CliOption(key = {"port" },
-                                     mandatory = true,
-                                     help = "Port to open value") String port) {
+    public String exposePort(
+            @CliOption(key = "name", mandatory = true, help = HELP_MODULE_NAME) String moduleName,
+            @CliOption(key = "port", mandatory = true, help = "Port number") String port) {
         return moduleUtils.managePort(moduleName, port, true);
     }
 
     @CliCommand(value = "close-port", help = "Expose the default module port")
-    public String closePort(@CliOption(key = {"name" },
-                                       mandatory = true,
-                                       help = "Name of the module. Use show-modules command to get all modules of this application") String moduleName,
-                            @CliOption(key = {"port" },
-                                    mandatory = true,
-                                    help = "Port to close value") String port) {
+    public String closePort(
+            @CliOption(key = "name", mandatory = true, help = HELP_MODULE_NAME) String moduleName,
+            @CliOption(key = {"port" }, mandatory = true, help = "Port number") String port) {
         return moduleUtils.managePort(moduleName, port, false);
     }
 
-    @CliCommand(value = "display-modules", help = "Display informations about all modules of the current application")
+    @CliCommand(value = "display-modules", help = "Display information about all modules of the current application")
     public String getApplication() {
         return moduleUtils.getListModules();
     }
     
     @CliCommand(value = "run-script", help = "Run a script inside a module of the current application")
     public String runScript(
-            @CliOption(key = "name", mandatory = true, help = "Name of the module") String moduleName,
-            @CliOption(key = "path", mandatory = true, help = "Path of the script") File file
-            ) {
+            @CliOption(key = "name", mandatory = true, help = HELP_MODULE_NAME) String moduleName,
+            @CliOption(key = "path", mandatory = true, help = "Script path") File file) {
         return moduleUtils.runScript(moduleName, file);
     }
 

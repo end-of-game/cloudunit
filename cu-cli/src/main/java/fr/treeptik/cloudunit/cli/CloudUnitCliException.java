@@ -4,6 +4,8 @@ package fr.treeptik.cloudunit.cli;
  * Created by nicolas on 10/10/2016.
  */
 public class CloudUnitCliException extends RuntimeException {
+    private static final long serialVersionUID = -1425403407922027331L;
+
     public CloudUnitCliException() {
     }
 

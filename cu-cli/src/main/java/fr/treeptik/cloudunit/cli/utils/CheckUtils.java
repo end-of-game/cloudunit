@@ -46,14 +46,11 @@ public class CheckUtils {
 	private ApplicationUtils applicationUtils;
 
 	@Autowired
-	private AuthentificationUtils authentificationUtils;
+	private AuthenticationUtils authentificationUtils;
 
 	@Autowired
 	private UrlLoader urlLoader;
 
-	/**
-	 * TODO refactore
-	 */
 	public boolean checkImageNoExist(String imageName) throws ManagerResponseException {
 
 		List<Image> images = null;

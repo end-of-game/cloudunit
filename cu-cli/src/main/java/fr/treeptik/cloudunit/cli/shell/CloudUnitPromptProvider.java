@@ -1,51 +1,60 @@
 package fr.treeptik.cloudunit.cli.shell;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.text.MessageFormat;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.shell.core.CommandMarker;
 import org.springframework.shell.plugin.PromptProvider;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.cli.utils.ApplicationUtils;
+import fr.treeptik.cloudunit.cli.utils.AuthenticationUtils;
+import fr.treeptik.cloudunit.cli.utils.FileUtils;
+
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class CloudUnitPromptProvider
-        implements PromptProvider, CommandMarker {
+public class CloudUnitPromptProvider implements PromptProvider, CommandMarker {
+    private static final String APPLICATION_NAME = "cloudunit";
+    
+    private static final String PROMPT_NOT_CONNECTED = "{0}> ";
+    private static final String PROMPT_CONNECTED = "{0} {1}> ";
+    private static final String PROMPT_APPLICATION_SELECTED = "{0} {1} {2}> ";
+    private static final String PROMPT_EXPLORER = "{0} {1} [{2}]> ";
 
-    private static final String PROMPT_CU = "cloudunit";
-
-    private static final String PROMPT_DELIMITER = "> ";
-
-    @Value("${default.prompt}")
-    private String prompt;
-
-    private String cuInstanceName = "";
-
-    private String applicationName = "";
-
-    private void resetPrompt() {
-        this.setPrompt(PROMPT_CU + cuInstanceName + applicationName + PROMPT_DELIMITER);
-    }
-
+    @Autowired
+    private AuthenticationUtils authenticationUtils;
+    
+    @Autowired
+    private ApplicationUtils applicationUtils;
+    
+    @Autowired
+    private FileUtils fileUtils;
+    
+    @Override
     public String getProviderName() {
-        return null;
+        return "cloudunit";
     }
 
+    @Override
     public String getPrompt() {
-        return prompt + " ";
-    }
-
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
-    }
-
-    public void setCuInstanceName(String cuInstanceName) {
-        this.cuInstanceName = cuInstanceName;
-        resetPrompt();
-    }
-
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-        resetPrompt();
+        if (!authenticationUtils.isConnected()) {
+            return MessageFormat.format(PROMPT_NOT_CONNECTED, APPLICATION_NAME);
+        } else if (!applicationUtils.isApplicationSelected()) {
+            return MessageFormat.format(PROMPT_CONNECTED,
+                    APPLICATION_NAME,
+                    authenticationUtils.getCurrentInstanceName());
+        } else if (!fileUtils.isInFileExplorer()) {
+            return MessageFormat.format(PROMPT_APPLICATION_SELECTED,
+                    APPLICATION_NAME,
+                    authenticationUtils.getCurrentInstanceName(),
+                    applicationUtils.getApplication().getName());
+        } else {
+            return MessageFormat.format(PROMPT_EXPLORER,
+                    APPLICATION_NAME,
+                    authenticationUtils.getCurrentInstanceName(),
+                    fileUtils.getCurrentContainerName());
+        }
     }
 }
