@@ -43,6 +43,8 @@ CU_KIBANA_URL=https://kibana-demo.cloudunit.io
 
 ### As `admincu`
 
+Open a new session as `admincu` on the server.
+
 #### Configuration
 
 Create a configuration file at `/home/admincu/.cloudunit/configuration.properties`.
@@ -77,23 +79,21 @@ database.password=changeit
 #email.password=
 ```
 
-
-
 #### Finish the installation
 
-Open a new session with **admincu** on the server.
+Run the command below as `admincu` to build Docker images.
 
 ```
 cd /home/admincu/cloudunit/cu-service && ./build-services.sh all
 ```
 
-You can check the image if you want with 
+You can check the previous step if you want.
 
 ```
 cd /home/admincu/cloudunit/cu-service && ./check_build_images.sh
 ```
 
-To finish you have to run the (re)init processus for the platform
+To finish you have to run the platform's (re)init script.
 
 ```
 cd /home/admincu/cloudunit/cu-compose && ./re-init.sh
@@ -117,12 +117,12 @@ apt-get install -y linux-image-extra-$(uname -r)
 ## How to reset Environment Production
 
 ```
-/home/admincu/cloudunit/cu-compose/reset.sh
+/home/admincu/cloudunit/cu-compose/re-init.sh
 ```
 
 ## How to change Mysql Password 
 
-You have to change MYSQL root password (*changeit* by default)
+You have to change MYSQL root password (`changeit` by default)
 To do it, you have to change the 
 * /home/admincu/.cloudunit/configuration.properties
 * /etc/profile
