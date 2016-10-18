@@ -25,6 +25,7 @@ case $yno in
         [yY] | [yY][Ee][Ss] )
                 echo "Agreed"
                 reset
+                ./start.sh
                 ;;
 
         [nN] | [n|N][O|o] )
@@ -32,10 +33,13 @@ case $yno in
                 exit 1
                 ;;
         *) echo "Invalid input"
+                exit 1
             ;;
 esac
 
-./start.sh
+
+
+
 
 
 
