@@ -72,8 +72,6 @@ services:
       image: cloudunit/nginx
       ports:
           - "443:443"
-      environment:
-          - CU_PORTAL_URL:${CU_PORTAL_URL}
       volumes:
           - ./nginx/sites-enabled:/etc/nginx/sites-enabled
           - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
