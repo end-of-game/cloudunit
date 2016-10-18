@@ -10,21 +10,35 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 * Docker 1.12 installed
 
 ```
-No mysql server must be installed because it is provided by cloudunit containers. So Port conflict !
-If present, you must save your data and remove it. 
+No mysql server must be installed because it is provided by cloudunit containers. 
+Else 3306 port conflict !
+If present, you must save your data (if needed) and remove mysql server.
 ```
 
 ## Installation
 
+### ROOT 
+
 We hope to provide a simple installation following KISS principles.
-So you just need to run this command as *ROOT* to create *admincu* user.
+So you just need to run this command as **ROOT** to create **admincu** user.
+You can change the default branch **dev** by **master** if needed into bootstap.sh
+
 ```
-useradd -m -s /bin/bash admincu
-usermod admincu -aG sudo
+wget https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstap.sh 
+sh bootstap.sh
 ```
 
 After installation, you need to set a password for *admincu* user account.
 Else recopy your private keys to access it.
+
+## ADMINCU
+
+Open a new session with **admincu** on the server.
+
+```
+cd /home/admincu/cloudunit/cu-service && ./build-services.sh all
+```
+
 
 ## Configuration
 
