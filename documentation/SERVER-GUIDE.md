@@ -22,8 +22,8 @@ So you just need to run this command as **ROOT** to create **admincu** user.
 You can change the default branch **dev** by **master** if needed into bootstap.sh
 
 ```
-wget https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstap.sh 
-sh bootstap.sh
+curl https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstrap.sh > bootstrap.sh
+sh bootstap.sh dev
 ```
 
 After installation, you need to set a password for *admincu* user account.
