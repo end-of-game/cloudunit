@@ -29,7 +29,7 @@ case $yno in
                 ;;
 
         [nN] | [n|N][O|o] )
-                echo "Not agreed, you can't proceed the installation";
+                echo "Not agreed, you can't re-init the installation";
                 exit 1
                 ;;
         *) echo "Invalid input"

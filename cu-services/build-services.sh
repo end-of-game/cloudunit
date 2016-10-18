@@ -135,9 +135,9 @@ wildfly
 
 'all')
 echo "Building all"
+base
 activemq
 apache
-base
 elastic
 fatjar
 mongo
