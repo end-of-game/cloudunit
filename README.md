@@ -44,7 +44,7 @@ You can test the common platform online here (reseted all night)
 ## Getting started
 
 There are many installation guides
-* [Server installation guide](documentation/SERVER-GUIDE.md) (TO BE UPDATED)
+* [Server installation guide](documentation/SERVER-GUIDE.md)
 * [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
 * [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
 * [Add new module](documentation/MODULE-GUIDE.md)

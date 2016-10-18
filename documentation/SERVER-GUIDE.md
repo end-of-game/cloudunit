@@ -1,61 +1,54 @@
 # CloudUnit server installation
 
-You are reading the wright guide if you want to setup a CloudUnit server, in order to frequently use it. 
+You are reading the right guide if you want to set up a CloudUnit server, in order to use it frequently. 
+We hope to provide a simple installation following KISS principles.
 
 ## Requirements
 
-* A virtual or baremetal server with at least 8 Go RAM. 32 or 64 will be better !
-* A server with Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (FAQ if needed)
+A virtual or baremetal server with
+* at least 8 GB RAM (32 GB or even 64 GB will be better!)
+* Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (see FAQ if needed)
 
-```
-No mysql server must be installed because it is provided by cloudunit containers. 
-Else 3306 port conflict !
-If present, you must save your data (if needed) and remove mysql server.
-```
+> No mysql server must be installed because one will be provided by CloudUnit. 
+> If one is already installed on the server, it will create a conflict on port 3306.
+> You must remove it before installing CloudUnit. 
+> Backup your data if necessary.
 
 ## Installation
 
-### ROOT 
+### As `root` 
 
-We hope to provide a simple installation following KISS principles.
-So you just need to run this command as **ROOT** to create **admincu** user.
-You can change the default branch **dev** by **master** if needed into bootstap.sh
-
-```
-wget https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstap.sh 
-sh bootstap.sh
-```
-
-After installation, you need to set a password for *admincu* user account.
-Else recopy your private keys to access it.
-
-## ADMINCU
-
-Open a new session with **admincu** on the server.
+Run the command below as `root` to create `admincu` user and install Docker.
+The installation script requires a branch to be selected.
+Branch `master` contains the latest stable version, whereas `dev` has the latest features.
 
 ```
-cd /home/admincu/cloudunit/cu-service && ./build-services.sh all
+export BRANCH=master
+curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
+sh bootstrap.sh $BRANCH
 ```
 
-You can check the image if you want with 
+After installation, you need to set a password for `admincu`.
+Otherwise set up ssh keys for authentication.
+
+Configure your access URLs by appending following environment variables to `/etc/environment`.
 
 ```
-cd /home/admincu/cloudunit/cu-service && ./check_build_images.sh
+CU_SUB_DOMAIN=.demo
+CU_MANAGER_URL=https://manager-demo.cloudunit.io
+CU_GITLAB_URL=https://gitlab-demo.cloudunit.io
+CU_JENKINS_URL=https://jenkins-demo.cloudunit.io
+CU_KIBANA_URL=https://kibana-demo.cloudunit.io
 ```
 
-To finish you have to run the (re)init processus for the platform
+### As `admincu`
 
-```
-cd /home/admincu/cloudunit/cu-compose && ./re-init.sh
-```
+Open a new session as `admincu` on the server.
 
-## Configuration
+#### Configuration
 
-### CloudUnit properties.
-
-The default configuration file is `/home/admincu/.cloudunit/configuration.properties`
-
-The template is :  
+Create a configuration file at `/home/admincu/.cloudunit/configuration.properties`.
+You may use the following template:
 
 ```
 # ################################################################################ #
@@ -77,25 +70,34 @@ database.password=changeit
 # database.user=root
 
 #mail server configuration :
-#admin.email=g.martial@treeptik.fr
+#admin.email=support.cloudunit@treeptik.fr
 #email.active=true
 #email.host=smtp.gmail.com
 #email.port=587
 #email.protocol=smtp
 #email.username=support.cloudunit@treeptik.fr
-#email.password=
+#email.password=xxx
 ```
 
-Add into ```/etc/environment``` *your* URLs
+#### Finish the installation
+
+Run the command below as `admincu` to build Docker images.
 
 ```
-CU_MANAGER_URL=https://manager-demo.cloudunit.io
-CU_GITLAB_URL=https://gitlab-demo.cloudunit.io
-CU_JENKINS_URL=https://jenkins-demo.cloudunit.io
-CU_KIBANA_URL=https://kibana-demo.cloudunit.io
-CU_SUB_DOMAIN=.demo
+cd /home/admincu/cloudunit/cu-service && ./build-services.sh all
 ```
 
+You can check the previous step if you want.
+
+```
+cd /home/admincu/cloudunit/cu-service && ./check_build_images.sh
+```
+
+To finish you have to run the platform's (re)init script.
+
+```
+cd /home/admincu/cloudunit/cu-compose && ./re-init.sh
+```
 
 # FAQ
 
@@ -106,33 +108,33 @@ apt-get install linux-image-4.4.0-42-generic
 apt-get install -y linux-image-extra-$(uname -r)
 ```
 
-## How to restart Environment Production without reseting data
+## How to restart the production environment without reseting data
 
 ```
 /home/admincu/cloudunit/cu-compose/restart.sh
 ```
 
-## How to reset Environment Production
+## How to reset the production environment 
 
 ```
-/home/admincu/cloudunit/cu-compose/reset.sh
+/home/admincu/cloudunit/cu-compose/re-init.sh
 ```
 
-## How to change Mysql Password 
+## How to change the MySQL password
 
-You have to change MYSQL root password (*changeit* by default)
-To do it, you have to change the 
+You have to change the MySQL root password (`changeit` by default)
+To do so, you have to change the value in the following files
 * /home/admincu/.cloudunit/configuration.properties
 * /etc/profile
 
-## How to change SSL Certificates
+## How to change the SSL Certificates
 
 In order to customize your Cloudunit installation with your own domain name and SSL certificates,
 please follow these instructions.
 
 ### NGINX config files
 
-NGINX is the entrypoint of the Cloudunit PAAS frontend and is provided as docker conatainer.
+NGINX is the entrypoint of the Cloudunit PaaS frontend and is provided as a Docker container.
 
 SSL certificates directory location:
 
