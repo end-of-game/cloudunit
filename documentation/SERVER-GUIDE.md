@@ -88,6 +88,13 @@ CU_SUB_DOMAIN=.demo
 
 # FAQ
 
+## How to install a 4.x kernel with AUFS support
+
+```
+apt-get install linux-image-4.4.0-42-generic
+apt-get install -y linux-image-extra-$(uname -r)
+```
+
 ## How to restart Environment Production without reseting data
 
 ```
