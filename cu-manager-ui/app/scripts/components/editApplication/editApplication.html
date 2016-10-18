@@ -14,7 +14,8 @@
         <h2 class="title">
           Application
           {{editApp.application.displayName}}
-          <a id="preview-link"
+          <a ng-if="editApp.application.contextPath"
+             id="preview-link"
              class="icon-button"
              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"
              data-ng-href="{{ editApp.application.location }}{{ editApp.application.contextPath }}"
@@ -36,7 +37,16 @@
             <span style="position: absolute; font-size: 12px; top: -12px; left: 5px;">{{port.port}}</span>
           </a>
         </h2>
+          <div ng-show="editApp.application.quickAccessNotice" style="margin: 0px; padding: 4px; width: 130px;" class="alert alert-info">
+            <button type="button"
+                    class="close"
+                    ng-click="ports.errorMsg = ''">
+              <span>&times;</span>
+            </button>
+            <p>{{editApp.application.quickAccessNotice}}</p>
+          </div>    
       </div>
+      
       <div class="page-menu">
         <ul class="tabs">
           <li ng-click="editApp.updateRoute();"

@@ -58,6 +58,16 @@
         vm.errorMsg = '';
         vm.number = '';
         vm.nature = '';
+
+        if(vm.isQuickAccess) {
+          setTimeout(function() {
+            vm.application.quickAccessNotice = 'Quick access here!';
+            setTimeout(function() {
+              vm.application.quickAccessNotice = '';
+            }, 4000);
+          }, 2000);
+        }
+        vm.isQuickAccess = false;
       }
 
       function error(response) {
