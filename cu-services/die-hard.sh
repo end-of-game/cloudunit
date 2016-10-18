@@ -17,7 +17,7 @@ case $yno in
                 ;;
 
         [nN] | [n|N][O|o] )
-                echo "Not agreed, you can't proceed the installation";
+                echo "Not agreed, you can't reset the platform";
                 exit 1
                 ;;
         *) echo "Invalid input"
@@ -25,6 +25,4 @@ case $yno in
             ;;
 esac
 
-## ALWAYS RIGHT
-exit 0
 
