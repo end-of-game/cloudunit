@@ -10,7 +10,8 @@ A virtual or baremetal server with
 
 > No mysql server must be installed because one will be provided by CloudUnit. 
 > If one is already installed on the server, it will create a conflict on port 3306.
-> You must remove it before installing CloudUnit. Backup your data if necessary.
+> You must remove it before installing CloudUnit. 
+> Backup your data if necessary.
 
 ## Installation
 
