@@ -70,13 +70,13 @@ database.password=changeit
 # database.user=root
 
 #mail server configuration :
-#admin.email=g.martial@treeptik.fr
+#admin.email=support.cloudunit@treeptik.fr
 #email.active=true
 #email.host=smtp.gmail.com
 #email.port=587
 #email.protocol=smtp
 #email.username=support.cloudunit@treeptik.fr
-#email.password=
+#email.password=xxx
 ```
 
 #### Finish the installation
@@ -108,33 +108,33 @@ apt-get install linux-image-4.4.0-42-generic
 apt-get install -y linux-image-extra-$(uname -r)
 ```
 
-## How to restart Environment Production without reseting data
+## How to restart the production environment without reseting data
 
 ```
 /home/admincu/cloudunit/cu-compose/restart.sh
 ```
 
-## How to reset Environment Production
+## How to reset the production environment 
 
 ```
 /home/admincu/cloudunit/cu-compose/re-init.sh
 ```
 
-## How to change Mysql Password 
+## How to change the MySQL password
 
-You have to change MYSQL root password (`changeit` by default)
-To do it, you have to change the 
+You have to change the MySQL root password (`changeit` by default)
+To do so, you have to change the value in the following files
 * /home/admincu/.cloudunit/configuration.properties
 * /etc/profile
 
-## How to change SSL Certificates
+## How to change the SSL Certificates
 
 In order to customize your Cloudunit installation with your own domain name and SSL certificates,
 please follow these instructions.
 
 ### NGINX config files
 
-NGINX is the entrypoint of the Cloudunit PAAS frontend and is provided as docker conatainer.
+NGINX is the entrypoint of the Cloudunit PaaS frontend and is provided as a Docker container.
 
 SSL certificates directory location:
 
