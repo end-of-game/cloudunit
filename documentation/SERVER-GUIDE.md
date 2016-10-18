@@ -73,14 +73,29 @@ CU_KIBANA_URL=https://kibana-demo.cloudunit.io
 CU_SUB_DOMAIN=.demo
 ```
 
-### Database password [ OPTIONAL ]
+
+# FAQ
+
+## How to restart Environment Production without reseting data
+
+```
+/home/admincu/cloudunit/cu-compose/restart.sh
+```
+
+## How to reset Environment Production
+
+```
+/home/admincu/cloudunit/cu-compose/reset.sh
+```
+
+## How to change Mysql Password 
 
 You have to change MYSQL root password (*changeit* by default)
 To do it, you have to change the 
 * /home/admincu/.cloudunit/configuration.properties
 * /etc/profile
 
-## Domain Name and SSL Certificates
+## How to change SSL Certificates
 
 In order to customize your Cloudunit installation with your own domain name and SSL certificates,
 please follow these instructions.
@@ -114,21 +129,4 @@ The number of certificates to list per Nginx server name depends on your SSL Pro
 Extensions also could be differ from a provider to another.
 
 As an example Globalsign gives, in addition, an intermediate certificate. Some others aggregate and encrypt certificates in PKCS / P7B format. In this case, you have to split the file in multiple standard certificates.
-
-# FAQ
-
-## How to restart Environment Production without reseting data
-
-```
-/home/admincu/cloudunit/cu-compose/restart.sh
-```
-
-
-## How to reset Environment Production
-
-```
-/home/admincu/cloudunit/cu-compose/reset.sh
-```
-
-
 
