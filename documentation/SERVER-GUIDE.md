@@ -1,11 +1,12 @@
 # CloudUnit server installation
 
-You are reading the wright guide if you want to setup a CloudUnit server, in order to frequently use it. 
+You are reading the right guide if you want to set up a CloudUnit server, in order to use it frequently. 
 
 ## Requirements
 
-* A virtual or baremetal server with at least 8 Go RAM. 32 or 64 will be better !
-* A server with Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (FAQ if needed)
+A virtual or baremetal server with
+* at least 8 GB RAM (32 GB or even 64 GB will be better!)
+* Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (see [FAQ](#FAQ) if needed)
 
 ```
 No mysql server must be installed because it is provided by cloudunit containers. 
@@ -95,7 +96,6 @@ CU_JENKINS_URL=https://jenkins-demo.cloudunit.io
 CU_KIBANA_URL=https://kibana-demo.cloudunit.io
 CU_SUB_DOMAIN=.demo
 ```
-
 
 # FAQ
 
