@@ -1,8 +1,6 @@
 
-
 server {
-    set_by_lua $portal_url 'return os.getenv("CU_PORTAL_URL")';
-    server_name $portal_url;
+    server_name CU_PORTAL_URL;
     listen 443 ssl;
     ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
     ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
@@ -10,8 +8,7 @@ server {
 }
 
 server {
-    set_by_lua $manager_url 'return os.getenv("CU_MANAGER_URL")';
-    server_name $manager_url;
+    server_name CU_MANAGER_URL;
     listen 443 ssl;
     ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
     ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
@@ -21,8 +18,7 @@ server {
 }
 
 server {
-    set_by_lua $gitlab_url 'return os.getenv("CU_GITLAB_URL")';
-    server_name $gitlab_url;
+    server_name CU_GITLAB_URL
     listen 443 ssl;
     ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
     ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
@@ -32,8 +28,7 @@ server {
 }
 
 server {
-    set_by_lua $jenkins_url 'return os.getenv("CU_JENKINS_URL")';
-    server_name $jenkins_url;
+    server_name CU_JENKINS_URL;
     listen 443 ssl;
     ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
     ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
