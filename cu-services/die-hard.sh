@@ -13,7 +13,6 @@ case $yno in
         [yY] | [yY][Ee][Ss] )
                 echo "Agreed"
                 reset
-                ./start.sh
                 ;;
 
         [nN] | [n|N][O|o] )

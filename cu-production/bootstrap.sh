@@ -11,6 +11,13 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     exit 1
 fi
 
+if [ -z "$1" ]
+  then
+    echo "No branch argument supplied"
+fi
+
+export GIT_BRANCH=$1
+
 # INIT
 apt-get update
 
@@ -24,7 +31,7 @@ apt-get install -y ncdu
 apt-get install -y git
 
 # CLONE CLOUDUNIT
-cd /home/$CU_USER && git clone https://github.com/Treeptik/cloudunit.git
+cd /home/$CU_USER && git clone https://github.com/Treeptik/cloudunit.git -b $GIT_BRANCH
 chown -R $CU_USER:$CU_USER /home/$CU_USER
 
 # INSTALL DOCKER
