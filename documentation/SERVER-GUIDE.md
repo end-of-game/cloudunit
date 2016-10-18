@@ -1,6 +1,7 @@
 # CloudUnit server installation
 
 You are reading the right guide if you want to set up a CloudUnit server, in order to use it frequently. 
+We hope to provide a simple installation following KISS principles.
 
 ## Requirements
 
@@ -17,13 +18,14 @@ A virtual or baremetal server with
 
 ### As `root` 
 
-We hope to provide a simple installation following KISS principles.
-So you just need to run this command as **ROOT** to create **admincu** user.
-You can change the default branch **dev** by **master** if needed into bootstap.sh
+Just run this command as `root` to create `admincu` user and install Docker.
+The installation script requires a branch to be selected.
+Branch `master` contains the latest stable version, whereas `dev` has the latest features.
 
 ```
-curl https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstrap.sh > bootstrap.sh
-sh bootstap.sh dev
+export GIT_BRANCH=master
+curl https://raw.githubusercontent.com/Treeptik/cloudunit/$GIT_BRANCH/cu-production/bootstrap.sh > bootstrap.sh
+sh bootstrap.sh $GIT_BRANCH
 ```
 
 After installation, you need to set a password for *admincu* user account.
