@@ -1,87 +1,53 @@
 #!/bin/bash
 
-# trap "set +x; sleep 5; set -x" DEBUG
-
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
 
+ROOTUID="0"
+
+if [ "$(id -u)" -ne "$ROOTUID" ] ; then
+    echo "This script must be executed with root privileges."
+    exit 1
+fi
+
 # INIT
-apt-get update &
-wait
+apt-get update
 
 # CREATE ADMINCU USER admincu account
-useradd -m $CU_USER
-usermod $CU_USER -aG sudo
+useradd -m -s /bin/bash $CU_USER
 
 # PROVISION THE ENV
-apt-get install -y nmap &
-wait
-apt-get install -y htop &
-wait
-apt-get install -y ncdu &
-wait
-apt-get install -y git &
-wait
-apt-get install -y mysql-client &
-wait
+apt-get install -y nmap
+apt-get install -y htop
+apt-get install -y ncdu
+apt-get install -y git
 
 # CLONE CLOUDUNIT
-cd /home/$CU_USER
-git clone https://github.com/Treeptik/cloudunit.git
-cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
+cd /home/$CU_USER && git clone https://github.com/Treeptik/cloudunit.git
 chown -R $CU_USER:$CU_USER /home/$CU_USER
 
 # INSTALL DOCKER
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+apt-get install -y apt-transport-https ca-certificates
+apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
-apt-get update &
-wait
-apt-get install -y lxc-docker-1.6.2 1.6.2 &
-wait
-apt-mark hold lxc-docker
-apt-get install -y linux-image-extra-$(uname -r) &
-wait
-usermod -aG docker $CU_USER
-usermod admincu -s /bin/bash
-curl -L https://github.com/docker/compose/releases/download/1.3.3/docker-compose-`uname -s`-`uname -m` > docker-compose
-chmod +x docker-compose
-mv docker-compose /usr/local/bin
-cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
-
-# INSTALL CERTIFICATS
-cp $CU_INSTALL_DIR/files/docker.secure /etc/default/docker
-mkdir -p /root/.docker
-cp $CU_HOME/conf/cert/server/* /root/.docker
-mkdir -p /home/$CU_USER/.docker
-cp $CU_HOME/conf/cert/server/* /home/admincu/.docker/
-chown -R $CU_USER:$CU_USER /home/$CU_USER/.docker
-cp $CU_INSTALL_DIR/files/environment /etc/environment
-cp $CU_INSTALL_DIR/files/hosts /etc/hosts
+apt-get update
+apt-get install -y docker-engine
+apt-get install -y mysql-client
+usermod -aG docker admincu
 service docker stop
-sleep 5
+cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
 service docker start
 
-# BUILD SERVICES
-su -l $CU_USER -c "cd $CU_HOME/cu-services && ./build-services.sh"
-# Exit on child script error
-if [ $? -eq 1 ]; then
-	echo "EXIT DUE TO FATAL ERROR !"
-        exit 1
-fi
+# install Docker Compose
+# @see http://docs.docker.com/compose/install/
+curl -o docker-compose -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
+chmod a+x docker-compose
+sudo mv docker-compose /usr/local/bin
 
-# COMPILE ROOT WAR FOR CLOUDUNIT
-mkdir -p $CU_HOME/cu-platform/tomcat
-cd $CU_HOME/cu-manager && su -l $CU_USER -c "$CU_HOME/cu-manager/compile-root-war.sh"
-cp target/ROOT.war $CU_HOME/cu-platform/tomcat
-chown -R $CU_USER:$CU_USER /home/$CU_USER/
+# Install log rotate
+cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
-# RESET ALL FOR FIRST START
-su -l $CU_USER -c "cd $CU_HOME/cu-platform && ./reset-prod.sh -y"
-
-#active cron for cloudunitmonitor
-
-sh $CU_HOME/cu-platform/update-cron.sh
 
 
 
