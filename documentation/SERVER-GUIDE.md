@@ -5,9 +5,7 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 ## Requirements
 
 * A virtual or baremetal server with at least 8 Go RAM. 32 or 64 will be better !
-* A server with Ubuntu 14.04 LTS with a 4.x kernel
-* Git installed and a root account
-* Docker 1.12 installed
+* A server with Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (FAQ if needed)
 
 ```
 No mysql server must be installed because it is provided by cloudunit containers. 
