@@ -5,10 +5,14 @@ You are reading the wright guide if you want to setup a CloudUnit server, in ord
 ## Requirements
 
 * A virtual or baremetal server with at least 8 Go RAM. 32 or 64 will be better !
-* A server with Ubuntu 14.04 LTS with a 3.13 or 3.19 kernel. Ok for 4.x
+* A server with Ubuntu 14.04 LTS with a 4.x kernel
 * Git installed and a root account
+* Docker 1.12 installed
 
-```No mysql server because it is provided by docker.  If present, you must save your data and remove it. ```
+```
+No mysql server must be installed because it is provided by cloudunit containers. So Port conflict !
+If present, you must save your data and remove it. 
+```
 
 ## Installation
 
@@ -59,13 +63,14 @@ database.password=changeit
 #email.password=
 ```
 
-Add into ```/etc/environment``` with the correct URL 
+Add into ```/etc/environment``` *your* URLs
 
 ```
+CU_MANAGER_URL=https://manager-demo.cloudunit.io
 CU_GITLAB_URL=https://gitlab-demo.cloudunit.io
 CU_JENKINS_URL=https://jenkins-demo.cloudunit.io
+CU_KIBANA_URL=https://kibana-demo.cloudunit.io
 CU_SUB_DOMAIN=.demo
-MYSQL_ROOT_PASSWORD=changeit
 ```
 
 ### Database password [ OPTIONAL ]
@@ -100,7 +105,7 @@ NGINX domain configuration for apps (gitlab, jenkins, admin...):
 Please rename the following file with your domain name and customize it.
 
 ```
-/home/admincu/cloudunit/cu-compose/nginx/sites-enabled/cloudunit.io.conf
+/home/admincu/cloudunit/cu-compose/nginx/sites-enabled/cloudunit.conf
 ```
 
 ### SSL Certificates
@@ -112,10 +117,17 @@ As an example Globalsign gives, in addition, an intermediate certificate. Some o
 
 # FAQ
 
+## How to restart Environment Production without reseting data
+
+```
+/home/admincu/cloudunit/cu-compose/restart.sh
+```
+
+
 ## How to reset Environment Production
 
 ```
-/home/admincu/cloudunit/cu-compose/reset-prod.sh -y
+/home/admincu/cloudunit/cu-compose/reset.sh
 ```
 
 
