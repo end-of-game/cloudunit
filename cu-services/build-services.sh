@@ -6,10 +6,10 @@ if [ "$2" == "cache" ]; then
 fi
 
 function base {
-    docker build --rm $CACHE_STRATEGY -t cloudunit/base-14.04 images/base-jessie
-    docker build --rm $CACHE_STRATEGY -t cloudunit/base-14.04 images/base-12.04
+    docker build --rm $CACHE_STRATEGY -t cloudunit/base-jessie images/base-jessie
+    docker build --rm $CACHE_STRATEGY -t cloudunit/base-12.04 images/base-12.04
     docker build --rm $CACHE_STRATEGY -t cloudunit/base-14.04 images/base-14.04
-    docker build --rm $CACHE_STRATEGY -t cloudunit/base-14.04 images/base-16.04
+    docker build --rm $CACHE_STRATEGY -t cloudunit/base-16.04 images/base-16.04
 }
 
 function apache {
