@@ -13,7 +13,8 @@ fi
 
 export GIT_BRANCH=$1
 BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
-if [ "z$BRANCH_EXIST"=="z" ]
+echo git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH
+if [ ! "$BRANCH_EXIST" ];
   then
     echo "The branch $1 is not valid. Please choose one the following branches: "
     git ls-remote --heads https://github.com/Treeptik/cloudunit
