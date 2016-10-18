@@ -15,7 +15,7 @@ A virtual or baremetal server with
 
 ## Installation
 
-### ROOT 
+### As `root` 
 
 We hope to provide a simple installation following KISS principles.
 So you just need to run this command as **ROOT** to create **admincu** user.
@@ -29,9 +29,9 @@ sh bootstap.sh dev
 After installation, you need to set a password for *admincu* user account.
 Else recopy your private keys to access it.
 
-## ADMINCU
+### As `admincu`
 
-### Configuration
+#### Configuration
 
 The default configuration file is `/home/admincu/.cloudunit/configuration.properties`
 
@@ -76,7 +76,7 @@ CU_KIBANA_URL=https://kibana-demo.cloudunit.io
 CU_SUB_DOMAIN=.demo
 ```
 
-### Finish the installation
+#### Finish the installation
 
 Open a new session with **admincu** on the server.
 
