@@ -6,12 +6,12 @@ You are reading the right guide if you want to set up a CloudUnit server, in ord
 
 A virtual or baremetal server with
 * at least 8 GB RAM (32 GB or even 64 GB will be better!)
-* Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (see [FAQ](#FAQ) if needed)
+* Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (see FAQ if needed)
 
 ```
-No mysql server must be installed because it is provided by cloudunit containers. 
-Else 3306 port conflict !
-If present, you must save your data (if needed) and remove mysql server.
+No mysql server must be installed because one will be provided by CloudUnit. 
+If one is already installed on the server, it will create a conflict on port 3306.
+You must remove it before installing CloudUnit. Backup your data if necessary.
 ```
 
 ## Installation
