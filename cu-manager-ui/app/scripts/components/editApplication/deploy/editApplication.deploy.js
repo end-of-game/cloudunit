@@ -41,8 +41,19 @@
   function DeployCtrl($scope, $stateParams, FileUploader) {
 
     var uploader, vm;
-
+    
     vm = this;
+    vm.uploadAll = uploadAll;
+
+    function uploadAll () {
+      uploader.uploadAll();
+      setTimeout(function() {
+        vm.app.quickAccessNotice = 'Quick access here!';
+        setTimeout(function() {        
+          vm.app.quickAccessNotice = '';
+        }, 4000);
+      }, 2000);
+    }
 
     $scope.$watch('vm.app', function(newVal){
       if(newVal){

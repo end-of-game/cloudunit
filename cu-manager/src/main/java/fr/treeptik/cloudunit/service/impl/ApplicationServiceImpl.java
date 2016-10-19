@@ -25,8 +25,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import fr.treeptik.cloudunit.model.*;
-import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +44,15 @@ import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Deployment;
+import fr.treeptik.cloudunit.model.DeploymentType;
+import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.PortToOpen;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DeploymentService;
 import fr.treeptik.cloudunit.service.DockerService;
@@ -56,6 +63,7 @@ import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.DomainUtils;
 import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
+import fr.treeptik.cloudunit.utils.NamingUtils;
 
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
@@ -631,9 +639,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Transactional
 	@Override
-	public PortToOpen addPort(Application application, String nature, Integer port) throws ServiceException {
+	public PortToOpen addPort(Application application, String nature, Integer port, Boolean isQuickAccess) throws ServiceException {
 		PortToOpen portToOpen = new PortToOpen();
 		portToOpen.setNature(nature);
+		portToOpen.setQuickAccess(isQuickAccess);
 		portToOpen.setPort(port);
 		portToOpen.setApplication(application);
 		try {

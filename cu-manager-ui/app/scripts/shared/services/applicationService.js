@@ -204,11 +204,12 @@ function removeAlias ( applicationName, alias ) {
 
 // Gestion des ports
 
-function createPort ( applicationName, number, nature ) {
+function createPort ( applicationName, number, nature, isQuickAccess ) {
     var data = {
         applicationName: applicationName,
         portToOpen: number,
-        portNature: nature
+        portNature: nature,
+        portQuickAccess: isQuickAccess
     };
     return $http.post ( 'application/ports', data );
 }

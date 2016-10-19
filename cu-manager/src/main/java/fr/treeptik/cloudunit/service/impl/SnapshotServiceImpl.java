@@ -270,10 +270,10 @@ public class SnapshotServiceImpl implements SnapshotService {
 
 			application.setDeploymentStatus(snapshot.getDeploymentStatus());
 			applicationService.saveInDB(application);
-
+			
 			for (String savedPort : snapshot.getSavedPorts()) {
 				applicationService.addPort(application, savedPort.split(";")[1],
-						Integer.parseInt(savedPort.split(";")[0]));
+						Integer.parseInt(savedPort.split(";")[0]), false);
 			}
 
 		} catch (ServiceException e) {
