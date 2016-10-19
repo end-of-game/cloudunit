@@ -33,7 +33,7 @@ public class Tomcat7RabbitMQ3651ModuleControllerTestIT extends AbstractModuleCon
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckDatabaseBroker().invoke(forwardedPort, "RABBITMQ_DEFAULT_USER",
+        new CheckBrokerConnection().invoke(forwardedPort, "RABBITMQ_DEFAULT_USER",
                 "RABBITMQ_DEFAULT_PASS", "RABBITMQ_DEFAULT_VHOST", "AMQP");
     }
 }

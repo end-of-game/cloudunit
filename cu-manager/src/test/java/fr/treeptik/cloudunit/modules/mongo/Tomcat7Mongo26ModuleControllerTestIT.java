@@ -13,19 +13,19 @@
  * For any questions, contact us : contact@treeptik.fr
  */
 
-package fr.treeptik.cloudunit.modules.activemq;
+package fr.treeptik.cloudunit.modules.mongo;
 
 import fr.treeptik.cloudunit.modules.AbstractModuleControllerTestIT;
 
 /**
  * Created by guillaume on 01/10/16.
  */
-public class Wildfly9ActiveMQ5132ModuleControllerTestIT extends AbstractModuleControllerTestIT {
+public class Tomcat7Mongo26ModuleControllerTestIT extends AbstractModuleControllerTestIT {
 
-    public Wildfly9ActiveMQ5132ModuleControllerTestIT() {
-        super.server = "wildfly-9";
-        super.module = "activemq-5.13.2";
-        super.numberPort = "61616";
+    public Tomcat7Mongo26ModuleControllerTestIT() {
+        super.server = "tomcat-7";
+        super.module = "mongo-2-6";
+        super.numberPort = "27017";
         super.managerPrefix = "";
         super.managerSuffix = "";
         super.managerPageContent = "";
@@ -33,7 +33,6 @@ public class Wildfly9ActiveMQ5132ModuleControllerTestIT extends AbstractModuleCo
 
     @Override
     protected void checkConnection(String forwardedPort) {
-        new CheckBrokerConnection().invoke(forwardedPort, "ACTIVEMQ_ADMIN_LOGIN",
-                "ACTIVEMQ_ADMIN_PASSWORD", "ACTIVEMQ_NAME", "JMS");
+        new CheckMongoConnection().invoke(forwardedPort);
     }
 }
