@@ -15,6 +15,6 @@ waitFor Tomcat  http://cuplatform_tomcat_1.manager.cloud.unit:8080
 waitFor Jenkins http://cuplatform_jenkins_1.jenkins.cloud.unit:8080
 waitFor Gitlab  http://cuplatform_gitlab_1.gitlab-ce.cloud.unit
 
-echo "Starting nginx..."
+echo "Nginx is started"
 exec nginx -g "daemon off;"
 

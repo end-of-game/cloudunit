@@ -17,8 +17,6 @@ source /etc/environment
 
 docker-compose up -d
 
-docker-compose logs -f nginx
-
 
 
 
