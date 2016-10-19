@@ -24,6 +24,7 @@ if [ "$1" != "-y" ]; then
     fi
 fi
 
+
 echo -e "\nRemoving containers\n"
 docker rm -v $(docker ps -a | grep "Dead" | awk '{print $1}')
 docker rm -v $(docker ps -q --filter="status=exited")
@@ -51,11 +52,5 @@ echo -e "\nStarting the platform\n"
 echo -e "\nChanging directory\n"
 cd /home/vagrant/cloudunit/cu-services
 
-echo -e "\nCurrent directory: `pwd`\n"
-
-echo -e "\nRunning services\n"
-/home/vagrant/cloudunit/cu-services/run-services.sh
-
-
-
+docker run -d --name java cloudunit/java
 
