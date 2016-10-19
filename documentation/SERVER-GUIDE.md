@@ -35,11 +35,11 @@ Configure your access URLs by appending following environment variables to `/etc
 
 ```
 MYSQL_ROOT_PASSWORD=changeit
-CU_PORTAL_URL=https://portal.domain.com
-CU_MANAGER_URL=https://manager.domain.com
-CU_GITLAB_URL=https://gitlab.domain.com
-CU_JENKINS_URL=https://jenkins.domain.com
-CU_KIBANA_URL=https://kibana.domain.com
+CU_PORTAL_DOMAIN=https://portal.domain.com
+CU_MANAGER_DOMAIN=https://manager.domain.com
+CU_GITLAB_DOMAIN=https://gitlab.domain.com
+CU_JENKINS_DOMAIN=https://jenkins.domain.com
+CU_KIBANA_DOMAIN=https://kibana.domain.com
 ```
 
 ### As `admincu`
