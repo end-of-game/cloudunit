@@ -93,6 +93,12 @@ You can check the previous step if you want.
 cd /home/admincu/cloudunit/cu-service && ./check_build_images.sh
 ```
 
+Build the manager.
+
+```
+cd /home/admincu/cloudunit/cu-manager/dockerhub && docker build -t cloudunit/manager .
+```
+
 To finish you have to run the platform's (re)init script.
 
 ```
