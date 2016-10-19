@@ -13,7 +13,7 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     exit 1
 fi
 
-if [ -z "$1" ] && echo "No branch argument supplied. Exit..." && exit 1
+[ -z "$1" ] && echo "No branch argument supplied. Exit..." && exit 1
 
 export GIT_BRANCH=$1
 BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
