@@ -42,11 +42,11 @@
         </encoder>
     </appender>
 
-    <logger name="fr.treeptik" level="warn"/>
+    <logger name="fr.treeptik" level="info"/>
     <logger name="org.springframework.security" level="warn"/>
     <logger name="net.sf.ehcache" level="warn"/>
 
-    <root level="warn">
+    <root level="info">
         <appender-ref ref="console"/>
         <appender-ref ref="FILE"/>
     </root>
