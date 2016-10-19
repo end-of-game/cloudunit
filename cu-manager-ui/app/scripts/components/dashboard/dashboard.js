@@ -55,7 +55,7 @@
     vm.toggleServer = toggleServer;
     vm.buffer = '';
     vm.selectedDisplayStyle = 'Grid';
-
+    // vm.checkCancel = checkCancel;
     update();
 
     // Polling on refresh

@@ -61,33 +61,21 @@
                   tooltip=""
                   data-title="Delete"
                   data-placement="bottom"
-                  data-toggle="modal"
-                  data-target="#delete-{{script.id}}">
+                  sweetalert
+                  sweet-options="{'title':'Removal confirmation required for script {{script.title}}',
+                  'text':'Caution, this is a permanent action.',
+                  'type':'warning',
+                  'showCancelButton':true,
+                  'confirmButtonText':'PERMANENTLY DELETE!',
+                  'cancelButtonText':'CANCEL',
+                  'closeOnConfirm':false,
+                  'closeOnCancel':false,
+                  'animation': 'slide-from-top'}"
+                  sweet-confirm-option="{'title':'Deleted!','text':'Your script has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-cancel-option="{'title':'Cancelled!','text':'Your script is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-on-confirm="scripting.deleteScript(script)">
             <i class="icon-whhg trash"></i>
           </button>
-
-          <div class="modal"
-              id="delete-{{script.id}}"
-              modaldismiss="">
-            <div class="modal-inner">
-              <div class="content clearfix">
-                <h3 class="title">Removal confirmation required for script {{script.title}}</h3>
-
-                <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
-
-                <div class="actions pull-right">
-                  <button type="button" class="button secondary" data-dismiss="modal">Cancel
-                  </button>
-                  <button type="button"
-                          class="delete-btn button primary"
-                          data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
-                          data-ng-click="scripting.deleteScript(script)">
-                    Delete script
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <button class="icon-button"
                   ripple=""
