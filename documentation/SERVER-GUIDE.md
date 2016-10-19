@@ -34,6 +34,7 @@ Otherwise set up ssh keys for authentication.
 Configure your access URLs by appending following environment variables to `/etc/environment`.
 
 ```
+MYSQL_ROOT_PASSWORD=changeit
 CU_PORTAL_URL=https://portal.domain.com
 CU_MANAGER_URL=https://manager.domain.com
 CU_GITLAB_URL=https://gitlab.domain.com
