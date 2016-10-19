@@ -175,9 +175,11 @@ public class ServerServiceImpl implements ServerService {
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 
-			logger.info(dockerService.getEnv(server.getName(), "CU_SERVER_PORT"));
-			logger.info(dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
-			logger.info(application.getLocation());
+			if (logger.isDebugEnabled()) {
+				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_PORT"));
+				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
+				logger.debug(application.getLocation());
+			}
 
 			hipacheRedisUtils.createRedisAppKey(server.getApplication(), server.getContainerIP(),
 					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
