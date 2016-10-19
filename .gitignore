@@ -10,7 +10,6 @@
 
 # Package Files #
 cu-manager/**/*.jar
-monitoring_scripts/**/*.jar
 *.war
 *.ear
 
@@ -371,7 +370,6 @@ nbactions.xml
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
