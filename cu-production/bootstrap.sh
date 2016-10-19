@@ -4,12 +4,16 @@ export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
 
+export COMPOSE_VERSION=1.8.0
+
 ROOTUID="0"
 
 if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     echo "This script must be executed with root privileges."
     exit 1
 fi
+
+if [ -z "$1" ] && echo "No branch argument supplied. Exit..." && exit 1
 
 export GIT_BRANCH=$1
 BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
