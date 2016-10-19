@@ -91,5 +91,5 @@ sudo mv docker-compose /usr/local/bin
 #sudo service docker stop
 #sudo service docker start
 
-cd /home/vagrant/cloudunit/cu-services && ./build-services.sh
+cd /home/vagrant/cloudunit/cu-services && ./build-services.sh all
 cd /home/vagrant/cloudunit/cu-platform && su -l vagrant -c "/home/vagrant/cloudunit/cu-platform/reset.sh -y"
