@@ -13,6 +13,8 @@
 
 #!/usr/bin/env bash
 
+source /etc/environment
+
 docker-compose kill
 docker-compose rm -f
 docker-compose up -d
