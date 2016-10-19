@@ -34,11 +34,11 @@ Otherwise set up ssh keys for authentication.
 Configure your access URLs by appending following environment variables to `/etc/environment`.
 
 ```
-CU_SUB_DOMAIN=.demo
-CU_MANAGER_URL=https://manager-demo.cloudunit.io
-CU_GITLAB_URL=https://gitlab-demo.cloudunit.io
-CU_JENKINS_URL=https://jenkins-demo.cloudunit.io
-CU_KIBANA_URL=https://kibana-demo.cloudunit.io
+CU_PORTAL_URL=https://portal.domain.com
+CU_MANAGER_URL=https://manager.domain.com
+CU_GITLAB_URL=https://gitlab.domain.com
+CU_JENKINS_URL=https://jenkins.domain.com
+CU_KIBANA_URL=https://kibana.domain.com
 ```
 
 ### As `admincu`
