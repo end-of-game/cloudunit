@@ -24,12 +24,17 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
     @Test
     public void test_shouldCreateApplication() {
         connect();
-        CommandResult result = createApplication();
-        
-        assertThat(result, isSuccessfulCommand());
-        
-        removeCurrentApplication();
-        disconnect();
+        try {
+            CommandResult result = createApplication();
+            
+            try {
+                assertThat(result, isSuccessfulCommand());
+            } finally {
+                removeCurrentApplication();
+            }
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
@@ -37,7 +42,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         CommandResult result = createApplication();
         
         assertThat(result, isFailedCommand());
-        assertThat(result.getException().getMessage(), containsString("You are not connected"));
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     @Ignore
@@ -64,7 +69,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
             CommandResult result = createApplication(applicationName, "xxx");
             
             assertThat(result, isFailedCommand());
-            assertThat(result.getException().getMessage(), containsString("This server image does not exist"));
+            assertThat(result.getException().getMessage(), containsString("No such image"));
         } finally {
             disconnect();
         }
@@ -92,12 +97,12 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         createApplication();
         try {
             disconnect();
-            
             connect();
+            
             CommandResult result = useApplication(applicationName);
             
-            String expected = String.format("Current application : %s", applicationName.toLowerCase());
-            assertEquals(expected, result.getResult().toString());
+            assertThat(result, isSuccessfulCommand());
+            assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
             connect();
             removeApplication();
@@ -110,8 +115,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         CommandResult result = useApplication(applicationName);
         
         assertThat(result, isFailedCommand());
-        String expected = "You are not connected";
-        assertThat(result.getException().getMessage(), containsString(expected));
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     @Test
@@ -134,6 +138,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         try {
             CommandResult result = getShell().executeCommand("stop");
             
+            assertThat(result, isSuccessfulCommand());
             assertThat(result.getResult().toString(), containsString("stopped"));
             assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
@@ -146,11 +151,13 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
     public void test_shouldStopAnApplicationWithArgs() {
         connect();
         createApplication();
-        disconnect();
-        connect();
         try {
+            disconnect();
+            connect();
+
             CommandResult result = stopApplication();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat(result.getResult().toString(), containsString("stopped"));
             assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
@@ -163,8 +170,9 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
     public void test_shouldNotStopAnApplicationBecauseUserIsNotLogged() {
         connect();
         createApplication();
-        disconnect();
         try {
+            disconnect();
+
             CommandResult result = stopCurrentApplication();
             
             assertThat(result, isFailedCommand());
@@ -180,9 +188,10 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
     public void test_shouldNotStopAnApplicationBecauseNoApplicationSelected() {
         connect();
         createApplication();
-        disconnect();
-        connect();
         try {
+            disconnect();
+            connect();
+
             CommandResult result = stopCurrentApplication();
             
             assertThat(result, isFailedCommand());
@@ -196,22 +205,28 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
     @Test
     public void test_shouldNotStopAnApplicationBecauseApplicationDoesNotExist() {
         connect();
-        String name = "qmozkdmqozkd";
-        CommandResult result = stopApplication(name);
-        
-        assertThat(result, isFailedCommand());
-        assertThat(result.getException().getMessage(), containsString("No such application"));
-        assertThat(result.getException().getMessage(), containsString(name));
+        try {
+            String name = "qmozkdmqozkd";
+            CommandResult result = stopApplication(name);
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("No such application"));
+            assertThat(result.getException().getMessage(), containsString(name));
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
     public void test_shouldStartAnApplication() {
         connect();
         createApplication();
-        stopCurrentApplication();
         try {
+            stopCurrentApplication();
+
             CommandResult result = startCurrentApplication();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat(result.getResult().toString(), containsString("started"));
             assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
@@ -228,9 +243,11 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         try {
             CommandResult result = startApplication();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat(result.getResult().toString(), containsString("started"));
             assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
+            removeApplication();
             disconnect();
         }
     }
@@ -289,7 +306,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         CommandResult result = listApplications();
         
         assertThat(result, isFailedCommand());
-        assertThat(result.getException().getMessage(), containsString("You are not connected"));
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     @Test
@@ -299,7 +316,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         try {
             CommandResult result = information();
             
-            assertEquals("Terminated", result.getResult().toString());
+            assertThat(result, isSuccessfulCommand());
         } finally {
             removeApplication();
             disconnect();
@@ -311,7 +328,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         CommandResult result = information();
         
         assertThat(result, isFailedCommand());
-        assertThat(result.getException().getMessage(), containsString("You are not connected"));
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     @Test
@@ -331,11 +348,13 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
     public void test_shouldRemoveApplicationWithArgs() {
         connect();
         createApplication();
-        disconnect();
-        connect();
         try {
+            disconnect();
+            connect();
+
             CommandResult result = removeApplication();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat(result.getResult().toString(), containsString("removed"));
             assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
@@ -350,6 +369,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         try {
             CommandResult result = removeCurrentApplication();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat(result.getResult().toString(), containsString("removed"));
             assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
@@ -357,14 +377,12 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         }
     }
 
-
     @Test
     public void test_shouldNotRemoveApplicationsBecauseUserIsNotLogged() {
         CommandResult result = removeCurrentApplication();
         
         assertThat(result, isFailedCommand());
-        String expected = "You are not connected";
-        assertThat(result.getException().getMessage(), containsString(expected));
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     @Test
@@ -397,6 +415,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         connect();
         try {
             CommandResult result = removeApplication("dzqmodzq", true);
+            
             assertThat(result, isFailedCommand());
             assertThat(result.getException(), instanceOf(CloudUnitCliException.class));
             assertThat(result.getException().getMessage(), containsString("No such application"));
@@ -412,6 +431,7 @@ public abstract class AbstractApplicationCommandsIT extends AbstractShellIntegra
         try {
             CommandResult result = listContainers();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat(result.getResult().toString(), containsString("found"));
         } finally {
             removeApplication();

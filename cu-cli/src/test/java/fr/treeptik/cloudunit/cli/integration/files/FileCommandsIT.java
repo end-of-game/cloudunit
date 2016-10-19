@@ -28,10 +28,11 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
     @After
     public void tearDown() {
         removeApplication();
+        disconnect();
     }
 
     @Test
-    public void test_create_directory() {
+    public void test_createDirectory() {
         useApplication(applicationName);
         openExplorer();
         try {
@@ -46,7 +47,7 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
     }
 
     @Test
-    public void test_enter_into_container_and_upload_file() {
+    public void test_uploadFile() {
         useApplication(applicationName);
         openExplorer();
         try {
@@ -61,7 +62,7 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
     }
 
     @Test
-    public void test_enter_into_container_and_list_files() {
+    public void test_enterIntoContainerAndListFiles() {
         useApplication(applicationName);
         openExplorer();
         try {
@@ -73,7 +74,6 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
         } finally {
             closeExplorer();
         }
-        
     }
 
     @Test
@@ -98,23 +98,25 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
     }
 
     private CommandResult unzip(String remotePathFile) {
-        return getShell().executeCommand("unzip --file " + remotePathFile);
+        return getShell().executeCommand(String.format("unzip --file %s", remotePathFile));
     }
 
     private CommandResult changeDirectory(String path) {
-        return getShell().executeCommand("change-directory " + path);
+        return getShell().executeCommand(String.format("change-directory %s", path));
     }
 
     private CommandResult createDirectory(String path) {
-        return getShell().executeCommand("create-directory --path " + path);
+        return getShell().executeCommand(String.format("create-directory --path %s", path));
     }
 
     private CommandResult uploadPath(String pathFileToUpload) {
-        return getShell().executeCommand("upload-file --path " + pathFileToUpload);
+        return getShell().executeCommand(String.format("upload-file --path %s", pathFileToUpload));
     }
 
     private CommandResult openExplorer() {
-        return getShell().executeCommand("open-explorer --containerName dev-johndoe-" + applicationName + "-tomcat-8");
+        return getShell().executeCommand(String.format("open-explorer --containerName dev-johndoe-%s-%s",
+                applicationName.toLowerCase(),
+                serverType));
     }
 
     private CommandResult closeExplorer() {

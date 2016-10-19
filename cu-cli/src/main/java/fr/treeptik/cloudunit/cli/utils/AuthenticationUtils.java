@@ -105,7 +105,7 @@ public class AuthenticationUtils {
             // trying to connect with host manager
 			String urlToCall = finalHost + urlLoader.connect;
 			restUtils.connect(urlToCall, loginInfo).get("body");
-			applicationUtils.setApplication(null);
+			applicationUtils.setCurrentApplication(null);
 
 			String response = null;
 
@@ -134,7 +134,7 @@ public class AuthenticationUtils {
 		try {
 			restUtils.sendGetCommand(finalHost + "/user/logout", map);
 			map.clear();
-			applicationUtils.setApplication(null);
+			applicationUtils.setCurrentApplication(null);
 			restUtils.localContext = null;
 		} catch (ManagerResponseException e) {
 			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;

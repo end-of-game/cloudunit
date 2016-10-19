@@ -71,7 +71,7 @@ public class FileUtils {
     public String createDirectory(String path) {
         if (checkSecurity()) return null;
         String url = authentificationUtils.finalHost + "/file/container/" + currentContainerName
-                + "/application/" + applicationUtils.getApplication().getName();
+                + "/application/" + applicationUtils.getCurrentApplication().getName();
         try {
             Map<String, Object> results = restUtils.sendPostCommand(url + "?path=" + path, authentificationUtils.getMap(), "");
             statusCommand.setExitStatut(0);
@@ -88,7 +88,7 @@ public class FileUtils {
             statusCommand.setExitStatut(1);
             return true;
         }
-        if (applicationUtils.getApplication() == null) {
+        if (applicationUtils.getCurrentApplication() == null) {
             log.log(Level.SEVERE,
                     "No application is currently selected by the followind command line : use <application name>");
             statusCommand.setExitStatut(1);
@@ -100,7 +100,7 @@ public class FileUtils {
 
     public String openExplorer(String containerName) {
         if (checkSecurity()) return null;
-		Application application = applicationUtils.getApplication();
+		Application application = applicationUtils.getCurrentApplication();
 		Server server = application.getServer();
 		if (server.getName().equalsIgnoreCase(containerName)) {
 			currentContainerName = server.getContainerID();
@@ -201,16 +201,16 @@ public class FileUtils {
         String currentPath = fileName.substring(0, fileName.lastIndexOf("/"));
         fileName = fileName.substring(fileName.lastIndexOf("/")+1);
 		String command = authentificationUtils.finalHost + "/file/unzip/container/" + currentContainerName + "/application/"
-				+ applicationUtils.getApplication().getName() + "?path=" + currentPath + "&fileName=" + fileName;
+				+ applicationUtils.getCurrentApplication().getName() + "?path=" + currentPath + "&fileName=" + fileName;
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put("applicationName", applicationUtils.getApplication().getName());
+		parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
 		try {
 			restUtils.sendPutCommand(command, authentificationUtils.getMap(), parameters).get("body");
 		} catch (ManagerResponseException e) {
 			statusCommand.setExitStatut(1);
 			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
 		}
-		applicationUtils.useApplication(applicationUtils.getApplication().getName());
+		applicationUtils.useApplication(applicationUtils.getCurrentApplication().getName());
 		return null;
 	}
 
@@ -231,7 +231,7 @@ public class FileUtils {
 			params.put("file", resource);
 			params.putAll(authentificationUtils.getMap());
 			restUtils.sendPostForUpload(authentificationUtils.finalHost + "/file/container/" + currentContainerName
-					+ "/application/" + applicationUtils.getApplication().getName() + "?path=" + currentPath, params);
+					+ "/application/" + applicationUtils.getCurrentApplication().getName() + "?path=" + currentPath, params);
 			statusCommand.setExitStatut(0);
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "File not found! Check the path file");
@@ -284,7 +284,7 @@ public class FileUtils {
 		Map<String, Object> params = new HashMap<>();
 		params.putAll(authentificationUtils.getMap());
 		restUtils.sendGetFileCommand(authentificationUtils.finalHost + "/file/container/" + currentContainerName
-				+ "/application/" + applicationUtils.getApplication().getName() + "?path=" + currentPath + "/fileName/"
+				+ "/application/" + applicationUtils.getCurrentApplication().getName() + "?path=" + currentPath + "/fileName/"
 				+ fileName, destFileName, params);
 		statusCommand.setExitStatut(0);
 		return "File correctly send in this default location : " + destFileName;
@@ -304,11 +304,11 @@ public class FileUtils {
 
 	public void displayAvailableContainerNames() {
 		StringBuilder builder = new StringBuilder();
-		Server server = applicationUtils.getApplication().getServer();
+		Server server = applicationUtils.getCurrentApplication().getServer();
 
 		builder.append("\t" + server.getName() + "\t");
 
-		for (Module module : applicationUtils.getApplication().getModules()) {
+		for (Module module : applicationUtils.getCurrentApplication().getModules()) {
 			builder.append("\t" + module.getName() + "\t");
 		}
 		log.log(Level.INFO, builder.toString());

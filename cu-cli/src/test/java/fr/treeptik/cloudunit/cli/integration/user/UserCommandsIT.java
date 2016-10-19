@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.cli.integration.user;
 
+import static fr.treeptik.cloudunit.cli.integration.ShellMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -20,6 +21,7 @@ public class UserCommandsIT extends AbstractShellIntegrationTest {
     public void test00_shouldConnect() {
         CommandResult result = connect();
 
+        assertThat(result, isSuccessfulCommand());
         assertEquals(result.getResult().toString(), "Connection established");
     }
 
@@ -28,8 +30,8 @@ public class UserCommandsIT extends AbstractShellIntegrationTest {
         connect();
         CommandResult result = connect();
         
-        assertThat(result.getResult().toString(), containsString("You are already connected to CloudUnit servers"));
+        assertThat(result, isFailedCommand());
+        assertThat(result.getException().getMessage(), containsString("already connected"));
     }
-
 
 }

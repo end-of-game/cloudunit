@@ -1,15 +1,15 @@
 package fr.treeptik.cloudunit.cli.utils;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.shell.core.ExitShellRequest;
 import org.springframework.stereotype.Component;
 
-import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.JsonConverter;
@@ -23,46 +23,57 @@ public class VolumeService {
 	private Logger log;
 
 	@Autowired
-	private AuthenticationUtils authentificationUtils;
+	private AuthenticationUtils authenticationUtils;
 
 	@Autowired
 	private RestUtils restUtils;
-
-	@Autowired
-	private ShellStatusCommand statusCommand;
 
 	/**
 	 * @param name
 	 * @return
 	 */
 	public String createVolume(String name) {
+	    authenticationUtils.checkConnected();
+	    
+	    getVolumes().stream()
+	        .filter(v -> v.getName().equals(name))
+	        .findAny()
+	        .ifPresent(v -> { throw new CloudUnitCliException("Volume name already exists"); });
+	    
 		try {
 			Map<String, String> parameters = new HashMap<>();
 			parameters.put("name", name);
-			restUtils.sendPostCommand(authentificationUtils.finalHost + "/volume",
-					authentificationUtils.getMap(), parameters);
+			restUtils.sendPostCommand(authenticationUtils.finalHost + "/volume",
+					authenticationUtils.getMap(), parameters);
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(ExitShellRequest.FATAL_EXIT.getExitCode());
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't create volume", e);
 		}
-		statusCommand.setExitStatut(ExitShellRequest.NORMAL_EXIT.getExitCode());
+
 		return name;
+	}
+	
+	private List<Volume> getVolumes() {
+        String response;
+        try {
+            response = restUtils.sendGetCommand(
+                    authenticationUtils.finalHost + "/volume",
+                    authenticationUtils.getMap()).get("body");
+        } catch (ManagerResponseException e) {
+            throw new CloudUnitCliException("Couldn't list volumes", e);
+        }
+        List<Volume> volumes = JsonConverter.getVolumes(response);
+        return volumes;
 	}
 
 	/**
 	 * @return list of volumes as text
 	 */
 	public String displayVolumes() {
-		String response;
-		try {
-			response = restUtils.sendGetCommand(authentificationUtils.finalHost + "/volume",
-					authentificationUtils.getMap()).get("body");
-		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-		}
-		String volumesAsTxt = MessageConverter.buildListVolumes(JsonConverter.getVolumes(response));
-		statusCommand.setExitStatut(0);
+	    authenticationUtils.checkConnected();
+	    
+		List<Volume> volumes = getVolumes();
+		
+		String volumesAsTxt = MessageConverter.buildListVolumes(volumes);
 		return volumesAsTxt;
 	}
 
@@ -71,28 +82,20 @@ public class VolumeService {
 	 * @return
 	 */
 	public String removeVolume(String name) {
-		String response;
-		if (authentificationUtils.getMap().isEmpty()) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
-					+ ANSIConstants.ANSI_RESET;
-		}
-		try {
-			response = restUtils.sendGetCommand(
-					authentificationUtils.finalHost + "/volume",
-					authentificationUtils.getMap()).get("body");
-			List<Volume> volumes = JsonConverter.getVolumes(response);
-			int id = -1;
-			for(Volume var : volumes)
-				if(var.getName().equals(name))
-					id = var.getId();
-			restUtils.sendDeleteCommand(authentificationUtils.finalHost + "/volume/" + id,
-					authentificationUtils.getMap());
+	    authenticationUtils.checkConnected();
+	    
+		int id = getVolumes().stream()
+		        .filter(v -> v.getName().equals(name))
+		        .findAny()
+		        .orElseThrow(() -> new CloudUnitCliException(MessageFormat.format("No such volume \"{0}\"", name)))
+		        .getId();
+		try {			
+			restUtils.sendDeleteCommand(authenticationUtils.finalHost + "/volume/" + id,
+					authenticationUtils.getMap());
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + false + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't remove volume", e);
 		}
-		statusCommand.setExitStatut(0);
-		return "true";
+		
+		return MessageFormat.format("Volume \"{0}\" has been removed", name);
 	}
 }

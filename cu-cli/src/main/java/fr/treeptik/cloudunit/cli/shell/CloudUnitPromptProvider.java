@@ -49,7 +49,7 @@ public class CloudUnitPromptProvider implements PromptProvider, CommandMarker {
             return MessageFormat.format(PROMPT_APPLICATION_SELECTED,
                     APPLICATION_NAME,
                     authenticationUtils.getCurrentInstanceName(),
-                    applicationUtils.getApplication().getName());
+                    applicationUtils.getCurrentApplication().getName());
         } else {
             return MessageFormat.format(PROMPT_EXPLORER,
                     APPLICATION_NAME,

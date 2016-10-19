@@ -50,9 +50,6 @@ public class ModuleUtils {
     private AuthenticationUtils authenticationUtils;
     
     @Autowired
-    private FileUtils fileUtils;
-
-    @Autowired
     private CheckUtils checkUtils;
 
     @Autowired
@@ -67,84 +64,74 @@ public class ModuleUtils {
     @Autowired
     private RestUtils restUtils;
 
-    private String check() {
-        authenticationUtils.checkConnected();
-        applicationUtils.checkApplicationSelected();
-        fileUtils.checkNotInFileExplorer();
-        return "";
-    }
-
     public String getListModules() {
-        check();
+        applicationUtils.checkConnectedAndApplicationSelected();
         
-        String dockerManagerIP = applicationUtils.getApplication().getManagerIp();
+        String dockerManagerIP = applicationUtils.getCurrentApplication().getManagerIp();
         statusCommand.setExitStatut(0);
-        MessageConverter.buildLightModuleMessage(applicationUtils.getApplication(), dockerManagerIP);
+        MessageConverter.buildLightModuleMessage(applicationUtils.getCurrentApplication(), dockerManagerIP);
 
-        int size = applicationUtils.getApplication().getModules().size();
+        int size = applicationUtils.getCurrentApplication().getModules().size();
         return MessageFormat.format(MODULES_COUNT, size);
     }
 
     public String addModule(final String imageName, final File script) {
-        check();
+        applicationUtils.checkConnectedAndApplicationSelected();
+        
+        checkUtils.checkImageExists(imageName);
         
         Map<String, String> parameters = new HashMap<>();
         parameters.put("imageName", imageName);
-        parameters.put("applicationName", applicationUtils.getApplication().getName());
+        parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
+        
         try {
-            if (checkUtils.checkImageNoExist(imageName)) {
-                return "this module does not exist";
-            }
             restUtils.sendPostCommand(authenticationUtils.finalHost + urlLoader.modulePrefix,
                     authenticationUtils.getMap(), parameters).get("body");
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't add module", e);
         }
-        statusCommand.setExitStatut(0);
+        
         return MessageFormat.format(MODULE_ADDED,
                 imageName,
-                applicationUtils.getApplication().getName());
+                applicationUtils.getCurrentApplication().getName());
     }
 
     public String removeModule(String moduleName) {
-        check();
+        applicationUtils.checkConnectedAndApplicationSelected();
 
         Module module = findModule(moduleName);
         
         try {
             restUtils.sendDeleteCommand(
                     authenticationUtils.finalHost + urlLoader.modulePrefix
-                            + applicationUtils.getApplication().getName() + "/" + module.getName(),
+                            + applicationUtils.getCurrentApplication().getName() + "/" + module.getName(),
                     authenticationUtils.getMap()).get("body");
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
             throw new CloudUnitCliException("Couldn't remove module", e);
         }
 
         return MessageFormat.format(MODULE_REMOVED,
                 moduleName,
-                applicationUtils.getApplication().getName());
+                applicationUtils.getCurrentApplication().getName());
     }
 
     private Module findModule(String moduleName) {
-        Guard.guardTrue(!applicationUtils.getApplication().getModules().isEmpty(),
-                NO_MODULES,
-                applicationUtils.getApplication().getName());
+        Guard.guardTrue(!applicationUtils.getCurrentApplication().getModules().isEmpty(), NO_MODULES,
+                applicationUtils.getCurrentApplication().getName());
         
-        Optional<Module> module = applicationUtils.getApplication().getModules().stream()
+        Optional<Module> module = applicationUtils.getCurrentApplication().getModules().stream()
                 .filter(m -> m.getName().endsWith(moduleName))
                 .findAny();
         
         Guard.guardTrue(module.isPresent(), NO_SUCH_MODULE,
-                applicationUtils.getApplication().getName(),
+                applicationUtils.getCurrentApplication().getName(),
                 moduleName);
         
         return module.get();
     }
 
     public String managePort(String moduleName, final String port, final Boolean open) {
-        check();
+        applicationUtils.checkConnectedAndApplicationSelected();
         
         Module module = findModule(moduleName);
         try {
@@ -158,14 +145,15 @@ public class ModuleUtils {
                         }
                     }).get("body");
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't change port", e);
         }
 
         return "OK";
     }
 
     public String runScript(String moduleName, File file) {
+        applicationUtils.checkConnectedAndApplicationSelected();
+        
         Module module = findModule(moduleName);
         
         Map<String, Object> parameters = new HashMap<>();
@@ -177,9 +165,11 @@ public class ModuleUtils {
             urlLoader.modulePrefix,
             module.getName());
         
+        log.info("Running script...");
+        
         restUtils.sendPostForUpload(url, parameters);
         
-        return "The script has been run";
+        return "Done";
     }
 
 }

@@ -92,10 +92,7 @@ public class ApplicationCommands implements CommandMarker {
 			@CliOption(key = "openBrowser", mandatory = false, help = "Open a browser to location",
 			    unspecifiedDefaultValue = "true") boolean openBrowser)
 			throws URISyntaxException, MalformedURLException {
-		if (path.exists() == true && path.isFile() == true) {
-			return applicationUtils.deployFromAWar(path, openBrowser);
-		}
-		return "Check your syntax and option chosen and it's the right path";
+	    return applicationUtils.deployFromAWar(path, openBrowser);
 	}
 
 	@CliCommand(value = "list-aliases", help = "Display all application aliases")

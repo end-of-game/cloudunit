@@ -138,9 +138,13 @@ public abstract class AbstractAliasesCommandsIT extends AbstractShellIntegration
         addAlias();
         try {
             result = removeAlias();
-            assertEquals("This alias has successful been deleted", result.getResult().toString());
+            
+            assertThat(result, isSuccessfulCommand());
+            assertThat(result.getResult().toString(), containsString("removed"));
+            assertThat(result.getResult().toString(), containsString(ALIAS));
+            
             result = listAliases();
-            assertEquals("1 aliases found!", result.getResult().toString());
+            assertThat(result.getResult().toString(), containsString("1 alias found"));
         } finally {
             removeApplication();
             disconnect();
@@ -190,6 +194,6 @@ public abstract class AbstractAliasesCommandsIT extends AbstractShellIntegration
     }
     
     private CommandResult listAliases() {
-        return getShell().executeCommand(String.format("list-aliases --name %s", applicationName));
+        return getShell().executeCommand(String.format("list-aliases --name %s", applicationName.toLowerCase()));
     }
 }

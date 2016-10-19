@@ -108,8 +108,7 @@ public class AbstractEnvironmentVariablesCommandsIT extends AbstractShellIntegra
         try {
             CommandResult result = removeEnvironmentVariable("azerty");
 
-            String expected = String.format("An environment variable has been successfully added to %s", applicationName.toLowerCase());
-            assertNotEquals(expected, result.getResult());
+            assertThat(result, isFailedCommand());
         } finally {
             removeApplication();
             disconnect();
@@ -125,8 +124,8 @@ public class AbstractEnvironmentVariablesCommandsIT extends AbstractShellIntegra
             createEnvironmentVariable("key", "value");
             CommandResult result = listEnvironmentVariables();
             
-            String expected = "1 variables found!";
-            assertEquals(expected, result.getResult().toString());
+            assertThat(result.getResult().toString(), containsString("1"));
+            assertThat(result.getResult().toString(), containsString("found"));
         } finally {
             removeApplication();
             disconnect();

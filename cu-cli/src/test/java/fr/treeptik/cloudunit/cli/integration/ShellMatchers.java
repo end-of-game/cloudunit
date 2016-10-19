@@ -25,20 +25,21 @@ public class ShellMatchers {
             this.success = success;
         }
 
-        private static String getSuccessString(boolean success) {
-            return success ? "success" : "failure";
-        }
-
         @Override
         public void describeTo(Description description) {
             description.appendText("Command to result in ");
-            description.appendText(getSuccessString(success));
+            description.appendText(success ? "success" : "failure");
         }
         
         @Override
         protected void describeMismatchSafely(CommandResult item, Description mismatchDescription) {
             mismatchDescription.appendText("was ");
-            mismatchDescription.appendText(getSuccessString(item.isSuccess()));
+            mismatchDescription.appendText(item.isSuccess() ? "success" : "failure");
+            mismatchDescription.appendText(" [");
+            mismatchDescription.appendText(item.isSuccess()
+                    ? item.getResult().toString()
+                    : item.getException().getMessage());
+            mismatchDescription.appendText("]");
         }
 
         @Override

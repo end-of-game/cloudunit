@@ -61,7 +61,7 @@ public class SnapshotUtils {
 		if (applicationName != null) {
 			applicationUtils.useApplication(applicationName);
 		} else {
-			applicationName = applicationUtils.getApplication().getName();
+			applicationName = applicationUtils.getCurrentApplication().getName();
 		}
 
 		Map<String, String> parameters = new HashMap<>();
