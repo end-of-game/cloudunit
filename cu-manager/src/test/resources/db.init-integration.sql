@@ -94,10 +94,15 @@ VALUES
 ("61613", "STOMP", 90),
 ("61614", "WEBSERVICES", 90),
 
+-- rabbitmq ports values --  
+
 ("15672", "WEBCONSOLE", 100),
 ("5672", "AMQP", 100),
+("5672", "AMQP", 100),
 
+("9300", "HTTP", 110),
 ("9200", "TCP", 110);
+
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
