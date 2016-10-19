@@ -18,6 +18,7 @@ source /etc/environment
 function reset {
     docker rm -vf $(docker ps -aq)
     docker volume rm $(docker volume ls -q)
+    # in the future the networks too
 }
 
 echo -n "Do you agree with this? [yes or no]: "
@@ -26,6 +27,7 @@ case $yno in
 
         [yY] | [yY][Ee][Ss] )
                 echo "Agreed"
+                ./configure.sh
                 reset
                 ./start.sh
                 ;;

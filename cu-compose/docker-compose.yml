@@ -150,6 +150,7 @@ services:
       ports:
           - '4444:4444'
       network_mode: bridge
+
   selenium-firefox:
       container_name: selenium-firefox
       image: selenium/node-firefox-debug
@@ -161,6 +162,7 @@ services:
       network_mode: bridge
       depends_on:
           - selenium-hub
+
   selenium-chrome:
       container_name: selenium-chrome
       image: selenium/node-chrome-debug

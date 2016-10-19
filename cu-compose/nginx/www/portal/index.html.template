@@ -22,21 +22,21 @@
 			<div class="main">
 				<ul class="cbp-ig-grid">
 					<li class="cloudunit-container">
-						<a href="https://CU_MANAGER_URL/#/login" target="_blank">
+						<a href="https://CU_MANAGER_DOMAIN/#/login" target="_blank">
 							<div class="cloudunit"></div>
 							<br>
 							<h3 class="cbp-ig-title">CloudUnit Manager</h3>
 						</a>
 					</li>
 					<li class="jenkins-container">
-						<a href="https://CU_JENKINS_URL/" target="_blank">
+						<a href="https://CU_JENKINS_DOMAIN/" target="_blank">
 							<div class="jenkins"></div>
 							<br>
 							<h3 class="cbp-ig-title">Jenkins</h3>
 						</a>
 					</li>
 					<li class="gitlab-container">
-						<a href="https://CU_GITLAB_URL/" target="_blank">
+						<a href="https://CU_GITLAB_DOMAIN/" target="_blank">
 							<div class="gitlab"></div>
 							<br>
 							<h3 class="cbp-ig-title">GitLab</h3>
@@ -50,7 +50,7 @@
 						</a>
 					</li>
 					<li class="elastic-container">
-						<a href="https://CU_KIBANA_URL/" target="_blank">
+						<a href="https://CU_KIBANA_DOMAIN/" target="_blank">
 							<div class="elastic"></div>
 							<br>
 							<h3 class="cbp-ig-title">Elastic Search</h3>

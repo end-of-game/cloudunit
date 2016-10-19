@@ -22,6 +22,10 @@ ENV LC_ALL en_US.UTF-8
 ENV MAVEN_HOME /usr/share/maven
 ENV JAVA_HOME /cloudunit/java/jdk1.8.0_25
 
+# git branch being bundled in this docker image
+ARG GIT_BRANCH
+ENV GIT_BRANCH ${GIT_BRANCH:master}
+
 # Dépendances Debian
 RUN apt-get update
 RUN apt-get install -y curl
@@ -47,7 +51,7 @@ RUN chown -R cloudunit /home/cloudunit/app
 
 WORKDIR /home/cloudunit/app
 
-RUN cd /home/cloudunit/app && git clone https://github.com/Treeptik/CloudUnit.git -b dev --depth 1
+RUN cd /home/cloudunit/app && git clone https://github.com/Treeptik/CloudUnit.git -b ${GIT_BRANCH} --depth 1
 
 # Add nodesource PPA for specific version of node and install
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
