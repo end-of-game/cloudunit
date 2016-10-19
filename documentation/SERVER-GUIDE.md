@@ -61,15 +61,6 @@ You may use the following template:
 # label for UI
 cloudunit.instance.name=PROD
 
-# database password
-database.password=changeit
-
-# database password must be the same in cu-platform/docker-compose.yml
-# database.hostname=cuplatform_mysql_1.mysql.cloud.unit
-# database.port=3306
-# database.schema=cloudunit
-# database.user=root
-
 #mail server configuration :
 #admin.email=support.cloudunit@treeptik.fr
 #email.active=true
@@ -85,25 +76,25 @@ database.password=changeit
 Run the command below as `admincu` to build Docker images.
 
 ```
-cd /home/admincu/cloudunit/cu-service && ./build-services.sh all
+cd ~/cloudunit/cu-services && ./build-services.sh all
 ```
 
 You can check the previous step if you want.
 
 ```
-cd /home/admincu/cloudunit/cu-service && ./check_build_images.sh
+cd ~/cloudunit/cu-services && ./check_build_images.sh
 ```
 
 Build the manager.
 
 ```
-cd /home/admincu/cloudunit/cu-manager/dockerhub && docker build -t cloudunit/manager .
+cd ~/cloudunit/cu-manager/dockerhub && docker build -t cloudunit/manager .
 ```
 
 To finish you have to run the platform's (re)init script.
 
 ```
-cd /home/admincu/cloudunit/cu-compose && ./re-init.sh
+cd ~/cloudunit/cu-compose && ./re-init.sh
 ```
 
 # FAQ
@@ -118,7 +109,7 @@ apt-get install -y linux-image-extra-$(uname -r)
 ## How to restart the production environment without reseting data
 
 ```
-/home/admincu/cloudunit/cu-compose/restart.sh
+~/cloudunit/cu-compose/restart.sh
 ```
 
 ## How to reset the production environment 
@@ -146,7 +137,7 @@ NGINX is the entrypoint of the Cloudunit PaaS frontend and is provided as a Dock
 SSL certificates directory location:
 
 ```
-/home/admincu/cloudunit/cu-compose/nginx/DOMAIN_NAME/
+~/cloudunit/cu-compose/nginx/DOMAIN_NAME/
 ```
 
 NGINX global configuration for domain wildcard:
@@ -159,7 +150,7 @@ NGINX domain configuration for apps (gitlab, jenkins, admin...):
 Please rename the following file with your domain name and customize it.
 
 ```
-/home/admincu/cloudunit/cu-compose/nginx/sites-enabled/cloudunit.conf
+~/cloudunit/cu-compose/nginx/sites-enabled/cloudunit.conf
 ```
 
 ### SSL Certificates
