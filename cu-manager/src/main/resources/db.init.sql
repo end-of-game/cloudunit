@@ -97,7 +97,10 @@ VALUES
 ("15672", "WEBCONSOLE", 100),
 ("5672", "AMQP", 100),
 
+-- elastic ports --
+("9300", "HTTP", 110),
 ("9200", "TCP", 110);
+
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES

@@ -21,10 +21,7 @@ public enum RemoteExecAction {
     MODULE_POST_START("Module post start just one time", "/opt/cloudunit/hooks/module-post-start.sh"),
     CLONE_PRE_ACTION("Before restoring an application", "/opt/cloudunit/hooks/clone-pre-action.sh"),
     CLONE_POST_ACTION("After restoring an application", "/opt/cloudunit/hooks/clone-post-action.sh"),
-    GATHER_CU_ENV("Gather CU env variables", "/opt/cloudunit/scripts/env.sh"),
-    ELK_CONFIG_PROXYBEAT_YAML("Configure yaml template", "/opt/cloudunit/scripts/elk_config.sh IP_ELK"),
-    ELK_RUN_PROXYBEAT("Run ProxyBeat", "/opt/cloudunit/scripts/elk_run_proxybeat.sh"),
-    ELK_UPDATE_KIBANA("Update Kibana", "/opt/cloudunit/scripts/elk_update_kibana.sh CONTAINER");
+    GATHER_CU_ENV("Gather CU env variables", "/opt/cloudunit/scripts/env.sh");
 
     private final String label;
     private String command;

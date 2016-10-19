@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-# logs nginx
-docker-compose logs -f nginx
+# logs tomcat
+docker-compose logs -f tomcat
+
 

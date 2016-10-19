@@ -199,32 +199,6 @@ public class ServerServiceImpl implements ServerService {
 			}
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 
-			try {
-				Map<String, String> kvStore = new HashMap<String, String>() {
-					private static final long serialVersionUID = 1L;
-					{
-						put("IP_ELK", "192.168.50.4");
-					}
-				};
-				String exec = dockerService.execCommand(server.getName(), RemoteExecAction.ELK_CONFIG_PROXYBEAT_YAML.getCommand(kvStore));
-                System.out.println(exec);
-                exec = dockerService.execCommand(server.getName(), RemoteExecAction.ELK_RUN_PROXYBEAT.getCommand(), false, true);
-                System.out.println(exec);
-
-                final String container = server.getName();
-                kvStore = new HashMap<String, String>() {
-                    private static final long serialVersionUID = 1L;
-                    {
-                        put("CONTAINER", container);
-                    }
-                };
-                exec = dockerService.execCommand(server.getName(), RemoteExecAction.ELK_UPDATE_KIBANA.getCommand(kvStore));
-                System.out.println(exec);
-			} catch (FatalDockerJSONException fex) {
-				fex.printStackTrace();
-				throw new ServiceException(fex.getMessage());
-			}
-
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);
 			// Removing a creating container if an error has occurred with
