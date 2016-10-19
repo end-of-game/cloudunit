@@ -29,6 +29,7 @@
         '$stateParams',
         '$q',
         'ApplicationService',
+        'VolumeService',
         'ErrorService',
         volumeCtrl
       ],
@@ -36,7 +37,7 @@
     }
   }
 
-  function volumeCtrl($stateParams, $q, ApplicationService, ErrorService) {
+  function volumeCtrl($stateParams, $q, ApplicationService, VolumeService, ErrorService) {
 
     var vm = this;
     vm.volumes = [];
@@ -90,14 +91,14 @@
     }
 
     function getListVolume() {
-        ApplicationService.getListVolume ( )
+        VolumeService.getListVolume ( )
         .then ( function(response) {
           vm.volumes = response;
         });
     }
 
     function setLinkVolume() {
-        ApplicationService.linkVolume ( $stateParams.name, vm.myContainer.name, vm.createLinkPath, vm.IReadOnly, vm.volumePicked )
+        VolumeService.linkVolume ( $stateParams.name, vm.myContainer.name, vm.createLinkPath, vm.IReadOnly, vm.volumePicked )
         .then ( function(response) {
             cleanMessage();
             vm.getLinkVolume();
@@ -116,7 +117,7 @@
     }
 
     function breakLink(volume) {
-        ApplicationService.unLinkVolume ( vm.myContainer.name, volume.name )
+        VolumeService.unLinkVolume ( vm.myContainer.name, volume.name )
         .then ( function(response) {
             vm.getLinkVolume();
             cleanMessage();
@@ -132,9 +133,16 @@
     }
 
     function getLinkVolume() {
-        ApplicationService.getLinkVolume ( vm.myContainer.name)
+        VolumeService.getLinkVolume ( vm.myContainer.name)
         .then ( function(response) {
             vm.listVolumes = response;
+            
+            angular.forEach(vm.listVolumes, function(volume, index) {
+              VolumeService.getLinkVolumeAssociation ( volume.id )
+                .then ( function(response) {
+                  vm.listVolumes[index].volumeAssociation = response[response.map(function(x) {return x.application; }).indexOf($stateParams.name)];
+                });
+            });
         });
     }
 

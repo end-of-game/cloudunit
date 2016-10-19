@@ -28,7 +28,7 @@
     <form id="add-ports"
           name="addPortsForm"
           class="clearfix" novalidate=""
-          data-ng-submit="editVolume.addVolume()">
+          data-ng-submit="editVolume.addVolume(editVolume.newVolumeName)">
 
       <div class="input-group-inline col-xs-12">
         <input type="text"
@@ -38,7 +38,7 @@
             required="">
         <span class="bar"></span>
         <label class="label-effect">Volume name</label>
-        <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right" ng-click="editVolume.addVolume(editVolume.newVolumeName)">Create volume</button>
+        <button ng-disabled="!editVolume.newVolumeName"  class="button raised pull-right">Create volume</button>
       </div>
     </form>
 
@@ -61,13 +61,22 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th>Application linked</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="volume in editVolume.volumes">
+        <tr ng-repeat="volume in editVolume.volumes track by $index">
           <td>
             <p ng-bind="volume.name"></p>
+          </td>
+          <td>
+            <a ui-sref="editApplication.settingsVolume({ name: application.name })" ng-repeat="application in volume.applications track by $index">
+              <span>{{application.displayName}}</span>
+            </a>
+            <span ng-if="volume.applications.length === 0">
+              No application linked
+            </span>
           </td>
           <td>
             <button class="toggle-modal icon-button secondary allowed danger"
@@ -84,11 +93,21 @@
                 sweet-confirm-option="{'title':'Deleted!','text':'Your volume has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
                 sweet-cancel-option="{'title':'Cancelled!','text':'Your volume is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
                 sweet-on-confirm="editVolume.deleteVolume(volume.id)">
+                ng-click="editVolume.deleteVolume(volume.id)"
+                ng-disabled="volume.applications.length > 0">
               <i class="icon-whhg trash"></i>
             </button> 
           </td>
         </tr>
       </tbody>
 		</table>
+    <div class="alert alert-danger" data-ng-show="editVolume.errorVolumeDelete">
+      <button type="button"
+              class="close"
+              ng-click="editVolume.errorVolumeDelete = ''">
+        <span>&times;</span>
+      </button>
+      <p>{{editVolume.errorVolumeDelete}}</p>
+    </div>
 	</div>
 </div>

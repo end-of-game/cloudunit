@@ -1,6 +1,7 @@
 package fr.treeptik.cloudunit.service;
 
 import java.util.List;
+import java.util.Set;
 
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -26,5 +27,7 @@ public interface VolumeService {
 	VolumeAssociation saveAssociation(VolumeAssociation volumeAssociation);
 
 	void removeAssociation(VolumeAssociation volumeAssociation);
+
+	Set<VolumeAssociation> loadVolumeAssociations(int id);
 
 }

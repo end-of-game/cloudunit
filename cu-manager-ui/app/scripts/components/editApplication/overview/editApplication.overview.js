@@ -106,22 +106,19 @@
       }
     }
 
-    // Démarrage de l'application
     function startApplication(applicationName) {
       ApplicationService.start(applicationName)
         .then(function() {
-          refreshEnvVar();
+          initializeEnvVar();
           $scope.$emit('workInProgress', {delay: 3000});
         });
     }
 
-    // Arrêt de l'application
     function stopApplication(applicationName) {
       ApplicationService.stop(applicationName);
       $scope.$emit('workInProgress', {delay: 3000});
     }
 
-    // Suppression d'un module
     function removeModule ( applicationName, moduleName ) {
       return ModuleService.removeModule ( applicationName, moduleName )
         .then(function() {

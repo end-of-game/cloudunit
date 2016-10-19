@@ -33,6 +33,15 @@ public class VolumeAssociation implements Serializable {
 		return volumeAssociationId;
 	}
 
+
+	public Server getServer() {
+		return volumeAssociationId.getServer();
+	}
+
+	public Volume getVolume() {
+		return volumeAssociationId.getVolume();
+	}
+	
 	public void setVolumeAssociationId(VolumeAssociationId volumeAssociationId) {
 		this.volumeAssociationId = volumeAssociationId;
 	}

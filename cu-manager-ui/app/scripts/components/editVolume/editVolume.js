@@ -37,17 +37,20 @@
       controller: [
         'FeedService',
         'ApplicationService',
+        'VolumeService',
         'ErrorService',
+        '$resource',
         EditVolumeCtrl
       ],
       controllerAs: 'editVolume',
     };
   }
 
-  function EditVolumeCtrl (FeedService, ApplicationService, ErrorService) {
+  function EditVolumeCtrl (FeedService, ApplicationService, VolumeService, ErrorService, $resource) {
 
     var vm = this;
     vm.errorVolumeCreate = "";
+    vm.errorVolumeDelete = "";
 
     vm.addVolume = addVolume;
     vm.deleteVolume = deleteVolume;
@@ -59,29 +62,49 @@
     ////////////////////////////////////////////////////
 
     function addVolume ( volumeName ) {
-      ApplicationService.addVolume ( volumeName )
+      VolumeService.addVolume ( volumeName )
         .then ( function(response) {
           vm.newVolumeName = "";
           vm.errorVolumeCreate = '';
+          vm.errorVolumeDelete = "";
           getListVolumes();
         })
         .catch(function(response) {
+          vm.errorVolumeDelete = "";
           vm.errorVolumeCreate = response.data.message;
+          getListVolumes();
         });  
     }
 
     function deleteVolume (id) {
-      ApplicationService.deleteVolume ( id )
+      VolumeService.deleteVolume ( id )
         .then ( function(response) {
+          getListVolumes();
+        })
+        .catch(function(response) {
+          vm.errorVolumeCreate = "";
+          vm.errorVolumeDelete = response.data.message;
           getListVolumes();
         }); 
     }
 
     function getListVolumes() {
-      ApplicationService.getListVolume ( )
-        .then ( function(response) {
+      VolumeService.getListVolume ( )
+        .then(function(response) {
           vm.volumes = response;
-        });
+          angular.forEach(vm.volumes, function(volume, volumeIndex) {
+            
+            VolumeService.getLinkVolumeAssociation ( volume.id )
+              .then(function(response) {
+                vm.volumes[volumeIndex].applications = [];
+                angular.forEach(response, function(application, applicationIndex) { 
+                  ApplicationService.findByName( application.application ).then(function(response) {
+                      vm.volumes[volumeIndex].applications.push(response);
+                  });
+                });
+            });
+          });
+      });      
     }
   }
 }) ();
