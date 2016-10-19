@@ -68,7 +68,7 @@ function redis {
 }
 
 function tools {
-    docker build --rm $CACHE_STRATEGY -t cloudunit/fatjar images/tools/java
+    docker build --rm $CACHE_STRATEGY -t cloudunit/java images/tools/java
 }
 
 case "$1" in
