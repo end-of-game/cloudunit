@@ -1,6 +1,6 @@
 
 server {
-    server_name CU_PORTAL_URL;
+    server_name CU_PORTAL_DOMAIN;
     listen 443 ssl;
     ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
     ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
@@ -8,7 +8,7 @@ server {
 }
 
 server {
-    server_name CU_MANAGER_URL;
+    server_name CU_MANAGER_DOMAIN;
     listen 443 ssl;
     ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
     ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
@@ -18,7 +18,7 @@ server {
 }
 
 server {
-    server_name CU_GITLAB_URL
+    server_name CU_GITLAB_DOMAIN;
     listen 443 ssl;
     ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
     ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
@@ -28,7 +28,7 @@ server {
 }
 
 server {
-    server_name CU_JENKINS_URL;
+    server_name CU_JENKINS_DOMAIN;
     listen 443 ssl;
     ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
     ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;

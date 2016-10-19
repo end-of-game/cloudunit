@@ -4,7 +4,7 @@ set -e
 
 function waitFor ( ) {
   echo "Waiting for" $1 "Up and Running"
-  until $(curl --output /dev/null --silent --head --fail $2); do
+  until (curl --output /dev/null --silent --head $2); do
     sleep 2s
   done
   echo "$1 is ready"

@@ -128,11 +128,11 @@ services:
           - /srv/gitlab/config:/etc/gitlab
           - /srv/gitlab/logs:/var/log/gitlab
           - /srv/gitlab/data:/var/opt/gitlab
-      # Define the CU_GITLAB_URL into /etc/environment
-      hostname: '${CU_GITLAB_URL}'
+      # Define the CU_GITLAB_DOMAIN into /etc/environment
+      hostname: '${CU_GITLAB_DOMAIN}'
       #environment:
       #    GITLAB_OMNIBUS_CONFIG: |
-      #        external_url 'https://${CU_GITLAB_URL}'
+      #        external_url 'https://${CU_GITLAB_DOMAIN}'
       network_mode: bridge
 
   jenkins:

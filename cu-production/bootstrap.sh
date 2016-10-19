@@ -12,7 +12,7 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     echo "This script must be executed with root privileges."
     exit 1
 fi
-    
+
 [ -z "$1" ] && echo "No branch argument supplied. Exit..." && exit 1
 
 export GIT_BRANCH=$1
