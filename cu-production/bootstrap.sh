@@ -36,6 +36,7 @@ apt-get install -y nmap
 apt-get install -y htop
 apt-get install -y ncdu
 apt-get install -y git
+apt-get install -y haveged
 
 # CLONE CLOUDUNIT
 cd /home/$CU_USER && git clone https://github.com/Treeptik/cloudunit.git -b $GIT_BRANCH
