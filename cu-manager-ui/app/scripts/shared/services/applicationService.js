@@ -58,11 +58,7 @@ function ApplicationService ( $resource, $http, $interval ) {
         restart: restart,
         init: init,
         state: {},
-        stopPolling: stopPolling,
-        getVariableEnvironment: getVariableEnvironment,
-        getListSettingsEnvironmentVariable: getListSettingsEnvironmentVariable,
-        addEnvironmentVariable: addEnvironmentVariable,
-        deleteEnvironmentVariable: deleteEnvironmentVariable
+        stopPolling: stopPolling
     };
 
 
@@ -238,46 +234,6 @@ function removePort ( applicationName, number ) {
     }
     );
     return dir.update( { }, data ).$promise;
-}
-
-// Gestion des variables environnement
-
-function getListSettingsEnvironmentVariable ( applicationName, containerName ) {
-    var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables' );
-    return dir.query ( {
-        applicationName: applicationName,
-        containerName: containerName
-    } ).$promise;      
-}
-
-function addEnvironmentVariable ( applicationName, containerName, environmentVariableKey, environmentVariableValue ) {
-    var data = {
-        keyEnv: environmentVariableKey,
-        valueEnv: environmentVariableValue
-    };
-
-    var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables' );
-    return dir.save ( {
-        applicationName: applicationName,
-        containerName: containerName
-    }, data ).$promise;
-}
-
-function deleteEnvironmentVariable ( applicationName, containerName, environmentVariableID ) {
-    var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables/:id' );
-    return dir.delete ( { 
-        applicationName: applicationName,
-        containerName: containerName,
-        id: environmentVariableID
-    }, {} ).$promise; 
-}
-
-function getVariableEnvironment ( applicationName, containerName ) {
-    var dir = $resource ( 'application/:applicationName/container/:containerName/env' );
-    return dir.query ( {
-        applicationName: applicationName,
-        containerName: containerName
-    } ).$promise;      
 }
 
 }
