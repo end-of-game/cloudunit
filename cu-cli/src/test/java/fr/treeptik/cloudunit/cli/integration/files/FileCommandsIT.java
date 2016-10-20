@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.cli.integration.files;
 
+import static fr.treeptik.cloudunit.cli.integration.ShellMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -33,13 +34,13 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
 
     @Test
     public void test_createDirectory() {
-        useApplication(applicationName);
         openExplorer();
         try {
             createDirectory("/opt/cloudunit/temporary");
             changeDirectory("/opt/cloudunit");
             CommandResult result = listFiles();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat("Directory is created", result.getResult().toString(), containsString("temporary"));
         } finally {
             closeExplorer();
@@ -48,13 +49,13 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
 
     @Test
     public void test_uploadFile() {
-        useApplication(applicationName);
         openExplorer();
         try {
             changeDirectory("/opt");
             uploadPath("src/test/resources/my-beautiful-file.txt");
             CommandResult result = listFiles();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat("File is uploaded", result.getResult().toString(), containsString("my-beautiful-file.txt"));
         } finally {
             closeExplorer();
@@ -63,7 +64,6 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
 
     @Test
     public void test_enterIntoContainerAndListFiles() {
-        useApplication(applicationName);
         openExplorer();
         try {
             listFiles();
@@ -78,7 +78,6 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
 
     @Test
     public void test_unzip() {
-        useApplication(applicationName);
         openExplorer();
         try {
             listFiles();
@@ -87,6 +86,7 @@ public class FileCommandsIT extends AbstractShellIntegrationTest {
             unzip("/opt/cloudunit/compressed.tar");
             CommandResult result = listFiles();
             
+            assertThat(result, isSuccessfulCommand());
             assertThat("File is unzipped", result.getResult().toString(), containsString("my-beautiful-file.txt"));
         } finally {
             closeExplorer();

@@ -69,8 +69,8 @@ public class ModuleCommands implements CommandMarker {
         return moduleUtils.managePort(moduleName, port, false);
     }
 
-    @CliCommand(value = "display-modules", help = "Display information about all modules of the current application")
-    public String getApplication() {
+    @CliCommand(value = "list-modules", help = "Display information about all modules of the current application")
+    public String listModules() {
         return moduleUtils.getListModules();
     }
     

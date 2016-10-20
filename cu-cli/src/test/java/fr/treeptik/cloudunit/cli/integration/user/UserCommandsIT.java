@@ -18,7 +18,7 @@ public class UserCommandsIT extends AbstractShellIntegrationTest {
     }
 
     @Test
-    public void test00_shouldConnect() {
+    public void test_shouldConnect() {
         CommandResult result = connect();
 
         assertThat(result, isSuccessfulCommand());
@@ -26,7 +26,7 @@ public class UserCommandsIT extends AbstractShellIntegrationTest {
     }
 
     @Test
-    public void test01_shouldNotConnectCausedByAlreadyConnected() {
+    public void test_shouldNotConnectCausedByAlreadyConnected() {
         connect();
         CommandResult result = connect();
         
