@@ -27,6 +27,7 @@
       controller: [
         '$scope',
         'ApplicationService',
+        'EnvironmentVariableService',
         'ModuleService',
         '$filter',
         '$stateParams',
@@ -36,7 +37,7 @@
     };
   }
 
-  function OverviewCtrl($scope, ApplicationService, ModuleService, $filter, $stateParams){
+  function OverviewCtrl($scope, ApplicationService, EnvironmentVariableService, ModuleService, $filter, $stateParams){
 
     var vm = this;
 
@@ -65,12 +66,12 @@
 
 
     function initializeEnvVar() {
-      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
+      EnvironmentVariableService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
         vm.app.env = data;
 
         angular.forEach(vm.app.modules, function(value, key) {
             vm.portList[value.id] = value.ports;
-            ApplicationService.getVariableEnvironment($stateParams.name, value.name)
+            EnvironmentVariableService.getVariableEnvironment($stateParams.name, value.name)
             .then(function successCallback(response) {
               vm.listEnvModule[value.id] = response;
             });
@@ -79,7 +80,7 @@
     }
 
     function refreshEnvVar () {
-      ApplicationService.getVariableEnvironment(vm.app.name, vm.app.server.name)
+      EnvironmentVariableService.getVariableEnvironment(vm.app.name, vm.app.server.name)
       .then ( function (data) {
         vm.app.env = data;
       });

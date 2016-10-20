@@ -29,6 +29,7 @@
         '$stateParams',
         '$q',
         'ApplicationService',
+        'EnvironmentVariableService',
         'ErrorService',
         EnvironmentCtrl
       ],
@@ -36,7 +37,7 @@
     }
   }
 
-  function EnvironmentCtrl($stateParams, $q, ApplicationService, ErrorService) {
+  function EnvironmentCtrl($stateParams, $q, ApplicationService, EnvironmentVariableService, ErrorService) {
 
     var vm = this;
     vm.env = [];
@@ -51,45 +52,40 @@
     vm.manageNoticeMsg = '';
     vm.manageErrorMsg = '';
 
-    vm.predicate = 'value';
+    vm.predicate = 'valueEnv';
     vm.reverse = false;
     vm.order = order;
 
-    vm.editEnv = editEnv;
     vm.deleteEnv = deleteEnv;
     vm.addEnv = addEnv;
+    vm.refreshListEnvironmentVariable = refreshListEnvironmentVariable;
+    vm.getContainers = getContainers;
 
     vm.$onInit = function() {  
-      getContainers()
-      .then(function() {
-        getListEnvironmentVariable();
-      })
-      .catch(function(response) {
-         ErrorService.handle(response);
-      });
+      refreshListEnvironmentVariable();
     }
     
     ////////////////////////////////////////////////
 
     function getListEnvironmentVariable() {
-      ApplicationService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.name)
+      EnvironmentVariableService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.name)
         .then(function(response) {
           vm.env = response;
-          console.log(response);
         })
         .catch(function(response) {
           ErrorService.handle(response);
         });
     }
 
-    function getContainers ( selectedContainer ) {
+    function getContainers ( ) {
       var deferred = $q.defer ();
-      vm.isLoading = true;
       ApplicationService.listContainers ( $stateParams.name )
         .then ( function ( containers ) {
           vm.containers = containers;
-          vm.myContainer = selectedContainer || containers[0];
-          vm.isLoading = false;
+          // if empty object
+          if(Object.getOwnPropertyNames(vm.myContainer).length === 0) {
+            vm.myContainer = containers[0];
+          }
           deferred.resolve ( containers );
         } )
         .catch ( function ( response ) {
@@ -98,8 +94,18 @@
         return deferred.promise;
     }
 
+    function refreshListEnvironmentVariable () {
+      getContainers()
+        .then(function() {
+          getListEnvironmentVariable();
+        })
+        .catch(function(response) {
+          ErrorService.handle(response);
+        });
+    }
+
     function deleteEnv (environmentVariable) {
-      ApplicationService.deleteEnvironmentVariable (  $stateParams.name, vm.myContainer.name, environmentVariable.id )
+      EnvironmentVariableService.deleteEnvironmentVariable (  $stateParams.name, vm.myContainer.name, environmentVariable.id )
         .then ( function() {
           cleanMessage();
           vm.env.splice(vm.env.indexOf(environmentVariable), 1);
@@ -107,43 +113,17 @@
         } )
         .catch (errorManageEnvironment);
     }
-    
-    function editEnv (environmentVariableID, environmentVariableKey, environmentVariableValue) {
-      console.log('ID', environmentVariableID);
-      console.log('KEY', environmentVariableKey);
-      console.log('VALUE', environmentVariableValue);
-      ApplicationService.editEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableID, environmentVariableKey,
-      environmentVariableValue)
-        .then(function(env) {
-          cleanMessage();
-          getListEnvironmentVariable();
-          var elementPos = vm.env.map(function(x) {return x.id; }).indexOf(environmentVariableID);         
-          vm.env[elementPos] = env;
-          vm.manageNoticeMsg = 'The variable has been edited !';
-        })
-        .catch (function(response) {
-          getListEnvironmentVariable();
-          errorManageEnvironment(response);
-        });
-    }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
-      ApplicationService.addEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue)
+      EnvironmentVariableService.addEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue)
         .then ( function(env) {
           cleanMessage();
           getListEnvironmentVariable();
           vm.addNoticeMsg = 'Variable successfully created !';
+          vm.environmentVariableKey = '';
+          vm.environmentVariableValue = '';
         } )
         .catch (errorAddEnvironment);
-    }
-
-    function errorScript (res) {
-      if(res.data.message) {
-        vm.manageNoticeMsg = res.data.message;
-      } else {
-        vm.manageNoticeMsg = 'An error has been encountered!';
-      }
-      vm.manageErrorMsg = '';
     }
 
     function errorAddEnvironment (res) {
