@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.*;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.shell.core.CommandResult;
 
@@ -19,6 +20,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         super(serverType);
     }
 
+    @Ignore
     @Test
     public void test00_shouldSnapshotAnApp() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
@@ -30,6 +32,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertEquals(expectedResult, result);
     }
 
+    @Ignore
     @Test
     public void test01_shouldNotSnapshotAnAppBecauseUserIsNotLogged() {
         CommandResult cr = getShell().executeCommand("use " + applicationName);
@@ -39,6 +42,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertThat(result, containsString(expectedResult));
     }
 
+    @Ignore
     @Test
     public void test02_shouldNotSnapshotAnAppBecauseApplicationNotSelected() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
@@ -48,6 +52,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertThat(result, containsString(expectedResult));
     }
 
+    @Ignore
     @Test
     public void test03_shouldNotSnapshotAnAppBecauseTagNameAlreadyExists() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
@@ -58,6 +63,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertThat(result, containsString(expectedResult));
     }
 
+    @Ignore
     @Test
     public void test10_shouldCloneAnApp() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
@@ -67,6 +73,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertEquals(expectedResult, result);
     }
 
+    @Ignore
     @Test
     public void test11_shouldNotCloneAnAppBecauseTagNameDoesNotExist() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
@@ -76,6 +83,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertThat(result, containsString(expectedResult));
     }
 
+    @Ignore
     @Test
     public void test12_shouldNotCloneAnAppBecauseUserIsNotLogged() {
         CommandResult cr = getShell().executeCommand("clone --tag " + TAG_NAME + "1 --applicationName " + applicationName + "cloned2");
@@ -84,6 +92,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertThat(result, containsString(expectedResult));
     }
 
+    @Ignore
     @Test
     public void test20_shouldListSnapshots() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
@@ -93,6 +102,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertEquals(expectedResult, result);
     }
 
+    @Ignore
     @Test
     public void test21_shouldNotListSnapshotsBecauseUserIsNotLogged() {
         CommandResult cr = getShell().executeCommand("list-snapshot");
@@ -101,6 +111,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertThat(result, Matchers.containsString(expectedResult));
     }
 
+    @Ignore
     @Test
     public void test30_shouldRemoveSnapshot() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
@@ -112,6 +123,7 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         Assert.assertEquals(expectedResult, result);
     }
 
+    @Ignore
     @Test
     public void test90_cleanEnv() {
         CommandResult cr = getShell().executeCommand("connect --login johndoe --password abc2015");
@@ -120,6 +132,4 @@ public abstract class AbstractSnapshotCommandsIT extends AbstractShellIntegratio
         String expectedResult = "Your application " + applicationName.toLowerCase() + " is currently being removed";
         Assert.assertEquals(expectedResult, result);
     }
-
-
 }

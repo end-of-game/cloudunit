@@ -15,7 +15,7 @@
 
 package fr.treeptik.cloudunit.cli.utils;
 
-import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -25,21 +25,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import fr.treeptik.cloudunit.cli.CloudUnitCliException;
+import fr.treeptik.cloudunit.cli.Guard;
+import fr.treeptik.cloudunit.cli.Messages;
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.JsonConverter;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
-import fr.treeptik.cloudunit.cli.shell.CloudUnitPromptProvider;
-import jline.console.ConsoleReader;
 
 @Component
-public class AuthentificationUtils {
+public class AuthenticationUtils {
+    private static final String NOT_CONNECTED = Messages.getString("auth.NOT_CONNECTED");
+    private static final String ALREADY_CONNECTED = Messages.getString("auth.ALREADY_CONNECTED");
 
 	public String finalHost;
 	@InjectLogger
 	private Logger log;
+	
 	private Map<String, Object> map = new HashMap<>();
 	@Value("${host}")
 	private String defaultHost;
@@ -48,8 +50,6 @@ public class AuthentificationUtils {
 	@Autowired
 	private UrlLoader urlLoader;
 	@Autowired
-	private CloudUnitPromptProvider clPromptProvider;
-	@Autowired
 	private ShellStatusCommand statusCommand;
 	@Autowired
 	private RestUtils restUtils;
@@ -57,13 +57,16 @@ public class AuthentificationUtils {
 	private ApplicationUtils applicationUtils;
 	@Autowired
 	private FileUtils fileUtils;
-	private Integer loop = 0;
+	
+	private String currentInstanceName;
 
 	public void checkConnected() {
-	    if (!isConnected()) {
-	        throw new CloudUnitCliException("You are not connected to a CloudUnit host. Use the 'connect' command first.");
-	    }
+	    Guard.guardTrue(isConnected(), NOT_CONNECTED);
 	}
+	
+	public void checkNotConnected() {
+        Guard.guardTrue(!isConnected(), ALREADY_CONNECTED);
+    }
 	
 	public boolean isConnected() {
 	    return !map.isEmpty();
@@ -77,109 +80,69 @@ public class AuthentificationUtils {
 	 * @param selectedHost
 	 * @return
 	 */
-	public String connect(String login, String password, String selectedHost) {
+	public String connect(String login, String password, String selectedHost, Prompter prompter) {
+	    checkNotConnected();
+		fileUtils.checkNotInFileExplorer();
+		
+		String finalPassword = password;
+        
+        if (password.isEmpty()) {
+            finalPassword = prompter.promptPassword("Enter password:");
+        }
+		
+        Map<String, Object> loginInfo = new HashMap<>();
+        loginInfo.put("login", login);
+        loginInfo.put("password", finalPassword);
 
-		if (!map.isEmpty()) {
-			statusCommand.setExitStatut(0);
-			return (ANSIConstants.ANSI_PURPLE + "You are already connected to CloudUnit servers"
-					+ ANSIConstants.ANSI_RESET);
-		}
+        if (selectedHost.isEmpty()) {
+            finalHost = defaultHost;
+        } else {
+            finalHost = selectedHost;
+        }
+        log.log(Level.INFO, MessageFormat.format("Connecting to {0}...", finalHost));
 
-		if (fileUtils.isInFileExplorer()) {
-			statusCommand.setExitStatut(1);
-			return (ANSIConstants.ANSI_RED
-					+ "You are currently in a container file explorer. Please exit it with close-explorer command"
-					+ ANSIConstants.ANSI_RESET);
-
-		}
-
-		try {
-			loop++;
-
-			if (password.equalsIgnoreCase("")) {
-				log.log(Level.INFO, "Enter your password : ");
-				try {
-					password = new ConsoleReader().readLine(new Character('*'));
-				} catch (IOException e) {
-					return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-				}
-			}
-			Map<String, Object> loginInfo = new HashMap<>();
-			loginInfo.put("login", login);
-			loginInfo.put("password", password);
-
-			// check the host
-
-			if (!selectedHost.isEmpty()) {
-				log.log(Level.INFO, "Trying to connect to " + selectedHost);
-				finalHost = selectedHost;
-
-			} else {
-				log.log(Level.INFO, "Trying to connect to default CloudUnit host...");
-				finalHost = defaultHost;
-			}
-
-			// trying to connect with host manager
+        try {
+            // trying to connect with host manager
 			String urlToCall = finalHost + urlLoader.connect;
 			restUtils.connect(urlToCall, loginInfo).get("body");
-			applicationUtils.setApplication(null);
+			applicationUtils.setCurrentApplication(null);
 
 			String response = null;
-			String cloudunitInstance = "";
-			try {
-				response = restUtils.sendGetCommand(finalHost + urlLoader.getCloudUnitInstance, null).get("body");
-				cloudunitInstance = JsonConverter.getCloudUnitInstance(response);
-				if (cloudunitInstance != null) {
-					cloudunitInstance = "-" + cloudunitInstance;
-				}
-				clPromptProvider.setCuInstanceName(cloudunitInstance);
-			} catch (ManagerResponseException e) {
-				statusCommand.setExitStatut(1);
-				return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-			}
 
+            response = restUtils.sendGetCommand(finalHost + urlLoader.getCloudUnitInstance, null).get("body");
+            String cloudunitInstance = JsonConverter.getCloudUnitInstance(response);
+            currentInstanceName = cloudunitInstance != null ? cloudunitInstance : "";
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			if (loop >= 3) {
-				return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-			}
-
-			password = "";
-			return this.connect(login, password, selectedHost);
+		    statusCommand.setExitStatut(1);
+			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
 		}
 
 		map.put("login", login);
-		map.put("password", password);
-		loop = 0;
+		map.put("password", finalPassword);
 
 		statusCommand.setExitStatut(0);
 		return "Connection established";
-
 	}
 
 	/**
 	 * Appel de l'url spring-secu pour suppression session côté serveur
 	 */
 	public String disconnect() {
-		if (fileUtils.isInFileExplorer()) {
-
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED
-					+ "You are currently in a container file explorer. Please exit it with close-explorer command"
-					+ ANSIConstants.ANSI_RESET;
-		}
+	    checkConnected();
+		fileUtils.checkNotInFileExplorer();
+		
 		try {
 			restUtils.sendGetCommand(finalHost + "/user/logout", map);
 			map.clear();
-			applicationUtils.setApplication(null);
+			applicationUtils.setCurrentApplication(null);
 			restUtils.localContext = null;
 		} catch (ManagerResponseException e) {
 			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
 		}
-		clPromptProvider.setCuInstanceName("");
+		
+		currentInstanceName = null;
 
-		return "Disconnect";
-
+		return "Disconnected";
 	}
 
 	public Map<String, Object> getMap() {
@@ -189,5 +152,9 @@ public class AuthentificationUtils {
 	public void setMap(Map<String, Object> map) {
 		this.map = map;
 	}
+
+    public String getCurrentInstanceName() {
+        return currentInstanceName;
+    }
 
 }

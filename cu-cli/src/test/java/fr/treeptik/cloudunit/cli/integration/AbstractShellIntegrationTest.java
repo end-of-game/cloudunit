@@ -4,7 +4,6 @@ import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.springframework.shell.Bootstrap;
 import org.springframework.shell.core.CommandResult;
 import org.springframework.shell.core.JLineShellComponent;
@@ -17,7 +16,7 @@ public class AbstractShellIntegrationTest {
     public static final String TEST_PASSWORD = "abc2015";
 
     private JLineShellComponent shell;
-    protected static String applicationName;
+    protected String applicationName;
 
     protected final String serverType;
     
@@ -28,14 +27,11 @@ public class AbstractShellIntegrationTest {
     protected JLineShellComponent getShell() {
         return shell;
     }
-    
-    @BeforeClass
-    public static void generateApplicationName() {
-        applicationName = "App" + new Random().nextInt(10000);
-    }
 
     @Before
     public void startUp() throws InterruptedException {
+        applicationName = "App" + new Random().nextInt(10000);
+        
         Bootstrap bootstrap = new Bootstrap();
         shell = bootstrap.getJLineShellComponent();
     }
@@ -62,7 +58,7 @@ public class AbstractShellIntegrationTest {
     }
 
     protected CommandResult useApplication() {
-        return useApplication(applicationName);
+        return useApplication(applicationName.toLowerCase());
     }
 
     protected CommandResult useApplication(String name) {
@@ -74,7 +70,7 @@ public class AbstractShellIntegrationTest {
     }
 
     protected CommandResult removeApplication(boolean errorIfNotExists) {
-        return getShell().executeCommand(String.format("rm-app --name %s --scriptUsage --errorIfNotExists %s", applicationName, errorIfNotExists));
+        return getShell().executeCommand(String.format("rm-app --name %s --scriptUsage --errorIfNotExists %s", applicationName.toLowerCase(), errorIfNotExists));
     }
     
     protected CommandResult removeModule(String moduleName) {
@@ -106,7 +102,7 @@ public class AbstractShellIntegrationTest {
     }
 
     protected CommandResult startApplication() {
-        return getShell().executeCommand("start --name " + applicationName);
+        return getShell().executeCommand("start --name " + applicationName.toLowerCase());
     }
 
     protected CommandResult startCurrentApplication() {
@@ -114,7 +110,7 @@ public class AbstractShellIntegrationTest {
     }
 
     protected CommandResult stopApplication() {
-        return getShell().executeCommand("stop --name " + applicationName);
+        return getShell().executeCommand("stop --name " + applicationName.toLowerCase());
     }
 
     protected CommandResult stopApplication(String name) {
@@ -126,7 +122,7 @@ public class AbstractShellIntegrationTest {
     }
 
     protected CommandResult listContainers() {
-        return getShell().executeCommand(String.format("list-containers --name %s", applicationName));
+        return getShell().executeCommand(String.format("list-containers --name %s", applicationName.toLowerCase()));
     }
 
     protected CommandResult listApplications() {

@@ -18,23 +18,26 @@ package fr.treeptik.cloudunit.cli.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jline.internal.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
+import fr.treeptik.cloudunit.cli.Guard;
+import fr.treeptik.cloudunit.cli.Messages;
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.JsonConverter;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
-import fr.treeptik.cloudunit.cli.shell.CloudUnitPromptProvider;
 import fr.treeptik.cloudunit.dto.FileUnit;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Module;
@@ -42,12 +45,15 @@ import fr.treeptik.cloudunit.model.Server;
 
 @Component
 public class FileUtils {
+    private static final String NO_SUCH_CONTAINER = "No such container \"{0}\". Available containers are\n{1}";
+    private static final String NOT_IN_EXPLORER = Messages.getString("file.NOT_IN_EXPLORER");
+    private static final String IN_EXPLORER = Messages.getString("file.IN_EXPLORER");
 
 	@InjectLogger
 	private Logger log;
 
 	@Autowired
-	private AuthentificationUtils authentificationUtils;
+	private AuthenticationUtils authentificationUtils;
 
 	@Autowired
 	private ShellStatusCommand statusCommand;
@@ -58,67 +64,69 @@ public class FileUtils {
 	@Autowired
 	private ApplicationUtils applicationUtils;
 
-	@Autowired
-	private CloudUnitPromptProvider clPromptProvider;
-
-	private String currentContainer;
+	private String currentContainerId;
 
 	private String currentPath;
+	
+	public String getCurrentContainerName() {
+        return currentContainerId;
+    }
+
+    public boolean isInFileExplorer() {
+        return currentContainerId != null;
+    }
+    
+    public void checkInFileExplorer() {
+        Guard.guardTrue(isInFileExplorer(), NOT_IN_EXPLORER);
+    }
+    
+    public void checkNotInFileExplorer() {
+        Guard.guardTrue(!isInFileExplorer(), IN_EXPLORER);
+    }
+    
+    public void checkConnectedAndInFileExplorer() {
+        authentificationUtils.checkConnected();
+        applicationUtils.checkApplicationSelected();
+        checkInFileExplorer();
+    }
 
     public String createDirectory(String path) {
-        if (checkSecurity()) return null;
-        String url = authentificationUtils.finalHost + "/file/container/" + currentContainer
-                + "/application/" + applicationUtils.getApplication().getName();
+        checkConnectedAndInFileExplorer();
+        
+        String url = authentificationUtils.finalHost + "/file/container/" + currentContainerId
+                + "/application/" + applicationUtils.getCurrentApplication().getName();
         try {
-            Map<String, Object> results = restUtils.sendPostCommand(url + "?path=" + path, authentificationUtils.getMap(), "");
-            statusCommand.setExitStatut(0);
-        } catch (Exception e) {
-            statusCommand.setExitStatut(1);
-            return "error";
+            restUtils.sendPostCommand(url + "?path=" + path, authentificationUtils.getMap(), "");
+        } catch (ManagerResponseException e) {
+            throw new CloudUnitCliException("Couldn't create directory", e);
         }
-        return "created";
+        return MessageFormat.format("Directory \"{0}\" created", path);
     }
-
-    private boolean checkSecurity() {
-        if (authentificationUtils.getMap().isEmpty()) {
-            log.log(Level.SEVERE, "You are not connected to CloudUnit host! Please use connect command");
-            statusCommand.setExitStatut(1);
-            return true;
-        }
-        if (applicationUtils.getApplication() == null) {
-            log.log(Level.SEVERE,
-                    "No application is currently selected by the followind command line : use <application name>");
-            statusCommand.setExitStatut(1);
-            return true;
-        }
-        return false;
-    }
-
 
     public String openExplorer(String containerName) {
-        if (checkSecurity()) return null;
-		Application application = applicationUtils.getApplication();
+        applicationUtils.checkConnectedAndApplicationSelected();
+        
+		Application application = applicationUtils.getCurrentApplication();
+		
 		Server server = application.getServer();
 		if (server.getName().equalsIgnoreCase(containerName)) {
-			currentContainer = server.getContainerID();
-		}
-		for (Module module : application.getModules()) {
-			if (module.getName().equalsIgnoreCase(containerName)) {
-				currentContainer = module.getContainerID();
-				break;
-			}
-		}
-		if (currentContainer == null) {
-			log.log(Level.SEVERE,
-					"This container name doesn't exist. Please choose one of following container name : ");
-			displayAvailableContainerNames();
-			statusCommand.setExitStatut(1);
-			return null;
+			currentContainerId = server.getContainerID();
+		} else {
+		    Optional<Module> module = application.getModules().stream()
+		        .filter(m -> m.getName().equalsIgnoreCase(containerName))
+		        .findAny();
+		    
+		    if (!module.isPresent()) {
+		        throw new CloudUnitCliException(MessageFormat.format(NO_SUCH_CONTAINER,
+		                containerName,
+		                getAvailableContainerNames()));
+		    }
+		    
+		    currentContainerId = module.get().getContainerID();
 		}
 
-		clPromptProvider.setPrompt("cloudunit>[" + containerName + "] ");
 		currentPath = "/";
-		return "";
+		return "Explorer opened";
 	}
 
     /**
@@ -128,16 +136,12 @@ public class FileUtils {
      * @throws ManagerResponseException
      */
 	public String closeExplorer() throws ManagerResponseException {
-        if (checkSecurity()) return null;
-        if (currentContainer != null) {
-			currentContainer = null;
-			currentPath = null;
-			clPromptProvider.setPrompt("cloudunit> ");
-		} else {
-			log.log(Level.WARNING, "You are not in a container file explorer");
-			return null;
-		}
-		return "File explorer closed!";
+        checkConnectedAndInFileExplorer();
+	        
+		currentContainerId = null;
+		currentPath = null;
+		
+		return "Explorer closed";
 	}
 
     /**
@@ -147,16 +151,11 @@ public class FileUtils {
      * @throws ManagerResponseException
      */
 	public String listFiles() throws ManagerResponseException {
-        if (checkSecurity()) return null;
-        if (currentContainer == null) {
-			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path="+ currentPath;
-		log.info(command);
-		String json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
-		statusCommand.setExitStatut(0);
+        checkConnectedAndInFileExplorer();
+	    
+		String url = authentificationUtils.finalHost + "/file/container/" + currentContainerId + "?path="+ currentPath;
+		String json = restUtils.sendGetCommand(url, authentificationUtils.getMap()).get("body");
+
 		String result = MessageConverter.buildListFileUnit(JsonConverter.getFileUnits(json));
 		return result;
 	}
@@ -169,18 +168,14 @@ public class FileUtils {
      * @throws ManagerResponseException
      */
 	public String changeDirectory(String directoryName) throws ManagerResponseException {
-        if (checkSecurity()) return null;
-        if (currentContainer == null) {
-			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		String command = authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path=" + currentPath;
-		String json = restUtils.sendGetCommand(command, authentificationUtils.getMap()).get("body");
-		List<FileUnit> fileUnits = JsonConverter.getFileUnits(json);
+        checkConnectedAndInFileExplorer();
+	    
+		String url = authentificationUtils.finalHost + "/file/container/" + currentContainerId + "?path=" + currentPath;
+		String json = restUtils.sendGetCommand(url, authentificationUtils.getMap()).get("body");
+		JsonConverter.getFileUnits(json);
 		currentPath = directoryName;
 		statusCommand.setExitStatut(0);
-		return "current directory is now : " + directoryName;
+		return "Current directory is " + directoryName;
 	}
 
     /**
@@ -190,35 +185,25 @@ public class FileUtils {
      * @return
      */
 	public String unzip(String fileName) {
-        if (checkSecurity()) return null;
-		if (currentContainer == null) {
-			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
+        checkConnectedAndInFileExplorer();
+	    
         String currentPath = fileName.substring(0, fileName.lastIndexOf("/"));
         fileName = fileName.substring(fileName.lastIndexOf("/")+1);
-		String command = authentificationUtils.finalHost + "/file/unzip/container/" + currentContainer + "/application/"
-				+ applicationUtils.getApplication().getName() + "?path=" + currentPath + "&fileName=" + fileName;
+		String command = authentificationUtils.finalHost + "/file/unzip/container/" + currentContainerId + "/application/"
+				+ applicationUtils.getCurrentApplication().getName() + "?path=" + currentPath + "&fileName=" + fileName;
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put("applicationName", applicationUtils.getApplication().getName());
+		parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
 		try {
 			restUtils.sendPutCommand(command, authentificationUtils.getMap(), parameters).get("body");
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't unzip file", e);
 		}
-		applicationUtils.useApplication(applicationUtils.getApplication().getName());
-		return null;
+		return "File unzipped";
 	}
 
 	public String uploadFile(File path) {
-        if (checkSecurity()) return null;
-        if (currentContainer == null) {
-			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
+        checkConnectedAndInFileExplorer();
+	    
 		File file = path;
 		try {
 			FileInputStream fileInputStream = new FileInputStream(file);
@@ -228,14 +213,13 @@ public class FileUtils {
 			Map<String, Object> params = new HashMap<>();
 			params.put("file", resource);
 			params.putAll(authentificationUtils.getMap());
-			restUtils.sendPostForUpload(authentificationUtils.finalHost + "/file/container/" + currentContainer
-					+ "/application/" + applicationUtils.getApplication().getName() + "?path=" + currentPath, params);
-			statusCommand.setExitStatut(0);
+			restUtils.sendPostForUpload(authentificationUtils.finalHost + "/file/container/" + currentContainerId
+					+ "/application/" + applicationUtils.getCurrentApplication().getName() + "?path=" + currentPath, params);
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "File not found! Check the path file");
 			statusCommand.setExitStatut(1);
 		}
-		return null;
+		return "File uploaded";
 	}
 
     /**
@@ -247,32 +231,23 @@ public class FileUtils {
      * @throws ManagerResponseException
      */
 	public String downloadFile(String fileName, String destination) throws ManagerResponseException {
-
-        if (checkSecurity()) return null;
-        if (currentContainer == null) {
-			log.log(Level.SEVERE, "You're not in a container file explorer. Please use the open-explorer command");
-			statusCommand.setExitStatut(1);
-			return null;
-		}
-		boolean fileExists = false;
+	    checkConnectedAndInFileExplorer();
+        
         String json = restUtils.sendGetCommand(
-				authentificationUtils.finalHost + "/file/container/" + currentContainer + "?path=" + currentPath,
+				authentificationUtils.finalHost + "/file/container/" + currentContainerId + "?path=" + currentPath,
 				authentificationUtils.getMap()).get("body");
 
 		List<FileUnit> fileUnits = JsonConverter.getFileUnits(json);
-		for (FileUnit fileUnit : fileUnits) {
-			if (fileUnit.getName().equalsIgnoreCase(fileName)) {
-				if (fileUnit.isDir()) {
-					log.log(Level.SEVERE, "This file should not be a directory");
-					return null;
-				}
-				fileExists = true;
-			}
+		
+		FileUnit fileUnit = fileUnits.stream()
+		    .filter(f -> f.getName().equalsIgnoreCase(fileName))
+		    .findAny()
+		    .orElseThrow(() -> new CloudUnitCliException(MessageFormat.format("No such file \"{0}\"", fileName)));
+		
+		if (fileUnit.isDir()) {
+		    throw new CloudUnitCliException("Cannot download a directory");
 		}
-		if (!fileExists) {
-			log.log(Level.SEVERE, "This file does not exist");
-			return null;
-		}
+
 		String destFileName = System.getProperty("user.home") + "/" + fileName;
 
 		if (destination != null) {
@@ -281,27 +256,25 @@ public class FileUtils {
 
 		Map<String, Object> params = new HashMap<>();
 		params.putAll(authentificationUtils.getMap());
-		restUtils.sendGetFileCommand(authentificationUtils.finalHost + "/file/container/" + currentContainer
-				+ "/application/" + applicationUtils.getApplication().getName() + "?path=" + currentPath + "/fileName/"
+		restUtils.sendGetFileCommand(authentificationUtils.finalHost + "/file/container/" + currentContainerId
+				+ "/application/" + applicationUtils.getCurrentApplication().getName() + "?path=" + currentPath + "/fileName/"
 				+ fileName, destFileName, params);
-		statusCommand.setExitStatut(0);
-		return "File correctly send in this default location : " + destFileName;
+		
+		return MessageFormat.format("File downloaded to {0}", destFileName);
 	}
 
-	public boolean isInFileExplorer() {
-		return currentContainer != null;
-	}
-
-	public void displayAvailableContainerNames() {
+	private String getAvailableContainerNames() {
 		StringBuilder builder = new StringBuilder();
-		Server server = applicationUtils.getApplication().getServer();
+		Server server = applicationUtils.getCurrentApplication().getServer();
 
-		builder.append("\t" + server.getName() + "\t");
+		builder.append("\t");
+		builder.append(server.getName());
 
-		for (Module module : applicationUtils.getApplication().getModules()) {
-			builder.append("\t" + module.getName() + "\t");
+		for (Module module : applicationUtils.getCurrentApplication().getModules()) {
+		    builder.append("\t");
+			builder.append("\t" + module.getName());
 		}
-		log.log(Level.INFO, builder.toString());
+		return builder.toString();
 	}
 
 }

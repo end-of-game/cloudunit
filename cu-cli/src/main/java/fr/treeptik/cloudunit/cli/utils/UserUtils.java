@@ -35,7 +35,7 @@ public class UserUtils {
 	private Logger log;
 
 	@Autowired
-	private AuthentificationUtils authentificationUtils;
+	private AuthenticationUtils authentificationUtils;
 
 	@Autowired
 	private RestUtils restUtils;

@@ -37,7 +37,7 @@ public class SnapshotUtils {
 	private Logger log;
 
 	@Autowired
-	private AuthentificationUtils authentificationUtils;
+	private AuthenticationUtils authentificationUtils;
 
 	@Autowired
 	private ApplicationUtils applicationUtils;
@@ -61,7 +61,7 @@ public class SnapshotUtils {
 		if (applicationName != null) {
 			applicationUtils.useApplication(applicationName);
 		} else {
-			applicationName = applicationUtils.getApplication().getName();
+			applicationName = applicationUtils.getCurrentApplication().getName();
 		}
 
 		Map<String, String> parameters = new HashMap<>();

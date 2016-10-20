@@ -1,108 +1,116 @@
 package fr.treeptik.cloudunit.cli.integration.volumes;
 
+import static fr.treeptik.cloudunit.cli.integration.ShellMatchers.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import java.util.Random;
 
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.shell.core.CommandResult;
 
 import fr.treeptik.cloudunit.cli.integration.AbstractShellIntegrationTest;
-import fr.treeptik.cloudunit.cli.integration.ShellMatchers;
-import fr.treeptik.cloudunit.cli.utils.ANSIConstants;
 
 public class VolumesCommandsIT extends AbstractShellIntegrationTest {
-    private static String volumeName;
-    private CommandResult cr;
+    private String volumeName;
 
-    protected VolumesCommandsIT(String serverType) {
-        super(serverType);
-    }
-
-    @BeforeClass
-    public static void generateVolumeName() {
-        volumeName = "Volume" + new Random().nextInt(100000);
+    public VolumesCommandsIT() {
+        super("tomcat-8");
     }
 
     @Before
-    public void initEnv() {
-        cr = getShell().executeCommand("connect --login johndoe --password abc2015 ");
+    public void setUp() {
+        volumeName = "Volume" + new Random().nextInt(100000);
+        
+        connect();
     }
 
     @Test
     public void test_createAndRemoveVolume() {
         // Create volume
-        createVolume(volumeName);
-        String volumeNameCreated = cr.getResult().toString();
+        CommandResult result = createVolume(volumeName);
         
-        Assert.assertThat("Volume created : ", cr, ShellMatchers.isSuccessfulCommand());
-        Assert.assertEquals(volumeName, volumeNameCreated);
+        assertThat("Volume created", result, isSuccessfulCommand());
+        assertEquals(volumeName, result.getResult().toString());
         // List volumes and check
-        String listVolumes = listVolumes();
-        Assert.assertThat("List of volumes contains " + volumeName, listVolumes, containsString(volumeName));
+        result = listVolumes();
+        assertThat("List of volumes contains volume name",
+                result.getResult().toString(), containsString(volumeName));
         // Remove volume
-        removeVolume(volumeName);
+        result = removeVolume(volumeName);
+        
+        assertThat(result, isSuccessfulCommand());
     }
 
     @Test
     public void test_two_identical_volumes() {
         // Create volume
-        createVolume(volumeName);
-        createVolume(volumeName);
-        String volumeNameCreated = cr.getResult().toString();
-        Assert.assertTrue("Volume created : ", cr.isSuccess());
-        Assert.assertThat(volumeNameCreated, containsString("This name already exists"));
-        removeVolume(volumeName);
+        CommandResult result = createVolume(volumeName);
+        try {
+            assumeThat(result, isSuccessfulCommand());
+            
+            result = createVolume(volumeName);
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("already exists"));
+        } finally {
+            removeVolume(volumeName);
+        }
     }
 
 
     @Test
     public void test_shouldNotCreateUnconsistentName() {
         // Create volume with wrong name
-        createVolume(volumeName + "/2");
-        String volumeNameCreated = cr.getResult().toString();
-        Assert.assertFalse("Volume not created : ", volumeNameCreated.equalsIgnoreCase(volumeName + "/2"));
+        CommandResult result = createVolume(volumeName + "/2");
+
+        assertThat(result, isFailedCommand());
     }
 
     @Test
     public void test_shouldNotRemoveNonExistantName() {
-        removeVolume(volumeName);
-        String result = cr.getResult().toString();
-        String expectedResult = ANSIConstants.ANSI_RED + false + ANSIConstants.ANSI_RESET;
-        Assert.assertEquals(expectedResult, result);
+        CommandResult result = removeVolume(volumeName);
+        
+        assertThat(result, isFailedCommand());
     }
 
     @Test
     public void test_shouldNotCreateEmptyName() {
-        createVolume("");
-        Assert.assertTrue("Command syntax incorrect: ", !cr.isSuccess());
-        createVolume("  ");
-        Assert.assertTrue("Command syntax incorrect: ", !cr.isSuccess());
+        CommandResult result = createVolume("");
+        
+        assertThat(result, isFailedCommand());
+    }
+    
+    @Test
+    public void test_shouldNotCreateBlankName() {
+        CommandResult result = createVolume("  ");
+        
+        assertThat(result, isFailedCommand());
     }
 
     @Test
     public void test_shouldNotRemoveEmptyName() {
-        removeVolume("");
-        Assert.assertTrue("Command syntax incorrect: ", !cr.isSuccess());
-        removeVolume("  ");
-        Assert.assertTrue("Command syntax incorrect: ", !cr.isSuccess());
+        CommandResult result = removeVolume("");
+        assertThat(result, isFailedCommand());
+    }
+    
+    @Test
+    public void test_shouldNotRemoveBlankName() {
+        CommandResult result = removeVolume("  ");
+        assertThat(result, isFailedCommand());
     }
 
-
-    private void createVolume(String name) {
-        cr = getShell().executeCommand("create-volume --name " + name);
+    private CommandResult createVolume(String name) {
+        return getShell().executeCommand(String.format("create-volume --name %s", name));
     }
 
-    private void removeVolume(String name) {
-        cr = getShell().executeCommand("rm-volume --name " + name);
+    private CommandResult removeVolume(String name) {
+        return getShell().executeCommand(String.format("rm-volume --name %s", name));
     }
 
-    private String listVolumes() {
-        cr = getShell().executeCommand("list-volumes");
-        Assert.assertTrue("List volumes", cr.isSuccess());
-        return cr.getResult().toString();
+    private CommandResult listVolumes() {
+        return getShell().executeCommand("list-volumes");
     }
 }

@@ -24,10 +24,11 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
+import fr.treeptik.cloudunit.model.Application;
 
 @Component
 public class ServerUtils {
@@ -36,13 +37,10 @@ public class ServerUtils {
 	private Logger log;
 
 	@Autowired
-	private AuthentificationUtils authentificationUtils;
+	private AuthenticationUtils authenticationUtils;
 
 	@Autowired
 	private ApplicationUtils applicationUtils;
-
-	@Autowired
-	private ShellStatusCommand statusCommand;
 
 	@Autowired
 	private RestUtils restUtils;
@@ -56,35 +54,25 @@ public class ServerUtils {
 	 * @return
 	 */
 	public String changeMemory(String memory) {
-		String checkResponse = applicationUtils.checkAndRejectIfError(null);
-		if (checkResponse != null) {
-			return checkResponse;
-		}
+	    applicationUtils.checkApplicationSelected();
 
 		if (!availableMemoryValues.contains(memory)) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + "The memory value you have put is not authorized (512, 1024, 2048, 3072)"
-					+ ANSIConstants.ANSI_RESET;
+			throw new CloudUnitCliException("The memory value you have put is not authorized (512, 1024, 2048, 3072)");
 		}
 
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put("applicationName", applicationUtils.getApplication().getName());
+		parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
 		parameters.put("jvmMemory", memory);
-		parameters.put("jvmRelease", applicationUtils.getApplication().getJvmRelease());
-		parameters.put("jvmOptions", applicationUtils.getApplication().getServer().getJvmOptions().toString());
+		parameters.put("jvmRelease", applicationUtils.getCurrentApplication().getJvmRelease());
+		parameters.put("jvmOptions", applicationUtils.getCurrentApplication().getServer().getJvmOptions().toString());
 		try {
-			restUtils.sendPutCommand(authentificationUtils.finalHost + "/server/configuration/jvm",
-					authentificationUtils.getMap(), parameters).get("body");
+			restUtils.sendPutCommand(authenticationUtils.finalHost + "/server/configuration/jvm",
+					authenticationUtils.getMap(), parameters).get("body");
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't change memory", e);
 		}
 
-		applicationUtils.useApplication(applicationUtils.getApplication().getName());
-
-		statusCommand.setExitStatut(0);
-
-		return "Change memory on " + applicationUtils.getApplication().getName() + " successful";
+		return "Change memory on " + applicationUtils.getCurrentApplication().getName() + " successful";
 	}
 
 	/**
@@ -94,29 +82,21 @@ public class ServerUtils {
 	 * @return
 	 */
 	public String addOpts(String opts) {
-
-		String checkResponse = applicationUtils.checkAndRejectIfError(null);
-		if (checkResponse != null) {
-			return checkResponse;
-		}
+        applicationUtils.checkApplicationSelected();
 
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put("applicationName", applicationUtils.getApplication().getName());
+		parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
 		parameters.put("jvmOptions", opts);
-		parameters.put("jvmRelease", applicationUtils.getApplication().getJvmRelease());
-		parameters.put("jvmMemory", applicationUtils.getApplication().getServer().getJvmMemory().toString());
+		parameters.put("jvmRelease", applicationUtils.getCurrentApplication().getJvmRelease());
+		parameters.put("jvmMemory", applicationUtils.getCurrentApplication().getServer().getJvmMemory().toString());
 		try {
-			restUtils.sendPutCommand(authentificationUtils.finalHost + "/server/configuration/jvm",
-					authentificationUtils.getMap(), parameters).get("body");
+			restUtils.sendPutCommand(authenticationUtils.finalHost + "/server/configuration/jvm",
+					authenticationUtils.getMap(), parameters).get("body");
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+			throw new CloudUnitCliException("Couldn't add JVM option", e);
 		}
-		applicationUtils.useApplication(applicationUtils.getApplication().getName());
 
-		statusCommand.setExitStatut(0);
-
-		return "Add java options to " + applicationUtils.getApplication().getName() + " application successfully";
+		return "Add java options to " + applicationUtils.getCurrentApplication().getName() + " application successfully";
 	}
 
 	/**
@@ -127,80 +107,42 @@ public class ServerUtils {
 	 * @return
 	 */
 	public String changeJavaVersion(String applicationName, String jvmRelease) {
-
-		String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
-		if (checkResponse != null) {
-			return checkResponse;
-		}
-
-		if (applicationName != null) {
-			applicationUtils.useApplication(applicationName);
-		} else {
-			applicationName = applicationUtils.getApplication().getName();
-		}
-
+	    Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
+	    
 		if (!availableJavaVersion.contains(jvmRelease)) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + "The specified java version is not available" + ANSIConstants.ANSI_RESET;
+			throw new CloudUnitCliException("The specified java version is not available");
 		}
 
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put("applicationName", applicationUtils.getApplication().getName());
+		parameters.put("applicationName", application.getName());
 		parameters.put("jvmRelease", jvmRelease);
-		parameters.put("jvmMemory", applicationUtils.getApplication().getServer().getJvmMemory().toString());
-		parameters.put("jvmOptions", applicationUtils.getApplication().getServer().getJvmOptions().toString());
+		parameters.put("jvmMemory", application.getServer().getJvmMemory().toString());
+		parameters.put("jvmOptions", application.getServer().getJvmOptions().toString());
 		try {
-			restUtils.sendPutCommand(authentificationUtils.finalHost + "/server/configuration/jvm",
-					authentificationUtils.getMap(), parameters).get("body");
+			restUtils.sendPutCommand(authenticationUtils.finalHost + "/server/configuration/jvm",
+					authenticationUtils.getMap(), parameters).get("body");
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't change Java version", e);
 		}
-
-		applicationUtils.useApplication(applicationUtils.getApplication().getName());
-		statusCommand.setExitStatut(0);
 
 		return "Your java version has been successfully changed";
 	}
 
-	/**
-	 * TODO
-	 *
-	 * @param applicationName
-	 * @param portToOpen
-	 * @return
-	 */
 	public String openPort(String applicationName, String portToOpen, String portNature) {
-
-		String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
-
-		if (checkResponse != null) {
-			return checkResponse;
-		}
-
-		if (applicationName != null) {
-			applicationUtils.useApplication(applicationName);
-		} else {
-			applicationName = applicationUtils.getApplication().getName();
-		}
+	    Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
 
 		Map<String, String> parameters = new HashMap<>();
-		parameters.put("applicationName", applicationUtils.getApplication().getName());
+		parameters.put("applicationName", application.getName());
 		parameters.put("portToOpen", portToOpen);
 		parameters.put("portNature", portNature);
 
 		try {
-			restUtils.sendPostCommand(authentificationUtils.finalHost + "/application/ports",
-					authentificationUtils.getMap(), parameters).get("body");
+			restUtils.sendPostCommand(authenticationUtils.finalHost + "/application/ports",
+					authenticationUtils.getMap(), parameters).get("body");
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
 		}
 
-		statusCommand.setExitStatut(0);
-
-		return "The port " + portToOpen + " was been successfully opened on "
-				+ applicationUtils.getApplication().getName();
+		return "The port " + portToOpen + " was been successfully opened on "+ application.getName();
 	}
 
 	/**
@@ -209,55 +151,27 @@ public class ServerUtils {
 	 * @return
 	 */
 	public String removePort(String applicationName, String portToOpen) {
-
-		String checkResponse = applicationUtils.checkAndRejectIfError(applicationName);
-
-		if (checkResponse != null) {
-			return checkResponse;
-		}
-
-		if (applicationName != null) {
-			applicationUtils.useApplication(applicationName);
-		} else {
-			applicationName = applicationUtils.getApplication().getName();
-		}
+        Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
 
 		try {
 			restUtils.sendDeleteCommand(
-					authentificationUtils.finalHost + "/application/" + applicationName + "/ports/" + portToOpen,
-					authentificationUtils.getMap()).get("body");
+					authenticationUtils.finalHost + "/application/" + application.getName() + "/ports/" + portToOpen,
+					authenticationUtils.getMap()).get("body");
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't remove port", e);
 		}
 
-		statusCommand.setExitStatut(0);
-
-		return "The port " + portToOpen + " was been successfully closed on "
-				+ applicationUtils.getApplication().getName();
+		return "The port " + portToOpen + " was been successfully closed on " + application.getName();
 	}
 
 	public String mountVolume(String name, String path, Boolean mode, String containerName, String applicationName) {
-		if(containerName == null)
+	    Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
+	    
+		if (containerName == null)
 		{
-			if(applicationUtils.getApplication() == null) {
-				statusCommand.setExitStatut(1);
-				return ANSIConstants.ANSI_RED
-						+ "No application is currently selected by the following command line : use <application name>"
-						+ ANSIConstants.ANSI_RESET;
-			}
-			containerName = applicationUtils.getApplication().getServer().getName();
+			containerName = application.getServer().getName();
 		}
 
-		if(applicationName == null) {
-			if(applicationUtils.getApplication() == null) {
-				statusCommand.setExitStatut(1);
-				return ANSIConstants.ANSI_RED
-						+ "No application is currently selected by the following command line : use <application name>"
-						+ ANSIConstants.ANSI_RESET;
-			}
-			applicationName = applicationUtils.getApplication().getName();
-		}
 		try {
 			Map<String, String> parameters = new HashMap<>();
 			parameters.put("containerName", containerName);
@@ -267,28 +181,22 @@ public class ServerUtils {
 			else parameters.put("mode", "rw");
 
 			parameters.put("volumeName", name);
-			parameters.put("applicationName", applicationName);
-			restUtils.sendPutCommand(authentificationUtils.finalHost + "/server/volume", authentificationUtils.getMap(), parameters);
+			parameters.put("applicationName", application.getName());
+			restUtils.sendPutCommand(authenticationUtils.finalHost + "/server/volume", authenticationUtils.getMap(), parameters);
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't mount volume", e);
 		}
-
-		statusCommand.setExitStatut(0);
 
 		return "This volume has successful been mounted";
 	}
 
 	public String unmountVolume(String name, String containerName) {
 		try {
-			restUtils.sendDeleteCommand(authentificationUtils.finalHost + "/server/volume/" + name + "/container/" +
-					containerName, authentificationUtils.getMap());
+			restUtils.sendDeleteCommand(authenticationUtils.finalHost + "/server/volume/" + name + "/container/" +
+					containerName, authenticationUtils.getMap());
 		} catch (ManagerResponseException e) {
-			statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't unmount volume", e);
 		}
-
-		statusCommand.setExitStatut(0);
 
 		return "This volume has successful been unmounted";
 	}

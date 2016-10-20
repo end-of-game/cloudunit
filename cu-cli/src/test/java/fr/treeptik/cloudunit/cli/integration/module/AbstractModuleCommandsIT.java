@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.springframework.shell.core.CommandResult;
 
@@ -19,93 +20,99 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
     }
 
     @Test
-    public void test00_shouldAddMysqlModule() {
+    public void test_shouldAddMysqlModule() {
         test_addModule("mysql-5-5");
     }
 
     @Test
-    public void test01_shouldAddPostGresModule() {
+    public void test_shouldAddPostGresModule() {
         test_addModule("postgresql-9-3");
     }
 
     @Test
-    public void test10_shouldAddAndRemoveMysqlModule() {
+    public void test_shouldAddAndRemoveMysqlModule() {
         test_addAndRemoveModule("mysql-5-5");
     }
 
     @Test
-    public void test11_shouldAddAndRemovePostGresModule() {
+    public void test_shouldAddAndRemovePostGresModule() {
         test_addAndRemoveModule("postgresql-9-3");
     }
 
     @Test
-    public void test03_shouldNotAddModuleBecauseImageDoesNotExist() {
+    public void test_shouldNotAddModuleBecauseImageDoesNotExist() {
         connect();
         createApplication();
         try {
             CommandResult result = addModule("mymodule");
             
             assertThat(result, isFailedCommand());
-            
-            String expected = "this module does not exist";
-            assertEquals(expected, result.getResult().toString());
+            assertThat(result.getException().getMessage(), containsString("No such image"));
+            assertThat(result.getException().getMessage(), containsString("mymodule"));
         } finally {
             removeApplication();
         }
     }
 
     @Test
-    public void test04_shouldNotAddModuleBecauseApplicationNotSelected() {
+    public void test_shouldNotAddModuleBecauseApplicationNotSelected() {
         connect();
-        CommandResult result = addModule("mysql-5-5");
-        
-        assertThat(result, isFailedCommand());
-        
-        String expected = "No application is currently selected by the following command line : use <application name>";
-        assertThat(result.getResult().toString(), containsString(expected));
+        try {
+            CommandResult result = addModule("mysql-5-5");
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("not selected"));
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
-    public void test05_shouldNotAddModuleBecauseUserIsNotLogged() {
+    public void test_shouldNotAddModuleBecauseUserIsNotLogged() {
         CommandResult result = addModule("mysql-5-5");
         
         assertThat(result, isFailedCommand());
-        
-        String expected = "You are not connected to CloudUnit host! Please use connect command";
-        assertThat(result.getResult().toString(), containsString(expected));
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     @Test
-    public void test20_shouldListModules() {
+    public void test_shouldListModules() {
         connect();
         createApplication();
         try {
-            String result = addModule("mysql-5-5").getResult().toString();
-            String expectedResult = String.format("Your module mysql-5-5 is currently being added to your application %s",
-                    applicationName.toLowerCase());
-            assertEquals(expectedResult, result);
+            CommandResult result = addModule("mysql-5-5");
+            Assume.assumeThat(result, isSuccessfulCommand());
             
-            result = displayModules().getResult().toString();
-            expectedResult = "1 modules found";
-            assertEquals(expectedResult, result);
+            result = displayModules();
+            
+            assertThat(result, isSuccessfulCommand());
+            assertThat(result.getResult().toString(), containsString("1"));
+            assertThat(result.getResult().toString(), containsString("found"));
         } finally {
             removeApplication();
-        }        
+            disconnect();
+        }
     }
 
     @Test
-    public void test21_shouldNotListModulesBecauseApplicationNotSelected() {
+    public void test_shouldNotListModulesBecauseApplicationNotSelected() {
         connect();
-        String result = displayModules().getResult().toString();
-        String expected = "No application is currently selected by the following command line : use <application name>";
-        assertTrue(result.contains(expected));
+        try {
+            CommandResult result = displayModules();
+            
+            assertThat(result, isFailedCommand());
+            assertThat(result.getException().getMessage(), containsString("not selected"));
+        } finally {
+            disconnect();
+        }
     }
 
     @Test
-    public void test22_shouldNotListModulesBecauseUserIsNotLogged() {
-        String result = displayModules().getResult().toString();
-        String expected = "You are not connected to CloudUnit host! Please use connect command";
-        assertThat(result, containsString(expected));
+    public void test_shouldNotListModulesBecauseUserIsNotLogged() {
+        CommandResult result = displayModules();
+        
+        assertThat(result, isFailedCommand());
+        assertThat(result.getException().getMessage(), containsString("not connected"));
     }
 
     @Test
@@ -128,11 +135,12 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
         connect();
         createApplication();
         try {
-            String result = addModule(moduleName).getResult().toString();
-            String expected = String.format("Your module %s is currently being added to your application %s",
-                    moduleName,
-                    applicationName.toLowerCase());
-            assertEquals(expected, result);
+            CommandResult result = addModule(moduleName);
+
+            assertThat(result, isSuccessfulCommand());
+            assertThat(result.getResult().toString(), containsString("added"));
+            assertThat(result.getResult().toString(), containsString(moduleName));
+            assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));
         } finally {
             removeApplication();
         }
@@ -146,10 +154,11 @@ public abstract class AbstractModuleCommandsIT extends AbstractShellIntegrationT
             assumeThat(result, isSuccessfulCommand());
             
             result = removeModule(moduleName);
-            String expected = String.format("Your module %s is currently being removed from your application %s",
-                    moduleName,
-                    applicationName.toLowerCase());
-            assertEquals(expected, result.getResult().toString());
+            
+            assertThat(result, isSuccessfulCommand());
+            assertThat(result.getResult().toString(), containsString("removed"));
+            assertThat(result.getResult().toString(), containsString(moduleName));
+            assertThat(result.getResult().toString(), containsString(applicationName.toLowerCase()));            
         } finally {
             removeApplication();
         }

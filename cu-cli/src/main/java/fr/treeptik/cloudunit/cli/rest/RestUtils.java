@@ -57,7 +57,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.treeptik.cloudunit.cli.exception.CustomResponseErrorHandler;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
-import fr.treeptik.cloudunit.cli.utils.AuthentificationUtils;
+import fr.treeptik.cloudunit.cli.utils.AuthenticationUtils;
 
 @Component
 public class RestUtils {
@@ -68,7 +68,7 @@ public class RestUtils {
 
     public HttpClientContext localContext;
     @Autowired
-    private AuthentificationUtils authentificationUtils;
+    private AuthenticationUtils authentificationUtils;
 
     public Map<String, String> connect(String url, Map<String, Object> parameters) throws ManagerResponseException {
 

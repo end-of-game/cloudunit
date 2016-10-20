@@ -19,8 +19,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,32 +29,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
-import jnr.ffi.Runtime;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.ResourceAccessException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
+import fr.treeptik.cloudunit.cli.Guard;
+import fr.treeptik.cloudunit.cli.Messages;
 import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.JsonConverter;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
-import fr.treeptik.cloudunit.cli.shell.CloudUnitPromptProvider;
 import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.EnvironmentVariable;
 import fr.treeptik.cloudunit.model.Module;
-import jline.console.ConsoleReader;
-
-import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 
 @Component
 public class ApplicationUtils {
+    private static final String ENV_VAR_ADDED = "Environment variable \"{0}\" has been added to application \"{1}\"";
+    private static final String ENV_VAR_REMOVED = "Environment variable \"{0}\" has been removed from application \"{1}\"";
+    private static final String NO_SUCH_ENV_VAR = "No such environment variable \"{0}\"";
+    private static final String APPLICATION_CREATED = "Application \"{0}\" has been created";
+    private static final String APPLICATION_REMOVED = "Application \"{0}\" has been removed";
+    private static final String APPLICATION_STARTED = "Application \"{0}\" has been started";
+    private static final String APPLICATION_STOPPED = "Application \"{0}\" has been stopped";
+    private static final String NO_APPLICATION = Messages.getString("application.NO_APPLICATION");
+    private static final String NO_SUCH_APPLICATION = Messages.getString("application.NO_SUCH_APPLICATION");
+    private static final String ALIAS_COUNT = Messages.getString("application.ALIAS_COUNT");
+    private static final String ALIAS_ADDED = Messages.getString("application.ALIAS_ADDED");
+    private static final String ALIAS_REMOVED = Messages.getString("application.ALIAS_REMOVED");
 
     @InjectLogger
     private Logger log;
@@ -62,7 +74,7 @@ public class ApplicationUtils {
     private UrlLoader urlLoader;
 
     @Autowired
-    private AuthentificationUtils authentificationUtils;
+    private AuthenticationUtils authenticationUtils;
 
     @Autowired
     private ShellStatusCommand statusCommand;
@@ -74,270 +86,209 @@ public class ApplicationUtils {
     private CheckUtils checkUtils;
 
     @Autowired
-    private ModuleUtils moduleUtils;
-
-    @Autowired
-    private CloudUnitPromptProvider clPromptProvider;
-
-    @Autowired
     private FileUtils fileUtils;
 
-    private Application application;
+    private Application currentApplication;
+
+    public Application getCurrentApplication() {
+        return currentApplication;
+    }
+
+    public void setCurrentApplication(Application application) {
+        this.currentApplication = application;
+    }
+
+    public boolean isApplicationSelected() {
+        return currentApplication != null;
+    }
+    
+    public void checkApplicationSelected() {
+        Guard.guardTrue(isApplicationSelected(), NO_APPLICATION);
+        currentApplication = getApplication(currentApplication.getName());
+    }
+    
+    public void checkConnectedAndApplicationSelected() {
+        authenticationUtils.checkConnected();
+        checkApplicationSelected();
+        fileUtils.checkNotInFileExplorer();
+    }
+
+    public boolean applicationExists(String applicationName) {
+        try {
+            return listAllApps().stream()
+                    .map(app -> app.getName())
+                    .filter(name -> name.equals(applicationName))
+                    .findAny()
+                    .isPresent();
+        } catch (ManagerResponseException e) {
+            throw new CloudUnitCliException("Couldn't check for application", e);
+        }
+    }
+    
+    public void checkApplicationExists(String applicationName) {
+        Guard.guardTrue(applicationExists(applicationName), NO_SUCH_APPLICATION, applicationName);
+    }
 
     public String getInformations() {
-        String checkResponse = checkAndRejectIfError(null);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
+        checkConnectedAndApplicationSelected();
 
-        useApplication(application.getName());
-        String dockerManagerIP = application.getManagerIp();
+        useApplication(currentApplication.getName());
+        String dockerManagerIP = currentApplication.getManagerIp();
         statusCommand.setExitStatut(0);
 
-        MessageConverter.buildApplicationMessage(application, dockerManagerIP);
+        MessageConverter.buildApplicationMessage(currentApplication, dockerManagerIP);
         return "Terminated";
+    }
+    
+    public Application getApplication(String applicationName) {
+        String result;
+        try {
+            String url = authenticationUtils.finalHost + urlLoader.actionApplication + applicationName;
+            result = restUtils.sendGetCommand(url, authenticationUtils.getMap()).get("body");
+        } catch (ManagerResponseException e) {
+            throw new CloudUnitCliException("Couldn't get application", e);
+        }
+
+        if (StringUtils.isNotBlank(result)) {
+            return JsonConverter.getApplication(result);
+        } else {
+            throw new CloudUnitCliException(MessageFormat.format(NO_SUCH_APPLICATION, applicationName));
+        }        
+    }
+    
+    public Application getSpecificOrCurrentApplication(String applicationName) {
+        authenticationUtils.checkConnected();
+        fileUtils.checkNotInFileExplorer();
+        
+        if (StringUtils.isEmpty(applicationName)) {
+            checkApplicationSelected();
+            return currentApplication;
+        } else {
+            checkApplicationExists(applicationName);
+            return getApplication(applicationName);
+        }
     }
 
     public String useApplication(String applicationName) {
-        String json = null;
+        authenticationUtils.checkConnected();
+        fileUtils.checkNotInFileExplorer();
 
-        if (authentificationUtils.getMap().isEmpty()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
-                    + ANSIConstants.ANSI_RESET;
-        }
-
-        if (fileUtils.isInFileExplorer()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are currently in a container file explorer. Please exit it with close-explorer command"
-                    + ANSIConstants.ANSI_RESET;
-        }
-
-        try {
-            String url = authentificationUtils.finalHost + urlLoader.actionApplication + applicationName;
-            log.info("url : " + url);
-            json = restUtils
-                    .sendGetCommand(url,
-                            authentificationUtils.getMap())
-                    .get("body");
-        } catch (ManagerResponseException e) {
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-        }
-        statusCommand.setExitStatut(0);
-
-        if (json != null && json.trim().length() > 0) {
-            moduleUtils.setApplicationName(applicationName);
-            setApplication(JsonConverter.getApplication(json));
-            clPromptProvider.setApplicationName("-" + applicationName);
-            return "Current application : " + getApplication().getName();
-        } else {
-            return "Error : " + applicationName + " doesn't exist";
-        }
+        currentApplication = getApplication(applicationName);
+        return MessageFormat.format("Using application \"{0}\"", currentApplication.getName());
     }
-
+    
     public String createApp(String applicationName, String serverName) {
-        String response = null;
-        if (authentificationUtils.getMap().isEmpty()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
-                    + ANSIConstants.ANSI_RESET;
-        }
-
-        if (fileUtils.isInFileExplorer()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are currently in a container file explorer. Please exit it with close-explorer command"
-                    + ANSIConstants.ANSI_RESET;
-        }
+        authenticationUtils.checkConnected();
+        fileUtils.checkNotInFileExplorer();
 
         try {
-            if (checkUtils.checkImageNoExist(serverName)) {
-                statusCommand.setExitStatut(1);
-                return ANSIConstants.ANSI_RED + "This server image does not exist" + ANSIConstants.ANSI_RESET;
-            }
+            checkUtils.checkImageExists(serverName);
             Map<String, String> parameters = new HashMap<>();
             parameters.put("applicationName", applicationName);
             parameters.put("serverName", serverName);
 
-            restUtils.sendPostCommand(authentificationUtils.finalHost + urlLoader.actionApplication,
-                    authentificationUtils.getMap(), parameters).get("body");
+            restUtils.sendPostCommand(authenticationUtils.finalHost + urlLoader.actionApplication,
+                    authenticationUtils.getMap(), parameters).get("body");
 
-            statusCommand.setExitStatut(0);
-
-            response = "Your application " + applicationName + " is currently being installed";
-
+            useApplication(applicationName);
+            return MessageFormat.format(APPLICATION_CREATED, currentApplication.getName());
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't create application", e);
         }
-
-        useApplication(applicationName);
-
-        return response;
     }
 
-    public String rmApp(String applicationName, Boolean scriptUsage, Boolean errorIfNotExists) {
-
-        // Check if application is eligble
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
+    public String rmApp(String applicationName, boolean errorIfNotExists, Prompter prompter) {
+        authenticationUtils.checkConnected();
+        fileUtils.checkNotInFileExplorer();
+        
+        Application application = null;
+        
+        if (StringUtils.isEmpty(applicationName)) {
+            checkApplicationSelected();
+            
+            application = currentApplication;
+        } else {
             if (errorIfNotExists) {
-                statusCommand.setExitStatut(1);
-                throw new CloudUnitCliException(checkResponse);
-            } else {
-                statusCommand.setExitStatut(0);
-                return "Warning, no way to delete because " + applicationName + " doesn't exist";
+                checkApplicationExists(applicationName);
+            } else if (!applicationExists(applicationName)) {
+                return MessageFormat.format(NO_SUCH_APPLICATION, applicationName);
+            }
+            
+            application = getApplication(applicationName);
+        }
+        
+        if (prompter != null) {
+            boolean confirmed = prompter.promptConfirmation(MessageFormat.format("Remove application \"{0}\"?",
+                    application.getName()));
+            if (!confirmed) {
+                return "Abort";
             }
         }
-
-        // Enter the non interactive mode (for script)
-        String response = null;
-        if (scriptUsage) {
-            try {
-                restUtils.sendDeleteCommand(
-                        authentificationUtils.finalHost + urlLoader.actionApplication + application.getName(),
-                        authentificationUtils.getMap()).get("body");
-                response = "Your application " + application.getName() + " is currently being removed";
-                statusCommand.setExitStatut(0);
-            } catch (ResourceAccessException e) {
-                statusCommand.setExitStatut(1);
-                response = ANSIConstants.ANSI_RED
-                        + "The CLI can't etablished connexion with host servers. Please try later or contact an admin"
-                        + ANSIConstants.ANSI_RESET;
-            } catch (ManagerResponseException e) {
-                statusCommand.setExitStatut(1);
-                response = ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-            } finally {
-                clPromptProvider.setApplicationName("");
-                setApplication(null);
-            }
-            return response;
-        }
-
-        // For human interactive mode
+        
         try {
-            log.log(Level.WARNING,
-                    "Confirm the suppression of your application: " + application.getName() + " - (yes/y) or (no/n)");
-            String confirmation = new ConsoleReader().readLine();
-            confirmation = confirmation.toLowerCase();
-
-            switch (confirmation) {
-            case "yes":
-            case "y":
-                restUtils.sendDeleteCommand(
-                        authentificationUtils.finalHost + urlLoader.actionApplication + application.getName(),
-                        authentificationUtils.getMap()).get("body");
-
-                response = "Your application " + application.getName() + " is currently being removed";
-                statusCommand.setExitStatut(0);
-                break;
-
-            case "no":
-            case "n":
-                statusCommand.setExitStatut(0);
-                break;
-            default:
-                log.log(Level.SEVERE, "Confirmation response is (yes/y) or (no/n) ");
-                return rmApp(applicationName, scriptUsage, errorIfNotExists);
+            restUtils.sendDeleteCommand(
+                    authenticationUtils.finalHost + urlLoader.actionApplication + application.getName(),
+                    authenticationUtils.getMap()).get("body");
+            
+            if (application.equals(currentApplication)) {
+                currentApplication = null;
             }
-        } catch (ResourceAccessException e) {
-            statusCommand.setExitStatut(1);
-            response = ANSIConstants.ANSI_RED
-                    + "The CLI can't etablished connexion with host servers. Please try later or contact an admin"
-                    + ANSIConstants.ANSI_RESET;
+            
+            return MessageFormat.format(APPLICATION_REMOVED, application.getName());
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            response = ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-        } catch (IOException e) {
-            statusCommand.setExitStatut(1);
-            response = ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-        } finally {
-            setApplication(null);
-            clPromptProvider.setApplicationName("");
+            throw new CloudUnitCliException("Couldn't remove application", e);
         }
-
-        return response;
     }
 
     public String startApp(String applicationName) {
-        String response = null;
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
-
-        try {
-            Map<String, String> parameters = new HashMap<>();
-            parameters.put("applicationName", application.getName());
-            restUtils.sendPostCommand(authentificationUtils.finalHost + urlLoader.actionApplication + urlLoader.start,
-                    authentificationUtils.getMap(), parameters).get("body");
-            response = "Your application " + application.getName().toLowerCase() + " is currently being started";
-            statusCommand.setExitStatut(0);
-
-        } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
-        }
-
-        return response;
-    }
-
-    public String stopApp(String applicationName) {
-
-        String response = null;
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
+        Application application = getSpecificOrCurrentApplication(applicationName);
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("applicationName", application.getName());
 
         try {
-            restUtils.sendPostCommand(authentificationUtils.finalHost + urlLoader.actionApplication + urlLoader.stop,
-                    authentificationUtils.getMap(), parameters).get("body");
+            restUtils.sendPostCommand(authenticationUtils.finalHost + urlLoader.actionApplication + urlLoader.start,
+                    authenticationUtils.getMap(), parameters).get("body");
+
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
+            throw new CloudUnitCliException("Couldn't start application", e);
+        }
+        
+        return MessageFormat.format(APPLICATION_STARTED, application.getName());
+    }
+
+    public String stopApp(String applicationName) {
+        Application application = getSpecificOrCurrentApplication(applicationName);
+        
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("applicationName", application.getName());
+
+        try {
+            restUtils.sendPostCommand(authenticationUtils.finalHost + urlLoader.actionApplication + urlLoader.stop,
+                    authenticationUtils.getMap(), parameters).get("body");
+        } catch (ManagerResponseException e) {
             return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
         }
-        response = "Your application " + application.getName().toLowerCase() + " is currently being stopped";
-        statusCommand.setExitStatut(0);
 
-        return response;
+        return MessageFormat.format(APPLICATION_STOPPED, application.getName());
     }
 
     public List<Application> listAllApps() throws ManagerResponseException {
-        List<Application> listApplications;
         String json = null;
-
         try {
-            json = (String) restUtils.sendGetCommand(authentificationUtils.finalHost + urlLoader.listAllApplications,
-                    authentificationUtils.getMap()).get("body");
+            json = (String) restUtils.sendGetCommand(authenticationUtils.finalHost + urlLoader.listAllApplications,
+                    authenticationUtils.getMap()).get("body");
         } catch (ManagerResponseException e) {
-            throw new ManagerResponseException(e.getMessage(), e);
+            throw new CloudUnitCliException("Couldn't list applications", e);
         }
 
-        listApplications = JsonConverter.getApplications(json);
-        statusCommand.setExitStatut(0);
+        List<Application> listApplications = JsonConverter.getApplications(json);
         return listApplications;
     }
 
     public String listAll() {
-        if (authentificationUtils.getMap().isEmpty()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
-                    + ANSIConstants.ANSI_RESET;
-        }
-
-        if (fileUtils.isInFileExplorer()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED
-                    + "You are currently in a container file explorer. Please exit it with close-explorer command"
-                    + ANSIConstants.ANSI_RESET;
-        }
+        authenticationUtils.checkConnected();
+        fileUtils.checkNotInFileExplorer();
 
         List<Application> listApplications = null;
         try {
@@ -352,107 +303,76 @@ public class ApplicationUtils {
     }
 
     public String deployFromAWar(File path, boolean openBrowser) throws MalformedURLException, URISyntaxException {
-
-        String checkResponse = checkAndRejectIfError(null);
+        checkConnectedAndApplicationSelected();
+        
         String body = "";
-        if (checkResponse != null) {
-            return checkResponse;
+
+        Guard.guardTrue(path != null, "Please specify a file path");
+        
+        try {
+            File file = path;
+            FileInputStream fileInputStream = new FileInputStream(file);
+            fileInputStream.available();
+            fileInputStream.close();
+            FileSystemResource resource = new FileSystemResource(file);
+            Map<String, Object> params = new HashMap<>();
+            params.put("file", resource);
+            params.putAll(authenticationUtils.getMap());
+            body = (String) restUtils.sendPostForUpload(authenticationUtils.finalHost
+                    + urlLoader.actionApplication + currentApplication.getName() + "/deploy", params).get("body");
+        } catch (IOException e) {
+            throw new CloudUnitCliException("The file could not be opened", e);
         }
 
-        if (path == null) {
-
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + "You must precise the file path with -p option" + ANSIConstants.ANSI_RESET;
-
-        } else {
-            // refresh application informations
-            useApplication(application.getName());
-
-            try {
-                File file = path;
-                FileInputStream fileInputStream = new FileInputStream(file);
-                fileInputStream.available();
-                fileInputStream.close();
-                FileSystemResource resource = new FileSystemResource(file);
-                Map<String, Object> params = new HashMap<>();
-                params.put("file", resource);
-                params.putAll(authentificationUtils.getMap());
-                body = (String) restUtils.sendPostForUpload(authentificationUtils.finalHost
-                        + urlLoader.actionApplication + application.getName() + "/deploy", params).get("body");
-                statusCommand.setExitStatut(0);
-
-            } catch (IOException e) {
-
-                return ANSIConstants.ANSI_RED + "File not found! Check the path file" + ANSIConstants.ANSI_RESET;
-            }
+        if (StringUtils.isNotEmpty(body) && openBrowser) {
+            DesktopAPI.browse(URI.create(currentApplication.getLocation()));
         }
 
-        if (!body.equalsIgnoreCase("") && openBrowser) {
-            DesktopAPI.browse(new URL(application.getLocation()).toURI());
-        }
-
-        return "War deployed - Access on " + application.getLocation();
+        return MessageFormat.format("Application deployed. Access on {0}", currentApplication.getLocation());
     }
 
     public String addNewAlias(String applicationName, String alias) {
-        String response = null;
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
+        Application application = getSpecificOrCurrentApplication(applicationName);
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("applicationName", application.getName());
         parameters.put("alias", alias);
         try {
-            restUtils.sendPostCommand(authentificationUtils.finalHost + urlLoader.actionApplication + "/alias",
-                    authentificationUtils.getMap(), parameters).get("body");
+            restUtils.sendPostCommand(authenticationUtils.finalHost + urlLoader.actionApplication + "/alias",
+                    authenticationUtils.getMap(), parameters).get("body");
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't add new alias", e);
         }
-        statusCommand.setExitStatut(0);
-        response = "An alias has been successfully added to " + application.getName();
-
-        return response;
+        return MessageFormat.format(ALIAS_ADDED,
+                alias,
+                application.getName());
     }
 
     public String listAllAliases(String applicationName) {
+        Application application = getSpecificOrCurrentApplication(applicationName);
+        
         String response = null;
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
 
         try {
             response = restUtils.sendGetCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/alias",
-                    authentificationUtils.getMap()).get("body");
+                    authenticationUtils.finalHost + urlLoader.actionApplication + application.getName() + "/alias",
+                    authenticationUtils.getMap()).get("body");
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't list aliases", e);
         }
 
         MessageConverter.buildListAliases(JsonConverter.getAliases(response));
 
-        statusCommand.setExitStatut(0);
-
-        return JsonConverter.getAliases(response).size() + " aliases found!";
+        return MessageFormat.format(ALIAS_COUNT, JsonConverter.getAliases(response).size());
     }
 
     public String removeAlias(String applicationName, String alias) {
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
-
+        Application application = getSpecificOrCurrentApplication(applicationName);
+        
         try {
 
-            restUtils.sendDeleteCommand(authentificationUtils.finalHost + urlLoader.actionApplication
-                    + application.getName() + "/alias/" + alias, authentificationUtils.getMap()).get("body");
+            restUtils.sendDeleteCommand(authenticationUtils.finalHost + urlLoader.actionApplication
+                    + application.getName() + "/alias/" + alias, authenticationUtils.getMap()).get("body");
         } catch (ManagerResponseException e) {
             statusCommand.setExitStatut(1);
             return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
@@ -460,20 +380,12 @@ public class ApplicationUtils {
 
         statusCommand.setExitStatut(0);
 
-        return "This alias has successful been deleted";
+        return MessageFormat.format(ALIAS_REMOVED, alias, application.getName());
     }
 
-    public Application getApplication() {
-        return application;
-    }
-
-    public void setApplication(Application application) {
-        this.application = application;
-    }
-
+    @Deprecated
     public String checkAndRejectIfError(String applicationName) {
-        if (authentificationUtils.getMap().isEmpty()) {
-            statusCommand.setExitStatut(1);
+        if (authenticationUtils.isConnected()) {
             return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
                     + ANSIConstants.ANSI_RESET;
         }
@@ -485,14 +397,14 @@ public class ApplicationUtils {
                     + ANSIConstants.ANSI_RESET;
         }
 
-        if (application == null && applicationName == null) {
+        if (currentApplication == null && applicationName == null) {
             statusCommand.setExitStatut(1);
             return ANSIConstants.ANSI_RED
                     + "No application is currently selected by the following command line : use <application name>"
                     + ANSIConstants.ANSI_RESET;
 
         }
-        String result = "";
+        
         if (applicationName != null) {
             log.log(Level.INFO, applicationName);
             return useApplication(applicationName);
@@ -500,111 +412,78 @@ public class ApplicationUtils {
 
         return null;
     }
-
+    
     public String createEnvironmentVariable(String applicationName, String key, String value) {
-        String response;
-
-        if (application != null && applicationName == null)
-            applicationName = application.getName();
-        if (application == null && applicationName != null)
-            useApplication(applicationName);
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
-
+        Application application = getSpecificOrCurrentApplication(applicationName);
+        
+        Guard.guardTrue(StringUtils.isNotEmpty(key), "No key was given");
+        Guard.guardTrue(Pattern.matches("^[a-zA-Z][-a-zA-Z0-9_]*$", key), "Invalid key name \"{0}\"", key);
+        
         try {
             Map<String, String> parameters = new HashMap<>();
             parameters.put("keyEnv", key);
             parameters.put("valueEnv", value);
 
             restUtils.sendPostCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName()
+                    authenticationUtils.finalHost + urlLoader.actionApplication + application.getName()
                             + "/container/" + application.getServer().getName() + "/environmentVariables",
-                    authentificationUtils.getMap(), parameters).get("body");
+                    authenticationUtils.getMap(), parameters).get("body");
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't create environment variable", e);
         }
 
-        statusCommand.setExitStatut(0);
-        response = "An environment variable has been successfully added to " + application.getName();
+        return MessageFormat.format(ENV_VAR_ADDED, key, application.getName());
+    }
 
-        return response;
+    private EnvironmentVariable getEnvironmentVariable(Application application, String key) throws ManagerResponseException {
+        String response = restUtils.sendGetCommand(
+                authenticationUtils.finalHost + urlLoader.actionApplication + application.getName()
+                        + "/container/" + application.getServer().getName() + "/environmentVariables",
+                authenticationUtils.getMap()).get("body");
+
+        List<EnvironmentVariable> environmentVariables = JsonConverter.getEnvironmentVariables(response);
+        
+        EnvironmentVariable variable = environmentVariables.stream()
+                .filter(var -> var.getKeyEnv().equals(key))
+                .findAny().orElseThrow(() -> new CloudUnitCliException(MessageFormat.format(NO_SUCH_ENV_VAR, key)));
+        return variable;
     }
 
     public String removeEnvironmentVariable(String applicationName, String key) {
-        String response;
-
-        if (authentificationUtils.getMap().isEmpty()) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + "You are not connected to CloudUnit host! Please use connect command"
-                    + ANSIConstants.ANSI_RESET;
-        }
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
+        Application application = getSpecificOrCurrentApplication(applicationName);
 
         try {
-            response = restUtils.sendGetCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName()
-                            + "/container/" + application.getServer().getName() + "/environmentVariables",
-                    authentificationUtils.getMap()).get("body");
-
-            List<EnvironmentVariable> environmentVariables = JsonConverter.getEnvironmentVariables(response);
-            int id = -1;
-            for (EnvironmentVariable var : environmentVariables)
-                if (var.getKeyEnv().equals(key))
-                    id = var.getId();
+            EnvironmentVariable variable = getEnvironmentVariable(application, key);
+            int id = variable.getId();
 
             restUtils.sendDeleteCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName()
+                    authenticationUtils.finalHost + urlLoader.actionApplication + application.getName()
                             + "/container/" + application.getServer().getName() + "/environmentVariables/" + id,
-                    authentificationUtils.getMap()).get("body");
-        } catch (Exception e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+                    authenticationUtils.getMap()).get("body");
+        } catch (ManagerResponseException e) {
+            throw new CloudUnitCliException("Couldn't remove environment variable", e);
         }
 
-        statusCommand.setExitStatut(0);
-
-        return "This environment variable has successful been deleted";
+        return MessageFormat.format(ENV_VAR_REMOVED, key, application.getName());
     }
 
     public String updateEnvironmentVariable(String applicationName, String oldKey, String newKey, String value) {
-        String response;
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
+        Application application = getSpecificOrCurrentApplication(applicationName);
 
         try {
-            response = restUtils.sendGetCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName()
-                            + "/container/" + application.getServer().getName() + "/environmentVariables",
-                    authentificationUtils.getMap()).get("body");
+            EnvironmentVariable variable = getEnvironmentVariable(application, oldKey);
+            int id = variable.getId();
 
-            List<EnvironmentVariable> environmentVariables = JsonConverter.getEnvironmentVariables(response);
-            int id = -1;
             Map<String, String> parameters = new HashMap<>();
-            for (EnvironmentVariable var : environmentVariables)
-                if (var.getKeyEnv().equals(oldKey)) {
-                    id = var.getId();
-                    parameters.put("keyEnv", newKey);
-                    parameters.put("valueEnv", value);
-                }
+            parameters.put("keyEnv", newKey);
+            parameters.put("valueEnv", value);
 
             restUtils.sendPutCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName()
+                    authenticationUtils.finalHost + urlLoader.actionApplication + application.getName()
                             + "/container/" + application.getServer().getName() + "/environmentVariables/" + id,
-                    authentificationUtils.getMap(), parameters).get("body");
-        } catch (Exception e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+                    authenticationUtils.getMap(), parameters).get("body");
+        } catch (ManagerResponseException e) {
+            throw new CloudUnitCliException("", e); 
         }
 
         statusCommand.setExitStatut(0);
@@ -613,40 +492,30 @@ public class ApplicationUtils {
     }
 
     public String listAllEnvironmentVariables(String applicationName) {
-        String response = null;
-
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
-
+        Application application = getSpecificOrCurrentApplication(applicationName);
+        
         try {
-            response = restUtils.sendGetCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName()
+            String response = restUtils.sendGetCommand(
+                    authenticationUtils.finalHost + urlLoader.actionApplication + application.getName()
                             + "/container/" + application.getServer().getName() + "/environmentVariables",
-                    authentificationUtils.getMap()).get("body");
+                    authenticationUtils.getMap()).get("body");
+            
+            MessageConverter.buildListEnvironmentVariables(JsonConverter.getEnvironmentVariables(response));
+
+            return JsonConverter.getEnvironmentVariables(response).size() + " variables found!";
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't list environment variables", e);
         }
 
-        MessageConverter.buildListEnvironmentVariables(JsonConverter.getEnvironmentVariables(response));
-
-        statusCommand.setExitStatut(0);
-
-        return JsonConverter.getEnvironmentVariables(response).size() + " variables found!";
     }
 
     public String listContainers(String applicationName) {
-        String checkResponse = checkAndRejectIfError(applicationName);
-        if (checkResponse != null) {
-            return checkResponse;
-        }
+        Application application = getSpecificOrCurrentApplication(applicationName);
 
         List<String> containers = new ArrayList<>();
-        containers.add(getApplication().getServer().getName());
+        containers.add(application.getServer().getName());
 
-        for (Module module : getApplication().getModules()) {
+        for (Module module : application.getModules()) {
             containers.add(module.getName());
         }
         MessageConverter.buildListContainers(containers);
@@ -661,9 +530,9 @@ public class ApplicationUtils {
 
         try {
             response = restUtils.sendGetCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName()
-                            + "/container/" + application.getServer().getName() + "/command",
-                    authentificationUtils.getMap()).get("body");
+                    authenticationUtils.finalHost + urlLoader.actionApplication + currentApplication.getName()
+                            + "/container/" + currentApplication.getServer().getName() + "/command",
+                    authenticationUtils.getMap()).get("body");
 
         } catch (ManagerResponseException e) {
             statusCommand.setExitStatut(1);
@@ -680,13 +549,13 @@ public class ApplicationUtils {
     public String execCommand(String name, String containerName, String arguments) {
 
         if (containerName == null) {
-            if (getApplication() == null) {
+            if (getCurrentApplication() == null) {
                 statusCommand.setExitStatut(1);
                 return ANSIConstants.ANSI_RED
                         + "No application is currently selected by the following command line : use <application name>"
                         + ANSIConstants.ANSI_RESET;
             }
-            containerName = getApplication().getServer().getName();
+            containerName = getCurrentApplication().getServer().getName();
         }
 
         try {
@@ -696,9 +565,9 @@ public class ApplicationUtils {
             ObjectMapper objectMapper = new ObjectMapper();
             String entity = objectMapper.writeValueAsString(command);
             restUtils.sendPostCommand(
-                    authentificationUtils.finalHost + urlLoader.actionApplication + application.getName()
-                            + "/container/" + application.getServer().getName() + "/command/" + name + "/exec",
-                    authentificationUtils.getMap(), entity);
+                    authenticationUtils.finalHost + urlLoader.actionApplication + currentApplication.getName()
+                            + "/container/" + currentApplication.getServer().getName() + "/command/" + name + "/exec",
+                    authenticationUtils.getMap(), entity);
 
         } catch (ManagerResponseException | JsonProcessingException e) {
             statusCommand.setExitStatut(1);
