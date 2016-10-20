@@ -36,6 +36,7 @@
     var vm = this;
 
     vm.number = '';
+    vm.isQuickAccess = false;
     vm.errorMsg = '';
     vm.createPort = createPort;
     vm.removePort = removePort;
@@ -48,8 +49,8 @@
 
     vm.myNature = vm.natures[0];
 
-    function createPort(applicationName, number, nature) {
-      ApplicationService.createPort(applicationName, number, nature)
+    function createPort(applicationName, number, nature, isQuickAccess) {
+      ApplicationService.createPort(applicationName, number, nature, isQuickAccess)
         .then(success)
         .catch(error);
 
@@ -57,6 +58,16 @@
         vm.errorMsg = '';
         vm.number = '';
         vm.nature = '';
+
+        if(vm.isQuickAccess) {
+          setTimeout(function() {
+            vm.application.quickAccessNotice = 'Quick access here!';
+            setTimeout(function() {
+              vm.application.quickAccessNotice = '';
+            }, 4000);
+          }, 2000);
+        }
+        vm.isQuickAccess = false;
       }
 
       function error(response) {

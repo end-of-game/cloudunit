@@ -53,6 +53,7 @@
     // ------------------------------------------------------------------------
     
     var vm = this;
+    vm.quickAccessNotice = ''
     vm.monitoringRoute = false;
     vm.settingsRoute = false;
     vm.currentServer;

@@ -46,6 +46,7 @@
       'ui.codemirror',
       'ngclipboard',
       'xeditable',
+      'ng-sweet-alert',
       'uiSwitch',
 
       //shared modules

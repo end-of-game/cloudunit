@@ -1,0 +1,40 @@
+
+server {
+    server_name CU_PORTAL_DOMAIN;
+    listen 443 ssl;
+    ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
+    ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
+    root /var/www/portal;
+}
+
+server {
+    server_name CU_MANAGER_DOMAIN;
+    listen 443 ssl;
+    ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
+    ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
+    location / {
+        proxy_pass http://cuplatform_tomcat_1.manager.cloud.unit:8080;
+    }
+}
+
+server {
+    server_name CU_GITLAB_DOMAIN;
+    listen 443 ssl;
+    ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
+    ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
+    location / {
+        proxy_pass http://cuplatform_gitlab_1.gitlab-ce.cloud.unit;
+    }
+}
+
+server {
+    server_name CU_JENKINS_DOMAIN;
+    listen 443 ssl;
+    ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
+    ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
+    location / {
+        proxy_pass http://cuplatform_jenkins_1.jenkins.cloud.unit:8080;
+    }
+}
+
+

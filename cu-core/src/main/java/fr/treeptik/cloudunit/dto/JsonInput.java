@@ -56,6 +56,8 @@ public class JsonInput implements Serializable {
 	private String portToOpen;
 
 	private String portNature;
+	
+	private Boolean portQuickAccess;
 
 	private String volumeName;
 
@@ -198,6 +200,14 @@ public class JsonInput implements Serializable {
 		this.portNature = portNature;
 	}
 
+	public Boolean getPortQuickAccess() {
+		return portQuickAccess;
+	}
+
+	public void setPortQuickAccess(Boolean portQuickAccess) {
+		this.portQuickAccess = portQuickAccess;
+	}
+	
 	// VALIDATIONS
 
 	public String getVolumeName() {

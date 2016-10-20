@@ -68,8 +68,6 @@ public interface ApplicationService {
 	Application create(String applicationName, String login, String serverName, String tagName, String origin)
 			throws ServiceException, CheckException;
 
-	PortToOpen addPort(Application application, String nature, Integer port) throws ServiceException;
-
 	void removePort(Application application, Integer port) throws CheckException, ServiceException;
 
 	Integer countApplicationsForImage(String cuInstanceName, User user, String tag)
@@ -78,5 +76,8 @@ public interface ApplicationService {
 	boolean isStarted(String name);
 
 	boolean isStopped(String name);
+
+	PortToOpen addPort(Application application, String nature, Integer port, Boolean isQuickAccess)
+			throws ServiceException;
 
 }

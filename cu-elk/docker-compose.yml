@@ -1,30 +1,39 @@
 version: '2'
 services:
 
-  cu-elasticsearch:
-    build: 
+  elasticsearch:
+    build:
       context: ./elasticsearch
-    image: cu-elasticsearch
-    security_opt:
-      - seccomp:unconfined
+    image: cloudunit/elk-elasticsearch
     ports:
       - "9200:9200"
-      - "9300:9300"
     hostname: cu-elasticsearch
-    container_name: cu-elasticsearch
-    working_dir: /usr/share/elasticsearch
+    volumes:
+      - /srv/cu-elk/elasticsearch:/usr/share/elasticsearch/data
     environment:
-      - "TZ=Europe/Paris"
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-    network_mode: bridge
+    privileged: true
+    command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
 
-  cu-kibana:
-    build: 
+  kibana:
+    build:
       context: ./kibana
-    image: cu-kibana
+    image: cloudunit/elk-kibana
     ports:
       - "5601:5601"
     hostname: cu-kibana
-    container_name: cu-kibana
-    working_dir: /usr/share/kibana
-    network_mode: bridge
+    environment:
+      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+    depends_on:
+      - elasticsearch
+
+  dockbeat-polling:
+    build:
+      context: ./poller/dockbeat/
+    image: cloudunit/elk-dockbeat
+    hostname: cu-dockbeat
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -e
+    depends_on:
+      - elasticsearch

@@ -388,3 +388,4 @@ hs_err_pid*
 *.css.map
 
 docker-client
+/cu-compose/nginx/sites-enabled/cloudunit.conf

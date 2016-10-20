@@ -35,6 +35,8 @@ public class PortResource implements Serializable {
 	private String portToOpen;
 
 	private String portNature;
+	
+	private Boolean portQuickAccess;
 
 	public PortResource() {
 	}
@@ -42,6 +44,7 @@ public class PortResource implements Serializable {
 	public PortResource(PortToOpen portToOpen) {
 		this.applicationName = portToOpen.getApplication().getName();
 		this.portNature = portToOpen.getNature();
+		this.portQuickAccess = portToOpen.getQuickAccess();
 		this.portToOpen = String.valueOf(portToOpen.getPort());
 		this.alias = portToOpen.getAlias();
 	}
@@ -76,6 +79,14 @@ public class PortResource implements Serializable {
 
 	public void setPortNature(String portNature) {
 		this.portNature = portNature;
+	}
+	
+	public Boolean getPortQuickAccess() {
+		return portQuickAccess;
+	}
+
+	public void setPortQuickAccess(Boolean portQuickAccess) {
+		this.portQuickAccess = portQuickAccess;
 	}
 
 	public static long getSerialVersionUID() {

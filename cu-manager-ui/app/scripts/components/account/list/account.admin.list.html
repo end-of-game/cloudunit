@@ -110,8 +110,21 @@
               tooltip=""
               data-title="Delete"
               data-placement="bottom"
-              data-toggle="modal"
-              data-target="#delete-{{user.login}}">
+              data-title="Delete"
+              sweetalert
+              sweet-options="{'title':'Removal confirmation required for user {{user.login}}',
+              'text':'Caution, this is a permanent action.',
+              'type':'warning',
+              'showCancelButton':true,
+              'confirmButtonText':'DELETE USER!',
+              'cancelButtonText':'CANCEL',
+              'closeOnConfirm':false,
+              'closeOnCancel':false,
+              'animation': 'slide-from-top'}"
+              sweet-confirm-option="{'title':'Deleted!','text':'The user has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+              sweet-cancel-option="{'title':'Cancelled!','text':'The user is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+              sweet-on-confirm="accountAdminList.handleDeleteUser(user)"
+              >
         <i class="icon-whhg removeuseralt"></i>
       </button>
       <a class="icon-button primary"
@@ -124,28 +137,6 @@
         <i class="icon-whhg rawaccesslogs"></i>
       </a>
 
-      <div class="modal"
-           id="delete-{{user.login}}"
-           modaldismiss="">
-        <div class="modal-inner">
-          <div class="content clearfix">
-            <h3 class="title">Removal confirmation required for user {{user.login}}</h3>
-
-            <p class="alert">Caution, <strong> this is a permanent action</strong>.</p>
-
-            <div class="actions pull-right">
-              <button type="button" class="button secondary" data-dismiss="modal">Cancel
-              </button>
-              <button type="button"
-                      class="delete-btn button primary"
-                      data-dismiss="{{accountAdminList.error ? '' : 'modal' }}"
-                      data-ng-click="accountAdminList.handleDeleteUser(user)">
-                Delete user
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </td>
   </tr>
   </tbody>
