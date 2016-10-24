@@ -333,26 +333,25 @@ public class DockerCloudUnitClient {
 		return dockerResponse;
 	}
 
-	public DockerResponse findNetwork(String name) throws DockerJSONException {
-		DockerResponse dockerResponse = null;
+	public Network findNetwork(String id) throws DockerJSONException, IOException {
 		try {
 			logger.info("The client attempts to find a network...");
 			Network network = new Network();
-			network.setName(name);
-			dockerResponse = driver.findNetwork(network);
+			network.setId(id);
+			DockerResponse dockerResponse = driver.findNetwork(network);
 			handleDockerAPIError(dockerResponse);
+			return objectMapper.readValue(dockerResponse.getBody(), Network.class);
 		} catch (FatalDockerJSONException e) {
 			throw new DockerJSONException(e.getMessage(), e);
 		}
-		return dockerResponse;
 	}
 
-	public DockerResponse removeNetwork(String name) throws DockerJSONException {
+	public DockerResponse removeNetwork(String id) throws DockerJSONException {
 		DockerResponse dockerResponse = null;
 		try {
 			logger.info("The client attempts to remove a network...");
 			Network network = new Network();
-			network.setName(name);
+			network.setId(id);
 			dockerResponse = driver.removeNetwork(network);
 			handleDockerAPIError(dockerResponse);
 		} catch (FatalDockerJSONException e) {

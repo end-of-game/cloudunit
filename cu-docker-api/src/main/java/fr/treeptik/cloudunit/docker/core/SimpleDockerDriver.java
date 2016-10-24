@@ -386,7 +386,7 @@ public class SimpleDockerDriver implements DockerDriver {
 		URI uri = null;
 		DockerResponse dockerResponse = null;
 		try {
-			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getName()).build();
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getId()).build();
 			dockerResponse = client.sendGet(uri);
 		} catch (URISyntaxException | JSONClientException e) {
 			StringBuilder contextError = new StringBuilder(256);
@@ -405,7 +405,7 @@ public class SimpleDockerDriver implements DockerDriver {
 		String body = new String();
 		DockerResponse dockerResponse = null;
 		try {
-			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/network/" + network.getName()).build();
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getId()).build();
 			dockerResponse = client.sendDelete(uri, false);
 		} catch (URISyntaxException | JSONClientException e) {
 			StringBuilder contextError = new StringBuilder(256);
