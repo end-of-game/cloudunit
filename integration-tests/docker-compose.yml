@@ -82,24 +82,6 @@ services:
           - /etc/timezone:/etc/timezone:ro
       network_mode: bridge
 
-  tomcat:
-      container_name: cuplatform_tomcat_1
-      image: cloudunit/manager
-      depends_on:
-          - nginx
-      ports:
-          - "8080:8080"
-      volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-          - /home/admincu/.cloudunit:/root/.cloudunit
-      environment:
-          - CU_KVM
-          - CU_SUB_DOMAIN
-          - CATALINA_OPTS="-Dspring.profiles.active=production"
-          - MYSQL_ROOT_PASSWORD
-      network_mode: bridge
-
   cadvisor:
       container_name: cuplatform_cadvisor_1
       image: google/cadvisor:0.14.0
