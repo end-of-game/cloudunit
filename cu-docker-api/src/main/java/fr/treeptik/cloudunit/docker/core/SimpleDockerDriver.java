@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import fr.treeptik.cloudunit.docker.model.Network;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -341,12 +342,70 @@ public class SimpleDockerDriver implements DockerDriver {
 
 	@Override
 	public DockerResponse removeVolume(Volume volume) throws FatalDockerJSONException {
-
 		URI uri = null;
 		String body = new String();
 		DockerResponse dockerResponse = null;
 		try {
 			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/" + volume.getName()).build();
+			dockerResponse = client.sendDelete(uri, false);
+		} catch (URISyntaxException | JSONClientException e) {
+			StringBuilder contextError = new StringBuilder(256);
+			contextError.append("uri : " + uri + " - ");
+			contextError.append("request body : " + body + " - ");
+			contextError.append("server response : " + dockerResponse);
+			logger.error(contextError.toString());
+			throw new FatalDockerJSONException("An error has occurred for removeImage request due to " + e.getMessage(),
+					e);
+		}
+		return dockerResponse;
+	}
+
+	@Override
+	public DockerResponse createNetwork(Network network) throws FatalDockerJSONException {
+		URI uri = null;
+		String body = new String();
+		DockerResponse dockerResponse = null;
+		try {
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/create").build();
+			body = objectMapper.writeValueAsString(network);
+			dockerResponse = client.sendPost(uri, body, "application/json");
+		} catch (URISyntaxException | IOException | JSONClientException e) {
+			StringBuilder contextError = new StringBuilder(256);
+			contextError.append("uri : " + uri + " - ");
+			contextError.append("request body : " + body + " - ");
+			contextError.append("server response : " + dockerResponse);
+			logger.error(contextError.toString());
+			throw new FatalDockerJSONException(
+					"An error has occurred for create container request due to " + e.getMessage(), e);
+		}
+		return dockerResponse;
+	}
+
+	@Override
+	public DockerResponse findNetwork(Network network) throws FatalDockerJSONException {
+		URI uri = null;
+		DockerResponse dockerResponse = null;
+		try {
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getName()).build();
+			dockerResponse = client.sendGet(uri);
+		} catch (URISyntaxException | JSONClientException e) {
+			StringBuilder contextError = new StringBuilder(256);
+			contextError.append("uri : " + uri + " - ");
+			contextError.append("server response : " + dockerResponse);
+			logger.error(contextError.toString());
+			throw new FatalDockerJSONException(
+					"An error has occurred for create container request due to " + e.getMessage(), e);
+		}
+		return dockerResponse;
+	}
+
+	@Override
+	public DockerResponse removeNetwork(Network network) throws FatalDockerJSONException {
+		URI uri = null;
+		String body = new String();
+		DockerResponse dockerResponse = null;
+		try {
+			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/network/" + network.getName()).build();
 			dockerResponse = client.sendDelete(uri, false);
 		} catch (URISyntaxException | JSONClientException e) {
 			StringBuilder contextError = new StringBuilder(256);

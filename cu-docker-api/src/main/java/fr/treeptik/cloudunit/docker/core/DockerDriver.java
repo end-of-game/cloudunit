@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.docker.core;
 
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.Image;
+import fr.treeptik.cloudunit.docker.model.Network;
 import fr.treeptik.cloudunit.docker.model.Volume;
 import fr.treeptik.cloudunit.dto.DockerResponse;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
@@ -38,4 +39,10 @@ public interface DockerDriver {
 	DockerResponse findVolume(Volume volume) throws FatalDockerJSONException;
 
 	DockerResponse removeVolume(Volume volume) throws FatalDockerJSONException;
+
+	DockerResponse createNetwork(Network network) throws FatalDockerJSONException;
+
+	DockerResponse findNetwork(Network network) throws FatalDockerJSONException;
+
+	DockerResponse removeNetwork(Network network) throws FatalDockerJSONException;
 }
