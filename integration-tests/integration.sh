@@ -15,8 +15,6 @@
 
 set -x
 
-sh reset.sh
-
 # Local execution for maven
 cd ../cu-manager
 mvn clean test "-Dtest=*IT"
