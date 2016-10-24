@@ -1,6 +1,5 @@
 version: '2'
 services:
-
   java:
       container_name: java
       image: cloudunit/java

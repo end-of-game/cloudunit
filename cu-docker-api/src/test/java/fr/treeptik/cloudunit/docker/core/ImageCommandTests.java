@@ -13,6 +13,8 @@ import fr.treeptik.cloudunit.exception.ErrorDockerJSONException;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,6 +27,8 @@ public class ImageCommandTests {
 
     static String DOCKER_HOST;
     static Boolean isTLS;
+    static Boolean isUnixSocketConnection;
+    static String socketPathAsString;
 
     private static DockerCloudUnitClient dockerCloudUnitClient;
     private static final String CONTAINER_NAME = "myContainer" + System.currentTimeMillis();
@@ -40,6 +44,8 @@ public class ImageCommandTests {
         } else {
             DOCKER_HOST = "cloudunit.dev:4243";
             isTLS = false;
+            isUnixSocketConnection = true;
+            socketPathAsString = "/var/run/docker.sock";
         }
 
         dockerCloudUnitClient = new DockerCloudUnitClient();
@@ -53,7 +59,7 @@ public class ImageCommandTests {
                 .withCmd(Arrays.asList("/bin/bash", "/cloudunit/scripts/start-service.sh", "johndoe", "abc2015",
                         "192.168.2.116", "172.17.0.221", "aaaa",
                         "AezohghooNgaegh8ei2jabib2nuj9yoe", "main"))
-                .withImage("cloudunit/tomcat-8")
+                .withImage("busybox")
                 .withHostConfig(hostConfig)
                 .withExposedPorts(new HashMap<>())
                 .withMemory(0L)
@@ -61,10 +67,18 @@ public class ImageCommandTests {
                 .build();
         DockerContainer container = ContainerBuilder.aContainer().withName(CONTAINER_NAME).withConfig(config).build();
         try {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS));
+            if(isUnixSocketConnection){
+                URI uri = new URI(socketPathAsString);
+                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS, true, uri));
+            } else {
+                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS));
+            }
+
             dockerCloudUnitClient.createContainer(container, DOCKER_HOST);
         } catch (DockerJSONException e) {
             Assert.fail();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
     }
 

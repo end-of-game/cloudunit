@@ -53,11 +53,20 @@ public class SimpleDockerDriver implements DockerDriver {
 	private String host;
 
 	public SimpleDockerDriver(String host, String certPathDir, boolean isTLSActivated) {
-		client = new JSONClient(certPathDir, isTLSActivated);
+		client = new JSONClient(certPathDir, isTLSActivated, false, null);
 		this.isTLSActivated = isTLSActivated;
 		this.certPathDir = certPathDir;
 		this.host = host;
 		protocol = isTLSActivated ? "https" : "http";
+		objectMapper = new ObjectMapper();
+	}
+
+	public SimpleDockerDriver(String host, String certPathDir, boolean isTLSActivated, boolean isUnixSocket, URI socketUri) {
+		client = new JSONClient(certPathDir, isTLSActivated, isUnixSocket, socketUri);
+		this.isTLSActivated = isTLSActivated;
+		this.certPathDir = certPathDir;
+		this.host = "localhost:80";
+		protocol = "unix";
 		objectMapper = new ObjectMapper();
 	}
 
