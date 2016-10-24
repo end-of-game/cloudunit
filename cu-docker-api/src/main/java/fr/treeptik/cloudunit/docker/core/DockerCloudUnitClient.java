@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.treeptik.cloudunit.docker.model.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -304,6 +305,55 @@ public class DockerCloudUnitClient {
 			Volume volume = new Volume();
 			volume.setName(name);
 			dockerResponse = driver.removeVolume(volume);
+			handleDockerAPIError(dockerResponse);
+		} catch (FatalDockerJSONException e) {
+			throw new DockerJSONException(e.getMessage(), e);
+		}
+		return dockerResponse;
+	}
+
+	public DockerResponse createNetwork(String name, String label) throws DockerJSONException {
+		DockerResponse dockerResponse = null;
+		try {
+			logger.info("The client attempts to create a network...");
+			Network network = new Network();
+			network.setName(name);
+			Map<String, String> labels = new HashMap<String, String>() {
+				private static final long serialVersionUID = 1L;
+				{
+					put("cloudunit.type", label);
+				}
+			};
+			network.setLabels(labels);
+			dockerResponse = driver.createNetwork(network);
+			handleDockerAPIError(dockerResponse);
+		} catch (FatalDockerJSONException e) {
+			throw new DockerJSONException(e.getMessage(), e);
+		}
+		return dockerResponse;
+	}
+
+	public DockerResponse findNetwork(String name) throws DockerJSONException {
+		DockerResponse dockerResponse = null;
+		try {
+			logger.info("The client attempts to find a network...");
+			Network network = new Network();
+			network.setName(name);
+			dockerResponse = driver.findNetwork(network);
+			handleDockerAPIError(dockerResponse);
+		} catch (FatalDockerJSONException e) {
+			throw new DockerJSONException(e.getMessage(), e);
+		}
+		return dockerResponse;
+	}
+
+	public DockerResponse removeNetwork(String name) throws DockerJSONException {
+		DockerResponse dockerResponse = null;
+		try {
+			logger.info("The client attempts to remove a network...");
+			Network network = new Network();
+			network.setName(name);
+			dockerResponse = driver.removeNetwork(network);
 			handleDockerAPIError(dockerResponse);
 		} catch (FatalDockerJSONException e) {
 			throw new DockerJSONException(e.getMessage(), e);
