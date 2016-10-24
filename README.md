@@ -52,7 +52,7 @@ There are many installation guides
 ## Go further
     
 * [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit/blob/dev/documentation/CLI-GUIDE.md)
-* [CloudUnit @ Plugin](https://github.com/Treeptik/cloudunit/tree/dev/cu-maven/README.md)
+* [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit/tree/dev/cu-maven/README.md)
 
 ## Examples
 
