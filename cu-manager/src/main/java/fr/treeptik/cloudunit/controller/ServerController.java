@@ -27,11 +27,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.spotify.docker.client.exceptions.DockerException;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
@@ -128,7 +131,8 @@ public class ServerController implements Serializable {
 	@CloudUnitSecurable
 	@RequestMapping(value = "/volume", method = RequestMethod.PUT)
 	@ResponseBody
-	public JsonResponse setVolume(@RequestBody VolumeAssociationDTO volumeAssociationDTO)
+	@Transactional
+	public JsonResponse linkVolumeAssociation(@RequestBody VolumeAssociationDTO volumeAssociationDTO)
 			throws ServiceException, CheckException {
 
 		if (logger.isDebugEnabled()) {
@@ -139,6 +143,7 @@ public class ServerController implements Serializable {
 		Application application = applicationService.findByNameAndUser(user, volumeAssociationDTO.getApplicationName());
 
 		serverService.addVolume(application, volumeAssociationDTO);
+
 		applicationEventPublisher.publishEvent(new ServerStartEvent(application.getServer()));
 		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 

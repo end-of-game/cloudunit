@@ -17,6 +17,8 @@ package fr.treeptik.cloudunit.service;
 
 import java.util.List;
 
+import com.spotify.docker.client.exceptions.DockerException;
+
 import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -61,7 +63,7 @@ public interface ServerService {
 
 	void addCredentialsForServerManagement(Server server, User user) throws ServiceException;
 
-	void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException;
+	void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException, CheckException;
 
 	void removeVolume(String containerName, String volumeName) throws ServiceException;
 

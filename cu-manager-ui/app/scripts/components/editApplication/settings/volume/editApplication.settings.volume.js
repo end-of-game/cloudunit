@@ -40,6 +40,10 @@
   function volumeCtrl($stateParams, $q, ApplicationService, VolumeService, ErrorService) {
 
     var vm = this;
+    vm.myConfig = {
+      create: true,
+      maxItems: 1
+    }
     vm.volumes = [];
     vm.containers = [];
     vm.myContainer = {};
@@ -94,6 +98,11 @@
         VolumeService.getListVolume ( )
         .then ( function(response) {
           vm.volumes = response;
+          vm.volumes = vm.volumes.map(function(volume){
+            volume.value = volume.name; 
+            volume.text = volume.name;
+            return volume;
+          })
         });
     }
 
