@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<div class="volume-card card col-lg-9" >
+<div class="volume-card card col-lg-9">
     <div class="content clearfix">
 
         <h3 class="title large">Associating Volume</h3>
@@ -55,23 +55,9 @@
         name="addvolumeVariable"
         class="clearfix" novalidate=""
         data-ng-submit="volume.setLinkVolume()">
-
-        <div class="dropdown dropdown--small col-lg-10" dropdown>
-            <a  class="dropdown-toggle"
-                dropdown-toggle=""
-                selectbox=""
-                ng-init="volume.volumePicked = volume.volumes[0].name">
-                {{ volume.volumePicked }}
-            </a>
-
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                <li data-ng-repeat="vol in volume.volumes">
-                    <a ng-href=""
-                        data-ng-click="volume.volumePicked = vol.name;">
-                        {{vol.name}}
-                    </a>
-                </li>
-            </ul>
+        
+        <div  class="col-lg-10">
+            <selectize class="selectize-small" placeholder='Volume Name' options='volume.volumes' config="volume.myConfig" ng-model="volume.volumePicked"></selectize>
         </div>
 
         <label for="" class="col-lg-2 small-margin-bottom">

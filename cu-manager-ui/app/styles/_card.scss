@@ -211,10 +211,6 @@
     border: 0;
   }
 
-  .check.radio input[type="radio"] + label:before {
-    content: '\f111';
-  }
-
   .allowed {
     z-index: 15;
   }
