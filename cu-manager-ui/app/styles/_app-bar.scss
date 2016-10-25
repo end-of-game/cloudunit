@@ -127,6 +127,13 @@
   & .dropdown-toggle:after {
     top: 8px;
   }
+
+  li.disabled > a {
+    color: #ccc;
+    border-bottom: 2px solid transparent;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 .app-bar-icons {
