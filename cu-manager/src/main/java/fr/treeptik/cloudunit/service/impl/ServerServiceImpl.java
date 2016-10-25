@@ -54,7 +54,6 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.factory.VolumeResourceFactory;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
