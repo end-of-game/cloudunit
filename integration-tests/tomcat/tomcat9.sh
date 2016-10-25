@@ -15,8 +15,10 @@
 
 set -x
 
+
 # run the integration test
-sh ~/cloudunit/integration-tests/maven.sh Tomcat*ApplicationControllerTestIT
+sh ~/cloudunit/integration-tests/maven.sh Tomcat9ApplicationControllerTestIT
+
 
 
 
