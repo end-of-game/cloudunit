@@ -78,6 +78,9 @@ import java.util.Properties;
 public class CloudUnitApplicationContext
     extends WebMvcConfigurerAdapter {
 
+    // Allow for longer running Docker commands, esp. database scripts.
+    private static final int READ_TIMEOUT_MILLIS = 1 * 60 * 1000;
+
     // Max file size
     private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
 
@@ -263,9 +266,10 @@ public class CloudUnitApplicationContext
         boolean isTLS = endpoint.equalsIgnoreCase("https");
         try {
             if (!isTLS) {
-                dockerClient = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
+                dockerClient = DefaultDockerClient.builder()
+                        .uri("http://" + dockerManagerIp)
+                        .readTimeoutMillis(READ_TIMEOUT_MILLIS)
+                        .build();
             } else {
                 final DockerCertificates certs = new DockerCertificates(Paths.get(certPathDirectory));
                 dockerClient = DefaultDockerClient
