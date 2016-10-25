@@ -1,6 +1,7 @@
 package fr.treeptik.cloudunit.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -21,14 +22,16 @@ public class Volume implements Serializable {
 
 	private String name;
 
-	public Volume() {
-
+	/**
+	 * Used by Hibernate
+	 */
+	protected Volume() {
+		this.volumeAssociations = new HashSet<>();
 	}
 
-	public Volume(Integer id, String name, Set<VolumeAssociation> volumeAssociations) {
-		this.id = id;
+	public Volume(String name) {
 		this.name = name;
-		this.volumeAssociations = volumeAssociations;
+		this.volumeAssociations = new HashSet<>();
 	}
 
 	@OneToMany(mappedBy = "volumeAssociationId.volume", fetch = FetchType.LAZY)

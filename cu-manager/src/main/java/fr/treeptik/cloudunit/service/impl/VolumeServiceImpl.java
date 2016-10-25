@@ -35,16 +35,24 @@ public class VolumeServiceImpl implements VolumeService {
 		try {
 			checkVolumeFormat(name);
 			dockerCloudUnitClient.createVolume(name, "runtime");
-			Volume volume = new Volume();
-			volume.setName(name);
+			return registerNewVolume(name);
+		} catch (CheckException e) {
+			throw new CheckException(e.getMessage());
+		}
+	}
+
+	@Override
+	@Transactional
+	public Volume registerNewVolume(String name) {
+		try {
+			Volume volume = new Volume(name);
 			volume = volumeDAO.save(volume);
 			return volume;
 		} catch (CheckException e) {
 			throw new CheckException(e.getMessage());
 		}
-
 	}
-
+	
 	@Override
 	@Transactional
 	public Volume updateVolume(Volume volume) {
@@ -76,6 +84,7 @@ public class VolumeServiceImpl implements VolumeService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Volume loadVolume(int id) throws CheckException {
 		Volume volume = volumeDAO.findById(id);
 		if (volume == null)
@@ -84,6 +93,7 @@ public class VolumeServiceImpl implements VolumeService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Volume> loadAllVolumes() {
 		return volumeDAO.findAllVolumes();
 	}
@@ -99,6 +109,7 @@ public class VolumeServiceImpl implements VolumeService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<Volume> loadAllByContainerName(String containerName) throws ServiceException {
 		return volumeDAO.findVolumesByContainerName(containerName);
 	}
@@ -109,11 +120,13 @@ public class VolumeServiceImpl implements VolumeService {
 	}
 
 	@Override
+	@Transactional
 	public VolumeAssociation saveAssociation(VolumeAssociation volumeAssociation) {
 		return volumeAssociationDAO.save(volumeAssociation);
 	}
 
 	@Override
+	@Transactional
 	public void removeAssociation(VolumeAssociation volumeAssociation) {
 		volumeAssociationDAO.delete(volumeAssociation);
 	}

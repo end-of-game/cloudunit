@@ -23,6 +23,8 @@ public interface VolumeService {
 	Volume updateVolume(Volume volume) throws ServiceException, CheckException;
 
 	Volume createNewVolume(String name) throws ServiceException;
+	
+	Volume registerNewVolume(String name) throws ServiceException;
 
 	VolumeAssociation saveAssociation(VolumeAssociation volumeAssociation);
 

@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +32,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.VolumeList;
 
 import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
@@ -41,11 +48,13 @@ import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
+import fr.treeptik.cloudunit.dto.VolumeResource;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.factory.VolumeResourceFactory;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
@@ -107,7 +116,10 @@ public class ServerServiceImpl implements ServerService {
 	
 	@Inject
 	private EnvironmentService environmentService;
-
+	
+    @Inject
+    private DockerClient dockerClient;
+    
 	public ServerDAO getServerDAO() {
 		return this.serverDAO;
 	}
@@ -507,17 +519,37 @@ public class ServerServiceImpl implements ServerService {
 	public void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO)
 			throws ServiceException, CheckException {
 		checkVolumeFormat(volumeAssociationDTO);
-		Server server = findByName(volumeAssociationDTO.getContainerName());
-		Volume volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
-		
+
+		Volume volume = null;
+		if (!volumeService.loadAllVolumes().stream().filter(v -> v.getName().equals(volumeAssociationDTO.getVolumeName())).findAny()
+				.isPresent()) {
+			VolumeList volumeList = null;
+			try {
+				volumeList = dockerClient.listVolumes();
+			} catch (InterruptedException | DockerException e) {
+				throw new ServiceException("Action failed");
+			}
+			if(volumeList.volumes().stream().filter(v -> v.name().equals(volumeAssociationDTO.getVolumeName()	)).findFirst().orElse(null) == null) {
+				throw new CheckException("This volume does not exist");
+			} else {
+				volume = volumeService.registerNewVolume(volumeAssociationDTO.getVolumeName());
+			}
+		} else {
+			volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
+		}
+
 		if(volumeAssociationService.checkVolumeAssociationPathAlreadyPresent(volumeAssociationDTO.getPath(), application.getServer().getId()) > 0) {
 			throw new CheckException("This path is already use !");
 		}
-		
-		volumeService.saveAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume),
-				volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode()));
-		stopAndRemoveServer(server, application);
-		recreateAndMountVolumes(server, application);
+
+		VolumeAssociation volumeAssociation = new VolumeAssociation(new VolumeAssociationId(application.getServer(), volume),
+				volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode());
+		volumeService.saveAssociation(volumeAssociation);
+		volume.getVolumeAssociations().add(volumeAssociation);
+		application.getServer().getVolumeAssociations().add(volumeAssociation);
+
+		stopAndRemoveServer(application.getServer(), application);
+		recreateAndMountVolumes(application.getServer(), application);
 	}
 
 	@Override
@@ -549,8 +581,8 @@ public class ServerServiceImpl implements ServerService {
 		dockerService.removeContainer(server.getName(), false);
 	}
 
+	@Transactional
 	private void recreateAndMountVolumes(Server server, Application application) throws ServiceException {
-
 		List<String> volumes = volumeService.loadAllByContainerName(server.getName())
 				.stream().map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath()
 						+ ":" + v.getVolumeAssociations().stream().findFirst().get().getMode())
@@ -575,10 +607,6 @@ public class ServerServiceImpl implements ServerService {
 			throw new CheckException("This path is not consistent !");
 		if (!volume.getVolumeName().matches("^[-a-zA-Z0-9_]*$"))
 			throw new CheckException("This name is not consistent : " + volume.getVolumeName());
-		if (!volumeService.loadAllVolumes().stream().filter(v -> v.getName().equals(volume.getVolumeName())).findAny()
-				.isPresent()) {
-			throw new CheckException("This volume does not exist");
-		}
 		if (!(volume.getMode().equalsIgnoreCase("ro") || volume.getMode().equalsIgnoreCase("rw"))) {
 			throw new CheckException("Authorized mode value : ro (readOnly) or rw (read-write)");
 		}
