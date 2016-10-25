@@ -61,8 +61,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration")
 public abstract class AbstractApplicationControllerTestIT {
 
-    protected String release;
-
     private final Logger logger = LoggerFactory.getLogger(AbstractApplicationControllerTestIT.class);
 
     @Autowired
@@ -86,6 +84,14 @@ public abstract class AbstractApplicationControllerTestIT {
     @BeforeClass
     public static void initEnv() {
         applicationName = "app" + new Random().nextInt(100000);
+    }
+
+    private final String release;
+    private final String jvmRelease;
+
+    protected AbstractApplicationControllerTestIT(final String release, final String jvmRelease) {
+        this.release = release;
+        this.jvmRelease = jvmRelease;
     }
 
     @Before
@@ -191,7 +197,7 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Change JVM Memory !");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
-                        + "\",\"jvmMemory\":\"1024\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\",\"location\":\"webui\"}";
+                        + "\",\"jvmMemory\":\"1024\",\"jvmOptions\":\"\",\"jvmRelease\":\""+jvmRelease+"\",\"location\":\"webui\"}";
         ResultActions resultats =
                 this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
@@ -220,7 +226,7 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Change JVM Memory size with an empty value");
         jsonString =
                 "{\"applicationName\":\"" + applicationName
-                        + "\",\"jvmMemory\":\"\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+                        + "\",\"jvmMemory\":\"\",\"jvmOptions\":\"\",\"jvmRelease\":\""+jvmRelease+"\"}";
         resultats =
                 mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
@@ -237,7 +243,7 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Change JVM Options !");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
-                       + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+                       + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\""+jvmRelease+"\"}";
         ResultActions resultats =
                 mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
@@ -245,7 +251,7 @@ public abstract class AbstractApplicationControllerTestIT {
         resultats =
                 mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(jsonPath("$.server.jvmMemory").value(512)).andExpect(jsonPath(
-                "$.server.jvmRelease").value("jdk1.8.0_25")).andExpect(jsonPath(
+                "$.server.jvmRelease").value(jvmRelease)).andExpect(jsonPath(
                 "$.server.jvmOptions").value("-Dkey1=value1"));
 
         deleteApplication(applicationName);
@@ -258,7 +264,7 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Change JVM With Xms : not allowed");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
-                        + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Xms=512m\",\"jvmRelease\":\"jdk1.8.0_25\"}";
+                        + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Xms=512m\",\"jvmRelease\":\""+jvmRelease+"\"}";
         ResultActions resultats =
                 mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());

@@ -21,7 +21,7 @@ package fr.treeptik.cloudunit.servers;
 public class Tomcat9ApplicationControllerTestIT extends AbstractApplicationControllerTestIT {
 
     public Tomcat9ApplicationControllerTestIT() {
-        super.release = "tomcat-9";
+        super("tomcat-9", "jdk1.8.0_25");
     }
 
 }
