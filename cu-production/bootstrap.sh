@@ -64,7 +64,7 @@ sudo mv docker-compose /usr/local/bin
 cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
 # Increase Virtual Memory
-sysctl -w -p vm.max_map_count=262144
+sysctl -w vm.max_map_count=262144
 
 
 

@@ -12,6 +12,7 @@ services:
       - /srv/cu-elk/elasticsearch:/usr/share/elasticsearch/data
     environment:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
 
   kibana:

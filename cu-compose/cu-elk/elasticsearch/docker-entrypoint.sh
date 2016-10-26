@@ -2,6 +2,8 @@
 
 set -e
 
+sysctl -w vm.max_map_count=262144
+
 # Add elasticsearch as command if needed
 if [ "${1:0:1}" = '-' ]; then
 	set -- elasticsearch "$@"
