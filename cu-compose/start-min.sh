@@ -15,31 +15,9 @@
 
 source /etc/environment
 
-function reset {
-    docker rm -vf $(docker ps -aq)
-    docker volume rm $(docker volume ls -q)
-    # in the future the networks too
-}
-
-echo -n "Do you agree with this? [yes or no]: "
-read yno
-case $yno in
-
-        [yY] | [yY][Ee][Ss] )
-                echo "Agreed"
-                ./configure.sh
-                reset
-                ;;
-
-        [nN] | [n|N][O|o] )
-                echo "Not agreed, you can't re-init the installation";
-                exit 1
-                ;;
-        *) echo "Invalid input"
-                exit 1
-            ;;
-esac
-
+docker-compose  -f docker-compose.yml \
+                -f docker-compose.elk.yml \
+                up -d
 
 
 
