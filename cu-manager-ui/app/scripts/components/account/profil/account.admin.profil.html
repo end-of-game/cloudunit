@@ -1,0 +1,100 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<section data-ng-cloak="" id="account">
+  <header class="header clearfix">
+    <div class="page-header">
+      <div class="page-title">
+        <a class="icon-button primary"
+           data-ng-href="#dashboard"
+           ripple=""
+           tooltip=""
+           data-title="Retour"
+           data-placement="bottom">
+          <i class="icon-whhg pageback"></i>
+        </a>
+
+        <h2 class="title">
+          Manage My Account
+        </h2>
+      </div>
+    </div>
+  </header>
+
+  <div class="page full">
+    <div id="user-info" class="card large vertical-spacing">
+      <div class="content clearfix">
+
+        <h3 class="title">Update My Account</h3>
+
+        <form class="form-wrapper" id="account-profil">
+          <br>
+          <div class="input-group stack">
+            <label for="old-password">Old Password</label>
+            <input id="old-password"
+                  name="old-password"
+                  type="password"
+                  data-ng-model="accountProfil.oldPassword">
+          </div>
+          
+
+          <div class="input-group stack">
+            <label for="new-password">New Password</label>
+            <input id="new-password"
+                  name="new-password"
+                  type="password"
+                  data-ng-model="accountProfil.newPassword">
+          </div>
+
+
+          <div class="input-group stack">
+            <label for="confirm-password">Confirmation Password</label>
+            <input id="confirm-password"
+                  name="confirm-password"
+                  type="password"
+                  data-ng-model="accountProfil.confirmPassword">
+          </div>
+
+          <div class="clearfix">
+            <button class="button-effect primary pull-right"
+                    ng-disabled="!accountProfil.oldPassword || !accountProfil.newPassword || !accountProfil.confirmPassword"
+                    data-ng-click="accountProfil.changePassword(accountProfil.oldPassword, accountProfil.newPassword, accountProfil.confirmPassword)">
+              <span>Save</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="alert alert-danger" data-ng-show="accountProfil.errorMsg">
+          <button type="button"
+                  class="close"
+                  ng-click="accountProfil.errorMsg = false">
+            <span>&times;</span>
+          </button>
+          <p>{{accountProfil.errorMsg}}</p>
+        </div>
+          
+        <div class="alert alert-info" data-ng-show="accountProfil.noticeMsg">
+          <button type="button"
+                  class="close"
+                  ng-click="accountProfil.noticeMsg = false">
+            <span>&times;</span>
+          </button>
+          <p>{{accountProfil.noticeMsg}}</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>

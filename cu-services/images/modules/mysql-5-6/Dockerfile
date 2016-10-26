@@ -1,44 +1,77 @@
-FROM cloudunit/base-14.04
+FROM cloudunit/base-jessie
 
-ENV DEBIAN_FRONTEND noninteractive 
+RUN groupadd -r mysql && useradd -r -g mysql mysql
 
-LABEL origin cloudunit
+## CLOUDUNIT :: BEGINNING
 
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" >> /etc/apt/sources.list
-RUN apt-get update
+ENV CU_MODULE_PORT 3306
+ENV CU_DEFAULT_LOG_FILE " "
+ENV CU_LOGS " "
 
-RUN echo mysql-server-5.6 mysql-server/root_password password 'root' | debconf-set-selections
-RUN echo mysql-server-5.6 mysql-server/root_password_again password 'root' | debconf-set-selections
+ENV MYSQL_RANDOM_ROOT_PASSWORD "true"
+
+# add custom scripts
+ADD scripts /opt/cloudunit/scripts
+RUN chmod +x /opt/cloudunit/scripts/*
+
+## CLOUDUNIT :: END
+
+# add gosu for easy step-down from root
+ENV GOSU_VERSION 1.7
+RUN set -x \
+	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
+	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
+	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
+	&& export GNUPGHOME="$(mktemp -d)" \
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
+	&& chmod +x /usr/local/bin/gosu \
+	&& gosu nobody true \
+	&& apt-get purge -y --auto-remove ca-certificates wget
+
+RUN mkdir /docker-entrypoint-initdb.d
+
+# FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
+# File::Basename
+# File::Copy
+# Sys::Hostname
+# Data::Dumper
+RUN apt-get update && apt-get install -y perl pwgen --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
+# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
+RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
 
 ENV MYSQL_MAJOR 5.6
-# ENV MYSQL_VERSION 5.6.30-0ubuntu0.14.04.1
-# RUN apt-get install -y mysql-server-$MYSQL_MAJOR=$MYSQL_VERSION
-RUN apt-get install -y mysql-server-$MYSQL_MAJOR
+ENV MYSQL_VERSION 5.6.34-1debian8
 
-RUN chown mysql:mysql /var/run/mysqld
-RUN sed -i -e"s/^bind-address\s*=\s*127.0.0.1/bind-address = 0.0.0.0/" -e"s/\/var\/lib\/mysql/\/cloudunit\/database/g" -e"/skip-external-locking/ a\lower_case_table_names = 1" /etc/mysql/my.cnf
-ADD php.ini /etc/php5/apache2/
+RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 
-RUN echo 'phpmyadmin phpmyadmin/dbconfig-install boolean true' | debconf-set-selections
-RUN echo 'phpmyadmin phpmyadmin/app-password-confirm password root' | debconf-set-selections
-RUN echo 'phpmyadmin phpmyadmin/mysql/admin-pass password root' | debconf-set-selections
-RUN echo 'phpmyadmin phpmyadmin/mysql/app-pass password root' | debconf-set-selections
-RUN echo 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2' | debconf-set-selections
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y phpmyadmin
+# the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
+# also, we set debconf keys to make APT a little quieter
+RUN { \
+		echo mysql-community-server mysql-community-server/data-dir select ''; \
+		echo mysql-community-server mysql-community-server/root-pass password ''; \
+		echo mysql-community-server mysql-community-server/re-root-pass password ''; \
+		echo mysql-community-server mysql-community-server/remove-test-db select false; \
+	} | debconf-set-selections \
+	&& apt-get update && apt-get install -y mysql-server="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
+	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
+	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
+# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
+	&& chmod 777 /var/run/mysqld
 
-# VARIABLES ENVIRONNEMENT
-ENV CU_DATABASE_HOME /cloudunit/database
-RUN mkdir /cloudunit/database
-RUN echo -n "CU_DATABASE_HOME=$CU_DATABASE_HOME\n" >> /etc/environment
+# comment out a few problematic configuration values
+# don't reverse lookup hostnames, they are usually another container
+RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
+	&& echo 'skip-host-cache\nskip-name-resolve' | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf \
+	&& mv /tmp/my.cnf /etc/mysql/my.cnf
 
-# Add custom scripts
-ADD scripts /cloudunit/scripts/
+VOLUME /var/lib/mysql
 
-# expose datadir as volume for performance cow
-VOLUME /cloudunit/database
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-# SSH
-EXPOSE 22	
-
-ENTRYPOINT ["/bin/bash", "/cloudunit/scripts/start-service.sh"]
-
+EXPOSE 3306
+CMD ["mysqld"]

@@ -17,6 +17,12 @@ package fr.treeptik.cloudunit.initializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificates;
+import com.spotify.docker.client.DockerClient;
+import fr.treeptik.cloudunit.config.EmailActiveCondition;
+import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
+import fr.treeptik.cloudunit.docker.core.SimpleDockerDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,12 +35,15 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
@@ -44,26 +53,33 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 @EnableAspectJAutoProxy
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"fr.treeptik.cloudunit.controller",
-    "fr.treeptik.cloudunit.dao", "fr.treeptik.cloudunit.docker",
-    "fr.treeptik.cloudunit.docker.model", "fr.treeptik.cloudunit.config",
-    "fr.treeptik.cloudunit.exception", "fr.treeptik.cloudunit.model",
-    "fr.treeptik.cloudunit.service", "fr.treeptik.cloudunit.service.impl",
-    "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
-    "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl",
-    "fr.treeptik.cloudunit.monitor", "fr.treeptik.cloudunit.monitor.tasks"
+        "fr.treeptik.cloudunit.dao", "fr.treeptik.cloudunit.docker",
+        "fr.treeptik.cloudunit.docker.model", "fr.treeptik.cloudunit.config",
+        "fr.treeptik.cloudunit.exception", "fr.treeptik.cloudunit.model",
+        "fr.treeptik.cloudunit.service", "fr.treeptik.cloudunit.service.impl",
+        "fr.treeptik.cloudunit.utils", "fr.treeptik.cloudunit.aspects",
+        "fr.treeptik.cloudunit.manager", "fr.treeptik.cloudunit.manager.impl",
+        "fr.treeptik.cloudunit.schedule", "fr.treeptik.cloudunit.schedule.tasks",
+        "fr.treeptik.cloudunit.logs"
 })
 @PropertySource({"classpath:/application.properties"})
 @PropertySource({"classpath:/maven.properties"})
 public class CloudUnitApplicationContext
     extends WebMvcConfigurerAdapter {
+
+    // Allow for longer running Docker commands, esp. database scripts.
+    private static final int READ_TIMEOUT_MILLIS = 1 * 60 * 1000;
 
     // Max file size
     private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
@@ -78,7 +94,6 @@ public class CloudUnitApplicationContext
     */
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
-
 
     @PostConstruct
     public void getCuINstanceName() {
@@ -163,10 +178,14 @@ public class CloudUnitApplicationContext
 
         return viewResolver;
     }
-
+    
     @Override
-    public void configureDefaultServletHandling(
-        DefaultServletHandlerConfigurer configurer) {
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+    }
+    
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
     }
 
@@ -205,6 +224,70 @@ public class CloudUnitApplicationContext
         multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
         return multipartResolver;
     }
+
+    @Bean
+    public DockerCloudUnitClient dockerCloudUnitClient(@Value("${docker.endpoint.mode}") String endpoint,
+                                              @Value("${certs.dir.path}") String certPathDirectory,
+                                              @Value("${docker.manager.ip}") String dockerManagerIp) {
+        boolean isTLS = endpoint.equalsIgnoreCase("https");
+        DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
+        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(dockerManagerIp, certPathDirectory, isTLS));
+        return dockerCloudUnitClient;
+    }
+
+    @Bean
+    @Conditional(value = EmailActiveCondition.class)
+    public JavaMailSender mailSender(@Value("${email.host}") String host,
+                                     @Value("${email.port}") Integer port,
+                                     @Value("${email.protocol}") String protocol,
+                                     @Value("${email.username}") String username,
+                                     @Value("${email.password}") String password) throws IOException {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setProtocol(protocol);
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
+        mailSender.setJavaMailProperties(javaMailProperties());
+        return mailSender;
+    }
+
+
+    private Properties javaMailProperties() throws IOException {
+        Properties properties = new Properties();
+        return properties;
+    }
+
+    @Bean
+    public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
+                                     @Value("${certs.dir.path}") String certPathDirectory,
+                                     @Value("${docker.manager.ip}") String dockerManagerIp) {
+        com.spotify.docker.client.DockerClient dockerClient = null;
+        boolean isTLS = endpoint.equalsIgnoreCase("https");
+        try {
+            if (!isTLS) {
+                dockerClient = DefaultDockerClient.builder()
+                        .uri("http://" + dockerManagerIp)
+                        .readTimeoutMillis(READ_TIMEOUT_MILLIS)
+                        .build();
+            } else {
+                final DockerCertificates certs = new DockerCertificates(Paths.get(certPathDirectory));
+                dockerClient = DefaultDockerClient
+                        .builder()
+                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
+            }
+        } catch (Exception e) {
+            logger.error("cannot instance docker client : ", e);
+        }
+        return dockerClient;
+    }
+    
+    @Bean
+    @Profile("integration")
+    public ObjectMapper objectMapper() {
+    	return new ObjectMapper();
+    }
+
 
     /**
      * Get Resources to load for CloudUnit Context.

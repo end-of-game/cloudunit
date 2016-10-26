@@ -15,76 +15,56 @@
 
 package fr.treeptik.cloudunit.service;
 
+import java.util.List;
+
+import com.spotify.docker.client.exceptions.DockerException;
+
+import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
-
-import java.util.List;
+import fr.treeptik.cloudunit.model.User;
 
 public interface ServerService {
 
-    List<Server> findAll()
-        throws ServiceException;
+	List<Server> findAll() throws ServiceException;
 
-    Server findById(Integer id)
-        throws ServiceException;
+	Server findById(Integer id) throws ServiceException;
 
-    Server remove(String serverName)
-        throws ServiceException;
+	Server remove(String serverName) throws ServiceException;
 
-    Server update(Server server)
-        throws ServiceException;
+	Server update(Server server) throws ServiceException;
 
-    Server startServer(Server server)
-        throws ServiceException;
+	Server startServer(Server server) throws ServiceException;
 
-    Server stopServer(Server server)
-        throws ServiceException;
+	Server stopServer(Server server) throws ServiceException;
 
-    Server restartServer(Server server)
-        throws ServiceException;
+	Server restartServer(Server server) throws ServiceException;
 
-    List<Server> findByApp(Application application)
-        throws ServiceException;
+	Server findByApp(Application application) throws ServiceException;
 
-    Server findByName(String serverName)
-        throws ServiceException;
+	Server findByName(String serverName) throws ServiceException;
 
-    void checkMaxNumberReach(Application application)
-        throws ServiceException,
-        CheckException;
+	Server saveInDB(Server server) throws ServiceException;
 
-    Server saveInDB(Server server)
-        throws ServiceException;
+	void checkStatus(Server server, String status) throws CheckException;
 
-    List<Server> findAllStatusStopServers()
-        throws ServiceException;
+	boolean checkStatusPENDING(Server server) throws ServiceException;
 
-    List<Server> findAllStatusStartServers()
-        throws ServiceException;
+	Server update(Server server, String memory, String options, String release, boolean restorePreviousEnv)
+			throws ServiceException;
 
-    void checkStatus(Server server, String status)
-        throws CheckException;
+	Server findByContainerID(String id) throws ServiceException;
 
-    boolean checkStatusPENDING(Server server)
-        throws ServiceException;
+	void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException;
 
-    Server update(Server server, String memory, String options, String release, boolean restorePreviousEnv)
-        throws ServiceException;
+	Server create(Server server, String tag) throws ServiceException, CheckException;
 
-    Server findByContainerID(String id)
-        throws ServiceException;
+	void addCredentialsForServerManagement(Server server, User user) throws ServiceException;
 
-    Server confirmSSHDStart(String applicationName, String userLogin)
-        throws ServiceException;
+	void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException, CheckException;
 
-    void changeJavaVersion(Application application, String javaVersion)
-        throws CheckException, ServiceException;
-
-    Server create(Server server, String tag)
-        throws ServiceException,
-        CheckException;
-
+	void removeVolume(String containerName, String volumeName) throws ServiceException;
 
 }

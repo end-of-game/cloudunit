@@ -34,7 +34,9 @@ public class PortToOpen
 
     private String nature;
 
-    @ManyToOne
+    private Boolean quickAccess;
+
+	@ManyToOne
     @JsonIgnore
     private Application application;
 
@@ -71,7 +73,15 @@ public class PortToOpen
         this.id = id;
     }
 
-    public String getNature() {
+	public Boolean getQuickAccess() {
+		return quickAccess;
+	}
+
+	public void setQuickAccess(Boolean quickAccess) {
+		this.quickAccess = quickAccess;
+	}
+
+	public String getNature() {
         return this.nature;
     }
 
@@ -94,6 +104,7 @@ public class PortToOpen
                 ", port=" + port +
                 ", alias='" + alias + '\'' +
                 ", nature='" + nature + '\'' +
+                ", isQuickAccess='" + quickAccess + '\'' +
                 ", application=" + application +
                 '}';
     }

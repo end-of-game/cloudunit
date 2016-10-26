@@ -15,6 +15,18 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import java.io.Serializable;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import fr.treeptik.cloudunit.dto.HttpOk;
 import fr.treeptik.cloudunit.dto.JsonInputForAdmin;
 import fr.treeptik.cloudunit.dto.JsonResponse;
@@ -23,16 +35,12 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.service.GitlabService;
+import fr.treeptik.cloudunit.service.ImageService;
+import fr.treeptik.cloudunit.service.JenkinsService;
+import fr.treeptik.cloudunit.service.MessageService;
+import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * This controller is restricted to the role ADMIN Security access is defined
@@ -40,184 +48,164 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/admin")
-public class AdministrationController
-        implements Serializable {
+public class AdministrationController implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final Logger logger = LoggerFactory
-            .getLogger(AdministrationController.class);
+	@Inject
+	private ImageService imageService;
 
-    @Inject
-    private ImageService imageService;
+	@Inject
+	private UserService userService;
 
-    @Inject
-    private ModuleService moduleService;
+	@Inject
+	private MessageService messageService;
 
-    @Inject
-    private UserService userService;
+	@Inject
+	private JenkinsService jenkinsService;
 
-    @Inject
-    private MessageService messageService;
+	@Inject
+	private GitlabService gitlabService;
 
-    @Inject
-    private JenkinsService jenkinsService;
+	@Inject
+	private AuthentificationUtils authentificationUtils;
 
-    @Inject
-    private GitlabService gitlabService;
+	/**
+	 * Create a new user
+	 *
+	 * @param input
+	 *            : {login:johndoe; firstName:john; lastName:doe;
+	 *            email:johndoe@gmail.com; password:xxx}
+	 * @return JsonResponse
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/user", method = RequestMethod.POST)
+	public JsonResponse createUser(@RequestBody JsonInputForAdmin input) throws ServiceException, CheckException {
 
-    @Inject
-    private AuthentificationUtils authentificationUtils;
+		User user = new User(input.getLogin(), input.getFirstName(), input.getLastName(), input.getOrganization(),
+				input.getEmail(), input.getPassword());
 
-    /**
-     * Create a new user
-     *
-     * @param input : {login:johndoe; firstName:john; lastName:doe;
-     *              email:johndoe@gmail.com; password:xxx}
-     * @return JsonResponse
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/user", method = RequestMethod.POST)
-    public JsonResponse createUser(@RequestBody JsonInputForAdmin input)
-            throws ServiceException, CheckException {
+		// create a new user
+		user = this.userService.create(user);
 
-        User user = new User(input.getLogin(), input.getFirstName(),
-                input.getLastName(), input.getOrganization(), input.getEmail(),
-                input.getPassword());
+		this.gitlabService.createUser(user);
+		this.jenkinsService.addUser(user);
+		this.userService.activationAccount(user);
 
-        // create a new user
-        user = this.userService.create(user);
+		return new HttpOk();
+	}
 
-        this.gitlabService.createUser(user);
-        this.jenkinsService.addUser(user);
-        this.userService.activationAccount(user);
+	/**
+	 * Remove an user
+	 *
+	 * @param login
+	 * @return
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/user/{login}", method = RequestMethod.DELETE)
+	public JsonResponse removeUser(@PathVariable String login) throws ServiceException, CheckException {
+		User user = this.userService.findByLogin(login);
+		String contextLogin = this.authentificationUtils.getAuthentificatedUser().getLogin();
+		if (login.equalsIgnoreCase(contextLogin)) {
+			throw new CheckException("You can't delete your own account from this interface");
+		}
+		this.gitlabService.deleteUser(login);
+		this.jenkinsService.deleteUser(login);
+		this.userService.remove(user);
 
-        return new HttpOk();
-    }
+		return new HttpOk();
+	}
 
-    /**
-     * Remove an user
-     *
-     * @param login
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/user/{login}", method = RequestMethod.DELETE)
-    public JsonResponse removeUser(@PathVariable String login)
-            throws ServiceException, CheckException {
-        User user = this.userService.findByLogin(login);
-        String contextLogin = this.authentificationUtils
-                .getAuthentificatedUser().getLogin();
-        if (login.equalsIgnoreCase(contextLogin)) {
-            throw new CheckException(
-                    "You can't delete your own account from this interface");
-        }
-        this.gitlabService.deleteUser(login);
-        this.jenkinsService.deleteUser(login);
-        this.userService.remove(user);
+	/**
+	 * Retrieve the user with its name
+	 *
+	 * @param login
+	 * @return
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/user/{login}", method = RequestMethod.GET)
+	public User findByLogin(@PathVariable String login) throws ServiceException, CheckException {
+		return this.userService.findByLogin(login);
+	}
 
-        return new HttpOk();
-    }
+	/**
+	 * List all users
+	 *
+	 * @return
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public List<User> findAll() throws ServiceException, CheckException {
+		return this.userService.findAll();
+	}
 
-    /**
-     * Retrieve the user with its name
-     *
-     * @param login
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/user/{login}", method = RequestMethod.GET)
-    public User findByLogin(@PathVariable String login)
-            throws ServiceException, CheckException {
-        return this.userService.findByLogin(login);
-    }
+	/**
+	 * Change the rights for an user
+	 *
+	 * @param input
+	 *            {login:johndoe;role:USER}
+	 * @return
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@RequestMapping(value = "/user/rights", method = RequestMethod.POST)
+	public JsonResponse changeRights(@RequestBody JsonInputForAdmin input) throws ServiceException, CheckException {
+		String login = this.authentificationUtils.getAuthentificatedUser().getLogin();
+		if (login.equalsIgnoreCase(input.getLogin())) {
+			throw new CheckException("You can't change your own rights");
+		}
+		this.userService.changeUserRights(input.getLogin(), input.getRole());
+		return new HttpOk();
+	}
 
-    /**
-     * List all users
-     *
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public List<User> findAll()
-            throws ServiceException, CheckException {
-        return this.userService.findAll();
-    }
+	/**
+	 * Activate an image
+	 *
+	 * @param imageName
+	 * @return
+	 * @throws ServiceException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/images/imageName/{imageName}/enable", method = RequestMethod.POST)
+	public Image enableImage(@PathVariable String imageName) throws ServiceException {
+		return this.imageService.enableImage(imageName);
+	}
 
-    /**
-     * Change the rights for an user
-     *
-     * @param input {login:johndoe;role:USER}
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @RequestMapping(value = "/user/rights", method = RequestMethod.POST)
-    public JsonResponse changeRights(@RequestBody JsonInputForAdmin input)
-            throws ServiceException, CheckException {
-        String login = this.authentificationUtils.getAuthentificatedUser()
-                .getLogin();
-        if (login.equalsIgnoreCase(input.getLogin())) {
-            throw new CheckException("You can't change your own rights");
-        }
-        this.userService.changeUserRights(input.getLogin(), input.getRole());
-        return new HttpOk();
-    }
+	/**
+	 * disable an image
+	 *
+	 * @param imageName
+	 * @return
+	 * @throws ServiceException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/images/imageName/{imageName}/disable", method = RequestMethod.POST)
+	public Image disableImage(@PathVariable String imageName) throws ServiceException {
+		return this.imageService.disableImage(imageName);
+	}
 
-    /**
-     * Activate an image
-     *
-     * @param imageName
-     * @return
-     * @throws ServiceException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/images/imageName/{imageName}/enable", method = RequestMethod.POST)
-    public Image enableImage(@PathVariable String imageName)
-            throws ServiceException {
-        return this.imageService.enableImage(imageName);
-    }
-
-    /**
-     * disable an image
-     *
-     * @param imageName
-     * @return
-     * @throws ServiceException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/images/imageName/{imageName}/disable", method = RequestMethod.POST)
-    public Image disableImage(@PathVariable String imageName)
-            throws ServiceException {
-        return this.imageService.disableImage(imageName);
-    }
-
-    /**
-     * List all actions for an user. Needed for admin panel
-     *
-     * @param login
-     * @param rows
-     * @return
-     * @throws NumberFormatException
-     * @throws ServiceException
-     */
-    @ResponseBody
-    @RequestMapping(value = "/messages/rows/{rows}/login/{login}", method = RequestMethod.GET)
-    public List<Message> listMessages(@PathVariable String login,
-                                      @PathVariable String rows)
-            throws NumberFormatException,
-            ServiceException {
-        return messageService.listByUser(userService.findByLogin(login),
-                Integer.parseInt(rows));
-    }
-
+	/**
+	 * List all actions for an user. Needed for admin panel
+	 *
+	 * @param login
+	 * @param rows
+	 * @return
+	 * @throws NumberFormatException
+	 * @throws ServiceException
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/messages/rows/{rows}/login/{login}", method = RequestMethod.GET)
+	public List<Message> listMessages(@PathVariable String login, @PathVariable String rows)
+			throws NumberFormatException, ServiceException {
+		return messageService.listByUser(userService.findByLogin(login), Integer.parseInt(rows));
+	}
 
 }

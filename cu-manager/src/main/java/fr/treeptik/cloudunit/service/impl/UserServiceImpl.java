@@ -15,7 +15,22 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import fr.treeptik.cloudunit.dao.MessageDAO;
 import fr.treeptik.cloudunit.dao.RoleDAO;
 import fr.treeptik.cloudunit.dao.UserDAO;
@@ -27,23 +42,8 @@ import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.EmailUtils;
+import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
 import fr.treeptik.cloudunit.utils.ShellUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-import javax.mail.MessagingException;
-import javax.persistence.PersistenceException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 @Service
 @Lazy(true)
@@ -51,9 +51,6 @@ public class UserServiceImpl
         implements UserService {
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
-    @Inject
-    private EmailUtils emailUtils;
 
     @Inject
     private UserDAO userDAO;
@@ -78,7 +75,7 @@ public class UserServiceImpl
     @Transactional
     public User create(User user)
             throws ServiceException, CheckException {
-        Map<String, Object> mapConfigMail = new HashMap<>();
+		// Map<String, Object> mapConfigMail = new HashMap<>();
 
         try {
             // VALIDATION
@@ -298,71 +295,26 @@ public class UserServiceImpl
         try {
 
             for (Application application : listApplications) {
-                for (Server server : application.getServers()) {
-                    configShell.put("port", server.getSshPort());
-                    configShell.put("dockerManagerAddress", server
-                            .getApplication().getManagerIp());
-                    String command = "sh /cloudunit/scripts/change-password.sh "
-                            + userLogin + " " + newPassword;
-                    configShell.put("password", application.getUser()
-                            .getPassword());
-                    shellUtils.executeShell(command, configShell);
+                Server server = application.getServer();
+                configShell.put("port", server.getSshPort());
+                configShell.put("dockerManagerAddress", server
+                        .getApplication().getManagerIp());
+                String command = "sh /cloudunit/scripts/change-password.sh "
+                        + userLogin + " " + newPassword;
+                configShell.put("password", application.getUser()
+                        .getPassword());
+                shellUtils.executeShell(command, configShell);
 
-                    String commandSource = "source /etc/environment";
-                    logger.debug(commandSource);
+                String commandSource = "source /etc/environment";
+                logger.debug(commandSource);
 
-                    shellUtils.executeShell(commandSource, configShell);
-                }
+                shellUtils.executeShell(commandSource, configShell);
             }
 
         } catch (Exception e) {
             logger.error("change Passsword - Error execute ssh Request - " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
-    }
-
-    @Override
-    public void changeEmail(User user, String newEmail)
-            throws ServiceException {
-        Map<String, Object> mapConfigMail = new HashMap<>();
-
-        user.setEmail(newEmail);
-        user.setStatus(User.STATUS_MAIL_NOT_CONFIRMED);
-        this.update(user);
-        mapConfigMail.put("user", user);
-        mapConfigMail.put("emailType", "changeEmail");
-        try {
-            emailUtils.sendEmail(mapConfigMail);
-        } catch (MessagingException e) {
-            logger.error("Error sendEmail method : send mail : " + e);
-            throw new ServiceException("Error : failed to send an email", e);
-        }
-
-    }
-
-    @Override
-    public String sendPassword(User user)
-            throws ServiceException {
-        Map<String, Object> mapConfigMail = new HashMap<>();
-
-        logger.debug("create : Methods parameters : " + user.toString());
-        logger.info("UserService : Starting creating user "
-                + user.getLastName());
-
-        mapConfigMail.put("user", user);
-        mapConfigMail.put("emailType", "sendPassword");
-
-        try {
-            emailUtils.sendEmail(mapConfigMail);
-        } catch (MessagingException e) {
-            logger.error("Error sendEmail method : send mail : " + e);
-            throw new ServiceException("Error : failed to send an email", e);
-        }
-
-        logger.info("UserService : User " + user.getLastName()
-                + " successfully created.");
-
-        return null;
     }
 
     @Override

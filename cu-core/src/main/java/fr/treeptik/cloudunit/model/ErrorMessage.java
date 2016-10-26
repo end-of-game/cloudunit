@@ -10,66 +10,59 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
-public class ErrorMessage
-    implements Serializable
-{
+public class ErrorMessage implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public final static Integer CHECKED_MESSAGE = 0;
+	public final static Integer CHECKED_MESSAGE = 0;
 
-    public final static Integer UNCHECKED_MESSAGE = 1;
+	public final static Integer UNCHECKED_MESSAGE = 1;
 
-    @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-    @Temporal( TemporalType.TIMESTAMP )
-    private Date date;
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "YYYY-MM-dd HH:mm")
+	private Date date;
 
-    private String message;
+	private String message;
 
-    private Integer status;
+	private Integer status;
 
-    public Integer getId()
-    {
-        return id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public void setId( Integer id )
-    {
-        this.id = id;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public Date getDate()
-    {
-        return date;
-    }
+	public Date getDate() {
+		return date;
+	}
 
-    public void setDate( Date date )
-    {
-        this.date = date;
-    }
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
-    public String getMessage()
-    {
-        return message;
-    }
+	public String getMessage() {
+		return message;
+	}
 
-    public void setMessage( String message )
-    {
-        this.message = message;
-    }
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
-    public Integer getStatus()
-    {
-        return status;
-    }
+	public Integer getStatus() {
+		return status;
+	}
 
-    public void setStatus( Integer status )
-    {
-        this.status = status;
-    }
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 
 }

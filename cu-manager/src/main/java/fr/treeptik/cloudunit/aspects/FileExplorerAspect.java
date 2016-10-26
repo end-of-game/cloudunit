@@ -15,58 +15,46 @@
 
 package fr.treeptik.cloudunit.aspects;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.inject.Inject;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.MessageService;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.Date;
 
 @Aspect
 @Component
-public class FileExplorerAspect
-    extends CloudUnitAbstractAspect
-    implements Serializable {
+public class FileExplorerAspect extends CloudUnitAbstractAspect implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final Logger logger = LoggerFactory.getLogger(FileExplorerAspect.class);
+	@Inject
+	private MessageService messageService;
 
-    @Inject
-    private MessageService messageService;
+	@AfterReturning("execution(* fr.treeptik.cloudunit.service.FileService.deleteFilesFromContainer(..))"
+			+ " || execution(* fr.treeptik.cloudunit.service.FileService.sendFileToContainer(..))")
+	public void afterReturningFileExplorer(JoinPoint joinPoint) throws ServiceException {
+		Message message = new Message();
+		User user = getAuthentificatedUser();
+		message.setDate(new Date());
+		message.setType(Message.INFO);
+		message.setAuthor(user);
+		message.setApplicationName((String) joinPoint.getArgs()[0]);
 
-    @AfterReturning("execution(* fr.treeptik.cloudunit.service.FileService.deleteFilesFromContainer(..))" +
-        " || execution(* fr.treeptik.cloudunit.service.FileService.sendFileToContainer(..))")
-    public void afterReturningFileExplorer(JoinPoint joinPoint)
-        throws ServiceException {
-        Message message = new Message();
-        User user = getAuthentificatedUser();
-        message.setDate(new Date());
-        message.setType(Message.INFO);
-        message.setAuthor(user);
-        message.setApplicationName((String) joinPoint.getArgs()[0]);
-
-        switch (joinPoint.getSignature().getName().toUpperCase()) {
-            case "DELETEFILESFROMCONTAINER":
-
-                message.setEvent(user.getLogin() + " has removed this file : "
-                    + joinPoint.getArgs()[2]);
-                break;
-            case "SENDFILETOCONTAINER":
-                message.setEvent(user.getLogin() + " has send this file : "
-                    + joinPoint.getArgs()[3] + " at "
-                    + joinPoint.getArgs()[4].toString().replaceAll("__", "/"));
-                break;
-        }
-        this.messageService.create(message);
-    }
+		switch (joinPoint.getSignature().getName().toUpperCase()) {
+		case "DELETEFILESFROMCONTAINER":
+			message.setEvent(user.getLogin() + " has removed this file : " + joinPoint.getArgs()[2]);
+			break;
+		}
+		this.messageService.create(message);
+	}
 
 }

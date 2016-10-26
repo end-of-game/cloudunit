@@ -15,737 +15,605 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import fr.treeptik.cloudunit.dao.ApplicationDAO;
-import fr.treeptik.cloudunit.dao.ServerDAO;
-import fr.treeptik.cloudunit.docker.model.DockerContainer;
-import fr.treeptik.cloudunit.docker.model.DockerContainerBuilder;
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.DockerJSONException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
-import fr.treeptik.cloudunit.model.*;
-import fr.treeptik.cloudunit.service.*;
-import fr.treeptik.cloudunit.utils.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.VolumeList;
+
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.config.events.ServerStartEvent;
+import fr.treeptik.cloudunit.config.events.ServerStopEvent;
+import fr.treeptik.cloudunit.dao.ApplicationDAO;
+import fr.treeptik.cloudunit.dao.ServerDAO;
+import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
+import fr.treeptik.cloudunit.dto.VolumeResource;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.DockerJSONException;
+import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Server;
+import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.Volume;
+import fr.treeptik.cloudunit.model.VolumeAssociation;
+import fr.treeptik.cloudunit.model.VolumeAssociationId;
+import fr.treeptik.cloudunit.service.DockerService;
+import fr.treeptik.cloudunit.service.EnvironmentService;
+import fr.treeptik.cloudunit.service.ServerService;
+import fr.treeptik.cloudunit.service.VolumeAssociationService;
+import fr.treeptik.cloudunit.service.VolumeService;
+import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
+import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 
 @Service
-public class ServerServiceImpl
-        implements ServerService {
+public class ServerServiceImpl implements ServerService {
 
-    private Logger logger = LoggerFactory.getLogger(ServerServiceImpl.class);
+	private Logger logger = LoggerFactory.getLogger(ServerServiceImpl.class);
 
+	@Inject
+	private ServerDAO serverDAO;
+
+	@Inject
+	private ApplicationDAO applicationDAO;
+
+	@Inject
+	private HipacheRedisUtils hipacheRedisUtils;
+
+	@Value("${cloudunit.max.servers:1}")
+	private String maxServers;
+
+	@Value("${suffix.cloudunit.io}")
+	private String suffixCloudUnitIO;
+
+	@Value("${database.password}")
+	private String databasePassword;
+
+	@Value("${env.exec}")
+	private String envExec;
+
+	@Value("${cloudunit.instance.name}")
+	private String cuInstanceName;
+
+	@Value("${database.hostname}")
+	private String databaseHostname;
+
+	@Inject
+	private DockerService dockerService;
+
+	@Inject
+	private ApplicationEventPublisher applicationEventPublisher;
+
+	@Inject
+	private VolumeService volumeService;
+
+	@Inject
+	private VolumeAssociationService volumeAssociationService;
+	
+	@Inject
+	private EnvironmentService environmentService;
+	
     @Inject
-    private ServerDAO serverDAO;
-
-    @Inject
-    private ApplicationDAO applicationDAO;
-
-    @Inject
-    private UserService userService;
-
-    @Inject
-    private ModuleService moduleService;
-
-    @Inject
-    private ApplicationService applicationService;
-
-    @Inject
-    private HookService hookService;
-
-    @Inject
-    private ShellUtils shellUtils;
-
-    @Inject
-    private HipacheRedisUtils hipacheRedisUtils;
-
-    @Inject
-    private ContainerMapper containerMapper;
-
-    @Value("${cloudunit.max.servers:1}")
-    private String maxServers;
-
-    @Value("${suffix.cloudunit.io}")
-    private String suffixCloudUnitIO;
-
-    @Value("${database.password}")
-    private String databasePassword;
-
-    @Value("${env.exec}")
-    private String envExec;
-
-    @Value("${cloudunit.instance.name}")
-    private String cuInstanceName;
-
-    @Value("${database.hostname}")
-    private String databaseHostname;
-
-    public ServerDAO getServerDAO() {
-        return this.serverDAO;
-    }
-
-    /**
-     * Save app in just in DB, not create container use principally to charge
-     * status.PENDING of entity until it's really functionnal
-     */
-    @Override
-    @Transactional
-    public Server saveInDB(Server server)
-            throws ServiceException {
-        server = serverDAO.save(server);
-        return server;
-    }
-
-    /**
-     * Create a server with or without a tag.
-     * Tag parameter is needed for restore processus after cloning
-     * The idea is to use the same logic for a new server or another one coming from registry.
-     *
-     * @param server
-     * @param tagName
-     * @return
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    @Override
-    @Transactional
-    public Server create(Server server, String tagName)
-            throws ServiceException, CheckException {
-
-        String registryPrefix = "";
-
-        if (tagName != null) {
-            registryPrefix = "";
-        } else {
-            tagName = "";
-        }
-
-        logger.debug("create : Methods parameters : " + server);
-        logger.info("ServerService : Starting creating Server "
-                + server.getName());
-
-        // Initialize container informations :
-        DockerContainer dockerContainer = new DockerContainer();
-        Map<String, String> ports = new HashMap<String, String>();
-
-        // General informations
-        server.setStatus(Status.PENDING);
-        server.setJvmOptions("");
-        server.setStartDate(new Date());
-
-        Application application = server.getApplication();
-        User user = server.getApplication().getUser();
-
-        // Build a custom container
-        String containerName = "";
-        try {
-            containerName = AlphaNumericsCharactersCheckUtils
-                    .convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-" + AlphaNumericsCharactersCheckUtils
-                    .convertToAlphaNumerics(user.getLogin())
-                    + "-"
-                    + AlphaNumericsCharactersCheckUtils
-                    .convertToAlphaNumerics(server.getApplication()
-                            .getName()) + "-" + server.getName();
-        } catch (UnsupportedEncodingException e2) {
-            throw new ServiceException("Error rename Server", e2);
-        }
-
-        String imagePath = server.getImage().getPath() + tagName;
-        logger.debug("imagePath:" + imagePath);
-
-        List<String> volumesFrom = new ArrayList<>();
-        if (!server.getImage().getName().contains("fatjar")
-                && !server.getImage().getName().startsWith("apache")
-                && !server.getImage().getName().startsWith("wildfly")) {
-            volumesFrom.add(server.getImage().getName());
-        }
-        volumesFrom.add("java");
-        dockerContainer = new DockerContainerBuilder()
-                .withName(containerName)
-                .withImage(imagePath)
-                .withMemory(0L)
-                .withMemorySwap(0L)
-                .withPorts(ports)
-                .withVolumesFrom(volumesFrom)
-                .withCmd(
-                        Arrays.asList(user.getLogin(), user.getPassword(), server
-                                        .getApplication().getRestHost(), server
-                                        .getApplication().getName(),
-                                server.getServerAction().getDefaultJavaRelease(),
-                                databasePassword, envExec, databaseHostname)).build();
-
-        try {
-            // create a container and get informations
-            DockerContainer.create(dockerContainer,
-                    application.getManagerIp());
-
-            logger.debug("container : " + dockerContainer);
-
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
-
-            String subdomain = System.getenv("CU_SUB_DOMAIN");
-            if (subdomain == null) {
-                subdomain = "";
-            }
-            logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-
-            server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
-            String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
-            DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
-            dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
-
-            server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
-            server = serverDAO.saveAndFlush(server);
-            server = ServerFactory.updateServer(server);
-
-            logger.info(server.getServerAction().getServerManagerPath());
-            logger.info("" + server.getListPorts());
-            logger.info(server.getServerAction().getServerManagerPort());
-            logger.info(application.getLocation());
-
-            hipacheRedisUtils.createRedisAppKey(server.getApplication(),
-                    server.getContainerIP(), server.getServerAction()
-                            .getServerPort(),
-                    server.getServerAction()
-                            .getServerManagerPort());
-
-            // Update server with all its informations
-            server.setManagerLocation("http://manager-"
-                    + application.getLocation().substring(7)
-                    + server.getServerAction().getServerManagerPath());
-            server.setStatus(Status.START);
-            server.setJvmMemory(512L);
-            server.setJvmRelease(server.getServerAction().getDefaultJavaRelease());
-
-            server = this.update(server);
-
-            Thread.sleep(3000);
-
-        } catch (PersistenceException e) {
-            logger.error("ServerService Error : Create Server " + e);
-            try {
-                // Removing a creating container if an error has occurred with
-                // the database
-                DockerContainer.remove(dockerContainer,
-                        application.getManagerIp());
-            } catch (DockerJSONException e1) {
-                logger.error("ServerService Error : Create Server " + e1);
-                throw new ServiceException(e.getLocalizedMessage(), e1);
-            }
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            StringBuilder msgError = new StringBuilder(512);
-            msgError.append("server=").append(server);
-            msgError.append(", tagName=[").append(tagName).append("]");
-            logger.error("" + msgError, e);
-            throw new ServiceException(msgError.toString(), e);
-        } catch (InterruptedException e) {
-            StringBuilder msgError = new StringBuilder(512);
-            msgError.append("server=").append(server);
-            msgError.append(", tagName=[").append(tagName).append("]");
-            logger.error("" + msgError, e);
-        }
-        logger.info("ServerService : Server " + server.getName()
-                + " successfully created.");
-        return server;
-    }
-
-    /**
-     * Test if the user can create new server associated to this application
-     *
-     * @param application
-     * @throws ServiceException
-     * @throws CheckException
-     */
-    public void checkMaxNumberReach(Application application)
-            throws ServiceException, CheckException {
-        logger.info("check number of server of " + application.getName());
-        if (application.getServers() != null) {
-            try {
-                if (application.getServers().size() >= Integer
-                        .parseInt(maxServers)) {
-                    throw new CheckException("You have already created your "
-                            + maxServers + " server for your application");
-                }
-            } catch (PersistenceException e) {
-                logger.error("ServerService Error : check number of server" + e);
-                throw new ServiceException(e.getLocalizedMessage(), e);
-            }
-        }
-    }
-
-    /**
-     * check if the status passed in parameter is the same as in db if it's case
-     * a checkException is throws
-     *
-     * @throws ServiceException CheckException
-     */
-    @Override
-    public void checkStatus(Server server, String status)
-            throws CheckException {
-        if (server.getStatus().name().equalsIgnoreCase(status)) {
-            throw new CheckException("Error : Server " + server.getName()
-                    + " is already " + status + "ED");
-        }
-    }
-
-    /**
-     * check if the status is PENDING return TRUE else return false
-     *
-     * @throws ServiceException CheckException
-     */
-    @Override
-    public boolean checkStatusPENDING(Server server)
-            throws ServiceException {
-        logger.info("--CHECK SERVER STATUS PENDING--");
-
-        if (server.getStatus().name().equalsIgnoreCase("PENDING")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    @Transactional
-    public Server update(Server server)
-            throws ServiceException {
-
-        logger.debug("update : Methods parameters : " + server.toString());
-        logger.info("ServerService : Starting updating Server "
-                + server.getName());
-        try {
-            server = serverDAO.save(server);
-
-            Application application = server.getApplication();
-            String dockerManagerIP = application.getManagerIp();
-
-            hipacheRedisUtils.updateServerAddress(application, server
-                            .getContainerIP(),
-                    server.getServerAction().getServerPort(), server
-                            .getServerAction().getServerManagerPort());
-
-        } catch (PersistenceException e) {
-            logger.error("ServerService Error : update Server" + e);
-            throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
-        }
-
-        logger.info("ServerService : Server " + server.getName()
-                + " successfully updated.");
-
-        return server;
-    }
-
-    @Override
-    @Transactional
-    public Server remove(String serverName)
-            throws ServiceException {
-        Server server = null;
-        try {
-            server = this.findByName(serverName);
-
-            // check if there is no action currently on the entity
-            if (this.checkStatusPENDING(server)) {
-                return null;
-            }
-            Application application = server.getApplication();
-
-            // Remove container on docker manager :
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(server.getName());
-            dockerContainer.setImage(server.getImage().getName());
-
-            if (server.getStatus().equals(Status.START)) {
-                DockerContainer.stop(dockerContainer,
-                        application.getManagerIp());
-                Thread.sleep(1000);
-            }
-
-            server.setStatus(Status.PENDING);
-            server = this.saveInDB(server);
-
-            String imageName = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp()).getImage();
-
-            DockerContainer.remove(dockerContainer,
-                    application.getManagerIp());
-
-            /*
-            try {
-                if (application.isAClone()) {
-                    DockerContainer.deleteImage(imageName,
-                            application.getManagerIp());
-                }
-            } catch (DockerJSONException e) {
-                logger.info("Others apps use this docker images");
-            }
-            */
-
-            // Remove server on cloudunit :
-            hipacheRedisUtils.removeServerAddress(application);
-
-            serverDAO.delete(server);
-
-            logger.info("ServerService : Server successfully removed ");
-
-        } catch (PersistenceException e) {
-            logger.error("Error database :  " + server.getName() + " : " + e);
-            throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            logger.error("ServerService Error : fail to remove Server" + e);
-            throw new ServiceException("Error docker :  "
-                    + e.getLocalizedMessage(), e);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return server;
-    }
-
-    @Override
-    public Server findById(Integer id)
-            throws ServiceException {
-        try {
-            logger.debug("findById : Methods parameters : " + id);
-            Server server = serverDAO.findOne(id);
-            if (server != null) {
-                logger.info("Server with id " + id + " found!");
-                logger.info("" + server);
-            }
-            return server;
-        } catch (PersistenceException e) {
-            logger.error("Error ServerService : error findById Method : " + e);
-            throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
-
-        }
-    }
-
-    @Override
-    public List<Server> findAll()
-            throws ServiceException {
-        try {
-            logger.debug("start findAll");
-            List<Server> servers = serverDAO.findAll();
-            logger.info("ServerService : All Servers found ");
-            return servers;
-        } catch (PersistenceException e) {
-            logger.error("Error ServerService : error findAll Method : " + e);
-            throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
-
-        }
-    }
-
-    @Override
-    public List<Server> findAllStatusStartServers()
-            throws ServiceException {
-        List<Server> listServers = this.findAll();
-        List<Server> listStatusStopServers = new ArrayList<>();
-
-        for (Server server : listServers) {
-            if (Status.START == server.getStatus()) {
-                listStatusStopServers.add(server);
-            }
-        }
-        return listStatusStopServers;
-    }
-
-    @Override
-    public List<Server> findAllStatusStopServers()
-            throws ServiceException {
-        List<Server> listServers = this.findAll();
-        List<Server> listStatusStopServers = new ArrayList<>();
-
-        for (Server server : listServers) {
-            if (Status.STOP == server.getStatus()) {
-                listStatusStopServers.add(server);
-            }
-        }
-        return listStatusStopServers;
-    }
-
-    @Override
-    @Transactional
-    public Server startServer(Server server)
-            throws ServiceException {
-
-        logger.debug("start : Methods parameters : " + server);
-        logger.info("ServerService : Starting Server " + server.getName());
-
-        try {
-            Application application = server.getApplication();
-
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(server.getName());
-            dockerContainer.setImage(server.getImage().getName());
-
-            // Call the hook for pre start
-            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_START);
-            String sharedDir = JvmOptionsUtils.extractDirectory(server.getJvmOptions());
-            DockerContainer.start(dockerContainer, application.getManagerIp(), sharedDir);
-            dockerContainer = DockerContainer.findOne(dockerContainer, application.getManagerIp());
-            server = containerMapper.mapDockerContainerToServer(dockerContainer, server);
-
-            String dockerManagerIP = server.getApplication().getManagerIp();
-            server.setStartDate(new Date());
-            application = applicationDAO.saveAndFlush(application);
-
-            server = update(server);
-
-            hipacheRedisUtils.updateServerAddress(server.getApplication(),
-                    server.getContainerIP(), server.getServerAction()
-                            .getServerPort(),
-                    server.getServerAction()
-                            .getServerManagerPort());
-
-            // Call the hook for post start
-            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_START);
-
-        } catch (PersistenceException e) {
-            logger.error("ServerService Error : fail to start Server" + e);
-            throw new ServiceException("Error database :  "
-                    + e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            logger.error("ServerService Error : fail to start Server" + e);
-            throw new ServiceException("Error docker :  "
-                    + e.getLocalizedMessage(), e);
-        }
-        return server;
-    }
-
-    @Override
-    @Transactional
-    public Server stopServer(Server server)
-            throws ServiceException {
-        try {
-            Application application = server.getApplication();
-
-            DockerContainer dockerContainer = new DockerContainer();
-            dockerContainer.setName(server.getName());
-            dockerContainer.setImage(server.getImage().getName());
-
-            // Call the hook for pre stop
-            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_PRE_STOP);
-
-            DockerContainer.stop(dockerContainer, application.getManagerIp());
-            dockerContainer = DockerContainer.findOne(dockerContainer,
-                    application.getManagerIp());
-
-            server.setStatus(Status.STOP);
-            server = update(server);
-
-            // Call the hook for post stop
-            hookService.call(dockerContainer.getName(), RemoteExecAction.APPLICATION_POST_STOP);
-
-        } catch (PersistenceException e) {
-            throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            logger.error("Fail to stop Server : " + e);
-            throw new ServiceException("Error docker : "
-                    + e.getLocalizedMessage(), e);
-        }
-        return server;
-    }
-
-    @Override
-    @Transactional
-    public Server restartServer(Server server)
-            throws ServiceException {
-        server = this.stopServer(server);
-        server = this.startServer(server);
-        return server;
-    }
-
-    @Override
-    public Server findByName(String serverName)
-            throws ServiceException {
-        try {
-            return serverDAO.findByName(serverName);
-        } catch (PersistenceException e) {
-            throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
-        }
-    }
-
-    @Override
-    public List<Server> findByApp(Application application)
-            throws ServiceException {
-        try {
-            return serverDAO.findByApp(application.getId());
-        } catch (PersistenceException e) {
-            throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
-        }
-    }
-
-    @Override
-    public Server findByContainerID(String id)
-            throws ServiceException {
-        try {
-            return serverDAO.findByContainerID(id);
-        } catch (PersistenceException e) {
-            throw new ServiceException("Error database : "
-                    + e.getLocalizedMessage(), e);
-        }
-    }
-
-    @Override
-    @Transactional
-    public Server update(Server server, String jvmMemory, String jvmOptions,
-                         String jvmRelease, boolean restorePreviousEnv)
-            throws ServiceException {
-
-        Map<String, String> configShell = new HashMap<>();
-        configShell.put("port", server.getSshPort());
-        configShell.put("dockerManagerAddress", server.getApplication().getManagerIp());
-        // We don't need to set userLogin because shell script caller must be root.
-        configShell.put("password", server.getApplication().getUser().getPassword());
-        // Protection without double slashes into jvm options
-
-        jvmOptions = jvmOptions.replaceAll("//", "\\\\/\\\\/");
-
-        String previousJvmOptions = server.getJvmOptions();
-        String previousJvmMemory = server.getJvmMemory().toString();
-        String previousJvmRelease = server.getJvmRelease();
-
-        try {
-
-            // If jvm memory or options changes...
-            if (!jvmMemory.equalsIgnoreCase(server.getJvmMemory().toString())
-                    || !jvmOptions.equalsIgnoreCase(server.getJvmOptions())) {
-                // Changement configuration MEMOIRE + OPTIONS
-
-                String command = "bash /cloudunit/appconf/scripts/change-server-config.sh "
-                        + jvmMemory + " " + "\"" + jvmOptions + "\"";
-
-                if (server.getImage().getName().contains("jar")
-                        || server.getImage().getName().contains("wildfly")
-                        || server.getImage().getName().contains("apache")) {
-                    command = "bash /cloudunit/scripts/change-server-config.sh "
-                            + jvmMemory + " " + "\"" + jvmOptions + "\"";
-                }
-                logger.info("command shell to execute [" + command + "]");
-                int status = shellUtils.executeShell(command, configShell);
-            }
-
-            // If jvm release changes...
-            if (!jvmRelease.equalsIgnoreCase(server.getJvmRelease())) {
-                changeJavaVersion(server.getApplication(), jvmRelease);
-            }
-
-            server.setJvmMemory(Long.valueOf(jvmMemory));
-            server.setJvmOptions(jvmOptions);
-            server.setJvmRelease(jvmRelease);
-            server = saveInDB(server);
-
-        } catch (Exception e) {
-            // Exception would be one RuntimeException coming from shell error
-            // If second call and no way to start gracefully tomcat, we need to stop application
-            if (!restorePreviousEnv) {
-                StringBuilder msgError = new StringBuilder();
-                msgError.append("jvmMemory:").append(jvmMemory).append(",");
-                msgError.append("jvmOptions:").append(jvmOptions).append(",");
-                msgError.append("jvmRelease:").append(jvmRelease);
-                throw new ServiceException(msgError.toString(), e);
-            } else {
-                // Rollback to previous configuration
-                logger.warn("Restore the previous environment for jvm configuration. Maybe a syntax error");
-                update(server, previousJvmMemory, previousJvmOptions, previousJvmRelease, false);
-            }
-        }
-
-        return server;
-
-    }
-
-    /**
-     * Change the version of the jvm
-     *
-     * @param application
-     * @param javaVersion
-     * @throws CheckException
-     * @throws ServiceException
-     */
-    @Override
-    public void changeJavaVersion(Application application, String javaVersion)
-            throws CheckException, ServiceException {
-
-        logger.info("Starting changing to java version " + javaVersion
-                + ", the application " + application.getName());
-
-        Map<String, String> configShell = new HashMap<>();
-        String command = null;
-
-        // Servers
-        List<Server> listServers = application.getServers();
-        for (Server server : listServers) {
-            try {
-                configShell.put("password", server.getApplication().getUser().getPassword());
-                configShell.put("port", server.getSshPort());
-                configShell.put("dockerManagerAddress", application.getManagerIp());
-
-                // Need to be root for shell call because we modify /etc/environme,t
-                command = "bash /cloudunit/scripts/change-java-version.sh " + javaVersion;
-                logger.info("command shell to execute [" + command + "]");
-                shellUtils.executeShell(command, configShell);
-
-            } catch (Exception e) {
-                server.setStatus(Status.FAIL);
-                saveInDB(server);
-                logger.error("java version = " + javaVersion + " - " + application.toString() + " - "
-                        + server.toString(), e);
-                throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
-            }
-        }
-    }
-
-    /**
-     * Méthode permettant de mettre le server dans un état particulier pour se
-     * prémunir d'éventuel problème de concurrence au niveau métier
-     */
-    @Override
-    public Server confirmSSHDStart(String applicationName, String userLogin)
-            throws ServiceException {
-
-        logger.debug("Start confirmSSHDStart - applicationName : "
-                + applicationName + " - userLogin :" + userLogin);
-
-        Application application = null;
-        Server server = null;
-        try {
-            User user = userService.findByLogin(userLogin);
-            while (application == null) {
-                try {
-                    application = applicationService.findByNameAndUser(user,
-                            applicationName);
-                } catch (Exception e) {
-                    continue;
-                }
-            }
-
-            server = this.findByApp(application).get(0);
-            server.setStatus(Status.START);
-            server = this.saveInDB(server);
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-            logger.error("Error ServerService : error set server on sshdStatus "
-                    + Status.START + " : " + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
-        return server;
-    }
-
+    private DockerClient dockerClient;
+    
+	public ServerDAO getServerDAO() {
+		return this.serverDAO;
+	}
+
+	/**
+	 * Save app in just in DB, not create container use principally to charge
+	 * status.PENDING of entity until it's really functionnal
+	 */
+	@Override
+	@Transactional
+	public Server saveInDB(Server server) throws ServiceException {
+		server = serverDAO.save(server);
+		return server;
+	}
+
+	/**
+	 * Create a server with or without a tag. Tag parameter is needed for
+	 * restore processus after cloning The idea is to use the same logic for a
+	 * new server or another one coming from registry.
+	 *
+	 * @param server
+	 * @param tagName
+	 * @return
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@Override
+	@Transactional
+	public Server create(Server server, String tagName) throws ServiceException, CheckException {
+
+		if (tagName == null) {
+			tagName = "";
+		}
+
+		logger.debug("create : Methods parameters : " + server);
+		logger.info("ServerService : Starting creating Server " + server.getName());
+
+		// General informations
+		server.setStatus(Status.PENDING);
+		server.setJvmOptions("");
+		server.setStartDate(new Date());
+
+		Application application = server.getApplication();
+		User user = server.getApplication().getUser();
+
+		// Build a custom container
+		String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
+					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
+					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(server.getApplication().getName()) + "-"
+					+ server.getName();
+
+		String imagePath = server.getImage().getPath() + tagName;
+		logger.debug("imagePath:" + imagePath);
+
+		String subdomain = System.getenv("CU_SUB_DOMAIN");
+		if (subdomain == null) {
+			subdomain = "";
+		}
+		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
+
+		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
+
+		try {
+			dockerService.createServer(containerName, server, imagePath, user, null, true, null);
+			server = dockerService.startServer(containerName, server);
+			server = serverDAO.saveAndFlush(server);
+
+			if (logger.isDebugEnabled()) {
+				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_PORT"));
+				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
+				logger.debug(application.getLocation());
+			}
+
+			hipacheRedisUtils.createRedisAppKey(server.getApplication(), server.getContainerIP(),
+					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
+
+			// Update server with all its informations
+			server.setManagerLocation("http://manager-" + application.getLocation().substring(7)
+					+ dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH"));
+			server.setStatus(Status.START);
+			server.setJvmMemory(512L);
+			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
+			server = this.update(server);
+
+			addCredentialsForServerManagement(server, user);
+			String needToRestart = dockerService.getEnv(server.getName(), "CU_SERVER_RESTART_POST_CREDENTIALS");
+			if ("true".equalsIgnoreCase(needToRestart)) {
+				dockerService.stopContainer(server.getName());
+				dockerService.startServer(server.getName(), server);
+			}
+			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+
+		} catch (PersistenceException e) {
+			logger.error("ServerService Error : Create Server " + e);
+			// Removing a creating container if an error has occurred with
+			// the database
+			// DockerContainer.remove(dockerContainer,
+			// application.getManagerIp());
+
+			throw new ServiceException(e.getLocalizedMessage(), e);
+		} catch (DockerJSONException e) {
+			StringBuilder msgError = new StringBuilder(512);
+			msgError.append("server=").append(server);
+			msgError.append(", tagName=[").append(tagName).append("]");
+			logger.error("" + msgError, e);
+			throw new ServiceException(msgError.toString(), e);
+		}
+		logger.info("ServerService : Server " + server.getName() + " successfully created.");
+		return server;
+	}
+
+	@Override
+	public void addCredentialsForServerManagement(Server server, final User user) throws ServiceException {
+		try {
+			Map<String, String> kvStore = new HashMap<String, String>() {
+				private static final long serialVersionUID = 1L;
+				{
+					put("CU_USER", user.getLogin());
+					put("CU_PASSWORD", user.getPassword());
+				}
+			};
+			dockerService.execCommand(server.getName(), RemoteExecAction.ADD_USER.getCommand(kvStore));
+		} catch (FatalDockerJSONException fex) {
+			fex.printStackTrace();
+			throw new ServiceException(fex.getMessage());
+		}
+	}
+
+	/**
+	 * check if the status passed in parameter is the same as in db if it's case
+	 * a checkException is throws
+	 *
+	 * @throws ServiceException
+	 *             CheckException
+	 */
+	@Override
+	public void checkStatus(Server server, String status) throws CheckException {
+		if (server.getStatus().name().equalsIgnoreCase(status)) {
+			throw new CheckException("Error : Server " + server.getName() + " is already " + status + "ED");
+		}
+	}
+
+	/**
+	 * check if the status is PENDING return TRUE else return false
+	 *
+	 * @throws ServiceException
+	 *             CheckException
+	 */
+	@Override
+	public boolean checkStatusPENDING(Server server) throws ServiceException {
+		logger.info("--CHECK SERVER STATUS PENDING--");
+
+		if (server.getStatus().name().equalsIgnoreCase("PENDING")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Transactional
+	public Server update(Server server) throws ServiceException {
+
+		logger.info("ServerService : Starting updating Server " + server.getName());
+		try {
+			serverDAO.save(server);
+
+			Application application = server.getApplication();
+
+			hipacheRedisUtils.updateServerAddress(application, server.getContainerIP(),
+					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
+					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
+
+		} catch (PersistenceException | FatalDockerJSONException e) {
+			logger.error("ServerService Error : update Server" + e);
+			e.printStackTrace();
+			throw new ServiceException("Error database : " + e.getLocalizedMessage(), e);
+		}
+
+		logger.info("ServerService : Server " + server.getName() + " successfully updated.");
+
+		return server;
+	}
+
+	@Override
+	@Transactional
+	public Server remove(String serverName) throws ServiceException {
+		Server server = null;
+		try {
+			server = this.findByName(serverName);
+
+			Application application = server.getApplication();
+			cleanServerDependencies(server.getName(), application.getUser(), application.getName());
+
+			dockerService.removeContainer(server.getName(), true);
+
+			// Remove server on cloudunit :
+			hipacheRedisUtils.removeServerAddress(application);
+			serverDAO.delete(server);
+
+			logger.info("ServerService : Server successfully removed ");
+
+		} catch (PersistenceException e) {
+			logger.error("Error database :  " + server.getName() + " : " + e);
+			throw new ServiceException("Error database :  " + e.getLocalizedMessage(), e);
+		} catch (DockerJSONException e) {
+			logger.error(serverName, e);
+		}
+		return server;
+	}
+
+	@Override
+	public Server findById(Integer id) throws ServiceException {
+		try {
+			logger.debug("findById : Methods parameters : " + id);
+			Server server = serverDAO.findOne(id);
+			if (server != null) {
+				logger.info("Server with id " + id + " found!");
+				logger.info("" + server);
+			}
+			return server;
+		} catch (PersistenceException e) {
+			logger.error("Error ServerService : error findById Method : " + e);
+			throw new ServiceException("Error database :  " + e.getLocalizedMessage(), e);
+
+		}
+	}
+
+	@Override
+	public List<Server> findAll() throws ServiceException {
+		try {
+			logger.debug("start findAll");
+			List<Server> servers = serverDAO.findAll();
+			logger.info("ServerService : All Servers found ");
+			return servers;
+		} catch (PersistenceException e) {
+			logger.error("Error ServerService : error findAll Method : " + e);
+			throw new ServiceException("Error database :  " + e.getLocalizedMessage(), e);
+
+		}
+	}
+
+	@Override
+	@Transactional
+	public Server startServer(Server server) throws ServiceException {
+
+		logger.info("ServerService : Starting Server " + server.getName());
+		try {
+			Application application = server.getApplication();
+
+			// Call the hook for pre start
+			server.setStartDate(new Date());
+			applicationDAO.saveAndFlush(application);
+			server = this.update(server);
+			server = dockerService.startServer(server.getName(), server);
+
+			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+
+		} catch (DockerJSONException e) {
+			e.printStackTrace();
+			throw new ServiceException(server.toString(), e);
+		} catch (PersistenceException e) {
+			throw new ServiceException(server.toString(), e);
+		}
+		return server;
+	}
+
+	@Override
+	@Transactional
+	public Server stopServer(Server server) throws ServiceException {
+		try {
+			dockerService.execCommand(server.getName(), RemoteExecAction.CLEAN_LOGS.getCommand());
+			dockerService.stopContainer(server.getName());
+			applicationEventPublisher.publishEvent(new ServerStopEvent(server));
+		} catch (PersistenceException e) {
+			throw new ServiceException(server.toString(), e);
+		} catch (DockerJSONException e) {
+			throw new ServiceException(server.toString(), e);
+		}
+		return server;
+	}
+
+	@Override
+	@Transactional
+	public Server restartServer(Server server) throws ServiceException {
+		server = this.stopServer(server);
+		server = this.startServer(server);
+		return server;
+	}
+
+	@Override
+	public Server findByName(String serverName) throws ServiceException {
+		try {
+			return serverDAO.findByName(serverName);
+		} catch (PersistenceException e) {
+			throw new ServiceException("Error database : " + e.getLocalizedMessage(), e);
+		}
+	}
+
+	@Override
+	public Server findByApp(Application application) throws ServiceException {
+		try {
+			return serverDAO.findByApp(application.getId());
+		} catch (PersistenceException e) {
+			throw new ServiceException("Error database : " + e.getLocalizedMessage(), e);
+		}
+	}
+
+	@Override
+	public Server findByContainerID(String id) throws ServiceException {
+		try {
+			return serverDAO.findByContainerID(id);
+		} catch (PersistenceException e) {
+			throw new ServiceException("Error database : " + e.getLocalizedMessage(), e);
+		}
+	}
+
+	@CacheEvict(value = "env", allEntries = true)
+	@Transactional
+	public Server update(Server server, String jvmMemory, String options, String jvmRelease, boolean restorePreviousEnv)
+			throws ServiceException {
+
+		String previousJvmMemory = server.getJvmMemory().toString();
+		String previousJvmRelease = server.getJvmRelease();
+		String previousJvmOptions = server.getJvmOptions();
+
+		options = options == null ? "" : options;
+		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
+
+		try {
+			List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
+					.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
+			String currentJvmMemory = dockerService.getEnv(server.getName(), "JAVA_OPTS");
+			currentJvmMemory = currentJvmMemory.replaceAll(previousJvmMemory, jvmMemory);
+			currentJvmMemory = currentJvmMemory.substring(currentJvmMemory.lastIndexOf("-Xms"));
+			currentJvmMemory = jvmOptions + " " + currentJvmMemory;
+			envs.add("JAVA_OPTS=" + currentJvmMemory);
+
+			// Add the jmv env variable to set the jvm release
+			envs.add("JAVA_HOME=/opt/cloudunit/java/" + jvmRelease);
+
+			dockerService.stopContainer(server.getName());
+			dockerService.removeContainer(server.getName(), false);
+			List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
+					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
+							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
+					.collect(Collectors.toList());
+			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+					server.getApplication().getUser(), envs, false, volumes);
+			server = startServer(server);
+			addCredentialsForServerManagement(server, server.getApplication().getUser());
+
+			server.setJvmMemory(Long.valueOf(jvmMemory));
+			server.setJvmOptions(jvmOptions);
+			server.setJvmRelease(jvmRelease);
+			server = saveInDB(server);
+
+		} catch (Exception e) {
+			if (!restorePreviousEnv) {
+				StringBuilder msgError = new StringBuilder();
+				msgError.append("jvmMemory:").append(jvmMemory).append(",");
+				msgError.append("jvmOptions:").append(jvmOptions).append(",");
+				msgError.append("jvmRelease:").append(jvmRelease);
+				throw new ServiceException(msgError.toString(), e);
+			} else {
+				// Rollback to previous configuration
+				logger.warn("Restore the previous environment for jvm configuration. Maybe a syntax error");
+				update(server, previousJvmMemory, previousJvmOptions, previousJvmRelease, false);
+			}
+		}
+
+		return server;
+
+	}
+
+	/**
+	 * Change the version of the jvm
+	 *
+	 * @param application
+	 * @param javaVersion
+	 * @throws CheckException
+	 * @throws ServiceException
+	 */
+	@Override
+	public void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException {
+		logger.info("Starting changing to java version " + javaVersion + ", the application " + application.getName());
+		try {
+			// todo
+		} catch (Exception e) {
+			throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
+		}
+	}
+
+	@Override
+	@Transactional
+	@CacheEvict(value = "env", allEntries = true)
+	public void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO)
+			throws ServiceException, CheckException {
+		checkVolumeFormat(volumeAssociationDTO);
+
+		Volume volume = null;
+		if (!volumeService.loadAllVolumes().stream().filter(v -> v.getName().equals(volumeAssociationDTO.getVolumeName())).findAny()
+				.isPresent()) {
+			VolumeList volumeList = null;
+			try {
+				volumeList = dockerClient.listVolumes();
+			} catch (InterruptedException | DockerException e) {
+				throw new ServiceException("Action failed");
+			}
+			if(volumeList.volumes().stream().filter(v -> v.name().equals(volumeAssociationDTO.getVolumeName()	)).findFirst().orElse(null) == null) {
+				throw new CheckException("This volume does not exist");
+			} else {
+				volume = volumeService.registerNewVolume(volumeAssociationDTO.getVolumeName());
+			}
+		} else {
+			volume = volumeService.findByName(volumeAssociationDTO.getVolumeName());
+		}
+
+		if(volumeAssociationService.checkVolumeAssociationPathAlreadyPresent(volumeAssociationDTO.getPath(), application.getServer().getId()) > 0) {
+			throw new CheckException("This path is already use !");
+		}
+
+		VolumeAssociation volumeAssociation = new VolumeAssociation(new VolumeAssociationId(application.getServer(), volume),
+				volumeAssociationDTO.getPath(), volumeAssociationDTO.getMode());
+		volumeService.saveAssociation(volumeAssociation);
+		volume.getVolumeAssociations().add(volumeAssociation);
+		application.getServer().getVolumeAssociations().add(volumeAssociation);
+
+		stopAndRemoveServer(application.getServer(), application);
+		recreateAndMountVolumes(application.getServer(), application);
+	}
+
+	@Override
+	@Transactional
+	@CacheEvict(value = "env", allEntries = true)
+	public void removeVolume(String containerName, String volumeName) throws ServiceException {
+		Server server = null;
+		try {
+			server = findByName(containerName);
+			Volume volume = volumeService.findByName(volumeName);
+			volumeService.removeAssociation(new VolumeAssociation(new VolumeAssociationId(server, volume), null, null));
+			stopAndRemoveServer(server, server.getApplication());
+			recreateAndMountVolumes(server, server.getApplication());
+		} catch (CheckException e) {
+			e.printStackTrace();
+			throw new CheckException(e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ServiceException(e.getMessage());
+		} finally {
+			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
+			applicationEventPublisher.publishEvent(new ApplicationStartEvent(server.getApplication()));
+		}
+	}
+
+	private void stopAndRemoveServer(Server server, Application application) throws ServiceException {
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+		applicationEventPublisher.publishEvent(new ServerStopEvent(server));
+		dockerService.removeContainer(server.getName(), false);
+	}
+
+	@Transactional
+	private void recreateAndMountVolumes(Server server, Application application) throws ServiceException {
+		List<String> volumes = volumeService.loadAllByContainerName(server.getName())
+				.stream().map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath()
+						+ ":" + v.getVolumeAssociations().stream().findFirst().get().getMode())
+				.collect(Collectors.toList());
+		List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
+				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
+		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+				server.getApplication().getUser(), envs, false, volumes);
+		server = startServer(server);
+		addCredentialsForServerManagement(server, server.getApplication().getUser());
+	}
+
+	private void checkVolumeFormat(VolumeAssociationDTO volume) throws ServiceException {
+		if (volume.getVolumeName() == null || volume.getVolumeName().isEmpty())
+			throw new CheckException("This name is not consistent !");
+		if (volume.getApplicationName() == null || volume.getApplicationName().isEmpty())
+			throw new CheckException("Application name is not consistent !");
+		if (volume.getContainerName() == null || volume.getContainerName().isEmpty())
+			throw new CheckException("Application name is not consistent !");
+		if (volume.getPath() == null || volume.getPath().isEmpty() || !volume.getPath().startsWith("/")
+				|| !volume.getPath().replaceAll("/", "").matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This path is not consistent !");
+		if (!volume.getVolumeName().matches("^[-a-zA-Z0-9_]*$"))
+			throw new CheckException("This name is not consistent : " + volume.getVolumeName());
+		if (!(volume.getMode().equalsIgnoreCase("ro") || volume.getMode().equalsIgnoreCase("rw"))) {
+			throw new CheckException("Authorized mode value : ro (readOnly) or rw (read-write)");
+		}
+	}
+
+	private void cleanServerDependencies(String name, User user, String applicationName) throws ServiceException {
+		volumeService.loadAllByContainerName(name).stream()
+				.forEach(v -> volumeService.removeAssociation(v.getVolumeAssociations().stream().findFirst().get()));
+	}
 
 }

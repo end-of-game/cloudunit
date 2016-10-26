@@ -14,11 +14,19 @@ package fr.treeptik.cloudunit.model;/*
  */
 
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Message
@@ -35,6 +43,7 @@ public class Message
     private Integer id;
 
     @Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "YYYY-MM-dd HH:mm")
     private Date date;
 
     @ManyToOne
@@ -55,7 +64,7 @@ public class Message
         this.date = new Date();
     }
 
-    public Message(Type type) {
+    public Message(DeploymentType type) {
         this.date = new Date();
 
         this.type = type.name();

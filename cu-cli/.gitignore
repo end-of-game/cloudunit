@@ -1,0 +1,38 @@
+*~
+target
+webapps
+.settings
+.classpath
+.project
+errors.log
+.log
+bin
+logs
+*.log
+
+## Directory-based project format
+.idea/*
+# if you remove the above rule, at least ignore user-specific stuff:
+# .idea/workspace.xml
+# .idea/tasks.xml
+# and these sensitive or high-churn files:
+# .idea/dataSources.ids
+# .idea/dataSources.xml
+# .idea/sqlDataSources.xml
+# .idea/dynamic.xml
+.idea/uiDesigner.xml
+
+## File-based project format
+*.ipr
+*.iws
+*.iml
+CloudUnitCLI.iml
+
+/script-test.cu
+#src/test/resources/projects_for_deployment/pizzaiolo/
+livrables/cloudunit-cli.zip
+
+.DS_Store
+.externalToolBuilders
+commandes.txt
+dependency-reduced-pom.xml

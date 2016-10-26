@@ -55,9 +55,15 @@ public class Tomcat7Postgres93ModuleControllerTestIT extends AbstractModuleContr
     public Tomcat7Postgres93ModuleControllerTestIT() {
         super.server = "tomcat-7";
         super.module = "postgresql-9-3";
+        super.numberPort = "5432";
         super.managerPrefix = "phppgadmin";
         super.managerSuffix = "phppgadmin";
         super.managerPageContent = "phpPgAdmin";
     }
 
+    @Override
+    protected void checkConnection(String forwardedPort) {
+        new CheckDatabaseConnection().invoke(forwardedPort, "POSTGRES_USER",
+                "POSTGRES_PASSWORD", "POSTGRES_DB", "org.postgresql.Driver", "jdbc:postgresql://");
+    }
 }

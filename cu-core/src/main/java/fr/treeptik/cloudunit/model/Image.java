@@ -1,27 +1,30 @@
 package fr.treeptik.cloudunit.model;/*
- * LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
- * but CloudUnit is licensed too under a standard commercial license.
- * Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
- * If you are not sure whether the AGPL is right for you,
- * you can always test our software under the AGPL and inspect the source code before you contact us
- * about purchasing a commercial license.
- *
- * LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
- * or promote products derived from this project without prior written permission from Treeptik.
- * Products or services derived from this software may not be called "CloudUnit"
- * nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
- * For any questions, contact us : contact@treeptik.fr
- */
+                                    * LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
+                                    * but CloudUnit is licensed too under a standard commercial license.
+                                    * Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+                                    * If you are not sure whether the AGPL is right for you,
+                                    * you can always test our software under the AGPL and inspect the source code before you contact us
+                                    * about purchasing a commercial license.
+                                    *
+                                    * LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+                                    * or promote products derived from this project without prior written permission from Treeptik.
+                                    * Products or services derived from this software may not be called "CloudUnit"
+                                    * nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+                                    * For any questions, contact us : contact@treeptik.fr
+                                    */
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import fr.treeptik.cloudunit.enums.ImageSubType;
+import fr.treeptik.cloudunit.enums.ModuleEnvironmentRole;
+import fr.treeptik.cloudunit.enums.PortType;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @Entity
-public class Image
-    implements Serializable {
+public class Image implements Serializable {
 
     public final static Integer DISABLED = 0;
 
@@ -43,14 +46,6 @@ public class Image
 
     private String displayName;
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
     private Integer status;
 
     private String imageType;
@@ -59,17 +54,18 @@ public class Image
 
     private String prefixEnv;
 
-    public int getPrefixId() {
-        return prefixEnv.hashCode();
-    }
+    @ElementCollection
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<PortType, String> exposedPorts;
 
-    public String getPrefixEnv() {
-        return prefixEnv;
-    }
+    private Integer prefixId;
 
-    public void setPrefixEnv(String prefixEnv) {
-        this.prefixEnv = prefixEnv;
-    }
+    @Enumerated(EnumType.STRING)
+    private ImageSubType imageSubType;
+
+    @ElementCollection
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables;
 
     @JsonIgnore
     @OneToMany(mappedBy = "image")
@@ -143,10 +139,55 @@ public class Image
         this.managerName = managerName;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getPrefixEnv() {
+        return prefixEnv;
+    }
+
+    public ImageSubType getImageSubType() {
+        return imageSubType;
+    }
+
+    public void setImageSubType(ImageSubType imageSubType) {
+        this.imageSubType = imageSubType;
+    }
+
+    public void setPrefixEnv(String prefixEnv) {
+        this.prefixEnv = prefixEnv;
+    }
+
+    // do not remove prefixId use for splitting server by nature
+    public Integer getPrefixId() {
+        return prefixEnv.hashCode();
+    }
+
+    public Map<ModuleEnvironmentRole, String> getModuleEnvironmentVariables() {
+        return moduleEnvironmentVariables;
+    }
+
+    public void setModuleEnvironmentVariables(Map<ModuleEnvironmentRole, String> moduleEnvironmentVariables) {
+        this.moduleEnvironmentVariables = moduleEnvironmentVariables;
+    }
+
+    public Map<PortType, String> getExposedPorts() {
+        return exposedPorts;
+    }
+
+    public void setExposedPorts(Map<PortType, String> exposedPorts) {
+        this.exposedPorts = exposedPorts;
+    }
+
     @Override
     public String toString() {
-        return "Image [id=" + id + ", name=" + name + ", path=" + path
-            + ", status=" + status + ", imageType=" + imageType + "]";
+        return "Image [id=" + id + ", name=" + name + ", path=" + path + ", status=" + status + ", imageType="
+                + imageType + "]";
     }
 
     @Override

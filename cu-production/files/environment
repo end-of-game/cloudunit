@@ -1,7 +1,13 @@
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 
 MYSQL_ROOT_PASSWORD=changeit
-DOCKER_CERT_PATH=/home/admincu/.docker
-DOCKER_TLS_VERIFY=1
-DOCKER_HOST=tcp://cloudunit.serv:2376
+DOCKER_HOST=tcp://cloudunit.serv:4243
+
+CU_PORTAL_URL=cu01.cloudunit.io
+CU_MANAGER_URL=admin-cu01.cloudunit.io
+CU_GITLAB_URL=gitlab-cu01.cloudunit.io
+CU_JENKINS_URL=jenkins-cu01.cloudunit.io
+CU_KIBANA_URL=kibana-cu01.cloudunit.io
+
+
 

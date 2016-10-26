@@ -68,6 +68,7 @@ public class ApplicationConfig
         security.setAsyncSupported(true);
 
         servletContext.addListener(new ContextLoaderListener(rootContext));
+
     }
 
 }

@@ -1,0 +1,9 @@
+init_config:
+
+instances:
+   -   host: 172.17.1.52
+       port: 5432
+       username: datadog
+       password: 5bgbzetJQ6nfPVTnnMcMP7SA
+       tags:
+            - instance:postgres

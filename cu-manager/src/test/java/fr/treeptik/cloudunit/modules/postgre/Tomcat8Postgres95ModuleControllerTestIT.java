@@ -40,9 +40,15 @@ public class Tomcat8Postgres95ModuleControllerTestIT extends AbstractModuleContr
     public Tomcat8Postgres95ModuleControllerTestIT() {
         super.server = "tomcat-8";
         super.module = "postgresql-9-5";
+        super.numberPort = "5432";
         super.managerPrefix = "phppgadmin";
         super.managerSuffix = "phppgadmin";
         super.managerPageContent = "phpPgAdmin";
     }
 
+    @Override
+    protected void checkConnection(String forwardedPort) {
+        new CheckDatabaseConnection().invoke(forwardedPort, "POSTGRES_USER",
+                "POSTGRES_PASSWORD", "POSTGRES_DB", "org.postgresql.Driver", "jdbc:postgresql://");
+    }
 }

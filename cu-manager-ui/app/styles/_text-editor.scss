@@ -1,0 +1,57 @@
+/* MODULE SCSS => ./scss2/_text-editor.scss
+*//*
+ * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+[text-angular] {
+  margin-bottom: $padding-base-vertical;
+  @include clearfix;
+}
+
+[text-angular] > [text-angular-toolbar] {
+  background-color: lighten($color-bg-muted, 0.2);
+  padding: $padding-base-vertical 0;
+  margin-bottom: $padding-base-vertical * 2;
+  margin-left: 0;
+}
+
+[text-angular] > [text-angular-toolbar] > .btn-group:not(:nth-child(3)) {
+  border-right: 1px solid $color-muted;
+}
+
+[text-angular] > [text-angular-toolbar] > .btn-group > .btn {
+  border-radius: 0;
+  border: none;
+  background-color: transparent;
+}
+
+[text-angular] > [text-angular-toolbar] > .btn-group > .btn.active {
+  box-shadow: none;
+  background-color: lighten($color-bg-muted, 0.5);
+}
+
+[text-angular] > [text-angular-toolbar] > .btn-group > .btn:focus {
+  font-weight: bold;
+  box-shadow: none;
+}
+
+[text-angular].ta-root.focussed > .ta-scroll-window.form-control,
+[text-angular].ta-root.focussed > .ta-scroll-window.form-control:focus {
+  box-shadow: none;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  outline: 0;
+  font-size: 14px;
+}

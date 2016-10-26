@@ -60,5 +60,4 @@ deb-src http://security.ubuntu.com/ubuntu trusty-security universe
 # deb-src http://security.ubuntu.com/ubuntu trusty-security multiverse
 
 # DOCKER
-deb https://get.docker.io/ubuntu docker main
-
+deb https://apt.dockerproject.org/repo ubuntu-trusty main

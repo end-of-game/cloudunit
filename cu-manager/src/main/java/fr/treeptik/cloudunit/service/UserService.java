@@ -50,12 +50,6 @@ public interface UserService {
     User findByLogin(String login)
         throws ServiceException;
 
-    void changeEmail(User user, String newEmail)
-        throws ServiceException;
-
-    String sendPassword(User user)
-        throws ServiceException;
-
     void deleteAllUsersMessages(User user)
         throws ServiceException;
 

@@ -1,29 +1,23 @@
 package fr.treeptik.cloudunit.model;/*
- * LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
- * but CloudUnit is licensed too under a standard commercial license.
- * Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
- * If you are not sure whether the AGPL is right for you,
- * you can always test our software under the AGPL and inspect the source code before you contact us
- * about purchasing a commercial license.
- *
- * LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
- * or promote products derived from this project without prior written permission from Treeptik.
- * Products or services derived from this software may not be called "CloudUnit"
- * nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
- * For any questions, contact us : contact@treeptik.fr
- */
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import fr.treeptik.cloudunit.utils.JsonDateSerializer;
+									* LICENCE : CloudUnit is available under the GNU Affero General Public License : https://gnu.org/licenses/agpl.html
+									* but CloudUnit is licensed too under a standard commercial license.
+									* Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+									* If you are not sure whether the AGPL is right for you,
+									* you can always test our software under the AGPL and inspect the source code before you contact us
+									* about purchasing a commercial license.
+									*
+									* LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+									* or promote products derived from this project without prior written permission from Treeptik.
+									* Products or services derived from this software may not be called "CloudUnit"
+									* nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+									* For any questions, contact us : contact@treeptik.fr
+									*/
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -35,197 +29,174 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @MappedSuperclass
-public class Container
-    implements Serializable {
+public class Container implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue
-    protected Integer id;
+	@Id
+	@GeneratedValue
+	protected Integer id;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @JsonSerialize(using = JsonDateSerializer.class)
-    protected Date startDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "YYYY-MM-dd HH:mm")
+	protected Date startDate;
 
-    protected String name;
+	protected String name;
 
-    protected String containerID;
+	protected String containerID;
 
-    @JsonIgnore
-    @Transient
-    protected String containerFullId;
+	@JsonIgnore
+	@Transient
+	protected String containerFullId;
 
-    protected Long memorySize;
+	protected Long memorySize;
 
-    protected String containerIP;
+	protected String containerIP;
 
-    /**
-     * This is the applicative status of the server START, STOP, PENDING when
-     * it's being modified and not yet in operational state or FAIL if a problem
-     * has been detected on this server.
-     */
-    @Enumerated(EnumType.STRING)
-    protected Status status;
+	/**
+	 * This is the applicative status of the server START, STOP, PENDING when
+	 * it's being modified and not yet in operational state or FAIL if a problem
+	 * has been detected on this server.
+	 */
+	@Enumerated(EnumType.STRING)
+	protected Status status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    protected Image image;
+	@ManyToOne(fetch = FetchType.EAGER)
+	protected Image image;
 
-    /**
-     * for docker use
-     */
-    @ElementCollection
-    protected Map<String, String> listPorts = new HashMap<>();
+	protected String internalDNSName;
 
-    @ManyToOne
-    @JsonIgnore
-    protected Application application;
+	@Transient
+	@JsonIgnore
+	protected Map<String, String> volumes;
 
-    protected String internalDNSName;
+	@JsonIgnore
+	@Transient
+	protected List<String> volumesFrom;
 
-    @Transient
-    @JsonIgnore
-    protected Map<String, String> volumes;
+	private String sshPort;
 
-    @JsonIgnore
-    @Transient
-    protected List<String> volumesFrom;
+	@Transient
+	@JsonIgnore
+	private String dockerState;
 
-    private String sshPort;
+	public Container() {
+	}
 
-    @Transient
-    @JsonIgnore
-    private String dockerState;
+	public Integer getId() {
+		return id;
+	}
 
-    public Container() {
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public Integer getId() {
-        return id;
-    }
+	public Date getStartDate() {
+		return startDate;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
 
-    public Date getStartDate() {
-        return startDate;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getContainerID() {
+		return containerID;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setContainerID(String containerID) {
+		this.containerID = containerID;
+	}
 
-    public String getContainerID() {
-        return containerID;
-    }
+	public String getContainerFullID() {
+		return containerFullId;
+	}
 
-    public void setContainerID(String containerID) {
-        this.containerID = containerID;
-    }
+	public void setContainerFullID(String containerFullId) {
+		this.containerFullId = containerFullId;
+	}
 
-    public String getContainerFullID() {
-        return containerFullId;
-    }
+	public Long getMemorySize() {
+		return memorySize;
+	}
 
-    public void setContainerFullID(String containerFullId) {
-        this.containerFullId = containerFullId;
-    }
+	public void setMemorySize(Long memorySize) {
+		this.memorySize = memorySize;
+	}
 
-    public Long getMemorySize() {
-        return memorySize;
-    }
+	public String getContainerIP() {
+		return containerIP;
+	}
 
-    public void setMemorySize(Long memorySize) {
-        this.memorySize = memorySize;
-    }
+	public void setContainerIP(String containerIP) {
+		this.containerIP = containerIP;
+	}
 
-    public String getContainerIP() {
-        return containerIP;
-    }
+	public Status getStatus() {
+		return status;
+	}
 
-    public void setContainerIP(String containerIP) {
-        this.containerIP = containerIP;
-    }
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
-    public Status getStatus() {
-        return status;
-    }
+	public Image getImage() {
+		return image;
+	}
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+	public void setImage(Image image) {
+		this.image = image;
+	}
 
-    public Image getImage() {
-        return image;
-    }
+	public String getSshPort() {
+		return sshPort;
+	}
 
-    public void setImage(Image image) {
-        this.image = image;
-    }
+	public void setSshPort(String sshPort) {
+		this.sshPort = sshPort;
+	}
 
-    public Map<String, String> getListPorts() {
-        return listPorts;
-    }
+	public String getInternalDNSName() {
+		return internalDNSName;
+	}
 
-    public void setListPorts(Map<String, String> listPorts) {
-        this.listPorts = listPorts;
-    }
+	public void setInternalDNSName(String internalDNSName) {
+		this.internalDNSName = internalDNSName;
+	}
 
-    public Application getApplication() {
-        return application;
-    }
+	public Map<String, String> getVolumes() {
+		return volumes;
+	}
 
-    public void setApplication(Application application) {
-        this.application = application;
-    }
+	public void setVolumes(Map<String, String> volumes) {
+		this.volumes = volumes;
+	}
 
-    public String getSshPort() {
-        return sshPort;
-    }
+	public List<String> getVolumesFrom() {
+		return volumesFrom;
+	}
 
-    public void setSshPort(String sshPort) {
-        this.sshPort = sshPort;
-    }
+	public void setVolumesFrom(List<String> volumesFrom) {
+		this.volumesFrom = volumesFrom;
+	}
 
-    public String getInternalDNSName() {
-        return internalDNSName;
-    }
+	public String getDockerState() {
+		return dockerState;
+	}
 
-    public void setInternalDNSName(String internalDNSName) {
-        this.internalDNSName = internalDNSName;
-    }
+	public void setDockerState(String dockerState) {
+		this.dockerState = dockerState;
+	}
 
-    public Map<String, String> getVolumes() {
-        return volumes;
-    }
-
-    public void setVolumes(Map<String, String> volumes) {
-        this.volumes = volumes;
-    }
-
-    public List<String> getVolumesFrom() {
-        return volumesFrom;
-    }
-
-    public void setVolumesFrom(List<String> volumesFrom) {
-        this.volumesFrom = volumesFrom;
-    }
-
-    public String getDockerState() {
-        return dockerState;
-    }
-
-    public void setDockerState(String dockerState) {
-        this.dockerState = dockerState;
-    }
 }

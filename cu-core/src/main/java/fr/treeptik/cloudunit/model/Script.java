@@ -13,18 +13,12 @@ package fr.treeptik.cloudunit.model;/*
  * For any questions, contact us : contact@treeptik.fr
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.text.Normalizer;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Entity
-public class Script
-        implements Serializable {
+public class Script implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,6 +27,10 @@ public class Script
     private Integer id;
 
     private String title;
+
+    private Date creationDate;
+
+    private Integer creationUserId;
 
     @Column(columnDefinition = "TEXT")
     private String content;
@@ -52,4 +50,16 @@ public class Script
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public Date getCreationDate() { return creationDate; }
+
+    public void setCreationDate(Date creationDate) { this.creationDate = creationDate; }
+
+    public Integer getCreationUserId() { return creationUserId; }
+
+    public void setCreationUserId(Integer creationUserId) { this.creationUserId = creationUserId; }
+
+    public String getContent() { return content; }
+
+    public void setContent(String content) { this.content = content; }
 }

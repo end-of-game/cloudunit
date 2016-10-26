@@ -15,13 +15,15 @@
 
 package fr.treeptik.cloudunit.service;
 
-import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.dto.LogLine;
-import fr.treeptik.cloudunit.dto.SourceUnit;
-import fr.treeptik.cloudunit.exception.ServiceException;
-
-import java.io.File;
+import java.io.OutputStream;
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.dto.SourceUnit;
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.ServiceException;
 
 /**
  * Created by nicolas on 20/05/15.
@@ -34,12 +36,11 @@ public interface FileService {
     List<SourceUnit> listLogsFilesByContainer(String containerId)
         throws ServiceException;
 
-    void sendFileToContainer(String applicationName, String containerId,
-                             File file, String originalName, String destFile)
-        throws ServiceException;
+    void sendFileToContainer(String containerId, String destination, MultipartFile fileUpload, String contentFileName, String contentFileData)
+            throws ServiceException, CheckException;
 
-    File getFileFromContainer(String applicationName, String containerId,
-                                        File file, String originalName, String destFile)
+    int getFileFromContainer(String containerId,
+                              String pathFile, OutputStream outputStream)
         throws ServiceException;
 
     void deleteFilesFromContainer(String applicationName, String containerId, String path)
@@ -48,9 +49,9 @@ public interface FileService {
     void createDirectory(String applicationName, String containerId, String path)
             throws ServiceException;
 
-    public List<LogLine> catFileForNLines(String containerId, String file, Integer nbRows)
+    String tailFile(String containerId, String filename, Integer maxRows)
             throws ServiceException;
 
-    public String getDefaultLogFile(String containerId)
+    String getLogDirectory(String containerId)
             throws ServiceException;
 }

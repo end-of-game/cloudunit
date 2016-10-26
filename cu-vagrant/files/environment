@@ -2,3 +2,8 @@ PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/u
 
 MYSQL_ROOT_PASSWORD=changeit
 DOCKER_HOST=tcp://cloudunit.serv:4243
+
+CU_PORTAL_URL=portal.cloudunit.dev
+CU_GITLAB_URL=gitlab.cloudunit.dev
+CU_JENKINS_URL=jenkins.cloudunit.dev
+CU_KIBINA_URL=kibana.cloudunit.dev

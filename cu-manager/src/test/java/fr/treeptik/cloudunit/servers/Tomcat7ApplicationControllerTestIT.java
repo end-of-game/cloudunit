@@ -20,8 +20,9 @@ package fr.treeptik.cloudunit.servers;
  */
 public class Tomcat7ApplicationControllerTestIT extends AbstractApplicationControllerTestIT {
 
-    public Tomcat7ApplicationControllerTestIT() {
-        super.release = "tomcat-7";
+    public Tomcat7ApplicationControllerTestIT()
+    {
+        super("tomcat-7", "jdk1.8.0_25");
     }
 
 }

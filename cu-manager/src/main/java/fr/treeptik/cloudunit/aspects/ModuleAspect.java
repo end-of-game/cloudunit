@@ -76,18 +76,6 @@ public class ModuleAspect
                 messageService.create(message);
                 break;
 
-            case deleteType:
-                module = (Module) joinPoint.getArgs()[2];
-                if (module != null) {
-                    message = MessageUtils
-                        .writeBeforeModuleMessage(user, module.getName(),
-                            ((User) joinPoint.getArgs()[1]).getLogin(),
-                            deleteType);
-                    logger.info(message.toString());
-                    messageService.create(message);
-                }
-                break;
-
         }
 
     }

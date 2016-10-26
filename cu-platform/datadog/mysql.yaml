@@ -1,0 +1,18 @@
+init_config:
+
+instances:
+  - server: 172.17.0.72
+    user: datadog
+    pass: 5bgbzetJQ6nfPVTnnMcMP7SA
+    tags:
+      - instance:mysql-5-7
+  - server: 172.17.0.71
+    user: datadog
+    pass: 5bgbzetJQ6nfPVTnnMcMP7SA
+    tags:
+      - instance:mysql-5-6
+  - server: 172.17.0.70
+    user: datadog
+    pass: 5bgbzetJQ6nfPVTnnMcMP7SA
+    tags:
+      - instance:mysql-5-5

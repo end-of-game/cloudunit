@@ -15,12 +15,8 @@
 
 set -x
 
-# clean the env
-sh ../reset.sh
-
 # run the integration test
-sh ../maven.sh Tomcat7ApplicationControllerTestIT
-
+sh ~/cloudunit/integration-tests/maven.sh Tomcat7ApplicationControllerTestIT
 
 
 

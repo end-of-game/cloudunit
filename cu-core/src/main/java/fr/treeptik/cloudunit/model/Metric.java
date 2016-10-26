@@ -1,10 +1,11 @@
 package fr.treeptik.cloudunit.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import java.io.Serializable;
+import javax.persistence.Id;
 
 /**
  * Created by guillaume on 04/07/16.
@@ -12,55 +13,57 @@ import java.io.Serializable;
 @Entity
 public class Metric implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	private static final long serialVersionUID = 1L;
 
-    private String name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    private String url;
+	private String name;
 
-    private String serverName;
+	private String url;
 
-    private String suffix;
+	private String serverName;
 
-    public Integer getId() {
-        return id;
-    }
+	private String suffix;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public String getServerName() {
-        return serverName;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
-    }
+	public String getServerName() {
+		return serverName;
+	}
 
-    public String getSuffix() {
-        return suffix;
-    }
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
 
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
-    }
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
 }

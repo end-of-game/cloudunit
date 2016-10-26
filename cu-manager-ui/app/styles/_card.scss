@@ -1,0 +1,294 @@
+/* MODULE SCSS => ./scss2/_card.scss
+*//*
+ * LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+ *     but CloudUnit is licensed too under a standard commercial license.
+ *     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+ *     If you are not sure whether the GPL is right for you,
+ *     you can always test our software under the GPL and inspect the source code before you contact us
+ *     about purchasing a commercial license.
+ *
+ *     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+ *     or promote products derived from this project without prior written permission from Treeptik.
+ *     Products or services derived from this software may not be called "CloudUnit"
+ *     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+ *     For any questions, contact us : contact@treeptik.fr
+ */
+
+.card {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  .content {
+    border-radius: 2px;
+    padding: 16px;
+    background-color: #fff;
+    position: relative;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    width: 100%;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    footer {
+      min-height: 14px;
+    }
+    .meta {
+      color: $color-muted;
+      font-size: 12px;
+    }
+    .title {
+      font-size: 24px;
+      // font-weight: normal;
+      .service-icon {
+        display: inline-block;
+        padding-top: 2px;
+        float: left;
+        margin-right: 4px;
+      }
+    }
+    .title.large {
+      padding-bottom: 16px;
+      & > small {
+        font-size: 12px;
+      }
+    }
+    .status {
+      @include clearfix();
+    }
+    .features {
+      padding: 16px 0px;
+      color: $color-muted;
+      margin-bottom: 32px;
+
+      &.features-modules {
+        margin-bottom: 0;
+      }
+    }
+    .modules li {
+      display: inline-block;
+      margin-right: 4px;
+    }
+    .spinner {
+      width: 100%;
+      left: 0;
+      text-align: center;
+      @include v-center();
+      z-index: 1;
+    }
+    .settings {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      color: $color-secondary;
+    }
+    .action {
+      .primary-action, .secondary-action {
+        width: 100%;
+        display: inline-block;
+      }
+      .primary-action {
+        text-align: right;
+      }
+      .secondary-action {
+        text-align: right;
+      }
+    }
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 15px;
+    * {
+      font-size : 1em;
+    }
+  }
+  &.clear {
+    clear: both;
+  }
+}
+
+.card.blank {
+  .content {
+    border: 0;
+    color: #bdbdbd !important;
+    padding: 16px;
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.application.card {
+  .content {
+    min-height: 256px;
+    .label-like {
+      color: rgba(0, 0, 0, 0.54);       
+      max-width: 100%;
+      margin-bottom: 5px;
+      font-weight: bold;   
+      font-size: 14px;
+      margin-right: 4px;
+      text-overflow: ellipsis;
+
+      &.quiet-list {
+        list-style-type: none;
+        display: block;
+
+        &:before {
+          content: "-";
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}
+
+.volume-card.card .content,
+.environment-card.card .content {
+  min-height: 230px;
+}
+
+.card.overview, .card.service {
+  .content {
+    min-height: 310px;
+    overflow: auto;
+  }
+}
+
+.template.card, .card.overview, .card.service {
+  .features {
+    margin-bottom: 0;
+  }
+}
+
+.card.smaller {
+  @include make-lg-column(3, 1rem);
+}
+
+.card.small {
+  @include make-lg-column(4, 1rem);
+}
+
+.card.medium {
+  @include make-lg-column(6, 1rem);
+  min-height: 212px;
+}
+
+.card.large {
+  @include make-lg-column(12, 1rem);
+}
+
+.start.pending .content,
+.stop.pending .content,
+.pending.stop .content,
+.pending.start .content,
+.pending .content,
+.app-creation .content,
+.fail .content,
+[data-status = 'pending'] .content {
+  border-top: 0;
+  color: $color-muted !important;
+  & .subhead, & .headline {
+    color: $color-muted;
+  }
+  & .button:not(.allowed), & .icon-button:not(.allowed) {
+    background-color: $color-bg-muted;
+    color: $color-disabled;
+    pointer-events: none;
+    cursor: not-allowed;
+    text-decoration: none;
+    &.power {
+      color: $color-muted;
+    }
+    & .spinner {
+      color: $color-muted;
+    }
+  }
+
+  input[type='text'], textarea {
+    border-bottom: 1px dashed #bdbdbd;
+  }
+  input.blank {
+    border: 0;
+  }
+
+  .allowed {
+    z-index: 15;
+  }
+}
+
+.radio.check.inline {
+    display: inline-block;
+    min-width: 100px;
+
+    input[type='radio'] {
+      cursor: pointer;
+      height: 25px;
+      width: 50px;
+      margin-left: 20px;
+      position: relative;
+    }
+
+    label {
+      position: relative;
+      top: 2px;
+      left: 4px;
+    }
+  }
+
+.application.start .status {
+  color: #8bc34a;
+}
+
+.service.fail .status {
+  color: $color-error;
+}
+
+.application.fail .status {
+  .subhead, .subhead > a, .headline {
+    color: $color-error;
+  }
+}
+
+.application.stop .status {
+  .subhead, .headline {
+    color: $brand-warning;
+  }
+}
+
+.list {
+  @include make-xs-column(12, 1rem);
+  @include make-lg-column(9, 1rem);
+  float: right !important;
+  border-radius: 2px;
+  padding: 10px 16px;
+  margin: 0px;
+  .content {
+    border-radius: 2px;
+    padding: 16px;
+    background-color: #fff;
+    position: relative;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    width: 100%;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    .features {
+      p {
+        float: left;
+        padding-right: 10px; 
+      }
+    }
+    .action .secondary-action {
+        float: right;
+      }
+    }
+    .spinner {
+      margin: auto;
+      width: 50px;
+      position: absolute;
+      left: 0;
+      right: 0;
+    }
+}

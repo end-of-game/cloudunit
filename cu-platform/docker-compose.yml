@@ -58,7 +58,7 @@ testmysqldata:
         - /etc/timezone:/etc/timezone:ro
 
 dnsdock:
-    image: tonistiigi/dnsdock:v1.10.0
+    image: tonistiigi/dnsdock:amd64-1.13.1
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - /etc/localtime:/etc/localtime:ro
@@ -68,7 +68,7 @@ dnsdock:
     command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
 
 cadvisor:
-    image: google/cadvisor:0.14.0
+    image: google/cadvisor:v0.23.8
     environment:
         - DB_USER=root
         - DB_PASS=root

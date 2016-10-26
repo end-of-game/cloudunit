@@ -24,6 +24,7 @@ if [ "$1" != "-y" ]; then
     fi
 fi
 
+
 echo -e "\nRemoving containers\n"
 docker rm -v $(docker ps -a | grep "Dead" | awk '{print $1}')
 docker rm -v $(docker ps -q --filter="status=exited")
@@ -40,8 +41,10 @@ docker rm -vf cuplatform_dnsdock_1
 docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
 
-echo -e "\nChanging directory\n"
-cd /home/vagrant/cloudunit/cu-platform
+# delete all volumes
+docker volume rm  $(docker volume ls -q)
+
+docker rm -f $(docker ps -aq --filter "label=origin=cloudunit")
 
 echo -e "\nStarting the platform\n"
 /home/vagrant/cloudunit/cu-platform/start-platform-dev.sh reset
@@ -49,11 +52,5 @@ echo -e "\nStarting the platform\n"
 echo -e "\nChanging directory\n"
 cd /home/vagrant/cloudunit/cu-services
 
-echo -e "\nCurrent directory: `pwd`\n"
-
-echo -e "\nRunning services\n"
-/home/vagrant/cloudunit/cu-services/run-services.sh
-
-
-
+docker run -d --name java cloudunit/java
 

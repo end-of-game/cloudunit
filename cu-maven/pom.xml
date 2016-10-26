@@ -12,10 +12,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<plexus-utils.version>3.0.8</plexus-utils.version>
-		<maven.core.version>3.3.3</maven.core.version>
-		<maven-plugin-annotations.version>3.2</maven-plugin-annotations.version>
+		<maven.core.version>3.3.9</maven.core.version>
+		<maven-plugin-annotations.version>3.4</maven-plugin-annotations.version>
 		<commons-lang.version>2.6</commons-lang.version>
-		<maven-plugin-api.version>3.3.3</maven-plugin-api.version>
+		<maven-plugin-api.version>3.3.9</maven-plugin-api.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.7</java.version>
 		<httpcomponents.version>4.5.1</httpcomponents.version>
@@ -115,15 +115,8 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
+	<name>CloudUnit Maven Plugin</name>
 </project>
 

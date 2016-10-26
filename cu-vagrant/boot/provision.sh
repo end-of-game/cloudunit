@@ -5,8 +5,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
-readonly COMPOSE_VERSION=1.3.3
-#readonly MACHINE_VERSION=v0.6.0
+readonly COMPOSE_VERSION=1.8.0
 
 #==========================================================#
 sudo apt-get update
@@ -17,7 +16,8 @@ source /home/vagrant/.profile
 cp -f cloudunit/cu-vagrant/files/hosts /etc/hosts
 cp -f cloudunit/cu-vagrant/files/environment /etc/environment
 cp -f cloudunit/cu-vagrant/files/.bashrc /home/vagrant/.bashrc
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+sudo apt-get install -y apt-transport-https ca-certificates
+sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 sudo cp -f cloudunit/cu-vagrant/files/sources.list /etc/apt/sources.list
 
 sudo apt-get update
@@ -26,7 +26,6 @@ sudo apt-get install -y apt-transport-https
 sudo apt-get install -y curl
 sudo apt-get install -y vim
 sudo apt-get install -y haveged
-#sudo apt-get install -y golang
 
 #==========================================================#
 
@@ -49,10 +48,10 @@ sudo rm -f \
 #
 sudo apt-get update
 sudo apt-get install -y linux-image-extra-$(uname -r)
-sudo apt-get install -y lxc-docker-1.6.2 1.6.2
+sudo apt-get install -y docker-engine
 sudo apt-get install -y mysql-client
 
-#sudo apt-mark hold lxc-docker
+#sudo apt-mark hold docker-engine
 sudo usermod -aG docker vagrant
 
 # stop docker
@@ -92,5 +91,5 @@ sudo mv docker-compose /usr/local/bin
 #sudo service docker stop
 #sudo service docker start
 
-cd /home/vagrant/cloudunit/cu-services && ./build-services.sh
+cd /home/vagrant/cloudunit/cu-services && ./build-services.sh all
 cd /home/vagrant/cloudunit/cu-platform && su -l vagrant -c "/home/vagrant/cloudunit/cu-platform/reset.sh -y"

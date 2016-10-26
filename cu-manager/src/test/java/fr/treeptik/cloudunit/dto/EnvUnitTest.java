@@ -18,6 +18,7 @@ import java.util.stream.Stream;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EnvUnitTest {
+
     @Test
     public void decode() {
         String output = "HOSTNAME=58f99ebf2f88\n" +
@@ -34,6 +35,29 @@ public class EnvUnitTest {
                 "_=/usr/bin/env\n";
 
         List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(output);
-        Assert.assertEquals("Output should contains 6 CU env", 6, envUnits.size());
+        Assert.assertEquals("Output should contains 12 CU env", 12, envUnits.size());
+    }
+
+    @Test
+    public void decodeEmpty() {
+        String output = "";
+        List<EnvUnit>  envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
+
+        output = "  ";
+        envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
+
+        output = "\n";
+        envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
+
+        output = "\t";
+        envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
+
+        output = null;
+        envUnits = EnvUnitFactory.fromOutput(output);
+        Assert.assertEquals("Output should contains 0 CU env", 0, envUnits.size());
     }
 }

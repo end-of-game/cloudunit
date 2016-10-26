@@ -1,104 +1,164 @@
 # CloudUnit server installation
 
-You are reading the wright guide if you want to setup a CloudUnit server, in order to frequently use it. 
+You are reading the right guide if you want to set up a CloudUnit server, in order to use it frequently. 
+We hope to provide a simple installation following KISS principles.
 
 ## Requirements
 
-* A virtual or baremetal server with at least 8 Go RAM. 32 or 64 will be better !
-* A server with Ubuntu 14.04 LTS with a 3.13 or 3.19 kernel. Ok for 4.x
-* Git installed and a root account
+A virtual or baremetal server with
+* at least 8 GB RAM (32 GB or even 64 GB will be better!)
+* Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (see FAQ if needed)
 
-```No mysql server because it is provided by docker.  If present, you must save your data and remove it. ```
+> No mysql server must be installed because one will be provided by CloudUnit. 
+> If one is already installed on the server, it will create a conflict on port 3306.
+> You must remove it before installing CloudUnit. 
+> Backup your data if necessary.
 
 ## Installation
 
-We hope to provide a simple installation following KISS principles.
-So you just need to run this command as *ROOT* :
+### As `root` 
+
+Run the command below as `root` to create `admincu` user and install Docker.
+The installation script requires a branch to be selected.
+Branch `master` contains the latest stable version, whereas `dev` has the latest features.
 
 ```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/boot.sh | bash
+export BRANCH=master
+curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
+sh bootstrap.sh $BRANCH
 ```
 
-After installation, you need to set a password for *admincu* user account. 
+After installation, you need to set a password for `admincu`.
+Otherwise set up ssh keys for authentication.
 
-## Configuration
-
-### CloudUnit properties.
-
-The default configuration files is `/home/admincu/.docker/application.properties`
-The template is 
+Configure your access URLs by appending following environment variables to `/etc/environment`.
 
 ```
-# cloudunit.max.apps=100
+MYSQL_ROOT_PASSWORD=changeit
+CU_PORTAL_DOMAIN=portal.domain.com
+CU_MANAGER_DOMAIN=manager.domain.com
+CU_GITLAB_DOMAIN=gitlab.domain.com
+CU_JENKINS_DOMAIN=jenkins.domain.com
+CU_KIBANA_DOMAIN=kibana.domain.com
+```
 
-# mail.apiKey=
-# mail.emailFrom=
-# mail.secretKey=
-# mail.smtpHost=smtp.gmail.com
-# mail.socketFactoryPort=587
-# mail.smtpPort=587
+### As `admincu`
 
+Open a new session as `admincu` on the server.
+
+#### Configuration
+
+Create a configuration file at `/home/admincu/.cloudunit/configuration.properties`.
+You may use the following template:
+
+```
+# ################################################################################ #
+#                                                                                  #
+#      >>  FILE TO PUT INTO ${USER.HOME}/.cloudunit/configuration.properties       #
+#                                                                                  #
+# ################################################################################ #
+
+# label for UI
 cloudunit.instance.name=PROD
 
-# database password must be the same in /etc/environment
-# database.hostname=cuplatform_mysql_1.mysql.cloud.unit
-# database.port=3306
-# database.schema=cloudunit
-# database.user=root
-# database.password=changeit
-
+#mail server configuration :
+#admin.email=support.cloudunit@treeptik.fr
+#email.active=true
+#email.host=smtp.gmail.com
+#email.port=587
+#email.protocol=smtp
+#email.username=support.cloudunit@treeptik.fr
+#email.password=xxx
 ```
 
-### Database password 
+Uncomment the properties to enable the email notifications.
 
-You have to change MYSQL root password (*changeit* by default)
-To do it, you have to change the 
-* /home/admincu/.docker/application.properties
+#### Finish the installation
+
+Run the command below as `admincu` to build Docker images.
+
+```
+cd ~/cloudunit/cu-services && ./build-services.sh all
+```
+
+You can check the previous step if you want.
+
+```
+cd ~/cloudunit/cu-services && ./check_build_images.sh
+```
+
+Build the manager for `master` branch.
+
+```
+cd ~/cloudunit/cu-manager/dockerhub && docker build --no-cache --build-arg GIT_BRANCH=master -t cloudunit/manager .
+```
+
+To finish you have to run the platform's (re)init script.
+
+```
+cd ~/cloudunit/cu-compose && ./re-init.sh
+```
+
+# FAQ
+
+## How to install a 4.x kernel with AUFS support
+
+```
+apt-get install linux-image-4.4.0-42-generic
+apt-get install -y linux-image-extra-$(uname -r)
+```
+
+## How to restart the production environment without reseting data
+
+```
+~/cloudunit/cu-compose/restart.sh
+```
+
+## How to reset the production environment 
+
+```
+/home/admincu/cloudunit/cu-compose/re-init.sh
+```
+
+## How to change the MySQL password
+
+You have to change the MySQL root password (`changeit` by default)
+To do so, you have to change the value in the following files
+* /home/admincu/.cloudunit/configuration.properties
 * /etc/profile
 
-Run `/home/admincu/cloudunit/cu-platform/reset-prod.sh -y`
+## How to change the SSL Certificates
 
-## Domain Name and SSL Certificates
-
-In order to customize your Cloudunit installation with your own domain name and SSL certificates, please follow these instructions.
+In order to customize your Cloudunit installation with your own domain name and SSL certificates,
+please follow these instructions.
 
 ### NGINX config files
 
-NGINX is the entrypoint of the Cloudunit PAAS frontend and is provided as docker conatainer.
+NGINX is the entrypoint of the Cloudunit PaaS frontend and is provided as a Docker container.
 
 SSL certificates directory location:
 
 ```
-/home/admincu/cloudunit/cu-production/nginx/DOMAIN_NAME/
+~/cloudunit/cu-compose/nginx/DOMAIN_NAME/
 ```
 
 NGINX global configuration for domain wildcard:
 
 ```
-/home/admincu/cloudunit/cu-production/nginx/nginx.conf
+/home/admincu/cloudunit/cu-compose/nginx/nginx.conf
 ```
 
 NGINX domain configuration for apps (gitlab, jenkins, admin...):
 Please rename the following file with your domain name and customize it.
 
 ```
-/home/admincu/cloudunit/cu-production/nginx/sites-enabled/cloudunit.io.conf
+~/cloudunit/cu-compose/nginx/sites-enabled/cloudunit.conf
 ```
+
 ### SSL Certificates
 
 The number of certificates to list per Nginx server name depends on your SSL Provider.
 Extensions also could be differ from a provider to another.
 
 As an example Globalsign gives, in addition, an intermediate certificate. Some others aggregate and encrypt certificates in PKCS / P7B format. In this case, you have to split the file in multiple standard certificates.
-
-
-# FAQ
-
-## How to reset Environment Production
-
-```
-/home/admincu/cloudunit/cu-platform/reset-prod.sh -y
-```
-
-
 
