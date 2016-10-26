@@ -132,7 +132,7 @@ public class FileControllerTestIT {
         createApplication();
         ResultActions resultActions = listFiles("/opt/cloudunit");
         String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
-        Assert.assertTrue(contentAsString.contains("beats-agents"));
+        Assert.assertTrue(contentAsString.contains("scripts"));
         deleteApplication();
     }
 
