@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -98,6 +100,15 @@ public class MonitoringController {
 	@RequestMapping(value = "/metrics/{serverName}")
 	public List<Metric> findAllByServer(@PathVariable("serverName") String serverName) {
 		return monitoringService.findByServer(serverName);
+	}
+
+	/**
+	 * Return the position into the architecture of the service
+	 * @return
+	 */
+	@RequestMapping("/location")
+	public ResponseEntity<String> getServiceLocation(@Value("${location.service.monitoring}") String location) {
+		return ResponseEntity.ok(location);
 	}
 
 }
