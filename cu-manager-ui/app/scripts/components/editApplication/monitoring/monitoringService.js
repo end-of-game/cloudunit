@@ -35,7 +35,8 @@
       initStats: initStats,
       stopPollStats: stopPollStats,
       chooseQueue: chooseQueue,
-      getUrlMetrics: getUrlMetrics
+      getUrlMetrics: getUrlMetrics,
+      getKibanaLocation: getKibanaLocation
     };
 
 
@@ -300,6 +301,12 @@
         deferred.reject ( reason );
       } );
       return deferred.promise;
+    }
+
+    function getKibanaLocation () {
+      return $http.get ( '/monitoring/location' ).then ( function ( response ) {
+          return angular.copy ( response.data );
+      } );
     }
 
   }
