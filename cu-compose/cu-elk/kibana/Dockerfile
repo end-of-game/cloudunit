@@ -51,6 +51,7 @@ RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends kibana=$KIBANA_VERSION \
 	&& npm install -g elasticdump \
+	&& perl -pi -e 's/fields/stored_fields/' /usr/share/kibana/node/lib/node_modules/elasticdump/elasticdump.js \
 	&& rm -rf /var/lib/apt/lists/* \
 	\
 # ensure the default configuration is useful when using --link
@@ -59,13 +60,12 @@ RUN set -x \
   && sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/' /etc/kibana/kibana.yml \
   && sed -i 's/#logging.quiet: false/logging.quiet: true/' /etc/kibana/kibana.yml
 
-COPY file /opt/cloudunit/file
-
-COPY docker-entrypoint.sh /
-
 WORKDIR /opt/cloudunit/
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY docker-entrypoint.sh .
+COPY kibana-index-tasks.sh .
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["kibana"]
 
 LABEL origin cloudunit-monitoring
