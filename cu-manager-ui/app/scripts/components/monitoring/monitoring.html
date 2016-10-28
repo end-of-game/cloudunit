@@ -1,0 +1,44 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<section id="monitoring" class="clearfix">
+  <header>
+    <div class="page-header">
+      <div class="page-title">
+        <h2 class="title">
+          Monitoring
+        </h2>
+      </div>
+      <div class="alert alert-danger" data-ng-show="monitoring.errorMsg">
+        <button type="button"
+                class="close"
+                ng-click="monitoring.errorMsg = false">
+          <span>&times;</span>
+        </button>
+        <p>{{monitoring.errorMsg}}</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-content">
+      <div class="col-lg-12 ">
+        <iframe src="http://192.168.50.4:5601/app/kibana#/dashboard/Dockbeat-Dasboard-Instant?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Dockbeat-Global-Application-Instant,panelIndex:1,row:1,size_x:7,size_y:7,type:visualization),(col:8,id:Dockbeat-Global-Container-Instant,panelIndex:2,row:3,size_x:5,size_y:5,type:visualization),(col:8,id:Dockbeat-Global-Reccources-Instant,panelIndex:3,row:1,size_x:5,size_y:2,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:'Dockbeat+Dasboard+Instant',uiState:(P-2:(vis:(params:(sort:(columnIndex:!n,direction:!n))))))"></iframe>
+      </div>
+  </div>
+</section>
+
+
+
+

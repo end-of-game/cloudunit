@@ -58,6 +58,7 @@
       'webuiApp.dashboard',
       'webuiApp.editApplication',
       'webuiApp.editVolume',
+      'webuiApp.monitoring',
       'webuiApp.snapshots',
       'webuiApp.mainTimeline',
       'webuiApp.scripting',
