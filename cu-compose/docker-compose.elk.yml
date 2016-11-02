@@ -31,9 +31,6 @@ services:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     depends_on:
       - elasticsearch
-    stdin_open: true
-    tty: true
-    command: bash
 
   kibana:
     build:
