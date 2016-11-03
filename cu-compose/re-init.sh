@@ -29,7 +29,6 @@ case $yno in
                 echo "Agreed"
                 ./configure.sh
                 reset
-                ./start.sh
                 ;;
 
         [nN] | [n|N][O|o] )
