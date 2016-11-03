@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>fr.treeptik</groupId>
 		<artifactId>cloudunit</artifactId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.0</version>
 	</parent>
 	<artifactId>cu-cli</artifactId>
 
