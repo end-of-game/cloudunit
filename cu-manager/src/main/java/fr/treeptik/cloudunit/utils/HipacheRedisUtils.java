@@ -234,7 +234,7 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 			jedis = pool.getResource();
 			String frontend = "frontend:" + portAlias;
 			jedis.lset(frontend, 1, "http://" + serverIP + ":" + port);
-		} catch (JedisConnectionException e) {
+		} catch (Exception e) {
 			logger.error("serverIP="+serverIP+",port="+port+",portAlias="+portAlias, e);
 		} finally {
 			if (jedis != null) {
