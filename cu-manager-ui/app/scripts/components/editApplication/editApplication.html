@@ -109,7 +109,10 @@
               <a class="dropdown-toggle mainLink" dropdown-toggle>Monitoring</a>
               <ul class="dropdown-menu" role="menu">
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
-                  <a id="monitoring-tab" ui-sref="editApplication.monitoringContainers"><span>Containers</span></a>
+                  <a id="monitoring-tab" ui-sref="editApplication.monitoringContainers"><span>CAdvisor</span></a>
+                </li>
+                <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
+                  <a id="kibana-tab" ui-sref="editApplication.monitoringKibana"><span>Kibana</span></a>
                 </li>
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat && editApp.application.deploymentStatus === 'ALREADY_DEPLOYED'">
                   <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="{{ editApp.application.location }}/monitoring">

@@ -15,9 +15,7 @@
 
 source /etc/environment
 
-docker-compose  -f docker-compose.yml \
-                -f docker-compose.elk.yml \
-                up -d
+docker-compose -f docker-compose.elk.yml up -d
 
 
 

@@ -1,0 +1,60 @@
+version: '2'
+services:
+
+  elasticsearch:
+    build:
+      context: ./cu-elk/elasticsearch
+    image: cloudunit/elk-elasticsearch
+    ports:
+      - "9200:9200"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /srv/cu-elk/elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    privileged: true
+    command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
+
+  logstash:
+    build:
+      context: ./cu-elk/logstash
+    image: cloudunit/elk-logstash
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /srv/cu-elk/logstash/conf:/etc/logstash/conf.d
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./cu-elk/logstash/conf.d:/etc/logstash/conf.d
+      - ./cu-elk/logstash/curator:/etc/curator
+    environment:
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build:
+      context: ./cu-elk/kibana
+    image: cloudunit/elk-kibana
+    ports:
+      - "5601:5601"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./cu-elk/kibana/file:/opt/cloudunit/file
+    environment:
+      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+    depends_on:
+      - elasticsearch
+
+  dockbeat-polling:
+    build:
+      context: cu-elk/poller/dockbeat/
+    image: cloudunit/elk-dockbeat
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -e
+    depends_on:
+      - elasticsearch
