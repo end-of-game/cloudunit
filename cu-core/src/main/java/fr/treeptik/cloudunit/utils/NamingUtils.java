@@ -1,6 +1,7 @@
 package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.dto.FileUnit;
+import fr.treeptik.cloudunit.model.Application;
 import org.apache.commons.io.FilenameUtils;
 
 import java.util.function.Function;
@@ -36,4 +37,11 @@ public class NamingUtils {
     public static Function<String, String> getContext =
             s ->  evaluateCtx.test(s) ? "/" : ("/"+ FilenameUtils.getBaseName(s));
 
+    /**
+     * Create the alias name for open port feature
+
+    public static Function<Function<Application, Integer>, String> getAliasForOpenPortFeature =
+
+            a -> "http://" + a.getName() + "-" + a.getUser().getLogin() + "-" + "forward-" + portToOpen.getPort() + a.getDomainName();
+     */
 }

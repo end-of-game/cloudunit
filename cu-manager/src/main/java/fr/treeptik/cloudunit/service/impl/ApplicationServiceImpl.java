@@ -347,6 +347,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 			application.removeServer();
 			applicationDAO.delete(application);
 
+			application.getPortsToOpen().stream().forEach(
+			        p -> p.getApplication()
+            );
+
 			hipacheRedisUtils.removeRedisAppKey(application);
 
 			logger.info("ApplicationService : Application successfully removed ");
