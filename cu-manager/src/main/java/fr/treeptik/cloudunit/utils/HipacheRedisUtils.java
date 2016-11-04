@@ -16,6 +16,7 @@
 package fr.treeptik.cloudunit.utils;
 
 import fr.treeptik.cloudunit.model.Application;
+import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -226,20 +227,15 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 
 	@Override
 	public void updatePortAlias(String serverIP, Integer port, String portAlias) {
-
 		JedisPool pool = null;
 		Jedis jedis = null;
-
 		try {
 			pool = new JedisPool(new JedisPoolConfig(), redisIp, Integer.parseInt(redisPort), 3000);
 			jedis = pool.getResource();
-
 			String frontend = "frontend:" + portAlias;
 			jedis.lset(frontend, 1, "http://" + serverIP + ":" + port);
-
 		} catch (JedisConnectionException e) {
-			logger.error("HipacheRedisUtils Exception", e);
-
+			logger.error("serverIP="+serverIP+",port="+port+",portAlias="+portAlias, e);
 		} finally {
 			if (jedis != null) {
 				pool.destroy();
@@ -257,10 +253,12 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 		try {
 			String frontend = "frontend:" + portAlias;
 			logger.info(frontend);
-			jedis.del(frontend.toLowerCase());
+			Long nbDeleted = jedis.del(frontend.toLowerCase());
+			if (nbDeleted != 1) {
+				logger.error("Error about" + portAlias + " because " + nbDeleted +" keys are deleted");
+			}
 		} catch (JedisConnectionException e) {
-			logger.error("HipacheRedisUtils Exception", e);
-
+			logger.error("portAlias="+portAlias, e);
 		} finally {
 			if (jedis != null) {
 				pool.destroy();
@@ -407,20 +405,17 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 	 */
 	@Override
 	public void removeAlias(String alias) {
-
 		JedisPool pool = null;
 		Jedis jedis = null;
 		try {
 			pool = new JedisPool(new JedisPoolConfig(), redisIp, Integer.parseInt(redisPort), 3000);
 			jedis = pool.getResource();
-			String frontend = "frontend:" + alias.toLowerCase() + suffixCloudUnitIO;
+			String frontend = "frontend:" + alias.toLowerCase();
 			jedis.del(frontend);
-			if (logger.isInfoEnabled()) {
-				logger.info("Suppression dans Redis de [" + frontend + "]");
-			}
+            frontend = "frontend:" + alias.toLowerCase() + suffixCloudUnitIO;
+            jedis.del(frontend);
 		} catch (JedisConnectionException e) {
-			logger.error("HipacheRedisUtils Exception", e);
-
+			logger.error("alias="+alias, e);
 		} finally {
 			if (jedis != null) {
 				pool.destroy();
