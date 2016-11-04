@@ -123,6 +123,11 @@ echo "Building Redis"
 redis
 ;;
 
+'tomcat')
+echo "Building Tomcat"
+tomcat
+;;
+
 'tools')
 echo "Building Tools"
 tools

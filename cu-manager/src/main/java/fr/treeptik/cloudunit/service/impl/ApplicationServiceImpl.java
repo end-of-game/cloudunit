@@ -108,7 +108,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Inject
 	private MessageSource messageSource;
 
-	@Value("${docker.manager.ip:192.168.50.4:2376}")
+	@Value("${docker.manager.ip:192.168.50.4:4243}")
 	private String dockerManagerIp;
 
 	@Value("${suffix.cloudunit.io}")
@@ -341,7 +341,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 				removeAlias(application, alias);
 			}
 
-			Server server = application.getServer();
+			// Remove all ports (web and others...) only for redis
+            // Remove database references are associated to CASCADE.REMOVE
+            removePortsForRedis(application);
+
+            Server server = application.getServer();
 			serverService.remove(server.getName());
 
 			application.removeServer();
@@ -649,12 +653,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 			String alias = null;
 			// add the port alias for http mode only
 			if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-				hipacheRedisUtils.writeNewAlias(
-						(application.getName() + "-" + application.getUser().getLogin() + "-" + "forward-"
-								+ portToOpen.getPort() + application.getSuffixCloudUnitIO()),
-						application, portToOpen.getPort().toString());
-				alias = "http://" + application.getName() + "-" + application.getUser().getLogin() + "-" + "forward-"
-						+ portToOpen.getPort() + application.getDomainName();
+
+                alias = NamingUtils.getAliasForOpenPortFeature(application.getName(), application.getUser().getLogin(),
+                        port, application.getDomainName());
+
+                hipacheRedisUtils.writeNewAlias(alias, application, port.toString());
+
 			} else if ("other".equalsIgnoreCase(portToOpen.getNature())) {
 				alias = application.getServer().getName() + "."
 						+ application.getServer().getImage().getPath().substring(10) + ".cloud.unit";
@@ -670,7 +674,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public void updatePortAlias(PortToOpen portToOpen, Application application) {
 		if ("web".equalsIgnoreCase(portToOpen.getNature())) {
 			hipacheRedisUtils.updatePortAlias(application.getServer().getContainerIP(), portToOpen.getPort(),
-					portToOpen.getAlias().substring(portToOpen.getAlias().lastIndexOf("//") + 2));
+					portToOpen.getAlias());
 		}
 	}
 
@@ -683,7 +687,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 		try {
 			if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-				hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias().substring(7));
+				hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias());
 			}
 			portToOpenDAO.delete(portToOpen);
 			saveInDB(application);
@@ -692,6 +696,23 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 
 	}
+
+    /**
+     * Remove all ports.
+     *
+     * @param application
+     */
+    private void removePortsForRedis(Application application) {
+        application.getPortsToOpen().stream().forEach(
+                p -> {
+                    try {
+                        hipacheRedisUtils.removeServerPortAlias(p.getAlias());
+                    } catch (Exception e) {
+                        logger.error(p.toString(), e);
+                    }
+                }
+        );
+    }
 
 	private boolean checkAliasIfExists(String alias) {
 		if (applicationDAO.findAliasesForAllApps().contains(alias)) {
