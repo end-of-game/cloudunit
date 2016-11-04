@@ -341,6 +341,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 				removeAlias(application, alias);
 			}
 
+			// Remove all ports (web and others...) only for redis
+            // Remove database references are associated to CASCADE.REMOVE
+            removePortsForRedis(application);
+
             Server server = application.getServer();
 			serverService.remove(server.getName());
 
@@ -693,7 +697,24 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	}
 
-    private boolean checkAliasIfExists(String alias) {
+    /**
+     * Remove all ports.
+     *
+     * @param application
+     */
+    private void removePortsForRedis(Application application) {
+        application.getPortsToOpen().stream().forEach(
+                p -> {
+                    try {
+                        hipacheRedisUtils.removeServerPortAlias(p.getAlias());
+                    } catch (Exception e) {
+                        logger.error(p.toString(), e);
+                    }
+                }
+        );
+    }
+
+	private boolean checkAliasIfExists(String alias) {
 		if (applicationDAO.findAliasesForAllApps().contains(alias)) {
 			return true;
 		}
