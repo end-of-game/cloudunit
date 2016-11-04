@@ -76,3 +76,5 @@ CMD ["catalina.sh", "run"]
 LABEL origin application
 LABEL application-type tomcat
 LABEL application-version $TOMCAT_VERSION
+LABEL argos-template tomcat.template
+LABEL argos-output elasticsearch
