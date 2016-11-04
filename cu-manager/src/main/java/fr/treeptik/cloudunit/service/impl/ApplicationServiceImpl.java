@@ -674,7 +674,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public void updatePortAlias(PortToOpen portToOpen, Application application) {
 		if ("web".equalsIgnoreCase(portToOpen.getNature())) {
 			hipacheRedisUtils.updatePortAlias(application.getServer().getContainerIP(), portToOpen.getPort(),
-					portToOpen.getAlias().substring(portToOpen.getAlias().lastIndexOf("//") + 2));
+					portToOpen.getAlias());
 		}
 	}
 
