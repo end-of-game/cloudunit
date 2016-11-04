@@ -99,7 +99,7 @@
           <p>
             {{ports.application.portsToOpen[$index].port}} ::
             <a class="body-2"
-               data-ng-href="{{ports.application.portsToOpen[$index].alias}}"
+               data-ng-href="http://{{ports.application.portsToOpen[$index].alias}}"
                data-ng-if="ports.application.portsToOpen[$index].nature == 'web'"
                target="_blank">
               <!-- TODO : en fonction de http ou external, activer _blank -->

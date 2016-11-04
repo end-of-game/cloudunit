@@ -39,9 +39,8 @@ public class NamingUtils {
 
     /**
      * Create the alias name for open port feature
-
-    public static Function<Function<Application, Integer>, String> getAliasForOpenPortFeature =
-
-            a -> "http://" + a.getName() + "-" + a.getUser().getLogin() + "-" + "forward-" + portToOpen.getPort() + a.getDomainName();
-     */
+    */
+    public final static String getAliasForOpenPortFeature(String applicationName, String userLogin, Integer port, String domainName){
+        return applicationName + "-" + userLogin + "-" + "forward-" + port + domainName;
+    }
 }

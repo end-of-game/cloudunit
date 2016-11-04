@@ -28,7 +28,7 @@
           <a ng-repeat="port in editApp.application.portsToOpen" ng-if="port.quickAccess === true" id="preview-link"
              class="icon-button"
              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' }"
-             data-ng-href="{{ port.alias }}"
+             data-ng-href="http://{{ port.alias }}"
              target="_blank"
              tooltip=""
              data-title="{{ port.alias }}"

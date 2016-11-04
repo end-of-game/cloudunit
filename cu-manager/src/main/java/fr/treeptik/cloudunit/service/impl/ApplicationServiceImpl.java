@@ -108,7 +108,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Inject
 	private MessageSource messageSource;
 
-	@Value("${docker.manager.ip:192.168.50.4:2376}")
+	@Value("${docker.manager.ip:192.168.50.4:4243}")
 	private String dockerManagerIp;
 
 	@Value("${suffix.cloudunit.io}")
@@ -341,15 +341,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 				removeAlias(application, alias);
 			}
 
-			Server server = application.getServer();
+            Server server = application.getServer();
 			serverService.remove(server.getName());
 
 			application.removeServer();
 			applicationDAO.delete(application);
-
-			application.getPortsToOpen().stream().forEach(
-			        p -> p.getApplication()
-            );
 
 			hipacheRedisUtils.removeRedisAppKey(application);
 
@@ -653,12 +649,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 			String alias = null;
 			// add the port alias for http mode only
 			if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-				hipacheRedisUtils.writeNewAlias(
-						(application.getName() + "-" + application.getUser().getLogin() + "-" + "forward-"
-								+ portToOpen.getPort() + application.getSuffixCloudUnitIO()),
-						application, portToOpen.getPort().toString());
-				alias = "http://" + application.getName() + "-" + application.getUser().getLogin() + "-" + "forward-"
-						+ portToOpen.getPort() + application.getDomainName();
+
+                alias = NamingUtils.getAliasForOpenPortFeature(application.getName(), application.getUser().getLogin(),
+                        port, application.getDomainName());
+
+                hipacheRedisUtils.writeNewAlias(alias, application, port.toString());
+
 			} else if ("other".equalsIgnoreCase(portToOpen.getNature())) {
 				alias = application.getServer().getName() + "."
 						+ application.getServer().getImage().getPath().substring(10) + ".cloud.unit";
@@ -687,7 +683,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 		try {
 			if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-				hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias().substring(7));
+				hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias());
 			}
 			portToOpenDAO.delete(portToOpen);
 			saveInDB(application);
@@ -697,7 +693,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	}
 
-	private boolean checkAliasIfExists(String alias) {
+    private boolean checkAliasIfExists(String alias) {
 		if (applicationDAO.findAliasesForAllApps().contains(alias)) {
 			return true;
 		}
