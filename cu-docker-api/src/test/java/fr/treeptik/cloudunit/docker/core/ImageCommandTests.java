@@ -1,5 +1,7 @@
 package fr.treeptik.cloudunit.docker.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.treeptik.cloudunit.docker.builders.ConfigBuilder;
 import fr.treeptik.cloudunit.docker.builders.ContainerBuilder;
 import fr.treeptik.cloudunit.docker.builders.HostConfigBuilder;
@@ -36,17 +38,9 @@ public class ImageCommandTests {
 
     @Before
     public void setup() {
-
-        boolean integration = System.getenv("CLOUDUNIT_JENKINS_CI") != null;
-        if (integration) {
-            DOCKER_HOST = "cloudunit.dev:2376";
-            isTLS = true;
-        } else {
-            DOCKER_HOST = "cloudunit.dev:4243";
-            isTLS = false;
-            isUnixSocketConnection = true;
-            socketPathAsString = "/var/run/docker.sock";
-        }
+        DOCKER_HOST = "cloudunit.dev:4243";
+        isUnixSocketConnection = true;
+        socketPathAsString = "/var/run/docker.sock";
 
         dockerCloudUnitClient = new DockerCloudUnitClient();
         HostConfig hostConfig = HostConfigBuilder.aHostConfig()
@@ -56,10 +50,8 @@ public class ImageCommandTests {
                 .withAttachStdin(Boolean.FALSE)
                 .withAttachStdout(Boolean.TRUE)
                 .withAttachStderr(Boolean.TRUE)
-                .withCmd(Arrays.asList("/bin/bash", "/cloudunit/scripts/start-service.sh", "johndoe", "abc2015",
-                        "192.168.2.116", "172.17.0.221", "aaaa",
-                        "AezohghooNgaegh8ei2jabib2nuj9yoe", "main"))
-                .withImage("busybox")
+                .withCmd(Arrays.asList("/bin/bash"))
+                .withImage("alpine")
                 .withHostConfig(hostConfig)
                 .withExposedPorts(new HashMap<>())
                 .withMemory(0L)
@@ -69,11 +61,11 @@ public class ImageCommandTests {
         try {
             if(isUnixSocketConnection){
                 URI uri = new URI(socketPathAsString);
-                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS, true, uri));
+                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, uri));
             } else {
-                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS));
+               dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST));
             }
-
+            dockerCloudUnitClient.pullImage("latest", "alpine");
             dockerCloudUnitClient.createContainer(container, DOCKER_HOST);
         } catch (DockerJSONException e) {
             Assert.fail();
@@ -88,23 +80,32 @@ public class ImageCommandTests {
                 .withName(CONTAINER_NAME)
                 .build();
         dockerCloudUnitClient.removeContainer(container);
+        Image image = ImageBuilder.anImage().withName("alpine:latest").build();
+        image = dockerCloudUnitClient.findAnImage(image);
+        dockerCloudUnitClient.removeImage(image);
+
     }
 
     @Test
-    public void test00_commitAnImage() throws DockerJSONException {
+    public void test01_commitAnImage() throws DockerJSONException {
         DockerContainer container = ContainerBuilder.aContainer()
                 .withName(CONTAINER_NAME)
                 .build();
         container = dockerCloudUnitClient.findContainer(container, DOCKER_HOST);
         dockerCloudUnitClient.commitImage(container, TAG, container.getConfig().getImage());
+        Image image = ImageBuilder.anImage().withName("alpine:"+TAG).build();
+        image = dockerCloudUnitClient.findAnImage(image);
+        Assert.assertTrue("Alpine found !", image.getId() != null);
+        dockerCloudUnitClient.removeImage(image);
+
     }
 
     @Test
-    public void test00_PullAndFindAnImage() throws DockerJSONException {
+    public void test02_PullAndFindAnImage() throws DockerJSONException, JsonProcessingException {
         dockerCloudUnitClient.pullImage("latest", "busybox");
         Image image = ImageBuilder.anImage().withName("busybox:latest").build();
         image = dockerCloudUnitClient.findAnImage(image);
-        Assert.assertTrue("Busybox found !", image.getRepoTags().get(0).contains("busybox"));
+        Assert.assertTrue("Busybox found !", image.getId() != null);
     }
 
     @Test(expected=ErrorDockerJSONException.class)
@@ -112,9 +113,9 @@ public class ImageCommandTests {
         dockerCloudUnitClient.pullImage("latest", "busybox");
         Image image = ImageBuilder.anImage().withName("busybox:latest").build();
         image = dockerCloudUnitClient.findAnImage(image);
-        Assert.assertTrue("Busybox found !", image.getRepoTags().get(0).contains("busybox"));
+        Assert.assertTrue("Busybox found !", image.getId() != null);
         dockerCloudUnitClient.removeImage(image);
-        image = dockerCloudUnitClient.findAnImage(image);
+        dockerCloudUnitClient.findAnImage(image);
     }
 
 }

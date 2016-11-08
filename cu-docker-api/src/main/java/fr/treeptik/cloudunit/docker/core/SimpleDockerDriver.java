@@ -46,25 +46,16 @@ public class SimpleDockerDriver implements DockerDriver {
 
 	private ObjectMapper objectMapper;
 
-	private boolean isTLSActivated;
-
-	private String certPathDir;
-
 	private String host;
 
-	public SimpleDockerDriver(String host, String certPathDir, boolean isTLSActivated) {
-		client = new JSONClient(certPathDir, isTLSActivated, false, null);
-		this.isTLSActivated = isTLSActivated;
-		this.certPathDir = certPathDir;
+	public SimpleDockerDriver(String host) {
+		client = new JSONClient(false, null);
 		this.host = host;
-		protocol = isTLSActivated ? "https" : "http";
 		objectMapper = new ObjectMapper();
 	}
 
-	public SimpleDockerDriver(String host, String certPathDir, boolean isTLSActivated, boolean isUnixSocket, URI socketUri) {
-		client = new JSONClient(certPathDir, isTLSActivated, isUnixSocket, socketUri);
-		this.isTLSActivated = isTLSActivated;
-		this.certPathDir = certPathDir;
+	public SimpleDockerDriver(boolean isUnixSocket, URI socketUri) {
+		client = new JSONClient(isUnixSocket, socketUri);
 		this.host = "localhost:80";
 		protocol = "unix";
 		objectMapper = new ObjectMapper();
@@ -247,7 +238,8 @@ public class SimpleDockerDriver implements DockerDriver {
 		DockerResponse dockerResponse = null;
 		try {
 			DockerResponse response = findAnImage(
-					ImageBuilder.anImage().withName(container.getConfig().getImage() + ":" + tag).build());
+					ImageBuilder.anImage().withName(container.getConfig().getImage()).build());
+			System.out.println(response.getBody());
 			Image image = objectMapper.readValue(response.getBody(), Image.class);
 			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/commit")
 					.setParameter("container", container.getName()).setParameter("tag", tag)
@@ -391,22 +383,6 @@ public class SimpleDockerDriver implements DockerDriver {
 
 	public void setObjectMapper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
-	}
-
-	public boolean isTLSActivated() {
-		return isTLSActivated;
-	}
-
-	public void setTLSActivated(boolean isTLSActivated) {
-		this.isTLSActivated = isTLSActivated;
-	}
-
-	public String getCertPathDir() {
-		return certPathDir;
-	}
-
-	public void setCertPathDir(String certPathDir) {
-		this.certPathDir = certPathDir;
 	}
 
 	public String getHost() {
