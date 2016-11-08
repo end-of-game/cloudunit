@@ -23,7 +23,7 @@ The installation script requires a branch to be selected.
 Branch `master` contains the latest stable version, whereas `dev` has the latest features.
 
 ```
-export BRANCH=master
+export BRANCH=dev
 curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
 sh bootstrap.sh $BRANCH
 ```
