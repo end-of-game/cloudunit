@@ -24,26 +24,32 @@ if [ "$1" != "-y" ]; then
     fi
 fi
 
-echo -e "\nRemoving containers\n"
-docker rm -v $(docker ps -a | grep "Dead" | awk '{print $1}')
-docker rm -v $(docker ps -q --filter="status=exited")
-docker rm -vf $(docker ps -aq --filter "label=origin=cloudunit")
+echo "***************************"
+echo -e "Removing containers"
+echo "***************************"
+docker kill $(docker ps -aq)
+docker rm -vf $(docker ps -aq)
 
-# delete all NONE images
+echo "***************************"
+echo -e "Removing images "
+echo "***************************"
 docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
-docker rm -f $(docker ps -aq --filter "label=origin=cloudunit")
 
-# clean the ELK data
+echo "***************************"
+echo -e "Deleting FS data volumes"
+echo "***************************"
 sudo rm -rf /srv/cu-elk
 sudo rm -rf /home/admincu/mysql_home/
 
-docker-compose --file docker-compose.dev.yml --file docker-compose.elk.yml kill
-docker-compose --file docker-compose.dev.yml --file docker-compose.elk.yml rm -f
-
-# delete all volumes
+echo "*******************************"
+echo -e "Deleting all docker volumes"
+echo "*******************************"
 docker volume rm $(docker volume ls -q)
 
+echo "*******************************"
+echo -e "Starting..."
+echo "*******************************"
 docker-compose --file docker-compose.dev.yml --file docker-compose.elk.yml up -d
 
 

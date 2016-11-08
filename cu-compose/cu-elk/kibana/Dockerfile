@@ -23,7 +23,7 @@ WORKDIR /opt/cloudunit/
 
 COPY docker-entrypoint.sh /
 COPY kibana-index-tasks.sh .
-
+RUN chmod +x kibana-index-tasks.sh
 LABEL origin cloudunit-monitoring
 LABEL application-type kibana
 LABEL application-version $KIBANA_VERSION

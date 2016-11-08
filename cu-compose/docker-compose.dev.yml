@@ -67,32 +67,6 @@ services:
           - /etc/timezone:/etc/timezone:ro
       network_mode: bridge
 
-  testmysql:
-      container_name: cuplatform_mysql_1
-      image: mysql:5.7.4
-      depends_on:
-           - testmysqldata
-      ports:
-           - "3307:3306"
-      environment:
-          - MYSQL_ROOT_PASSWORD
-          - MYSQL_DATABASE=cloudunit
-      volumes_from:
-           - mysqldata
-      volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
-
-  testmysqldata:
-      container_name: cuplatform_mysqldata_1
-      image: ubuntu:14.04
-      volumes:
-          - /home/admincu/mysql_home:/var/lib/mysql
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
-
   nginx:
       container_name: cuplatform_nginx_1
       build:
@@ -117,6 +91,8 @@ services:
           - DB_USER=root
           - DB_PASS=root
           - DB_NAME=cadvisor
+      ports:
+        - "8081:8080"
       volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:rw
