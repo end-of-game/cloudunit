@@ -40,7 +40,6 @@ echo "***************************"
 echo -e "Deleting FS data volumes"
 echo "***************************"
 sudo rm -rf /srv/cu-elk
-sudo rm -rf /home/admincu/mysql_home/
 sudo rm -rf /home/admincu/testmysql_home/
 
 echo "*******************************"
@@ -52,9 +51,9 @@ echo "*******************************"
 echo -e "Starting..."
 echo "*******************************"
 docker-compose  --file docker-compose.dev.yml \
-                --file docker-compose.elk.yml \
                 --file docker-compose.test.yml \
                 up -d
+
 
 
 
