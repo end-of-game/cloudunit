@@ -21,7 +21,7 @@ public class ErrorHandlerAspect {
     @AfterThrowing(pointcut = "execution(* fr.treeptik.cloudunit.service.*.*(..))",
             throwing= "error")
     public void logAfterThrowing(Throwable error) {
-        if(error.getMessage()
+        if(error.getMessage() != null && error.getMessage()
                 .contains("org.hibernate.exception.JDBCConnectionException: could not extract ResultSet")) {
             publisher.publishEvent(new DatabaseConnectionFailEvent("Database connection has been lost"));
         }
