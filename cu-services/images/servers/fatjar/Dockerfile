@@ -38,8 +38,7 @@ COPY binary/boot.jar $CU_SOFTWARE/boot.jar
 
 ENTRYPOINT ["/tini", "--", "/docker-entrypoint.sh"]
 
-
-
 LABEL origin application
 LABEL application-type fatjar
-LABEL application-version ????
+LABEL application-version undef
+

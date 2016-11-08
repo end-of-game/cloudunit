@@ -32,19 +32,19 @@ docker rm -vf $(docker ps -aq --filter "label=origin=cloudunit")
 # delete all NONE images
 docker rmi $(docker images | grep "<none>" | awk '{print $3}')
 docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
-
 docker rm -f $(docker ps -aq --filter "label=origin=cloudunit")
-
-# delete all volumes
-docker volume rm  $(docker volume ls -q)
-
-docker run -d --name java cloudunit/java
 
 # clean the ELK data
 sudo rm -rf /srv/cu-elk
+sudo rm -rf /home/admincu/mysql_home/
 
 docker-compose --file docker-compose.dev.yml --file docker-compose.elk.yml kill
 docker-compose --file docker-compose.dev.yml --file docker-compose.elk.yml rm -f
+
+# delete all volumes
+docker volume rm $(docker volume ls -q)
+
 docker-compose --file docker-compose.dev.yml --file docker-compose.elk.yml up -d
+
 
 

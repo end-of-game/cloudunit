@@ -63,8 +63,11 @@ sudo mv docker-compose /usr/local/bin
 # Install log rotate
 cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
-# Increase Virtual Memory
-sysctl -w vm.max_map_count=262144
+# Install cron restart
+touch "*/3 * * * * admincu /home/admincu/.cloudunit/cron.sh" >> /etc/crontab
+cp $CU_INSTALL_DIR/files/cron.sh ~/.cloudunit
+
+
 
 
 
