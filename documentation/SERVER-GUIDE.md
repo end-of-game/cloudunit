@@ -87,10 +87,10 @@ You can check the previous step if you want.
 cd ~/cloudunit/cu-services && ./check_build_images.sh
 ```
 
-Build the manager for `master` branch.
+Build the manager for `dev` branch.
 
 ```
-cd ~/cloudunit/cu-manager/dockerhub && docker build --no-cache --build-arg GIT_BRANCH=master -t cloudunit/manager .
+cd ~/cloudunit/cu-manager/dockerhub && docker build --no-cache --build-arg GIT_BRANCH=dev -t cloudunit/manager .
 ```
 
 To finish you have to run the platform's (re)init script.
