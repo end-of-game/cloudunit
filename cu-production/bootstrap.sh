@@ -65,7 +65,10 @@ cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
 # Install cron restart
 touch "*/3 * * * * admincu /home/admincu/.cloudunit/cron.sh" >> /etc/crontab
-cp $CU_INSTALL_DIR/files/cron.sh ~/.cloudunit
+mkdir -p /home/admincu/.cloudunit
+cp $CU_INSTALL_DIR/files/cron.sh /home/admincu/.cloudunit
+chown -R admincu /home/admincu
+
 
 
 
