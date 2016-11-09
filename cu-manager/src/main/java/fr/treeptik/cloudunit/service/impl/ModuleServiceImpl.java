@@ -99,13 +99,10 @@ public class ModuleServiceImpl implements ModuleService {
     @Value("${database.hostname}")
     private String databaseHostname;
 
-    @Value("${certs.dir.path}")
-    private String certsDirPath;
-
     @Value("${docker.endpoint.mode}")
     private String dockerEndpointMode;
 
-    @Value("${docker.manager.ip:192.168.50.4:2376}")
+    @Value("${docker.manager.ip:192.168.50.4:4243}")
     private String dockerManagerIp;
 
     @Inject

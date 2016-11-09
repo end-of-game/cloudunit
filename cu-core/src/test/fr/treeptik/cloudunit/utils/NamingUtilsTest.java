@@ -15,23 +15,44 @@ import static org.junit.Assert.*;
 public class NamingUtilsTest {
 
     @org.junit.Test
-    public void classicRootArchive() throws Exception {
+    public void classicRootArchive1() throws Exception {
         String context = NamingUtils.getContext.apply("ROOT.war");
-        assertThat(context, Matchers.equalToIgnoringCase("/"));
-
-        context = NamingUtils.getContext.apply("ROOT.WAR");
-        assertThat(context, Matchers.equalToIgnoringCase("/"));
-
-        context = NamingUtils.getContext.apply("root.war");
         assertThat(context, Matchers.equalToIgnoringCase("/"));
     }
 
     @org.junit.Test
-    public void classicArchive() throws Exception {
+    public void classicRootArchive2() throws Exception {
+        String context = NamingUtils.getContext.apply("ROOT.WAR");
+        assertThat(context, Matchers.equalToIgnoringCase("/"));
+    }
+
+    @org.junit.Test
+    public void classicRootArchive3() throws Exception {
+        String context = NamingUtils.getContext.apply("root.war");
+        assertThat(context, Matchers.equalToIgnoringCase("/"));
+    }
+
+    @org.junit.Test
+    public void classicArchive1() throws Exception {
         String context = NamingUtils.getContext.apply("helloworld.war");
         assertThat(context, Matchers.equalToIgnoringCase("/helloworld"));
+    }
 
-        context = NamingUtils.getContext.apply("HELLOWORLD.WAR");
+    public void classicArchive2() throws Exception {
+        String context = NamingUtils.getContext.apply("HELLOWORLD.WAR");
         assertThat(context, Matchers.equalToIgnoringCase("/helloworld"));
     }
+
+    @org.junit.Test
+    public void checkProtocolUnix() throws Exception {
+        String context = NamingUtils.protocolSocket.apply(true);
+        assertThat(context, Matchers.equalToIgnoringCase("unix"));
+    }
+
+    @org.junit.Test
+    public void checkProtocolHttp() throws Exception {
+        String context = NamingUtils.protocolSocket.apply(false);
+        assertThat(context, Matchers.equalToIgnoringCase("http"));
+    }
+
 }

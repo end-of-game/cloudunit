@@ -55,8 +55,6 @@ import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
-import fr.treeptik.cloudunit.service.GitlabService;
-import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 
@@ -77,12 +75,6 @@ public class ApplicationController implements Serializable {
 
 	@Inject
 	private AuthentificationUtils authentificationUtils;
-
-	@Inject
-	private GitlabService gitlabService;
-
-	@Inject
-	private JenkinsService jenkinsService;
 
 	@Inject
 	private DockerService dockerService;
