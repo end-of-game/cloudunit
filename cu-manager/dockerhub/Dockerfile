@@ -67,7 +67,7 @@ RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && bower --allow-root install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && grunt build -f 
 
 # Build Maven with profiles
-RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean package -DskipTests -Pdefault -Pproduction
+RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean package -DskipTests -Pdefault
 
 ENV CATALINA_HOME /opt/tomcat
 ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/scripts
