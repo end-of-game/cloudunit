@@ -52,10 +52,7 @@ import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.net.URI;
+import java.net.*;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 
@@ -67,17 +64,18 @@ public class JSONClient  {
 
     private File socketFile;
 
-    public JSONClient() {
-        isUnixSocket = false;
-    }
-
-    public JSONClient(boolean isUnixSocket, URI socketUri) {
+    public JSONClient(boolean isUnixSocket, String location) {
         this.isUnixSocket = isUnixSocket;
-        if(isUnixSocket && socketUri !=null) {
-            final String filename = socketUri.toString()
-                    .replaceAll("^unix:///", "unix://localhost/")
-                    .replaceAll("^unix://localhost", "");
-            this.socketFile = new File(filename);
+        if(isUnixSocket && location !=null) {
+            try {
+                URI uri = new URI(location);
+                final String filename = location.toString()
+                        .replaceAll("^unix:///", "unix://localhost/")
+                        .replaceAll("^unix://localhost", "");
+                this.socketFile = new File(filename);
+            } catch (URISyntaxException e) {
+                logger.error(isUnixSocket + " " + location, e);
+            }
         }
     }
 
@@ -200,14 +198,13 @@ public class JSONClient  {
     }
 
     public CloseableHttpClient buildSecureHttpClient(Boolean httpRequired) throws IOException {
-
         if(isUnixSocket){
             HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(getUnixSocketFactoryRegistry());
             HttpClientBuilder builder = HttpClients.custom();
             builder.setConnectionManager(manager);
             return builder.build();
         }
-            return HttpClients.createDefault();
+        return HttpClients.createDefault();
     }
 
 

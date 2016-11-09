@@ -28,7 +28,6 @@ import java.util.HashMap;
 public class ImageCommandTests {
 
     static String DOCKER_HOST;
-    static Boolean isTLS;
     static Boolean isUnixSocketConnection;
     static String socketPathAsString;
 
@@ -60,17 +59,14 @@ public class ImageCommandTests {
         DockerContainer container = ContainerBuilder.aContainer().withName(CONTAINER_NAME).withConfig(config).build();
         try {
             if(isUnixSocketConnection){
-                URI uri = new URI(socketPathAsString);
-                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, uri));
+                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, socketPathAsString));
             } else {
-               dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST));
+               dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, DOCKER_HOST));
             }
             dockerCloudUnitClient.pullImage("latest", "alpine");
             dockerCloudUnitClient.createContainer(container, DOCKER_HOST);
         } catch (DockerJSONException e) {
             Assert.fail();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
         }
     }
 

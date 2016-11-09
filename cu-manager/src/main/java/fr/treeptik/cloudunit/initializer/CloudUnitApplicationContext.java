@@ -54,6 +54,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -223,13 +224,36 @@ public class CloudUnitApplicationContext
     }
 
     @Bean
-    public DockerCloudUnitClient dockerCloudUnitClient(@Value("${docker.endpoint.mode}") String endpoint,
-                                              @Value("${certs.dir.path}") String certPathDirectory,
-                                              @Value("${docker.manager.ip}") String dockerManagerIp) {
-        boolean isTLS = endpoint.equalsIgnoreCase("https");
+    public DockerCloudUnitClient dockerCloudUnitClient( @Value("${docker.endpoint.mode}") String endpoint,
+                                                        @Value("${docker.socket.ip}") String socketTcpLocation,
+                                                        @Value("${docker.socket.location}") String socketUnixLocation) {
+        boolean useUnixSocket = endpoint.equalsIgnoreCase("socket");
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
-        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(dockerManagerIp, certPathDirectory, isTLS));
+        if (useUnixSocket) {
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, socketUnixLocation));
+        } else {
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, socketTcpLocation));
+        }
         return dockerCloudUnitClient;
+    }
+
+    @Bean
+    public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
+                                     @Value("${docker.socket.ip}") String dockerSocketIp) {
+        com.spotify.docker.client.DockerClient dockerClient = null;
+        boolean useUnixSocket = endpoint.equalsIgnoreCase("socket");
+        try {
+            if (useUnixSocket) {
+                dockerClient = DefaultDockerClient.fromEnv().build();
+            } else {
+                dockerClient = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerSocketIp).build();
+            }
+        } catch (Exception e) {
+            logger.error("cannot instance docker client : ", e);
+        }
+        return dockerClient;
     }
 
     @Bean
@@ -255,28 +279,7 @@ public class CloudUnitApplicationContext
         return properties;
     }
 
-    @Bean
-    public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
-                                     @Value("${certs.dir.path}") String certPathDirectory,
-                                     @Value("${docker.manager.ip}") String dockerManagerIp) {
-        com.spotify.docker.client.DockerClient dockerClient = null;
-        boolean isTLS = endpoint.equalsIgnoreCase("https");
-        try {
-            if (!isTLS) {
-                dockerClient = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerManagerIp).build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certPathDirectory));
-                dockerClient = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
-        } catch (Exception e) {
-            logger.error("cannot instance docker client : ", e);
-        }
-        return dockerClient;
-    }
+
     
     @Bean
     @Profile("integration")

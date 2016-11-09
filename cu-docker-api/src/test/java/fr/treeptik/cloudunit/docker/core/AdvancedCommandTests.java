@@ -32,7 +32,7 @@ public class AdvancedCommandTests {
         DOCKER_HOST = "cloudunit.dev:4243";
 
         dockerCloudUnitClient = new DockerCloudUnitClient();
-        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST));
+        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, DOCKER_HOST));
 
         HostConfig hostConfig = HostConfigBuilder.aHostConfig()
                 .withVolumesFrom(new ArrayList<>())

@@ -36,4 +36,9 @@ public class NamingUtils {
     public static Function<String, String> getContext =
             s ->  evaluateCtx.test(s) ? "/" : ("/"+ FilenameUtils.getBaseName(s));
 
+    /**
+     * To decide if we use unix or http  mode to access docker socket
+     */
+    public static Function<Boolean, String> protocolSocket
+            = isUnix -> isUnix.booleanValue() ? "unix" : "http";
 }
