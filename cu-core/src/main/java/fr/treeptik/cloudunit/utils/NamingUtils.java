@@ -20,7 +20,7 @@ public class NamingUtils {
      * @return
      */
     private static Predicate<String> fileEndsWith(String extension) {
-        return f -> f.toLowerCase().endsWith(extension);
+        return f -> f.toLowerCase().endsWith(extension.toLowerCase());
     }
 
     /**
