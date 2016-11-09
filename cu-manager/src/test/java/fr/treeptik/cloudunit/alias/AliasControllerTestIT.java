@@ -79,6 +79,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         CloudUnitApplicationContext.class,
         MockServletContext.class
 })
+@Ignore
 @ActiveProfiles("integration")
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:sql/beforeAliasTest.sql")
 public class AliasControllerTestIT {

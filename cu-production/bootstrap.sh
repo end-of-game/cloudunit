@@ -63,6 +63,15 @@ sudo mv docker-compose /usr/local/bin
 # Install log rotate
 cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
+# Install cron restart
+touch "*/3 * * * * admincu /home/admincu/.cloudunit/cron.sh" >> /etc/crontab
+mkdir -p /home/admincu/.cloudunit
+cp $CU_INSTALL_DIR/files/cron.sh /home/admincu/.cloudunit
+chown -R admincu /home/admincu
+
+
+
+
 
 
 

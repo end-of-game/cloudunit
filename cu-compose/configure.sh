@@ -2,12 +2,12 @@
 
 source /etc/environment
 
-[ -z "$MYSQL_ROOT_PASSWORD" ] && echo "Need to set MYSQL_ROOT_PASSWORD in /etc/environment" && exit 1;
-[ -z "$CU_PORTAL_DOMAIN" ] && echo "Need to set CU_PORTAL_DOMAIN in /etc/environment" && exit 1;
-[ -z "$CU_MANAGER_DOMAIN" ] && echo "Need to set CU_MANAGER_DOMAIN in /etc/environment" && exit 1;
-[ -z "$CU_GITLAB_DOMAIN" ] && echo "Need to set CU_GITLAB_DOMAIN in /etc/environment" && exit 1;
-[ -z "$CU_JENKINS_DOMAIN" ] && echo "Need to set CU_JENKINS_DOMAIN in /etc/environment" && exit 1;
-[ -z "$CU_KIBANA_DOMAIN" ] && echo "Need to set CU_KIBANA_DOMAIN in /etc/environment" && exit 1;
+[ -z "$MYSQL_ROOT_PASSWORD" ] && echo "Need to set MYSQL_ROOT_PASSWORD in /etc/environment. Exit in error" && exit 1;
+[ -z "$CU_PORTAL_DOMAIN" ] && echo "Need to set CU_PORTAL_DOMAIN in /etc/environment. Exit in error" && exit 1;
+[ -z "$CU_MANAGER_DOMAIN" ] && echo "Need to set CU_MANAGER_DOMAIN in /etc/environment. Exit in error" && exit 1;
+[ -z "$CU_GITLAB_DOMAIN" ] && echo "Need to set CU_GITLAB_DOMAIN in /etc/environment. Exit in error" && exit 1;
+[ -z "$CU_JENKINS_DOMAIN" ] && echo "Need to set CU_JENKINS_DOMAIN in /etc/environment. Exit in error" && exit 1;
+[ -z "$CU_KIBANA_DOMAIN" ] && echo "Need to set CU_KIBANA_DOMAIN in /etc/environment. Exit in error" && exit 1;
 
 echo ""
 echo "CU_PORTAL_DOMAIN="$CU_PORTAL_DOMAIN
