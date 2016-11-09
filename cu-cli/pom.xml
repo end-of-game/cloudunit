@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>fr.treeptik</groupId>
 			<artifactId>cu-core</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.shell</groupId>
@@ -55,7 +55,6 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
