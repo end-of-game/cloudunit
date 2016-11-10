@@ -227,14 +227,13 @@ public class CloudUnitApplicationContext
 
     @Bean
     public DockerCloudUnitClient dockerCloudUnitClient( @Value("${docker.endpoint.mode}") String endpoint,
-                                                        @Value("${docker.socket.ip}") String socketTcpLocation,
-                                                        @Value("${docker.socket.location}") String socketUnixLocation) {
+                                                        @Value("${docker.socket.location}") String socketLocation) {
         boolean useUnixSocket = endpoint.equalsIgnoreCase("socket");
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
         if (useUnixSocket) {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, socketUnixLocation));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, socketLocation));
         } else {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, socketTcpLocation));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, socketLocation));
         }
         return dockerCloudUnitClient;
     }
