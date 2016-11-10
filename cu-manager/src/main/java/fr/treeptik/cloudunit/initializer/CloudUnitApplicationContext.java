@@ -227,21 +227,20 @@ public class CloudUnitApplicationContext
 
     @Bean
     public DockerCloudUnitClient dockerCloudUnitClient( @Value("${docker.endpoint.mode}") String endpoint,
-                                                        @Value("${docker.socket.host}") String dockerSocketHost) {
+                                                        @Value("${docker.socket.location}") String dockerSocketLocation) {
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
         if (useUnixSocket) {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, dockerSocketHost));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, dockerSocketLocation));
         } else {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, dockerSocketHost));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, dockerSocketLocation));
         }
         return dockerCloudUnitClient;
     }
 
     @Bean
     public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
-                                     @Value("${docker.socket.location}") String dockerSocketIp,
-                                     @Value("${docker.socket.host}") String dockerSocketHost) {
+                                     @Value("${docker.socket.location}") String dockerSocketLocation) {
         com.spotify.docker.client.DockerClient dockerClient = null;
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
         try {
@@ -250,7 +249,7 @@ public class CloudUnitApplicationContext
             } else {
                 dockerClient = DefaultDockerClient
                         .builder()
-                        .uri("http://" + dockerSocketIp).build();
+                        .uri("http://" + dockerSocketLocation).build();
             }
         } catch (Exception e) {
             logger.error("cannot instance docker client : ", e);
