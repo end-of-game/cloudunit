@@ -48,5 +48,6 @@ public class NamingUtils {
      * To decide if we use unix or http  mode to access docker socket
      */
     public static Function<Boolean, String> protocolSocket
-            = isUnix -> isUnix.booleanValue() ? "unix" : "http";
+            = isUnix
+                        -> (isUnix !=null && isUnix.booleanValue()) ? "unix" : "http";
 }

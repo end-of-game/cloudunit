@@ -60,11 +60,11 @@ public class JSONClient  {
 
     private Logger logger = LoggerFactory.getLogger(JSONClient.class);
 
-    private boolean isUnixSocket;
+    private Boolean isUnixSocket;
 
     private File socketFile;
 
-    public JSONClient(boolean isUnixSocket, String location) {
+    public JSONClient(Boolean isUnixSocket, String location) {
         this.isUnixSocket = isUnixSocket;
         if(isUnixSocket && location !=null) {
             try {
