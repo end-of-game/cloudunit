@@ -50,6 +50,7 @@ public class SimpleDockerDriver implements DockerDriver {
 	private JSONClient client;
 
 	public SimpleDockerDriver(boolean isUnixSocket, String host) {
+        this.isUnixSocket = isUnixSocket;
 		if (isUnixSocket) {
             client = new JSONClient(isUnixSocket, "/var/run/docker.sock");
         } else {

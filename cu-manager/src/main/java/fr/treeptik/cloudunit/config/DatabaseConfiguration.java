@@ -129,7 +129,7 @@ public class DatabaseConfiguration {
         lcemfb.setJpaVendorAdapter(jpaVendorAdapter());
         lcemfb.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
         Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.generate_statistics", true);
+        jpaProperties.put("hibernate.generate_statistics", false);
         jpaProperties.put("hibernate.show_sql", Boolean.parseBoolean(databaseShowSQL));
         lcemfb.setJpaProperties(jpaProperties);
         lcemfb.setPackagesToScan("fr.treeptik.cloudunit.model");
