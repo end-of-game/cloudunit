@@ -6,4 +6,5 @@ DOCKER_HOST=tcp://cloudunit.serv:4243
 CU_PORTAL_DOMAIN=portal.cloudunit.dev
 CU_GITLAB_DOMAIN=gitlab.cloudunit.dev
 CU_JENKINS_DOMAIN=jenkins.cloudunit.dev
-CU_KIBINA_DOMAIN=kibana.cloudunit.dev
+CU_KIBANA_DOMAIN=kibana.cloudunit.dev
+CU_MANAGER_DOMAIN=localhost:9000
