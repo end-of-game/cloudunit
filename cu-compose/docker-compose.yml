@@ -88,6 +88,7 @@ services:
           - nginx
       ports:
           - "8080:8080"
+      user: "1000:999"
       volumes:
           - /var/run/docker.sock:/var/run/docker.sock
           - /etc/localtime:/etc/localtime:ro

@@ -41,7 +41,7 @@ RUN mkdir -p /cloudunit/java && wget https://github.com/Treeptik/cloudunit/relea
 RUN tar -xvf /tmp/jdk-8u25-linux-x64.tar.gz -C /cloudunit/java
 RUN rm /tmp/jdk-*
 
-RUN groupadd -r cloudunit && useradd -r -g cloudunit cloudunit
+RUN groupadd -r -g 1001 cloudunit && useradd -r -g cloudunit -u 1001 cloudunit
 RUN mkdir -p /home/cloudunit/app
 RUN chown -R cloudunit /home/cloudunit/app
 
@@ -64,10 +64,10 @@ RUN cd /usr/lib/node_modules/npm \
 RUN npm install -g grunt grunt-cli bower
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && npm install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && bower --allow-root install
-RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && grunt build -f 
+RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && grunt build -f
 
 # Build Maven with profiles
-RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean package -DskipTests -Pdefault
+RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault
 
 ENV CATALINA_HOME /opt/tomcat
 ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/scripts
@@ -86,9 +86,16 @@ ADD tomcat.sh $CATALINA_HOME/scripts/tomcat.sh
 RUN chmod +x $CATALINA_HOME/scripts/*.sh
 
 # Create tomcat user
-RUN groupadd -r tomcat && \
-	useradd -g tomcat -d ${CATALINA_HOME} tomcat && \
+ARG user=tomcat
+ARG group=tomcat
+ARG uid=1000
+ARG gid=1000
+
+RUN groupadd -g ${gid} ${group}  && \
+	useradd -u ${uid} -g ${gid} -d ${CATALINA_HOME} tomcat && \
 	chown -R tomcat:tomcat ${CATALINA_HOME}
+
+RUN groupadd -g 999 docker && usermod -G docker -a tomcat
 
 WORKDIR /opt/tomcat
 RUN rm -rf /opt/tomcat/webapps/*

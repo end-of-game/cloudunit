@@ -108,20 +108,8 @@ public class ModuleServiceImpl implements ModuleService {
     @Inject
     private ApplicationEventPublisher applicationEventPublisher;
 
-    private boolean isHttpMode;
-
     @Inject
     private FileService fileService;
-
-    @PostConstruct
-    public void initDockerEndPointMode() {
-        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
-            logger.warn("Docker TLS mode is disabled");
-            setHttpMode(true);
-        } else {
-            setHttpMode(false);
-        }
-    }
 
     @Override
     @Transactional
@@ -456,14 +444,6 @@ public class ModuleServiceImpl implements ModuleService {
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
-    }
-
-    public boolean isHttpMode() {
-        return isHttpMode;
-    }
-
-    public void setHttpMode(boolean isHttpMode) {
-        this.isHttpMode = isHttpMode;
     }
 
     public Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> getModuleEnvironmentVariables(Image image,

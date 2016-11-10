@@ -87,21 +87,6 @@ public class SnapshotServiceImpl implements SnapshotService {
 	@Value("${cloudunit.instance.name}")
 	private String cuInstanceName;
 
-	@Value("${docker.endpoint.mode}")
-	private String dockerEndpointMode;
-
-	private boolean isHttpMode;
-
-	@PostConstruct
-	public void initDockerEndPointMode() {
-		if ("http".equalsIgnoreCase(dockerEndpointMode)) {
-			logger.warn("Docker TLS mode is disabled");
-			setHttpMode(true);
-		} else {
-			setHttpMode(false);
-		}
-	}
-
 	@Override
 	public Snapshot findOne(String tag) {
 		return snapshotDAO.findByTag(tag);
@@ -386,11 +371,4 @@ public class SnapshotServiceImpl implements SnapshotService {
 		return false;
 	}
 
-	public boolean isHttpMode() {
-		return isHttpMode;
-	}
-
-	public void setHttpMode(boolean isHttpMode) {
-		this.isHttpMode = isHttpMode;
-	}
 }
