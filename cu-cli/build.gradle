@@ -1,0 +1,10 @@
+
+description = 'CloudUnit CLI'
+dependencies {
+  compile project(':cu-core')
+    compile group: 'org.springframework.shell', name: 'spring-shell', version:'1.1.0.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web', version:'3.2.14.RELEASE'
+    compile group: 'org.springframework', name: 'spring-webmvc', version:'3.2.14.RELEASE'
+    compile group: 'com.github.lalyos', name: 'jfiglet', version:'0.0.3'
+    compile group: 'log4j', name: 'log4j', version:'1.2.17'
+}
