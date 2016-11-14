@@ -1,4 +1,4 @@
-FROM cloudunit/base-14.04
+    FROM cloudunit/base-14.04
 
 RUN set -ex \
 	&& for key in \
