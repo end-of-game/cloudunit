@@ -42,6 +42,12 @@ CU_JENKINS_DOMAIN=jenkins.domain.com
 CU_KIBANA_DOMAIN=kibana.domain.com
 ```
 
+Only if you want to use a subdomain as `cu01.cloudunit.xxx` for you domain `cloudunit.xxx`, you need to set into `/etc/environment`
+
+```
+CU_SUB_DOMAIN=.cu01
+```
+
 ### As `admincu`
 
 Open a new session as `admincu` on the server.
