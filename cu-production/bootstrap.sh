@@ -67,7 +67,9 @@ cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 touch "*/3 * * * * admincu /home/admincu/.cloudunit/cron.sh" >> /etc/crontab
 mkdir -p /home/admincu/.cloudunit
 cp $CU_INSTALL_DIR/files/cron.sh /home/admincu/.cloudunit
-chown -R admincu /home/admincu
+chmod +x /home/admincu/.cloudunit/cron.sh
+chown -R admincu /home/admincu/
+chown -R admincu /home/admincu/.cloudunit
 
 
 
