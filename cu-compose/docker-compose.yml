@@ -95,7 +95,6 @@ services:
           - /etc/timezone:/etc/timezone:ro
           - /home/admincu/.cloudunit:/root/.cloudunit
       environment:
-          - CU_KVM
           - CU_SUB_DOMAIN
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - MYSQL_ROOT_PASSWORD
