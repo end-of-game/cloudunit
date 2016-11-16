@@ -18,7 +18,6 @@ package fr.treeptik.cloudunit.initializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.config.EmailActiveCondition;
 import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
@@ -54,7 +53,6 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +74,7 @@ import java.util.Properties;
 @PropertySource({"classpath:/application.properties"})
 @PropertySource({"classpath:/maven.properties"})
 public class CloudUnitApplicationContext
-    extends WebMvcConfigurerAdapter {
+        extends WebMvcConfigurerAdapter {
 
     // Allow for longer running Docker commands, esp. database scripts.
     private static final int READ_TIMEOUT_MILLIS = 1 * 60 * 1000;
@@ -103,10 +101,10 @@ public class CloudUnitApplicationContext
     @Bean
     @Profile("vagrant")
     public static PropertySourcesPlaceholderConfigurer properties()
-        throws Exception {
+            throws Exception {
         String file = "application-vagrant.properties";
         PropertySourcesPlaceholderConfigurer pspc =
-            new PropertySourcesPlaceholderConfigurer();
+                new PropertySourcesPlaceholderConfigurer();
         pspc.setLocations(getResources(file));
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
@@ -116,10 +114,10 @@ public class CloudUnitApplicationContext
     @Bean
     @Profile("production")
     public static PropertySourcesPlaceholderConfigurer propertiesForProduction()
-        throws Exception {
+            throws Exception {
         String file = "application-production.properties";
         PropertySourcesPlaceholderConfigurer pspc =
-            new PropertySourcesPlaceholderConfigurer();
+                new PropertySourcesPlaceholderConfigurer();
         pspc.setLocations(getResources(file));
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
@@ -129,7 +127,7 @@ public class CloudUnitApplicationContext
     @Bean
     @Profile("integration")
     public static PropertySourcesPlaceholderConfigurer propertiesForIntegration()
-        throws Exception {
+            throws Exception {
         String file = "application-integration-local.properties";
 
         String envIntegration = System.getenv("CLOUDUNIT_JENKINS_CI");
@@ -138,7 +136,7 @@ public class CloudUnitApplicationContext
         }
 
         PropertySourcesPlaceholderConfigurer pspc =
-            new PropertySourcesPlaceholderConfigurer();
+                new PropertySourcesPlaceholderConfigurer();
         pspc.setLocations(getResources(file));
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
@@ -148,11 +146,11 @@ public class CloudUnitApplicationContext
     @Bean
     @Profile("test")
     public static PropertySourcesPlaceholderConfigurer propertiesForTest()
-        throws Exception {
+            throws Exception {
         PropertySourcesPlaceholderConfigurer pspc =
-            new PropertySourcesPlaceholderConfigurer();
+                new PropertySourcesPlaceholderConfigurer();
         Resource[] resources = new Resource[]
-            {new ClassPathResource("application-test.properties")};
+                {new ClassPathResource("application-test.properties")};
         pspc.setLocations(resources);
         pspc.setIgnoreUnresolvablePlaceholders(true);
         pspc.setLocalOverride(true);
@@ -178,12 +176,12 @@ public class CloudUnitApplicationContext
 
         return viewResolver;
     }
-    
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
     }
-    
+
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
@@ -199,7 +197,7 @@ public class CloudUnitApplicationContext
 
     @Override
     public void configureMessageConverters(
-        List<HttpMessageConverter<?>> converters) {
+            List<HttpMessageConverter<?>> converters) {
         converters.add(jacksonMessageConverter());
         super.configureMessageConverters(converters);
     }
@@ -227,12 +225,34 @@ public class CloudUnitApplicationContext
 
     @Bean
     public DockerCloudUnitClient dockerCloudUnitClient(@Value("${docker.endpoint.mode}") String endpoint,
-                                              @Value("${certs.dir.path}") String certPathDirectory,
-                                              @Value("${docker.manager.ip}") String dockerManagerIp) {
-        boolean isTLS = endpoint.equalsIgnoreCase("https");
+                                                       @Value("${docker.socket.location}") String dockerSocketLocation) {
+        boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
-        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(dockerManagerIp, certPathDirectory, isTLS));
+        if (useUnixSocket) {
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, dockerSocketLocation));
+        } else {
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, dockerSocketLocation));
+        }
         return dockerCloudUnitClient;
+    }
+
+    @Bean
+    public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
+                                     @Value("${docker.socket.location}") String dockerSocketLocation) {
+        com.spotify.docker.client.DockerClient dockerClient = null;
+        boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
+        try {
+            if (useUnixSocket) {
+                dockerClient = DefaultDockerClient.fromEnv().build();
+            } else {
+                dockerClient = DefaultDockerClient
+                        .builder()
+                        .uri("http://" + dockerSocketLocation).build();
+            }
+        } catch (Exception e) {
+            logger.error("cannot instance docker client : ", e);
+        }
+        return dockerClient;
     }
 
     @Bean
@@ -258,43 +278,21 @@ public class CloudUnitApplicationContext
         return properties;
     }
 
-    @Bean
-    public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
-                                     @Value("${certs.dir.path}") String certPathDirectory,
-                                     @Value("${docker.manager.ip}") String dockerManagerIp) {
-        com.spotify.docker.client.DockerClient dockerClient = null;
-        boolean isTLS = endpoint.equalsIgnoreCase("https");
-        try {
-            if (!isTLS) {
-                dockerClient = DefaultDockerClient.builder()
-                        .uri("http://" + dockerManagerIp)
-                        .readTimeoutMillis(READ_TIMEOUT_MILLIS)
-                        .build();
-            } else {
-                final DockerCertificates certs = new DockerCertificates(Paths.get(certPathDirectory));
-                dockerClient = DefaultDockerClient
-                        .builder()
-                        .uri("https://" + dockerManagerIp).dockerCertificates(certs).build();
-            }
-        } catch (Exception e) {
-            logger.error("cannot instance docker client : ", e);
-        }
-        return dockerClient;
-    }
-    
+
     @Bean
     @Profile("integration")
     public ObjectMapper objectMapper() {
-    	return new ObjectMapper();
+        return new ObjectMapper();
     }
 
 
     /**
      * Get Resources to load for CloudUnit Context.
+     *
      * @param profileProperties The filename of the profile properties.
      * @return An array of Resource.
-     *         The array will have at least the profileProperties given by parameter, and eventually a custom
-     *         configuration file if found in the {@code $HOME/.cloudunit/} repertory.
+     * The array will have at least the profileProperties given by parameter, and eventually a custom
+     * configuration file if found in the {@code $HOME/.cloudunit/} repertory.
      */
     private static Resource[] getResources(String profileProperties) {
         final File customFile = new File(System.getProperty("user.home") + "/.cloudunit/configuration.properties");

@@ -17,11 +17,15 @@
 
 package fr.treeptik.cloudunit.utils;
 
+import com.spotify.docker.client.ApacheUnixSocket;
 import fr.treeptik.cloudunit.dto.DockerResponse;
 import fr.treeptik.cloudunit.exception.JSONClientException;
+import jnr.unixsocket.UnixSocketAddress;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -29,40 +33,50 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.scheme.SchemeSocketFactory;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URI;
+import java.net.*;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 
-public class JSONClient {
+public class JSONClient  {
 
     private Logger logger = LoggerFactory.getLogger(JSONClient.class);
 
-    private String certsDirPath;
+    private Boolean isUnixSocket;
 
-    private boolean isTLSActivated;
+    private File socketFile;
 
-    public JSONClient() {
-        this.certsDirPath = "";
-        isTLSActivated = false;
-    }
-
-    public JSONClient(String certsDirPath, boolean isTLSActivated) {
-        this.isTLSActivated = isTLSActivated;
-        this.certsDirPath = certsDirPath;
+    public JSONClient(Boolean isUnixSocket, String location) {
+        this.isUnixSocket = isUnixSocket;
+        if(isUnixSocket && location !=null) {
+            try {
+                URI uri = new URI(location);
+                final String filename = location.toString()
+                        .replaceAll("^unix:///", "unix://localhost/")
+                        .replaceAll("^unix://localhost", "");
+                this.socketFile = new File(filename);
+            } catch (URISyntaxException e) {
+                logger.error(isUnixSocket + " " + location, e);
+            }
+        }
     }
 
     public DockerResponse sendGet(URI uri) throws JSONClientException {
@@ -184,39 +198,44 @@ public class JSONClient {
     }
 
     public CloseableHttpClient buildSecureHttpClient(Boolean httpRequired) throws IOException {
-        if (isTLSActivated && !httpRequired) {
-            org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
-            HttpClientConnectionManager manager = getConnectionFactory(certsDirPath, 10);
+        if(isUnixSocket){
+            HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(getUnixSocketFactoryRegistry());
+            HttpClientBuilder builder = HttpClients.custom();
             builder.setConnectionManager(manager);
             return builder.build();
-        } else {
-            return HttpClients.createDefault();
+        }
+        return HttpClients.createDefault();
+    }
+
+
+    private Registry<ConnectionSocketFactory> getUnixSocketFactoryRegistry() throws IOException {
+        UnixSocketFactory socketFactory = new UnixSocketFactory();
+        return RegistryBuilder.<ConnectionSocketFactory>create().register("unix", socketFactory).build();
+    }
+
+    private class UnixSocketFactory implements ConnectionSocketFactory{
+
+        @Override
+        public Socket createSocket(final HttpContext context) throws IOException {
+            return new ApacheUnixSocket();
+        }
+
+        @Override
+        public Socket connectSocket(final int connectTimeout,
+                                    final Socket socket,
+                                    final HttpHost host,
+                                    final InetSocketAddress remoteAddress,
+                                    final InetSocketAddress localAddress,
+                                    final HttpContext context) throws IOException {
+            try {
+                socket.connect(new UnixSocketAddress(socketFile), connectTimeout);
+            } catch (SocketTimeoutException e) {
+                throw new ConnectTimeoutException(e, null, remoteAddress.getAddress());
+            }
+
+            return socket;
         }
     }
 
-    private static HttpClientConnectionManager getConnectionFactory(String certPath, int maxConnections) throws IOException {
-        PoolingHttpClientConnectionManager ret = new PoolingHttpClientConnectionManager(getSslFactoryRegistry(certPath));
-        ret.setDefaultMaxPerRoute(maxConnections);
-        return ret;
-    }
 
-    private static Registry<ConnectionSocketFactory> getSslFactoryRegistry(String certPath) throws IOException {
-        try {
-            KeyStore keyStore = KeyStoreUtils.createDockerKeyStore(certPath);
-
-            SSLContext sslContext =
-                    SSLContexts.custom()
-                            .useTLS()
-                            .loadKeyMaterial(keyStore, "docker".toCharArray())
-                            .loadTrustMaterial(keyStore)
-                            .build();
-
-            SSLConnectionSocketFactory sslsf =
-
-                    new SSLConnectionSocketFactory(sslContext);
-            return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslsf).build();
-        } catch (GeneralSecurityException e) {
-            throw new IOException(e);
-        }
-    }
 }

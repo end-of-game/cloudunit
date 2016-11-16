@@ -20,7 +20,7 @@ public class NamingUtils {
      * @return
      */
     private static Predicate<String> fileEndsWith(String extension) {
-        return f -> f.toLowerCase().endsWith(extension);
+        return f -> f.toLowerCase().endsWith(extension.toLowerCase());
     }
 
     /**
@@ -43,4 +43,11 @@ public class NamingUtils {
     public final static String getAliasForOpenPortFeature(String applicationName, String userLogin, Integer port, String domainName){
         return applicationName + "-" + userLogin + "-" + "forward-" + port + domainName;
     }
+
+    /**
+     * To decide if we use unix or http  mode to access docker socket
+     */
+    public static Function<Boolean, String> protocolSocket
+            = isUnix
+                        -> (isUnix !=null && isUnix.booleanValue()) ? "unix" : "http";
 }

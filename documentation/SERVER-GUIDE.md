@@ -42,6 +42,12 @@ CU_JENKINS_DOMAIN=jenkins.domain.com
 CU_KIBANA_DOMAIN=kibana.domain.com
 ```
 
+Only if you want to use a subdomain as `cu01.cloudunit.xxx` for you domain `cloudunit.xxx`, you need to set into `/etc/environment`
+
+```
+CU_SUB_DOMAIN=.cu01
+```
+
 ### As `admincu`
 
 Open a new session as `admincu` on the server.
@@ -93,10 +99,17 @@ Build the manager for `dev` branch.
 cd ~/cloudunit/cu-manager/dockerhub && docker build --no-cache --build-arg GIT_BRANCH=dev -t cloudunit/manager .
 ```
 
-To finish you have to run the platform's (re)init script.
+To finish you have to start the platform:
 
 ```
-cd ~/cloudunit/cu-compose && ./re-init.sh
+cd ~/cloudunit/cu-compose && ./start-with-elk.sh
+```
+
+Last step is to enable cron.
+Uncomment please the command into this file:
+```
+/home/admincu/.cloudunit/cron.sh
+sudo service cron restart
 ```
 
 # FAQ
@@ -111,13 +124,15 @@ apt-get install -y linux-image-extra-$(uname -r)
 ## How to restart the production environment without reseting data
 
 ```
-~/cloudunit/cu-compose/restart.sh
+~/cloudunit/cu-compose/start-with-elk.sh
 ```
+You have many start-* files for different scenarii.
 
 ## How to reset the production environment 
 
 ```
 /home/admincu/cloudunit/cu-compose/re-init.sh
+/home/admincu/cloudunit/cu-compose/start-with-elk.sh
 ```
 
 ## How to change the MySQL password

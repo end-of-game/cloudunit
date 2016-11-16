@@ -1,6 +1,5 @@
 version: '2'
 services:
-
   java:
       container_name: java
       image: cloudunit/java
@@ -89,12 +88,13 @@ services:
           - nginx
       ports:
           - "8080:8080"
+      user: "1000:999"
       volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
           - /home/admincu/.cloudunit:/root/.cloudunit
       environment:
-          - CU_KVM
           - CU_SUB_DOMAIN
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - MYSQL_ROOT_PASSWORD
@@ -143,34 +143,3 @@ services:
       volumes:
           - /home/admincu/jenkins_home:/var/jenkins_home
       network_mode: bridge
-
-  selenium-hub:
-      container_name: selenium-hub
-      image: selenium/hub
-      ports:
-          - '4444:4444'
-      network_mode: bridge
-
-  selenium-firefox:
-      container_name: selenium-firefox
-      image: selenium/node-firefox-debug
-      environment:
-          - HUB_PORT_4444_TCP_ADDR=selenium-hub.hub.cloud.unit
-          - HUB_PORT_4444_TCP_PORT=4444
-      ports:
-          - '5900:5900'
-      network_mode: bridge
-      depends_on:
-          - selenium-hub
-
-  selenium-chrome:
-      container_name: selenium-chrome
-      image: selenium/node-chrome-debug
-      environment:
-          - HUB_PORT_4444_TCP_ADDR=selenium-hub.hub.cloud.unit
-          - HUB_PORT_4444_TCP_PORT=4444
-      ports:
-          - '5901:5900'
-      network_mode: bridge
-      depends_on:
-          - selenium-hub

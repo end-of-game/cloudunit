@@ -99,32 +99,17 @@ public class ModuleServiceImpl implements ModuleService {
     @Value("${database.hostname}")
     private String databaseHostname;
 
-    @Value("${certs.dir.path}")
-    private String certsDirPath;
-
     @Value("${docker.endpoint.mode}")
     private String dockerEndpointMode;
 
-    @Value("${docker.manager.ip:192.168.50.4:2376}")
+    @Value("${docker.manager.ip:192.168.50.4:4243}")
     private String dockerManagerIp;
 
     @Inject
     private ApplicationEventPublisher applicationEventPublisher;
 
-    private boolean isHttpMode;
-
     @Inject
     private FileService fileService;
-
-    @PostConstruct
-    public void initDockerEndPointMode() {
-        if ("http".equalsIgnoreCase(dockerEndpointMode)) {
-            logger.warn("Docker TLS mode is disabled");
-            setHttpMode(true);
-        } else {
-            setHttpMode(false);
-        }
-    }
 
     @Override
     @Transactional
@@ -459,14 +444,6 @@ public class ModuleServiceImpl implements ModuleService {
         } catch (Exception e) {
             throw new ServiceException(e.getLocalizedMessage(), e);
         }
-    }
-
-    public boolean isHttpMode() {
-        return isHttpMode;
-    }
-
-    public void setHttpMode(boolean isHttpMode) {
-        this.isHttpMode = isHttpMode;
     }
 
     public Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> getModuleEnvironmentVariables(Image image,

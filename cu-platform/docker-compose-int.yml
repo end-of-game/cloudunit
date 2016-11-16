@@ -58,7 +58,6 @@ tomcat:
         - /home/admincu/.cloudunit:/root/.cloudunit
     environment:
         - CU_SUB_DOMAIN
-        - CU_KVM
         - CATALINA_OPTS="-Dspring.profiles.active=production"
         - MYSQL_ROOT_PASSWORD
 

@@ -40,8 +40,8 @@ echo "***************************"
 echo -e "Deleting FS data volumes"
 echo "***************************"
 sudo rm -rf /srv/cu-elk
-sudo rm -rf /home/admincu/mysql_home/
-sudo rm -rf /home/admincu/testmysql_home/
+sudo rm -rf /home/vagrant/mysql_home/
+sudo rm -rf /home/vagrant/testmysql_home/
 
 echo "*******************************"
 echo -e "Deleting all docker volumes"

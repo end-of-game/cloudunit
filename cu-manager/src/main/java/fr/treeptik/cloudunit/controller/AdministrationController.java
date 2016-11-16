@@ -35,9 +35,7 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Message;
 import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.GitlabService;
 import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.JenkinsService;
 import fr.treeptik.cloudunit.service.MessageService;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
@@ -62,12 +60,6 @@ public class AdministrationController implements Serializable {
 	private MessageService messageService;
 
 	@Inject
-	private JenkinsService jenkinsService;
-
-	@Inject
-	private GitlabService gitlabService;
-
-	@Inject
 	private AuthentificationUtils authentificationUtils;
 
 	/**
@@ -90,8 +82,6 @@ public class AdministrationController implements Serializable {
 		// create a new user
 		user = this.userService.create(user);
 
-		this.gitlabService.createUser(user);
-		this.jenkinsService.addUser(user);
 		this.userService.activationAccount(user);
 
 		return new HttpOk();
@@ -113,8 +103,6 @@ public class AdministrationController implements Serializable {
 		if (login.equalsIgnoreCase(contextLogin)) {
 			throw new CheckException("You can't delete your own account from this interface");
 		}
-		this.gitlabService.deleteUser(login);
-		this.jenkinsService.deleteUser(login);
 		this.userService.remove(user);
 
 		return new HttpOk();
