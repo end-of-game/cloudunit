@@ -35,6 +35,7 @@ server {
     location / {
         proxy_pass http://cuplatform_jenkins_1.jenkins.cloud.unit:8080;
     }
+}
 
 server {
     server_name CU_KIBANA_DOMAIN;
