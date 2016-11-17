@@ -12,7 +12,7 @@
 
     <groupId>fr.treeptik</groupId>
     <artifactId>argos</artifactId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.6</version>
 
     <properties>
         <docker.image.name>argos</docker.image.name>
