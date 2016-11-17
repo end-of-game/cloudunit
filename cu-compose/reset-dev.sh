@@ -61,5 +61,6 @@ docker-compose  --file docker-compose.dev.yml \
                 --file docker-compose.test.yml \
                 up -d
 
+docker network connect cucompose_default cuplatform_kibana_1
 
 

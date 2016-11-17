@@ -21,7 +21,7 @@ hs_err_pid*
 .vagrant
 /monitoring_scripts/cloudunitmonitor.log
 
-cu-platform/cu-platform.iml
+cu-platform-deprecated/cu-platform.iml
 cu-services/cu-services.iml
 cu-monitor/target*
 

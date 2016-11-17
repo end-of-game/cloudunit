@@ -15,6 +15,11 @@
 
 source /etc/environment
 
+if [[ $USER != "admincu" ]]; then
+    echo "This script must be run as admincu"
+    exit 1
+fi
+
 function reset {
     docker rm -vf $(docker ps -aq)
     docker volume rm $(docker volume ls -q)
@@ -32,7 +37,7 @@ case $yno in
                 ;;
 
         [nN] | [n|N][O|o] )
-                echo "Not agreed, you can't re-init the installation";
+                echo "Not agreed, you can't reinit the installation";
                 exit 1
                 ;;
         *) echo "Invalid input"
