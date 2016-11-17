@@ -47,6 +47,7 @@ services:
       - "ELASTICSEARCH_URL=http://elasticsearch:9200"
     depends_on:
       - elasticsearch
+    network_mode: bridge
 
   dockbeat-polling:
     build:
