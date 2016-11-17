@@ -35,6 +35,16 @@ server {
     location / {
         proxy_pass http://cuplatform_jenkins_1.jenkins.cloud.unit:8080;
     }
+
+server {
+    server_name CU_KIBANA_DOMAIN;
+    listen 443 ssl;
+    ssl_certificate /etc/ssl/cloudunit.io/cloudunit.io.crt;
+    ssl_certificate_key /etc/ssl/cloudunit.io/cloudunit.io.pem;
+    location / {
+        proxy_pass http://cuplatform_kibana_1.kibana.cloud.unit:5601;
+    }
 }
+
 
 

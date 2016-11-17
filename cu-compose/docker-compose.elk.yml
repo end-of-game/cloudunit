@@ -33,6 +33,7 @@ services:
       - elasticsearch
 
   kibana:
+    container_name: cuplatform_kibana_1
     build:
       context: ./cu-elk/kibana
     image: cloudunit/elk-kibana
