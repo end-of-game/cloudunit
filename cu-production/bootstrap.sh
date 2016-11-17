@@ -71,6 +71,10 @@ chmod +x /home/admincu/.cloudunit/cron.sh
 chown -R admincu /home/admincu/
 chown -R admincu /home/admincu/.cloudunit
 
+# Add admincu to sudoers group
+cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
+usermod -g sudo $CU_USER
+
 
 
 

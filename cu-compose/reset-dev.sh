@@ -13,6 +13,11 @@
 
 #!/bin/bash
 
+if [[ $USER != "vagrant" ]]; then
+    echo "This script must be run as vagrant user for dev environment"
+    exit 1
+fi
+
 if [ "$1" != "-y" ]; then
     echo "Are you sure to delete them ? [y/n]"
     read PROD_ASW
@@ -56,5 +61,6 @@ docker-compose  --file docker-compose.dev.yml \
                 --file docker-compose.test.yml \
                 up -d
 
+docker network connect cucompose_default cuplatform_kibana_1
 
 

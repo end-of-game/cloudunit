@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>fr.treeptik</groupId>
 		<artifactId>cloudunit</artifactId>
-		<version>1.5</version>
+		<version>1.6</version>
 	</parent>
 	<artifactId>cloudunit-maven</artifactId>
 	<packaging>maven-plugin</packaging>

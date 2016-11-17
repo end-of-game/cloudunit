@@ -33,6 +33,7 @@ services:
       - elasticsearch
 
   kibana:
+    container_name: cuplatform_kibana_1
     build:
       context: ./cu-elk/kibana
     image: cloudunit/elk-kibana
@@ -46,6 +47,7 @@ services:
       - "ELASTICSEARCH_URL=http://elasticsearch:9200"
     depends_on:
       - elasticsearch
+    network_mode: bridge
 
   dockbeat-polling:
     build:

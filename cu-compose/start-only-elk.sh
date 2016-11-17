@@ -17,6 +17,7 @@ source /etc/environment
 
 docker-compose -f docker-compose.elk.yml up -d
 
+docker network connect cucompose_default cuplatform_kibana_1
 
 
 
