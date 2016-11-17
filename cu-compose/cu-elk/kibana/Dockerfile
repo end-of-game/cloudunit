@@ -16,8 +16,8 @@ RUN set -x \
 # ensure the default configuration is useful when using --link
 	&& sed -ri "s!^(\#\s*)?(elasticsearch\.url:).*!\2 'http://elasticsearch:9200'!" /etc/kibana/kibana.yml \
 	&& grep -q 'elasticsearch:9200' /etc/kibana/kibana.yml \
-  && sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/' /etc/kibana/kibana.yml \
-  && sed -i 's/#logging.quiet: false/logging.quiet: true/' /etc/kibana/kibana.yml
+    && sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/' /etc/kibana/kibana.yml \
+    && sed -i 's/#logging.quiet: false/logging.quiet: true/' /etc/kibana/kibana.yml
 
 WORKDIR /opt/cloudunit/
 
