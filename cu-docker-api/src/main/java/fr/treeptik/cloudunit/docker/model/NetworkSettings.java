@@ -70,7 +70,7 @@ public class NetworkSettings implements Serializable {
     private String endpointID;
 
     @JsonProperty("Networks")
-    private Object networks;
+    private Map<String, Object> networks;
 
     public String getBridge() {
         return bridge;
@@ -168,4 +168,11 @@ public class NetworkSettings implements Serializable {
         this.ports = ports;
     }
 
+    public Map<String, Object> getNetworks() {
+        return networks;
+    }
+
+    public void setNetworks(Map<String, Object> networks) {
+        this.networks = networks;
+    }
 }
