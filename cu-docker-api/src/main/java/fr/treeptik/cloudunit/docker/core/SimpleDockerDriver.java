@@ -365,6 +365,16 @@ public class SimpleDockerDriver implements DockerDriver {
 		URI uri = null;
 		String body = new String();
 		DockerResponse dockerResponse = null;
+
+		/*
+		check network name
+		 */
+		DockerResponse response = findNetwork(network);
+		if(response.getStatus() == 200){
+			throw new FatalDockerJSONException("this network already exists");
+		}
+
+
 		try {
 			uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/create").build();
 			body = objectMapper.writeValueAsString(network);
