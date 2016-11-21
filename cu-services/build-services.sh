@@ -52,7 +52,7 @@ function mysql {
 }
 
 function activemq {
-    docker build --rm $CACHE_STRATEGY -t cloudunit/activemq-5.13.2 images/modules/activemq-5.13.2
+    docker build --rm $CACHE_STRATEGY -t cloudunit/activemq-5.13.2 images/modules/activemq-5.13
 }
 
 function rabbitmq {
