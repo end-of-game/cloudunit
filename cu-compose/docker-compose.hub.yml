@@ -70,6 +70,9 @@ services:
   manager:
     image: cloudunit/manager
 
+  mongo-2-6:
+    image: cloudunit/mongo-2-6
+
 
 
 
