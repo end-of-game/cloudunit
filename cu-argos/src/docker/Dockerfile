@@ -6,10 +6,10 @@ MAINTAINER Nicolas MULLER
  
 # Add the application
 ADD /@application.jar@ /
- 
+
 # Show java version
 RUN java -version
- 
+
 # Expose the application port
 EXPOSE @server.port@
  
