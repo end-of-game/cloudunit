@@ -20,6 +20,9 @@ RUN set -ex \
 		gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	done
 
+ARG TOMCAT_VERSION
+ENV TOMCAT_VERSION ${TOMCAT_VERSION:-8.5.5}
+
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*

@@ -26,7 +26,7 @@ images_list_expected+=('cloudunit/base-16.04')
 images_list_expected+=('cloudunit/base-14.04')
 images_list_expected+=('cloudunit/base-12.04')
 images_list_expected+=('cloudunit/elasticsearch-2.4')
-images_list_expected+=('cloudunit/rabbitmq-3.6.')
+images_list_expected+=('cloudunit/rabbitmq-3.6')
 images_list_expected+=('cloudunit/activemq-5.13')
 images_list_expected+=('cloudunit/fatjar')
 
