@@ -15,12 +15,11 @@
 
 source /etc/environment
 
-docker-compose  -f docker-compose.yml \
-                -f docker-compose.hub.yml \
-                -f docker-compose.elk.yml \
-                up -d
+docker-compose  -f docker-compose.hub.yml \
+                pull --ignore-pull-failures
 
-docker network connect cucompose_default cuplatform_kibana_1
+./check_build_images.sh
+
 
 
 
