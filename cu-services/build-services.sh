@@ -56,7 +56,7 @@ function activemq {
 }
 
 function rabbitmq {
-    docker build --rm $CACHE_STRATEGY -t cloudunit/rabbitmq-3.6.5-1 images/modules/rabbitmq-3.6.5-1
+    docker build --rm $CACHE_STRATEGY -t cloudunit/rabbitmq-3.6.5-1 images/modules/rabbitmq-3.6
 }
 
 function elastic {
