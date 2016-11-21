@@ -1,6 +1,18 @@
 version: '2'
 services:
 
+  base-jessie:
+    image: cloudunit/base-jessie
+
+  base-12.04:
+    image: cloudunit/base-12.04
+
+  base-14.04:
+    image: cloudunit/base-14.04
+
+  base-12.04:
+    image: cloudunit/base-16.04
+
   activemq-5.13:
     image: cloudunit/activemq-5.13
 
