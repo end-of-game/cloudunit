@@ -34,8 +34,8 @@ services:
   postgresql-9-5:
     image: cloudunit/postgresql-9-5
 
-  postgis:
-    image: cloudunit/postgis
+  postgis-2-2:
+    image: cloudunit/postgis-2-2
 
   rabbitmq-3.6:
     image: cloudunit/rabbitmq-3.6
