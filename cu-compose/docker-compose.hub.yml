@@ -10,7 +10,7 @@ services:
   base-14.04:
     image: cloudunit/base-14.04
 
-  base-12.04:
+  base-16.04:
     image: cloudunit/base-16.04
 
   activemq-5.13:
