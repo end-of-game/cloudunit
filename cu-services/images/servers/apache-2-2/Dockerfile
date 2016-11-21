@@ -85,7 +85,7 @@ ENV CU_DEFAULT_LOG_FILE access.log
 ENV CU_LOGS STDOUT
 ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
 ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
-ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m"
+ENV JAVA_OPTS " "
 
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
