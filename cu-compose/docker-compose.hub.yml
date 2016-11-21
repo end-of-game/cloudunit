@@ -1,30 +1,73 @@
 version: '2'
 services:
 
-  dockerhub:
+  activemq-5.13:
     image: cloudunit/activemq-5.13
+
+  apache-2-2:
     image: cloudunit/apache-2-2
+
+  elasticsearch-2.4:
     image: cloudunit/elasticsearch-2.4
+
+  fatjar:
     image: cloudunit/fatjar
+
+  java:
     image: cloudunit/java
+
+  mysql-5-5:
     image: cloudunit/mysql-5-5
+
+  mysql-5-6:
     image: cloudunit/mysql-5-6
+
+  mysql-5-7:
     image: cloudunit/mysql-5-7
-    image: cloudunit/mysql-5-5
+
+  postgresql-9-3:
     image: cloudunit/postgresql-9-3
+
+  postgresql-9-4:
     image: cloudunit/postgresql-9-4
+
+  postgresql-9-5:
     image: cloudunit/postgresql-9-5
+
+  postgis:
     image: cloudunit/postgis
+
+  rabbitmq-3.6:
     image: cloudunit/rabbitmq-3.6
+
+  redis-3-2:
     image: cloudunit/redis-3-2
+
+  tomcat-6:
     image: cloudunit/tomcat-6
+
+  tomcat-7:
     image: cloudunit/tomcat-7
+
+  tomcat-8:
     image: cloudunit/tomcat-8
+
+  tomcat-85:
     image: cloudunit/tomcat-85
+
+  tomcat-9:
     image: cloudunit/tomcat-9
+
+  wildly-8:
     image: cloudunit/wildfly-8
+
+  wildly-9:
     image: cloudunit/wildfly-9
+
+  wildly-10:
     image: cloudunit/wildfly-10
+
+  manager:
     image: cloudunit/manager
 
 
