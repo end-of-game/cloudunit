@@ -24,6 +24,7 @@ services:
       image: cloudunit/wildfly-8
       image: cloudunit/wildfly-9
       image: cloudunit/wildfly-10
+      image: cloudunit/manager
 
 
 
