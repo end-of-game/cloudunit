@@ -1,6 +1,0 @@
-init_config:
-
-instances:
-  - apache_status_url: http://172.17.0.85/server-status?auto
-    tags:
-      - instance:apache
