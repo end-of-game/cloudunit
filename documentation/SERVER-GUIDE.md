@@ -23,9 +23,9 @@ The installation script requires a branch to be selected.
 Branch `master` contains the latest stable version, whereas `dev` has the latest features.
 
 ```
-# export BRANCH=master
-# curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
-# sh bootstrap.sh $BRANCH
+export BRANCH=master
+curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
+sh bootstrap.sh $BRANCH
 ```
 
 After installation, you need to set a password for `admincu`.
