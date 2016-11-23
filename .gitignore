@@ -387,3 +387,5 @@ hs_err_pid*
 
 docker-client
 /cu-compose/nginx/sites-enabled/cloudunit.conf
+/cu-argos/target/
+/cu-argos/.gradle/
