@@ -85,9 +85,20 @@ services:
   mongo-2-6:
     image: cloudunit/mongo-2-6
 
+  elk-kibana:
+    image: cloudunit/elk-kibana
 
+  elk-logstash:
+    image: cloudunit/elk-logstash
 
+  elk-elasticsearch:
+    image: cloudunit/elk-elasticsearch
 
+  elk-poller:
+    image: cloudunit/elk-poller
 
+  jmxtrans:
+    image: cloudunit/jmxtrans
 
-
+  jenkins:
+    image: cloudunit/cu-jenkins
