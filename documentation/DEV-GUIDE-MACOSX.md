@@ -28,9 +28,11 @@ You are reading the wright guide, if you want to setup an environment to contrib
 ### Architecture sources
 
 ```
-cloudunit/cu-manager  : Maven project 
-cloudunit/cu-plaform  : Shell scripts for administration 
-cloudunit/cu-services : Docker images
+cloudunit/cu-manager        : Maven project for backend ui
+cloudunit/cu-manager-ui     : Maven project for web ui
+cloudunit/cu-cli            : Maven project for Spring Shell CLI
+cloudunit/cu-compose        : Shell scripts for administration 
+cloudunit/cu-services       : Docker images
 ```
 
 ## Installation 
