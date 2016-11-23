@@ -109,7 +109,7 @@ vagrant provision
 cd $HOME/cloudunit/cu-vagrant 
 vagrant up (if not running)
 vagrant ssh
-cd cloudunit/cu-platform && ./reset.sh -y
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 2 - Start the Java Backend from Linux
@@ -173,7 +173,7 @@ All questions and answers about dev tasks
 
 ```
 vagrant ssh
-cloudunit/cu-platform/reset.sh -y
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
     
 ## How to rebuild images
@@ -182,8 +182,8 @@ Update your sources, build the images and reninit the database :
 
 ```
 vagrant ssh dev
-cloudunit/cu-services/build-services.sh
-cloudunit/cu-platform/reset.sh -y
+cd cloudunit/cu-compose && ./build-services.sh all
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 ## How to run e2e test (selenium & protractor)

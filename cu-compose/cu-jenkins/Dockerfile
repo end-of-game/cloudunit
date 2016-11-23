@@ -26,3 +26,4 @@ RUN rm -rf /var/lib/apt/lists/*
 COPY CloudUnitCLI.jar /tmp/cloudunit-cli.jar
 
 USER jenkins
+

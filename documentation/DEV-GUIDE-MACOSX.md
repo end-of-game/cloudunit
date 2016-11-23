@@ -121,7 +121,7 @@ vagrant plugin install vagrant-vbguest
 cd $HOME/cloudUnit 
 vagrant up
 vagrant ssh 
-cd cloudunit/cu-platform && ./reset.sh -y
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 2 - Run the UI for development (http://0.0.0.0:9000) from Mac
@@ -159,7 +159,7 @@ password: abc2015
 ```
 cd $HOME/cloudUnit
 vagrant ssh dev
-cloudunit/cu-platform/reset.sh -y
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 ## How to run e2e test (selenium & protractor)
