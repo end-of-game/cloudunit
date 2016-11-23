@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <echo message="processing the parametrized dockerfile."/>
+  <filter value="argos-1.0-SNAPSHOT.jar" token="application.jar"/>
+  <filter filtersfile="/Users/nicolas/cloudunit/cu-argos/target/classes/application.properties"/>
+  <copy todir="/Users/nicolas/cloudunit/cu-argos/target/docker-resources" filtering="true">
+    <fileset dir="/Users/nicolas/cloudunit/cu-argos/src/docker"/>
+  </copy>
+</target>
+</project>
