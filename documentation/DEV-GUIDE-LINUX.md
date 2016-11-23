@@ -27,23 +27,14 @@ You are reading the wright guide, if you want to setup an environment to contrib
 ### Architecture sources
 
 ```
-cloudunit/cu-manager  : Maven project 
-cloudunit/cu-plaform  : Shell scripts for administration 
-cloudunit/cu-services : Docker images
+cloudunit/cu-manager        : Maven project for backend ui
+cloudunit/cu-manager-ui     : Maven project for web ui
+cloudunit/cu-cli            : Maven project for Spring Shell CLI
+cloudunit/cu-compose        : Shell scripts for administration 
+cloudunit/cu-services       : Docker images
 ```
 
 ## Installation 
-
-You can use script to autoinstall step 1 to 5 :
-
-For Ubuntu 15.10
-```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-15.10.sh | bash
-```
-For Ubuntu 16.04
-```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-16.04.sh | bash
-```
 
 ### Step 1 - Local DNS
 
