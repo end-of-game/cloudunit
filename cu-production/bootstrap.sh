@@ -15,6 +15,10 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     exit 1
 fi
 
+# INIT
+apt-get update
+apt-get install -y git
+
 [ -z "$1" ] && echo "No branch argument supplied. Exit..." && exit 1
 
 export GIT_BRANCH=$1
@@ -26,9 +30,6 @@ if [ ! "$BRANCH_EXIST" ];
     git ls-remote --heads https://github.com/Treeptik/cloudunit
     exit 1
 fi
-
-# INIT
-apt-get update
 
 # CREATE ADMINCU USER admincu account
 useradd -m -s /bin/bash $CU_USER
