@@ -1,4 +1,4 @@
-    FROM cloudunit/base-14.04
+FROM cloudunit/base-14.04
 
 RUN set -ex \
 	&& for key in \
@@ -19,6 +19,9 @@ RUN set -ex \
 	; do \
 		gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	done
+
+ARG TOMCAT_VERSION
+ENV TOMCAT_VERSION ${TOMCAT_VERSION:-8.0.37}
 
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts

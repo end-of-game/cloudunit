@@ -14,7 +14,6 @@ public class Application {
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) {
-        logger.info("Start");
         try {
             final DefaultDockerClient.Builder builder = DefaultDockerClient.fromEnv();
             DefaultDockerClient dockerClient = builder.build();
@@ -27,5 +26,4 @@ public class Application {
             e.printStackTrace();
         }
     }
-
 }

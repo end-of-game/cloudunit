@@ -10,10 +10,10 @@ if [[ $USER != "$CU_USER" ]]; then
 fi
 
 # BUILD ALL IMAGES
-cd $CU_HOME/cu-service && ./build-services.sh all
+cd $CU_HOME/cu-services && ./build-services.sh all
 
 # INIT THE PLATFORM WITH DOCKER COMPOSE
-cd $CU_HOME/cu-compose && ./re-init.sh -yes
+cd $CU_HOME/cu-compose && ./reset-prod.sh -yes
 
 
 

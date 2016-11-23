@@ -313,7 +313,11 @@ public class ServerServiceImpl implements ServerService {
 			Application application = server.getApplication();
 			cleanServerDependencies(server.getName(), application.getUser(), application.getName());
 
-			dockerService.removeContainer(server.getName(), true);
+			try {
+				dockerService.removeContainer(server.getName(), true);
+			} catch (Exception e) {
+				logger.error("Cannot delete the container ["+serverName+"]. Maybe already destroyed");
+			}
 
 			// Remove server on cloudunit :
 			hipacheRedisUtils.removeServerAddress(application);

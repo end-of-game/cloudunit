@@ -1,9 +1,0 @@
-init_config:
-
-instances:
-  - host: 172.17.0.244
-    port: 6379
-    password: vqg2anft
-    tags:
-      - instance:redis
-    keys:

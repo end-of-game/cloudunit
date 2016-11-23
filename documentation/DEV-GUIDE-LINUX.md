@@ -27,23 +27,14 @@ You are reading the wright guide, if you want to setup an environment to contrib
 ### Architecture sources
 
 ```
-cloudunit/cu-manager  : Maven project 
-cloudunit/cu-plaform  : Shell scripts for administration 
-cloudunit/cu-services : Docker images
+cloudunit/cu-manager        : Maven project for backend ui
+cloudunit/cu-manager-ui     : Maven project for web ui
+cloudunit/cu-cli            : Maven project for Spring Shell CLI
+cloudunit/cu-compose        : Shell scripts for administration 
+cloudunit/cu-services       : Docker images
 ```
 
 ## Installation 
-
-You can use script to autoinstall step 1 to 5 :
-
-For Ubuntu 15.10
-```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-15.10.sh | bash
-```
-For Ubuntu 16.04
-```
-curl -sL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/documentation/scripts/ubuntu-16.04.sh | bash
-```
 
 ### Step 1 - Local DNS
 
@@ -109,7 +100,7 @@ vagrant provision
 cd $HOME/cloudunit/cu-vagrant 
 vagrant up (if not running)
 vagrant ssh
-cd cloudunit/cu-platform && ./reset.sh -y
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 2 - Start the Java Backend from Linux
@@ -173,7 +164,7 @@ All questions and answers about dev tasks
 
 ```
 vagrant ssh
-cloudunit/cu-platform/reset.sh -y
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
     
 ## How to rebuild images
@@ -182,8 +173,8 @@ Update your sources, build the images and reninit the database :
 
 ```
 vagrant ssh dev
-cloudunit/cu-services/build-services.sh
-cloudunit/cu-platform/reset.sh -y
+cd cloudunit/cu-compose && ./build-services.sh all
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 ## How to run e2e test (selenium & protractor)

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
@@ -13,6 +15,10 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     exit 1
 fi
 
+# INIT
+apt-get update
+apt-get install -y git
+
 [ -z "$1" ] && echo "No branch argument supplied. Exit..." && exit 1
 
 export GIT_BRANCH=$1
@@ -24,9 +30,6 @@ if [ ! "$BRANCH_EXIST" ];
     git ls-remote --heads https://github.com/Treeptik/cloudunit
     exit 1
 fi
-
-# INIT
-apt-get update
 
 # CREATE ADMINCU USER admincu account
 useradd -m -s /bin/bash $CU_USER
@@ -64,9 +67,10 @@ sudo mv docker-compose /usr/local/bin
 cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
 # Install cron restart
-touch "*/3 * * * * admincu /home/admincu/.cloudunit/cron.sh" >> /etc/crontab
 mkdir -p /home/admincu/.cloudunit
-cp $CU_INSTALL_DIR/files/cron.sh /home/admincu/.cloudunit
+cp $CU_INSTALL_DIR/files/cron.sh /home/admincu/.cloudunit/cron.sh
+echo "*/3 * * * * admincu /home/admincu/.cloudunit/cron.sh" >> /etc/crontab
+
 chmod +x /home/admincu/.cloudunit/cron.sh
 chown -R admincu /home/admincu/
 chown -R admincu /home/admincu/.cloudunit

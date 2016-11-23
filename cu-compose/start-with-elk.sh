@@ -25,3 +25,4 @@ docker network connect cucompose_default cuplatform_kibana_1
 
 
 
+

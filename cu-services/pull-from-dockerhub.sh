@@ -11,9 +11,16 @@
 # nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
 # For any questions, contact us : contact@treeptik.fr
 
-#!/bin/bash
+#!/usr/bin/env bash
 
-/home/vagrant/cloudunit/cu-platform/_start-platform.sh DEV docker-compose.yml
+source /etc/environment
+
+docker-compose  -f docker-compose.hub.yml \
+                pull --ignore-pull-failures
+
+./check_build_images.sh
+
+
 
 
 

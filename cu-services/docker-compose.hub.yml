@@ -1,0 +1,104 @@
+version: '2'
+services:
+
+  base-jessie:
+    image: cloudunit/base-jessie
+
+  base-12.04:
+    image: cloudunit/base-12.04
+
+  base-14.04:
+    image: cloudunit/base-14.04
+
+  base-16.04:
+    image: cloudunit/base-16.04
+
+  activemq-5.13:
+    image: cloudunit/activemq-5.13
+
+  apache-2-2:
+    image: cloudunit/apache-2-2
+
+  elasticsearch-2.4:
+    image: cloudunit/elasticsearch-2.4
+
+  fatjar:
+    image: cloudunit/fatjar
+
+  java:
+    image: cloudunit/java
+
+  mysql-5-5:
+    image: cloudunit/mysql-5-5
+
+  mysql-5-6:
+    image: cloudunit/mysql-5-6
+
+  mysql-5-7:
+    image: cloudunit/mysql-5-7
+
+  postgresql-9-3:
+    image: cloudunit/postgresql-9-3
+
+  postgresql-9-4:
+    image: cloudunit/postgresql-9-4
+
+  postgresql-9-5:
+    image: cloudunit/postgresql-9-5
+
+  postgis-2-2:
+    image: cloudunit/postgis-2-2
+
+  rabbitmq-3.6:
+    image: cloudunit/rabbitmq-3.6
+
+  redis-3-2:
+    image: cloudunit/redis-3-2
+
+  tomcat-6:
+    image: cloudunit/tomcat-6
+
+  tomcat-7:
+    image: cloudunit/tomcat-7
+
+  tomcat-8:
+    image: cloudunit/tomcat-8
+
+  tomcat-85:
+    image: cloudunit/tomcat-85
+
+  tomcat-9:
+    image: cloudunit/tomcat-9
+
+  wildly-8:
+    image: cloudunit/wildfly-8
+
+  wildly-9:
+    image: cloudunit/wildfly-9
+
+  wildly-10:
+    image: cloudunit/wildfly-10
+
+  manager:
+    image: cloudunit/manager
+
+  mongo-2-6:
+    image: cloudunit/mongo-2-6
+
+  elk-kibana:
+    image: cloudunit/elk-kibana
+
+  elk-logstash:
+    image: cloudunit/elk-logstash
+
+  elk-elasticsearch:
+    image: cloudunit/elk-elasticsearch
+
+  elk-dockbeat:
+    image: cloudunit/elk-dockbeat
+
+  jmxtrans:
+    image: jmxtrans/jmxtrans
+
+  jenkins:
+    image: cloudunit/cu-jenkins

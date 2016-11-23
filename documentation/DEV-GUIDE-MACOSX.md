@@ -28,9 +28,11 @@ You are reading the wright guide, if you want to setup an environment to contrib
 ### Architecture sources
 
 ```
-cloudunit/cu-manager  : Maven project 
-cloudunit/cu-plaform  : Shell scripts for administration 
-cloudunit/cu-services : Docker images
+cloudunit/cu-manager        : Maven project for backend ui
+cloudunit/cu-manager-ui     : Maven project for web ui
+cloudunit/cu-cli            : Maven project for Spring Shell CLI
+cloudunit/cu-compose        : Shell scripts for administration 
+cloudunit/cu-services       : Docker images
 ```
 
 ## Installation 
@@ -121,7 +123,7 @@ vagrant plugin install vagrant-vbguest
 cd $HOME/cloudUnit 
 vagrant up
 vagrant ssh 
-cd cloudunit/cu-platform && ./reset.sh -y
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 2 - Run the UI for development (http://0.0.0.0:9000) from Mac
@@ -159,7 +161,7 @@ password: abc2015
 ```
 cd $HOME/cloudUnit
 vagrant ssh dev
-cloudunit/cu-platform/reset.sh -y
+cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 ## How to run e2e test (selenium & protractor)

@@ -119,7 +119,7 @@ services:
 
   gitlab:
       container_name: cuplatform_gitlab_1
-      image: gitlab/gitlab-ce:8.12.3-ce.0
+      image: gitlab/gitlab-ce:8.13.5-ce.0
       depends_on:
           - nginx
       volumes:
@@ -137,7 +137,9 @@ services:
 
   jenkins:
       container_name: cuplatform_jenkins_1
-      image: jenkinsci/jenkins:2.21
+      build:
+        context: cu-jenkins
+      image: cloudunit/jenkins
       depends_on:
           - nginx
       volumes:

@@ -23,7 +23,7 @@ The installation script requires a branch to be selected.
 Branch `master` contains the latest stable version, whereas `dev` has the latest features.
 
 ```
-export BRANCH=dev
+export BRANCH=master
 curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
 sh bootstrap.sh $BRANCH
 ```
@@ -35,6 +35,7 @@ Configure your access URLs by appending following environment variables to `/etc
 
 ```
 MYSQL_ROOT_PASSWORD=changeit
+CU_DOMAIN=domain.com
 CU_PORTAL_DOMAIN=portal.domain.com
 CU_MANAGER_DOMAIN=manager.domain.com
 CU_GITLAB_DOMAIN=gitlab.domain.com
@@ -54,49 +55,26 @@ Open a new session as `admincu` on the server.
 
 #### Configuration
 
-Create a configuration file at `/home/admincu/.cloudunit/configuration.properties`.
-You may use the following template:
+Run the command below as `admincu` to configure the server
 
 ```
-# ################################################################################ #
-#                                                                                  #
-#      >>  FILE TO PUT INTO ${USER.HOME}/.cloudunit/configuration.properties       #
-#                                                                                  #
-# ################################################################################ #
-
-# label for UI
-cloudunit.instance.name=PROD
-
-#mail server configuration :
-#admin.email=support.cloudunit@treeptik.fr
-#email.active=true
-#email.host=smtp.gmail.com
-#email.port=587
-#email.protocol=smtp
-#email.username=support.cloudunit@treeptik.fr
-#email.password=xxx
+cd ~/cloudunit/cu-compose && ./configure.sh
 ```
-
-Uncomment the properties to enable the email notifications.
 
 #### Finish the installation
 
 Run the command below as `admincu` to build Docker images.
 
+Build the manager for `master` branch.
 ```
 cd ~/cloudunit/cu-services && ./build-services.sh all
-```
-
-You can check the previous step if you want.
-
-```
 cd ~/cloudunit/cu-services && ./check_build_images.sh
+cd ~/cloudunit/cu-manager/dockerhub && docker build --no-cache --build-arg GIT_BRANCH=master -t cloudunit/manager .
 ```
 
-Build the manager for `dev` branch.
-
+Or else pull all images from dockerhub
 ```
-cd ~/cloudunit/cu-manager/dockerhub && docker build --no-cache --build-arg GIT_BRANCH=dev -t cloudunit/manager .
+cd ~/cloudunit/cu-services && ./pull-from-dockerhub.sh
 ```
 
 To finish you have to start the platform:
@@ -108,7 +86,7 @@ cd ~/cloudunit/cu-compose && ./start-with-elk.sh
 Last step is to enable cron.
 Uncomment please the command into this file:
 ```
-/home/admincu/.cloudunit/cron.sh
+~/.cloudunit/cron.sh
 sudo service cron restart
 ```
 
@@ -131,8 +109,8 @@ You have many start-* files for different scenarii.
 ## How to reset the production environment 
 
 ```
-/home/admincu/cloudunit/cu-compose/re-init.sh
-/home/admincu/cloudunit/cu-compose/start-with-elk.sh
+~/cloudunit/cu-compose/reset-prod.sh
+~/cloudunit/cu-compose/start-with-elk.sh
 ```
 
 ## How to change the MySQL password
@@ -160,7 +138,7 @@ SSL certificates directory location:
 NGINX global configuration for domain wildcard:
 
 ```
-/home/admincu/cloudunit/cu-compose/nginx/nginx.conf
+~/cloudunit/cu-compose/nginx/nginx.conf
 ```
 
 NGINX domain configuration for apps (gitlab, jenkins, admin...):

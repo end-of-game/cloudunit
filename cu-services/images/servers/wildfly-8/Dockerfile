@@ -1,9 +1,14 @@
 FROM cloudunit/base-14.04
 
-# Set the WILDFLY_VERSION env variable
 ARG WILDFLY_VERSION
-ENV WILDFLY_TGZ_URL https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz
+ENV WILDFLY_VERSION ${WILDFLY_VERSION:-8.2.1.Final}
+
 ARG WILDFLY_SHA1
+ENV WILDFLY_SHA1 ${WILDFLY_SHA1:-77161d682005f26acb9d2df5548c8623ba3a4905}
+
+# Set the WILDFLY_VERSION env variable
+ENV WILDFLY_TGZ_URL https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-$WILDFLY_VERSION.tar.gz
+
 ENV JBOSS_HOME /opt/cloudunit/wildfly
 
 ## CLOUDUNIT :: BEGINNING
