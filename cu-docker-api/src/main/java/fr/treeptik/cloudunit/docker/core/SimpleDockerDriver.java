@@ -20,11 +20,12 @@ package fr.treeptik.cloudunit.docker.core;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.function.Function;
+import java.util.List;
 
-import fr.treeptik.cloudunit.utils.NamingUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.input.BOMInputStream;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
+import fr.treeptik.cloudunit.docker.model.Network;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,329 +43,484 @@ import fr.treeptik.cloudunit.utils.JSONClient;
 
 public class SimpleDockerDriver implements DockerDriver {
 
-	private static Logger logger = LoggerFactory.getLogger(SimpleDockerDriver.class);
+    private static Logger logger = LoggerFactory.getLogger(SimpleDockerDriver.class);
 
-	private String host;
-	private Boolean isUnixSocket;
-	private ObjectMapper objectMapper = new ObjectMapper();
-	private JSONClient client;
+    private JSONClient client;
 
-	public SimpleDockerDriver(Boolean isUnixSocket, String host) {
-        this.isUnixSocket = isUnixSocket;
-		if (isUnixSocket) {
-            client = new JSONClient(isUnixSocket, "/var/run/docker.sock");
-        } else {
-            client = new JSONClient(isUnixSocket, host);
-        }
+    private String protocol;
+
+    private ObjectMapper objectMapper;
+
+    private boolean isTLSActivated;
+
+    private String certPathDir;
+
+    private String host;
+
+    public SimpleDockerDriver(String host, String certPathDir, boolean isTLSActivated) {
+        client = new JSONClient(certPathDir, isTLSActivated);
+        this.isTLSActivated = isTLSActivated;
+        this.certPathDir = certPathDir;
         this.host = host;
-		objectMapper = new ObjectMapper();
-	}
+        protocol = isTLSActivated ? "https" : "http";
+        objectMapper = new ObjectMapper();
+    }
 
-	@Override
-	public DockerResponse find(DockerContainer container) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host)
-					.setPath("/containers/" + container.getName() + "/json").build();
-			dockerResponse = client.sendGet(uri);
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for find a container request due to " + e.getMessage(), e);
-		}
+    @Override
+    public DockerResponse find(DockerContainer container) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host)
+                    .setPath("/containers/" + container.getName() + "/json").build();
+            dockerResponse = client.sendGet(uri);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for find a container request due to " + e.getMessage(), e);
+        }
 
-		return dockerResponse;
-	}
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse findAll() throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/containers/json").build();
-			dockerResponse = client.sendGet(uri);
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for find all containers request due to " + e.getMessage(), e);
-		}
+    @Override
+    public DockerResponse findAll() throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/containers/json").build();
+            dockerResponse = client.sendGet(uri);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for find all containers request due to " + e.getMessage(), e);
+        }
 
-		return dockerResponse;
-	}
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse create(DockerContainer container) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/containers/create")
-					.setParameter("name", container.getName()).build();
-			body = objectMapper.writeValueAsString(container.getConfig());
-			dockerResponse = client.sendPost(uri, body, "application/json");
-		} catch (URISyntaxException | IOException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for create container request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse create(DockerContainer container) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/containers/create")
+                    .setParameter("name", container.getName()).build();
+            body = objectMapper.writeValueAsString(container.getConfig());
+            dockerResponse = client.sendPost(uri, body, "application/json");
+        } catch (URISyntaxException | IOException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for create container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse start(DockerContainer container) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host)
-					.setPath("/containers/" + container.getName() + "/start").build();
-			dockerResponse = client.sendPost(uri, body, "application/json");
-		} catch (Exception e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for start container request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse start(DockerContainer container) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host)
+                    .setPath("/containers/" + container.getName() + "/start").build();
+            dockerResponse = client.sendPost(uri, body, "application/json");
+        } catch (Exception e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for start container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse stop(DockerContainer container) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host)
-					.setPath("/containers/" + container.getName() + "/stop").setParameter("t", "10").build();
-			dockerResponse = client.sendPost(uri, body, "application/json");
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for stop container request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse stop(DockerContainer container) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host)
+                    .setPath("/containers/" + container.getName() + "/stop").setParameter("t", "10").build();
+            dockerResponse = client.sendPost(uri, body, "application/json");
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for stop container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse kill(DockerContainer container) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host)
-					.setPath("/containers/" + container.getName() + "/kill").build();
-			dockerResponse = client.sendPost(uri, "", "application/json");
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for kill container request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse kill(DockerContainer container) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host)
+                    .setPath("/containers/" + container.getName() + "/kill").build();
+            dockerResponse = client.sendPost(uri, "", "application/json");
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for kill container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse remove(DockerContainer container) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/containers/" + container.getName())
-					.setParameter("v", "1").setParameter("force", "true").build();
-			dockerResponse = client.sendDelete(uri, false);
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException("An error has occurred for remove request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse remove(DockerContainer container) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/containers/" + container.getName())
+                    .setParameter("v", "1").setParameter("force", "true").build();
+            dockerResponse = client.sendDelete(uri, false);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException("An error has occurred for remove request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse findAnImage(Image image) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/images/" + image.getName() + "/json")
-					.build();
-			dockerResponse = client.sendGet(uri);
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for find a container request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse findAnImage(Image image) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/images/" + image.getName() + "/json")
+                    .build();
+            dockerResponse = client.sendGet(uri);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for find a container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse commit(DockerContainer container, String tag, String repository)
-			throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			DockerResponse response = findAnImage(
-					ImageBuilder.anImage().withName(container.getConfig().getImage()).build());
-			System.out.println(response.getBody());
-			Image image = objectMapper.readValue(response.getBody(), Image.class);
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/commit")
-					.setParameter("container", container.getName()).setParameter("tag", tag)
-					.setParameter("repo", repository).build();
-			dockerResponse = client.sendPost(uri, "", "application/json");
-			if (dockerResponse.getStatus() == 201 && image != null) {
-				removeImage(image);
-			}
-		} catch (Exception e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException("An error has occurred for commit request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse commit(DockerContainer container, String tag, String repository)
+            throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            DockerResponse response = findAnImage(
+                    ImageBuilder.anImage().withName(container.getConfig().getImage() + ":" + tag).build());
+            Image image = objectMapper.readValue(response.getBody(), Image.class);
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/commit")
+                    .setParameter("container", container.getName()).setParameter("tag", tag)
+                    .setParameter("repo", repository).build();
+            dockerResponse = client.sendPost(uri, "", "application/json");
+            if (dockerResponse.getStatus() == 201 && image != null) {
+                removeImage(image);
+            }
+        } catch (Exception e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException("An error has occurred for commit request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse pull(String tag, String repository) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/images/create")
-					.setParameter("fromImage", repository).setParameter("tag", tag.toLowerCase()).build();
-			dockerResponse = client.sendPostToRegistryHost(uri, "", "application/json");
-			dockerResponse = client.sendPost(uri, "", "application/json");
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException("An error has occurred for pull request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse pull(String tag, String repository) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/images/create")
+                    .setParameter("fromImage", repository).setParameter("tag", tag.toLowerCase()).build();
+            dockerResponse = client.sendPostToRegistryHost(uri, "", "application/json");
+            dockerResponse = client.sendPost(uri, "", "application/json");
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException("An error has occurred for pull request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse removeImage(Image image) throws FatalDockerJSONException {
+    @Override
+    public DockerResponse removeImage(Image image) throws FatalDockerJSONException {
 
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/images/" + image.getId()).build();
-			dockerResponse = client.sendDelete(uri, false);
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException("An error has occurred for removeImage request due to " + e.getMessage(),
-					e);
-		}
-		return dockerResponse;
-	}
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/images/" + image.getId()).build();
+            dockerResponse = client.sendDelete(uri, false);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException("An error has occurred for removeImage request due to " + e.getMessage(),
+                    e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse createVolume(Volume volume) throws FatalDockerJSONException {
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/volumes/create").build();
-			body = objectMapper.writeValueAsString(volume);
-			dockerResponse = client.sendPost(uri, body, "application/json");
-		} catch (URISyntaxException | IOException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for create container request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse createVolume(Volume volume) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/create").build();
+            body = objectMapper.writeValueAsString(volume);
+            dockerResponse = client.sendPost(uri, body, "application/json");
+        } catch (URISyntaxException | IOException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for create container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse findVolume(Volume volume) throws FatalDockerJSONException {
-		URI uri = null;
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/volumes/" + volume.getName()).build();
-			dockerResponse = client.sendGet(uri);
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException(
-					"An error has occurred for create container request due to " + e.getMessage(), e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse findVolume(Volume volume) throws FatalDockerJSONException {
+        URI uri = null;
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/" + volume.getName()).build();
+            dockerResponse = client.sendGet(uri);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for create container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
 
-	@Override
-	public DockerResponse removeVolume(Volume volume) throws FatalDockerJSONException {
+    @Override
+    public DockerResponse removeVolume(Volume volume) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/" + volume.getName()).build();
+            dockerResponse = client.sendDelete(uri, false);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException("An error has occurred for removeImage request due to " + e.getMessage(),
+                    e);
+        }
+        return dockerResponse;
+    }
 
-		URI uri = null;
-		String body = new String();
-		DockerResponse dockerResponse = null;
-		try {
-			uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/volumes/" + volume.getName()).build();
-			dockerResponse = client.sendDelete(uri, false);
-		} catch (URISyntaxException | JSONClientException e) {
-			StringBuilder contextError = new StringBuilder(256);
-			contextError.append("uri : " + uri + " - ");
-			contextError.append("request body : " + body + " - ");
-			contextError.append("server response : " + dockerResponse);
-			logger.error(contextError.toString());
-			throw new FatalDockerJSONException("An error has occurred for removeImage request due to " + e.getMessage(),
-					e);
-		}
-		return dockerResponse;
-	}
+    @Override
+    public DockerResponse createNetwork(Network network) throws FatalDockerJSONException, IOException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
 
-	public JSONClient getClient() {
-		return client;
-	}
-	public void setClient(JSONClient client) {
-		this.client = client;
-	}
+		/*
+        check network name
+		 */
+        DockerResponse response = listNetworks();
 
+        List<Network> networks = objectMapper.readValue(response.getBody(), new TypeReference<List<Network>>() {
+        });
+        if (networks.stream()
+                .filter(n -> n.getName().equalsIgnoreCase(network.getName()))
+                .findAny()
+                .isPresent()) {
+            throw new RuntimeException("this network already exists");
+        }
+
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/create").build();
+            body = objectMapper.writeValueAsString(network);
+            dockerResponse = client.sendPost(uri, body, "application/json");
+        } catch (URISyntaxException | IOException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for create container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
+
+    @Override
+    public DockerResponse findNetwork(Network network) throws FatalDockerJSONException {
+        URI uri = null;
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getId()).build();
+            dockerResponse = client.sendGet(uri);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for create container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
+
+    @Override
+    public DockerResponse listNetworks() throws FatalDockerJSONException {
+        URI uri = null;
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks").build();
+            dockerResponse = client.sendGet(uri);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for create container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
+
+    @Override
+    public DockerResponse connectToNetwork(Network network, String containerId) throws FatalDockerJSONException {
+        URI uri = null;
+        DockerResponse dockerResponse = null;
+        String body = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getId() + "/connect").build();
+            body = "{ \"Container\":\"" + containerId + "\" }";
+            dockerResponse = client.sendPost(uri, body, "application/json");
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException(
+                    "An error has occurred for create container request due to " + e.getMessage(), e);
+        }
+        return dockerResponse;
+    }
+
+    @Override
+    public DockerResponse removeNetwork(Network network) throws FatalDockerJSONException {
+        URI uri = null;
+        String body = new String();
+        DockerResponse dockerResponse = null;
+        try {
+            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getId()).build();
+            dockerResponse = client.sendDelete(uri, false);
+        } catch (URISyntaxException | JSONClientException e) {
+            StringBuilder contextError = new StringBuilder(256);
+            contextError.append("uri : " + uri + " - ");
+            contextError.append("request body : " + body + " - ");
+            contextError.append("server response : " + dockerResponse);
+            logger.error(contextError.toString());
+            throw new FatalDockerJSONException("An error has occurred for removeImage request due to " + e.getMessage(),
+                    e);
+        }
+        return dockerResponse;
+    }
+
+    public JSONClient getClient() {
+        return client;
+    }
+
+    public void setClient(JSONClient client) {
+        this.client = client;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    public boolean isTLSActivated() {
+        return isTLSActivated;
+    }
+
+    public void setTLSActivated(boolean isTLSActivated) {
+        this.isTLSActivated = isTLSActivated;
+    }
+
+    public String getCertPathDir() {
+        return certPathDir;
+    }
+
+    public void setCertPathDir(String certPathDir) {
+        this.certPathDir = certPathDir;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 }
