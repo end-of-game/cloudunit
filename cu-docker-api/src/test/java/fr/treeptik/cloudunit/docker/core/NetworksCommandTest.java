@@ -28,18 +28,9 @@ public class NetworksCommandTest {
 
     @BeforeClass
     public static void setupClass() {
-
-        boolean integration = System.getenv("CLOUDUNIT_JENKINS_CI") != null;
-        if (integration) {
-            DOCKER_HOST = "cloudunit.dev:2376";
-            isTLS = true;
-        } else {
-            DOCKER_HOST = "cloudunit.dev:4243";
-            isTLS = false;
-        }
-
+        DOCKER_HOST = "cloudunit.dev:4243";
         dockerCloudUnitClient = new DockerCloudUnitClient();
-        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(DOCKER_HOST, "../cu-vagrant/certificats", isTLS));
+        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, DOCKER_HOST));
     }
 
     @Test

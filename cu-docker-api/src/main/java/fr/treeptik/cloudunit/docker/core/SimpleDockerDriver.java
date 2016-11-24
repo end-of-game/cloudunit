@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import fr.treeptik.cloudunit.docker.model.Network;
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,23 +47,18 @@ public class SimpleDockerDriver implements DockerDriver {
     private static Logger logger = LoggerFactory.getLogger(SimpleDockerDriver.class);
 
     private JSONClient client;
-
-    private String protocol;
-
     private ObjectMapper objectMapper;
-
-    private boolean isTLSActivated;
-
-    private String certPathDir;
-
+    private Boolean isUnixSocket;
     private String host;
 
-    public SimpleDockerDriver(String host, String certPathDir, boolean isTLSActivated) {
-        client = new JSONClient(certPathDir, isTLSActivated);
-        this.isTLSActivated = isTLSActivated;
-        this.certPathDir = certPathDir;
+    public SimpleDockerDriver(Boolean isUnixSocket, String host) {
+        this.isUnixSocket = isUnixSocket;
+        if (isUnixSocket) {
+            client = new JSONClient(isUnixSocket, "/var/run/docker.sock");
+        } else {
+            client = new JSONClient(isUnixSocket, host);
+        }
         this.host = host;
-        protocol = isTLSActivated ? "https" : "http";
         objectMapper = new ObjectMapper();
     }
 
@@ -72,7 +68,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host)
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host)
                     .setPath("/containers/" + container.getName() + "/json").build();
             dockerResponse = client.sendGet(uri);
         } catch (URISyntaxException | JSONClientException e) {
@@ -94,7 +90,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/containers/json").build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/containers/json").build();
             dockerResponse = client.sendGet(uri);
         } catch (URISyntaxException | JSONClientException e) {
             StringBuilder contextError = new StringBuilder(256);
@@ -115,7 +111,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/containers/create")
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/containers/create")
                     .setParameter("name", container.getName()).build();
             body = objectMapper.writeValueAsString(container.getConfig());
             dockerResponse = client.sendPost(uri, body, "application/json");
@@ -137,7 +133,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host)
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host)
                     .setPath("/containers/" + container.getName() + "/start").build();
             dockerResponse = client.sendPost(uri, body, "application/json");
         } catch (Exception e) {
@@ -158,7 +154,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host)
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host)
                     .setPath("/containers/" + container.getName() + "/stop").setParameter("t", "10").build();
             dockerResponse = client.sendPost(uri, body, "application/json");
         } catch (URISyntaxException | JSONClientException e) {
@@ -179,7 +175,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host)
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host)
                     .setPath("/containers/" + container.getName() + "/kill").build();
             dockerResponse = client.sendPost(uri, "", "application/json");
         } catch (URISyntaxException | JSONClientException e) {
@@ -200,7 +196,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/containers/" + container.getName())
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/containers/" + container.getName())
                     .setParameter("v", "1").setParameter("force", "true").build();
             dockerResponse = client.sendDelete(uri, false);
         } catch (URISyntaxException | JSONClientException e) {
@@ -220,7 +216,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/images/" + image.getName() + "/json")
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/images/" + image.getName() + "/json")
                     .build();
             dockerResponse = client.sendGet(uri);
         } catch (URISyntaxException | JSONClientException e) {
@@ -245,7 +241,7 @@ public class SimpleDockerDriver implements DockerDriver {
             DockerResponse response = findAnImage(
                     ImageBuilder.anImage().withName(container.getConfig().getImage() + ":" + tag).build());
             Image image = objectMapper.readValue(response.getBody(), Image.class);
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/commit")
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/commit")
                     .setParameter("container", container.getName()).setParameter("tag", tag)
                     .setParameter("repo", repository).build();
             dockerResponse = client.sendPost(uri, "", "application/json");
@@ -269,7 +265,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/images/create")
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/images/create")
                     .setParameter("fromImage", repository).setParameter("tag", tag.toLowerCase()).build();
             dockerResponse = client.sendPostToRegistryHost(uri, "", "application/json");
             dockerResponse = client.sendPost(uri, "", "application/json");
@@ -291,7 +287,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/images/" + image.getId()).build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/images/" + image.getId()).build();
             dockerResponse = client.sendDelete(uri, false);
         } catch (URISyntaxException | JSONClientException e) {
             StringBuilder contextError = new StringBuilder(256);
@@ -311,7 +307,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/create").build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/volumes/create").build();
             body = objectMapper.writeValueAsString(volume);
             dockerResponse = client.sendPost(uri, body, "application/json");
         } catch (URISyntaxException | IOException | JSONClientException e) {
@@ -331,7 +327,7 @@ public class SimpleDockerDriver implements DockerDriver {
         URI uri = null;
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/" + volume.getName()).build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/volumes/" + volume.getName()).build();
             dockerResponse = client.sendGet(uri);
         } catch (URISyntaxException | JSONClientException e) {
             StringBuilder contextError = new StringBuilder(256);
@@ -350,7 +346,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/volumes/" + volume.getName()).build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/volumes/" + volume.getName()).build();
             dockerResponse = client.sendDelete(uri, false);
         } catch (URISyntaxException | JSONClientException e) {
             StringBuilder contextError = new StringBuilder(256);
@@ -385,7 +381,7 @@ public class SimpleDockerDriver implements DockerDriver {
         }
 
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/create").build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/networks/create").build();
             body = objectMapper.writeValueAsString(network);
             dockerResponse = client.sendPost(uri, body, "application/json");
         } catch (URISyntaxException | IOException | JSONClientException e) {
@@ -405,7 +401,7 @@ public class SimpleDockerDriver implements DockerDriver {
         URI uri = null;
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getId()).build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/networks/" + network.getId()).build();
             dockerResponse = client.sendGet(uri);
         } catch (URISyntaxException | JSONClientException e) {
             StringBuilder contextError = new StringBuilder(256);
@@ -423,7 +419,7 @@ public class SimpleDockerDriver implements DockerDriver {
         URI uri = null;
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks").build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/networks").build();
             dockerResponse = client.sendGet(uri);
         } catch (URISyntaxException | JSONClientException e) {
             StringBuilder contextError = new StringBuilder(256);
@@ -442,7 +438,7 @@ public class SimpleDockerDriver implements DockerDriver {
         DockerResponse dockerResponse = null;
         String body = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getId() + "/connect").build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/networks/" + network.getId() + "/connect").build();
             body = "{ \"Container\":\"" + containerId + "\" }";
             dockerResponse = client.sendPost(uri, body, "application/json");
         } catch (URISyntaxException | JSONClientException e) {
@@ -462,7 +458,7 @@ public class SimpleDockerDriver implements DockerDriver {
         String body = new String();
         DockerResponse dockerResponse = null;
         try {
-            uri = new URIBuilder().setScheme(protocol).setHost(host).setPath("/networks/" + network.getId()).build();
+            uri = new URIBuilder().setScheme(NamingUtils.protocolSocket.apply(isUnixSocket)).setHost(host).setPath("/networks/" + network.getId()).build();
             dockerResponse = client.sendDelete(uri, false);
         } catch (URISyntaxException | JSONClientException e) {
             StringBuilder contextError = new StringBuilder(256);
@@ -484,36 +480,12 @@ public class SimpleDockerDriver implements DockerDriver {
         this.client = client;
     }
 
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
     public ObjectMapper getObjectMapper() {
         return objectMapper;
     }
 
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-    }
-
-    public boolean isTLSActivated() {
-        return isTLSActivated;
-    }
-
-    public void setTLSActivated(boolean isTLSActivated) {
-        this.isTLSActivated = isTLSActivated;
-    }
-
-    public String getCertPathDir() {
-        return certPathDir;
-    }
-
-    public void setCertPathDir(String certPathDir) {
-        this.certPathDir = certPathDir;
     }
 
     public String getHost() {
