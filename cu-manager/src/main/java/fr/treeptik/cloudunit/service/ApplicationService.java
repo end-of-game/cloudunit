@@ -65,8 +65,7 @@ public interface ApplicationService {
 
 	Application remove(Application application, User user) throws ServiceException, CheckException;
 
-	Application create(String applicationName, String login, String serverName, String tagName, String origin)
-			throws ServiceException, CheckException;
+	Application create(String applicationName, String serverName) throws ServiceException, CheckException;
 
 	void removePort(Application application, Integer port) throws CheckException, ServiceException;
 

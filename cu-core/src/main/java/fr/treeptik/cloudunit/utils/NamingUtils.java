@@ -45,6 +45,13 @@ public class NamingUtils {
     }
 
     /**
+     * Create the container name
+     */
+    public final static String getContainerName(String applicationName, String nature, String userLogin){
+        return AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(applicationName) + "." + nature + "." + userLogin;
+    }
+
+    /**
      * To decide if we use unix or http  mode to access docker socket
      */
     public static Function<Boolean, String> protocolSocket

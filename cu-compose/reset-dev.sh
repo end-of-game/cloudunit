@@ -29,6 +29,8 @@ if [ "$1" != "-y" ]; then
     fi
 fi
 
+docker network create skynet
+
 echo "***************************"
 echo -e "Removing containers"
 echo "***************************"

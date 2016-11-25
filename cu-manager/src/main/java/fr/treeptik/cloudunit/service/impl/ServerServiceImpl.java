@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,10 +84,7 @@ public class ServerServiceImpl implements ServerService {
 	@Inject
 	private HipacheRedisUtils hipacheRedisUtils;
 
-	@Value("${cloudunit.max.servers:1}")
-	private String maxServers;
-
-	@Value("${suffix.cloudunit.io}")
+    @Value("${suffix.cloudunit.io}")
 	private String suffixCloudUnitIO;
 
 	@Value("${database.password}")
@@ -140,18 +138,13 @@ public class ServerServiceImpl implements ServerService {
 	 * new server or another one coming from registry.
 	 *
 	 * @param server
-	 * @param tagName
 	 * @return
 	 * @throws ServiceException
 	 * @throws CheckException
 	 */
 	@Override
 	@Transactional
-	public Server create(Server server, String tagName) throws ServiceException, CheckException {
-
-		if (tagName == null) {
-			tagName = "";
-		}
+	public Server create(Server server) throws ServiceException, CheckException {
 
 		logger.debug("create : Methods parameters : " + server);
 		logger.info("ServerService : Starting creating Server " + server.getName());
@@ -165,20 +158,16 @@ public class ServerServiceImpl implements ServerService {
 		User user = server.getApplication().getUser();
 
 		// Build a custom container
-		String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
-					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
-					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(server.getApplication().getName()) + "-"
-					+ server.getName();
+		String containerName = NamingUtils.getContainerName(server.getApplication().getName()
+                                                            , server.getImage().getPrefixEnv()
+															, server.getApplication().getUser().getLogin());
 
-		String imagePath = server.getImage().getPath() + tagName;
+		String imagePath = server.getImage().getPath();
 		logger.debug("imagePath:" + imagePath);
 
 		String subdomain = System.getenv("CU_SUB_DOMAIN");
-		if (subdomain == null) {
-			subdomain = "";
-		}
+		if (subdomain == null) { subdomain = ""; }
 		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-
 		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
@@ -192,7 +181,7 @@ public class ServerServiceImpl implements ServerService {
 				logger.debug(application.getLocation());
 			}
 
-			hipacheRedisUtils.createRedisAppKey(server.getApplication(), server.getContainerIP(),
+			hipacheRedisUtils.createRedisAppKey(server.getApplication(), containerName,
 					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
 					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 
@@ -223,7 +212,6 @@ public class ServerServiceImpl implements ServerService {
 		} catch (DockerJSONException e) {
 			StringBuilder msgError = new StringBuilder(512);
 			msgError.append("server=").append(server);
-			msgError.append(", tagName=[").append(tagName).append("]");
 			logger.error("" + msgError, e);
 			throw new ServiceException(msgError.toString(), e);
 		}
@@ -285,13 +273,6 @@ public class ServerServiceImpl implements ServerService {
 		logger.info("ServerService : Starting updating Server " + server.getName());
 		try {
 			serverDAO.save(server);
-
-			Application application = server.getApplication();
-
-			hipacheRedisUtils.updateServerAddress(application, server.getContainerIP(),
-					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
-
 		} catch (PersistenceException | FatalDockerJSONException e) {
 			logger.error("ServerService Error : update Server" + e);
 			e.printStackTrace();
@@ -493,9 +474,7 @@ public class ServerServiceImpl implements ServerService {
 				update(server, previousJvmMemory, previousJvmOptions, previousJvmRelease, false);
 			}
 		}
-
 		return server;
-
 	}
 
 	/**

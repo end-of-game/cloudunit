@@ -66,11 +66,6 @@ public class ServerListener {
 			} while (counter++ < 30 && !started);
 			if (counter <= 30) {
 				server.setStatus(Status.START);
-
-				hipacheRedisUtils.updateServerAddress(server.getApplication(), server.getContainerIP(),
-						dockerService.getEnv(containerName, "CU_SERVER_PORT"),
-						dockerService.getEnv(containerName, "CU_SERVER_MANAGER_PORT"));
-
 			} else {
 				server.setStatus(Status.FAIL);
 			}

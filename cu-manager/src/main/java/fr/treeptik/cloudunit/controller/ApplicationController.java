@@ -131,7 +131,7 @@ public class ApplicationController implements Serializable {
 		authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
 		// CREATE AN APP
-		applicationService.create(input.getApplicationName(), input.getLogin(), input.getServerName(), null, null);
+		applicationService.create(input.getApplicationName(), input.getServerName());
 
 		return new HttpOk();
 	}

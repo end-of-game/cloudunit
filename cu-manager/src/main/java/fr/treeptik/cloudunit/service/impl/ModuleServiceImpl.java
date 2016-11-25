@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,22 +138,16 @@ public class ModuleServiceImpl implements ModuleService {
         module.setPorts(ports);
 
         // Build a custom container
-        String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
-                + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
-                + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(module.getApplication().getName()) + "-"
-                + module.getName();
+        String containerName = NamingUtils.getContainerName(module.getApplication().getName(), module.getImage().getPrefixEnv(), user.getLogin());
         String imagePath = module.getImage().getPath();
         logger.debug("imagePath:" + imagePath);
 
         String subdomain = System.getenv("CU_SUB_DOMAIN");
-        if (subdomain == null) {
-            subdomain = "";
-        }
+        if (subdomain == null) { subdomain = ""; }
         logger.info("env.CU_SUB_DOMAIN=" + subdomain);
 
-        module.setInternalDNSName(containerName + "." + imageName + ".cloud.unit");
+        module.setInternalDNSName(containerName);
         module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
-
         try {
             Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs = getModuleEnvironmentVariables(image,
                     application.getName());

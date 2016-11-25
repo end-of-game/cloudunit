@@ -224,26 +224,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	@Transactional(rollbackFor = ServiceException.class)
-	public Application create(String applicationName, String login, String serverName, String tagName, String origin)
+	public Application create(String applicationName, String serverName)
 			throws ServiceException, CheckException {
-
-		// if tagname is null, we prefix with a ":"
-		if (tagName != null) {
-			tagName = ":" + tagName;
-		}
 
 		logger.info("--CALL CREATE NEW APP--");
 		Application application = new Application();
 
 		logger.info("applicationName = " + applicationName + ", serverName = " + serverName);
-
 		User user = authentificationUtils.getAuthentificatedUser();
-
-		// For cloning management
-		if (tagName != null) {
-			application.setAClone(true);
-			application.setOrigin(origin);
-		}
 
 		application.setName(applicationName);
 		application.setDisplayName(applicationName);
@@ -283,7 +271,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			server.setImage(image);
 			server.setApplication(application);
 			server.setName(serverName);
-			server = serverService.create(server, tagName);
+			server = serverService.create(server);
 
 			List<Server> servers = new ArrayList<>();
 			servers.add(server);

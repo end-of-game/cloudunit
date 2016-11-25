@@ -15,6 +15,8 @@
 
 source /etc/environment
 
+docker network create skynet
+
 docker-compose  -f docker-compose.yml \
                 -f docker-compose.elk.yml \
                 up -d

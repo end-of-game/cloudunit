@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.service.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -72,7 +73,7 @@ public class DockerServiceImpl implements DockerService {
 
     @Override
     public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
-                             boolean createMainVolume, List<String> volumes) throws DockerJSONException {
+                             boolean createMainVolume, List<String> volumes) throws DockerJSONException, ServiceException {
         List<String> volumesFrom = Arrays.asList("java");
         if (volumes == null) {
             volumes = new ArrayList<>();
@@ -86,6 +87,8 @@ public class DockerServiceImpl implements DockerService {
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null,
                 volumes, envs, null);
         dockerCloudUnitClient.createContainer(container);
+
+        dockerCloudUnitClient.connectToNetwork("skynet", containerName);
     }
 
     @Override

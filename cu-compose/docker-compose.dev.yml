@@ -4,19 +4,6 @@ services:
   java:
       container_name: java
       image: cloudunit/java
-      network_mode: bridge
-
-  dnsdock:
-      container_name: cuplatform_dnsdock_1
-      image: tonistiigi/dnsdock:v1.10.0
-      volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      ports:
-          - "172.17.42.1:53:53/udp"
-      command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
-      network_mode: bridge
 
   hipache:
       container_name: cuplatform_hipache_1
@@ -28,7 +15,6 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
 
   redis:
       container_name: cuplatform_redis_1
@@ -39,7 +25,6 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
 
   mysql:
       container_name: cuplatform_mysql_1
@@ -56,7 +41,6 @@ services:
       volumes:
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
 
   mysqldata:
       container_name: cuplatform_mysqldata_1
@@ -65,7 +49,6 @@ services:
           - /home/vagrant/mysql_home:/var/lib/mysql
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
 
   nginx:
       container_name: cuplatform_nginx_1
@@ -82,7 +65,6 @@ services:
           - ./nginx/log:/var/log/nginx
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
 
   cadvisor:
       container_name: cuplatform_cadvisor_1
@@ -101,11 +83,10 @@ services:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
-      network_mode: bridge
 
   gitlab:
       container_name: cuplatform_gitlab_1
-      image: gitlab/gitlab-ce:8.12.3-ce.0
+      image: gitlab/gitlab-ce:8.13.5-ce.0
       ports:
           - "480:80"
       depends_on:
@@ -121,7 +102,6 @@ services:
       #environment:
       #    GITLAB_OMNIBUS_CONFIG: |
       #        external_url 'https://${CU_GITLAB_DOMAIN}'
-      network_mode: bridge
 
   jenkins:
       container_name: cuplatform_jenkins_1
@@ -135,4 +115,8 @@ services:
           - nginx
       volumes:
           - /home/vagrant/jenkins_home:/var/jenkins_home
-      network_mode: bridge
+
+networks:
+  default:
+    external:
+      name: skynet

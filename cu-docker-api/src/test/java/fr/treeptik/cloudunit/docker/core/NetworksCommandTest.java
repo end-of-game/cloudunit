@@ -7,6 +7,7 @@ import fr.treeptik.cloudunit.docker.model.Config;
 import fr.treeptik.cloudunit.docker.model.DockerContainer;
 import fr.treeptik.cloudunit.docker.model.HostConfig;
 import fr.treeptik.cloudunit.docker.model.Network;
+import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Container;
 import fr.treeptik.cloudunit.utils.ContainerUtils;
 import org.junit.Assert;
@@ -33,7 +34,7 @@ public class NetworksCommandTest {
     }
 
     @Test
-    public void createThenDeleteNetworkAsBridge() throws IOException {
+    public void createThenDeleteNetworkAsBridge() throws IOException, ServiceException {
         dockerCloudUnitClient.createNetwork("myNetwork", "group1");
         Network network = dockerCloudUnitClient.findNetwork("myNetwork");
         Assert.assertEquals("myNetwork", network.getName());

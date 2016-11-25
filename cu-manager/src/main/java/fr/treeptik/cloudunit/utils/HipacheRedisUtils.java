@@ -182,7 +182,8 @@ public class HipacheRedisUtils implements KeyValueStoreUtils {
 			logger.error("HipacheRedisUtils Exception", e);
 		} finally {
 			if (jedis != null) {
-				pool.destroy();
+				pool.close();
+				jedis.close();
 			}
 		}
 	}
