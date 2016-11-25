@@ -20,7 +20,6 @@ import java.util.HashMap;
 public class NetworksCommandTest {
 
     public static String DOCKER_HOST;
-    public static Boolean isTLS;
 
     private static DockerCloudUnitClient dockerCloudUnitClient;
     private static final String CONTAINER_NAME = "myContainer";
