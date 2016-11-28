@@ -58,7 +58,7 @@ You should ping **foo.cloudunit.dev** to **192.168.50.4**
 ### Step 2 - How to install Vagrant plugins
 
 ```
-apt install ruby-dev
+sudo apt-get install ruby-dev
 vagrant plugin install vagrant-reload
 vagrant plugin install vagrant-vbguest
 ```
@@ -88,11 +88,18 @@ cd $HOME/cloudunit/cu-manager-ui && bower install
 
 Warning because this step could need lot of times !
 
+If your machine has at least 8 GB Memory
 ```
 cd $HOME/cloudunit/cu-vagrant 
 ./mediumbox.sh
-vagrant provision
 ```
+
+If your machine has at less than 8 GB Memory
+```
+cd $HOME/cloudunit/cu-vagrant 
+./smallbox.sh
+```
+
 
 ### <a name="step6"></a>Step 6 - How to start the application
 
