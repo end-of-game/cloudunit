@@ -106,7 +106,7 @@ cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 2 - Start the Java Backend from Linux
-
+**Outside the vagrand box** 
 ```
 cd $HOME/cloudunit
 mvn clean install -DskipTests
