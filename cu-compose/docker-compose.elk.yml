@@ -15,6 +15,10 @@ services:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
+    labels:
+      - "traefik.backend=elastic"
+      - "traefik.port=9200"
+      - "traefik.frontend.rule=Host:elastic.cloudunit.dev"
 
   logstash:
     build:
@@ -31,6 +35,9 @@ services:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     depends_on:
       - elasticsearch
+    labels:
+      - "traefik.backend=logstash"
+      - "traefik.frontend.rule=Host:logstash.cloudunit.dev"
 
   kibana:
     container_name: cuplatform_kibana_1
@@ -48,6 +55,10 @@ services:
     depends_on:
       - elasticsearch
     network_mode: bridge
+    labels:
+      - "traefik.backend=kibana"
+      - "traefik.port=5601"
+      - "traefik.frontend.rule=Host:kibana.cloudunit.dev"
 
   dockbeat-polling:
     build:
@@ -60,3 +71,8 @@ services:
     command: -e
     depends_on:
       - elasticsearch
+
+networks:
+  default:
+    external:
+      name: skynet

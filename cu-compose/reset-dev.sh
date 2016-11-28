@@ -60,7 +60,6 @@ echo -e "Starting..."
 echo "*******************************"
 docker-compose  --file docker-compose.dev.yml \
                 --file docker-compose.elk.yml \
-                --file docker-compose.test.yml \
                 up -d
 
 
