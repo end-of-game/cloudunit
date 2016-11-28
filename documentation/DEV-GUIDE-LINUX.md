@@ -56,7 +56,9 @@ sudo service dnsmasq restart
 You should ping **foo.cloudunit.dev** to **192.168.50.4**
 
 ### Step 2 - How to install Vagrant plugins
+
 ```
+apt install ruby-dev
 vagrant plugin install vagrant-reload
 vagrant plugin install vagrant-vbguest
 ```
