@@ -89,7 +89,7 @@ services:
           - /home/vagrant/jenkins_home:/var/jenkins_home
       labels:
         - "traefik.backend=jenkins"
-        - "traefik.port=8080s"
+        - "traefik.port=8080"
         - "traefik.frontend.rule=Host:jenkins.cloudunit.dev"
 
   traefik:
