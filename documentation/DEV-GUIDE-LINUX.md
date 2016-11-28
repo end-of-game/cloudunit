@@ -90,7 +90,7 @@ Warning because this step could need lot of times !
 
 ```
 cd $HOME/cloudunit/cu-vagrant 
-vagrant up
+./mediumbox.sh
 vagrant provision
 ```
 
