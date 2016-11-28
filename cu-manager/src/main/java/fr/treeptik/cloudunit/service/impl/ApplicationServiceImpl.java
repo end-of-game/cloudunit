@@ -236,6 +236,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		application.setName(applicationName);
 		application.setDisplayName(applicationName);
 		application.setUser(user);
+		application.setCuInstanceName(cuInstanceName);
 		application.setModules(new ArrayList<>());
 
 		// verify if application exists already
@@ -706,11 +707,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 			return true;
 		}
 		return false;
-	}
-
-	public Integer countApplicationsForImage(String cuInstanceName, User user, String tag)
-			throws CheckException, ServiceException {
-		return applicationDAO.countAppForTagLike(cuInstanceName, user.getLogin(), tag);
 	}
 
 	@Override

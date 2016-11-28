@@ -41,7 +41,6 @@ public class ContainerUtils {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withBinds(volumes).withPrivileged(Boolean.FALSE)
                 .withPublishAllPorts(publishAllPorts).withVolumesFrom(volumesFrom).build();
         Config config = ConfigBuilder.aConfig().withHostConfig(hostConfig).build();
-
         DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
         return container;
     }

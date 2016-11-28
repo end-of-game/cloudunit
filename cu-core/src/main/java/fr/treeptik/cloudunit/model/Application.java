@@ -136,10 +136,11 @@ public class Application implements Serializable {
 		deploymentStatus = Application.NONE;
 	}
 
-	public Application(Integer id, String name, User user, List<Module> modules) {
+	public Application(Integer id, String name, String cuInstanceName, User user, List<Module> modules) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.cuInstanceName = cuInstanceName;
 		this.user = user;
 		this.modules = new HashSet<>(modules);
 	}
