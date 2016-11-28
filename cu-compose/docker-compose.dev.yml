@@ -5,17 +5,6 @@ services:
       container_name: java
       image: cloudunit/java
 
-  hipache:
-      container_name: cuplatform_hipache_1
-      image: tutum/hipache:0.3.1
-      ports:
-          - "80:80"
-      links:
-          - redis:redis
-      volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-
   redis:
       container_name: cuplatform_redis_1
       image: redis:3.0.1
@@ -25,6 +14,8 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
+      labels:
+        - "traefik.enable=false"
 
   mysql:
       container_name: cuplatform_mysql_1
@@ -41,28 +32,14 @@ services:
       volumes:
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
+      labels:
+        - "traefik.enable=false"
 
   mysqldata:
       container_name: cuplatform_mysqldata_1
       image: ubuntu:14.04
       volumes:
           - /home/vagrant/mysql_home:/var/lib/mysql
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-
-  nginx:
-      container_name: cuplatform_nginx_1
-      build:
-        context: nginx
-      image: cloudunit/nginx
-      ports:
-          - "443:443"
-      volumes:
-          - ./nginx/sites-enabled:/etc/nginx/sites-enabled
-          - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
-          - ./nginx/www:/var/www
-          - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-          - ./nginx/log:/var/log/nginx
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
 
@@ -87,10 +64,6 @@ services:
   gitlab:
       container_name: cuplatform_gitlab_1
       image: gitlab/gitlab-ce:8.13.5-ce.0
-      ports:
-          - "480:80"
-      depends_on:
-          - nginx
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
@@ -102,19 +75,32 @@ services:
       #environment:
       #    GITLAB_OMNIBUS_CONFIG: |
       #        external_url 'https://${CU_GITLAB_DOMAIN}'
+      labels:
+        - "traefik.backend=gitlab"
+        - "traefik.port=80"
+        - "traefik.frontend.rule=Host:gitlab.cloudunit.dev"
 
   jenkins:
       container_name: cuplatform_jenkins_1
       build:
         context: cu-jenkins
       image: cloudunit/jenkins
-      ports:
-         - "9080:8080"
-         - "50000:50000"
-      depends_on:
-          - nginx
       volumes:
           - /home/vagrant/jenkins_home:/var/jenkins_home
+      labels:
+        - "traefik.backend=jenkins"
+        - "traefik.port=8080s"
+        - "traefik.frontend.rule=Host:jenkins.cloudunit.dev"
+
+  traefik:
+      image: traefik
+      command: --web --docker --docker.domain=cloudunit.dev --logLevel=DEBUG
+      ports:
+        - "80:80"
+        - "8080:8080"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /dev/null:/traefik.toml
 
 networks:
   default:

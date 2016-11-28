@@ -19,12 +19,19 @@ public class ContainerUtils {
 
     public static DockerContainer newCreateInstance(String name, String image, List<String> volumesFrom,
             List<String> args, List<String> rawVolumes, List<String> envs,
-            Map<String, String> ports) {
+            Map<String, String> ports, String networkMode) {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withVolumesFrom(volumesFrom).withBinds(rawVolumes)
-                .withPublishAllPorts(false).withPortBindings(buildPortBindingBody(ports)).build();
+                .withPublishAllPorts(false).withPortBindings(buildPortBindingBody(ports))
+                .withNetworkMode(networkMode)
+                .build();
         Config config = ConfigBuilder.aConfig().withAttachStdin(Boolean.FALSE).withAttachStdout(Boolean.TRUE)
                 .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(image).withHostConfig(hostConfig).withMemory(0L)
                 .withMemorySwap(0L).withEnv(envs).build();
+        Map<String, String> labels = new HashMap<>();
+        labels.put("traefik.port", "8080");
+        labels.put("traefik.backend", name);
+        labels.put("traefik.frontend.rule", "Host:"+name+".cloudunit.dev");
+        config.setLabels(labels);
         DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
         return container;
     }
@@ -34,6 +41,7 @@ public class ContainerUtils {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withBinds(volumes).withPrivileged(Boolean.FALSE)
                 .withPublishAllPorts(publishAllPorts).withVolumesFrom(volumesFrom).build();
         Config config = ConfigBuilder.aConfig().withHostConfig(hostConfig).build();
+
         DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
         return container;
     }

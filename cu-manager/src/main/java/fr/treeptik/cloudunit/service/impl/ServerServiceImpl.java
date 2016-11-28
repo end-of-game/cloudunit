@@ -159,7 +159,7 @@ public class ServerServiceImpl implements ServerService {
 
 		// Build a custom container
 		String containerName = NamingUtils.getContainerName(server.getApplication().getName()
-                                                            , server.getImage().getPrefixEnv()
+                                                            , null
 															, server.getApplication().getUser().getLogin());
 
 		String imagePath = server.getImage().getPath();

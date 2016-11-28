@@ -85,10 +85,10 @@ public class DockerServiceImpl implements DockerService {
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null,
-                volumes, envs, null);
+                volumes, envs, null, "skynet");
         dockerCloudUnitClient.createContainer(container);
 
-        dockerCloudUnitClient.connectToNetwork("skynet", containerName);
+        //dockerCloudUnitClient.connectToNetwork("skynet", containerName);
     }
 
     @Override
@@ -324,7 +324,7 @@ public class DockerServiceImpl implements DockerService {
                          ports.put(String.format("%s/tcp", p.getContainerValue()), p.getHostValue());
                 });
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
-                envs, ports);
+                envs, ports, "skynet");
         dockerCloudUnitClient.createContainer(container);
     }
 

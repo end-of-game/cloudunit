@@ -62,15 +62,10 @@ public class Application implements Serializable {
 
 	private String displayName;
 
-	/**
-	 * CloudUnit instance name (e.g. DEV, QA, PROD).
-	 */
-	private String cuInstanceName;
-
-	/**
-	 * Origin property issue from snapshot when created by clone process.
-	 */
-	private String origin;
+    /**
+     * CloudUnit instance name (e.g. DEV, QA, PROD).
+     */
+    private String cuInstanceName;
 
 	@Enumerated(EnumType.STRING)
 	private Status status;
@@ -126,8 +121,6 @@ public class Application implements Serializable {
 
 	private String contextPath;
 
-	private boolean isAClone;
-
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
 	@OrderBy(value = "port")
 	private Set<PortToOpen> portsToOpen;
@@ -140,15 +133,13 @@ public class Application implements Serializable {
 	public Application() {
 		super();
 		date = new Date();
-		isAClone = false;
 		deploymentStatus = Application.NONE;
 	}
 
-	public Application(Integer id, String name, String cuInstanceName, User user, List<Module> modules) {
+	public Application(Integer id, String name, User user, List<Module> modules) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.cuInstanceName = cuInstanceName;
 		this.user = user;
 		this.modules = new HashSet<>(modules);
 	}
@@ -178,21 +169,13 @@ public class Application implements Serializable {
 		this.displayName = displayName;
 	}
 
-	public String getCuInstanceName() {
-		return cuInstanceName;
-	}
+    public String getCuInstanceName() {
+        return cuInstanceName;
+    }
 
-	public void setCuInstanceName(String cuInstanceName) {
-		this.cuInstanceName = cuInstanceName;
-	}
-
-	public String getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
+    public void setCuInstanceName(String cuInstanceName) {
+        this.cuInstanceName = cuInstanceName;
+    }
 
 	public Server getServer() {
 		return server;
@@ -287,7 +270,7 @@ public class Application implements Serializable {
 	}
 
 	public String getLocation() {
-		location = "http://" + name + "-" + user.getLogin() + "-" + user.getOrganization() + suffixCloudUnitIO;
+		location = "http://" + name + "-" + user.getLogin() + suffixCloudUnitIO;
 		return location;
 	}
 
@@ -313,8 +296,7 @@ public class Application implements Serializable {
 				+ ", user=" + user + ", domainName='" + domainName + '\'' + ", managerIP='" + managerIp + '\''
 				+ ", managerPort='" + managerPort + '\'' + ", jvmRelease='" + jvmRelease + '\'' + ", restHost='"
 				+ restHost + '\'' + ", deploymentStatus='" + deploymentStatus + '\'' + ", suffixCloudUnitIO='"
-				+ suffixCloudUnitIO + '\'' + ", isAClone=" + isAClone + ", cuInstanceName=" + cuInstanceName
-				+ ", origin=" + origin + '\'' + '}';
+				+ suffixCloudUnitIO + '\'' + ", isAClone=" + '}';
 	}
 
 	@Override
@@ -354,14 +336,6 @@ public class Application implements Serializable {
 
 	public void setDomainName(String domainName) {
 		this.domainName = domainName;
-	}
-
-	public boolean isAClone() {
-		return isAClone;
-	}
-
-	public void setAClone(boolean isAClone) {
-		this.isAClone = isAClone;
 	}
 
 	public String getDeploymentStatus() {

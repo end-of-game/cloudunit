@@ -236,7 +236,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		application.setName(applicationName);
 		application.setDisplayName(applicationName);
 		application.setUser(user);
-		application.setCuInstanceName(cuInstanceName);
 		application.setModules(new ArrayList<>());
 
 		// verify if application exists already

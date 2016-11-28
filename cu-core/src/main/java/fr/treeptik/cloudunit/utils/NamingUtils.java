@@ -48,7 +48,11 @@ public class NamingUtils {
      * Create the container name
      */
     public final static String getContainerName(String applicationName, String nature, String userLogin){
-        return AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(applicationName) + "." + nature + "." + userLogin;
+        if (nature != null) {
+            return AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(applicationName) + "-" + nature + "-" + userLogin;
+        } else {
+            return AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(applicationName) + "-" + userLogin;
+        }
     }
 
     /**
