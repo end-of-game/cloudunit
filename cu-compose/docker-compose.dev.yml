@@ -60,6 +60,8 @@ services:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
+      labels:
+        - "traefik.enable=false"
 
   gitlab:
       container_name: cuplatform_gitlab_1
@@ -94,7 +96,7 @@ services:
 
   traefik:
       image: traefik
-      command: --web --docker --docker.domain=cloudunit.dev --logLevel=DEBUG
+      command: --web --docker --docker.domain=cloudunit.dev --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
       ports:
         - "80:80"
         - "8080:8080"

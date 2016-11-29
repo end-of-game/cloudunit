@@ -90,10 +90,6 @@ public class Application implements Serializable {
 	@ElementCollection
 	private Set<String> aliases;
 
-	/**
-	 * Suffixe du domaine des applications déployées Ce champ est dynamique à
-	 * travers le profil maven
-	 */
 	private String suffixCloudUnitIO;
 
 	private String domainName;
@@ -102,8 +98,6 @@ public class Application implements Serializable {
 
 	private String managerPort;
 
-	// version de java sous laquelle tourne les containers serveurs et git
-	// (maven)
 	private String jvmRelease;
 
 	@JsonIgnore
@@ -271,8 +265,7 @@ public class Application implements Serializable {
 	}
 
 	public String getLocation() {
-		location = "http://" + name + "-" + user.getLogin() + suffixCloudUnitIO;
-		return location;
+		return (name + "-" + user.getLogin() + suffixCloudUnitIO);
 	}
 
 	public Set<String> getAliases() {

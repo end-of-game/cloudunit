@@ -160,9 +160,10 @@ public class ServerServiceImpl implements ServerService {
 		// Build a custom container
 		String containerName = NamingUtils.getContainerName(server.getApplication().getName()
                                                             , null
-															, server.getApplication().getUser().getLogin());
+															,server.getApplication().getUser().getLogin());
 
 		String imagePath = server.getImage().getPath();
+		String prefixEnv = server.getImage().getPrefixEnv();
 		logger.debug("imagePath:" + imagePath);
 
 		String subdomain = System.getenv("CU_SUB_DOMAIN");
@@ -171,7 +172,7 @@ public class ServerServiceImpl implements ServerService {
 		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
-			dockerService.createServer(containerName, server, imagePath, user, null, true, null);
+			dockerService.createServer(containerName, server, imagePath, prefixEnv, user, null, true, null);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 
@@ -186,7 +187,7 @@ public class ServerServiceImpl implements ServerService {
 					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 
 			// Update server with all its informations
-			server.setManagerLocation("http://manager-" + application.getLocation().substring(7)
+			server.setManagerLocation("http://"+NamingUtils.getContainerName(application.getName(), null, application.getUser().getLogin() + suffixCloudUnitIO)
 					+ dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH"));
 			server.setStatus(Status.START);
 			server.setJvmMemory(512L);
@@ -451,7 +452,7 @@ public class ServerServiceImpl implements ServerService {
 					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
 							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
 					.collect(Collectors.toList());
-			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+			dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
 			addCredentialsForServerManagement(server, server.getApplication().getUser());
@@ -571,7 +572,7 @@ public class ServerServiceImpl implements ServerService {
 				.collect(Collectors.toList());
 		List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
 				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
-		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+		dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
 				server.getApplication().getUser(), envs, false, volumes);
 		server = startServer(server);
 		addCredentialsForServerManagement(server, server.getApplication().getUser());

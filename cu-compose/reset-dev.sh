@@ -61,5 +61,3 @@ echo "*******************************"
 docker-compose  --file docker-compose.dev.yml \
                 --file docker-compose.elk.yml \
                 up -d
-
-

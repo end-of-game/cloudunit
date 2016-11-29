@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
@@ -120,9 +122,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Value("${cloudunit.instance.name}")
 	private String cuInstanceName;
 
-	public ApplicationDAO getApplicationDAO() {
-		return this.applicationDAO;
-	}
+	private List<String> imageNames;
+
+	@PostConstruct
+    public void init() throws ServiceException {
+        List<Image> imagesEnabled = imageService.findEnabledImages();
+       imageNames = imagesEnabled.stream().map(i -> i.getName()).collect(Collectors.toList());
+    }
 
     /**
 	 * Test if the user can create new applications because we limit the number
@@ -233,7 +239,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 		logger.info("applicationName = " + applicationName + ", serverName = " + serverName);
 		User user = authentificationUtils.getAuthentificatedUser();
 
-		application.setName(applicationName);
+        if (!imageNames.contains(serverName)) {
+            throw new CheckException(messageSource.getMessage("server.not.found", null, locale));
+        }
+
+        application.setName(applicationName);
 		application.setDisplayName(applicationName);
 		application.setUser(user);
 		application.setCuInstanceName(cuInstanceName);
@@ -246,23 +256,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 		application = this.saveInDB(application);
 
 		String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-		List<Image> imagesEnabled = imageService.findEnabledImages();
-		List<String> imageNames = new ArrayList<>();
-		for (Image image : imagesEnabled) {
-			imageNames.add(image.getName());
-		}
 
-		if (!imageNames.contains(serverName)) {
-			throw new CheckException(messageSource.getMessage("server.not.found", null, locale));
-		}
-
-		try {
+        try {
 			// BLOC APPLICATION
 			application.setDomainName(subdomain + suffixCloudUnitIO);
 			application = applicationDAO.save(application);
 			application.setManagerIp(dockerManagerIp);
-
-			logger.info(application.getManagerIp());
 
 			// BLOC SERVER
 			Server server = new Server();
@@ -272,10 +271,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 			server.setApplication(application);
 			server.setName(serverName);
 			server = serverService.create(server);
-
-			List<Server> servers = new ArrayList<>();
-			servers.add(server);
 			application.setServer(server);
+
+			if ("webserver".equalsIgnoreCase(image.getPrefixEnv())) {
+                application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
+            }
 
 			// Persistence for Application model
 			application.setJvmRelease(server.getJvmRelease());

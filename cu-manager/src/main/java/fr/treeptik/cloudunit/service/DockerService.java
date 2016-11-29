@@ -33,7 +33,7 @@ DockerService {
 
 	void addEnv(String containerId, String key, String value) throws FatalDockerJSONException;
 
-	void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
+	void createServer(String containerName, Server server, String imagePath, String imageType, User user, List<String> envs,
 			boolean createMainVolume, List<String> volumes) throws DockerJSONException, ServiceException;
 
 	Server startServer(String containerName, Server server) throws DockerJSONException;
