@@ -68,7 +68,6 @@ import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.VolumeAssociationService;
 import fr.treeptik.cloudunit.service.VolumeService;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 
 @Service
 public class ServerServiceImpl implements ServerService {
@@ -81,10 +80,7 @@ public class ServerServiceImpl implements ServerService {
 	@Inject
 	private ApplicationDAO applicationDAO;
 
-	@Inject
-	private HipacheRedisUtils hipacheRedisUtils;
-
-    @Value("${suffix.cloudunit.io}")
+	@Value("${suffix.cloudunit.io}")
 	private String suffixCloudUnitIO;
 
 	@Value("${database.password}")
@@ -181,10 +177,6 @@ public class ServerServiceImpl implements ServerService {
 				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 				logger.debug(application.getLocation());
 			}
-
-			hipacheRedisUtils.createRedisAppKey(server.getApplication(), containerName,
-					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
 
 			// Update server with all its informations
 			server.setManagerLocation("http://"+NamingUtils.getContainerName(application.getName(), null, application.getUser().getLogin() + suffixCloudUnitIO)
@@ -301,8 +293,6 @@ public class ServerServiceImpl implements ServerService {
 				logger.error("Cannot delete the container ["+serverName+"]. Maybe already destroyed");
 			}
 
-			// Remove server on cloudunit :
-			hipacheRedisUtils.removeServerAddress(application);
 			serverDAO.delete(server);
 
 			logger.info("ServerService : Server successfully removed ");

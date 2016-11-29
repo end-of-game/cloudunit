@@ -127,19 +127,41 @@ public class Application implements Serializable {
 	public Application() {
 		super();
 		date = new Date();
+		// todo : create an enum for deployment status
 		deploymentStatus = Application.NONE;
+		status = Status.PENDING;
 	}
 
-	public Application(Integer id, String name, String cuInstanceName, User user, List<Module> modules) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.cuInstanceName = cuInstanceName;
-		this.user = user;
-		this.modules = new HashSet<>(modules);
-	}
+	private Application(Builder builder) {
+	    this();
 
-	public Integer getId() {
+        this.name = builder.name;
+        this.displayName = builder.displayName;
+        this.cuInstanceName = builder.cuInstanceName;
+        this.status = builder.status;
+        this.user = builder.user;
+        this.modules = builder.modules;
+        this.server = builder.server;
+        this.deployments = builder.deployments;
+        this.aliases = builder.aliases;
+        this.suffixCloudUnitIO = builder.suffixCloudUnitIO;
+        this.domainName = builder.domainName;
+        this.managerIp = builder.managerIp;
+        this.managerPort = builder.managerPort;
+        this.jvmRelease = builder.jvmRelease;
+        this.deploymentStatus = builder.deploymentStatus;
+        this.contextPath = builder.contextPath;
+        this.environmentVariables = builder.environmentVariables;
+        this.portsToOpen = builder.portsToOpen;
+        this.location = builder.location;
+        this.restHost = builder.restHost;
+    }
+
+	public static Builder of(String displayName, Image image) {
+        return new Builder(displayName, image);
+    }
+
+    public Integer getId() {
 		return id;
 	}
 
@@ -149,11 +171,6 @@ public class Application implements Serializable {
 
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		name = name.toLowerCase();
-		this.name = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(name);
 	}
 
 	public String getDisplayName() {
@@ -350,5 +367,135 @@ public class Application implements Serializable {
 	}
 
 
+    public static final class Builder {
 
+        private final String name;
+        private String displayName;
+        private String cuInstanceName;
+        private Status status;
+        private User user;
+        private Set<Module> modules;
+        private Server server;
+        private Set<Deployment> deployments;
+        private Set<String> aliases;
+        private String suffixCloudUnitIO;
+        private String domainName;
+        private String managerIp;
+        private String managerPort;
+        private String jvmRelease;
+        private String restHost;
+        private String deploymentStatus;
+        private String contextPath;
+        private Set<PortToOpen> portsToOpen;
+        private Set<EnvironmentVariable> environmentVariables;
+        private String location;
+        private Image image;
+
+        private Builder(String displayName, Image image) {
+            this.displayName = displayName;
+            this.image = image;
+            this.name = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(displayName).toLowerCase();
+        }
+
+        public Builder withDisplayName(String displayName) {
+            this.displayName = displayName;
+            return this;
+        }
+
+        public Builder withCuInstanceName(String cuInstanceName) {
+            this.cuInstanceName = cuInstanceName;
+            return this;
+        }
+
+        public Builder withStatus(Status status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder withUser(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public Builder withModules(Set<Module> modules) {
+            this.modules = modules;
+            return this;
+        }
+
+        public Builder withServer(Server server) {
+            this.server = server;
+            return this;
+        }
+
+        public Builder withAliases(Set<String> aliases) {
+            this.aliases = aliases;
+            return this;
+        }
+
+        public Builder withSuffixCloudUnitIO(String suffixCloudUnitIO) {
+            this.suffixCloudUnitIO = suffixCloudUnitIO;
+            return this;
+        }
+
+        public Builder withDomainName(String domainName) {
+            this.domainName = domainName;
+            return this;
+        }
+
+        public Builder withManagerIp(String managerIp) {
+            this.managerIp = managerIp;
+            return this;
+        }
+
+        public Builder withManagerPort(String managerPort) {
+            this.managerPort = managerPort;
+            return this;
+        }
+
+        public Builder withJvmRelease(String jvmRelease) {
+            this.jvmRelease = jvmRelease;
+            return this;
+        }
+
+        public Builder withRestHost(String restHost) {
+            this.restHost = restHost;
+            return this;
+        }
+
+        public Builder withDeploymentStatus(String deploymentStatus) {
+            this.deploymentStatus = deploymentStatus;
+            return this;
+        }
+
+        public Builder withContextPath(String contextPath) {
+            this.contextPath = contextPath;
+            return this;
+        }
+
+        public Builder withPortsToOpen(Set<PortToOpen> portsToOpen) {
+            this.portsToOpen = portsToOpen;
+            return this;
+        }
+
+        public Builder withEnvironmentVariables(Set<EnvironmentVariable> environmentVariables) {
+            this.environmentVariables = environmentVariables;
+            return this;
+        }
+
+        public Builder withLocation(String location) {
+            this.location = location;
+            return this;
+        }
+
+        public Application build() {
+            // todo : is the right place, Bill ?
+            if ("webserver".equalsIgnoreCase(image.getPrefixEnv())) {
+                this.deploymentStatus = Application.ALREADY_DEPLOYED;
+            } else {
+                this.deploymentStatus = Application.NONE;
+            }
+            return new Application(this);
+        }
+
+    }
 }

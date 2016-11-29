@@ -29,7 +29,7 @@ public class ContainerUtils {
                 .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(imagePath).withHostConfig(hostConfig).withMemory(0L)
                 .withMemorySwap(0L).withEnv(envs).build();
         Map<String, String> labels = new HashMap<>();
-        if (prefixEnv.equalsIgnoreCase("webserver")) {
+        if ("webserver".equalsIgnoreCase(prefixEnv)) {
             labels.put("traefik.port", "80");
         } else {
             labels.put("traefik.port", "8080");

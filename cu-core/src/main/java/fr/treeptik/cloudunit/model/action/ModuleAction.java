@@ -30,7 +30,6 @@ package fr.treeptik.cloudunit.model.action;/*
 
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.ModuleConfiguration;
-import fr.treeptik.cloudunit.utils.KeyValueStoreUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -59,23 +58,6 @@ public abstract class ModuleAction
 
     public abstract List<String> createDockerCmdForClone(Map<String, String> map,
                                                          String databasePassword, String envExec, String databaseHostname);
-
-    /**
-     * add url to access to module manager (e.g phpMyAdmin)
-     *
-     * @param hipacheRedisUtils
-     * @param parent
-     * @param instanceNumber
-     * @return
-     */
-    public abstract Module enableModuleManager(
-            KeyValueStoreUtils hipacheRedisUtils, Module parent, Long instanceNumber);
-
-    public abstract void updateModuleManager(
-            KeyValueStoreUtils hipacheRedisUtils);
-
-    public abstract void unsubscribeModuleManager(
-            KeyValueStoreUtils hipacheRedisUtils);
 
     public abstract ModuleConfiguration cloneProperties();
 
