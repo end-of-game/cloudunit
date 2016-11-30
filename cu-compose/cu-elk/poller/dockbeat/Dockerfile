@@ -1,4 +1,5 @@
 FROM cloudunit/base-14.04
+HEALTHCHECK CMD pidof dockbeat
 
 MAINTAINER s.musso@treeptik.fr
 

@@ -10,6 +10,8 @@ ENV CU_LOGS " "
 
 ENV MYSQL_RANDOM_ROOT_PASSWORD "true"
 
+ENV METRICBEAT_VERSION 5.0.1
+
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
@@ -49,6 +51,7 @@ RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /
 
 # the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
 # also, we set debconf keys to make APT a little quieter
+# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 RUN { \
 		echo mysql-community-server mysql-community-server/data-dir select ''; \
 		echo mysql-community-server mysql-community-server/root-pass password ''; \
@@ -58,7 +61,6 @@ RUN { \
 	&& apt-get update && apt-get install -y mysql-server="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
-# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 	&& chmod 777 /var/run/mysqld
 
 # comment out a few problematic configuration values
@@ -66,6 +68,17 @@ RUN { \
 RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
 	&& echo 'skip-host-cache\nskip-name-resolve' | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf \
 	&& mv /tmp/my.cnf /etc/mysql/my.cnf
+
+# Install metricbeat agent
+
+RUN mkdir -p /opt/cloudunit/polling-agents/metricbeat \
+  && cd /opt/cloudunit/polling-agents \
+	&& curl --insecure -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
+	&& tar zxvf metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz -C metricbeat --strip-components 1 \
+	&& rm metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
+	&& chown -R mysql:mysql /opt/cloudunit/polling-agents/metricbeat
+
+ADD metricbeat.yml /opt/cloudunit/polling-agents/metricbeat
 
 VOLUME /var/lib/mysql
 
