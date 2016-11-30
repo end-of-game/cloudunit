@@ -23,6 +23,7 @@ public class ContainerUtils {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withVolumesFrom(volumesFrom).withBinds(rawVolumes)
                 .withPublishAllPorts(false).withPortBindings(buildPortBindingBody(ports)).build();
         Config config = ConfigBuilder.aConfig().withAttachStdin(Boolean.FALSE).withAttachStdout(Boolean.TRUE)
+                .withHostname(name)
                 .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(image).withHostConfig(hostConfig).withMemory(0L)
                 .withMemorySwap(0L).withEnv(envs).build();
         DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
