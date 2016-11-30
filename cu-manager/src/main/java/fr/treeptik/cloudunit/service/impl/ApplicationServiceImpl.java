@@ -118,8 +118,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@PostConstruct
     public void init() throws ServiceException {
+		logger.info("Loading images enabled from database...");
 	    List<Image> imagesEnabled = imageService.findEnabledImages();
         imageNames = imagesEnabled.stream().map(i -> i.getName()).collect(Collectors.toList());
+		logger.info("Images are loaded from database...");
     }
 
     /**
@@ -201,8 +203,6 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .withSuffixCloudUnitIO(suffixCloudUnitIO)
                 .withManagerIp(dockerSocketIP)
                 .withCuInstanceName(cuInstanceName).build();
-
-        System.out.println(application.toString());
 
         // verify if application exists already
 		this.checkCreate(user, applicationName);

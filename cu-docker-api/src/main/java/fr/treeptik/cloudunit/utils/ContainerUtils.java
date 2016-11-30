@@ -27,6 +27,7 @@ public class ContainerUtils {
                 .build();
         Config config = ConfigBuilder.aConfig().withAttachStdin(Boolean.FALSE).withAttachStdout(Boolean.TRUE)
                 .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(imagePath).withHostConfig(hostConfig).withMemory(0L)
+                .withHostname(name)
                 .withMemorySwap(0L).withEnv(envs).build();
         Map<String, String> labels = new HashMap<>();
         if ("webserver".equalsIgnoreCase(prefixEnv)) {
@@ -67,6 +68,6 @@ public class ContainerUtils {
                 finalMap.put(port, params);
             }
         return finalMap;
-
     }
+
 }
