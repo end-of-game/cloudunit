@@ -94,7 +94,7 @@ cd $HOME/cloudunit/cu-vagrant
 ./mediumbox.sh
 ```
 
-If your machine has at less than 8 GB Memory
+If your machine has less than 8 GB Memory
 ```
 cd $HOME/cloudunit/cu-vagrant 
 ./smallbox.sh
