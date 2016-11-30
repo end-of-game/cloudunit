@@ -31,6 +31,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./cu-elk/logstash/conf.d:/etc/logstash/conf.d
       - ./cu-elk/logstash/curator:/etc/curator
+      - ./cu-elk/poller/metricbeat/conf:/opt/cloudunit/polling-agents/metricbeat
     environment:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     depends_on:
@@ -55,12 +56,9 @@ services:
     depends_on:
       - elasticsearch
     network_mode: bridge
-    labels:
-      - "traefik.backend=kibana"
-      - "traefik.port=5601"
-      - "traefik.frontend.rule=Host:kibana.cloudunit.dev"
 
   dockbeat-polling:
+    hostname: ${HOSTNAME}
     build:
       context: cu-elk/poller/dockbeat/
     image: cloudunit/elk-dockbeat

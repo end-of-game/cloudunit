@@ -81,6 +81,8 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			DELETE FROM mysql.user ;
 			CREATE USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
 			GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
+			CREATE USER 'monitoring'@'%' IDENTIFIED BY 'monitoring' ;
+			GRANT SELECT ON *.* TO 'monitoring'@'%' IDENTIFIED BY 'monitoring';
 			DROP DATABASE IF EXISTS test ;
 			FLUSH PRIVILEGES ;
 		EOSQL
@@ -128,6 +130,12 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 		echo 'MySQL init process done. Ready for start up.'
 		echo
+		echo
+		echo 'Start metricbeat agent with mysql module.'
+		sed -i "s/MYSQL_USER/$MYSQL_USER/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
+		sed -i "s/MYSQL_PASSWORD/$MYSQL_PASSWORD/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
+		nohup /opt/cloudunit/polling-agents/metricbeat/metricbeat -c /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml > /dev/null 2>&1 &
+
 	fi
 fi
 
