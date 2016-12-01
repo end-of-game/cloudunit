@@ -227,6 +227,7 @@ public class CloudUnitApplicationContext
     public DockerCloudUnitClient dockerCloudUnitClient(@Value("${docker.endpoint.mode}") String endpoint,
                                                        @Value("${docker.socket.location}") String dockerSocketLocation) {
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
+        logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
         if (useUnixSocket) {
             dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, dockerSocketLocation));
@@ -241,6 +242,7 @@ public class CloudUnitApplicationContext
                                      @Value("${docker.socket.location}") String dockerSocketLocation) {
         com.spotify.docker.client.DockerClient dockerClient = null;
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
+        logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
         try {
             if (useUnixSocket) {
                 dockerClient = DefaultDockerClient.fromEnv().build();
