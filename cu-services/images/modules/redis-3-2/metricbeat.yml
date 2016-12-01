@@ -10,25 +10,41 @@
 #==========================  Modules configuration ============================
 metricbeat.modules:
 
-#-------------------------------- MySQL Module -------------------------------
-- module: mysql
-  metricsets: ["status"]
+#-------------------------------- Redis Module -------------------------------
+- module: redis
+  metricsets: ["info"]
+  #, "keyspace"]
   enabled: true
   period: 60s
 
-  # Host DSN should be defined as "user:pass@tcp(127.0.0.1:3306)/"
-  # The username and password can either be set in the DSN or using the username
-  # and password config options. Those specified in the DSN take precedence.
-  hosts: ["tcp(127.0.0.1:3306)/"]
+  # Redis hosts
+  hosts: ["127.0.0.1:6379"]
 
-  # Username of hosts. Empty by default.
-  username: monitoring
+  # Enabled defines if the module is enabled. Default: true
+  enabled: true
 
-  # Password of hosts. Empty by default.
-  password: monitoring
+  # Timeout after which time a metricset should return an error
+  # Timeout is by default defined as period, as a fetch of a metricset
+  # should never take longer then period, as otherwise calls can pile up.
+  timeout: 5s
 
-  # By setting raw to true, all raw fields from the status metricset will be added to the event.
-  #raw: false
+  # Optional fields to be added to each event
+  #fields:
+  #  datacenter: west
+
+  # Network type to be used for redis connection. Default: tcp
+  #network: tcp
+
+  # Max number of concurrent connections. Default: 10
+  #maxconn: 10
+
+  # Filters can be used to reduce the number of fields sent.
+  #filters:
+  #  - include_fields:
+  #      fields: ["stats"]
+
+  # Redis AUTH password. Empty by default.
+  #password: foobared
 
 #================================ Outputs ======================================
 

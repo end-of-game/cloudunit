@@ -132,9 +132,11 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 		echo
 		echo 'Start metricbeat agent with mysql module.'
-		sed -i "s/MYSQL_USER/$MYSQL_USER/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
-		sed -i "s/MYSQL_PASSWORD/$MYSQL_PASSWORD/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
-		nohup /opt/cloudunit/polling-agents/metricbeat/metricbeat -c /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml > /dev/null 2>&1 &
+		if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
+			sed -i "s/MYSQL_USER/$MYSQL_USER/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
+			sed -i "s/MYSQL_PASSWORD/$MYSQL_PASSWORD/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
+			nohup /opt/cloudunit/polling-agents/metricbeat/metricbeat -c /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml > /dev/null 2>&1 &
+		fi
 
 	fi
 fi

@@ -10,25 +10,18 @@
 #==========================  Modules configuration ============================
 metricbeat.modules:
 
-#-------------------------------- MySQL Module -------------------------------
-- module: mysql
+#------------------------------- MongoDB Module ------------------------------
+- module: mongodb
   metricsets: ["status"]
   enabled: true
   period: 60s
 
-  # Host DSN should be defined as "user:pass@tcp(127.0.0.1:3306)/"
-  # The username and password can either be set in the DSN or using the username
-  # and password config options. Those specified in the DSN take precedence.
-  hosts: ["tcp(127.0.0.1:3306)/"]
-
-  # Username of hosts. Empty by default.
-  username: monitoring
-
-  # Password of hosts. Empty by default.
-  password: monitoring
-
-  # By setting raw to true, all raw fields from the status metricset will be added to the event.
-  #raw: false
+   #The hosts must be passed as MongoDB URLs in the format:
+   #[mongodb://][user:pass@]host[:port].
+   #The username and password can also be set using the respective configuration
+   #options. The credentials in the URL take precedence over the username and
+   #password configuration options.
+  hosts: ["localhost:27017"]
 
 #================================ Outputs ======================================
 
