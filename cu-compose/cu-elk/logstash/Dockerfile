@@ -14,7 +14,7 @@ RUN set -x \
 	&& apt update \
 	&& apt install elasticsearch-curator \
   && sed -i 's/#path.config/path.config/' /etc/logstash/logstash.yml \
-	&& /usr/share/logstash/bin/logstash-plugin install logstash-output-exec
+	&& /usr/share/logstash/bin/logstash-plugin install logstash-input-exec
 
 LABEL origin cloudunit-monitoring
 LABEL application-type logstash

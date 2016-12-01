@@ -44,15 +44,14 @@ ENV PG_MAJOR 9.3
 
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
 
-RUN apt-get update \
-	&& apt-get install -y postgresql-common \
-	&& sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf \
-	&& apt-get install -y \
-		# postgresql-$PG_MAJOR=$PG_VERSION \
-		postgresql-$PG_MAJOR \
-		# postgresql-contrib-$PG_MAJOR=$PG_VERSION \
-		postgresql-contrib-$PG_MAJOR \
-	&& rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update
+RUN apt-get install -y postgresql-common
+RUN	&& sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
+RUN apt-get install -y
+RUN	postgresql-$PG_MAJOR=$PG_VERSION
+RUN	postgresql-contrib-$PG_MAJOR=$PG_VERSION
+RUN rm -rf /var/lib/apt/lists/*
 
 # make the sample config easier to munge (and "correct by default")
 RUN mv -v /usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample /usr/share/postgresql/ \

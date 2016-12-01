@@ -23,11 +23,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - /srv/cu-elk/logstash/conf:/etc/logstash/conf.d
       - /var/run/docker.sock:/var/run/docker.sock
       - ./cu-elk/logstash/conf.d:/etc/logstash/conf.d
       - ./cu-elk/logstash/curator:/etc/curator
-      - ./cu-elk/poller/metricbeat/conf:/opt/cloudunit/polling-agents/metricbeat
     environment:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     depends_on:
