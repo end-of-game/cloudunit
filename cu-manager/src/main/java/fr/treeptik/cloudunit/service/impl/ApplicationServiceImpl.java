@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +64,7 @@ import fr.treeptik.cloudunit.utils.DomainUtils;
 import fr.treeptik.cloudunit.utils.NamingUtils;
 
 @Service
+@DependsOn("dataSourceInitializer")
 public class ApplicationServiceImpl implements ApplicationService {
 
 	Locale locale = Locale.ENGLISH;
@@ -117,11 +119,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private List<String> imageNames;
 
 	@PostConstruct
-    public void init() throws ServiceException {
+	public void init() throws ServiceException {
 		logger.info("Loading images enabled from database...");
 	    List<Image> imagesEnabled = imageService.findEnabledImages();
         imageNames = imagesEnabled.stream().map(i -> i.getName()).collect(Collectors.toList());
-		logger.info("Images are loaded from database...");
+		logger.info("{} images have been loaded from database", imageNames.size());
     }
 
     /**
