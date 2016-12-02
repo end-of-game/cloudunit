@@ -12,6 +12,10 @@ function base {
     docker build --rm $CACHE_STRATEGY -t cloudunit/base-16.04 images/base-16.04
 }
 
+function nginx {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/nginx-1.10 images/servers/nginx-10
+}
+
 function apache {
     docker build --rm $CACHE_STRATEGY -t cloudunit/apache-2-2 images/servers/apache-2-2
 }
@@ -108,6 +112,11 @@ echo "Building Mysql"
 mysql
 ;;
 
+'nginx')
+echo "Building Nginx"
+nginx
+;;
+
 'postgre')
 echo "Building Postgre"
 postgre
@@ -147,6 +156,7 @@ elastic
 fatjar
 mongo
 mysql
+nginx
 postgre
 rabbitmq
 redis
