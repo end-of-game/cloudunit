@@ -75,9 +75,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private ApplicationDAO applicationDAO;
 
 	@Inject
-	private PortToOpenDAO portToOpenDAO;
-
-	@Inject
 	private ServerService serverService;
 
 	@Inject
