@@ -25,18 +25,19 @@ INSERT IGNORE INTO `Image`
   (80, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'webserver', 'server', '', null),
   (90, 'activemq-5.13.2', 'cloudunit/activemq-5.13.2', 'ActiveMQ 5.13.2', 'activemq', 'module', '', 'MESSAGE_BROKER'),
   (100, 'rabbitmq-3.6.5-1', 'cloudunit/rabbitmq-3.6.5-1', 'RabbitMQ 3.6.5-1', 'rabbitmq', 'module', '', 'MESSAGE_BROKER'),
-  (110, 'elasticsearch-2.4', 'cloudunit/elasticsearch-2.4', 'Elasticsearch 2.4', 'elasticsearch', 'module', '', 'SEARCH_ENGINE');
+  (110, 'elasticsearch-2.4', 'cloudunit/elasticsearch-2.4', 'Elasticsearch 2.4', 'elasticsearch', 'module', '', 'SEARCH_ENGINE'),
+  (100, 'nginx-1.10.2-1', 'cloudunit/nginx-1.10.2-1', 'Nginx 1.11.2-1', 'nginx', 'webserver', 'server', null);
 
 INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariables`,`moduleEnvironmentVariables_KEY`,`Image_id`)
 VALUES
     ("MYSQL_USER", "USER", 20),
     ("MYSQL_PASSWORD", "PASSWORD", 20),
     ("MYSQL_DATABASE", "NAME", 20),
-    
+
     ("MYSQL_USER", "USER", 21),
     ("MYSQL_PASSWORD", "PASSWORD", 21),
     ("MYSQL_DATABASE", "NAME", 21),
-        
+
     ("MYSQL_USER", "USER", 22),
     ("MYSQL_PASSWORD", "PASSWORD", 22),
     ("MYSQL_DATABASE", "NAME", 22),
