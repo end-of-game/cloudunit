@@ -15,7 +15,7 @@ if [[ $USER != "admincu" ]]; then
     exit 1
 fi
 
-read -p "- Nom de l'hôte Docker : " dhostname
+read -p "- Domain CloudUnit : " dhostname
 dip="172.17.42.1"
 
 ## Clean
