@@ -233,9 +233,9 @@ public class CloudUnitApplicationContext
         logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
         if (useUnixSocket) {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, dockerSocketLocation, null));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, endpoint, dockerSocketLocation, null));
         } else {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, endpoint + "://" + dockerSocketLocation, certPathDirectory));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false,  endpoint, dockerSocketLocation, certPathDirectory));
         }
         return dockerCloudUnitClient;
     }
