@@ -6,6 +6,8 @@ RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres
 
 ## CLOUDUNIT :: BEGINNING
 
+ENV METRICBEAT_VERSION 5.0.1
+
 ENV CU_MODULE_PORT 5432
 ENV CU_DEFAULT_LOG_FILE " "
 ENV CU_LOGS " "
@@ -44,14 +46,16 @@ ENV PG_MAJOR 9.3
 
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
 
-
-RUN apt-get update
-RUN apt-get install -y postgresql-common
-RUN	&& sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf
-RUN apt-get install -y
-RUN	postgresql-$PG_MAJOR=$PG_VERSION
-RUN	postgresql-contrib-$PG_MAJOR=$PG_VERSION
-RUN rm -rf /var/lib/apt/lists/*
+# postgresql-$PG_MAJOR=$PG_VERSION \
+# postgresql-contrib-$PG_MAJOR=$PG_VERSION \
+# postgresql-contrib-$PG_MAJOR=$PG_VERSION \
+RUN apt-get update \
+	&& apt-get install -y postgresql-common \
+	&& sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf \
+	&& apt-get install -y \
+		postgresql-$PG_MAJOR \
+		postgresql-contrib-$PG_MAJOR \
+	&& rm -rf /var/lib/apt/lists/*
 
 # make the sample config easier to munge (and "correct by default")
 RUN mv -v /usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample /usr/share/postgresql/ \
@@ -59,6 +63,17 @@ RUN mv -v /usr/share/postgresql/$PG_MAJOR/postgresql.conf.sample /usr/share/post
 	&& sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /usr/share/postgresql/postgresql.conf.sample
 
 RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql
+
+# Install metricbeat agent
+
+RUN mkdir -p /opt/cloudunit/polling-agents/metricbeat \
+  && cd /opt/cloudunit/polling-agents \
+	&& curl --insecure -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
+	&& tar zxvf metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz -C metricbeat --strip-components 1 \
+	&& rm metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
+	&& chown -R postgres:postgres /opt/cloudunit/polling-agents/metricbeat
+
+ADD metricbeat.yml /opt/cloudunit/polling-agents/metricbeat
 
 ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
 ENV PGDATA /var/lib/postgresql/data
