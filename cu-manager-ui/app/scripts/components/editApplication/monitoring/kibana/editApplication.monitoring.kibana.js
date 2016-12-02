@@ -14,78 +14,80 @@
  */
 
 (function () {
-  'use strict';
+    'use strict';
 
-  angular
-    .module ( 'webuiApp.editApplication' )
-    .component ( 'editAppMonitoringKibana', Monitoring() );
+    angular
+        .module('webuiApp.editApplication')
+        .component('editAppMonitoringKibana', Monitoring());
 
-  function Monitoring () {
-    return {
-      templateUrl: 'scripts/components/editApplication/monitoring/kibana/editApplication.monitoring.kibana.html',
-      bindings: {
-        app: '='
-      },
-      controller: [
-        '$scope',
-        'MonitoringService',
-        '$sce',
-        'ErrorService',
-        MonitoringCtrl
-      ],
-      controllerAs: 'monitoring',
-    };
-  }
-
-  function MonitoringCtrl ( $scope, MonitoringService, $sce, ErrorService ) {
-
-    // ------------------------------------------------------------------------
-    // MONITORING
-    // ------------------------------------------------------------------------
-
-    var vm = this;
-    vm.containers = [];
-    vm.myContainer = {};
-    vm.isLoading = true;
-    vm.getContainers = getContainers;
-    vm.monitoringService = MonitoringService;
-
-    vm.$onDestroy = function () {
-      vm.monitoringService.stopPollStats();
-    };
-
-    vm.$onInit = function() {
-      getContainers ();
+    function Monitoring() {
+        return {
+            templateUrl: 'scripts/components/editApplication/monitoring/kibana/editApplication.monitoring.kibana.html',
+            bindings: {
+                app: '='
+            },
+            controller: [
+                '$scope',
+                'ApplicationService',
+                '$stateParams',
+                'MonitoringService',
+                '$sce',
+                'ErrorService',
+                MonitoringCtrl
+            ],
+            controllerAs: 'monitoring',
+        };
     }
 
-    vm.$onInit = function() {
-      setTimeout(function() {
-        MonitoringService.getKibanaLocation()
-          .then(function(url) {
-            vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Dockbeat-Per-Container-Dashboard-Graph?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Dockbeat-Per-Container-CPU-Graph,panelIndex:3,row:1,size_x:6,size_y:3,type:visualization),(col:7,id:Dockbeat-Per-Container-Memory-Graph,panelIndex:4,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-Net-Error-Graph,panelIndex:5,row:4,size_x:6,size_y:3,type:visualization),(col:7,id:Dockbeat-Global-Net-Usage-Graph,panelIndex:6,row:4,size_x:6,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-IO-Usage-Graph,panelIndex:7,row:7,size_x:12,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'containerName:+" + vm.app.server.name + "')),title:'Dockbeat+Per+Container+Dashboard+Graph',uiState:())");
-          })
-          .catch(function(response) {
-            ErrorService.handle(response);
-          })
-      }, 0);
-    }
+    function MonitoringCtrl($scope, ApplicationService, $stateParams, MonitoringService, $sce, ErrorService) {
 
-    function getContainers ( selectedContainer ) {
+        // ------------------------------------------------------------------------
+        // MONITORING
+        // ------------------------------------------------------------------------
+
+        var vm = this;
+        vm.containers = [];
+        vm.myContainer = {};
         vm.isLoading = true;
-          return ApplicationService.listContainers ( $stateParams.name )
-              .then ( function onGetContainersComplete ( containers ) {
-                  vm.containers = containers;
-                  vm.myContainer = selectedContainer || containers[0];
+        vm.getContainers = getContainers;
+        vm.monitoringService = MonitoringService;
 
-                  vm.monitoringService.initStats ( vm.myContainer.name ).then ( function () {
-                      vm.stats = vm.monitoringService.stats;
-                      vm.isLoading = false;
-                  } )
-              } )
-              .catch ( function onGetContainersError ( reason ) {
-                  console.error ( reason ); //debug
-        } );
+        vm.$onDestroy = function () {
+            vm.monitoringService.stopPollStats();
+        };
+
+        vm.$onInit = function () {
+            getContainers();
+        }
+
+        function getContainers(selectedContainer) {
+            console.log(selectedContainer);
+            vm.isLoading = true;
+            return ApplicationService.listContainers($stateParams.name)
+                .then(function onGetContainersComplete(containers) {
+                    vm.containers = containers;
+                    vm.myContainer = selectedContainer || containers[0];
+
+                    setTimeout(function () {
+                        MonitoringService.getKibanaLocation()
+                            .then(function (url) {
+                                vm.isLoading = false;
+                                console.log(vm.myContainer.name.contains("mysql"))
+                                if (vm.myContainer.name.contains("mysql")){
+                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Metricbeat-Mysql?embed=true&_g=()&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Metricbeat-Mysql-bytes-stats,panelIndex:1,row:1,size_x:6,size_y:3,type:visualization),(col:7,id:Metricbeat-Mysql-connections-stats,panelIndex:2,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Metricbeat-Mysql-threads-stats,panelIndex:4,row:4,size_x:6,size_y:3,type:visualization),(col:7,id:Metricbeat-Mysql-delayed-stats,panelIndex:3,row:4,size_x:6,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:"+ vm.myContainer.name +")),title:'Metricbeat+Mysql',uiState:())");
+                                } else {
+                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Dockbeat-Per-Container-Dashboard-Graph?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Dockbeat-Per-Container-CPU-Graph,panelIndex:3,row:1,size_x:6,size_y:3,type:visualization),(col:7,id:Dockbeat-Per-Container-Memory-Graph,panelIndex:4,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-Net-Error-Graph,panelIndex:5,row:4,size_x:6,size_y:3,type:visualization),(col:7,id:Dockbeat-Global-Net-Usage-Graph,panelIndex:6,row:4,size_x:6,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-IO-Usage-Graph,panelIndex:7,row:7,size_x:12,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'containerName:+" + vm.myContainer.name + "')),title:'Dockbeat+Per+Container+Dashboard+Graph',uiState:())");
+                                }
+                            })
+                            .catch(function (response) {
+                                ErrorService.handle(response);
+                            })
+                    }, 0);
+                })
+                .catch(function onGetContainersError(reason) {
+                    console.error(reason); //debug
+                });
+        }
     }
-  }
 
-}) ();
+})();
