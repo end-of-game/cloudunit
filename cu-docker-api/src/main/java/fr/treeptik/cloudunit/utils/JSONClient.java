@@ -61,10 +61,11 @@ public class JSONClient  {
     private Logger logger = LoggerFactory.getLogger(JSONClient.class);
 
     private Boolean isUnixSocket;
-
+    private String certPathDirectory;
     private File socketFile;
 
-    public JSONClient(Boolean isUnixSocket, String location) {
+    public JSONClient(Boolean isUnixSocket, String location, String certPathDirectory) {
+        this.certPathDirectory = certPathDirectory;
         this.isUnixSocket = isUnixSocket;
         if(isUnixSocket && location !=null) {
             try {
@@ -203,14 +204,43 @@ public class JSONClient  {
             HttpClientBuilder builder = HttpClients.custom();
             builder.setConnectionManager(manager);
             return builder.build();
+        } else {
+            org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
+            HttpClientConnectionManager manager = getConnectionFactory(this.certPathDirectory, 10);
+            builder.setConnectionManager(manager);
+            return builder.build();
         }
-        return HttpClients.createDefault();
     }
 
+    private static HttpClientConnectionManager getConnectionFactory(String certPath, int maxConnections) throws IOException {
+        PoolingHttpClientConnectionManager ret = new PoolingHttpClientConnectionManager(getSslFactoryRegistry(certPath));
+        ret.setDefaultMaxPerRoute(maxConnections);
+        return ret;
+    }
 
     private Registry<ConnectionSocketFactory> getUnixSocketFactoryRegistry() throws IOException {
         UnixSocketFactory socketFactory = new UnixSocketFactory();
         return RegistryBuilder.<ConnectionSocketFactory>create().register("unix", socketFactory).build();
+    }
+
+    private static Registry<ConnectionSocketFactory> getSslFactoryRegistry(String certPath) throws IOException {
+        try {
+            KeyStore keyStore = KeyStoreUtils.createDockerKeyStore(certPath);
+
+            SSLContext sslContext =
+                    SSLContexts.custom()
+                            .useTLS()
+                            .loadKeyMaterial(keyStore, "docker".toCharArray())
+                            .loadTrustMaterial(keyStore)
+                            .build();
+
+            SSLConnectionSocketFactory sslsf =
+
+                    new SSLConnectionSocketFactory(sslContext);
+            return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslsf).build();
+        } catch (GeneralSecurityException e) {
+            throw new IOException(e);
+        }
     }
 
     private class UnixSocketFactory implements ConnectionSocketFactory{

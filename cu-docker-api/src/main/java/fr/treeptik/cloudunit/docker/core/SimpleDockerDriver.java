@@ -51,12 +51,12 @@ public class SimpleDockerDriver implements DockerDriver {
     private Boolean isUnixSocket;
     private String host;
 
-    public SimpleDockerDriver(Boolean isUnixSocket, String host) {
+    public SimpleDockerDriver(Boolean isUnixSocket, String host, String certPathDirectory) {
         this.isUnixSocket = isUnixSocket;
         if (isUnixSocket) {
-            client = new JSONClient(isUnixSocket, "/var/run/docker.sock");
+            client = new JSONClient(isUnixSocket, "/var/run/docker.sock", null);
         } else {
-            client = new JSONClient(isUnixSocket, host);
+            client = new JSONClient(isUnixSocket, host, certPathDirectory);
         }
         this.host = host;
         objectMapper = new ObjectMapper();

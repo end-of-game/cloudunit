@@ -29,7 +29,7 @@ public class NetworksCommandTest {
     public static void setupClass() {
         DOCKER_HOST = "cloudunit.dev:4243";
         dockerCloudUnitClient = new DockerCloudUnitClient();
-        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, DOCKER_HOST));
+        dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, DOCKER_HOST, null));
     }
 
     @Test

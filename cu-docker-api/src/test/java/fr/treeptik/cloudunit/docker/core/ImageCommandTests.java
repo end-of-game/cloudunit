@@ -59,9 +59,9 @@ public class ImageCommandTests {
         DockerContainer container = ContainerBuilder.aContainer().withName(CONTAINER_NAME).withConfig(config).build();
         try {
             if(isUnixSocketConnection){
-                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, socketPathAsString));
+                dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, socketPathAsString, null));
             } else {
-               dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, DOCKER_HOST));
+               dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, DOCKER_HOST, null));
             }
             dockerCloudUnitClient.pullImage("latest", "alpine");
             dockerCloudUnitClient.createContainer(container, DOCKER_HOST);
