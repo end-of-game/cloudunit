@@ -228,7 +228,7 @@ public class CloudUnitApplicationContext
     @Bean
     public DockerCloudUnitClient dockerCloudUnitClient(@Value("${docker.endpoint.mode}") String endpoint,
                                                        @Value("${docker.socket.location}") String dockerSocketLocation,
-                                                       @Value("${certs.dir.path}") String certPathDirectory) {
+                                                       @Value("${certs.dir.path:}") String certPathDirectory) {
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
         logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
@@ -246,20 +246,22 @@ public class CloudUnitApplicationContext
                                      @Value("${certs.dir.path}") String certPathDirectory) {
         com.spotify.docker.client.DockerClient dockerClient = null;
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
+        boolean useTLS = endpoint.equalsIgnoreCase("https");
         logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
+        logger.info("Socket TLS : " + (useTLS ? "no" : "yes"));
         try {
             if (useUnixSocket) {
                 dockerClient = DefaultDockerClient.fromEnv().build();
             } else {
-                if (dockerSocketLocation.startsWith("https")) {
+                if (useTLS) {
                     final DockerCertificates certs = new DockerCertificates(Paths.get(certPathDirectory));
                     dockerClient = DefaultDockerClient
                             .builder()
-                            .uri("https://" + dockerSocketLocation).dockerCertificates(certs).build();
+                            .uri("https://"+dockerSocketLocation).dockerCertificates(certs).build();
                 } else {
                     dockerClient = DefaultDockerClient
                             .builder()
-                            .uri("http://" + dockerSocketLocation).build();
+                            .uri("http://"+dockerSocketLocation).build();
                 }
             }
         } catch (Exception e) {

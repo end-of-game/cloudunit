@@ -204,7 +204,7 @@ public class JSONClient  {
             HttpClientBuilder builder = HttpClients.custom();
             builder.setConnectionManager(manager);
             return builder.build();
-        } else if (certPathDirectory != null) {
+        } else if (certPathDirectory != null && !certPathDirectory.isEmpty()) {
             org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
             HttpClientConnectionManager manager = getConnectionFactory(this.certPathDirectory, 10);
             builder.setConnectionManager(manager);
