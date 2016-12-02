@@ -235,7 +235,7 @@ public class CloudUnitApplicationContext
         if (useUnixSocket) {
             dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, dockerSocketLocation, null));
         } else {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, dockerSocketLocation, certPathDirectory));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, endpoint + "://" + dockerSocketLocation, certPathDirectory));
         }
         return dockerCloudUnitClient;
     }
