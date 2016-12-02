@@ -228,7 +228,7 @@ public class CloudUnitApplicationContext
     @Bean
     public DockerCloudUnitClient dockerCloudUnitClient(@Value("${docker.endpoint.mode}") String endpoint,
                                                        @Value("${docker.socket.location}") String dockerSocketLocation,
-                                                       @Value("${certs.dir.path:}") String certPathDirectory) {
+                                                       @Value("${docker.certs.dir.path:}") String certPathDirectory) {
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
         logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
@@ -243,7 +243,7 @@ public class CloudUnitApplicationContext
     @Bean
     public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
                                      @Value("${docker.socket.location}") String dockerSocketLocation,
-                                     @Value("${certs.dir.path}") String certPathDirectory) {
+                                     @Value("${docker.certs.dir.path}") String certPathDirectory) {
         com.spotify.docker.client.DockerClient dockerClient = null;
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
         boolean useTLS = endpoint.equalsIgnoreCase("https");
