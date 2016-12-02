@@ -91,7 +91,7 @@ public class JSONClient  {
         HttpGet httpGet = new HttpGet(uri);
         HttpResponse response = null;
         try {
-            CloseableHttpClient httpclient = buildSecureHttpClient(false);
+            CloseableHttpClient httpclient = buildSecureHttpClient();
             response = httpclient.execute(httpGet);
             LineIterator iterator = IOUtils.lineIterator(response.getEntity()
                     .getContent(), "UTF-8");
@@ -124,7 +124,7 @@ public class JSONClient  {
         HttpResponse response = null;
         StringWriter writer = new StringWriter();
         try {
-            CloseableHttpClient httpclient = buildSecureHttpClient(false);
+            CloseableHttpClient httpclient = buildSecureHttpClient();
             httpPost.setEntity(new StringEntity(body));
             response = httpclient.execute(httpPost);
             if (response.getEntity() != null) {
@@ -161,7 +161,7 @@ public class JSONClient  {
         HttpResponse response = null;
         StringWriter writer = new StringWriter();
         try {
-            CloseableHttpClient httpclient = buildSecureHttpClient(false);
+            CloseableHttpClient httpclient = buildSecureHttpClient();
             httpPost.setEntity(new StringEntity(body));
             response = httpclient.execute(httpPost);
             IOUtils.copy(response.getEntity().getContent(), writer, "UTF-8");
@@ -184,7 +184,7 @@ public class JSONClient  {
         }
         CloseableHttpResponse response = null;
         try {
-            CloseableHttpClient httpClient = buildSecureHttpClient(httpRequired);
+            CloseableHttpClient httpClient = buildSecureHttpClient();
             HttpDelete httpDelete = new HttpDelete(uri);
             response = httpClient.execute(httpDelete);
         } catch (IOException e) {
@@ -198,17 +198,19 @@ public class JSONClient  {
         return new DockerResponse(response.getStatusLine().getStatusCode(), "");
     }
 
-    public CloseableHttpClient buildSecureHttpClient(Boolean httpRequired) throws IOException {
+    public CloseableHttpClient buildSecureHttpClient() throws IOException {
         if(isUnixSocket){
             HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(getUnixSocketFactoryRegistry());
             HttpClientBuilder builder = HttpClients.custom();
             builder.setConnectionManager(manager);
             return builder.build();
-        } else {
+        } else if (certPathDirectory != null) {
             org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
             HttpClientConnectionManager manager = getConnectionFactory(this.certPathDirectory, 10);
             builder.setConnectionManager(manager);
             return builder.build();
+        } else {
+            return HttpClients.createDefault();
         }
     }
 
