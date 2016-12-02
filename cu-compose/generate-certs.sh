@@ -16,14 +16,14 @@ if [[ $USER != "admincu" ]]; then
 fi
 
 read -p "- Nom de l'hôte Docker : " dhostname
-read -p "- Adresse IP de l'hôte Docker : " dip
+dip="172.17.42.1"
 
 ## Clean
 sudo rm -f *.pem
 
 ## Generation du certificat CA
 sudo openssl genrsa -aes256 -passout pass:$PASSPHRASE -out $CA_KEY 2048
-sudo openssl req -new -x509 -days 365 -key $CA_KEY -sha256 -passin pass:$PASSPHRASE -subj "/C=FR/ST=MyState/O=MyOrg" -out $CA_CERT
+sudo openssl req -new -x509 -days 365 -key $CA_KEY -sha256 -passin pass:$PASSPHRASE -subj "/C=FR/ST=MyState/O=Treeptik" -out $CA_CERT
 
 ## Generation du certificat Serveur
 sudo openssl genrsa -out $SERVER_KEY 2048
