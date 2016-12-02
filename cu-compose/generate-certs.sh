@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ########################################################
 CA_CERT=ca.pem
 CA_KEY=ca-key.pem
@@ -44,7 +44,16 @@ sudo chmod 0444 $CA_CERT $SERVER_CERT $CLIENT_CERT
 
 ## Instruction
 echo ""
-echo " - Côté Serveur : copier dans [/root/.docker] les fichiers [$CA_CERT $SERVER_CERT $SERVER_KEY]"
-echo " - Côté Client  : copier dans [~/.docker    ] les fichiers [$CA_CERT $CLIENT_CERT $CLIENT_KEY]"
+echo " - Server side : copying into [/root/.docker] les fichiers [$CA_CERT $SERVER_CERT $SERVER_KEY]"
+sudo mkdir /root/.docker
+sudo cp -f $CA_CERT /root/.docker
+sudo cp -f $SERVER_CERT /root/.docker
+sudo cp -f $SERVER_KEY /root/.docker
 
-## That's all folks
+echo " - Client side : copying into [~/.docker    ] les fichiers [$CA_CERT $CLIENT_CERT $CLIENT_KEY]"
+sudo mkdir ~/.docker
+sudo cp -f $CA_CERT ~/.docker 
+sudo cp -f $CLIENT_CERT ~/.docker 
+sudo cp -f $CLIENT_KEY ~/.docker 
+sudo chown -R admincu ~/.docker
+# That's all folks
