@@ -248,7 +248,7 @@ public class CloudUnitApplicationContext
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
         boolean useTLS = endpoint.equalsIgnoreCase("https");
         logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
-        logger.info("Socket TLS : " + (useTLS ? "no" : "yes"));
+        logger.info("Socket TLS : " + (useTLS ? "yes" : "no"));
         try {
             if (useUnixSocket) {
                 dockerClient = DefaultDockerClient.fromEnv().build();
