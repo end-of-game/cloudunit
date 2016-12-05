@@ -54,6 +54,7 @@ apt-get install -y docker-engine
 apt-get install -y mysql-client
 usermod -aG docker admincu
 service docker stop
+sh /home/admincu/cloudunit/cu-compose/generate-certs.sh
 cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
 service docker start
 
