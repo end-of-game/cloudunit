@@ -15,6 +15,8 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     exit 1
 fi
 
+read -p "- Domain : " domain
+
 # INIT
 apt-get update
 apt-get install -y git
@@ -80,7 +82,15 @@ chown -R admincu /home/admincu/.cloudunit
 cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
 usermod -g sudo $CU_USER
 
+# copy the environment file
+cp -f $CU_INSTALL_DIR/files/environment /etc/environment
+sed -i "s/DOMAIN_NAME/$domain/g" /etc/environment
 
+# display values to declare
+echo ""
+echo "You have to declare into your dns"
+echo ""
+cat /etc/environment
 
 
 
