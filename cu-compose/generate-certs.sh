@@ -15,7 +15,7 @@ if [[ $USER != "admincu" ]]; then
     exit 1
 fi
 
-read -p "- Domain CloudUnit : " dhostname
+dhostname="localhost"
 dip="172.17.42.1"
 
 ## Clean
@@ -47,13 +47,14 @@ echo ""
 echo " - Server side : copying into [/root/.docker] les fichiers [$CA_CERT $SERVER_CERT $SERVER_KEY]"
 sudo mkdir /root/.docker
 sudo cp -f $CA_CERT /root/.docker
-sudo cp -f $SERVER_CERT /root/.docker
-sudo cp -f $SERVER_KEY /root/.docker
+sudo mv -f $SERVER_CERT /root/.docker
+sudo mv -f $SERVER_KEY /root/.docker
 
 echo " - Client side : copying into [~/.docker    ] les fichiers [$CA_CERT $CLIENT_CERT $CLIENT_KEY]"
 sudo mkdir ~/.docker
-sudo cp -f $CA_CERT ~/.docker 
-sudo cp -f $CLIENT_CERT ~/.docker 
-sudo cp -f $CLIENT_KEY ~/.docker 
+sudo mv -f $CA_CERT ~/.docker
+sudo mv -f $CLIENT_CERT ~/.docker
+sudo mv -f $CLIENT_KEY ~/.docker
 sudo chown -R admincu ~/.docker
+
 # That's all folks
