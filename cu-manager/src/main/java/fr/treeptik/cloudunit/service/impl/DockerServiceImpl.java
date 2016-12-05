@@ -1,6 +1,5 @@
 package fr.treeptik.cloudunit.service.impl;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -315,12 +314,11 @@ public class DockerServiceImpl implements DockerService {
         logger.info("Volumes to add : " + volumes.toString());
 
         // map ports
-        final Map<String, String> ports =  new HashMap<>();
-        module.getPorts().stream()
+        Map<String, String> ports = module.getPorts().stream()
                 .filter(p -> p.getOpened())
-                .forEach(p->{
-                         ports.put(String.format("%s/tcp", p.getContainerValue()), p.getHostValue());
-                });
+                .collect(Collectors.toMap(
+                        p -> String.format("%s/tcp", p.getContainerValue()),
+                        p -> p.getHostValue()));
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, null, volumes,
                 envs, ports, "skynet", suffixCloudUnitIO);
         dockerCloudUnitClient.createContainer(container);

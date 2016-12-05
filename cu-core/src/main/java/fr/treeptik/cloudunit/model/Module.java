@@ -16,9 +16,14 @@ package fr.treeptik.cloudunit.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -29,6 +34,7 @@ public class Module extends Container implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     @Transient
     protected String suffixCU;
 
@@ -36,28 +42,55 @@ public class Module extends Container implements Serializable {
     @JsonIgnore
     private ModuleAction moduleAction;
 
-    private String managerLocation;
-
     @OneToMany(mappedBy = "module", cascade = { CascadeType.REMOVE, CascadeType.PERSIST })
     private List<Port> ports;
 
-    private Boolean isInitialized;
+    private boolean initialized;
 
     @ManyToOne
     @JsonIgnore
     private Application application;
 
     public Module() {
-        isInitialized = false;
+        initialized = false;
         this.image = new Image();
     }
-
-    public String getManagerLocation() {
-        return managerLocation;
+    
+    public Module(Application application, Image image) {
+        super(application, image);
+        this.application = application;
+        this.ports = image.getExposedPorts().entrySet().stream()
+                .map(kv -> new Port(kv.getKey(), kv.getValue(), null, false, this))
+                .collect(Collectors.toList());
+        this.initialized = false;
     }
+    
+    protected Module(Builder builder) {
+        super(builder);
+    }
+    
+    public static abstract class AbstractBuilder<T extends AbstractBuilder<T>> extends Container.AbstractBuilder<T> {
+        
+        protected AbstractBuilder(Image image) {
+            super(image);
+        }
+    }
+    
+    public static final class Builder extends AbstractBuilder<Builder> {
 
-    public void setManagerLocation(String managerLocation) {
-        this.managerLocation = managerLocation;
+        protected Builder(Image image) {
+            super(image);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+        
+        public Module build() {
+            return new Module(this);
+        }
+        
     }
 
     public ModuleAction getModuleAction() {
@@ -111,15 +144,6 @@ public class Module extends Container implements Serializable {
         return true;
     }
 
-    @JsonIgnore
-    public Long getInstanceNumber() {
-        if (name == null) {
-            throw new RuntimeException("Cannot get instance number without first call initNewModule");
-        }
-        return Long.parseLong((name.substring(name.lastIndexOf("-") + 1)));
-    }
-
-
     public List<Port> getPorts() {
         return ports;
     }
@@ -128,12 +152,12 @@ public class Module extends Container implements Serializable {
         this.ports = ports;
     }
 
-    public Boolean getIsInitialized() {
-        return isInitialized;
+    public boolean isInitialized() {
+        return initialized;
     }
 
-    public void setIsInitialized(Boolean isInitialized) {
-        this.isInitialized = isInitialized;
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 
 }

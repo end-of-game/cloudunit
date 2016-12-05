@@ -16,7 +16,11 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -30,25 +34,21 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
-import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Deployment;
 import fr.treeptik.cloudunit.model.DeploymentType;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.PortToOpen;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
@@ -60,7 +60,6 @@ import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.DomainUtils;
 import fr.treeptik.cloudunit.utils.NamingUtils;
 
 @Service
@@ -203,24 +202,14 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .withManagerIp(dockerSocketIP)
                 .withCuInstanceName(cuInstanceName).build();
 
-        // verify if application exists already
-		this.checkCreate(user, applicationName);
+		checkCreate(user, applicationName);
 
-        // BLOC APPLICATION
         application = applicationDAO.save(application);
 
-        // BLOC SERVER
-        Server server = new Server();
-        // We get image associated to server
-        server.setImage(image);
-        server.setApplication(application);
-        server.setName(imageName);
+        Server server = application.getServer();
+
         server = serverService.create(server);
-        application.setServer(server);
-
-        // Persistence for Application model
-        application.setJvmRelease(server.getJvmRelease());
-
+        
         application = applicationDAO.save(application);
         applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 

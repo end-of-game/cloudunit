@@ -15,26 +15,20 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +43,6 @@ import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
-import fr.treeptik.cloudunit.dto.VolumeResource;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
@@ -67,7 +60,6 @@ import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.VolumeAssociationService;
 import fr.treeptik.cloudunit.service.VolumeService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 
 @Service
 public class ServerServiceImpl implements ServerService {
@@ -145,27 +137,24 @@ public class ServerServiceImpl implements ServerService {
 		logger.debug("create : Methods parameters : " + server);
 		logger.info("ServerService : Starting creating Server " + server.getName());
 
-		// General informations
-		server.setStatus(Status.PENDING);
-		server.setJvmOptions("");
-		server.setStartDate(new Date());
-
+		// General information
 		Application application = server.getApplication();
 		User user = server.getApplication().getUser();
 
 		// Build a custom container
-		String containerName = NamingUtils.getContainerName(server.getApplication().getName()
-                                                            , null
-															,server.getApplication().getUser().getLogin());
+		String containerName = server.getName();
 
 		String imagePath = server.getImage().getPath();
 		String prefixEnv = server.getImage().getPrefixEnv();
 		logger.debug("imagePath:" + imagePath);
 
 		String subdomain = System.getenv("CU_SUB_DOMAIN");
-		if (subdomain == null) { subdomain = ""; }
+		if (subdomain == null) {
+		    subdomain = "";
+		}
 		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
+		// XXX - Why ???
+		// server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
 			dockerService.createServer(containerName, server, imagePath, prefixEnv, user, null, true, null);
@@ -178,11 +167,11 @@ public class ServerServiceImpl implements ServerService {
 				logger.debug(application.getLocation());
 			}
 
-			// Update server with all its informations
-			server.setManagerLocation("http://"+NamingUtils.getContainerName(application.getName(), null, application.getUser().getLogin() + suffixCloudUnitIO)
-					+ dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH"));
+			// Update server with all its information
+			server.setManagerLocation(String.format("http://%s/%s",
+			        application.getLocation(),
+					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH")));
 			server.setStatus(Status.START);
-			server.setJvmMemory(512L);
 			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
 			server = this.update(server);
 

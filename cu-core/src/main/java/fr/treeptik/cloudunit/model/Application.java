@@ -42,6 +42,7 @@ import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 
 @Entity
@@ -122,10 +123,7 @@ public class Application implements Serializable {
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
 	private Set<EnvironmentVariable> environmentVariables;
 
-	private String location;
-
 	public Application() {
-		super();
 		date = new Date();
 		// todo : create an enum for deployment status
 		deploymentStatus = Application.NONE;
@@ -140,10 +138,6 @@ public class Application implements Serializable {
         this.cuInstanceName = builder.cuInstanceName;
         this.status = builder.status;
         this.user = builder.user;
-        this.modules = builder.modules;
-        this.server = builder.server;
-        this.deployments = builder.deployments;
-        this.aliases = builder.aliases;
         this.suffixCloudUnitIO = builder.suffixCloudUnitIO;
         this.domainName = builder.domainName;
         this.managerIp = builder.managerIp;
@@ -153,8 +147,19 @@ public class Application implements Serializable {
         this.contextPath = builder.contextPath;
         this.environmentVariables = builder.environmentVariables;
         this.portsToOpen = builder.portsToOpen;
-        this.location = builder.location;
         this.restHost = builder.restHost;
+        
+        if ("webserver".equalsIgnoreCase(server.getImage().getPrefixEnv())) {
+            this.deploymentStatus = Application.ALREADY_DEPLOYED;
+        } else {
+            this.deploymentStatus = Application.NONE;
+        }
+        
+        this.modules = new HashSet<>();
+        this.deployments = new HashSet<>();
+        this.aliases = new HashSet<>();
+        
+        this.server = new Server(this, builder.image);
     }
 
 	public static Builder of(String displayName, Image image) {
@@ -229,6 +234,13 @@ public class Application implements Serializable {
 	public void setModules(List<Module> modules) {
 		this.modules = new HashSet<>(modules);
 	}
+	
+	public Module addModule(Image image) {
+	    Module module = new Module(this, image);
+	    modules.add(module);
+	    
+	    return module;
+	}
 
 	public void removeModule(Module module) {
 		module.setApplication(null);
@@ -294,11 +306,7 @@ public class Application implements Serializable {
 	}
 
 	public String getJvmRelease() {
-		return jvmRelease;
-	}
-
-	public void setJvmRelease(String jvmRelease) {
-		this.jvmRelease = jvmRelease;
+		return server.getJvmRelease();
 	}
 
 	@Override
@@ -366,7 +374,6 @@ public class Application implements Serializable {
 		return this.portsToOpen;
 	}
 
-
     public static final class Builder {
 
         private final String name;
@@ -374,10 +381,6 @@ public class Application implements Serializable {
         private String cuInstanceName;
         private Status status;
         private User user;
-        private Set<Module> modules;
-        private Server server;
-        private Set<Deployment> deployments;
-        private Set<String> aliases;
         private String suffixCloudUnitIO;
         private String domainName;
         private String managerIp;
@@ -388,7 +391,6 @@ public class Application implements Serializable {
         private String contextPath;
         private Set<PortToOpen> portsToOpen;
         private Set<EnvironmentVariable> environmentVariables;
-        private String location;
         private Image image;
 
         private Builder(String displayName, Image image) {
@@ -414,21 +416,6 @@ public class Application implements Serializable {
 
         public Builder withUser(User user) {
             this.user = user;
-            return this;
-        }
-
-        public Builder withModules(Set<Module> modules) {
-            this.modules = modules;
-            return this;
-        }
-
-        public Builder withServer(Server server) {
-            this.server = server;
-            return this;
-        }
-
-        public Builder withAliases(Set<String> aliases) {
-            this.aliases = aliases;
             return this;
         }
 
@@ -482,18 +469,7 @@ public class Application implements Serializable {
             return this;
         }
 
-        public Builder withLocation(String location) {
-            this.location = location;
-            return this;
-        }
-
         public Application build() {
-            // todo : is the right place, Bill ?
-            if ("webserver".equalsIgnoreCase(image.getPrefixEnv())) {
-                this.deploymentStatus = Application.ALREADY_DEPLOYED;
-            } else {
-                this.deploymentStatus = Application.NONE;
-            }
             return new Application(this);
         }
 
