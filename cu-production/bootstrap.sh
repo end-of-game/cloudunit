@@ -92,6 +92,12 @@ echo "You have to declare into your dns"
 echo ""
 cat /etc/environment
 
+# Change admincu passwd
+passwd admincu
+
+echo ""
+echo "You can open a new session with admincu"
+echo ""
 
 
 
