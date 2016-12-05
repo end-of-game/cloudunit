@@ -27,27 +27,9 @@ export BRANCH=master
 curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
 sh bootstrap.sh $BRANCH
 ```
-
+Set the domain name to access to your server. For example : `cu01.cloudunit.io` or `cloudunit.local`
 After installation, you need to set a password for `admincu`.
 Otherwise set up ssh keys for authentication.
-
-Configure your access URLs by appending following environment variables to `/etc/environment`.
-
-```
-MYSQL_ROOT_PASSWORD=changeit
-CU_DOMAIN=domain.com
-CU_PORTAL_DOMAIN=portal.domain.com
-CU_MANAGER_DOMAIN=manager.domain.com
-CU_GITLAB_DOMAIN=gitlab.domain.com
-CU_JENKINS_DOMAIN=jenkins.domain.com
-CU_KIBANA_DOMAIN=kibana.domain.com
-```
-
-Only if you want to use a subdomain as `cu01.cloudunit.xxx` for you domain `cloudunit.xxx`, you need to set into `/etc/environment`
-
-```
-CU_SUB_DOMAIN=.cu01
-```
 
 ### As `admincu`
 
