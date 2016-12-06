@@ -5,6 +5,9 @@ FROM cloudunit/base-jessie
 
 ENV HTTPD_PREFIX /usr/local/apache2
 ENV PATH $HTTPD_PREFIX/bin:$PATH
+
+ENV METRICBEAT_VERSION 5.0.1
+
 RUN mkdir -p "$HTTPD_PREFIX" \
 	&& chown www-data:www-data "$HTTPD_PREFIX"
 WORKDIR $HTTPD_PREFIX
@@ -42,7 +45,6 @@ RUN set -x \
 	\
 	&& wget -O httpd.tar.bz2 "$HTTPD_BZ2_URL" \
 	&& echo "$HTTPD_SHA1 *httpd.tar.bz2" | sha1sum -c - \
-# see https://httpd.apache.org/download.cgi#verify
 	&& wget -O httpd.tar.bz2.asc "$HTTPD_BZ2_URL.asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B1B96F45DFBDCCF974019235193F180AB55D9977 \
@@ -56,8 +58,6 @@ RUN set -x \
 	\
 	&& ./configure \
 		--prefix="$HTTPD_PREFIX" \
-# https://httpd.apache.org/docs/2.2/programs/configure.html
-# Caveat: --enable-mods-shared=all does not actually build all modules. To build all modules then, one might use:
 		--enable-mods-shared='all ssl ldap cache proxy authn_alias mem_cache file_cache authnz_ldap charset_lite dav_lock disk_cache' \
 	&& make -j"$(nproc)" \
 	&& make install \
@@ -92,6 +92,24 @@ ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
 
 ## CLOUDUNIT :: END
+
+RUN echo "<Location /server-status>" >> /usr/local/apache2/conf/httpd.conf \
+  && echo "		SetHandler server-status" >> /usr/local/apache2/conf/httpd.conf \
+	&& echo "		Order deny,allow" >> /usr/local/apache2/conf/httpd.conf \
+	&& echo "		Deny from all" >> /usr/local/apache2/conf/httpd.conf \
+	&& echo "		Allow from 127.0.0.1" >> /usr/local/apache2/conf/httpd.conf \
+	&& echo "</Location>" >> /usr/local/apache2/conf/httpd.conf
+
+# Install metricbeat agent
+
+RUN mkdir -p /opt/cloudunit/polling-agents/metricbeat \
+  && cd /opt/cloudunit/polling-agents \
+	&& curl --insecure -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
+	&& tar zxvf metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz -C metricbeat --strip-components 1 \
+	&& rm metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
+	&& chown -R www-data:www-data /opt/cloudunit/polling-agents/metricbeat
+
+ADD metricbeat.yml /opt/cloudunit/polling-agents/metricbeat
 
 EXPOSE 80
 CMD ["httpd-foreground"]

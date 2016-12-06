@@ -71,8 +71,8 @@ public class DockerServiceImpl implements DockerService {
     private DockerCloudUnitClient dockerCloudUnitClient;
 
     @Override
-    public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
-                             boolean createMainVolume, List<String> volumes) throws DockerJSONException {
+    public void createServer(String containerName, Server server, String imagePath, String prefixEnv, User user, List<String> envs,
+                             boolean createMainVolume, List<String> volumes) throws DockerJSONException, ServiceException {
         List<String> volumesFrom = Arrays.asList("java");
         if (volumes == null) {
             volumes = new ArrayList<>();
@@ -83,8 +83,8 @@ public class DockerServiceImpl implements DockerService {
         // always mount the associated volume
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
-        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null,
-                volumes, envs, null);
+        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, prefixEnv, volumesFrom, null,
+                volumes, envs, null, "skynet", suffixCloudUnitIO);
         dockerCloudUnitClient.createContainer(container);
     }
 
@@ -314,14 +314,13 @@ public class DockerServiceImpl implements DockerService {
         logger.info("Volumes to add : " + volumes.toString());
 
         // map ports
-        final Map<String, String> ports =  new HashMap<>();
-        module.getPorts().stream()
+        Map<String, String> ports = module.getPorts().stream()
                 .filter(p -> p.getOpened())
-                .forEach(p->{
-                         ports.put(String.format("%s/tcp", p.getContainerValue()), p.getHostValue());
-                });
-        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
-                envs, ports);
+                .collect(Collectors.toMap(
+                        p -> String.format("%s/tcp", p.getContainerValue()),
+                        p -> p.getHostValue()));
+        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, null, volumes,
+                envs, ports, "skynet", suffixCloudUnitIO);
         dockerCloudUnitClient.createContainer(container);
     }
 
@@ -341,7 +340,7 @@ public class DockerServiceImpl implements DockerService {
         try {
             LogStream stream = dockerClient.logs(container, DockerClient.LogsParam.stdout(), DockerClient.LogsParam.stderr());
             String logs = stream.readFully();
-            logger.debug(logs);
+            if (logger.isDebugEnabled()) { logger.debug(logs); }
             return logs;
         } catch (Exception e) {
             logger.error(container, e);

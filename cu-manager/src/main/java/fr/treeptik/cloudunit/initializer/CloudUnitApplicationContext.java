@@ -86,12 +86,6 @@ public class CloudUnitApplicationContext
 
     private final static Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
 
-    /*
-    @Override
-    public void addFormatters(FormatterRegistry formatterRegistry) {
-        formatterRegistry.addConverter(new StringToJsonInputConverter());
-    }
-    */
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 

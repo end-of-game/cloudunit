@@ -17,15 +17,26 @@ import fr.treeptik.cloudunit.docker.model.HostConfig;
  */
 public class ContainerUtils {
 
-    public static DockerContainer newCreateInstance(String name, String image, List<String> volumesFrom,
+    public static DockerContainer newCreateInstance(String name, String imagePath, String prefixEnv, List<String> volumesFrom,
             List<String> args, List<String> rawVolumes, List<String> envs,
-            Map<String, String> ports) {
+            Map<String, String> ports, String networkMode, String suffixCloudUnitIO) {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withVolumesFrom(volumesFrom).withBinds(rawVolumes)
-                .withPublishAllPorts(false).withPortBindings(buildPortBindingBody(ports)).build();
+                .withPublishAllPorts(false).withPortBindings(buildPortBindingBody(ports))
+                .withNetworkMode(networkMode)
+                .build();
         Config config = ConfigBuilder.aConfig().withAttachStdin(Boolean.FALSE).withAttachStdout(Boolean.TRUE)
                 .withHostname(name)
                 .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(image).withHostConfig(hostConfig).withMemory(0L)
                 .withMemorySwap(0L).withEnv(envs).build();
+        Map<String, String> labels = new HashMap<>();
+        if ("webserver".equalsIgnoreCase(prefixEnv)) {
+            labels.put("traefik.port", "80");
+        } else {
+            labels.put("traefik.port", "8080");
+        }
+        labels.put("traefik.backend", name);
+        labels.put("traefik.frontend.rule", "Host:" + name + suffixCloudUnitIO);
+        config.setLabels(labels);
         DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
         return container;
     }
@@ -56,6 +67,7 @@ public class ContainerUtils {
                 finalMap.put(port, params);
             }
         return finalMap;
+
     }
 
 }

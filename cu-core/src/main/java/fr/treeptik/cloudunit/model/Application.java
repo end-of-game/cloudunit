@@ -42,6 +42,7 @@ import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 
 @Entity
@@ -62,15 +63,10 @@ public class Application implements Serializable {
 
 	private String displayName;
 
-	/**
-	 * CloudUnit instance name (e.g. DEV, QA, PROD).
-	 */
-	private String cuInstanceName;
-
-	/**
-	 * Origin property issue from snapshot when created by clone process.
-	 */
-	private String origin;
+    /**
+     * CloudUnit instance name (e.g. DEV, QA, PROD).
+     */
+    private String cuInstanceName;
 
 	@Enumerated(EnumType.STRING)
 	private Status status;
@@ -95,10 +91,6 @@ public class Application implements Serializable {
 	@ElementCollection
 	private Set<String> aliases;
 
-	/**
-	 * Suffixe du domaine des applications déployées Ce champ est dynamique à
-	 * travers le profil maven
-	 */
 	private String suffixCloudUnitIO;
 
 	private String domainName;
@@ -107,8 +99,6 @@ public class Application implements Serializable {
 
 	private String managerPort;
 
-	// version de java sous laquelle tourne les containers serveurs et git
-	// (maven)
 	private String jvmRelease;
 
 	@JsonIgnore
@@ -126,8 +116,6 @@ public class Application implements Serializable {
 
 	private String contextPath;
 
-	private boolean isAClone;
-
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
 	@OrderBy(value = "port")
 	private Set<PortToOpen> portsToOpen;
@@ -135,25 +123,50 @@ public class Application implements Serializable {
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
 	private Set<EnvironmentVariable> environmentVariables;
 
-	private String location;
-
 	public Application() {
-		super();
 		date = new Date();
-		isAClone = false;
+		// todo : create an enum for deployment status
 		deploymentStatus = Application.NONE;
+		status = Status.PENDING;
 	}
 
-	public Application(Integer id, String name, String cuInstanceName, User user, List<Module> modules) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.cuInstanceName = cuInstanceName;
-		this.user = user;
-		this.modules = new HashSet<>(modules);
-	}
+	private Application(Builder builder) {
+	    this();
 
-	public Integer getId() {
+        this.name = builder.name;
+        this.displayName = builder.displayName;
+        this.cuInstanceName = builder.cuInstanceName;
+        this.status = builder.status;
+        this.user = builder.user;
+        this.suffixCloudUnitIO = builder.suffixCloudUnitIO;
+        this.domainName = builder.domainName;
+        this.managerIp = builder.managerIp;
+        this.managerPort = builder.managerPort;
+        this.jvmRelease = builder.jvmRelease;
+        this.deploymentStatus = builder.deploymentStatus;
+        this.contextPath = builder.contextPath;
+        this.environmentVariables = builder.environmentVariables;
+        this.portsToOpen = builder.portsToOpen;
+        this.restHost = builder.restHost;
+        
+        if ("webserver".equalsIgnoreCase(server.getImage().getPrefixEnv())) {
+            this.deploymentStatus = Application.ALREADY_DEPLOYED;
+        } else {
+            this.deploymentStatus = Application.NONE;
+        }
+        
+        this.modules = new HashSet<>();
+        this.deployments = new HashSet<>();
+        this.aliases = new HashSet<>();
+        
+        this.server = new Server(this, builder.image);
+    }
+
+	public static Builder of(String displayName, Image image) {
+        return new Builder(displayName, image);
+    }
+
+    public Integer getId() {
 		return id;
 	}
 
@@ -165,11 +178,6 @@ public class Application implements Serializable {
 		return name;
 	}
 
-	public void setName(String name) {
-		name = name.toLowerCase();
-		this.name = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(name);
-	}
-
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -178,21 +186,13 @@ public class Application implements Serializable {
 		this.displayName = displayName;
 	}
 
-	public String getCuInstanceName() {
-		return cuInstanceName;
-	}
+    public String getCuInstanceName() {
+        return cuInstanceName;
+    }
 
-	public void setCuInstanceName(String cuInstanceName) {
-		this.cuInstanceName = cuInstanceName;
-	}
-
-	public String getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
+    public void setCuInstanceName(String cuInstanceName) {
+        this.cuInstanceName = cuInstanceName;
+    }
 
 	public Server getServer() {
 		return server;
@@ -233,6 +233,13 @@ public class Application implements Serializable {
 
 	public void setModules(List<Module> modules) {
 		this.modules = new HashSet<>(modules);
+	}
+	
+	public Module addModule(Image image) {
+	    Module module = new Module(this, image);
+	    modules.add(module);
+	    
+	    return module;
 	}
 
 	public void removeModule(Module module) {
@@ -287,8 +294,7 @@ public class Application implements Serializable {
 	}
 
 	public String getLocation() {
-		location = "http://" + name + "-" + user.getLogin() + "-" + user.getOrganization() + suffixCloudUnitIO;
-		return location;
+		return (name + "-" + user.getLogin() + suffixCloudUnitIO);
 	}
 
 	public Set<String> getAliases() {
@@ -300,11 +306,7 @@ public class Application implements Serializable {
 	}
 
 	public String getJvmRelease() {
-		return jvmRelease;
-	}
-
-	public void setJvmRelease(String jvmRelease) {
-		this.jvmRelease = jvmRelease;
+		return server.getJvmRelease();
 	}
 
 	@Override
@@ -313,8 +315,7 @@ public class Application implements Serializable {
 				+ ", user=" + user + ", domainName='" + domainName + '\'' + ", managerIP='" + managerIp + '\''
 				+ ", managerPort='" + managerPort + '\'' + ", jvmRelease='" + jvmRelease + '\'' + ", restHost='"
 				+ restHost + '\'' + ", deploymentStatus='" + deploymentStatus + '\'' + ", suffixCloudUnitIO='"
-				+ suffixCloudUnitIO + '\'' + ", isAClone=" + isAClone + ", cuInstanceName=" + cuInstanceName
-				+ ", origin=" + origin + '\'' + '}';
+				+ suffixCloudUnitIO + '\'' + ", isAClone=" + '}';
 	}
 
 	@Override
@@ -356,14 +357,6 @@ public class Application implements Serializable {
 		this.domainName = domainName;
 	}
 
-	public boolean isAClone() {
-		return isAClone;
-	}
-
-	public void setAClone(boolean isAClone) {
-		this.isAClone = isAClone;
-	}
-
 	public String getDeploymentStatus() {
 		return deploymentStatus;
 	}
@@ -381,6 +374,104 @@ public class Application implements Serializable {
 		return this.portsToOpen;
 	}
 
+    public static final class Builder {
 
+        private final String name;
+        private String displayName;
+        private String cuInstanceName;
+        private Status status;
+        private User user;
+        private String suffixCloudUnitIO;
+        private String domainName;
+        private String managerIp;
+        private String managerPort;
+        private String jvmRelease;
+        private String restHost;
+        private String deploymentStatus;
+        private String contextPath;
+        private Set<PortToOpen> portsToOpen;
+        private Set<EnvironmentVariable> environmentVariables;
+        private Image image;
 
+        private Builder(String displayName, Image image) {
+            this.displayName = displayName;
+            this.image = image;
+            this.name = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(displayName).toLowerCase();
+        }
+
+        public Builder withDisplayName(String displayName) {
+            this.displayName = displayName;
+            return this;
+        }
+
+        public Builder withCuInstanceName(String cuInstanceName) {
+            this.cuInstanceName = cuInstanceName;
+            return this;
+        }
+
+        public Builder withStatus(Status status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder withUser(User user) {
+            this.user = user;
+            return this;
+        }
+
+        public Builder withSuffixCloudUnitIO(String suffixCloudUnitIO) {
+            this.suffixCloudUnitIO = suffixCloudUnitIO;
+            return this;
+        }
+
+        public Builder withDomainName(String domainName) {
+            this.domainName = domainName;
+            return this;
+        }
+
+        public Builder withManagerIp(String managerIp) {
+            this.managerIp = managerIp;
+            return this;
+        }
+
+        public Builder withManagerPort(String managerPort) {
+            this.managerPort = managerPort;
+            return this;
+        }
+
+        public Builder withJvmRelease(String jvmRelease) {
+            this.jvmRelease = jvmRelease;
+            return this;
+        }
+
+        public Builder withRestHost(String restHost) {
+            this.restHost = restHost;
+            return this;
+        }
+
+        public Builder withDeploymentStatus(String deploymentStatus) {
+            this.deploymentStatus = deploymentStatus;
+            return this;
+        }
+
+        public Builder withContextPath(String contextPath) {
+            this.contextPath = contextPath;
+            return this;
+        }
+
+        public Builder withPortsToOpen(Set<PortToOpen> portsToOpen) {
+            this.portsToOpen = portsToOpen;
+            return this;
+        }
+
+        public Builder withEnvironmentVariables(Set<EnvironmentVariable> environmentVariables) {
+            this.environmentVariables = environmentVariables;
+            return this;
+        }
+
+        public Application build() {
+            return new Application(this);
+        }
+
+    }
 }

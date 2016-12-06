@@ -15,6 +15,31 @@
 
 <div class="tab-pane vertical-spacing"
      data-ng-class="{pending: monitoring.isLoading}">
+
+    <div class="card">
+        <div class="content clearfix">
+            <h3 class="title large">Monitoring application</h3>
+
+            <p class="hint">Choose a component</p>
+
+            <div class="dropdown dropdown--small" dropdown>
+                <a class="dropdown-toggle"
+                   dropdown-toggle=""
+                   selectbox="">
+                    {{ monitoring.myContainer.name }}
+                </a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    <li data-ng-repeat="container in monitoring.containers">
+                        <a ng-href=""
+                           data-ng-click="monitoring.myContainer = container; monitoring.getContainers(monitoring.myContainer)">
+                            {{container.name}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
   <div id="monitoring" class="monitoring-kibana" style="margin: 0; height: 170vh;">
     <iframe ng-src="{{monitoring.iframeUrl}}" frameborder="0" scrolling="no" style="display: block; background: #000; border: none; height: 160vh; width: 100%;"></iframe>
   </div>

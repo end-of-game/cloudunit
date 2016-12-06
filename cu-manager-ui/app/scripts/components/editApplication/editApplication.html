@@ -14,11 +14,11 @@
         <h2 class="title">
           Application
           {{editApp.application.displayName}}
-          <a ng-if="editApp.application.contextPath"
+          <a
              id="preview-link"
              class="icon-button"
              data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"
-             data-ng-href="{{ editApp.application.location }}{{ editApp.application.contextPath }}"
+             data-ng-href="http://{{ editApp.application.location }}{{ editApp.application.contextPath }}"
              target="_blank"
              tooltip=""
              data-title="Open in browser"
@@ -115,19 +115,19 @@
                   <a id="kibana-tab" ui-sref="editApplication.monitoringKibana"><span>Kibana</span></a>
                 </li>
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat && editApp.application.deploymentStatus === 'ALREADY_DEPLOYED'">
-                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="{{ editApp.application.location }}/monitoring">
+                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="http://{{ editApp.application.location }}/monitoring">
                     <span>Application</span>
                     <!-- <div class="hint-disabled" ng-if="editApp.hasTomcatMonitoring">Cann't monitoring on this Tomcat's version</div> -->
                   </a>
                 </li>
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat && editApp.application.deploymentStatus === 'ALREADY_DEPLOYED'">
-                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="{{ editApp.application.location }}/monitoring?part=mbeans">
+                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="http://{{ editApp.application.location }}/monitoring?part=mbeans">
                     <span>MBEANS</span>
                     <!-- <div class="hint-disabled" ng-if="editApp.hasTomcatMonitoring">Cann't monitoring on this Tomcat's version</div> -->
                   </a>
                 </li>
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || !editApp.hasTomcatMonitoring}" ng-if="editApp.hasTomcat && editApp.application.deploymentStatus === 'ALREADY_DEPLOYED'">
-                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="{{ editApp.application.location }}/monitoring?part=sessions">
+                  <a class="hint-disabled-parent" id="monitoring-tab" target="_blank" ng-href="http://{{ editApp.application.location }}/monitoring?part=sessions">
                     <span>SESSIONS</span>
                     <!-- <div class="hint-disabled" ng-if="editApp.hasTomcatMonitoring">Cann't monitoring on this Tomcat's version</div> -->
                   </a>
@@ -169,12 +169,14 @@
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
                   <a id="settings-tab" ui-sref="editApplication.settingsJVM"><span>JVM Configuration</span></a>
                 </li>
+                <!--
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
                   <a id="settings-tab" ui-sref="editApplication.settingsAlias"><span>DNS Alias</span></a>
                 </li>
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
                   <a id="settings-tab" ui-sref="editApplication.settingsPort"><span>Port to expose</span></a>
                 </li>
+                -->
                 <li data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING'}" >
                   <a id="settings-tab" ui-sref="editApplication.settingsEnvironment"><span>Variables Environment</span></a>
                 </li>

@@ -1,4 +1,5 @@
-FROM logstash:5.0.0
+FROM logstash:5.0.1
+HEALTHCHECK CMD ps -f -u logstash | grep logstash
 
 ENV DOCKER_CLIENT 1.12.3
 
@@ -12,10 +13,9 @@ RUN set -x \
 	&& chmod +x /usr/local/bin/docker \
 	&& apt update \
 	&& apt install elasticsearch-curator \
-  && sed -i 's/#path.config/path.config/' /etc/logstash/logstash.yml
-
-#	&& ln -sf /dev/stdout /var/log/logstash/logstash-plain.log
+  && sed -i 's/#path.config/path.config/' /etc/logstash/logstash.yml \
+	&& /usr/share/logstash/bin/logstash-plugin install logstash-input-exec
 
 LABEL origin cloudunit-monitoring
 LABEL application-type logstash
-LABEL application-version 5.0.0
+LABEL application-version $LOGSTASH_VERSION

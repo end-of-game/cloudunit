@@ -59,7 +59,7 @@ public interface ServerService {
 
 	void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException;
 
-	Server create(Server server, String tag) throws ServiceException, CheckException;
+	Server create(Server server) throws ServiceException, CheckException;
 
 	void addCredentialsForServerManagement(Server server, User user) throws ServiceException;
 

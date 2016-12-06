@@ -15,13 +15,10 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -32,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +43,6 @@ import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
-import fr.treeptik.cloudunit.dto.VolumeResource;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
@@ -66,8 +60,6 @@ import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.VolumeAssociationService;
 import fr.treeptik.cloudunit.service.VolumeService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 
 @Service
 public class ServerServiceImpl implements ServerService {
@@ -79,12 +71,6 @@ public class ServerServiceImpl implements ServerService {
 
 	@Inject
 	private ApplicationDAO applicationDAO;
-
-	@Inject
-	private HipacheRedisUtils hipacheRedisUtils;
-
-	@Value("${cloudunit.max.servers:1}")
-	private String maxServers;
 
 	@Value("${suffix.cloudunit.io}")
 	private String suffixCloudUnitIO;
@@ -140,49 +126,38 @@ public class ServerServiceImpl implements ServerService {
 	 * new server or another one coming from registry.
 	 *
 	 * @param server
-	 * @param tagName
 	 * @return
 	 * @throws ServiceException
 	 * @throws CheckException
 	 */
 	@Override
 	@Transactional
-	public Server create(Server server, String tagName) throws ServiceException, CheckException {
-
-		if (tagName == null) {
-			tagName = "";
-		}
+	public Server create(Server server) throws ServiceException, CheckException {
 
 		logger.debug("create : Methods parameters : " + server);
 		logger.info("ServerService : Starting creating Server " + server.getName());
 
-		// General informations
-		server.setStatus(Status.PENDING);
-		server.setJvmOptions("");
-		server.setStartDate(new Date());
-
+		// General information
 		Application application = server.getApplication();
 		User user = server.getApplication().getUser();
 
 		// Build a custom container
-		String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
-					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
-					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(server.getApplication().getName()) + "-"
-					+ server.getName();
+		String containerName = server.getName();
 
-		String imagePath = server.getImage().getPath() + tagName;
+		String imagePath = server.getImage().getPath();
+		String prefixEnv = server.getImage().getPrefixEnv();
 		logger.debug("imagePath:" + imagePath);
 
 		String subdomain = System.getenv("CU_SUB_DOMAIN");
 		if (subdomain == null) {
-			subdomain = "";
+		    subdomain = "";
 		}
 		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-
-		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
+		// XXX - Why ???
+		// server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
 		try {
-			dockerService.createServer(containerName, server, imagePath, user, null, true, null);
+			dockerService.createServer(containerName, server, imagePath, prefixEnv, user, null, true, null);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 
@@ -192,15 +167,11 @@ public class ServerServiceImpl implements ServerService {
 				logger.debug(application.getLocation());
 			}
 
-			hipacheRedisUtils.createRedisAppKey(server.getApplication(), server.getContainerIP(),
-					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
-
-			// Update server with all its informations
-			server.setManagerLocation("http://manager-" + application.getLocation().substring(7)
-					+ dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH"));
+			// Update server with all its information
+			server.setManagerLocation(String.format("http://%s/%s",
+			        application.getLocation(),
+					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH")));
 			server.setStatus(Status.START);
-			server.setJvmMemory(512L);
 			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
 			server = this.update(server);
 
@@ -223,7 +194,6 @@ public class ServerServiceImpl implements ServerService {
 		} catch (DockerJSONException e) {
 			StringBuilder msgError = new StringBuilder(512);
 			msgError.append("server=").append(server);
-			msgError.append(", tagName=[").append(tagName).append("]");
 			logger.error("" + msgError, e);
 			throw new ServiceException(msgError.toString(), e);
 		}
@@ -285,13 +255,6 @@ public class ServerServiceImpl implements ServerService {
 		logger.info("ServerService : Starting updating Server " + server.getName());
 		try {
 			serverDAO.save(server);
-
-			Application application = server.getApplication();
-
-			hipacheRedisUtils.updateServerAddress(application, server.getContainerIP(),
-					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
-
 		} catch (PersistenceException | FatalDockerJSONException e) {
 			logger.error("ServerService Error : update Server" + e);
 			e.printStackTrace();
@@ -319,8 +282,6 @@ public class ServerServiceImpl implements ServerService {
 				logger.error("Cannot delete the container ["+serverName+"]. Maybe already destroyed");
 			}
 
-			// Remove server on cloudunit :
-			hipacheRedisUtils.removeServerAddress(application);
 			serverDAO.delete(server);
 
 			logger.info("ServerService : Server successfully removed ");
@@ -470,7 +431,7 @@ public class ServerServiceImpl implements ServerService {
 					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
 							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
 					.collect(Collectors.toList());
-			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+			dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
 			addCredentialsForServerManagement(server, server.getApplication().getUser());
@@ -493,9 +454,7 @@ public class ServerServiceImpl implements ServerService {
 				update(server, previousJvmMemory, previousJvmOptions, previousJvmRelease, false);
 			}
 		}
-
 		return server;
-
 	}
 
 	/**
@@ -592,7 +551,7 @@ public class ServerServiceImpl implements ServerService {
 				.collect(Collectors.toList());
 		List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
 				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
-		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+		dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
 				server.getApplication().getUser(), envs, false, volumes);
 		server = startServer(server);
 		addCredentialsForServerManagement(server, server.getApplication().getUser());

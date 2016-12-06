@@ -23,7 +23,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - /srv/cu-elk/logstash/conf:/etc/logstash/conf.d
       - /var/run/docker.sock:/var/run/docker.sock
       - ./cu-elk/logstash/conf.d:/etc/logstash/conf.d
       - ./cu-elk/logstash/curator:/etc/curator
@@ -33,7 +32,6 @@ services:
       - elasticsearch
 
   kibana:
-    container_name: cuplatform_kibana_1
     build:
       context: ./cu-elk/kibana
     image: cloudunit/elk-kibana
@@ -47,9 +45,13 @@ services:
       - "ELASTICSEARCH_URL=http://elasticsearch:9200"
     depends_on:
       - elasticsearch
-    network_mode: bridge
+    labels:
+      - "traefik.backend=kibana"
+      - "traefik.port=5601"
+      - "traefik.frontend.rule=Host:kibana.cloudunit.dev"
 
   dockbeat-polling:
+    hostname: ${HOSTNAME}
     build:
       context: cu-elk/poller/dockbeat/
     image: cloudunit/elk-dockbeat
@@ -60,3 +62,8 @@ services:
     command: -e
     depends_on:
       - elasticsearch
+
+networks:
+  default:
+    external:
+      name: skynet

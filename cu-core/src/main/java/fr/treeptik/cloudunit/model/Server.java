@@ -16,8 +16,6 @@
 package fr.treeptik.cloudunit.model;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -32,6 +30,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Server extends Container implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+    private static final long DEFAULT_JVM_MEMORY = 512L;
 
 	private Long jvmMemory;
 
@@ -50,20 +50,73 @@ public class Server extends Container implements Serializable {
 	@OneToMany(mappedBy = "volumeAssociationId.server", fetch = FetchType.LAZY)
 	private Set<VolumeAssociation> volumeAssociations;
 
-	public Server(Integer id, Date startDate, String name, String containerID, Long memorySize, String containerIP,
-			Status status, Image image, Map<String, String> listPorts) {
-		super();
-		this.id = id;
-		this.startDate = startDate;
-		this.name = name;
-		this.containerID = containerID;
-		this.memorySize = memorySize;
-		this.containerIP = containerIP;
-		this.status = status;
-		this.image = image;
+	public Server() {
+	}
+	
+	public Server(Builder builder) {
+        super(builder);
+        
+        this.jvmMemory = builder.jvmMemory;
+        this.jvmOptions = builder.jvmOptions;
+        this.jvmRelease = builder.jvmRelease;
+        this.managerLocation = builder.managerLocation;
+    }
+	
+	public Server(Application application, Image image) {
+	    super(application, image);
+	    
+	    this.jvmOptions = "";
+	    this.jvmMemory = DEFAULT_JVM_MEMORY;
 	}
 
-	public Server() {
+    public static abstract class AbstractBuilder<T extends AbstractBuilder<T>> extends Container.AbstractBuilder<T> {
+        protected Long jvmMemory;
+        protected String jvmOptions;
+        protected String jvmRelease;
+        protected String managerLocation;
+        
+        protected AbstractBuilder(Image image) {
+            super(image);
+        }
+
+	    public T withJvmMemory(Long jvmMemory) {
+	        this.jvmMemory = jvmMemory;
+	        return self();
+	    }
+	    
+	    public T withJvmOptions(String jvmOptions) {
+	        this.jvmOptions = jvmOptions;
+	        return self();
+	    }
+	    
+	    public T withJvmRelease(String jvmRelease) {
+	        this.jvmRelease = jvmRelease;
+	        return self();
+	    }
+	    
+	    public T withManagerLocation(String managerLocation) {
+	        this.managerLocation = managerLocation;
+	        return self();
+	    }
+	}
+	
+	public static final class Builder extends AbstractBuilder<Builder> {
+        protected Builder(Image image) {
+            super(image);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+	    
+        public Server build() {
+            return new Server(this);
+        }
+	}
+	
+	public static Builder of(Image image) {
+	    return new Builder(image);
 	}
 
 	public Long getJvmMemory() {

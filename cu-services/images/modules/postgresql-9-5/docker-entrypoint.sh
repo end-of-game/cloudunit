@@ -44,7 +44,7 @@ if [ "$1" = 'postgres' ]; then
 
 		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA/pg_hba.conf"
 
-		# internal start of server in order to allow set-up using psql-client		
+		# internal start of server in order to allow set-up using psql-client
 		# does not listen on external TCP/IP and waits until start finishes
 		gosu postgres pg_ctl -D "$PGDATA" \
 			-o "-c listen_addresses='localhost'" \
@@ -93,6 +93,12 @@ if [ "$1" = 'postgres' ]; then
 		echo
 	fi
 
+	if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
+		sed -i "s/POSTGRES_USER/$POSTGRES_USER/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
+		sed -i "s/POSTGRES_PASSWORD/$POSTGRES_PASSWORD/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
+		nohup /opt/cloudunit/polling-agents/metricbeat/metricbeat -c /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml > /dev/null 2>&1 &
+	fi
+	
 	exec gosu postgres "$@"
 fi
 

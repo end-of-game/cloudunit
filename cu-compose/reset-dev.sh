@@ -29,6 +29,8 @@ if [ "$1" != "-y" ]; then
     fi
 fi
 
+docker network create skynet
+
 echo "***************************"
 echo -e "Removing containers"
 echo "***************************"
@@ -58,9 +60,4 @@ echo -e "Starting..."
 echo "*******************************"
 docker-compose  --file docker-compose.dev.yml \
                 --file docker-compose.elk.yml \
-                --file docker-compose.test.yml \
                 up -d
-
-docker network connect cucompose_default cuplatform_kibana_1
-
-

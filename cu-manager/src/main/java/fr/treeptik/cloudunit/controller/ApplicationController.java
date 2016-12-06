@@ -32,6 +32,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -96,6 +97,7 @@ public class ApplicationController implements Serializable {
 	public JsonResponse isValid(@PathVariable String applicationName, @PathVariable String serverName)
 			throws ServiceException, CheckException {
 
+		User user = authentificationUtils.getAuthentificatedUser();
 		if (logger.isInfoEnabled()) {
 			logger.info("applicationName:" + applicationName);
 			logger.info("serverName:" + serverName);
@@ -104,7 +106,7 @@ public class ApplicationController implements Serializable {
 		CheckUtils.validateInput(applicationName, "check.app.name");
 		CheckUtils.validateInput(serverName, "check.server.name");
 
-		applicationService.isValid(applicationName, serverName);
+		applicationService.checkCreate(user, applicationName);
 
 		return new HttpOk();
 	}
@@ -119,6 +121,7 @@ public class ApplicationController implements Serializable {
 	 * @throws InterruptedException
 	 */
 	@ResponseBody
+	@Transactional
 	@RequestMapping(method = RequestMethod.POST)
 	public JsonResponse createApplication(@RequestBody JsonInput input)
 			throws ServiceException, CheckException, InterruptedException {
@@ -131,7 +134,7 @@ public class ApplicationController implements Serializable {
 		authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
 
 		// CREATE AN APP
-		applicationService.create(input.getApplicationName(), input.getLogin(), input.getServerName(), null, null);
+		applicationService.create(input.getApplicationName(), input.getServerName());
 
 		return new HttpOk();
 	}
@@ -383,167 +386,6 @@ public class ApplicationController implements Serializable {
 			throws ServiceException, CheckException {
 		logger.debug("applicationName:" + applicationName);
 		return applicationService.listContainers(applicationName);
-	}
-
-	/**
-	 * Return the list of aliases for an application
-	 *
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@ResponseBody
-	@RequestMapping(value = "/{applicationName}/alias", method = RequestMethod.GET)
-	public List<String> aliases(JsonInput jsonInput) throws ServiceException, CheckException {
-		logger.debug("application.name = " + jsonInput.getApplicationName());
-		User user = this.authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, jsonInput.getApplicationName());
-		List<String> aliases = applicationService.getListAliases(application);
-		if (logger.isDebugEnabled() && aliases != null)
-			logger.debug(aliases.toString());
-		return aliases;
-	}
-
-	/**
-	 * Add an alias for an application
-	 *
-	 * @param input
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@CloudUnitSecurable
-	@ResponseBody
-	@RequestMapping(value = "/alias", method = RequestMethod.POST)
-	public JsonResponse addAlias(@RequestBody JsonInput input) throws ServiceException, CheckException {
-
-		if (logger.isDebugEnabled()) {
-			logger.debug(input.toString());
-		}
-
-		User user = this.authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, input.getApplicationName());
-
-		CheckUtils.validateInput(input.getApplicationName(), "check.app.name");
-		CheckUtils.validateInput(input.getAlias(), "check.alias.name");
-
-		// We must be sure there is no running action before starting new one
-		this.authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
-
-		this.applicationService.addNewAlias(application, input.getAlias());
-
-		return new HttpOk();
-	}
-
-	/**
-	 * Delete an alias for an application
-	 *
-	 * @param jsonInput
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@CloudUnitSecurable
-	@ResponseBody
-	@RequestMapping(value = "/{applicationName}/alias/{alias}", method = RequestMethod.DELETE)
-	public JsonResponse removeAlias(JsonInput jsonInput) throws ServiceException, CheckException {
-
-		String applicationName = jsonInput.getApplicationName();
-		String alias = jsonInput.getAlias();
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("application.name=" + applicationName);
-			logger.debug("alias.name=" + alias);
-		}
-
-		if (applicationName != null) {
-			applicationName = applicationName.toLowerCase();
-		}
-		if (alias != null) {
-			alias = alias.toLowerCase();
-		}
-
-		User user = this.authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, applicationName);
-
-		// We must be sure there is no running action before starting new one
-		authentificationUtils.canStartNewAction(user, null, Locale.ENGLISH);
-
-		applicationService.removeAlias(application, alias);
-
-		return new HttpOk();
-	}
-
-	/*
-	 * ********************************************************** / /* PORTS
-	 */
-	/*
-	 * ********************************************************** /
-	 * 
-	 * /** Add a port for an application
-	 *
-	 * @param input
-	 * 
-	 * @return
-	 * 
-	 * @throws ServiceException
-	 * 
-	 * @throws CheckException
-	 */
-	@CloudUnitSecurable
-	@ResponseBody
-	@RequestMapping(value = "/ports", method = RequestMethod.POST)
-	public ResponseEntity<PortResource> addPort(@RequestBody JsonInput input) throws ServiceException, CheckException {
-
-		if (logger.isDebugEnabled()) {
-			logger.debug(input.toString());
-		}
-
-		String applicationName = input.getApplicationName();
-		String nature = input.getPortNature();
-		Boolean isQuickAccess = input.getPortQuickAccess();
-		
-		User user = this.authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, applicationName);
-
-		CheckUtils.validateOpenPort(input.getPortToOpen(), application);
-		CheckUtils.isPortFree(input.getPortToOpen(), application);
-		CheckUtils.validateNatureForOpenPortFeature(input.getPortNature(), application);
-
-		Integer port = Integer.parseInt(input.getPortToOpen());
-		PortToOpen portToOpen= applicationService.addPort(application, nature, port, isQuickAccess);
-		PortResource portResource = new PortResource(portToOpen);
-		return ResponseEntity.status(HttpStatus.OK).body(portResource);
-	}
-
-	/**
-	 * Delete a port for an application
-	 *
-	 * @param input
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@CloudUnitSecurable
-	@ResponseBody
-	@RequestMapping(value = "/{applicationName}/ports/{portToOpen}", method = RequestMethod.DELETE)
-	public JsonResponse removePort(JsonInput input) throws ServiceException, CheckException {
-
-		String applicationName = input.getApplicationName();
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("application.name=" + applicationName);
-			logger.debug("application.port=" + input.getPortToOpen());
-		}
-
-		User user = this.authentificationUtils.getAuthentificatedUser();
-		Application application = applicationService.findByNameAndUser(user, applicationName);
-
-		CheckUtils.validateOpenPort(input.getPortToOpen(), application);
-		Integer port = Integer.parseInt(input.getPortToOpen());
-		applicationService.removePort(application, port);
-
-		return new HttpOk();
 	}
 
 	/**

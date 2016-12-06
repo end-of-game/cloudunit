@@ -34,9 +34,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @MappedSuperclass
 public class Container implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
+    private static final String CONTAINER_NAME_FORMAT = "%s-%s-%s";
+    
 	@Id
 	@GeneratedValue
 	protected Integer id;
@@ -77,7 +78,7 @@ public class Container implements Serializable {
 	@JsonIgnore
 	@Transient
 	protected List<String> volumesFrom;
-
+	
 	private String sshPort;
 
 	@Transient
@@ -85,7 +86,47 @@ public class Container implements Serializable {
 	private String dockerState;
 
 	public Container() {
+	    this.startDate = new Date();
 	}
+	
+	protected Container(AbstractBuilder<?> builder) {
+	    this();
+	    this.name = builder.name;
+	    this.memorySize = builder.memorySize;
+	    this.image = builder.image;
+	}
+	
+    public Container(Application application, Image image) {
+        this.image = image;
+        this.name = String.format(CONTAINER_NAME_FORMAT,
+                application.getName(),
+                image.getPrefixEnv(),
+                application.getUser().getLogin());
+        this.status = Status.PENDING;
+        this.internalDNSName = name;
+    }
+
+    public static abstract class AbstractBuilder<T extends AbstractBuilder<T>> {
+        protected String name;
+        protected Long memorySize;
+        protected final Image image;
+        
+        protected AbstractBuilder(Image image) {
+            this.image = image;
+        }
+        
+        public T withName(String name) {
+            this.name = name;
+            return self();
+        }
+        
+        public T withMemorySize(Long memorySize) {
+            this.memorySize = memorySize;
+            return self();
+        }
+        
+        protected abstract T self();
+    }
 
 	public Integer getId() {
 		return id;
@@ -158,14 +199,14 @@ public class Container implements Serializable {
 	public void setImage(Image image) {
 		this.image = image;
 	}
-
+	
 	public String getSshPort() {
-		return sshPort;
-	}
-
+        return sshPort;
+    }
+	
 	public void setSshPort(String sshPort) {
-		this.sshPort = sshPort;
-	}
+        this.sshPort = sshPort;
+    }
 
 	public String getInternalDNSName() {
 		return internalDNSName;

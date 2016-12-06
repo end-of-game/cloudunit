@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
@@ -31,25 +33,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.dao.DataAccessException;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
-import fr.treeptik.cloudunit.dao.PortToOpenDAO;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Deployment;
 import fr.treeptik.cloudunit.model.DeploymentType;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.PortToOpen;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
@@ -61,11 +60,10 @@ import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.DomainUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 import fr.treeptik.cloudunit.utils.NamingUtils;
 
 @Service
+@DependsOn("dataSourceInitializer")
 public class ApplicationServiceImpl implements ApplicationService {
 
 	Locale locale = Locale.ENGLISH;
@@ -74,9 +72,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Inject
 	private ApplicationDAO applicationDAO;
-
-	@Inject
-	private PortToOpenDAO portToOpenDAO;
 
 	@Inject
 	private ServerService serverService;
@@ -94,9 +89,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private FileService fileService;
 
 	@Inject
-	private HipacheRedisUtils hipacheRedisUtils;
-
-	@Inject
 	private DockerService dockerService;
 
 	@Inject
@@ -109,7 +101,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private MessageSource messageSource;
 
 	@Value("${docker.manager.ip:192.168.50.4:4243}")
-	private String dockerManagerIp;
+	private String dockerSocketIP;
 
 	@Value("${suffix.cloudunit.io}")
 	private String suffixCloudUnitIO;
@@ -120,38 +112,36 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Value("${cloudunit.instance.name}")
 	private String cuInstanceName;
 
-	public ApplicationDAO getApplicationDAO() {
-		return this.applicationDAO;
-	}
+	private List<String> imageNames;
+
+	@PostConstruct
+	public void init() throws ServiceException {
+		logger.info("Loading images enabled from database...");
+	    List<Image> imagesEnabled = imageService.findEnabledImages();
+        imageNames = imagesEnabled.stream().map(i -> i.getName()).collect(Collectors.toList());
+		logger.info("{} images have been loaded from database", imageNames.size());
+    }
 
     /**
 	 * Test if the user can create new applications because we limit the number
 	 * per user
 	 *
 	 * @param application
-	 * @param serverName
 	 * @throws CheckException
 	 * @throws ServiceException
 	 */
-	@Override
-	public void checkCreate(Application application, String serverName) throws CheckException, ServiceException {
-
+	public void checkCreate(User user, String application) throws CheckException, ServiceException {
 		try {
-			if (checkAppExist(application.getUser(), application.getName())) {
+			if (checkAppExist(user, application)) {
 				throw new CheckException(messageSource.getMessage("app.exists", null, locale));
 			}
-			if (checkNameLength(application.getName())) {
-				throw new CheckException("This name has length equal to zero : " + application.getName());
+			if (checkNameLength(application)) {
+				throw new CheckException("This name has length equal to zero : " + application);
 			}
-			if (imageService.findByName(serverName) == null)
-				throw new CheckException(messageSource.getMessage("image.not.found", null, locale));
-			imageService.findByName(serverName);
-
 		} catch (PersistenceException e) {
 			logger.error("ApplicationService Error : Create Application" + e);
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
-
 	}
 
 	/**
@@ -193,113 +183,36 @@ public class ApplicationServiceImpl implements ApplicationService {
 		return application;
 	}
 
-	/*
-	 * Methode qui teste la validité d'une application
-	 *
-	 * @param applicationName
-	 *
-	 * @param serverName
-	 *
-	 * @throws ServiceException
-	 *
-	 * @throws CheckException
-	 */
-	public void isValid(String applicationName, String serverName) throws ServiceException, CheckException {
-		logger.info("--CALL APP IS VALID--");
-		Application application = new Application();
-		logger.info("applicationName = " + applicationName + ", serverName = " + serverName);
-
-		User user = authentificationUtils.getAuthentificatedUser();
-		if (user == null) {
-			throw new CheckException("User is not authentificated");
-		}
-
-		application.setName(applicationName);
-		application.setDisplayName(applicationName);
-		application.setUser(user);
-		application.setModules(new ArrayList<>());
-
-		this.checkCreate(application, serverName);
-	}
 
 	@Override
-	@Transactional(rollbackFor = ServiceException.class)
-	public Application create(String applicationName, String login, String serverName, String tagName, String origin)
+	@Transactional
+	public Application create(String applicationName, String imageName)
 			throws ServiceException, CheckException {
 
-		// if tagname is null, we prefix with a ":"
-		if (tagName != null) {
-			tagName = ":" + tagName;
-		}
+        User user = authentificationUtils.getAuthentificatedUser();
+        if (!imageNames.contains(imageName)) {
+            throw new CheckException(messageSource.getMessage("server.not.found", null, locale));
+        }
 
-		logger.info("--CALL CREATE NEW APP--");
-		Application application = new Application();
+        Image image = imageService.findByName(imageName);
+		Application application = Application.of(applicationName, image)
+                .withDisplayName(applicationName)
+                .withUser(user)
+                .withSuffixCloudUnitIO(suffixCloudUnitIO)
+                .withManagerIp(dockerSocketIP)
+                .withCuInstanceName(cuInstanceName).build();
 
-		logger.info("applicationName = " + applicationName + ", serverName = " + serverName);
+		checkCreate(user, applicationName);
 
-		User user = authentificationUtils.getAuthentificatedUser();
+        application = applicationDAO.save(application);
 
-		// For cloning management
-		if (tagName != null) {
-			application.setAClone(true);
-			application.setOrigin(origin);
-		}
+        Server server = application.getServer();
 
-		application.setName(applicationName);
-		application.setDisplayName(applicationName);
-		application.setUser(user);
-		application.setCuInstanceName(cuInstanceName);
-		application.setModules(new ArrayList<>());
+        server = serverService.create(server);
+        
+        application = applicationDAO.save(application);
+        applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
-		// verify if application exists already
-		this.checkCreate(application, serverName);
-
-		application.setStatus(Status.PENDING);
-		application = this.saveInDB(application);
-
-		String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-		List<Image> imagesEnabled = imageService.findEnabledImages();
-		List<String> imageNames = new ArrayList<>();
-		for (Image image : imagesEnabled) {
-			imageNames.add(image.getName());
-		}
-
-		if (!imageNames.contains(serverName)) {
-			throw new CheckException(messageSource.getMessage("server.not.found", null, locale));
-		}
-
-		try {
-			// BLOC APPLICATION
-			application.setDomainName(subdomain + suffixCloudUnitIO);
-			application = applicationDAO.save(application);
-			application.setManagerIp(dockerManagerIp);
-
-			logger.info(application.getManagerIp());
-
-			// BLOC SERVER
-			Server server = new Server();
-			// We get image associated to server
-			Image image = imageService.findByName(serverName);
-			server.setImage(image);
-			server.setApplication(application);
-			server.setName(serverName);
-			server = serverService.create(server, tagName);
-
-			List<Server> servers = new ArrayList<>();
-			servers.add(server);
-			application.setServer(server);
-
-			// Persistence for Application model
-			application.setJvmRelease(server.getJvmRelease());
-
-			application = applicationDAO.save(application);
-			applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
-
-		} catch (DataAccessException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-
-		logger.info("" + application);
 		logger.info("ApplicationService : Application " + application.getName() + " successfully created.");
 
 		return application;
@@ -334,24 +247,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 				}
 			}
 
-			// Delete all alias
-			List<String> aliases = new ArrayList<>();
-			aliases.addAll(application.getAliases());
-			for (String alias : aliases) {
-				removeAlias(application, alias);
-			}
-
-			// Remove all ports (web and others...) only for redis
-            // Remove database references are associated to CASCADE.REMOVE
-            removePortsForRedis(application);
-
-            Server server = application.getServer();
+			Server server = application.getServer();
 			serverService.remove(server.getName());
 
 			application.removeServer();
 			applicationDAO.delete(application);
-
-			hipacheRedisUtils.removeRedisAppKey(application);
 
 			logger.info("ApplicationService : Application successfully removed ");
 
@@ -405,12 +305,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 			logger.info("old server ip : " + server.getContainerIP());
 			server = serverService.startServer(server);
 
-			if (application.getAliases() != null && !application.getAliases().isEmpty()) {
-				updateAliases(application);
-			}
-
-			application.getPortsToOpen().stream().forEach(p -> updatePortAlias(p, application));
-
 			logger.info("ApplicationService : Application successfully started ");
 		} catch (PersistenceException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
@@ -421,24 +315,20 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	@Transactional
 	public Application stop(Application application) throws ServiceException {
-
 		try {
-
 			Server server = application.getServer();
-			server = serverService.stopServer(server);
+			serverService.stopServer(server);
 			application.getModules().stream().forEach(m -> {
 				try {
 					moduleService.stopModule(m.getName());
 				} catch (ServiceException e) {
-					e.printStackTrace();
+					logger.error(application.toString(), e);
 				}
 			});
-
 			logger.info("ApplicationService : Application successfully stopped ");
 		} catch (PersistenceException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
-
 		return application;
 	}
 
@@ -531,15 +421,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		return application;
 	}
 
-	@Override
-	public Long countApp(User user) throws ServiceException {
-		try {
-			return applicationDAO.countApp(user.getId(), cuInstanceName);
-		} catch (PersistenceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
-
 	/**
 	 * Return the list of containers for an application
 	 *
@@ -568,162 +449,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 		return containers;
-	}
-
-	@Override
-	public List<String> getListAliases(Application application) throws ServiceException {
-		try {
-			return applicationDAO.findAllAliases(application.getName(), cuInstanceName);
-		} catch (DataAccessException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
-
-	@Override
-	@Transactional
-	public void addNewAlias(Application application, String alias) throws ServiceException, CheckException {
-
-		logger.info("ALIAS VALUE IN addNewAlias : " + alias);
-
-		alias = alias.toLowerCase();
-		if (alias.startsWith("https://") || alias.startsWith("http://") || alias.startsWith("ftp://")) {
-			alias = alias.substring(alias.lastIndexOf("//") + 2, alias.length());
-		}
-
-		if (!DomainUtils.isValidDomainName(alias)) {
-			throw new CheckException(messageSource.getMessage("alias.invalid", null, locale));
-		}
-
-		if (checkAliasIfExists(alias)) {
-			throw new CheckException(messageSource.getMessage("alias.exists", null, locale));
-		}
-
-		try {
-			Server server = application.getServer();
-			application.getAliases().add(alias);
-			hipacheRedisUtils.writeNewAlias(alias, application,
-					dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
-			applicationDAO.save(application);
-
-		} catch (DataAccessException | FatalDockerJSONException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
-
-	@Override
-	@Transactional
-	public void updateAliases(Application application) throws ServiceException {
-		try {
-			Server server = application.getServer();
-			List<String> aliases = applicationDAO.findAllAliases(application.getName(), cuInstanceName);
-			for (String alias : aliases) {
-				hipacheRedisUtils.updateAlias(alias, application,
-						dockerService.getEnv(server.getContainerID(), "CU_SERVER_PORT"));
-			}
-
-		} catch (DataAccessException | FatalDockerJSONException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
-
-	@Override
-	@Transactional
-	public void removeAlias(Application application, String alias) throws ServiceException, CheckException {
-		try {
-			hipacheRedisUtils.removeAlias(alias);
-			boolean removed = application.getAliases().remove(alias);
-			if (!removed) {
-				throw new CheckException("Alias [" + alias + "] doesn't exist");
-			}
-			application = applicationDAO.save(application);
-		} catch (DataAccessException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
-
-	@Transactional
-	@Override
-	public PortToOpen addPort(Application application, String nature, Integer port, Boolean isQuickAccess) throws ServiceException {
-		PortToOpen portToOpen = new PortToOpen();
-		portToOpen.setNature(nature);
-		portToOpen.setQuickAccess(isQuickAccess);
-		portToOpen.setPort(port);
-		portToOpen.setApplication(application);
-		try {
-			String alias = null;
-			// add the port alias for http mode only
-			if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-
-                alias = NamingUtils.getAliasForOpenPortFeature(application.getName(), application.getUser().getLogin(),
-                        port, application.getDomainName());
-
-                hipacheRedisUtils.writeNewAlias(alias, application, port.toString());
-
-			} else if ("other".equalsIgnoreCase(portToOpen.getNature())) {
-				alias = application.getServer().getName() + "."
-						+ application.getServer().getImage().getPath().substring(10) + ".cloud.unit";
-			}
-			portToOpen.setAlias(alias);
-			portToOpenDAO.save(portToOpen);
-		} catch (DataAccessException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-		return portToOpen;
-	}
-
-	public void updatePortAlias(PortToOpen portToOpen, Application application) {
-		if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-			hipacheRedisUtils.updatePortAlias(application.getServer().getContainerIP(), portToOpen.getPort(),
-					portToOpen.getAlias());
-		}
-	}
-
-	@Transactional
-	@Override
-	public void removePort(Application application, Integer port) throws CheckException, ServiceException {
-
-		PortToOpen portToOpen = application.getPortsToOpen().stream().filter(p -> p.getPort().equals(port)).findFirst()
-				.orElseThrow(() -> new CheckException("Port[" + port + "] is not bound to this application"));
-
-		try {
-			if ("web".equalsIgnoreCase(portToOpen.getNature())) {
-				hipacheRedisUtils.removeServerPortAlias(portToOpen.getAlias());
-			}
-			portToOpenDAO.delete(portToOpen);
-			saveInDB(application);
-		} catch (DataAccessException e) {
-			throw new ServiceException(e.getMessage(), e);
-		}
-
-	}
-
-    /**
-     * Remove all ports.
-     *
-     * @param application
-     */
-    private void removePortsForRedis(Application application) {
-        application.getPortsToOpen().stream().forEach(
-                p -> {
-                    try {
-                        hipacheRedisUtils.removeServerPortAlias(p.getAlias());
-                    } catch (Exception e) {
-                        logger.error(p.toString(), e);
-                    }
-                }
-        );
-    }
-
-	private boolean checkAliasIfExists(String alias) {
-		if (applicationDAO.findAliasesForAllApps().contains(alias)) {
-			return true;
-		}
-		return false;
-	}
-
-	public Integer countApplicationsForImage(String cuInstanceName, User user, String tag)
-			throws CheckException, ServiceException {
-		return applicationDAO.countAppForTagLike(cuInstanceName, user.getLogin(), tag);
 	}
 
 	@Override

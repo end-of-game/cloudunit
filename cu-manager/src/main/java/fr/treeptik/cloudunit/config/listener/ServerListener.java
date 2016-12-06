@@ -17,7 +17,6 @@ import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 
 /**
  * Created by nicolas on 03/08/2016.
@@ -26,9 +25,6 @@ import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 public class ServerListener {
 
 	private Logger logger = LoggerFactory.getLogger(ApplicationListener.class);
-
-	@Inject
-	private HipacheRedisUtils hipacheRedisUtils;
 
 	@Inject
 	DockerService dockerService;
@@ -66,11 +62,6 @@ public class ServerListener {
 			} while (counter++ < 30 && !started);
 			if (counter <= 30) {
 				server.setStatus(Status.START);
-
-				hipacheRedisUtils.updateServerAddress(server.getApplication(), server.getContainerIP(),
-						dockerService.getEnv(containerName, "CU_SERVER_PORT"),
-						dockerService.getEnv(containerName, "CU_SERVER_MANAGER_PORT"));
-
 			} else {
 				server.setStatus(Status.FAIL);
 			}

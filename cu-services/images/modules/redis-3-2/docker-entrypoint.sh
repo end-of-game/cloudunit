@@ -13,4 +13,8 @@ if [ "$1" = 'redis-server' -a "$(id -u)" = '0' ]; then
 	exec gosu redis "$0" "$@"
 fi
 
+if [ -z "$APPLICATIVE_MONITORING" ] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
+	nohup /opt/cloudunit/polling-agents/metricbeat/metricbeat -c /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml > /dev/null 2>&1 &
+fi
+
 exec "$@"

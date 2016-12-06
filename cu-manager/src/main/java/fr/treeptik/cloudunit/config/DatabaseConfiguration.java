@@ -102,7 +102,7 @@ public class DatabaseConfiguration {
         return new HikariDataSource(config);
     }
 
-    @Bean
+    @Bean(name = "dataSourceInitializer")
     public DataSourceInitializer dataSourceInitializer(
         final DataSource dataSource) {
         final DataSourceInitializer initializer = new DataSourceInitializer();
