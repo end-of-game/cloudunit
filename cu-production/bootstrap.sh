@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
@@ -15,7 +13,11 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     exit 1
 fi
 
+echo ""
+echo ""
 read -p "- Domain : " domain
+echo ""
+echo ""
 
 # INIT
 apt-get update

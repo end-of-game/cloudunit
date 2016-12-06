@@ -94,6 +94,7 @@ services:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
           - /home/admincu/.cloudunit:/opt/tomcat/.cloudunit
+          - /home/admincu/.docker:/opt/certificats
       environment:
           - CU_SUB_DOMAIN
           - CATALINA_OPTS="-Dspring.profiles.active=production"
