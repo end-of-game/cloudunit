@@ -1,4 +1,4 @@
-FROM jenkins:2.19.2
+FROM jenkins:2.19.3
 
 USER root
 
@@ -20,10 +20,11 @@ RUN cd /usr/lib/node_modules/npm \
 
 RUN npm install -g bower gulp
 
+RUN apt-get install maven -y
+RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
+
 RUN rm -rf /var/lib/apt/lists/*
 
-# do better... wget remote or local
-COPY CloudUnitCLI.jar /tmp/cloudunit-cli.jar
-
 USER jenkins
+
 

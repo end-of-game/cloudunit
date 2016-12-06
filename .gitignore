@@ -387,3 +387,11 @@ hs_err_pid*
 
 docker-client
 /cu-compose/nginx/sites-enabled/cloudunit.conf
+/cu-argos/target/
+/cu-argos/.gradle/
+/security/docker-bench-security/
+cu-compose/cu-elk/poller/metricbeat/
+cu-compose/json-files/
+cu-compose/nginx/log/
+cu-core/src/main/java/fr/treeptik/cloudunit/model/builder/
+cu-vagrant/test/

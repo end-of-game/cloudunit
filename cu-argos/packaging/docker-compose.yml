@@ -3,11 +3,8 @@ services:
 
   jmxtrans:
     container_name: jmxtrans
-    build:
-      context: jmxtrans
-    image: cloudunit/jmxtrans
+    image: jmxtrans/jmxtrans
     volumes:
-      - ./logs:/var/log/jmxtrans
       - configuration:/var/lib/jmxtrans
 
   argos:

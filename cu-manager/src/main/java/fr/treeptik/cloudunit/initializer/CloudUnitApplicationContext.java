@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.initializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.config.EmailActiveCondition;
 import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
@@ -53,6 +54,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -225,29 +227,42 @@ public class CloudUnitApplicationContext
 
     @Bean
     public DockerCloudUnitClient dockerCloudUnitClient(@Value("${docker.endpoint.mode}") String endpoint,
-                                                       @Value("${docker.socket.location}") String dockerSocketLocation) {
+                                                       @Value("${docker.socket.location}") String dockerSocketLocation,
+                                                       @Value("${docker.certs.dir.path:}") String certPathDirectory) {
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
+        logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
         if (useUnixSocket) {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, dockerSocketLocation));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, endpoint, dockerSocketLocation, null));
         } else {
-            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false, dockerSocketLocation));
+            dockerCloudUnitClient.setDriver(new SimpleDockerDriver(false,  endpoint, dockerSocketLocation, certPathDirectory));
         }
         return dockerCloudUnitClient;
     }
 
     @Bean
     public DockerClient dockerClient(@Value("${docker.endpoint.mode}") String endpoint,
-                                     @Value("${docker.socket.location}") String dockerSocketLocation) {
+                                     @Value("${docker.socket.location}") String dockerSocketLocation,
+                                     @Value("${docker.certs.dir.path}") String certPathDirectory) {
         com.spotify.docker.client.DockerClient dockerClient = null;
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
+        boolean useTLS = endpoint.equalsIgnoreCase("https");
+        logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
+        logger.info("Socket TLS : " + (useTLS ? "yes" : "no"));
         try {
             if (useUnixSocket) {
                 dockerClient = DefaultDockerClient.fromEnv().build();
             } else {
-                dockerClient = DefaultDockerClient
-                        .builder()
-                        .uri("http://" + dockerSocketLocation).build();
+                if (useTLS) {
+                    final DockerCertificates certs = new DockerCertificates(Paths.get(certPathDirectory));
+                    dockerClient = DefaultDockerClient
+                            .builder()
+                            .uri("https://"+dockerSocketLocation).dockerCertificates(certs).build();
+                } else {
+                    dockerClient = DefaultDockerClient
+                            .builder()
+                            .uri("http://"+dockerSocketLocation).build();
+                }
             }
         } catch (Exception e) {
             logger.error("cannot instance docker client : ", e);

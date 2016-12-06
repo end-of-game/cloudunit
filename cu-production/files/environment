@@ -1,13 +1,14 @@
 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 
 MYSQL_ROOT_PASSWORD=changeit
-DOCKER_HOST=tcp://cloudunit.serv:4243
 
-CU_PORTAL_URL=cu01.cloudunit.io
-CU_MANAGER_URL=admin-cu01.cloudunit.io
-CU_GITLAB_URL=gitlab-cu01.cloudunit.io
-CU_JENKINS_URL=jenkins-cu01.cloudunit.io
-CU_KIBANA_URL=kibana-cu01.cloudunit.io
+CU_DOMAIN=DOMAIN_NAME
+CU_PORTAL_DOMAIN=DOMAIN_NAME
+CU_MANAGER_DOMAIN=admin-DOMAIN_NAME
+CU_GITLAB_DOMAIN=gitlab-DOMAIN_NAME
+CU_JENKINS_DOMAIN=jenkins-DOMAIN_NAME
+CU_KIBANA_DOMAIN=kibana-DOMAIN_NAME
+
 
 
 

@@ -15,6 +15,9 @@
 
 source /etc/environment
 
+mkdir -p /home/admincu/jenkins_home
+sudo chmod -R 777 /home/admincu/jenkins_home
+
 docker-compose  -f docker-compose.yml \
                 -f docker-compose.elk.yml \
                 up -d

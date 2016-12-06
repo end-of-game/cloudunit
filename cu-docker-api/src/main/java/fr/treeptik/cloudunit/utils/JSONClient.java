@@ -61,10 +61,11 @@ public class JSONClient  {
     private Logger logger = LoggerFactory.getLogger(JSONClient.class);
 
     private Boolean isUnixSocket;
-
+    private String certPathDirectory;
     private File socketFile;
 
-    public JSONClient(Boolean isUnixSocket, String location) {
+    public JSONClient(Boolean isUnixSocket, String location, String certPathDirectory) {
+        this.certPathDirectory = certPathDirectory;
         this.isUnixSocket = isUnixSocket;
         if(isUnixSocket && location !=null) {
             try {
@@ -90,7 +91,7 @@ public class JSONClient  {
         HttpGet httpGet = new HttpGet(uri);
         HttpResponse response = null;
         try {
-            CloseableHttpClient httpclient = buildSecureHttpClient(false);
+            CloseableHttpClient httpclient = buildSecureHttpClient();
             response = httpclient.execute(httpGet);
             LineIterator iterator = IOUtils.lineIterator(response.getEntity()
                     .getContent(), "UTF-8");
@@ -123,7 +124,7 @@ public class JSONClient  {
         HttpResponse response = null;
         StringWriter writer = new StringWriter();
         try {
-            CloseableHttpClient httpclient = buildSecureHttpClient(false);
+            CloseableHttpClient httpclient = buildSecureHttpClient();
             httpPost.setEntity(new StringEntity(body));
             response = httpclient.execute(httpPost);
             if (response.getEntity() != null) {
@@ -160,7 +161,7 @@ public class JSONClient  {
         HttpResponse response = null;
         StringWriter writer = new StringWriter();
         try {
-            CloseableHttpClient httpclient = buildSecureHttpClient(false);
+            CloseableHttpClient httpclient = buildSecureHttpClient();
             httpPost.setEntity(new StringEntity(body));
             response = httpclient.execute(httpPost);
             IOUtils.copy(response.getEntity().getContent(), writer, "UTF-8");
@@ -183,7 +184,7 @@ public class JSONClient  {
         }
         CloseableHttpResponse response = null;
         try {
-            CloseableHttpClient httpClient = buildSecureHttpClient(httpRequired);
+            CloseableHttpClient httpClient = buildSecureHttpClient();
             HttpDelete httpDelete = new HttpDelete(uri);
             response = httpClient.execute(httpDelete);
         } catch (IOException e) {
@@ -197,20 +198,51 @@ public class JSONClient  {
         return new DockerResponse(response.getStatusLine().getStatusCode(), "");
     }
 
-    public CloseableHttpClient buildSecureHttpClient(Boolean httpRequired) throws IOException {
+    public CloseableHttpClient buildSecureHttpClient() throws IOException {
         if(isUnixSocket){
             HttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(getUnixSocketFactoryRegistry());
             HttpClientBuilder builder = HttpClients.custom();
             builder.setConnectionManager(manager);
             return builder.build();
+        } else if (certPathDirectory != null && !certPathDirectory.isEmpty()) {
+            org.apache.http.impl.client.HttpClientBuilder builder = HttpClients.custom();
+            HttpClientConnectionManager manager = getConnectionFactory(this.certPathDirectory, 10);
+            builder.setConnectionManager(manager);
+            return builder.build();
+        } else {
+            return HttpClients.createDefault();
         }
-        return HttpClients.createDefault();
     }
 
+    private static HttpClientConnectionManager getConnectionFactory(String certPath, int maxConnections) throws IOException {
+        PoolingHttpClientConnectionManager ret = new PoolingHttpClientConnectionManager(getSslFactoryRegistry(certPath));
+        ret.setDefaultMaxPerRoute(maxConnections);
+        return ret;
+    }
 
     private Registry<ConnectionSocketFactory> getUnixSocketFactoryRegistry() throws IOException {
         UnixSocketFactory socketFactory = new UnixSocketFactory();
         return RegistryBuilder.<ConnectionSocketFactory>create().register("unix", socketFactory).build();
+    }
+
+    private static Registry<ConnectionSocketFactory> getSslFactoryRegistry(String certPath) throws IOException {
+        try {
+            KeyStore keyStore = KeyStoreUtils.createDockerKeyStore(certPath);
+
+            SSLContext sslContext =
+                    SSLContexts.custom()
+                            .useTLS()
+                            .loadKeyMaterial(keyStore, "docker".toCharArray())
+                            .loadTrustMaterial(keyStore)
+                            .build();
+
+            SSLConnectionSocketFactory sslsf =
+
+                    new SSLConnectionSocketFactory(sslContext);
+            return RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslsf).build();
+        } catch (GeneralSecurityException e) {
+            throw new IOException(e);
+        }
     }
 
     private class UnixSocketFactory implements ConnectionSocketFactory{

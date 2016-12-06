@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
@@ -14,6 +12,12 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     echo "This script must be executed with root privileges."
     exit 1
 fi
+
+echo ""
+echo ""
+read -p "- Domain : " domain
+echo ""
+echo ""
 
 # INIT
 apt-get update
@@ -54,6 +58,7 @@ apt-get install -y docker-engine
 apt-get install -y mysql-client
 usermod -aG docker admincu
 service docker stop
+sh /home/admincu/cloudunit/cu-production/generate-certs.sh
 cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
 service docker start
 
@@ -79,8 +84,22 @@ chown -R admincu /home/admincu/.cloudunit
 cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
 usermod -g sudo $CU_USER
 
+# copy the environment file
+cp -f $CU_INSTALL_DIR/files/environment /etc/environment
+sed -i "s/DOMAIN_NAME/$domain/g" /etc/environment
 
+# display values to declare
+echo ""
+echo "You have to declare into your dns"
+echo ""
+cat /etc/environment
 
+# Change admincu passwd
+passwd admincu
+
+echo ""
+echo "You can open a new session with admincu"
+echo ""
 
 
 

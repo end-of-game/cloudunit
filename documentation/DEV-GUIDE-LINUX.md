@@ -56,7 +56,9 @@ sudo service dnsmasq restart
 You should ping **foo.cloudunit.dev** to **192.168.50.4**
 
 ### Step 2 - How to install Vagrant plugins
+
 ```
+sudo apt-get install ruby-dev
 vagrant plugin install vagrant-reload
 vagrant plugin install vagrant-vbguest
 ```
@@ -86,11 +88,18 @@ cd $HOME/cloudunit/cu-manager-ui && bower install
 
 Warning because this step could need lot of times !
 
+If your machine has at least 8 GB Memory
 ```
 cd $HOME/cloudunit/cu-vagrant 
-vagrant up
-vagrant provision
+./mediumbox.sh
 ```
+
+If your machine has less than 8 GB Memory
+```
+cd $HOME/cloudunit/cu-vagrant 
+./smallbox.sh
+```
+
 
 ### <a name="step6"></a>Step 6 - How to start the application
 
@@ -104,7 +113,7 @@ cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 2 - Start the Java Backend from Linux
-
+**Outside the vagrand box** 
 ```
 cd $HOME/cloudunit
 mvn clean install -DskipTests
