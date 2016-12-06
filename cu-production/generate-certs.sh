@@ -50,11 +50,11 @@ sudo cp -f $CA_CERT /root/.docker
 sudo mv -f $SERVER_CERT /root/.docker
 sudo mv -f $SERVER_KEY /root/.docker
 
-echo " - Client side : copying into [~/.docker    ] les fichiers [$CA_CERT $CLIENT_CERT $CLIENT_KEY]"
-sudo mkdir ~/.docker
-sudo mv -f $CA_CERT ~/.docker
-sudo mv -f $CLIENT_CERT ~/.docker
-sudo mv -f $CLIENT_KEY ~/.docker
-sudo chown -R admincu ~/.docker
+echo " - Client side : copying into [/home/admincu/.docker] les fichiers [$CA_CERT $CLIENT_CERT $CLIENT_KEY]"
+sudo mkdir /home/admincu/.docker
+sudo mv -f $CA_CERT /home/admincu/.docker
+sudo mv -f $CLIENT_CERT /home/admincu/.docker
+sudo mv -f $CLIENT_KEY /home/admincu/.docker
+sudo chown -R admincu /home/admincu/.docker
 
 # That's all folks
