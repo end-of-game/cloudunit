@@ -3,7 +3,6 @@ PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/u
 MYSQL_ROOT_PASSWORD=changeit
 
 CU_DOMAIN=DOMAIN_NAME
-CU_PORTAL_URL=DOMAIN_NAME
 CU_PORTAL_DOMAIN=DOMAIN_NAME
 CU_MANAGER_DOMAIN=admin-DOMAIN_NAME
 CU_GITLAB_DOMAIN=gitlab-DOMAIN_NAME
