@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -119,7 +120,7 @@ public class ModuleServiceImpl implements ModuleService {
         Module module = application.addModule(image);
 
         // Build a custom container
-        String containerName = module.getName();
+        String containerName = NamingUtils.getContainerName(module.getApplication().getName(), module.getImage().getPrefixEnv(), user.getLogin());
         String imagePath = module.getImage().getPath();
         logger.debug("imagePath:" + imagePath);
 

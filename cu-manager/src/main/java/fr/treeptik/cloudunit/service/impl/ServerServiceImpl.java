@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -142,7 +143,9 @@ public class ServerServiceImpl implements ServerService {
 		User user = server.getApplication().getUser();
 
 		// Build a custom container
-		String containerName = server.getName();
+		String containerName = NamingUtils.getContainerName(server.getApplication().getName()
+                                                            , null
+															,server.getApplication().getUser().getLogin());
 
 		String imagePath = server.getImage().getPath();
 		String prefixEnv = server.getImage().getPrefixEnv();
