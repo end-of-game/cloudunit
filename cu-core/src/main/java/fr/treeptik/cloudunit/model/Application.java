@@ -148,19 +148,20 @@ public class Application implements Serializable {
         this.environmentVariables = builder.environmentVariables;
         this.portsToOpen = builder.portsToOpen;
         this.restHost = builder.restHost;
-        
-        if ("webserver".equalsIgnoreCase(server.getImage().getPrefixEnv())) {
-            this.deploymentStatus = Application.ALREADY_DEPLOYED;
-        } else {
-            this.deploymentStatus = Application.NONE;
-        }
-        
+
         this.modules = new HashSet<>();
         this.deployments = new HashSet<>();
         this.aliases = new HashSet<>();
         
         this.server = new Server(this, builder.image);
-    }
+
+		if ("webserver".equalsIgnoreCase(server.getImage().getPrefixEnv())) {
+			this.deploymentStatus = Application.ALREADY_DEPLOYED;
+		} else {
+			this.deploymentStatus = Application.NONE;
+		}
+
+	}
 
 	public static Builder of(String displayName, Image image) {
         return new Builder(displayName, image);

@@ -207,6 +207,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         application = applicationDAO.save(application);
 
         Server server = application.getServer();
+		server.setApplication(application);
 
         server = serverService.create(server);
         

@@ -32,13 +32,13 @@
         <query objectName="Catalina:type=Manager,context=/,host=localhost" attribute="activeSessions"
                resultAlias="application.activeSessions"/>
     </queries>
-    <outputWriter class="org.jmxtrans.agent.elasticsearch.ElasticSearchOutputWriter">
+    <outputWriter class="org.jmxtrans.agent.elastic.ElasticSearchOutputWriter">
         <elasticsearchHost>elasticsearch.skynet</elasticsearchHost>
-        <elasticsearchPort>9300</elasticsearchPort>
+        <elasticsearchPort>9200</elasticsearchPort>
         <elasticsearchClusterName>cu-mon</elasticsearchClusterName>
         <elasticsearchIndex>jmxtrans-%{yyyy.MM.dd}</elasticsearchIndex>
         <nodeName>nodeName</nodeName><!--empty by default-->
         <usePrefixAsType>true</usePrefixAsType>
     </outputWriter>
-    <collectIntervalInSeconds>20</collectIntervalInSeconds>
+    <collectIntervalInSeconds>2</collectIntervalInSeconds>
 </jmxtrans-agent>

@@ -26,7 +26,7 @@ public class ContainerUtils {
                 .build();
         Config config = ConfigBuilder.aConfig().withAttachStdin(Boolean.FALSE).withAttachStdout(Boolean.TRUE)
                 .withHostname(name)
-                .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(image).withHostConfig(hostConfig).withMemory(0L)
+                .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(imagePath).withHostConfig(hostConfig).withMemory(0L)
                 .withMemorySwap(0L).withEnv(envs).build();
         Map<String, String> labels = new HashMap<>();
         if ("webserver".equalsIgnoreCase(prefixEnv)) {
