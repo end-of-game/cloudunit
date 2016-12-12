@@ -116,7 +116,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// Routes security
 		http.authorizeRequests()
 				.antMatchers("/gitlab/**").permitAll()
-				.antMatchers("/nopublic/**").permitAll()
 				.antMatchers("/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
 				.and().exceptionHandling()
 				.authenticationEntryPoint(authenticationEntryPoint);

@@ -88,6 +88,40 @@
         </li>
         <li><a ui-sref="editVolume">Volumes</a></li>
         <li><a ui-sref="monitoring">Monitoring</a></li>
+        <li>
+          <div class="dropdown" dropdown>
+            <a class="dropdown-toggle"
+               dropdown-toggle> Portal
+            </a>
+            <ul class="dropdown-menu" role="menu">
+              <li>
+                <a ui-sref="scriptingPlay">
+                  Jenkins
+                </a>
+              </li>
+              <li>
+                <a ui-sref="scriptingManage">
+                  Kibana
+                </a>
+              </li>
+              <li>
+                <a ui-sref="scriptingManage">
+                  Nexus
+                </a>
+              </li>
+              <li>
+                <a ui-sref="scriptingManage">
+                  SonarQube
+                </a>
+              </li>
+              <li>
+                <a ui-sref="scriptingManage">
+                  Let's chat
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
         <li class="app-bar-cli">
           <div class="dropdown" dropdown>
             <a class="dropdown-toggle"
@@ -268,6 +302,7 @@
 <!--Services-->
 <script src="scripts/shared/services/userService.js"></script>
 <script src="scripts/shared/services/applicationService.js"></script>
+<script src="scripts/shared/services/homepageService.js"></script>
 <script src="scripts/shared/services/snapshotService.js"></script>
 <script src="scripts/shared/services/moduleService.js"></script>
 <script src="scripts/shared/services/scriptingService.js"></script>
@@ -369,6 +404,9 @@
 <!--timeline-->
 <script src="scripts/components/mainTimeline/mainTimeline.config.js"></script>
 <script src="scripts/components/mainTimeline/mainTimeline.js"></script>
+<!--homepage-->
+<script src="scripts/components/homepage/homepage.config.js"></script>
+<script src="scripts/components/homepage/homepage.js"></script>
 <!--account-->
 <script src="scripts/components/account/account.config.js"></script>
 <script src="scripts/components/account/account.admin.js"></script>

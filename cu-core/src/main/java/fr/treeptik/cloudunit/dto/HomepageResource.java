@@ -9,16 +9,18 @@ public class HomepageResource {
     private String kibana;
     private String nexus;
     private String sonar;
+    private String letschat;
 
     public HomepageResource() {
     }
 
-    public HomepageResource(String jenkins, String gitlab, String kibana, String nexus, String sonar) {
+    public HomepageResource(String jenkins, String gitlab, String kibana, String nexus, String sonar, String letschat) {
         this.jenkins = jenkins;
         this.gitlab = gitlab;
         this.kibana = kibana;
         this.nexus = nexus;
         this.sonar = sonar;
+        this.letschat = letschat;
     }
 
     public String getJenkins() {
