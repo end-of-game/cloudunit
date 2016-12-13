@@ -98,6 +98,12 @@ services:
       environment:
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - MYSQL_ROOT_PASSWORD
+          - CU_JENKINS_DOMAIN
+          - CU_GITLAB_DOMAIN
+          - CU_KIBANA_DOMAIN
+          - CU_NEXUS_DOMAIN
+          - CU_SONAR_DOMAIN
+          - CU_LETSCHAT_DOMAIN
       network_mode: bridge
 
   cadvisor:
