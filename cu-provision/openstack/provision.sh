@@ -9,9 +9,11 @@ readonly COMPOSE_VERSION=1.8.0
 
 set -x
 
-CU_USER=${1:-admincu}
+CU_USER=admincu
+
 # CREATE ADMINCU USER admincu account
 useradd -m -s /bin/bash $CU_USER
+usermod -G sudo $CU_USER
 
 # PROVISION THE ENV
 apt-get install -y nmap
@@ -89,23 +91,5 @@ sudo update-grub
 curl -o docker-compose -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
 chmod a+x docker-compose
 sudo mv docker-compose /usr/local/bin
-
-# install Docker Machine
-# @see https://docs.docker.com/machine/
-#curl -L https://github.com/docker/machine/releases/download/$MACHINE_VERSION/docker-machine-`uname -s`-`uname -m` > docker-machine
-#chmod a+x docker-machine
-#sudo mv docker-machine /usr/local/bin/
-
-# install swarm
-#sudo docker pull swarm
-
-# install docker-bench-security
-#docker pull diogomonica/docker-bench-security
-#sudo cp cloudunit/cu-vagrant/files/docker-bench-security /usr/local/bin
-#chmod a+x /usr/local/bin/docker-bench-security
-
-# to activate the new docker.service file configuration
-#sudo service docker stop
-#sudo service docker start
 
 cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
