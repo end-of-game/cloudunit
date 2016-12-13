@@ -24,7 +24,7 @@ angular.module('webuiApp.homepage', [])
           url: '/homepage',
           template: '<homepage></homepage>',
           data: {
-            isFree: false,
+            isFree: true,
           },
         });
     },]);

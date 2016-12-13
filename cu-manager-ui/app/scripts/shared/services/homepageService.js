@@ -14,35 +14,37 @@
  */
 
 (function () {
-  'use strict';
+    'use strict';
 
-  /**
-   * @ngdoc service
-   * @name webuiApp.ScriptingService
-   * @description
-   * # ScriptingService
-   * Factory in the webuiApp.
-   */
-  angular
-    .module ( 'webuiApp' )
-    .factory ( 'HomepageService', HomepageService );
+    /**
+     * @ngdoc service
+     * @name webuiApp.ScriptingService
+     * @description
+     * # ScriptingService
+     * Factory in the webuiApp.
+     */
+    angular
+        .module('webuiApp')
+        .factory('HomepageService', HomepageService);
 
     HomepageService.$inject = [
-      '$resource'
+        '$resource',
+        '$http',
     ];
 
 
-  function HomepageService ( $resource ) {
+    function HomepageService($resource, $http) {
 
-    return {
-        listFriends: listFriends,
-    };
+        return {
+            listFriends: listFriends,
+        };
 
-    // list script
-    function listFriends ( ) {
-      var dir = $resource ( 'homepage/friends' );
-      return dir.query ( { } ).$promise; 
+        // list script
+        function listFriends() {
+            return $http.get('homepage/friends').then(function (response) {
+                return angular.copy(response.data);
+            })
+        }
+
     }
-
-  }
-}) ();
+})();

@@ -54,10 +54,9 @@
                 .then(success)
                 .catch(error);
 
-            function success(messages) {
-                console.log(messages);
-                vm.messages = messages;
-                return vm.messages;
+            function success(friends) {
+                vm.friends = friends;
+                return vm.friends;
             }
 
             function error(response) {

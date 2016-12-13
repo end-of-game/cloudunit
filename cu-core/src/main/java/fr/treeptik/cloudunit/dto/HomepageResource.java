@@ -42,4 +42,8 @@ public class HomepageResource {
     public String getSonar() {
         return sonar;
     }
+
+    public String getLetschat() {
+        return letschat;
+    }
 }
