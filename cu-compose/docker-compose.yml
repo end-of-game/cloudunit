@@ -121,6 +121,7 @@ services:
           - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
 
   traefik:
+      container_name: cu-traefik
       env_file: .env
       image: traefik
       command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
