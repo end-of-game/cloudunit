@@ -32,7 +32,7 @@ services:
       - elasticsearch
 
   kibana:
-    env_file: .env-dev
+    env_file: .env
     build:
       context: ./cu-elk/kibana
     image: cloudunit/elk-kibana
@@ -52,8 +52,8 @@ services:
       - "traefik.frontend.rule=Host:kibana.cloudunit.dev"
 
   monitoring-agents:
-    env_file: .env-dev
-    hostname: ${HOSTNAME}
+    env_file: .env
+    hostname: "${HOSTNAME}"
     build:
       context: cu-elk/monitoring-agents
     image: cloudunit/elk-monitoring-agents

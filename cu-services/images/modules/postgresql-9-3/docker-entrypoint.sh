@@ -42,8 +42,6 @@ if [ "$1" = 'postgres' ]; then
 			authMethod=trust
 		fi
 
-		{ echo; echo "host all monitoring 127.0.0.1/32 $authMethod"; } >> "$PGDATA/pg_hba.conf"
-		{ echo; echo "host  all monitoring 0.0.0.0/0 reject"; } >> "$PGDATA/pg_hba.conf"
 		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA/pg_hba.conf"
 
 		# internal start of server in order to allow set-up using psql-client
@@ -76,13 +74,6 @@ if [ "$1" = 'postgres' ]; then
 		echo
 
 		psql+=( --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" )
-
-		"${psql[@]}" --username postgres <<-EOSQL
-			CREATE USER monitoring PASSWORD 'monitoring' SUPERUSER;
-		EOSQL
-		echo
-
-		psql+=( --username "monitoring" --dbname "$POSTGRES_DB" )
 
 		echo
 		for f in /docker-entrypoint-initdb.d/*; do

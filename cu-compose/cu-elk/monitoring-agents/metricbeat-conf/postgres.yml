@@ -36,10 +36,10 @@ metricbeat.modules:
   hosts: ["postgres://localhost:5432?sslmode=disable"]
 
   # Username to use when connecting to PostgreSQL. Empty by default.
-  username: monitoring
+  username: ${POSTGRES_USER:postgres}
 
   # Password to use when connecting to PostgreSQL. Empty by default.
-  password: monitoring
+  password: ${$POSTGRES_PASSWORD:}
 
 #-------------------------- Elasticsearch output ------------------------------
 output.elasticsearch:

@@ -102,11 +102,13 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 
 			if [ "$MYSQL_DATABASE" ]; then
 				echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" | "${mysql[@]}"
-				echo "GRANT SELECT, PROCESS ON *.* TO 'monitoring'@'%' ;" | "${mysql[@]}"
-		fi
+			fi
 
 			echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
 		fi
+
+
+
 
 		echo
 		for f in /docker-entrypoint-initdb.d/*; do
@@ -134,6 +136,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 		echo
 		echo 'Start metricbeat agent with mysql module.'
+
 		if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
 			/opt/cloudunit/monitoring-agents/metricbeat/metricbeat -c /opt/cloudunit/monitoring-agents/metricbeat/conf.d/mysql.yml&
 		fi
