@@ -26,15 +26,15 @@ function init {
 }
 
 function with-elk {
-    docker-compose -f   docker-compose.elk.yml \
-                        docker-compose.yml \
+    docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.yml \
     up -d
 }
 
 function with-elk-and-selenium {
-    docker-compose -f   docker-compose.elk.yml \
-                        docker-compose.selenium.yml \
-                        docker-compose.yml \
+    docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.selenium.yml \
+                    -f docker-compose.yml \
     up -d
 }
 
