@@ -32,7 +32,6 @@ case $yno in
 
         [yY] | [yY][Ee][Ss] )
                 echo "Agreed"
-                ./configure.sh
                 reset
                 ;;
 

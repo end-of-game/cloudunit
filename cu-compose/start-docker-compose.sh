@@ -13,18 +13,61 @@
 
 #!/usr/bin/env bash
 
-source /etc/environment
+##
+##
+## FUNCTIONS
+##
+##
 
-mkdir -p /home/admincu/jenkins_home
-sudo chmod -R 777 /home/admincu/jenkins_home
+function init {
+    mkdir -p /home/admincu/jenkins_home
+    # BUG with jenkins... to investigate about rights
+    sudo chmod -R 777 /home/admincu/jenkins_home
+}
 
-docker network create skynet
+function with-elk {
+    docker-compose -f   docker-compose.elk.yml \
+                        docker-compose.yml \
+    up -d
+}
 
-docker-compose  -f docker-compose.yml \
-                -f docker-compose.elk.yml \
-                up -d
+function with-elk-and-selenium {
+    docker-compose -f   docker-compose.elk.yml \
+                        docker-compose.selenium.yml \
+                        docker-compose.yml \
+    up -d
+}
 
-docker network connect cucompose_default cuplatform_kibana_1
+##
+##
+## MAIN
+##
+##
+
+case "$1" in
+
+'with-elk')
+init && with-elk
+;;
+
+'with-elk-and-selenium')
+init && with-elk-and-selenium
+;;
+
+*)
+echo ""
+echo "Usage $0 "
+echo "Example : $0 tomcat cache"
+echo "Example : $0 mysql"
+echo "Choice between : "
+echo "                    with-elk"
+echo "                    with-elk-and-selenium"
+echo ""
+;;
+
+esac
+
+
 
 
 
