@@ -39,7 +39,7 @@
 
 		<!-- Dependencies properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>4.3.0.RELEASE</spring.version>
+		<spring.version>4.3.2.RELEASE</spring.version>
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
 		<hibernate.version>5.1.0.Final</hibernate.version>
 		<codahale.metrics.version>3.0.1</codahale.metrics.version>
@@ -50,13 +50,6 @@
 		<surefireArgLine />
 
 	</properties>
-
-	<repositories>
-		<repository>
-			<id>jgit-repository</id>
-			<url>https://repo.eclipse.org/content/groups/releases/</url>
-		</repository>
-	</repositories>
 
 	<licenses>
 		<license>
