@@ -96,7 +96,7 @@ services:
 
   traefik:
       image: traefik
-      command: --web --docker --docker.domain=cloudunit.dev --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
+      command: --web --docker --docker.domain=cudev-nicolas.treeptik.corp --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
       ports:
         - "80:80"
         - "8080:8080"
