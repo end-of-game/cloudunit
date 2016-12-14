@@ -45,8 +45,6 @@ services:
   tomcat:
       container_name: cuplatform_tomcat_1
       image: cloudunit/manager
-      depends_on:
-          - nginx
       ports:
           - "8080:8080"
       user: "1000:999"
@@ -91,8 +89,6 @@ services:
   gitlab:
       container_name: cuplatform_gitlab_1
       image: gitlab/gitlab-ce:8.13.5-ce.0
-      depends_on:
-          - nginx
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
@@ -116,8 +112,6 @@ services:
       build:
         context: cu-jenkins
       image: cloudunit/jenkins
-      depends_on:
-          - nginx
       volumes:
           - /home/admincu/jenkins_home:/var/jenkins_home
           - /etc/localtime:/etc/localtime:ro
