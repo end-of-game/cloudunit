@@ -44,7 +44,7 @@ services:
 
   tomcat:
       env_file:
-          - production.env
+          - ./production.env
       container_name: cuplatform_tomcat_1
       image: cloudunit/manager
       ports:
