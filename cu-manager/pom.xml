@@ -51,6 +51,13 @@
 
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>jgit-repository</id>
+			<url>https://repo.eclipse.org/content/groups/releases/</url>
+		</repository>
+	</repositories>
+
 	<licenses>
 		<license>
 			<name>The Affero GPL, Version 3.0</name>
