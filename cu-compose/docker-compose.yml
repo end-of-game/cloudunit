@@ -43,8 +43,7 @@ services:
           - "traefik.enable=false"
 
   tomcat:
-      env_file:
-          - ./production.env
+      env_file: ./production.env
       container_name: cuplatform_tomcat_1
       image: cloudunit/manager
       ports:
