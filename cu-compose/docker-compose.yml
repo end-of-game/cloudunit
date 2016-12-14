@@ -3,31 +3,6 @@ services:
   java:
       container_name: java
       image: cloudunit/java
-      network_mode: bridge
-
-  dnsdock:
-      container_name: cuplatform_dnsdock_1
-      image: tonistiigi/dnsdock:v1.10.0
-      volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      ports:
-          - "172.17.42.1:53:53/udp"
-      command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
-      network_mode: bridge
-
-  hipache:
-      container_name: cuplatform_hipache_1
-      image: tutum/hipache:0.3.1
-      ports:
-          - "80:80"
-      links:
-          - redis:redis
-      volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
 
   redis:
       container_name: cuplatform_redis_1
@@ -36,7 +11,8 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
+      labels:
+          - "traefik.enable=false"
 
   mysql:
       container_name: cuplatform_mysql_1
@@ -53,7 +29,8 @@ services:
       volumes:
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
+      labels:
+            - "traefik.enable=false"
 
   mysqldata:
       container_name: cuplatform_mysqldata_1
@@ -62,24 +39,8 @@ services:
           - /home/admincu/mysql_home:/var/lib/mysql
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
-
-  nginx:
-      container_name: cuplatform_nginx_1
-      build:
-        context: nginx
-      image: cloudunit/nginx
-      ports:
-          - "443:443"
-      volumes:
-          - ./nginx/sites-enabled:/etc/nginx/sites-enabled
-          - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
-          - ./nginx/www:/var/www
-          - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-          - ./nginx/log:/var/log/nginx
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
+      labels:
+          - "traefik.enable=false"
 
   tomcat:
       container_name: cuplatform_tomcat_1
@@ -97,14 +58,15 @@ services:
           - /home/admincu/.docker:/opt/certificats
       environment:
           - CATALINA_OPTS="-Dspring.profiles.active=production"
-          - MYSQL_ROOT_PASSWORD
-          - CU_JENKINS_DOMAIN
-          - CU_GITLAB_DOMAIN
-          - CU_KIBANA_DOMAIN
-          - CU_NEXUS_DOMAIN
-          - CU_SONAR_DOMAIN
-          - CU_LETSCHAT_DOMAIN
-      network_mode: bridge
+          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+          - CU_JENKINS_DOMAIN=${CU_JENKINS_DOMAIN}
+          - CU_GITLAB_DOMAIN=${CU_GITLAB_DOMAIN}
+          - CU_KIBANA_DOMAIN=${CU_KIBANA_DOMAIN}
+          - CU_NEXUS_DOMAIN=${CU_NEXUS_DOMAIN}
+          - CU_SONAR_DOMAIN=${CU_SONAR_DOMAIN}
+          - CU_LETSCHAT_DOMAIN=${CU_LETSCHAT_DOMAIN}
+      labels:
+          - "traefik.enable=false"
 
   cadvisor:
       container_name: cuplatform_cadvisor_1
@@ -121,7 +83,8 @@ services:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
-      network_mode: bridge
+      labels:
+          - "traefik.enable=false"
 
   gitlab:
       container_name: cuplatform_gitlab_1
@@ -139,7 +102,10 @@ services:
       #environment:
       #    GITLAB_OMNIBUS_CONFIG: |
       #        external_url 'https://${CU_GITLAB_DOMAIN}'
-      network_mode: bridge
+      labels:
+          - "traefik.backend=gitlab"
+          - "traefik.port=80"
+          - "traefik.frontend.rule=Host:${CU_GITLAB_DOMAIN}"
 
   jenkins:
       container_name: cuplatform_jenkins_1
@@ -150,4 +116,26 @@ services:
           - nginx
       volumes:
           - /home/admincu/jenkins_home:/var/jenkins_home
-      network_mode: bridge
+          - /etc/localtime:/etc/localtime:ro
+          - /etc/timezone:/etc/timezone:ro
+      labels:
+          - "traefik.backend=jenkins"
+          - "traefik.port=8080"
+          - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
+
+  traefik:
+      image: traefik
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
+      ports:
+        - "80:80"
+        - "8080:8080"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /dev/null:/traefik.toml
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+
+networks:
+  default:
+    external:
+      name: skynet
