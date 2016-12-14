@@ -42,6 +42,8 @@ if [ "$1" = 'postgres' ]; then
 			authMethod=trust
 		fi
 
+		{ echo; echo "host all monitoring 127.0.0.1/32 $authMethod"; } >> "$PGDATA/pg_hba.conf"
+		{ echo; echo "host  all monitoring 0.0.0.0/0 reject"; } >> "$PGDATA/pg_hba.conf"
 		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA/pg_hba.conf"
 
 		# internal start of server in order to allow set-up using psql-client
@@ -75,6 +77,13 @@ if [ "$1" = 'postgres' ]; then
 
 		psql+=( --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" )
 
+		"${psql[@]}" --username postgres <<-EOSQL
+			CREATE USER monitoring PASSWORD 'monitoring' SUPERUSER;
+		EOSQL
+		echo
+
+		psql+=( --username "monitoring" --dbname "$POSTGRES_DB" )
+
 		echo
 		for f in /docker-entrypoint-initdb.d/*; do
 			case "$f" in
@@ -94,9 +103,7 @@ if [ "$1" = 'postgres' ]; then
 	fi
 
 	if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
-		sed -i "s/POSTGRES_USER/$POSTGRES_USER/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
-		sed -i "s/POSTGRES_PASSWORD/$POSTGRES_PASSWORD/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
-		nohup /opt/cloudunit/polling-agents/metricbeat/metricbeat -c /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml > /dev/null 2>&1 &
+		/opt/cloudunit/monitoring-agents/metricbeat/metricbeat -c /opt/cloudunit/monitoring-agents/metricbeat/conf.d/postgres.yml&
 	fi
 
 	exec gosu postgres "$@"

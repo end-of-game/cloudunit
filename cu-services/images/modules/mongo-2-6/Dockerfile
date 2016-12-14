@@ -9,8 +9,6 @@ ENV CU_MODULE_PORT 27017
 ENV CU_DEFAULT_LOG_FILE " "
 ENV CU_LOGS " "
 
-ENV METRICBEAT_VERSION 5.0.1
-
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
@@ -52,17 +50,6 @@ RUN mkdir -p /data/db /data/configdb \
 VOLUME /data/db /data/configdb
 
 COPY docker-entrypoint.sh /entrypoint.sh
-
-# Install metricbeat agent
-
-RUN mkdir -p /opt/cloudunit/polling-agents/metricbeat \
-  && cd /opt/cloudunit/polling-agents \
-	&& curl --insecure -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& tar zxvf metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz -C metricbeat --strip-components 1 \
-	&& rm metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& chown -R mongodb:mongodb /opt/cloudunit/polling-agents/metricbeat
-
-ADD metricbeat.yml /opt/cloudunit/polling-agents/metricbeat
 
 ENTRYPOINT ["/entrypoint.sh"]
 

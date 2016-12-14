@@ -98,9 +98,11 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 
 		if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
 			echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" | "${mysql[@]}"
+			echo "CREATE USER 'monitoring'@'%' IDENTIFIED BY 'monitoring' ;" | "${mysql[@]}"
 
 			if [ "$MYSQL_DATABASE" ]; then
 				echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" | "${mysql[@]}"
+				echo "GRANT SELECT, PROCESS ON *.* TO 'monitoring'@'%' ;" | "${mysql[@]}"
 			fi
 
 			echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
@@ -133,9 +135,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 		echo 'Start metricbeat agent with mysql module.'
 		if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
-			sed -i "s/MYSQL_USER/$MYSQL_USER/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
-			sed -i "s/MYSQL_PASSWORD/$MYSQL_PASSWORD/" /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml
-			nohup /opt/cloudunit/polling-agents/metricbeat/metricbeat -c /opt/cloudunit/polling-agents/metricbeat/metricbeat.yml > /dev/null 2>&1 &
+			/opt/cloudunit/monitoring-agents/metricbeat/metricbeat -c /opt/cloudunit/monitoring-agents/metricbeat/conf.d/mysql.yml&
 		fi
 
 	fi
