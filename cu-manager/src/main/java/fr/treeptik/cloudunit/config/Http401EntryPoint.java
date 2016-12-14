@@ -40,25 +40,8 @@ public class Http401EntryPoint implements AuthenticationEntryPoint {
 
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException arg)
 			throws IOException, ServletException {
-
 		// Maybe change the log level...
 		log.warn("Access Denied [ " + request.getRequestURL().toString() + "] : " + arg.getMessage());
-
-		// Trace message to ban intruders with fail2ban
-		// generateLogTraceForFail2ban();
-
 		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access unauthorized");
-	}
-
-	public void generateLogTraceForFail2ban() {
-		log.debug("generateLogTraceForFail2ban");
-		String filePath = "/var/log/culogin.log";
-		try {
-			Files.write(Paths.get(filePath), "Access Denied".getBytes(), StandardOpenOption.APPEND);
-			Files.write(Paths.get(filePath), System.getProperty("line.separator").getBytes(),
-					StandardOpenOption.APPEND);
-		} catch (IOException e) {
-			log.error("Cannot write to " + filePath + "", e.getMessage());
-		}
 	}
 }
