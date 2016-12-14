@@ -21,6 +21,9 @@
 
 function init {
     echo "init"
+    mkdir -p /home/$USER/jenkins_home
+    # BUG with jenkins... to investigate about rights
+    sudo chmod -R 777 /home/$USER/jenkins_home
 }
 
 function with-elk {
@@ -34,6 +37,21 @@ function with-elk-and-selenium {
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
     up -d
+}
+
+function reset {
+    if [ "$1" != "-y" ]; then
+        echo "Are you sure to delete them ? [y/n]"
+        read PROD_ASW
+        if [ "$PROD_ASW" != "y" ] && [ "$PROD_ASW" != "n" ]; then
+            echo "Entrer y ou n!"
+            exit 1
+        elif [ "$PROD_ASW" = "n" ]; then
+            exit 1
+        fi
+    fi
+    docker-compose  -f docker-compose.elk.yml docker-compose.selenium.yml docker-compose.yml kill
+    docker-compose  -f docker-compose.elk.yml docker-compose.selenium.yml docker-compose.yml rm -f
 }
 
 ##
@@ -52,6 +70,11 @@ init && with-elk
 init && with-elk-and-selenium
 ;;
 
+'reset')
+reset
+;;
+
+
 *)
 echo ""
 echo "Usage $0 "
@@ -63,11 +86,4 @@ echo ""
 ;;
 
 esac
-
-
-
-
-
-
-
 
