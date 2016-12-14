@@ -119,8 +119,6 @@ services:
           - "traefik.backend=jenkins"
           - "traefik.port=8080"
           - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
-      env_file:
-          - .production.env
 
   traefik:
       env_file: .env
