@@ -43,6 +43,8 @@ services:
           - "traefik.enable=false"
 
   tomcat:
+      env_file:
+          - production.env
       container_name: cuplatform_tomcat_1
       image: cloudunit/manager
       ports:
@@ -65,8 +67,6 @@ services:
           - CU_LETSCHAT_DOMAIN=${CU_LETSCHAT_DOMAIN}
       labels:
           - "traefik.enable=false"
-      env_file:
-          - production.env
 
   cadvisor:
       container_name: cuplatform_cadvisor_1
@@ -87,6 +87,8 @@ services:
           - "traefik.enable=false"
 
   gitlab:
+      env_file:
+          - production.env
       container_name: cuplatform_gitlab_1
       image: gitlab/gitlab-ce:8.13.5-ce.0
       volumes:
