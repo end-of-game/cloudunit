@@ -20,9 +20,7 @@
 ##
 
 function init {
-    mkdir -p /home/admincu/jenkins_home
-    # BUG with jenkins... to investigate about rights
-    sudo chmod -R 777 /home/admincu/jenkins_home
+    echo "init"
 }
 
 function with-elk {
