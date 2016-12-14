@@ -55,8 +55,7 @@ init && with-elk-and-selenium
 *)
 echo ""
 echo "Usage $0 "
-echo "Example : $0 tomcat cache"
-echo "Example : $0 mysql"
+echo "Example : $0 with-elk"
 echo "Choice between : "
 echo "                    with-elk"
 echo "                    with-elk-and-selenium"
