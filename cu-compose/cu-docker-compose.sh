@@ -50,8 +50,8 @@ function reset {
             exit 1
         fi
     fi
-    docker-compose  -f docker-compose.elk.yml docker-compose.selenium.yml docker-compose.yml kill
-    docker-compose  -f docker-compose.elk.yml docker-compose.selenium.yml docker-compose.yml rm -f
+    docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
+    docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
 }
 
 ##
@@ -82,6 +82,7 @@ echo "Example : $0 with-elk"
 echo "Choice between : "
 echo "                    with-elk"
 echo "                    with-elk-and-selenium"
+echo "                    reset"
 echo ""
 ;;
 
