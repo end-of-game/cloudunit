@@ -65,7 +65,9 @@ services:
           - "CU_SONAR_DOMAIN=${CU_SONAR_DOMAIN}"
           - "CU_LETSCHAT_DOMAIN=${CU_LETSCHAT_DOMAIN}"
       labels:
-          - "traefik.enable=false"
+          - "traefik.backend=manager"
+          - "traefik.port=8080"
+          - "traefik.frontend.rule=Host:${CU_MANAGER_DOMAIN}"
 
   cadvisor:
       container_name: cuplatform_cadvisor_1
