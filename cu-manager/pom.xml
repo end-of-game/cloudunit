@@ -48,7 +48,6 @@
 		<!-- surefire argLine empty by default it will be populated by plugin contributing 
 			to the surefire and failsafe argument line. -->
 		<surefireArgLine />
-
 	</properties>
 
 	<repositories>
