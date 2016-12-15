@@ -18,6 +18,7 @@ services:
         - "traefik.enable=false"
 
   mysql:
+      env_file: .env
       container_name: cuplatform_mysql_1
       image: mysql:5.7.4
       depends_on:
@@ -25,8 +26,8 @@ services:
       ports:
            - "3306:3306"
       environment:
-          - MYSQL_ROOT_PASSWORD
-          - MYSQL_DATABASE=cloudunit
+          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+          - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes_from:
            - mysqldata
       volumes:
@@ -64,6 +65,7 @@ services:
         - "traefik.enable=false"
 
   gitlab:
+      env_file: .env
       container_name: cuplatform_gitlab_1
       image: gitlab/gitlab-ce:8.13.5-ce.0
       volumes:
@@ -95,8 +97,9 @@ services:
         - "traefik.frontend.rule=Host:jenkins.cloudunit.dev"
 
   traefik:
+      env_file: .env
       image: traefik
-      command: --web --docker --docker.domain=cloudunit.dev --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
       ports:
         - "80:80"
         - "8080:8080"
