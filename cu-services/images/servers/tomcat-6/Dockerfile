@@ -40,7 +40,7 @@ ENV PATH $CATALINA_HOME/bin:$PATH
 ## CLOUDUNIT :: BEGINNING
 ENV CU_SERVER_RESTART_POST_DEPLOYMENT false
 ENV CU_SOFTWARE $CATALINA_HOME
-ENV CU_SERVER_MANAGER_PATH /manager/html?
+ENV CU_SERVER_MANAGER_PATH manager/html?
 ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
 ENV CU_SERVER_RESTART_POST_CREDENTIALS true
@@ -66,6 +66,10 @@ RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-
 COPY files/web.xml $CU_SOFTWARE/conf/web.xml
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
 COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar \
+    && mv jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar $CU_SOFTWARE/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar
+COPY files/jmxtrans-agent.xml /opt/cloudunit/conf/jmxtrans-agent.xml
+ENV JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/cloudunit/tomcat/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar=/opt/cloudunit/conf/jmxtrans-agent.xml"
 ## CLOUDUNIT :: END
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
@@ -78,4 +82,4 @@ CMD ["catalina.sh", "run"]
 
 LABEL origin application
 LABEL application-type tomcat
-LABEL application-version $TOMCAT_VERSION
+LABEL application-version tomcat-$TOMCAT_VERSION

@@ -182,8 +182,12 @@ public class ServerServiceImpl implements ServerService {
 			String needToRestart = dockerService.getEnv(server.getName(), "CU_SERVER_RESTART_POST_CREDENTIALS");
 			if ("true".equalsIgnoreCase(needToRestart)) {
 				dockerService.stopContainer(server.getName());
-				dockerService.startServer(server.getName(), server);
-			}
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+				dockerService.startServer(server.getName(), server);}
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
 
 		} catch (PersistenceException e) {
