@@ -9,11 +9,11 @@ services:
       container_name: cuplatform_redis_1
       image: redis:3.0.1
       ports:
-          - "6379:6379"
+        - "6379:6379"
       command: redis-server --appendonly yes
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
       labels:
         - "traefik.enable=false"
 
@@ -22,17 +22,17 @@ services:
       container_name: cuplatform_mysql_1
       image: mysql:5.7.4
       depends_on:
-           - mysqldata
+        - mysqldata
       ports:
-           - "3306:3306"
+        - "3306:3306"
       environment:
-          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-          - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes_from:
-           - mysqldata
+        - mysqldata
       volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - /etc/timezone:/etc/timezone:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
       labels:
         - "traefik.enable=false"
 
@@ -40,26 +40,26 @@ services:
       container_name: cuplatform_mysqldata_1
       image: ubuntu:14.04
       volumes:
-          - /home/vagrant/mysql_home:/var/lib/mysql
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
+        - /home/vagrant/mysql_home:/var/lib/mysql
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
 
   cadvisor:
       container_name: cuplatform_cadvisor_1
       image: google/cadvisor:0.14.0
       environment:
-          - DB_USER=root
-          - DB_PASS=root
-          - DB_NAME=cadvisor
+        - DB_USER=root
+        - DB_PASS=root
+        - DB_NAME=cadvisor
       ports:
         - "8081:8080"
       volumes:
-          - /:/rootfs:ro
-          - /var/run:/var/run:rw
-          - /sys:/sys:ro
-          - /var/lib/docker:/var/lib/docker:ro
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
+        - /:/rootfs:ro
+        - /var/run:/var/run:rw
+        - /sys:/sys:ro
+        - /var/lib/docker:/var/lib/docker:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
       labels:
         - "traefik.enable=false"
@@ -69,11 +69,11 @@ services:
       container_name: cuplatform_gitlab_1
       image: gitlab/gitlab-ce:8.13.5-ce.0
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-          - /srv/gitlab/config:/etc/gitlab
-          - /srv/gitlab/logs:/var/log/gitlab
-          - /srv/gitlab/data:/var/opt/gitlab
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+        - /srv/gitlab/config:/etc/gitlab
+        - /srv/gitlab/logs:/var/log/gitlab
+        - /srv/gitlab/data:/var/opt/gitlab
       # Define the CU_GITLAB_DOMAIN into /etc/environment
       hostname: '${CU_GITLAB_DOMAIN}'
       #environment:
@@ -90,7 +90,7 @@ services:
         context: cu-jenkins
       image: cloudunit/jenkins
       volumes:
-          - /home/vagrant/jenkins_home:/var/jenkins_home
+        - /home/vagrant/jenkins_home:/var/jenkins_home
       labels:
         - "traefik.backend=jenkins"
         - "traefik.port=8080"
