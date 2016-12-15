@@ -55,7 +55,7 @@ public class FileServiceImpl implements FileService {
 	@Inject
 	private DockerService dockerService;
 
-	@Value("${docker.manager.ip:192.168.50.4:4243}")
+	@Value("${docker.socket.location}")
 	private String dockerManagerIp;
 
 	@Value("${docker.endpoint.mode}")

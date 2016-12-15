@@ -100,7 +100,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Inject
 	private MessageSource messageSource;
 
-	@Value("${docker.manager.ip:192.168.50.4:4243}")
+	@Value("${docker.socket.location}")
 	private String dockerSocketIP;
 
 	@Value("${suffix.cloudunit.io}")

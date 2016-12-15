@@ -99,7 +99,7 @@ public class ModuleServiceImpl implements ModuleService {
     @Value("${docker.endpoint.mode}")
     private String dockerEndpointMode;
 
-    @Value("${docker.manager.ip:192.168.50.4:4243}")
+    @Value("${docker.socket.location}")
     private String dockerManagerIp;
 
     @Inject
