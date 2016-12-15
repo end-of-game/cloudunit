@@ -78,6 +78,7 @@
                                 if ((str.length) != 2) {
                                     console.log(str)
                                     vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/"+ str[1] +"?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'beat.hostname: +" + vm.myContainer.name + "')),title:"+ str[1] +",uiState:())");
+                                    //vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Per-Container-Dashboard-Graph?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'docker.container.name: +" + vm.myContainer.name + "')),title:'Per+Container+Dashboard+Graph',uiState:())");
                                 } else {
                                     vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Per-Container-Dashboard-Graph?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'docker.container.name: +" + vm.myContainer.name + "')),title:'Per+Container+Dashboard+Graph',uiState:())");
                                 }
