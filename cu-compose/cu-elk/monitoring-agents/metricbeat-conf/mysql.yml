@@ -22,10 +22,10 @@ metricbeat.modules:
   hosts: ["tcp(127.0.0.1:3306)/"]
 
   # Username of hosts. Empty by default.
-  username: monitoring
+  username: ${MYSQL_USER}
 
   # Password of hosts. Empty by default.
-  password: monitoring
+  password: ${MYSQL_PASSWORD}
 
   # By setting raw to true, all raw fields from the status metricset will be added to the event.
   #raw: false
