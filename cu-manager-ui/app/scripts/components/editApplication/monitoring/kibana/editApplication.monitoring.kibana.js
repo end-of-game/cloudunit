@@ -74,7 +74,7 @@
                                 vm.isLoading = false;
                                 console.log(vm.myContainer.name.contains("mysql"))
                                 if (vm.myContainer.name.contains("mysql")){
-                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/mysql?embed=true&embed=true&embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'docker.container.name: +" + vm.myContainer.name + "')),title:mysql,uiState:())");
+                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/mysql?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'beat.hostname: +" + vm.myContainer.name + "')),title:mysql,uiState:())");
                                 } else {
                                     vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Per-Container-Dashboard-Graph?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'docker.container.name: +" + vm.myContainer.name + "')),title:'Per+Container+Dashboard+Graph',uiState:())");
                                 }
