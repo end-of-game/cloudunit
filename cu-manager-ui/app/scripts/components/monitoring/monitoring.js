@@ -52,7 +52,7 @@
       setTimeout(function() {
         MonitoringService.getKibanaLocation()
             .then(function(url) {
-              vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Dasboard-Instant?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Global-Application-Instant,panelIndex:1,row:1,size_x:7,size_y:7,type:visualization),(col:8,id:Global-Container-Instant,panelIndex:2,row:3,size_x:5,size_y:5,type:visualization),(col:8,id:Global-Reccources-Instant,panelIndex:3,row:1,size_x:5,size_y:2,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:'Dasboard+Instant',uiState:(P-2:(vis:(params:(sort:(columnIndex:!n,direction:!n))))))' style='height: 100vh; width: 100%; border: none;");
+              vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Dashboard-Instant?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1m,mode:relative,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Global-Application-Instant,panelIndex:1,row:1,size_x:7,size_y:7,type:visualization),(col:8,id:Global-Container-Instant,panelIndex:2,row:3,size_x:5,size_y:5,type:visualization),(col:8,id:Global-Reccources-Instant,panelIndex:3,row:1,size_x:5,size_y:2,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:'Dashboard+Instant',uiState:(P-2:(vis:(params:(sort:(columnIndex:!n,direction:!n))))))");
             })
             .catch(function(response) {
               ErrorService.handle(response);
