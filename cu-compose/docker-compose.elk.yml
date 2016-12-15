@@ -2,6 +2,7 @@ version: '2'
 services:
 
   elasticsearch:
+    env_file: -
     build:
       context: ./cu-elk/elasticsearch
     image: cloudunit/elk-elasticsearch
@@ -15,6 +16,10 @@ services:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
+    labels:
+      - "traefik.backend=elasticsearch"
+      - "traefik.port=9200"
+      - "traefik.frontend.rule=Host:elasticsearch.${CU_DOMAIN}"
 
   logstash:
     build:
@@ -28,6 +33,8 @@ services:
       - ./cu-elk/logstash/curator:/etc/curator
     environment:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    labels:
+      - "traefik.enable=false"
     depends_on:
       - elasticsearch
 
@@ -49,7 +56,7 @@ services:
     labels:
       - "traefik.backend=kibana"
       - "traefik.port=5601"
-      - "traefik.frontend.rule=Host:kibana.cloudunit.dev"
+      - "traefik.frontend.rule=Host:kibana.${CU_DOMAIN}"
 
   monitoring-agents:
     env_file: .env
@@ -64,6 +71,8 @@ services:
       - ./cu-elk/monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
     environment:
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
+    labels:
+      - "traefik.enable=false"
     depends_on:
       - elasticsearch
 
