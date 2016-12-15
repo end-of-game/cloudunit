@@ -99,7 +99,7 @@ services:
   traefik:
       env_file: .env
       image: traefik
-      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true 
       ports:
         - "80:80"
         - "8080:8080"
