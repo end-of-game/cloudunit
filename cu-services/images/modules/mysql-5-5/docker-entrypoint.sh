@@ -81,11 +81,12 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			DELETE FROM mysql.user ;
 			CREATE USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
 			GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
-			CREATE USER 'monitoring'@'%' IDENTIFIED BY 'monitoring' ;
-			GRANT SELECT ON *.* TO 'monitoring'@'%' IDENTIFIED BY 'monitoring';
 			DROP DATABASE IF EXISTS test ;
 			FLUSH PRIVILEGES ;
 		EOSQL
+
+		#CREATE USER 'monitoring'@'%' IDENTIFIED BY 'monitoring' ;
+		#GRANT SELECT ON *.* TO 'monitoring'@'%' IDENTIFIED BY 'monitoring';
 
 		if [ ! -z "$MYSQL_ROOT_PASSWORD" ]; then
 			mysql+=( -p"${MYSQL_ROOT_PASSWORD}" )
@@ -98,7 +99,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 
 		if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
 			echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" | "${mysql[@]}"
-			echo "CREATE USER 'monitoring'@'%' IDENTIFIED BY 'monitoring' ;" | "${mysql[@]}"
+			#echo "CREATE USER 'monitoring'@'%' IDENTIFIED BY 'monitoring' ;" | "${mysql[@]}"
 
 			if [ "$MYSQL_DATABASE" ]; then
 				echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" | "${mysql[@]}"
