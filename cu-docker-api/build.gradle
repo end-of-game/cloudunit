@@ -1,0 +1,7 @@
+
+description = 'CloudUnit Docker API Client'
+dependencies {
+  compile project(':cu-core')
+    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.6'
+    compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version:'1.51'
+}

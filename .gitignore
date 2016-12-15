@@ -21,7 +21,7 @@ hs_err_pid*
 .vagrant
 /monitoring_scripts/cloudunitmonitor.log
 
-cu-platform-deprecated/cu-platform.iml
+cu-platform/cu-platform.iml
 cu-services/cu-services.iml
 cu-monitor/target*
 
@@ -395,3 +395,22 @@ cu-compose/json-files/
 cu-compose/nginx/log/
 cu-core/src/main/java/fr/treeptik/cloudunit/model/builder/
 cu-vagrant/test/
+
+
+# Created by https://www.gitignore.io/api/gradle
+
+### Gradle ###
+.gradle
+/build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
+# gradle/wrapper/gradle-wrapper.properties

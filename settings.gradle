@@ -1,0 +1,12 @@
+rootProject.name = 'cloudunit'
+include ':cu-core'
+include ':cu-cli'
+include ':cu-docker-api'
+include ':cu-manager'
+include ':cloudunit-maven'
+
+project(':cu-core').projectDir = "$rootDir/cu-core" as File
+project(':cu-cli').projectDir = "$rootDir/cu-cli" as File
+project(':cu-docker-api').projectDir = "$rootDir/cu-docker-api" as File
+project(':cu-manager').projectDir = "$rootDir/cu-manager" as File
+project(':cloudunit-maven').projectDir = "$rootDir/cu-maven" as File
