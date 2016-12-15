@@ -81,8 +81,6 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			DELETE FROM mysql.user ;
 			CREATE USER 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
 			GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
-			CREATE USER 'monitoring'@'%' IDENTIFIED BY 'monitoring' ;
-			GRANT SELECT ON *.* TO 'monitoring'@'%' IDENTIFIED BY 'monitoring';
 			DROP DATABASE IF EXISTS test ;
 			FLUSH PRIVILEGES ;
 		EOSQL
@@ -98,11 +96,9 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 
 		if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
 			echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" | "${mysql[@]}"
-			echo "CREATE USER 'monitoring'@'%' IDENTIFIED BY 'monitoring' ;" | "${mysql[@]}"
 
 			if [ "$MYSQL_DATABASE" ]; then
 				echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%' ;" | "${mysql[@]}"
-				echo "GRANT SELECT, PROCESS ON *.* TO 'monitoring'@'%' ;" | "${mysql[@]}"
 			fi
 
 			echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
@@ -136,7 +132,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 		echo
 		echo 'Start metricbeat agent with mysql module.'
-		
+
 		if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
 			/opt/cloudunit/monitoring-agents/metricbeat/metricbeat -c /opt/cloudunit/monitoring-agents/metricbeat/conf.d/mysql.yml&
 		fi
