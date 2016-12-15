@@ -312,14 +312,14 @@ public class DockerServiceImpl implements DockerService {
         }
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
-
+        List<String> volumesFrom = Arrays.asList("monitoring");
         // map ports
         Map<String, String> ports = module.getPorts().stream()
                 .filter(p -> p.getOpened())
                 .collect(Collectors.toMap(
                         p -> String.format("%s/tcp", p.getContainerValue()),
                         p -> p.getHostValue()));
-        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, null, volumes,
+        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, volumesFrom, null, volumes,
                 envs, ports, "skynet", suffixCloudUnitIO);
         dockerCloudUnitClient.createContainer(container);
     }
