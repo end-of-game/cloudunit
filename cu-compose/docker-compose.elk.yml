@@ -2,7 +2,7 @@ version: '2'
 services:
 
   elasticsearch:
-    env_file: -
+    env_file: .env
     build:
       context: ./cu-elk/elasticsearch
     image: cloudunit/elk-elasticsearch
