@@ -26,4 +26,4 @@ LABEL origin cloudunit-monitoring
 LABEL application-type monitoring
 LABEL application-version 0.1
 
-CMD /docker-entrypoint.sh
+CMD ["/docker-entrypoint.sh"]
