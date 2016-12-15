@@ -43,7 +43,7 @@ services:
         - /home/vagrant/mysql_home:/var/lib/mysql
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
-
+  
   cadvisor:
       container_name: cuplatform_cadvisor_1
       image: google/cadvisor:0.14.0
@@ -99,7 +99,7 @@ services:
   traefik:
       env_file: .env
       image: traefik
-      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
+      command: --web --docker --docker.endpoint="tcp://${CU_DOMAIN}:4243" --docker.domain=${CU_DOMAIN} --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
       ports:
         - "80:80"
         - "8080:8080"
