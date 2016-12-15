@@ -61,7 +61,7 @@ services:
   monitoring-agents:
     container_name: monitoring-agents
     env_file: .env
-    hostname: "${HOSTNAME}"
+    hostname: ${HOSTNAME}
     build:
       context: cu-elk/monitoring-agents
     image: cloudunit/elk-monitoring-agents
@@ -72,6 +72,7 @@ services:
       - ./cu-elk/monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
     environment:
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
+      - "HOSTNAME=${HOSTNAME}"
     labels:
       - "traefik.enable=false"
     depends_on:
