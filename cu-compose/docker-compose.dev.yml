@@ -19,14 +19,16 @@ services:
 
   mysql:
       container_name: cu-mysql
+      env_file: .env
+      container_name: cuplatform_mysql_1
       image: mysql:5.7.4
       depends_on:
            - mysqldata
       ports:
            - "3306:3306"
       environment:
-          - MYSQL_ROOT_PASSWORD
-          - MYSQL_DATABASE=cloudunit
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes_from:
            - mysqldata
       volumes:
@@ -39,51 +41,52 @@ services:
       container_name: cu-mysqldata
       image: ubuntu:14.04
       volumes:
-          - /home/vagrant/mysql_home:/var/lib/mysql
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
+        - /home/vagrant/mysql_home:/var/lib/mysql
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
 
   cadvisor:
       container_name: cuplatform_cadvisor_1
       image: google/cadvisor:0.14.0
       environment:
-          - DB_USER=root
-          - DB_PASS=root
-          - DB_NAME=cadvisor
+        - DB_USER=root
+        - DB_PASS=root
+        - DB_NAME=cadvisor
       ports:
-          - "8081:8080"
+        - "8081:8080"
       volumes:
-          - /:/rootfs:ro
-          - /var/run:/var/run:rw
-          - /sys:/sys:ro
-          - /var/lib/docker:/var/lib/docker:ro
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
+        - /:/rootfs:ro
+        - /var/run:/var/run:rw
+        - /sys:/sys:ro
+        - /var/lib/docker:/var/lib/docker:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
       labels:
-          - "traefik.enable=false"
+        - "traefik.enable=false"
 
   gitlab:
+      env_file: .env
       container_name: cu-gitlab
       image: gitlab/gitlab-ce:8.13.5-ce.0
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-          - /srv/gitlab/config:/etc/gitlab
-          - /srv/gitlab/logs:/var/log/gitlab
-          - /srv/gitlab/data:/var/opt/gitlab
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+        - /srv/gitlab/config:/etc/gitlab
+        - /srv/gitlab/logs:/var/log/gitlab
+        - /srv/gitlab/data:/var/opt/gitlab
       # Define the CU_GITLAB_DOMAIN into /etc/environment
       hostname: '${CU_GITLAB_DOMAIN}'
       #environment:
       #    GITLAB_OMNIBUS_CONFIG: |
       #        external_url 'https://${CU_GITLAB_DOMAIN}'
       labels:
-          - "traefik.backend=cu-gitlab"
-          - "traefik.port=80"
-          - "traefik.frontend.rule=Host:gitlab.cloudunit.dev"
+        - "traefik.backend=gitlab"
+        - "traefik.port=80"
+        - "traefik.frontend.rule=Host:gitlab.${CU_DOMAIN}"
 
   jenkins:
-      container_name: cu-jenkins
+      container_name: cuplatform_jenkins_1
       build:
         context: cu-jenkins
       image: cloudunit/jenkins
@@ -96,14 +99,17 @@ services:
 
   traefik:
       container_name: cu-traefik
+      env_file: .env
       image: traefik
       command: --web --docker --docker.domain=cloudunit.dev --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
       ports:
-          - "80:80"
-          - "8080:8080"
+        - "80:80"
+        - "8080:8080"
       volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /dev/null:/traefik.toml
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /dev/null:/traefik.toml
+      labels:
+        - "traefik.enable=false"
 
 networks:
   default:

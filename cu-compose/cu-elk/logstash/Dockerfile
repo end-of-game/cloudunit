@@ -1,4 +1,4 @@
-FROM logstash:5.0.1
+FROM logstash:5.1.1
 HEALTHCHECK CMD ps -f -u logstash | grep logstash
 
 ENV DOCKER_CLIENT 1.12.3

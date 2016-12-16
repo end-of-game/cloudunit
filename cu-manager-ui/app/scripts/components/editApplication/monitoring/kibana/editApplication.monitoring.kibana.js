@@ -72,11 +72,14 @@
                         MonitoringService.getKibanaLocation()
                             .then(function (url) {
                                 vm.isLoading = false;
-                                console.log(vm.myContainer.name.contains("mysql"))
-                                if (vm.myContainer.name.contains("mysql")){
-                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Metricbeat-Mysql?embed=true&_g=()&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Metricbeat-Mysql-bytes-stats,panelIndex:1,row:1,size_x:6,size_y:3,type:visualization),(col:7,id:Metricbeat-Mysql-connections-stats,panelIndex:2,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Metricbeat-Mysql-threads-stats,panelIndex:4,row:4,size_x:6,size_y:3,type:visualization),(col:7,id:Metricbeat-Mysql-delayed-stats,panelIndex:3,row:4,size_x:6,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:"+ vm.myContainer.name +")),title:'Metricbeat+Mysql',uiState:())");
+                                //console.log(vm.myContainer.name.contains("mysql"))
+                                //if (vm.myContainer.name.contains("mysql")){
+                                var str = vm.myContainer.name.split("-")
+                                if ((str.length) != 2) {
+                                    var apptype = str[1]
+                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/"+ apptype +"?embed=true&_g=(refreshInterval:('$$hashKey':'object:1633',display:'10 seconds',pause:!f,section:1,value:10000),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'(metricset.module: docker AND docker.container.name: " + vm.myContainer.name + ") OR (metricset.module: " + apptype + " AND beat.name: " + vm.myContainer.name + ")')),title:"+ apptype +",uiState:())");
                                 } else {
-                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Dockbeat-Per-Container-Dashboard-Graph?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Dockbeat-Per-Container-CPU-Graph,panelIndex:3,row:1,size_x:6,size_y:3,type:visualization),(col:7,id:Dockbeat-Per-Container-Memory-Graph,panelIndex:4,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-Net-Error-Graph,panelIndex:5,row:4,size_x:6,size_y:3,type:visualization),(col:7,id:Dockbeat-Global-Net-Usage-Graph,panelIndex:6,row:4,size_x:6,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-IO-Usage-Graph,panelIndex:7,row:7,size_x:12,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'containerName:+" + vm.myContainer.name + "')),title:'Dockbeat+Per+Container+Dashboard+Graph',uiState:())");
+                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Container-Dashboard-Graph?embed=true&_g=(refreshInterval:('$$hashKey':'object:1633',display:'10 seconds',pause:!f,section:1,value:10000),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'docker.container.name:+" + vm.myContainer.name + "')),title:'Container+Dashboard+Graph',uiState:())");
                                 }
                             })
                             .catch(function (response) {

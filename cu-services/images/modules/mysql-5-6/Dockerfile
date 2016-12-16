@@ -10,8 +10,6 @@ ENV CU_LOGS " "
 
 ENV MYSQL_RANDOM_ROOT_PASSWORD "true"
 
-ENV METRICBEAT_VERSION 5.0.1
-
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
@@ -45,7 +43,7 @@ RUN apt-get update && apt-get install -y perl pwgen --no-install-recommends && r
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
 
 ENV MYSQL_MAJOR 5.6
-ENV MYSQL_VERSION 5.6.34-1debian8
+ENV MYSQL_VERSION 5.6.35-1debian8
 
 RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 
@@ -69,17 +67,6 @@ RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
 	&& echo 'skip-host-cache\nskip-name-resolve' | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf \
 	&& mv /tmp/my.cnf /etc/mysql/my.cnf
 
-# Install metricbeat agent
-
-RUN mkdir -p /opt/cloudunit/polling-agents/metricbeat \
-  && cd /opt/cloudunit/polling-agents \
-	&& curl --insecure -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& tar zxvf metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz -C metricbeat --strip-components 1 \
-	&& rm metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& chown -R mysql:mysql /opt/cloudunit/polling-agents/metricbeat
-
-ADD metricbeat.yml /opt/cloudunit/polling-agents/metricbeat
-
 VOLUME /var/lib/mysql
 
 COPY docker-entrypoint.sh /usr/local/bin/
@@ -88,3 +75,7 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306
 CMD ["mysqld"]
+
+LABEL origin application
+LABEL application-type mysql
+LABEL application-version $MYSQL_VERSION

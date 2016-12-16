@@ -10,8 +10,6 @@ ENV CU_LOGS " "
 
 ENV MYSQL_RANDOM_ROOT_PASSWORD "true"
 
-ENV METRICBEAT_VERSION 5.0.1
-
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
@@ -46,10 +44,7 @@ RUN apt-get update && apt-get install -y perl --no-install-recommends && rm -rf 
 RUN apt-get update && apt-get install -y libaio1 pwgen && rm -rf /var/lib/apt/lists/*
 
 ENV MYSQL_MAJOR 5.5
-ENV MYSQL_VERSION 5.5.53
-
-ENV MYSQL_MAJOR 5.5
-ENV MYSQL_VERSION 5.5.53
+ENV MYSQL_VERSION 5.5.54
 
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 RUN apt-get update && apt-get install -y ca-certificates wget --no-install-recommends && rm -rf /var/lib/apt/lists/* \
@@ -87,17 +82,6 @@ RUN mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
 	&& chmod 777 /var/run/mysqld
 
-# Install metricbeat agent
-
-RUN mkdir -p /opt/cloudunit/polling-agents/metricbeat \
-  && cd /opt/cloudunit/polling-agents \
-	&& curl --insecure -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& tar zxvf metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz -C metricbeat --strip-components 1 \
-	&& rm metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& chown -R mysql:mysql /opt/cloudunit/polling-agents/metricbeat
-
-ADD metricbeat.yml /opt/cloudunit/polling-agents/metricbeat
-
 VOLUME /var/lib/mysql
 
 COPY docker-entrypoint.sh /usr/local/bin/
@@ -106,3 +90,7 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306
 CMD ["mysqld"]
+
+LABEL origin application
+LABEL application-type mysql
+LABEL application-version $MYSQL_VERSION

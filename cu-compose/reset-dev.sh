@@ -13,11 +13,6 @@
 
 #!/bin/bash
 
-if [[ $USER != "vagrant" ]]; then
-    echo "This script must be run as vagrant user for dev environment"
-    exit 1
-fi
-
 if [ "$1" != "-y" ]; then
     echo "Are you sure to delete them ? [y/n]"
     read PROD_ASW
@@ -46,9 +41,9 @@ docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
 echo "***************************"
 echo -e "Deleting FS data volumes"
 echo "***************************"
-sudo rm -rf /srv/cu-elk
-sudo rm -rf /home/vagrant/mysql_home/
-sudo rm -rf /home/vagrant/testmysql_home/
+rm -rf /srv/cu-elk
+rm -rf /home/vagrant/mysql_home/
+rm -rf /home/vagrant/testmysql_home/
 
 echo "*******************************"
 echo -e "Deleting all docker volumes"

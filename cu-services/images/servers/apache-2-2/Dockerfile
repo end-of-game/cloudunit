@@ -6,8 +6,6 @@ FROM cloudunit/base-jessie
 ENV HTTPD_PREFIX /usr/local/apache2
 ENV PATH $HTTPD_PREFIX/bin:$PATH
 
-ENV METRICBEAT_VERSION 5.0.1
-
 RUN mkdir -p "$HTTPD_PREFIX" \
 	&& chown www-data:www-data "$HTTPD_PREFIX"
 WORKDIR $HTTPD_PREFIX
@@ -91,8 +89,7 @@ ENV JAVA_OPTS " "
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
 
-## CLOUDUNIT :: END
-
+# Ennable apache status app
 RUN echo "<Location /server-status>" >> /usr/local/apache2/conf/httpd.conf \
   && echo "		SetHandler server-status" >> /usr/local/apache2/conf/httpd.conf \
 	&& echo "		Order deny,allow" >> /usr/local/apache2/conf/httpd.conf \
@@ -100,16 +97,7 @@ RUN echo "<Location /server-status>" >> /usr/local/apache2/conf/httpd.conf \
 	&& echo "		Allow from 127.0.0.1" >> /usr/local/apache2/conf/httpd.conf \
 	&& echo "</Location>" >> /usr/local/apache2/conf/httpd.conf
 
-# Install metricbeat agent
-
-RUN mkdir -p /opt/cloudunit/polling-agents/metricbeat \
-  && cd /opt/cloudunit/polling-agents \
-	&& curl --insecure -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& tar zxvf metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz -C metricbeat --strip-components 1 \
-	&& rm metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& chown -R www-data:www-data /opt/cloudunit/polling-agents/metricbeat
-
-ADD metricbeat.yml /opt/cloudunit/polling-agents/metricbeat
+## CLOUDUNIT :: END
 
 EXPOSE 80
 CMD ["httpd-foreground"]

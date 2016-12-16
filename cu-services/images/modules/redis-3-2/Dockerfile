@@ -7,8 +7,6 @@ ENV CU_MODULE_PORT 6379
 ENV CU_DEFAULT_LOG_FILE " "
 ENV CU_LOGS " "
 
-ENV METRICBEAT_VERSION 5.0.1
-
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
@@ -70,15 +68,6 @@ RUN set -ex \
 	&& rm -r /usr/src/redis \
 	&& apt-get purge -y --auto-remove $buildDeps
 
-RUN mkdir -p /opt/cloudunit/polling-agents/metricbeat \
-  && cd /opt/cloudunit/polling-agents \
-	&& curl --insecure -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& tar zxvf metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz -C metricbeat --strip-components 1 \
-	&& rm metricbeat-$METRICBEAT_VERSION-linux-x86_64.tar.gz \
-	&& chown -R redis:redis /opt/cloudunit/polling-agents/metricbeat
-
-ADD metricbeat.yml /opt/cloudunit/polling-agents/metricbeat
-
 RUN mkdir /data && chown redis:redis /data
 VOLUME /data
 WORKDIR /data
@@ -88,3 +77,7 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 6379
 CMD [ "redis-server" ]
+
+LABEL origin application
+LABEL application-type redis
+LABEL application-version $REDIS_VERSION

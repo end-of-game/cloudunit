@@ -2,6 +2,7 @@ version: '2'
 services:
 
   elasticsearch:
+    env_file: .env
     build:
       context: ./cu-elk/elasticsearch
     image: cloudunit/elk-elasticsearch
@@ -15,6 +16,10 @@ services:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
+    labels:
+      - "traefik.backend=elasticsearch"
+      - "traefik.port=9200"
+      - "traefik.frontend.rule=Host:elasticsearch.${CU_DOMAIN}"
 
   logstash:
     build:
@@ -28,10 +33,13 @@ services:
       - ./cu-elk/logstash/curator:/etc/curator
     environment:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    labels:
+      - "traefik.enable=false"
     depends_on:
       - elasticsearch
 
   kibana:
+    env_file: .env
     build:
       context: ./cu-elk/kibana
     image: cloudunit/elk-kibana
@@ -42,24 +50,31 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - ./cu-elk/kibana/file:/opt/cloudunit/file
     environment:
-      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+      - "ELASTICSEARCH_URL=http://$ELASTICSEARCH_URL:9200"
     depends_on:
       - elasticsearch
     labels:
       - "traefik.backend=kibana"
       - "traefik.port=5601"
-      - "traefik.frontend.rule=Host:kibana.cloudunit.dev"
+      - "traefik.frontend.rule=Host:kibana.${CU_DOMAIN}"
 
-  dockbeat-polling:
+  monitoring-agents:
+    container_name: monitoring-agents
+    env_file: .env
     hostname: ${HOSTNAME}
     build:
-      context: cu-elk/poller/dockbeat/
-    image: cloudunit/elk-dockbeat
+      context: cu-elk/monitoring-agents
+    image: cloudunit/elk-monitoring-agents
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: -e
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./cu-elk/monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
+    environment:
+      - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
+      - "HOSTNAME=${HOSTNAME}"
+    labels:
+      - "traefik.enable=false"
     depends_on:
       - elasticsearch
 

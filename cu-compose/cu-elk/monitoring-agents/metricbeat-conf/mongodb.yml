@@ -10,39 +10,34 @@
 #==========================  Modules configuration ============================
 metricbeat.modules:
 
-#------------------------------- Apache Module -------------------------------
-- module: apache
+#------------------------------- MongoDB Module ------------------------------
+- module: mongodb
   metricsets: ["status"]
   enabled: true
   period: 60s
 
-  # Apache hosts
-  hosts: ["http://127.0.0.1"]
+   #The hosts must be passed as MongoDB URLs in the format:
+   #[mongodb://][user:pass@]host[:port].
+   #The username and password can also be set using the respective configuration
+   #options. The credentials in the URL take precedence over the username and
+   #password configuration options.
+  hosts: ["localhost:27017"]
 
-  # Path to server status. Default server-status
-  server_status_path: "server-status"
-
-  # Username of hosts.  Empty by default
-  #username: test
-
-  # Password of hosts. Empty by default
-  #password: test123
-
-#================================ Outputs =====================================
+#================================ Outputs ======================================
 
 # Configure what outputs to use when sending the data collected by the beat.
 # Multiple outputs may be used.
 
-#-------------------------- Elasticsearch output ------------------------------
+#-------------------------- Elasticsearch output -------------------------------
 output.elasticsearch:
   # Boolean flag to enable or disable the output module.
-  enabled: true
+  #enabled: true
 
   # Array of hosts to connect to.
   # Scheme and port can be left out and will be set to the default (http and 9200)
   # In case you specify and additional path, the scheme is required: http://localhost:9200/path
   # IPv6 addresses should always be defined as: https://[2001:db8::1]:9200
-  hosts: ["elasticsearch:9200"]
+  hosts: ["${ELASTICSEARCH_URL:elasticsearch}:9200"]
 
   # Set gzip compression level.
   #compression_level: 0
@@ -146,41 +141,7 @@ output.elasticsearch:
   # Configure curve types for ECDHE based cipher suites
   #ssl.curve_types: []
 
-#----------------------------- Console output ---------------------------------
-output.console:
-  # Boolean flag to enable or disable the output module.
-  enabled: true
-
-  # Pretty print json event
-  pretty: true
-
-#================================= Paths ======================================
-
-# The home path for the metricbeat installation. This is the default base path
-# for all other path settings and for miscellaneous files that come with the
-# distribution (for example, the sample dashboards).
-# If not set by a CLI flag or in the configuration file, the default for the
-# home path is the location of the binary.
-#path.home:
-
-# The configuration path for the metricbeat installation. This is the default
-# base path for configuration files, including the main YAML configuration file
-# and the Elasticsearch template file. If not set by a CLI flag or in the
-# configuration file, the default for the configuration path is the home path.
-#path.config: ${path.home}
-
-# The data path for the metricbeat installation. This is the default base path
-# for all the files in which metricbeat needs to store its data. If not set by a
-# CLI flag or in the configuration file, the default for the data path is a data
-# subdirectory inside the home path.
-#path.data: ${path.home}/data
-
-# The logs path for a metricbeat installation. This is the default location for
-# the Beat's log files. If not set by a CLI flag or in the configuration file,
-# the default for the logs path is a logs subdirectory inside the home path.
-#path.logs: ${path.home}/logs
-
-#================================ Logging =====================================
+#================================ Logging ======================================
 # There are three options for the log output: syslog, file, stderr.
 # Under Windows systems, the log files are per default sent to the file output,
 # under all other system per default to syslog.
@@ -208,11 +169,11 @@ output.console:
 
 # Logging to rotating files files. Set logging.to_files to false to disable logging to
 # files.
-logging.to_files: true
-logging.files:
+logging.to_files: false
+#logging.files:
   # Configure the path where the logs are written. The default is the logs directory
   # under the home path (the binary location).
-  #path: /var/log/metricbeat
+  #path: /opt/cloudunit/polling-agents/metricbeat
 
   # The name of the files where the logs are written to.
   #name: metricbeat
