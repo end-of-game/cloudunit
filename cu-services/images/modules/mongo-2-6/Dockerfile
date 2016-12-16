@@ -55,3 +55,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 27017
 CMD ["mongod"]
+
+LABEL origin application
+LABEL application-type mongo
+LABEL application-version $MONGO_VERSION

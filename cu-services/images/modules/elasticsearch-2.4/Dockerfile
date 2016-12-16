@@ -70,3 +70,7 @@ COPY docker-entrypoint.sh /
 EXPOSE 9200 9300
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["elasticsearch"]
+
+LABEL origin application
+LABEL application-type elasticsearch
+LABEL application-version $ELASTICSEARCH_VERSION

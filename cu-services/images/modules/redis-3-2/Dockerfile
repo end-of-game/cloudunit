@@ -77,3 +77,7 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 6379
 CMD [ "redis-server" ]
+
+LABEL origin application
+LABEL application-type redis
+LABEL application-version $REDIS_VERSION

@@ -72,3 +72,7 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 5432
 CMD ["postgres"]
+
+LABEL origin application
+LABEL application-type postgres
+LABEL application-version $PG_MAJOR

@@ -70,13 +70,15 @@ metricbeat.modules:
 # Optional fields that you can specify to add additional information to the
 # output. Fields can be scalar values, arrays, dictionaries, or any nested
 # combination of these.
+#fields_under_root: true
+
 #fields:
-#  env: staging
+#  container_name: ["docker.container.name"]
 
 # If this option is set to true, the custom fields are stored as top-level
 # fields in the output document instead of being grouped under a fields
+#fields_under_root: true
 # sub-dictionary. Default is false.
-#fields_under_root: false
 
 # Internal queue size for single events in processing pipeline
 #queue_size: 1000
@@ -107,7 +109,7 @@ metricbeat.modules:
 #
 #processors:
 #- include_fields:
-#    fields: ["cpu"]
+#    container_name: ["docker.container.name"]
 #- drop_fields:
 #    fields: ["cpu.user", "cpu.system"]
 #

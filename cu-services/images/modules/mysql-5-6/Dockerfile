@@ -75,3 +75,7 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306
 CMD ["mysqld"]
+
+LABEL origin application
+LABEL application-type mysql
+LABEL application-version $MYSQL_VERSION

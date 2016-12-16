@@ -44,3 +44,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD [ "nginx" ]
+
+LABEL origin application
+LABEL application-type nginx
+LABEL application-version $NGINX_VERSION
