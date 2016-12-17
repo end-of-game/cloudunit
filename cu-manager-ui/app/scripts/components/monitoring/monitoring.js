@@ -52,7 +52,7 @@
       setTimeout(function() {
         MonitoringService.getKibanaLocation()
             .then(function(url) {
-              vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Global-Dashboard?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1m,mode:relative,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'*')),title:'Global+Dashboard',uiState:(P-2:(vis:(params:(sort:(columnIndex:!n,direction:!n))))))");
+              vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Global-Dashboard?embed=true&_g=(refreshInterval:('$$hashKey':'object:1633',display:'10 seconds',pause:!f,section:1,value:10000),time:(from:now-1m,mode:relative,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'*')),title:'Global+Dashboard',uiState:(P-2:(vis:(params:(sort:(columnIndex:!n,direction:!n))))))");
             })
             .catch(function(response) {
               ErrorService.handle(response);
