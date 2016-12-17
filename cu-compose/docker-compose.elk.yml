@@ -17,6 +17,7 @@ services:
     privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
     labels:
+      - "traefik.frontend.entryPoints=https"
       - "traefik.backend=elasticsearch"
       - "traefik.port=9200"
       - "traefik.frontend.rule=Host:elasticsearch.${CU_DOMAIN}"
