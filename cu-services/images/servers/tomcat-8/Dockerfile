@@ -1,4 +1,4 @@
-FROM cloudunit/base-14.04
+FROM openjdk:8-jdk
 
 RUN set -ex \
 	&& for key in \
@@ -21,7 +21,7 @@ RUN set -ex \
 	done
 
 ARG TOMCAT_VERSION
-ENV TOMCAT_VERSION ${TOMCAT_VERSION:-8.0.37}
+ENV TOMCAT_VERSION ${TOMCAT_VERSION:-8.0.39}
 
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
@@ -38,6 +38,23 @@ ENV TOMCAT_TGZ_URL https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v
 ENV PATH $CATALINA_HOME/bin:$PATH
 
 ## CLOUDUNIT :: BEGINNING
+# Create directory for CloudUnit
+RUN mkdir -p /opt/cloudunit/backup &&  \
+    mkdir -p /opt/cloudunit/hooks/ && \
+    mkdir -p /opt/cloudunit/java && \
+    mkdir -p /opt/cloudunit/shared && \
+    mkdir -p /opt/cloudunit/scripts && \
+    mkdir -p /opt/cloudunit/tmp
+
+WORKDIR /opt/cloudunit
+
+# Environment variables
+ENV CU_BACKUP /opt/cloudunit/backup
+ENV CU_HOOKS /opt/cloudunit/hooks
+ENV CU_JAVA /opt/cloudunit/java
+ENV CU_SCRIPTS /opt/cloudunit/scripts
+ENV CU_SHARED /opt/cloudunit/shared
+ENV CU_TMP /opt/cloudunit/tmp
 
 ENV CU_SERVER_RESTART_POST_DEPLOYMENT false
 ENV CU_SOFTWARE $CATALINA_HOME
@@ -46,8 +63,6 @@ ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
 ENV CU_DEFAULT_LOG_FILE catalina.log
 ENV CU_LOGS $CATALINA_HOME/logs
-ENV CU_DEFAULT_JAVA_RELEASE "java8"
-ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 ## CLOUDUNIT :: END
 
@@ -80,8 +95,6 @@ VOLUME /opt/cloudunit
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "run" ]
-
-expose 8080
 
 LABEL origin application
 LABEL application-type tomcat

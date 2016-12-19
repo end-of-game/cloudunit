@@ -63,7 +63,6 @@ public class ServerUtils {
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
 		parameters.put("jvmMemory", memory);
-		parameters.put("jvmRelease", applicationUtils.getCurrentApplication().getJvmRelease());
 		parameters.put("jvmOptions", applicationUtils.getCurrentApplication().getServer().getJvmOptions().toString());
 		try {
 			restUtils.sendPutCommand(authenticationUtils.finalHost + "/server/configuration/jvm",
@@ -87,7 +86,6 @@ public class ServerUtils {
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
 		parameters.put("jvmOptions", opts);
-		parameters.put("jvmRelease", applicationUtils.getCurrentApplication().getJvmRelease());
 		parameters.put("jvmMemory", applicationUtils.getCurrentApplication().getServer().getJvmMemory().toString());
 		try {
 			restUtils.sendPutCommand(authenticationUtils.finalHost + "/server/configuration/jvm",

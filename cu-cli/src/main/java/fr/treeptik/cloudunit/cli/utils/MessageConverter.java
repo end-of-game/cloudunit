@@ -45,8 +45,7 @@ public class MessageConverter {
                 new String[] { application.getName(),
                         application.getUser().getLastName() + " " + application.getUser().getFirstName(),
                         DateUtils.formatDate(application.getDate()),
-                        application.getServer().getImage().getName().toUpperCase(), application.getStatus().toString(),
-                        application.getJvmRelease() },
+                        application.getServer().getImage().getName().toUpperCase(), application.getStatus().toString()},
 
         });
 

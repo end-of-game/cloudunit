@@ -54,6 +54,8 @@ public class ServerListener {
 					if ("0".equalsIgnoreCase(exec.trim())) {
 						started = true;
 						break;
+					} else {
+						logger.warn(exec);
 					}
 					Thread.sleep(1000);
 				} catch (Exception e) {

@@ -6,9 +6,9 @@ INSERT IGNORE INTO `Image`
     (`id`, `name`, `path`, `displayName`, `prefixEnv`, `imageType`, `managerName`, `imageSubType`) VALUES
   (10, 'tomcat-6', 'cloudunit/tomcat-6', 'Tomcat 6.0.45', 'tomcat', 'server', '', null),
   (11, 'tomcat-7', 'cloudunit/tomcat-7', 'Tomcat 7.0.70', 'tomcat', 'server', '',  null),
-  (12, 'tomcat-8', 'cloudunit/tomcat-8', 'Tomcat 8.0.37', 'tomcat', 'server', '', null),
-  (13, 'tomcat-85', 'cloudunit/tomcat-85', 'Tomcat 8.5.5', 'tomcat', 'server', '', null),
-  (14, 'tomcat-9', 'cloudunit/tomcat-9', 'Tomcat 9.0.0.M10', 'tomcat', 'server', '', null),
+  (12, 'tomcat-8', 'cloudunit/tomcat-8', 'Tomcat 8.0.39', 'tomcat', 'server', '', null),
+  (13, 'tomcat-85', 'cloudunit/tomcat-85', 'Tomcat 8.5.9', 'tomcat', 'server', '', null),
+  (14, 'tomcat-9', 'cloudunit/tomcat-9', 'Tomcat 9.0.0.M15', 'tomcat', 'server', '', null),
   (20, 'mysql-5-5', 'cloudunit/mysql-5-5', 'MySQL 5.5.49', 'mysql', 'module', 'phpmyadmin', 'DATABASE'),
   (21, 'mysql-5-6', 'cloudunit/mysql-5-6', 'MySQL 5.6.30', 'mysql', 'module', 'phpmyadmin', 'DATABASE'),
   (22, 'mysql-5-7', 'cloudunit/mysql-5-7', 'MySQL 5.7.12', 'mysql', 'module', 'phpmyadmin', 'DATABASE'),

@@ -38,8 +38,6 @@ public class Server extends Container implements Serializable {
 	@Column(columnDefinition = "TEXT")
 	private String jvmOptions;
 
-	private String jvmRelease;
-
 	private String managerLocation;
 
 	@JsonIgnore
@@ -58,7 +56,6 @@ public class Server extends Container implements Serializable {
         
         this.jvmMemory = builder.jvmMemory;
         this.jvmOptions = builder.jvmOptions;
-        this.jvmRelease = builder.jvmRelease;
         this.managerLocation = builder.managerLocation;
     }
 	
@@ -143,12 +140,8 @@ public class Server extends Container implements Serializable {
 		this.managerLocation = managerLocation;
 	}
 
-	public String getJvmRelease() {
-		return jvmRelease;
-	}
-
-	public void setJvmRelease(String jvmRelease) {
-		this.jvmRelease = jvmRelease;
+	public boolean isApplicationServer() {
+		return image.getName().contains("tomcat") || image.getName().contains("wildfly");
 	}
 
 	@Override

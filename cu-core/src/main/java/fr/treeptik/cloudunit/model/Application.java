@@ -306,10 +306,6 @@ public class Application implements Serializable {
 		this.aliases = aliases;
 	}
 
-	public String getJvmRelease() {
-		return server.getJvmRelease();
-	}
-
 	@Override
 	public String toString() {
 		return "Application{" + "id=" + id + ", name='" + name + '\'' + ", status=" + status + ", date=" + date

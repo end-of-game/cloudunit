@@ -1,4 +1,4 @@
-FROM cloudunit/base-14.04
+FROM openjdk:7
 
 ARG WILDFLY_VERSION
 ENV WILDFLY_VERSION ${WILDFLY_VERSION:-8.2.1.Final}
@@ -12,16 +12,31 @@ ENV WILDFLY_TGZ_URL https://download.jboss.org/wildfly/$WILDFLY_VERSION/wildfly-
 ENV JBOSS_HOME /opt/cloudunit/wildfly
 
 ## CLOUDUNIT :: BEGINNING
+# Create directory for CloudUnit
+RUN mkdir -p /opt/cloudunit/backup &&  \
+    mkdir -p /opt/cloudunit/hooks/ && \
+    mkdir -p /opt/cloudunit/java && \
+    mkdir -p /opt/cloudunit/shared && \
+    mkdir -p /opt/cloudunit/scripts && \
+    mkdir -p /opt/cloudunit/tmp
+
+WORKDIR /opt/cloudunit
+
+# Environment variables
+ENV CU_BACKUP /opt/cloudunit/backup
+ENV CU_HOOKS /opt/cloudunit/hooks
+ENV CU_JAVA /opt/cloudunit/java
+ENV CU_SCRIPTS /opt/cloudunit/scripts
+ENV CU_SHARED /opt/cloudunit/shared
+ENV CU_TMP /opt/cloudunit/tmp
+
 ENV CU_SERVER_RESTART_POST_DEPLOYMENT false
 ENV CU_SOFTWARE $JBOSS_HOME
 ENV CU_SERVER_MANAGER_PATH " "
 ENV CU_SERVER_MANAGER_PORT 9990
 ENV CU_SERVER_PORT 8080
-ENV CU_SERVER_RESTART_POST_CREDENTIALS false
 ENV CU_DEFAULT_LOG_FILE server.log
 ENV CU_LOGS $JBOSS_HOME/standalone/log
-ENV CU_DEFAULT_JAVA_RELEASE "jdk1.7.0_55"
-ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS "-Xms512m -Xmx512m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS -Djava.awt.headless=true "
 ## CLOUDUNIT :: END
 
@@ -47,7 +62,9 @@ USER cloudunit
 
 VOLUME /opt/cloudunit/
 
-CMD ["/opt/cloudunit/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["run"]
 
 LABEL origin application
 LABEL application-type wildfy

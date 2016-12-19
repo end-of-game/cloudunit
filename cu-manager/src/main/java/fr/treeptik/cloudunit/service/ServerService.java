@@ -52,7 +52,7 @@ public interface ServerService {
 
 	boolean checkStatusPENDING(Server server) throws ServiceException;
 
-	Server update(Server server, String memory, String options, String release, boolean restorePreviousEnv)
+	Server update(Server server, String memory, String options, boolean restorePreviousEnv)
 			throws ServiceException;
 
 	Server findByContainerID(String id) throws ServiceException;

@@ -15,10 +15,7 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -151,7 +148,10 @@ public class ServerServiceImpl implements ServerService {
 		String prefixEnv = server.getImage().getPrefixEnv();
 		logger.debug("imagePath:" + imagePath);
 		try {
-			dockerService.createServer(containerName, server, imagePath, prefixEnv, user, null, true, null);
+            List<String> volumes = new ArrayList<>();
+            volumes.add("java8:/opt/cloudunit/java/java8");
+
+			dockerService.createServer(containerName, server, imagePath, prefixEnv, user, null, true, volumes);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 			// Update server with all its information
@@ -159,7 +159,6 @@ public class ServerServiceImpl implements ServerService {
 			        application.getLocation(),
 					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH")));
 			server.setStatus(Status.START);
-			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
 			server = this.update(server);
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);
@@ -359,11 +358,10 @@ public class ServerServiceImpl implements ServerService {
 
 	@CacheEvict(value = "env", allEntries = true)
 	@Transactional
-	public Server update(Server server, String jvmMemory, String options, String jvmRelease, boolean restorePreviousEnv)
+	public Server update(Server server, String jvmMemory, String options, boolean restorePreviousEnv)
 			throws ServiceException {
 
 		String previousJvmMemory = server.getJvmMemory().toString();
-		String previousJvmRelease = server.getJvmRelease();
 		String previousJvmOptions = server.getJvmOptions();
 
 		options = options == null ? "" : options;
@@ -378,9 +376,6 @@ public class ServerServiceImpl implements ServerService {
 			currentJvmMemory = jvmOptions + " " + currentJvmMemory;
 			envs.add("JAVA_OPTS=" + currentJvmMemory);
 
-			// Add the jmv env variable to set the jvm release
-			envs.add("JAVA_HOME=/opt/cloudunit/java/" + jvmRelease);
-
 			dockerService.stopContainer(server.getName());
 			dockerService.removeContainer(server.getName(), false);
 			List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
@@ -390,11 +385,9 @@ public class ServerServiceImpl implements ServerService {
 			dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
-			//addCredentialsForServerManagement(server, server.getApplication().getUser());
 
 			server.setJvmMemory(Long.valueOf(jvmMemory));
 			server.setJvmOptions(jvmOptions);
-			server.setJvmRelease(jvmRelease);
 			server = saveInDB(server);
 
 		} catch (Exception e) {
@@ -402,12 +395,11 @@ public class ServerServiceImpl implements ServerService {
 				StringBuilder msgError = new StringBuilder();
 				msgError.append("jvmMemory:").append(jvmMemory).append(",");
 				msgError.append("jvmOptions:").append(jvmOptions).append(",");
-				msgError.append("jvmRelease:").append(jvmRelease);
 				throw new ServiceException(msgError.toString(), e);
 			} else {
 				// Rollback to previous configuration
 				logger.warn("Restore the previous environment for jvm configuration. Maybe a syntax error");
-				update(server, previousJvmMemory, previousJvmOptions, previousJvmRelease, false);
+				update(server, previousJvmMemory, previousJvmOptions, false);
 			}
 		}
 		return server;
