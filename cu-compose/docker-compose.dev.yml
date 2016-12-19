@@ -9,11 +9,11 @@ services:
       container_name: cu-redis
       image: redis:3.0.1
       ports:
-          - "6379:6379"
+        - "6379:6379"
       command: redis-server --appendonly yes
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
       labels:
         - "traefik.enable=false"
 
@@ -23,19 +23,19 @@ services:
       container_name: cuplatform_mysql_1
       image: mysql:5.7.4
       depends_on:
-           - mysqldata
+        - mysqldata
       ports:
-           - "3306:3306"
+        - "3306:3306"
       environment:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes_from:
-           - mysqldata
+        - mysqldata
       volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - /etc/timezone:/etc/timezone:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
       labels:
-            - "traefik.enable=false"
+        - "traefik.enable=false"
 
   mysqldata:
       container_name: cu-mysqldata
@@ -44,7 +44,7 @@ services:
         - /home/vagrant/mysql_home:/var/lib/mysql
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
-
+  
   cadvisor:
       container_name: cuplatform_cadvisor_1
       image: google/cadvisor:0.14.0
@@ -68,7 +68,9 @@ services:
   gitlab:
       env_file: .env
       container_name: cu-gitlab
-      image: gitlab/gitlab-ce:8.13.5-ce.0
+      build:
+        context: cu-gitlab-ce
+      image: cloudunit/gitlab
       volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
@@ -81,33 +83,38 @@ services:
       #    GITLAB_OMNIBUS_CONFIG: |
       #        external_url 'https://${CU_GITLAB_DOMAIN}'
       labels:
+        - "traefik.frontend.entryPoints=https"
         - "traefik.backend=gitlab"
         - "traefik.port=80"
         - "traefik.frontend.rule=Host:gitlab.${CU_DOMAIN}"
 
   jenkins:
       container_name: cuplatform_jenkins_1
+      user: root
       build:
         context: cu-jenkins
       image: cloudunit/jenkins
       volumes:
-          - /home/vagrant/jenkins_home:/var/jenkins_home
+        - /home/vagrant/jenkins_home:/var/jenkins_home
       labels:
-          - "traefik.backend=cu-jenkins"
-          - "traefik.port=8080"
-          - "traefik.frontend.rule=Host:jenkins.cloudunit.dev"
+        - "traefik.frontend.entryPoints=https"
+        - "traefik.backend=cu-jenkins"
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
 
   traefik:
       container_name: cu-traefik
       env_file: .env
       image: traefik
-      command: --web --docker --docker.domain=cloudunit.dev --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true 
       ports:
         - "80:80"
+        - "443:443"
         - "8080:8080"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-        - /dev/null:/traefik.toml
+        - ./cu-traefik/traefik.toml:/traefik.toml
+        - ./cu-traefik/certs:/certs
       labels:
         - "traefik.enable=false"
 
