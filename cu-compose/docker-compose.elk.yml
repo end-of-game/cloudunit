@@ -55,6 +55,7 @@ services:
     depends_on:
       - elasticsearch
     labels:
+      - "traefik.frontend.entryPoints=https"
       - "traefik.backend=kibana"
       - "traefik.port=5601"
       - "traefik.frontend.rule=Host:kibana.${CU_DOMAIN}"
