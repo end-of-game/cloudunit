@@ -1,4 +1,4 @@
-FROM gitlab/gitlab-ce:8.13.5-ce.0
+FROM gitlab/gitlab-ce:8.14.5-ce.0
 
 RUN echo "nginx['listen_port'] = 80" >> /etc/gitlab/gitlab.rb \
     && echo "nginx['listen_https'] = false" >> /etc/gitlab/gitlab.rb \

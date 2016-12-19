@@ -333,10 +333,10 @@ You can change option of Java in your application :
 
 - Change the version of Java which your application use :
 ```bash
-cloudunit-DEV-myapp> change-java-version --javaVersion jdk1.7.0_55
+cloudunit-DEV-myapp> change-java-version --javaVersion java7
 Your java version has been successfully changed
 ```
-You have access to two versions of Java :  jdk1.8.0_25 and jdk1.7.0_55.
+You have access to three versions of Java :  java7, java8 and java9
 
 - Change the memory used by Java :
 ```bash

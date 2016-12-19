@@ -150,26 +150,10 @@ public class ServerServiceImpl implements ServerService {
 		String imagePath = server.getImage().getPath();
 		String prefixEnv = server.getImage().getPrefixEnv();
 		logger.debug("imagePath:" + imagePath);
-
-		String subdomain = System.getenv("CU_SUB_DOMAIN");
-		if (subdomain == null) {
-		    subdomain = "";
-		}
-		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-		// XXX - Why ???
-		// server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
-
 		try {
 			dockerService.createServer(containerName, server, imagePath, prefixEnv, user, null, true, null);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
-
-			if (logger.isDebugEnabled()) {
-				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_PORT"));
-				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
-				logger.debug(application.getLocation());
-			}
-
 			// Update server with all its information
 			server.setManagerLocation(String.format("http://%s/%s",
 			        application.getLocation(),
@@ -177,28 +161,8 @@ public class ServerServiceImpl implements ServerService {
 			server.setStatus(Status.START);
 			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
 			server = this.update(server);
-
-			/*
-			addCredentialsForServerManagement(server, user);
-			String needToRestart = dockerService.getEnv(server.getName(), "CU_SERVER_RESTART_POST_CREDENTIALS");
-			if ("true".equalsIgnoreCase(needToRestart)) {
-				dockerService.stopContainer(server.getName());
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-				dockerService.startServer(server.getName(), server);
-			}
-			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
-			*/
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);
-			// Removing a creating container if an error has occurred with
-			// the database
-			// DockerContainer.remove(dockerContainer,
-			// application.getManagerIp());
-
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		} catch (DockerJSONException e) {
 			StringBuilder msgError = new StringBuilder(512);
@@ -208,23 +172,6 @@ public class ServerServiceImpl implements ServerService {
 		}
 		logger.info("ServerService : Server " + server.getName() + " successfully created.");
 		return server;
-	}
-
-	@Override
-	public void addCredentialsForServerManagement(Server server, final User user) throws ServiceException {
-		try {
-			Map<String, String> kvStore = new HashMap<String, String>() {
-				private static final long serialVersionUID = 1L;
-				{
-					put("CU_USER", user.getLogin());
-					put("CU_PASSWORD", user.getPassword());
-				}
-			};
-			dockerService.execCommand(server.getName(), RemoteExecAction.ADD_USER.getCommand(kvStore));
-		} catch (FatalDockerJSONException fex) {
-			fex.printStackTrace();
-			throw new ServiceException(fex.getMessage());
-		}
 	}
 
 	/**

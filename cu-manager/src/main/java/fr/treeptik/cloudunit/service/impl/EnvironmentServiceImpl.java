@@ -273,7 +273,6 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
                     server.getApplication().getUser(), envs, false, volumes);
             server = serverService.startServer(server);
-            serverService.addCredentialsForServerManagement(server, server.getApplication().getUser());
             applicationEventPublisher.publishEvent(new ServerStartEvent(server));
         } else {
             Module module = moduleService.findByName(containerName);

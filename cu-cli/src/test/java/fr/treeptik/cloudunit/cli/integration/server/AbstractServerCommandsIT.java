@@ -38,7 +38,7 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
     public void test_shouldChangeJavaVersion() {
         createApplication();
         try {
-            CommandResult result = changeJavaVersion("jdk1.8.0_25");
+            CommandResult result = changeJavaVersion("java8");
             
             assertThat(result, isSuccessfulCommand());
         } finally {
@@ -48,7 +48,7 @@ public abstract class AbstractServerCommandsIT extends AbstractShellIntegrationT
 
     @Test
     public void test_shouldNotChangeJavaVersionBecauseApplicationNotSelected() {
-        CommandResult result = changeJavaVersion("jdk1.8.0_25");
+        CommandResult result = changeJavaVersion("java8");
         
         assertThat(result, isFailedCommand());
     }

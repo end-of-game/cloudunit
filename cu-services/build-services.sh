@@ -72,7 +72,9 @@ function redis {
 }
 
 function tools {
-    docker build --rm $CACHE_STRATEGY -t cloudunit/java images/tools/java
+    docker build --rm $CACHE_STRATEGY -t cloudunit/java7 images/tools/opendjk7
+    docker build --rm $CACHE_STRATEGY -t cloudunit/java8 images/tools/openjdk8
+    docker build --rm $CACHE_STRATEGY -t cloudunit/java9 images/tools/openjdk9
 }
 
 case "$1" in

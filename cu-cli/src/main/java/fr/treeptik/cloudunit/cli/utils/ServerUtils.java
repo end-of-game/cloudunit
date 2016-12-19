@@ -45,7 +45,7 @@ public class ServerUtils {
 	@Autowired
 	private RestUtils restUtils;
 
-	private List<String> availableJavaVersion = Arrays.asList(new String[] { "jdk1.7.0_55", "jdk1.8.0_25" });
+	private List<String> availableJavaVersion = Arrays.asList(new String[] { "java7", "java8", "java9" });
 
 	private List<String> availableMemoryValues = Arrays.asList("512", "1024", "2048", "3072");
 

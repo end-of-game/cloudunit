@@ -43,7 +43,7 @@
 
 
     vm.jvmMemorySizes = [512, 1024, 2048, 3072, 4096];
-    vm.jvmReleases = ['jdk1.7.0_55', 'jdk1.8.0_25'];
+    vm.jvmReleases = ['java7', 'java8', 'java9'];
     vm.saveConfigurationJVM = saveConfigurationJVM;
 
 

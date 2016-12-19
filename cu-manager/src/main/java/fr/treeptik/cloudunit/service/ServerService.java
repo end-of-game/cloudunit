@@ -61,8 +61,6 @@ public interface ServerService {
 
 	Server create(Server server) throws ServiceException, CheckException;
 
-	void addCredentialsForServerManagement(Server server, User user) throws ServiceException;
-
 	void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException, CheckException;
 
 	void removeVolume(String containerName, String volumeName) throws ServiceException;

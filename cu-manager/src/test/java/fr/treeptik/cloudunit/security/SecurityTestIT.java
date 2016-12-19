@@ -253,7 +253,7 @@ public class SecurityTestIT extends TestCase {
 
         final String jsonString =
             "{\"applicationName\":\"" + applicationName
-                + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\",\"location\":\"webui\"}";
+                + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"\",\"jvmRelease\":\"java8\",\"location\":\"webui\"}";
         ResultActions resultats =
             this.mockMvc.perform(put("/server/configuration/jvm").session(session2).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().is5xxServerError());

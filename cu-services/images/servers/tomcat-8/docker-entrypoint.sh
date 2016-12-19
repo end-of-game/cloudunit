@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 CU_USER=$2
 CU_PASSWORD=$3
 

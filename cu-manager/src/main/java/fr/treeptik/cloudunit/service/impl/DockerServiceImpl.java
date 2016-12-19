@@ -73,7 +73,7 @@ public class DockerServiceImpl implements DockerService {
     @Override
     public void createServer(String containerName, Server server, String imagePath, String prefixEnv, User user, List<String> envs,
                              boolean createMainVolume, List<String> volumes) throws DockerJSONException, ServiceException {
-        List<String> volumesFrom = Arrays.asList("java");
+        List<String> volumesFrom = Arrays.asList("java8");
         if (volumes == null) { volumes = new ArrayList<>(); }
         if (createMainVolume) { dockerCloudUnitClient.createVolume(containerName, "runtime"); }
         volumes.add(containerName + ":/opt/cloudunit:rw");

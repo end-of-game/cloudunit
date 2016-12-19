@@ -42,7 +42,7 @@ public class ServerCommand implements CommandMarker {
     @CliCommand(value = "change-java-version", help = "Change java version")
     public String changeJavaVersion(
             @CliOption(key = {""}, mandatory = false, help = "Application name") String applicationName,
-            @CliOption(key = {"javaVersion"}, mandatory = true, help = "Choose your java version (available : jdk1.7.0_55 & jdk1.8.0_25)") String javaVersion) {
+            @CliOption(key = {"javaVersion"}, mandatory = true, help = "Choose your java version (available : java7, java8 or java9)") String javaVersion) {
         return serverUtils.changeJavaVersion(applicationName, javaVersion);
     }
 

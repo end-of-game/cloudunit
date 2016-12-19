@@ -21,7 +21,7 @@ package fr.treeptik.cloudunit.servers;
 public class Tomcat6ApplicationControllerTestIT extends AbstractApplicationControllerTestIT {
 
     public Tomcat6ApplicationControllerTestIT() {
-        super("tomcat-6", "jdk1.7.0_55");
+        super("tomcat-6", "java7");
     }
 
 }

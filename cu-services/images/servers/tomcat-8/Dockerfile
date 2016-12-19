@@ -46,7 +46,7 @@ ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
 ENV CU_DEFAULT_LOG_FILE catalina.log
 ENV CU_LOGS $CATALINA_HOME/logs
-ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
+ENV CU_DEFAULT_JAVA_RELEASE "java8"
 ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 ## CLOUDUNIT :: END
