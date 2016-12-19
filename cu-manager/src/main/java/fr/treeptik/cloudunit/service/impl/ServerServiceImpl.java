@@ -178,6 +178,7 @@ public class ServerServiceImpl implements ServerService {
 			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
 			server = this.update(server);
 
+			/*
 			addCredentialsForServerManagement(server, user);
 			String needToRestart = dockerService.getEnv(server.getName(), "CU_SERVER_RESTART_POST_CREDENTIALS");
 			if ("true".equalsIgnoreCase(needToRestart)) {
@@ -187,9 +188,10 @@ public class ServerServiceImpl implements ServerService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-				dockerService.startServer(server.getName(), server);}
+				dockerService.startServer(server.getName(), server);
+			}
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
-
+			*/
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);
 			// Removing a creating container if an error has occurred with
@@ -441,7 +443,7 @@ public class ServerServiceImpl implements ServerService {
 			dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
-			addCredentialsForServerManagement(server, server.getApplication().getUser());
+			//addCredentialsForServerManagement(server, server.getApplication().getUser());
 
 			server.setJvmMemory(Long.valueOf(jvmMemory));
 			server.setJvmOptions(jvmOptions);
@@ -561,7 +563,7 @@ public class ServerServiceImpl implements ServerService {
 		dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
 				server.getApplication().getUser(), envs, false, volumes);
 		server = startServer(server);
-		addCredentialsForServerManagement(server, server.getApplication().getUser());
+		//addCredentialsForServerManagement(server, server.getApplication().getUser());
 	}
 
 	private void checkVolumeFormat(VolumeAssociationDTO volume) throws ServiceException {

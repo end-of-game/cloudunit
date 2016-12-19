@@ -43,16 +43,5 @@ public class NamingUtilsTest {
         assertThat(context, Matchers.equalToIgnoringCase("/helloworld"));
     }
 
-    @org.junit.Test
-    public void checkProtocolUnix() throws Exception {
-        String context = NamingUtils.protocolSocket.apply(true);
-        assertThat(context, Matchers.equalToIgnoringCase("unix"));
-    }
-
-    @org.junit.Test
-    public void checkProtocolHttp() throws Exception {
-        String context = NamingUtils.protocolSocket.apply(false);
-        assertThat(context, Matchers.equalToIgnoringCase("http"));
-    }
 
 }

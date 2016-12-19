@@ -41,9 +41,9 @@ docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
 echo "***************************"
 echo -e "Deleting FS data volumes"
 echo "***************************"
-rm -rf /srv/cu-elk
-rm -rf /home/vagrant/mysql_home/
-rm -rf /home/vagrant/testmysql_home/
+sudo rm -rf /srv/cu-elk
+sudo rm -rf /home/vagrant/mysql_home/
+sudo rm -rf /home/vagrant/testmysql_home/
 
 echo "*******************************"
 echo -e "Deleting all docker volumes"

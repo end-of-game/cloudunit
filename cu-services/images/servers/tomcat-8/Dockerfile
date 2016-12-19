@@ -38,12 +38,12 @@ ENV TOMCAT_TGZ_URL https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v
 ENV PATH $CATALINA_HOME/bin:$PATH
 
 ## CLOUDUNIT :: BEGINNING
+
 ENV CU_SERVER_RESTART_POST_DEPLOYMENT false
 ENV CU_SOFTWARE $CATALINA_HOME
 ENV CU_SERVER_MANAGER_PATH manager/html
 ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
-ENV CU_SERVER_RESTART_POST_CREDENTIALS true
 ENV CU_DEFAULT_LOG_FILE catalina.log
 ENV CU_LOGS $CATALINA_HOME/logs
 ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
@@ -70,7 +70,6 @@ RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jmxtrans-ag
     && mv jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar $CU_SOFTWARE/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar
 COPY files/jmxtrans-agent.xml /opt/cloudunit/conf/jmxtrans-agent.xml
 ENV JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/cloudunit/tomcat/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar=/opt/cloudunit/conf/jmxtrans-agent.xml"
-## CLOUDUNIT :: END
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
@@ -78,8 +77,13 @@ USER cloudunit
 
 VOLUME /opt/cloudunit
 
-CMD ["catalina.sh", "run"]
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD [ "run" ]
+
+expose 8080
 
 LABEL origin application
 LABEL application-type tomcat
 LABEL application-version tomcat-$TOMCAT_VERSION
+## CLOUDUNIT :: END
