@@ -112,43 +112,33 @@ public abstract class AbstractFatjarDeploymentControllerIT
                     mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
             resultats.andExpect(status().isOk());
 
-            // OPEN THE PORT
-            jsonString =
-                    "{\"applicationName\":\"" + applicationName
-                            + "\",\"portToOpen\":\"8080\",\"portNature\":\"web\"}";
             resultats =
-                    this.mockMvc.perform(post("/application/ports")
-                            .session(session)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonString));
-            resultats.andExpect(status().isOk()).andDo(print());
+                    mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy")
+                            .file(downloadAndPrepareFileToDeploy(binary,
+                                    "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary))
+                            .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
+            resultats.andExpect(status().is2xxSuccessful());
+
+            String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe.cloudunit.dev";
+            logger.debug(urlToCall);
+            int i = 0;
+            String content = null;
+            while (i++ < TestUtils.NB_ITERATION_MAX) {
+                content = getUrlContentPage(urlToCall);
+                logger.debug(content);
+                Thread.sleep(1000);
+                if (content == null || !content.contains("502")) {
+                    break;
+                }
+            }
+            logger.debug(content);
+            if (content != null) {
+                Assert.assertTrue(content.contains("Greetings from Spring Boot!"));
+            }
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
 
-        ResultActions resultats =
-                mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy")
-                        .file(downloadAndPrepareFileToDeploy(binary,
-                                "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary))
-                        .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
-        resultats.andExpect(status().is2xxSuccessful());
-
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
-        logger.debug(urlToCall);
-        int i = 0;
-        String content = null;
-        while (i++ < TestUtils.NB_ITERATION_MAX) {
-            content = getUrlContentPage(urlToCall);
-            logger.debug(content);
-            Thread.sleep(1000);
-            if (content == null || !content.contains("502")) {
-                break;
-            }
-        }
-        logger.debug(content);
-        if (content != null) {
-            Assert.assertTrue(content.contains("Greetings from Spring Boot!"));
-        }
     }
 
     @Test
@@ -163,17 +153,6 @@ public abstract class AbstractFatjarDeploymentControllerIT
         ResultActions resultats =
                 mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
-
-        // Open the port 8080
-        jsonString =
-                "{\"applicationName\":\"" + applicationName
-                        + "\",\"portToOpen\":\"8080\",\"portNature\":\"web\"}";
-        resultats =
-                this.mockMvc.perform(post("/application/ports")
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString));
-        resultats.andExpect(status().isOk()).andDo(print());
 
         // Add a module MYSQL
         jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"mysql-5-5\"}";
@@ -190,7 +169,7 @@ public abstract class AbstractFatjarDeploymentControllerIT
                                 "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary))
                         .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe-forward-8080.cloudunit.dev";
+        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe.cloudunit.dev";
         logger.debug(urlToCall);
         int i = 0;
         String content = null;
@@ -209,7 +188,7 @@ public abstract class AbstractFatjarDeploymentControllerIT
         }
 
         String url2AddAnUser = "http://" + applicationName.toLowerCase()
-                + "-johndoe-forward-8080.cloudunit.dev/create?email=johndoe@gmail.com&name=johndoe";
+                + "-johndoe.cloudunit.dev/create?email=johndoe@gmail.com&name=johndoe";
 
         // Add a module MYSQL
         resultats = mockMvc.perform(get(url2AddAnUser)
