@@ -21,6 +21,6 @@ package fr.treeptik.cloudunit.servers;
 public class Tomcat8ApplicationControllerTestIT extends AbstractApplicationControllerTestIT {
 
     public Tomcat8ApplicationControllerTestIT() {
-        super("tomcat-8", "java8");
+        super("tomcat-8");
     }
 }

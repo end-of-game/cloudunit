@@ -87,11 +87,9 @@ public abstract class AbstractApplicationControllerTestIT {
     }
 
     private final String release;
-    private final String jvmRelease;
 
-    protected AbstractApplicationControllerTestIT(final String release, final String jvmRelease) {
+    protected AbstractApplicationControllerTestIT(final String release) {
         this.release = release;
-        this.jvmRelease = jvmRelease;
     }
 
     @Before
@@ -197,7 +195,7 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Change JVM Memory !");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
-                        + "\",\"jvmMemory\":\"1024\",\"jvmOptions\":\"\",\"jvmRelease\":\""+jvmRelease+"\",\"location\":\"webui\"}";
+                        + "\",\"jvmMemory\":\"1024\",\"jvmOptions\":\"\",\"location\":\"webui\"}";
         ResultActions resultats =
                 this.mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
@@ -226,7 +224,7 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Change JVM Memory size with an empty value");
         jsonString =
                 "{\"applicationName\":\"" + applicationName
-                        + "\",\"jvmMemory\":\"\",\"jvmOptions\":\"\",\"jvmRelease\":\""+jvmRelease+"\"}";
+                        + "\",\"jvmMemory\":\"\",\"jvmOptions\":\"\"}";
         resultats =
                 mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());
@@ -243,16 +241,15 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Change JVM Options !");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
-                       + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\",\"jvmRelease\":\""+jvmRelease+"\"}";
+                       + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Dkey1=value1\"}";
         ResultActions resultats =
                 mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().isOk());
 
         resultats =
                 mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
-        resultats.andExpect(jsonPath("$.server.jvmMemory").value(512)).andExpect(jsonPath(
-                "$.server.jvmRelease").value(jvmRelease)).andExpect(jsonPath(
-                "$.server.jvmOptions").value("-Dkey1=value1"));
+        resultats.andExpect(jsonPath("$.server.jvmMemory").value(512))
+                .andExpect(jsonPath("$.server.jvmOptions").value("-Dkey1=value1"));
 
         deleteApplication(applicationName);
     }
@@ -264,7 +261,7 @@ public abstract class AbstractApplicationControllerTestIT {
         logger.info("Change JVM With Xms : not allowed");
         String jsonString =
                 "{\"applicationName\":\"" + applicationName
-                        + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Xms=512m\",\"jvmRelease\":\""+jvmRelease+"\"}";
+                        + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"-Xms=512m\"}";
         ResultActions resultats =
                 mockMvc.perform(put("/server/configuration/jvm").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
         resultats.andExpect(status().is4xxClientError());

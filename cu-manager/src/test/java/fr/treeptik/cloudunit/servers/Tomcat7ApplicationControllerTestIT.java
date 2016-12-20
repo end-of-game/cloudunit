@@ -22,7 +22,7 @@ public class Tomcat7ApplicationControllerTestIT extends AbstractApplicationContr
 
     public Tomcat7ApplicationControllerTestIT()
     {
-        super("tomcat-7", "java8");
+        super("tomcat-7");
     }
 
 }

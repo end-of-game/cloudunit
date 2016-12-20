@@ -78,13 +78,12 @@ RUN cd $HOME \
 ## CLOUDUNIT :: BEGINNING
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-1.61.0.jar \
     && mv javamelody-1.61.0.jar $CU_SOFTWARE/lib/javamelody-1.61.0.jar
-COPY files/web.xml $CU_SOFTWARE/conf/web.xml
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
+COPY files/web.xml $CU_SOFTWARE/conf/web.xml
 COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar \
     && mv jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar $CU_SOFTWARE/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar
 COPY files/jmxtrans-agent.xml /opt/cloudunit/conf/jmxtrans-agent.xml
-ENV JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/cloudunit/tomcat/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar=/opt/cloudunit/conf/jmxtrans-agent.xml"
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
@@ -95,6 +94,8 @@ VOLUME /opt/cloudunit
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "run" ]
+
+EXPOSE 8080
 
 LABEL origin application
 LABEL application-type tomcat

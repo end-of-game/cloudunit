@@ -155,7 +155,7 @@ public class Application implements Serializable {
         
         this.server = new Server(this, builder.image);
 
-		if ("webserver".equalsIgnoreCase(server.getImage().getPrefixEnv())) {
+		if ("webserver".equalsIgnoreCase(server.getImage().getImageSubType().toString())) {
 			this.deploymentStatus = Application.ALREADY_DEPLOYED;
 		} else {
 			this.deploymentStatus = Application.NONE;

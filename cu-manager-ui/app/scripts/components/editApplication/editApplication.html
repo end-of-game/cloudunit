@@ -25,17 +25,6 @@
              data-placement="bottom">
             <span><i class="icon-whhg preview"></i></span>
           </a>
-          <a ng-repeat="port in editApp.application.portsToOpen" ng-if="port.quickAccess === true" id="preview-link"
-             class="icon-button"
-             data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' }"
-             data-ng-href="http://{{ port.alias }}"
-             target="_blank"
-             tooltip=""
-             data-title="{{ port.alias }}"
-             data-placement="bottom">
-            <span><i class="icon-whhg preview"></i></span>
-            <span style="position: absolute; font-size: 12px; top: -12px; left: 5px;">{{port.port}}</span>
-          </a>
         </h2>
           <div ng-show="editApp.application.quickAccessNotice" style="margin: 0px; padding: 4px; width: 130px;" class="alert alert-info">
             <button type="button"

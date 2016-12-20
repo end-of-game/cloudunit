@@ -17,7 +17,7 @@ import fr.treeptik.cloudunit.docker.model.HostConfig;
  */
 public class ContainerUtils {
 
-    public static DockerContainer newCreateInstance(String name, String imagePath, String prefixEnv, List<String> volumesFrom,
+    public static DockerContainer newCreateInstance(String name, String imagePath, String imageSubType, List<String> volumesFrom,
             List<String> args, List<String> rawVolumes, List<String> envs,
             Map<String, String> ports, String networkMode, String suffixCloudUnitIO) {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withVolumesFrom(volumesFrom).withBinds(rawVolumes)
@@ -29,7 +29,7 @@ public class ContainerUtils {
                 .withAttachStderr(Boolean.TRUE).withCmd(args).withImage(imagePath).withHostConfig(hostConfig).withMemory(0L)
                 .withMemorySwap(0L).withEnv(envs).build();
         Map<String, String> labels = new HashMap<>();
-        if ("webserver".equalsIgnoreCase(prefixEnv)) {
+        if ("webserver".equalsIgnoreCase(imageSubType)) {
             labels.put("traefik.port", "80");
         } else {
             labels.put("traefik.port", "8080");

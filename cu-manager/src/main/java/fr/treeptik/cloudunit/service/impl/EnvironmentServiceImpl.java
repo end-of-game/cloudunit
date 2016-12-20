@@ -270,7 +270,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
         Server server = serverService.findByName(containerName);
         if (server != null) {
-            dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
+            dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),
                     server.getApplication().getUser(), envs, false, volumes);
             server = serverService.startServer(server);
             applicationEventPublisher.publishEvent(new ServerStartEvent(server));

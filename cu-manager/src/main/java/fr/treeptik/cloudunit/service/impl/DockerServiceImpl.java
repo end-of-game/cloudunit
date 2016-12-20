@@ -71,11 +71,12 @@ public class DockerServiceImpl implements DockerService {
     private DockerCloudUnitClient dockerCloudUnitClient;
 
     @Override
-    public void createServer(String containerName, Server server, String imagePath, String prefixEnv, User user, List<String> envs,
+    public void createServer(String containerName, Server server, String imagePath, String imageSubType, User user, List<String> envs,
                              boolean createMainVolume, List<String> volumes) throws DockerJSONException, ServiceException {
         if (volumes == null) { volumes = new ArrayList<>(); }
         if (createMainVolume) { dockerCloudUnitClient.createVolume(containerName, "runtime"); }
         volumes.add(containerName + ":/opt/cloudunit:rw");
+        List<String> volumesFrom = Arrays.asList("monitoring-agents");
         logger.info("Volumes to add : " + volumes.toString());
         List<String> args = null;
         if (server.isApplicationServer()) {
@@ -84,7 +85,7 @@ public class DockerServiceImpl implements DockerService {
             args.add(user.getLogin());
             args.add(user.getPassword());
         }
-        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, prefixEnv, null, args,
+        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, imageSubType, volumesFrom, args,
                 volumes, envs, null, "skynet", suffixCloudUnitIO);
         dockerCloudUnitClient.createContainer(container);
     }
