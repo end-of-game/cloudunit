@@ -71,12 +71,6 @@ function redis {
     docker build --rm $CACHE_STRATEGY -t cloudunit/redis-3-2 images/modules/redis-3-2
 }
 
-function tools {
-    docker build --rm $CACHE_STRATEGY -t cloudunit/java7 images/tools/opendjk7
-    docker build --rm $CACHE_STRATEGY -t cloudunit/java8 images/tools/openjdk8
-    docker build --rm $CACHE_STRATEGY -t cloudunit/java9 images/tools/openjdk9
-}
-
 case "$1" in
 
 'activemq')
@@ -163,7 +157,6 @@ postgre
 rabbitmq
 redis
 tomcat
-tools
 wildfly
 ;;
 
