@@ -1,18 +1,6 @@
 version: '2'
 services:
 
-  java7:
-      container_name: java7
-      image: cloudunit/java7
-
-  java8:
-      container_name: java8
-      image: cloudunit/java8
-
-  java9:
-        container_name: java9
-        image: cloudunit/java9
-
   redis:
       container_name: cu-redis
       image: redis:3.0.1
