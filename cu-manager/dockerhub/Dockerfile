@@ -23,12 +23,13 @@ ENV MAVEN_HOME /usr/share/maven
 ENV JAVA_HOME /cloudunit/java/jdk1.8.0_25
 
 # Dépendances Debian
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y git
-RUN apt-get install -y wget
-RUN apt-get install -y git-core
-RUN apt-get install -y unzip
+RUN apt-get update \
+    && apt-get install -y curl \
+    && apt-get install -y git \
+    && apt-get install -y wget \
+    && apt-get install -y git-core \
+    && apt-get install -y unzip \
+	&& rm -r /var/lib/apt/lists/*
 
 # Fix pour permettre de tirer correctement certaines dépendances
 RUN git config --global url."https://".insteadOf git://

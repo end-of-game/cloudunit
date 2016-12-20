@@ -1,4 +1,4 @@
-FROM cloudunit/base-jessie
+FROM debian:jessie
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 #RUN groupadd -r www-data && useradd -r --create-home -g www-data www-data
@@ -21,7 +21,12 @@ RUN apt-get update \
 		libaprutil1-dev \
 		libpcre++0 \
 		libssl1.0.0 \
+		netcat \
 	&& rm -r /var/lib/apt/lists/*
+
+RUN apt-get update \
+        && apt-get install -y --no-install-recommends --no-install-suggests netcat \
+	    && rm -r /var/lib/apt/lists/*
 
 ENV HTTPD_VERSION 2.2.31
 ENV HTTPD_SHA1 e3b55387112206307ba76526820a2627472f3787
@@ -81,8 +86,6 @@ ENV CU_SERVER_PORT 80
 ENV CU_SERVER_RESTART_POST_CREDENTIALS true
 ENV CU_DEFAULT_LOG_FILE access.log
 ENV CU_LOGS STDOUT
-ENV CU_DEFAULT_JAVA_RELEASE " "
-ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS " "
 
 # add custom scripts

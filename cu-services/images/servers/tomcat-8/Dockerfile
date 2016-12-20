@@ -37,15 +37,6 @@ ARG TOMCAT_VERSION
 ENV TOMCAT_TGZ_URL https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
 ENV PATH $CATALINA_HOME/bin:$PATH
 
-## CLOUDUNIT :: BEGINNING
-# Create directory for CloudUnit
-RUN mkdir -p /opt/cloudunit/backup &&  \
-    mkdir -p /opt/cloudunit/hooks/ && \
-    mkdir -p /opt/cloudunit/java && \
-    mkdir -p /opt/cloudunit/shared && \
-    mkdir -p /opt/cloudunit/scripts && \
-    mkdir -p /opt/cloudunit/tmp
-
 WORKDIR /opt/cloudunit
 
 # Environment variables
@@ -78,9 +69,9 @@ RUN cd $HOME \
 ## CLOUDUNIT :: BEGINNING
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-1.61.0.jar \
     && mv javamelody-1.61.0.jar $CU_SOFTWARE/lib/javamelody-1.61.0.jar
-COPY files/web.xml $CU_SOFTWARE/conf/web.xml
-COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
-COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
+COPY files/web.xml $CU_SOFTWARE/conf/web.xml.melody
+COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml.melody
+COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties.melody
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar \
     && mv jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar $CU_SOFTWARE/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar
 COPY files/jmxtrans-agent.xml /opt/cloudunit/conf/jmxtrans-agent.xml

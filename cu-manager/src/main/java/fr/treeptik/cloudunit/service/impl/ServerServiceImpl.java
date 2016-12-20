@@ -146,12 +146,10 @@ public class ServerServiceImpl implements ServerService {
 
 		String imagePath = server.getImage().getPath();
 		String prefixEnv = server.getImage().getPrefixEnv();
+		String imageSubType = server.getImage().getImageSubType().toString();
 		logger.debug("imagePath:" + imagePath);
 		try {
-            List<String> volumes = new ArrayList<>();
-            volumes.add("java8:/opt/cloudunit/java/java8");
-
-			dockerService.createServer(containerName, server, imagePath, prefixEnv, user, null, true, volumes);
+            dockerService.createServer(containerName, server, imagePath, imageSubType, user, null, true, null);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 			// Update server with all its information
@@ -382,7 +380,7 @@ public class ServerServiceImpl implements ServerService {
 					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
 							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
 					.collect(Collectors.toList());
-			dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
+			dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
 
@@ -499,7 +497,7 @@ public class ServerServiceImpl implements ServerService {
 				.collect(Collectors.toList());
 		List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
 				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
-		dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getPrefixEnv(),
+		dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),
 				server.getApplication().getUser(), envs, false, volumes);
 		server = startServer(server);
 		//addCredentialsForServerManagement(server, server.getApplication().getUser());
