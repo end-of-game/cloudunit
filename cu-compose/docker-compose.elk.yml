@@ -2,6 +2,7 @@ version: '2'
 services:
 
   elasticsearch:
+    container_name: cu-elasticsearch
     env_file: .env
     build:
       context: ./cu-elk/elasticsearch
@@ -11,7 +12,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - /srv/cu-elk/elasticsearch:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
     environment:
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     privileged: true
@@ -22,24 +23,8 @@ services:
       - "traefik.port=9200"
       - "traefik.frontend.rule=Host:elasticsearch.${CU_DOMAIN}"
 
-  logstash:
-    build:
-      context: ./cu-elk/logstash
-    image: cloudunit/elk-logstash
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./cu-elk/logstash/conf.d:/etc/logstash/conf.d
-      - ./cu-elk/logstash/curator:/etc/curator
-    environment:
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-    labels:
-      - "traefik.enable=false"
-    depends_on:
-      - elasticsearch
-
   kibana:
+    container_name: cu-kibana
     env_file: .env
     build:
       context: ./cu-elk/kibana
@@ -61,7 +46,7 @@ services:
       - "traefik.frontend.rule=Host:kibana.${CU_DOMAIN}"
 
   monitoring-agents:
-    container_name: monitoring-agents
+    container_name: cu-monitoring-agents
     env_file: .env
     hostname: ${HOSTNAME}
     build:
@@ -84,3 +69,5 @@ networks:
   default:
     external:
       name: skynet
+volumes:
+  elasticsearch-data:

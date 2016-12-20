@@ -8,50 +8,39 @@ services:
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
+          - redis-data:/data
       labels:
           - "traefik.enable=false"
 
   mysql:
       container_name: cu-mysql
+      env_file: .env
       image: mysql:5.7.4
-      depends_on:
-           - mysqldata
-      ports:
-           - "3306:3306"
+      #ports:
+      #     - "3306:3306"
       environment:
-          - MYSQL_ROOT_PASSWORD
-          - MYSQL_DATABASE=cloudunit
-      volumes_from:
-           - mysqldata
+          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+          - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes:
+            - mysqldata:/var/lib/mysql
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
       labels:
             - "traefik.enable=false"
 
-  mysqldata:
-      container_name: cu-mysqldata
-      image: ubuntu:14.04
-      volumes:
-          - /home/admincu/mysql_home:/var/lib/mysql
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      labels:
-          - "traefik.enable=false"
-
   tomcat:
       env_file: .env
       container_name: cu-tomcat
       image: cloudunit/manager
-      ports:
-          - "8080:8080"
+      #ports:
+      #    - "8080:8080"
       user: "1000:999"
       volumes:
           - /var/run/docker.sock:/var/run/docker.sock
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-          - /home/admincu/.cloudunit:/opt/tomcat/.cloudunit
-          - /home/admincu/.docker:/opt/certificats
+          - ./.cloudunit:/opt/tomcat/.cloudunit
+          - /home/$USER/.docker:/opt/certificats
       environment:
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
@@ -62,6 +51,7 @@ services:
           - "CU_SONAR_DOMAIN=${CU_SONAR_DOMAIN}"
           - "CU_LETSCHAT_DOMAIN=${CU_LETSCHAT_DOMAIN}"
       labels:
+          - "traefik.frontend.entryPoints=https"
           - "traefik.backend=manager"
           - "traefik.port=8080"
           - "traefik.frontend.rule=Host:${CU_MANAGER_DOMAIN}"
@@ -87,21 +77,27 @@ services:
   gitlab:
       env_file: .env
       container_name: cu-gitlab
-      image: gitlab/gitlab-ce:8.13.5-ce.0
+      #build:
+      #  context: cu-gitlab-ce
+      #  args:
+      #    - domain=$CU_GITLAB_DOMAIN
+      image: gitlab/gitlab-ce:8.14.5-ce.0
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-          - /srv/gitlab/config:/etc/gitlab
-          - /srv/gitlab/logs:/var/log/gitlab
-          - /srv/gitlab/data:/var/opt/gitlab
+          - gitlab-config:/etc/gitlab
+          - gitlab-logs:/var/log/gitlab
+          - gitlab-data:/var/opt/gitlab
+          - ./cu-gitlab-ce/gitlab.rb:/etc/gitlab/gitlab.rb
       # Define the CU_GITLAB_DOMAIN into /etc/environment
       hostname: '${CU_GITLAB_DOMAIN}'
-      #environment:
-      #    GITLAB_OMNIBUS_CONFIG: |
-      #        external_url 'https://${CU_GITLAB_DOMAIN}'
+      environment:
+        GITLAB_OMNIBUS_CONFIG: |
+               external_url 'https://${CU_GITLAB_DOMAIN}'
       labels:
+          - "traefik.frontend.entryPoints=https"
           - "traefik.backend=gitlab"
-          - "traefik.port=80"
+          - "traefik.port=8080"
           - "traefik.frontend.rule=Host:${CU_GITLAB_DOMAIN}"
 
   jenkins:
@@ -111,10 +107,11 @@ services:
         context: cu-jenkins
       image: cloudunit/jenkins
       volumes:
-          - /home/admincu/jenkins_home:/var/jenkins_home
+          - jenkins-home:/var/jenkins_home
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
       labels:
+          - "traefik.frontend.entryPoints=https"
           - "traefik.backend=jenkins"
           - "traefik.port=8080"
           - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
@@ -123,17 +120,30 @@ services:
       container_name: cu-traefik
       env_file: .env
       image: traefik
-      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=INFO --docker.watch=true --docker.exposedbydefault=true
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
       ports:
           - "80:80"
+          - "443:443"
           - "9090:8080"
       volumes:
           - /var/run/docker.sock:/var/run/docker.sock
-          - /dev/null:/traefik.toml
+          - ./cu-traefik/traefik.toml:/traefik.toml
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
+          - ./cu-traefik/certs:/certs
+      labels:
+        - "traefik.enable=false"
 
 networks:
   default:
     external:
       name: skynet
+
+volumes:
+  mysqldata:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  jenkins-home:
+  traefik-certs:
+  redis-data:

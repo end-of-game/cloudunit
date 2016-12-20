@@ -16,31 +16,19 @@ services:
   mysql:
       container_name: cu-mysql
       env_file: .env
-      container_name: cuplatform_mysql_1
       image: mysql:5.7.4
-      depends_on:
-        - mysqldata
       ports:
         - "3306:3306"
       environment:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         - MYSQL_DATABASE=${MYSQL_DATABASE}
-      volumes_from:
-        - mysqldata
       volumes:
+        - mysqldata:/var/lib/mysql
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
       labels:
         - "traefik.enable=false"
 
-  mysqldata:
-      container_name: cu-mysqldata
-      image: ubuntu:14.04
-      volumes:
-        - /home/vagrant/mysql_home:/var/lib/mysql
-        - /etc/localtime:/etc/localtime:ro
-        - /etc/timezone:/etc/timezone:ro
-  
   cadvisor:
       container_name: cuplatform_cadvisor_1
       image: google/cadvisor:0.14.0
@@ -102,7 +90,7 @@ services:
       container_name: cu-traefik
       env_file: .env
       image: traefik
-      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true 
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
       ports:
         - "80:80"
         - "443:443"
@@ -118,3 +106,6 @@ networks:
   default:
     external:
       name: skynet
+
+volumes:
+  mysqldata:

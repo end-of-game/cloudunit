@@ -4,7 +4,7 @@ export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
 
-export COMPOSE_VERSION=1.8.0
+export COMPOSE_VERSION=1.9.0
 
 ROOTUID="0"
 
@@ -100,8 +100,3 @@ passwd admincu
 echo ""
 echo "You can open a new session with admincu"
 echo ""
-
-
-
-
-

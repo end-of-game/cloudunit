@@ -9,7 +9,7 @@ actions:
   1:
     action: delete_indices
     description: >-
-      Delete indices older than 7 days (based on index name)
+      Delete indices older than 1 days (based on index name)
     options:
       ignore_empty_list: True
       timeout_override:
@@ -21,4 +21,4 @@ actions:
       direction: older
       timestring: '%Y.%m.%d'
       unit: days
-      unit_count: 7
+      unit_count: 1
