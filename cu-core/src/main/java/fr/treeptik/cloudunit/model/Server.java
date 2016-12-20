@@ -141,7 +141,7 @@ public class Server extends Container implements Serializable {
 	}
 
 	public boolean isApplicationServer() {
-		return image.getImageSubType().equals("APPSERVER");
+		return image.getImageSubType().toString().equalsIgnoreCase("APPSERVER");
 	}
 
 	@Override
