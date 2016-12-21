@@ -71,6 +71,10 @@ function redis {
     docker build --rm $CACHE_STRATEGY -t cloudunit/redis-3-2 images/modules/redis-3-2
 }
 
+function vertx3 {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx3 images/servers/vertx3
+}
+
 case "$1" in
 
 'activemq')
@@ -138,6 +142,11 @@ echo "Building Tools"
 tools
 ;;
 
+'vertx3')
+echo "Building Vertx"
+vertx3
+;;
+
 'wildfly')
 echo "Building WildFly"
 wildfly
@@ -157,6 +166,7 @@ postgre
 rabbitmq
 redis
 tomcat
+vertx3
 wildfly
 ;;
 
@@ -181,6 +191,7 @@ echo "                    rabbitmq"
 echo "                    redis"
 echo "                    tomcat"
 echo "                    tools"
+echo "                    vertx3"
 echo "                    wildfly"
 echo ""
 ;;
