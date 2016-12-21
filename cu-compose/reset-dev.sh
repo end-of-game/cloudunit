@@ -37,36 +37,20 @@ else
   openssl x509 -req -days 365 -in cu-traefik/certs/traefik.csr -signkey cu-traefik/certs/traefik.key -out cu-traefik/certs/traefik.crt
 fi
 
-docker network create skynet
+echo "***************************"
+echo -e "Removing containers And Volumes"
+echo "***************************"
 
-echo "***************************"
-echo -e "Removing containers"
-echo "***************************"
-docker kill $(docker ps -aq)
-docker rm -vf $(docker ps -aq)
-
-echo "***************************"
-echo -e "Removing images "
-echo "***************************"
-docker rmi $(docker images | grep "<none>" | awk '{print $3}')
-docker rmi $(docker images | grep "johndoe" | awk '{print $3}')
-
-echo "***************************"
-echo -e "Deleting FS data volumes"
-echo "***************************"
-sudo rm -rf /srv/cu-elk
-sudo rm -rf /home/vagrant/mysql_home/
-sudo rm -rf /home/vagrant/testmysql_home/
-
-echo "*******************************"
-echo -e "Deleting all docker volumes"
-echo "*******************************"
-docker volume rm $(docker volume ls -q)
+docker-compose  -f docker-compose.elk.yml -f docker-compose.dev.yml kill
+docker volume rm cucompose_gitlab-logs
+docker volume rm cucompose_mysqldata
+docker volume rm cucompose_redis-data
+docker network rm skynet
 
 echo "*******************************"
 echo -e "Starting..."
 echo "*******************************"
+docker network create skynet
 docker-compose  --file docker-compose.dev.yml \
                 --file docker-compose.elk.yml \
                 up -d
-

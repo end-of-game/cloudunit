@@ -76,7 +76,7 @@ public class DockerServiceImpl implements DockerService {
         if (volumes == null) { volumes = new ArrayList<>(); }
         if (createMainVolume) { dockerCloudUnitClient.createVolume(containerName, "runtime"); }
         volumes.add(containerName + ":/opt/cloudunit:rw");
-        List<String> volumesFrom = Arrays.asList("monitoring-agents");
+        List<String> volumesFrom = Arrays.asList("cu-monitoring-agents");
         logger.info("Volumes to add : " + volumes.toString());
         List<String> args = null;
         if (server.isApplicationServer()) {
@@ -314,7 +314,7 @@ public class DockerServiceImpl implements DockerService {
         }
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
-        List<String> volumesFrom = Arrays.asList("monitoring-agents");
+        List<String> volumesFrom = Arrays.asList("cu-monitoring-agents");
         // map ports
         Map<String, String> ports = module.getPorts().stream()
                 .filter(p -> p.getOpened())
