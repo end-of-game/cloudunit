@@ -45,6 +45,7 @@ function reset {
             exit 1
         fi
     fi
+    docker rm -vf $(docker ps -aq --filter "label=origin=application")
     docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
     docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
     docker volume rm cucompose_gitlab-logs
