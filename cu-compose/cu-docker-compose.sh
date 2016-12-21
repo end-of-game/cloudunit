@@ -19,20 +19,15 @@
 ##
 ##
 
-function init {
-    echo "init"
-    mkdir -p /home/$USER/jenkins_home
-    # BUG with jenkins... to investigate about rights
-    sudo chmod -R 777 /home/$USER/jenkins_home
-}
-
 function with-elk {
+    docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
                     -f docker-compose.yml \
     up -d
 }
 
 function with-elk-and-selenium {
+    docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
@@ -52,6 +47,10 @@ function reset {
     fi
     docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
     docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
+    docker volume rm cucompose_gitlab-logs
+    docker volume rm cucompose_mysqldata
+    docker volume rm cucompose_redis-data
+    docker network rm skynet
 }
 
 ##
@@ -63,7 +62,7 @@ function reset {
 case "$1" in
 
 'with-elk')
-init && with-elk
+with-elk
 ;;
 
 'with-elk-and-selenium')
@@ -87,4 +86,3 @@ echo ""
 ;;
 
 esac
-
