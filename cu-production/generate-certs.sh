@@ -10,10 +10,10 @@ PASSPHRASE=changeit
 
 # Origin from https://raw.githubusercontent.com/ksahnine/docker/master/gen-docker-certs.sh
 
-if [[ $USER != "root" ]]; then
-    echo "This script must be run as admincu"
-    exit 1
-fi
+#if [[ $USER != "root" ]]; then
+#    echo "This script must be run as admincu"
+#    exit 1
+#fi
 
 dhostname="localhost"
 dip="172.17.42.1"
