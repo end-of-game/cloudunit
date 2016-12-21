@@ -52,20 +52,19 @@ services:
   gitlab:
       env_file: .env
       container_name: cu-gitlab
-      build:
-        context: cu-gitlab-ce
-      image: cloudunit/gitlab
+      image: gitlab/gitlab-ce:8.14.5-ce.0
       volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
         - /srv/gitlab/config:/etc/gitlab
         - /srv/gitlab/logs:/var/log/gitlab
         - /srv/gitlab/data:/var/opt/gitlab
+        - ./cu-gitlab-ce/gitlab.rb:/etc/gitlab/gitlab.rb
       # Define the CU_GITLAB_DOMAIN into /etc/environment
       hostname: '${CU_GITLAB_DOMAIN}'
-      #environment:
-      #    GITLAB_OMNIBUS_CONFIG: |
-      #        external_url 'https://${CU_GITLAB_DOMAIN}'
+      environment:
+          GITLAB_OMNIBUS_CONFIG: |
+              external_url 'https://${CU_GITLAB_DOMAIN}'
       labels:
         - "traefik.frontend.entryPoints=https"
         - "traefik.backend=gitlab"
@@ -109,3 +108,9 @@ networks:
 
 volumes:
   mysqldata:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  jenkins-home:
+  traefik-certs:
+  redis-data:
