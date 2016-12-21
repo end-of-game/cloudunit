@@ -10,6 +10,7 @@ services:
       volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
+        - redis-data:/data
       labels:
         - "traefik.enable=false"
 
@@ -56,9 +57,9 @@ services:
       volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
-        - /srv/gitlab/config:/etc/gitlab
-        - /srv/gitlab/logs:/var/log/gitlab
-        - /srv/gitlab/data:/var/opt/gitlab
+        - gitlab-config:/etc/gitlab
+        - gitlab-logs:/var/log/gitlab
+        - gitlab-data:/var/opt/gitlab
         - ./cu-gitlab-ce/gitlab.rb:/etc/gitlab/gitlab.rb
       # Define the CU_GITLAB_DOMAIN into /etc/environment
       hostname: '${CU_GITLAB_DOMAIN}'
@@ -78,7 +79,7 @@ services:
         context: cu-jenkins
       image: cloudunit/jenkins
       volumes:
-        - /home/vagrant/jenkins_home:/var/jenkins_home
+        - jenkins-home:/var/jenkins_home
       labels:
         - "traefik.frontend.entryPoints=https"
         - "traefik.backend=cu-jenkins"
