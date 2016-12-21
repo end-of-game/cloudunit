@@ -141,8 +141,6 @@ networks:
 
 volumes:
   mysqldata:
-    labels:
-      - "donotdelete"
   gitlab-config:
   gitlab-logs:
   gitlab-data:
