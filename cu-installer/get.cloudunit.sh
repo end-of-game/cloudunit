@@ -82,16 +82,6 @@ docker_version() {
 }
 
 install_docker() {
-	if [ "$1" != "-y" ]; then
-    echo "Docker is not installed, do you want to install it within this script ? [y/n] (official get.docker.com script)"
-    read PROD_ASW
-    if [ "$PROD_ASW" != "y" ] && [ "$PROD_ASW" != "n" ]; then
-    	echo "Entrer y ou n!"
-      exit 1
-    elif [ "$PROD_ASW" = "n" ]; then
-      exit 1
-    fi
-  fi
 	if [ -f /usr/bin/curl ]; then
   	curl -sSL https://get.docker.com/ | sh
 		# > /dev/null 2>&1
@@ -110,4 +100,8 @@ install_docker() {
 }
 
 check_prerequisite
+
+curl https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstrap.sh > bootstrap.sh
+
+sh bootstrap.sh dev
 
