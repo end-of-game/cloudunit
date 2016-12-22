@@ -51,10 +51,10 @@ chown -R $CU_USER:$CU_USER /home/$CU_USER
 
 # INSTALL DOCKER
 apt-get install -y apt-transport-https ca-certificates
-#apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-#cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
+apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
 apt-get update
-#apt-get install -y docker-engine
+apt-get install -y docker-engine
 apt-get install -y mysql-client
 usermod -aG docker admincu
 service docker stop
