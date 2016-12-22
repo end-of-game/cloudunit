@@ -14,10 +14,7 @@ services:
 
   mysql:
       container_name: cu-mysql
-      env_file: .env
       image: mysql:5.7.4
-      #ports:
-      #     - "3306:3306"
       environment:
           - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
           - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -29,11 +26,8 @@ services:
             - "traefik.enable=false"
 
   tomcat:
-      env_file: .env
       container_name: cu-tomcat
       image: cloudunit/manager
-      #ports:
-      #    - "8080:8080"
       user: "1000:999"
       volumes:
           - /var/run/docker.sock:/var/run/docker.sock
@@ -76,12 +70,7 @@ services:
           - "traefik.enable=false"
 
   gitlab:
-      env_file: .env
       container_name: cu-gitlab
-      #build:
-      #  context: cu-gitlab-ce
-      #  args:
-      #    - domain=$CU_GITLAB_DOMAIN
       image: gitlab/gitlab-ce:8.14.5-ce.0
       volumes:
           - /etc/localtime:/etc/localtime:ro
@@ -90,7 +79,6 @@ services:
           - gitlab-logs:/var/log/gitlab
           - gitlab-data:/var/opt/gitlab
           - ./cu-gitlab-ce/gitlab.rb:/etc/gitlab/gitlab.rb
-      # Define the CU_GITLAB_DOMAIN into /etc/environment
       hostname: '${CU_GITLAB_DOMAIN}'
       environment:
         GITLAB_OMNIBUS_CONFIG: |
@@ -102,7 +90,6 @@ services:
           - "traefik.frontend.rule=Host:${CU_GITLAB_DOMAIN}"
 
   jenkins:
-      env_file: .env
       container_name: cu-jenkins
       build:
         context: cu-jenkins
@@ -119,7 +106,6 @@ services:
 
   traefik:
       container_name: cu-traefik
-      env_file: .env
       image: traefik
       command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
       ports:
