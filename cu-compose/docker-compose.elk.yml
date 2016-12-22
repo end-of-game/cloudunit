@@ -7,8 +7,8 @@ services:
     build:
       context: ./cu-elk/elasticsearch
     image: cloudunit/elk-elasticsearch
-    ports:
-      - "9200:9200"
+    #ports:
+    #  - "9200:9200"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -18,10 +18,7 @@ services:
     privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
     labels:
-      - "traefik.frontend.entryPoints=https"
-      - "traefik.backend=elasticsearch"
-      - "traefik.port=9200"
-      - "traefik.frontend.rule=Host:elasticsearch.${CU_DOMAIN}"
+       - "traefik.enable=Host:false"
 
   kibana:
     container_name: cu-kibana
@@ -29,8 +26,8 @@ services:
     build:
       context: ./cu-elk/kibana
     image: cloudunit/elk-kibana
-    ports:
-      - "5601:5601"
+    #ports:
+    #  - "5601:5601"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -43,7 +40,7 @@ services:
       - "traefik.frontend.entryPoints=https"
       - "traefik.backend=kibana"
       - "traefik.port=5601"
-      - "traefik.frontend.rule=Host:kibana.${CU_DOMAIN}"
+      - "traefik.frontend.rule=Host:${CU_KIBANA_DOMAIN}"
 
   monitoring-agents:
     container_name: cu-monitoring-agents
@@ -57,6 +54,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./cu-elk/monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
+      - monitoring-agents:/opt/cloudunit/monitoring-agents
     environment:
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
       - "HOSTNAME=${HOSTNAME}"
@@ -71,3 +69,4 @@ networks:
       name: skynet
 volumes:
   elasticsearch-data:
+  monitoring-agents:
