@@ -204,7 +204,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 		checkCreate(user, applicationName);
 
-        application = applicationDAO.save(application);
+		String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
+		application.setDomainName(subdomain + suffixCloudUnitIO);
+		application = applicationDAO.save(application);
+
 
         Server server = application.getServer();
 		server.setApplication(application);

@@ -124,14 +124,8 @@ public class ModuleServiceImpl implements ModuleService {
         String imagePath = module.getImage().getPath();
         logger.debug("imagePath:" + imagePath);
 
-        String subdomain = System.getenv("CU_SUB_DOMAIN");
-        if (subdomain == null) {
-            subdomain = "";
-        }
-        logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-
-        // XXX - Why ???
-        //module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
+        String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
+        module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
         try {
             Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs = getModuleEnvironmentVariables(image,
                     application.getName());
