@@ -58,6 +58,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import java.io.FileInputStream;
@@ -119,11 +120,11 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     protected static String applicationName;
 
-    @Value("${suffix.cloudunit.io}")
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
     private String domainSuffix;
-
     @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomain;
+    private String subdomainPrefix;
+    protected String domain;
 
     @Inject
     private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
@@ -135,6 +136,15 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     protected String managerSuffix;
     protected String managerPageContent;
     protected String testScriptPath;
+
+    @PostConstruct
+    public void init() {
+        if (subdomainPrefix != null) {
+            domain = subdomainPrefix + "." + domainSuffix;
+        } else {
+            domain = domainSuffix;
+        }
+    }
 
     @BeforeClass
     public static void initEnv() {

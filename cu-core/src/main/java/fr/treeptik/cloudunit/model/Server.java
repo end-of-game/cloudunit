@@ -53,7 +53,7 @@ public class Server extends Container implements Serializable {
 	
 	public Server(Builder builder) {
         super(builder);
-        
+
         this.jvmMemory = builder.jvmMemory;
         this.jvmOptions = builder.jvmOptions;
         this.managerLocation = builder.managerLocation;
@@ -140,6 +140,7 @@ public class Server extends Container implements Serializable {
 		this.managerLocation = managerLocation;
 	}
 
+	@JsonIgnore
 	public boolean isApplicationServer() {
 		return image.getImageSubType().toString().equalsIgnoreCase("APPSERVER");
 	}

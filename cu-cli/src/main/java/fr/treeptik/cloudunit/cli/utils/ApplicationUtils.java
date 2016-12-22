@@ -133,7 +133,7 @@ public class ApplicationUtils {
         checkConnectedAndApplicationSelected();
 
         useApplication(currentApplication.getName());
-        String dockerManagerIP = currentApplication.getManagerIp();
+        String dockerManagerIP = authenticationUtils.finalHost;
         statusCommand.setExitStatut(0);
 
         MessageConverter.buildApplicationMessage(currentApplication, dockerManagerIP);

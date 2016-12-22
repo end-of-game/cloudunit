@@ -81,26 +81,8 @@ public class ModuleServiceImpl implements ModuleService {
     @Inject
     private DockerService dockerService;
 
-    @Value("${suffix.cloudunit.io}")
-    private String suffixCloudUnitIO;
-
-    @Value("${database.password}")
-    private String databasePassword;
-
-    @Value("${env.exec}")
-    private String envExec;
-
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
-
-    @Value("${database.hostname}")
-    private String databaseHostname;
-
-    @Value("${docker.endpoint.mode}")
-    private String dockerEndpointMode;
-
-    @Value("${docker.socket.location}")
-    private String dockerManagerIp;
 
     @Inject
     private ApplicationEventPublisher applicationEventPublisher;
@@ -124,8 +106,6 @@ public class ModuleServiceImpl implements ModuleService {
         String imagePath = module.getImage().getPath();
         logger.debug("imagePath:" + imagePath);
 
-        String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-        module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
         try {
             Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs = getModuleEnvironmentVariables(image,
                     application.getName());

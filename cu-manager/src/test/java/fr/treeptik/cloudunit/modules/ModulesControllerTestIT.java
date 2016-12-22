@@ -100,21 +100,9 @@ public class ModulesControllerTestIT extends TestCase {
     @Inject
     private UserService userService;
 
-    @Value("${cloudunit.instance.name}")
-    private String cuInstanceName;
-
-    @Value("${ip.box.vagrant}")
-    protected String ipVagrantBox;
-
     protected MockHttpSession session;
 
     protected static String applicationName;
-
-    @Value("${suffix.cloudunit.io}")
-    private String domainSuffix;
-
-    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomain;
 
     @Inject
     private CheckBrokerConnectionUtils checkBrokerConnectionUtils;

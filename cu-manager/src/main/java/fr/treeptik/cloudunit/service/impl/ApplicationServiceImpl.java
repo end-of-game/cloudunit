@@ -103,11 +103,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Value("${docker.socket.location}")
 	private String dockerSocketIP;
 
-	@Value("${suffix.cloudunit.io}")
-	private String suffixCloudUnitIO;
+	@Value("#{systemEnvironment['CU_DOMAIN']}")
+	private String domainSuffix;
 
-	@Value("${java.version.default}")
-	private String javaVersionDefault;
+	@Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+	private String subdomainPrefix;
+
+	protected String domain;
 
 	@Value("${cloudunit.instance.name}")
 	private String cuInstanceName;
@@ -120,6 +122,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 	    List<Image> imagesEnabled = imageService.findEnabledImages();
         imageNames = imagesEnabled.stream().map(i -> i.getName()).collect(Collectors.toList());
 		logger.info("{} images have been loaded from database", imageNames.size());
+
+		if (subdomainPrefix != null) {
+			domain = subdomainPrefix + "." + domainSuffix;
+		} else {
+			domain = domainSuffix;
+		}
     }
 
     /**
@@ -198,16 +206,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 		Application application = Application.of(applicationName, image)
                 .withDisplayName(applicationName)
                 .withUser(user)
-                .withSuffixCloudUnitIO(suffixCloudUnitIO)
-                .withManagerIp(dockerSocketIP)
                 .withCuInstanceName(cuInstanceName).build();
 
 		checkCreate(user, applicationName);
-
-		String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-		application.setDomainName(subdomain + suffixCloudUnitIO);
 		application = applicationDAO.save(application);
-
 
         Server server = application.getServer();
 		server.setApplication(application);

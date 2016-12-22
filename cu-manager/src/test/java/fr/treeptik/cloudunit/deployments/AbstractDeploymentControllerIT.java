@@ -58,14 +58,23 @@ public abstract class AbstractDeploymentControllerIT {
     private Filter springSecurityFilterChain;
     @Inject
     private UserService userService;
-    @Value("${suffix.cloudunit.io}")
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
     private String domainSuffix;
     @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomain;
+    private String subdomainPrefix;
     protected String domain;
 
     public AbstractDeploymentControllerIT() {
         super();
+    }
+
+    @PostConstruct
+    public void init() {
+        if (subdomainPrefix != null) {
+            domain = subdomainPrefix + "." + domainSuffix;
+        } else {
+            domain = domainSuffix;
+        }
     }
 
     protected ResultActions deployApp(String appName) throws Exception {
@@ -119,15 +128,6 @@ public abstract class AbstractDeploymentControllerIT {
             .limit(TestUtils.NB_ITERATION_MAX)
             .filter(content -> content != null && !content.contains("404"))
             .findFirst();
-    }
-
-    @PostConstruct
-    public void init() {
-        if (subdomain != null) {
-            domain = subdomain + domainSuffix;
-        } else {
-            domain = domainSuffix;
-        }
     }
 
     @Before
