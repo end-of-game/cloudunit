@@ -87,7 +87,7 @@ public class Application implements Serializable {
         if (System.getenv("CU_SUB_DOMAIN") != null) {
             domain = System.getenv("CU_SUB_DOMAIN") + "." + System.getenv("CU_DOMAIN");
         } else {
-            domain = System.getenv("CU_DOMAIN");
+            domain = "." + System.getenv("CU_DOMAIN");
         }
         return NamingUtils.getContainerName(name, null, user.getLogin()) + domain;
 	}

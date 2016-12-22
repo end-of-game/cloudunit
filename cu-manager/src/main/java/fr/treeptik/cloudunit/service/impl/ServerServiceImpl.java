@@ -109,7 +109,7 @@ public class ServerServiceImpl implements ServerService {
         if (subdomainPrefix != null) {
             domain = subdomainPrefix + "." + domainSuffix;
         } else {
-            domain = domainSuffix;
+            domain = "." + domainSuffix;
         }
     }
 

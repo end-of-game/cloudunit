@@ -72,7 +72,7 @@ public class DockerServiceImpl implements DockerService {
         if (subdomainPrefix != null) {
             domain = subdomainPrefix + "." + domainSuffix;
         } else {
-            domain = domainSuffix;
+            domain = "." + domainSuffix;
         }
     }
 

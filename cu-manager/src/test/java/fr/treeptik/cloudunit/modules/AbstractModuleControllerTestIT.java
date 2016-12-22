@@ -142,7 +142,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         if (subdomainPrefix != null) {
             domain = subdomainPrefix + "." + domainSuffix;
         } else {
-            domain = domainSuffix;
+            domain = "." + domainSuffix;
         }
     }
 

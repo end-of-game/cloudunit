@@ -73,7 +73,7 @@ public abstract class AbstractDeploymentControllerIT {
         if (subdomainPrefix != null) {
             domain = subdomainPrefix + "." + domainSuffix;
         } else {
-            domain = domainSuffix;
+            domain = "." + domainSuffix;
         }
     }
 

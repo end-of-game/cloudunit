@@ -126,7 +126,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if (subdomainPrefix != null) {
 			domain = subdomainPrefix + "." + domainSuffix;
 		} else {
-			domain = domainSuffix;
+			domain = "." + domainSuffix;
 		}
     }
 
