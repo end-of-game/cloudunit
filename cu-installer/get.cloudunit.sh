@@ -6,7 +6,6 @@ set -e
 
 check_prerequisite=''
 DOCKER_SUPPORTED_MAJOR_VERSION=1.12
-READY_TOGO=1
 while [ $# -gt 0 ]; do
 	case "$1" in
 		--check_prerequisite)
@@ -26,6 +25,7 @@ check_prerequisite() {
 		printf "Memory Size \033[1;32m[OK]\033[0m\n"
 	else
 		printf "Memory Size \033[1;31m[KO]\033[0m\n"
+		exit 1
 	fi
 
 	# Check Cpu number
@@ -33,6 +33,7 @@ check_prerequisite() {
 		printf "CPU Number \033[1;32m[OK]\033[0m\n"
 	else
 		printf "CPU Number \033[1;31m[KO]\033[0m\n"
+		exit 1
 	fi
 
 	# Check host system distribution and version
@@ -43,7 +44,7 @@ check_prerequisite() {
 			printf "$distribution version $distribution_version \033[1;32m[OK]\033[0m\n"
 		else
 			printf "Wrong $distribution Version (should be 14.04 or 16.04) \033[1;31m[KO]\033[0m\n"
-			READY_TOGO=0
+			exit 1
 		fi
 	fi
 
@@ -52,10 +53,11 @@ check_prerequisite() {
 		printf "Kernel version \033[1;32m[OK]\033[0m\n"
 	else
 		printf "Kernel version sould be 4 or higher please upgrade you kernel \033[1;31m[KO]\033[0m\n"
-		READY_TOGO=0
+		exit 1
 	fi
 	# Check if docker is intalled
 	if [ ! -f /usr/bin/docker ]; then
+		echo "Install docker from official sources"
   	install_docker
 	else
 		echo "Docker already installed"
@@ -68,6 +70,7 @@ check_prerequisite() {
 		printf "Disk Space \033[1;32m[OK]\033[0m\n"
 	else
 		printf "Disk Space for /var/lib/docker should be greather than 30GB \033[1;31m[KO]\033[0m\n"
+		exit 1
 	fi
 }
 
@@ -77,7 +80,7 @@ docker_version() {
 			printf "Docker version \033[1;32m[OK]\033[0m\n"
 	else
 		printf "Docker version should be at least $DOCKER_SUPPORTED_MAJOR_VERSION \033[1;31m[KO]\033[0m\n"
-		READY_TOGO=0
+		exit 1
 	fi
 }
 
