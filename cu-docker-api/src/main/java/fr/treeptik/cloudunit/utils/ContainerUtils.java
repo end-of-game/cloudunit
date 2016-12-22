@@ -17,9 +17,10 @@ import fr.treeptik.cloudunit.docker.model.HostConfig;
  */
 public class ContainerUtils {
 
-    public static DockerContainer newCreateInstance(String name, String imagePath, String imageSubType, List<String> volumesFrom,
-            List<String> args, List<String> rawVolumes, List<String> envs,
-            Map<String, String> ports, String networkMode, String suffixCloudUnitIO) {
+    public static DockerContainer newCreateInstance(String name, String imagePath, String imageSubType
+            , List<String> volumesFrom, List<String> args, List<String> rawVolumes
+            , List<String> envs
+            , Map<String, String> ports, String networkMode, String suffixCloudUnitIO) {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withVolumesFrom(volumesFrom).withBinds(rawVolumes)
                 .withPublishAllPorts(false).withPortBindings(buildPortBindingBody(ports))
                 .withNetworkMode(networkMode)
@@ -35,7 +36,8 @@ public class ContainerUtils {
             labels.put("traefik.port", "8080");
         }
         labels.put("traefik.backend", name);
-        labels.put("traefik.frontend.rule", "Host:" + name + suffixCloudUnitIO);
+        String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
+        labels.put("traefik.frontend.rule", "Host:" + name + subdomain + suffixCloudUnitIO);
         config.setLabels(labels);
         DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
         return container;
