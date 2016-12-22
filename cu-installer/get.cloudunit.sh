@@ -103,5 +103,3 @@ install_docker() {
 check_prerequisite
 
 curl https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstrap.sh > bootstrap.sh
-
-sh bootstrap.sh dev
