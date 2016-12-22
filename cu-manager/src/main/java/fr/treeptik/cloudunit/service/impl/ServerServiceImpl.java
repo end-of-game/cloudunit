@@ -148,6 +148,15 @@ public class ServerServiceImpl implements ServerService {
 		String prefixEnv = server.getImage().getPrefixEnv();
 		String imageSubType = server.getImage().getImageSubType().toString();
 		logger.debug("imagePath:" + imagePath);
+
+		String subdomain = System.getenv("CU_SUB_DOMAIN");
+		if (subdomain == null) {
+			subdomain = "";
+		}
+		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
+
+		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
+
 		try {
             dockerService.createServer(containerName, server, imagePath, imageSubType, user, null, true, null);
 			server = dockerService.startServer(containerName, server);
