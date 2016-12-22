@@ -43,12 +43,12 @@ function generate-env {
   echo "Enter CU Domain :"
   read CU_DOMAIN
   echo "CU_DOMAIN=$CU_DOMAIN" >> .env
-  echo "Enter CU Sub Domain : [ default to ."$CU_DOMAIN" ]"
+  echo "Enter CU Sub Domain : [ no default ]"
   read CU_SUB_DOMAIN
   if [ -n "$CU_SUB_DOMAIN" ]; then
     echo "CU_SUB_DOMAIN=$CU_DOMAIN" >> .env
   else
-    echo "CU_SUB_DOMAIN=.$CU_DOMAIN" >> .env
+    echo "CU_SUB_DOMAIN=" >> .env
   fi
   source .env
   echo "Enter CU Manager domain : [ default to admin."$CU_DOMAIN" ]"
