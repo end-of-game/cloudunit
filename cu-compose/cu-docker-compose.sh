@@ -28,6 +28,7 @@ function check-env {
             echo "Entrer y ou n!"
             exit 1
         elif [ "$PROD_ASW" = "n" ]; then
+            rm .env
             generate-env
         fi
     fi
@@ -37,6 +38,8 @@ function check-env {
 }
 
 function generate-env {
+  echo "# Set CloudUnit deployment Environment" > .env
+  echo "" >> .env
   echo "Enter CU Domain :"
   read CU_DOMAIN
   echo "CU_DOMAIN=$CU_DOMAIN" >> .env
@@ -49,7 +52,7 @@ function generate-env {
   if [ -n "$CU_MANAGER_DOMAIN" ]; then
     echo "CU_MANAGER_DOMAIN=$CU_MANAGER_DOMAIN" >> .env
   else
-    echo "CU_MANAGER_DOMAIN=admin.$CU_MANAGER_DOMAIN" >> .env
+    echo "CU_MANAGER_DOMAIN=admin.$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Gitlab domain : [ default to gitlab."$CU_DOMAIN" ]"
   read CU_GITLAB_DOMAIN
@@ -115,10 +118,15 @@ function generate-env {
     echo "MYSQL_DATABASE=cloudunit" >> .env
   fi
   echo "HOSTNAME=$HOSTNAME" >> .env
+  USERID=$(id -u admincu)
+  echo "USERID=$USERID" >> .env
+  GROUPID=$(id -g admincu)
+  echo "GROUPID=$GROUPID" >> .env
 }
 
 function with-elk {
     check-env
+    sleep 2
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
                     -f docker-compose.yml \

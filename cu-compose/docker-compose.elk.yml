@@ -18,7 +18,7 @@ services:
     privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
     labels:
-       - "traefik.enable=Host:false"
+       - "traefik.enable=false"
 
   kibana:
     container_name: cu-kibana
