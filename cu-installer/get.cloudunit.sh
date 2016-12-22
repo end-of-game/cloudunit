@@ -65,7 +65,6 @@ check_prerequisite() {
 	docker_version
 
 	# Check docker (/var/lib/docker) free disk space
-	df -P -H /var/lib/docker/ | awk 'NR > 1 {print $4+0}'
 	if [ "$(df -P -H /var/lib/docker/ | awk 'NR > 1 {print $4+0}')" -ge 20 ]; then
 		printf "Disk Space \033[1;32m[OK]\033[0m\n"
 	else
@@ -76,7 +75,6 @@ check_prerequisite() {
 
 docker_version() {
 	if [ "$(docker info | grep Server | cut -c17-20)" = $DOCKER_SUPPORTED_MAJOR_VERSION ]; then
-		echo "Docker version is supported by Cloudunit"
 			printf "Docker version \033[1;32m[OK]\033[0m\n"
 	else
 		printf "Docker version should be at least $DOCKER_SUPPORTED_MAJOR_VERSION \033[1;31m[KO]\033[0m\n"
@@ -107,4 +105,3 @@ check_prerequisite
 curl https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstrap.sh > bootstrap.sh
 
 sh bootstrap.sh dev
-
