@@ -83,7 +83,7 @@ services:
       labels:
         - "traefik.frontend.entryPoints=https"
         - "traefik.backend=cu-jenkins"
-        - "traefik.port=8080"
+        - "traefik.port=9090"
         - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
 
   traefik:

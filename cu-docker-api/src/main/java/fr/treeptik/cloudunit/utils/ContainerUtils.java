@@ -20,7 +20,7 @@ public class ContainerUtils {
     public static DockerContainer newCreateInstance(String name, String imagePath, String imageSubType
             , List<String> volumesFrom, List<String> args, List<String> rawVolumes
             , List<String> envs
-            , Map<String, String> ports, String networkMode, String suffixCloudUnitIO) {
+            , Map<String, String> ports, String networkMode, String domain) {
         HostConfig hostConfig = HostConfigBuilder.aHostConfig().withVolumesFrom(volumesFrom).withBinds(rawVolumes)
                 .withPublishAllPorts(false).withPortBindings(buildPortBindingBody(ports))
                 .withNetworkMode(networkMode)
@@ -36,8 +36,7 @@ public class ContainerUtils {
             labels.put("traefik.port", "8080");
         }
         labels.put("traefik.backend", name);
-        String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-        labels.put("traefik.frontend.rule", "Host:" + name + subdomain + suffixCloudUnitIO);
+        labels.put("traefik.frontend.rule", "Host:" + name + domain);
         config.setLabels(labels);
         DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
         return container;

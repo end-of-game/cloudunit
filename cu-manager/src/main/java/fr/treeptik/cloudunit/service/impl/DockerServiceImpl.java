@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -52,23 +53,28 @@ public class DockerServiceImpl implements DockerService {
     @Inject
     private ContainerMapper containerMapper;
 
-    @Value("${database.password}")
-    private String databasePassword;
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
+    private String domainSuffix;
 
-    @Value("${env.exec}")
-    private String envExec;
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+    private String subdomainPrefix;
 
-    @Value("${database.hostname}")
-    private String databaseHostname;
-
-    @Value("${suffix.cloudunit.io}")
-    private String suffixCloudUnitIO;
+    protected String domain;
 
     @Inject
     private DockerClient dockerClient;
 
     @Inject
     private DockerCloudUnitClient dockerCloudUnitClient;
+
+    @PostConstruct
+    public void init() {
+        if (subdomainPrefix != null) {
+            domain = subdomainPrefix + "." + domainSuffix;
+        } else {
+            domain = "." + domainSuffix;
+        }
+    }
 
     @Override
     public void createServer(String containerName, Server server, String imagePath, String imageSubType, User user, List<String> envs,
@@ -86,7 +92,7 @@ public class DockerServiceImpl implements DockerService {
             args.add(user.getPassword());
         }
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, imageSubType, volumesFrom, args,
-                volumes, envs, null, "skynet", suffixCloudUnitIO);
+                volumes, envs, null, "skynet", domain);
         dockerCloudUnitClient.createContainer(container);
     }
 
@@ -322,7 +328,7 @@ public class DockerServiceImpl implements DockerService {
                         p -> String.format("%s/tcp", p.getContainerValue()),
                         p -> p.getHostValue()));
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, volumesFrom, null, volumes,
-                envs, ports, "skynet", suffixCloudUnitIO);
+                envs, ports, "skynet", domain);
         dockerCloudUnitClient.createContainer(container);
     }
 

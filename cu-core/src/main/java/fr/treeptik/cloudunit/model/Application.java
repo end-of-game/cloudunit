@@ -22,29 +22,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import javax.annotation.PostConstruct;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
+import fr.treeptik.cloudunit.utils.NamingUtils;
+import org.springframework.beans.factory.annotation.Value;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "name", "cuInstanceName" }))
 public class Application implements Serializable {
@@ -91,20 +80,17 @@ public class Application implements Serializable {
 	@ElementCollection
 	private Set<String> aliases;
 
-	private String suffixCloudUnitIO;
-
-	private String domainName;
-
-	private String managerIp;
-
-	private String managerPort;
-
-	private String jvmRelease;
-
-	@JsonIgnore
-	private String restHost;
-
 	private String deploymentStatus;
+
+	public String getLocation(){
+	    String domain = null;
+        if (System.getenv("CU_SUB_DOMAIN") != null) {
+            domain = System.getenv("CU_SUB_DOMAIN") + "." + System.getenv("CU_DOMAIN");
+        } else {
+            domain = "." + System.getenv("CU_DOMAIN");
+        }
+        return NamingUtils.getContainerName(name, null, user.getLogin()) + domain;
+	}
 
 	public String getContextPath() {
 		return contextPath;
@@ -138,16 +124,10 @@ public class Application implements Serializable {
         this.cuInstanceName = builder.cuInstanceName;
         this.status = builder.status;
         this.user = builder.user;
-        this.suffixCloudUnitIO = builder.suffixCloudUnitIO;
-        this.domainName = builder.domainName;
-        this.managerIp = builder.managerIp;
-        this.managerPort = builder.managerPort;
-        this.jvmRelease = builder.jvmRelease;
         this.deploymentStatus = builder.deploymentStatus;
         this.contextPath = builder.contextPath;
         this.environmentVariables = builder.environmentVariables;
         this.portsToOpen = builder.portsToOpen;
-        this.restHost = builder.restHost;
 
         this.modules = new HashSet<>();
         this.deployments = new HashSet<>();
@@ -270,34 +250,6 @@ public class Application implements Serializable {
 
 	public void addDeployment(Deployment deployment) { this.deployments.add(deployment); }
 
-	public String getSuffixCloudUnitIO() {
-		return suffixCloudUnitIO;
-	}
-
-	public void setSuffixCloudUnitIO(String suffixCloudUnitIO) {
-		this.suffixCloudUnitIO = suffixCloudUnitIO;
-	}
-
-	public String getManagerIp() {
-		return managerIp;
-	}
-
-	public void setManagerIp(String managerIp) {
-		this.managerIp = managerIp;
-	}
-
-	public String getManagerPort() {
-		return managerPort;
-	}
-
-	public void setManagerPort(String managerPort) {
-		this.managerPort = managerPort;
-	}
-
-	public String getLocation() {
-		return (name + "-" + user.getLogin() + suffixCloudUnitIO);
-	}
-
 	public Set<String> getAliases() {
 		return aliases;
 	}
@@ -308,11 +260,7 @@ public class Application implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Application{" + "id=" + id + ", name='" + name + '\'' + ", status=" + status + ", date=" + date
-				+ ", user=" + user + ", domainName='" + domainName + '\'' + ", managerIP='" + managerIp + '\''
-				+ ", managerPort='" + managerPort + '\'' + ", jvmRelease='" + jvmRelease + '\'' + ", restHost='"
-				+ restHost + '\'' + ", deploymentStatus='" + deploymentStatus + '\'' + ", suffixCloudUnitIO='"
-				+ suffixCloudUnitIO + '\'' + ", isAClone=" + '}';
+		return "Application{" + "id=" + id + ", name='" + name + '\'' + ", status=" + status + ", date=" + date + "}'";
 	}
 
 	@Override
@@ -346,14 +294,6 @@ public class Application implements Serializable {
 		return true;
 	}
 
-	public String getDomainName() {
-		return domainName;
-	}
-
-	public void setDomainName(String domainName) {
-		this.domainName = domainName;
-	}
-
 	public String getDeploymentStatus() {
 		return deploymentStatus;
 	}
@@ -378,11 +318,6 @@ public class Application implements Serializable {
         private String cuInstanceName;
         private Status status;
         private User user;
-        private String suffixCloudUnitIO;
-        private String domainName;
-        private String managerIp;
-        private String managerPort;
-        private String jvmRelease;
         private String restHost;
         private String deploymentStatus;
         private String contextPath;
@@ -413,31 +348,6 @@ public class Application implements Serializable {
 
         public Builder withUser(User user) {
             this.user = user;
-            return this;
-        }
-
-        public Builder withSuffixCloudUnitIO(String suffixCloudUnitIO) {
-            this.suffixCloudUnitIO = suffixCloudUnitIO;
-            return this;
-        }
-
-        public Builder withDomainName(String domainName) {
-            this.domainName = domainName;
-            return this;
-        }
-
-        public Builder withManagerIp(String managerIp) {
-            this.managerIp = managerIp;
-            return this;
-        }
-
-        public Builder withManagerPort(String managerPort) {
-            this.managerPort = managerPort;
-            return this;
-        }
-
-        public Builder withJvmRelease(String jvmRelease) {
-            this.jvmRelease = jvmRelease;
             return this;
         }
 

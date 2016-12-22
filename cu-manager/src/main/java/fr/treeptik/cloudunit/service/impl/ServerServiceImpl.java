@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
@@ -70,22 +71,18 @@ public class ServerServiceImpl implements ServerService {
 	@Inject
 	private ApplicationDAO applicationDAO;
 
-	@Value("${suffix.cloudunit.io}")
-	private String suffixCloudUnitIO;
-
-	@Value("${database.password}")
-	private String databasePassword;
-
-	@Value("${env.exec}")
-	private String envExec;
-
 	@Value("${cloudunit.instance.name}")
 	private String cuInstanceName;
 
-	@Value("${database.hostname}")
-	private String databaseHostname;
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
+    private String domainSuffix;
 
-	@Inject
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+    private String subdomainPrefix;
+
+    protected String domain;
+
+    @Inject
 	private DockerService dockerService;
 
 	@Inject
@@ -107,11 +104,20 @@ public class ServerServiceImpl implements ServerService {
 		return this.serverDAO;
 	}
 
-	/**
-	 * Save app in just in DB, not create container use principally to charge
-	 * status.PENDING of entity until it's really functionnal
-	 */
-	@Override
+    @PostConstruct
+    public void init() throws ServiceException {
+        if (subdomainPrefix != null) {
+            domain = subdomainPrefix + "." + domainSuffix;
+        } else {
+            domain = "." + domainSuffix;
+        }
+    }
+
+    /**
+     * Save app in just in DB, not create container use principally to charge
+     * status.PENDING of entity until it's really functionnal
+     */
+    @Override
 	@Transactional
 	public Server saveInDB(Server server) throws ServiceException {
 		server = serverDAO.save(server);
@@ -146,16 +152,13 @@ public class ServerServiceImpl implements ServerService {
 
 		String imagePath = server.getImage().getPath();
 		String imageSubType = server.getImage().getImageSubType().toString();
-        String subdomain = System.getenv("CU_SUB_DOMAIN") == null ? "" : System.getenv("CU_SUB_DOMAIN");
-		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 		try {
             dockerService.createServer(containerName, server, imagePath, imageSubType, user, null, true, null);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
 			// Update server with all its information
 			server.setManagerLocation(String.format("http://%s/%s",
-			        application.getLocation(),
-					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH")));
+                    containerName + domain, dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH")));
 			server.setStatus(Status.START);
 			server = this.update(server);
 		} catch (PersistenceException e) {
