@@ -66,7 +66,7 @@ check_prerequisite() {
 
 	# Check docker (/var/lib/docker) free disk space
 	df -P -H /var/lib/docker/ | awk 'NR > 1 {print $4+0}'
-	if [ "$(df -P -H /var/lib/docker/ | awk 'NR > 1 {print $4+0}')" -ge 30 ]; then
+	if [ "$(df -P -H /var/lib/docker/ | awk 'NR > 1 {print $4+0}')" -ge 20 ]; then
 		printf "Disk Space \033[1;32m[OK]\033[0m\n"
 	else
 		printf "Disk Space for /var/lib/docker should be greather than 30GB \033[1;31m[KO]\033[0m\n"
