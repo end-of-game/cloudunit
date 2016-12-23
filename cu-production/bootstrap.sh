@@ -1,6 +1,11 @@
 #!/bin/bash
 
-export GIT_BRANCH=dev
+if [ -z "$1" ]; then
+  export GIT_BRANCH=dev
+else
+  export GIT_BRANCH=$1
+fi
+
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
