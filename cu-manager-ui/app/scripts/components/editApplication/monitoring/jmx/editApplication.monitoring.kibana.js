@@ -57,25 +57,20 @@
         };
 
         vm.$onInit = function () {
-            console.log("lol")
             getContainers();
         }
 
         function getContainers(selectedContainer) {
-            console.log(selectedContainer);
             vm.isLoading = true;
             return ApplicationService.listContainers($stateParams.name)
                 .then(function onGetContainersComplete(containers) {
                     vm.containers = containers;
                     vm.myContainer = selectedContainer || containers[0];
-
                     setTimeout(function () {
                         MonitoringService.getKibanaLocation()
                             .then(function (url) {
                                 vm.isLoading = false;
-                                console.log(vm.myContainer.name);
                                 var str = vm.myContainer.name.split("-")
-                                //vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/jmx-tomcat?embed=true&_g=(refreshInterval:('$$hashKey':'object:573',display:'5+seconds',pause:!f,section:1,value:5000),time:(from:now-15m,interval:'1m',mode:quick,timezone:Europe%2FBerlin,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:jmx-heapMemoryUsage,panelIndex:1,row:1,size_x:5,size_y:4,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'host.keyword:+"+ vm.myContainer.name +"')),title:jmx-tomcat,uiState:())");
                                   vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/jmx-tomcat?embed=true&_g=(refreshInterval:('$$hashKey':'object:573',display:'5+seconds',pause:!f,section:1,value:5000),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:jmx-heapMemoryUsage,panelIndex:1,row:1,size_x:5,size_y:4,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'host.keyword:+"+ vm.myContainer.name +"')),title:jmx-tomcat,uiState:())");
                             })
                             .catch(function (response) {
