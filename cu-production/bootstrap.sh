@@ -16,9 +16,8 @@ intall_docker() {
   apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
   cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
   apt-get install -y docker-engine
-  usermod -aG docker admincu
   service docker stop
-  sh /home/admincu/cloudunit/cu-production/generate-certs.sh
+  sh /home/"$CU_USER"/cloudunit/cu-production/generate-certs.sh
   cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
   service docker start
 }
@@ -34,9 +33,11 @@ if [ ! -f /usr/bin/git ]; then
   apt-get install -y git
 fi
 
-if [ -n "$GIT_BRANCH" ]; then
+if [ -z "$1" ]; then
   echo "No branch argument supplied so dev will be used"
+  GIT_BRANCH=dev
 fi
+
 BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
 echo git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH
 if [ ! "$BRANCH_EXIST" ];
@@ -47,8 +48,9 @@ if [ ! "$BRANCH_EXIST" ];
 fi
 
 # CREATE ADMINCU USER admincu account
-groupadd -g 10000 admincu
-useradd -m -u 10000 -g 10000 -s /bin/bash $CU_USER
+groupadd -g 10000 $CU_USER
+useradd -m -u 10000 -s /bin/bash $CU_USER
+usermod -a -G docker,sudo,$CU_USER
 
 # PROVISION THE ENV
 apt-get install -y nmap
@@ -87,13 +89,13 @@ fi
 cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
 
 # Install cron restart
-mkdir -p /home/admincu/.cloudunit
-cp $CU_INSTALL_DIR/files/cron.sh /home/admincu/.cloudunit/cron.sh
-echo "*/3 * * * * admincu /home/admincu/.cloudunit/cron.sh" >> /etc/crontab
+mkdir -p /home/"$CU_USER"/.cloudunit
+cp $CU_INSTALL_DIR/files/cron.sh /home/"$CU_USER"/.cloudunit/cron.sh
+echo "*/3 * * * * admincu /home/"$CU_USER"/.cloudunit/cron.sh" >> /etc/crontab
 
-chmod +x /home/admincu/.cloudunit/cron.sh
-chown -R admincu /home/admincu/
-chown -R admincu /home/admincu/.cloudunit
+chmod +x /home/"$CU_USER"/.cloudunit/cron.sh
+chown -R $CU_USER /home/"$CU_USER"/
+chown -R $CU_USER /home/"$CU_USER"/.cloudunit
 
 # Add admincu to sudoers group
 cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
@@ -110,7 +112,7 @@ echo ""
 cat /etc/environment
 
 # Change admincu passwd
-passwd admincu
+passwd $CU_USER
 
 echo ""
 echo "Lets get application images"
@@ -134,4 +136,5 @@ echo ""
 echo "Lets start cloudunit"
 echo ""
 
-cd /home/$CU_USER/cloudunit/cu-compose && ./cu-docker-compose.sh with-elk
+cd /home/$CU_USER/cloudunit/cu-compose
+sh $CU_USER -c "./cu-docker-compose.sh with-elk"
