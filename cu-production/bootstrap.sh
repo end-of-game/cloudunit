@@ -29,6 +29,7 @@ if [ ! "$BRANCH_EXIST" ];
 fi
 
 # CREATE ADMINCU USER admincu account
+groupadd -g 10000 admincu
 useradd -m -u 10000 -g 10000 -s /bin/bash $CU_USER
 
 # PROVISION THE ENV
