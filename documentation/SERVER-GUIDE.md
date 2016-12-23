@@ -19,57 +19,20 @@ A virtual or baremetal server with
 ### As `root` 
 
 Run the command below as `root` to create `admincu` user and install Docker.
-The installation script requires a branch to be selected.
-Branch `master` contains the latest stable version, whereas `dev` has the latest features.
 
 ```
-export BRANCH=master
-curl https://raw.githubusercontent.com/Treeptik/cloudunit/$BRANCH/cu-production/bootstrap.sh > bootstrap.sh
-sh bootstrap.sh $BRANCH
-```
-Set the domain name to access to your server. For example : `cu01.cloudunit.io` or `cloudunit.local`
-After installation, you need to set a password for `admincu`.
-Otherwise set up ssh keys for authentication.
-
-### As `admincu`
-
-Open a new session as `admincu` on the server.
-
-#### Configuration
-
-Run the command below as `admincu` to configure the server
-
-```
-cd ~/cloudunit/cu-compose && ./configure.sh
+curl -sSL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/get.cloudunit.sh | sh
 ```
 
-#### Finish the installation
-
-Run the command below as `admincu` to build Docker images.
-
-Build the manager for `master` branch.
-```
-cd ~/cloudunit/cu-services && ./build-services.sh all
-cd ~/cloudunit/cu-services && ./check_build_images.sh
-cd ~/cloudunit/cu-manager/dockerhub && docker build --no-cache --build-arg GIT_BRANCH=master -t cloudunit/manager .
-```
-
-Or else pull all images from dockerhub
-```
-cd ~/cloudunit/cu-services && ./pull-from-dockerhub.sh
-```
-
-To finish you have to start the platform:
+If all prerequisites are met you can start installation procedure, you can add argument to the script in order to install different version of cloudunit, by default dev one will be installed :
 
 ```
-cd ~/cloudunit/cu-compose && ./start-with-elk.sh
+./bootstrap.sh
 ```
 
-Last step is to enable cron.
-Uncomment please the command into this file:
-```
-~/.cloudunit/cron.sh
-sudo service cron restart
+During installation process, some information have to be set mannually like domain name to access to your server. For example : `cu01.cloudunit.io` or `cloudunit.local` and the password for `admincu` user.
+
+All module images (tomcat, mysql, postgresql ....) will be downloaded automatically
 ```
 
 # FAQ
