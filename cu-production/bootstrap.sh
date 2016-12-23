@@ -49,9 +49,9 @@ if [ ! "$BRANCH_EXIST" ];
 fi
 
 # CREATE ADMINCU USER admincu account
+
 groupadd -g 10000 $CU_USER
-useradd -m -u 10000 -s /bin/bash $CU_USER
-usermod -a -G docker,sudo,$CU_USER
+useradd -m -u 10000 -g $CU_USER -G docker,sudo -s /bin/bash $CU_USER
 
 # PROVISION THE ENV
 apt-get install -y nmap
@@ -127,7 +127,8 @@ if [ "$PUSHPULL" = "" ] || [ "$PUSHPULL" == "pull" ]; then
   docker pull cloudunit/tomcat-8
   docker pull cloudunit/postgresql-9-3
 elif [ "$PUSHPULL" = "build" ]; then
-  cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
+  echo "image have been builded"
+  #cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
 else
   echo "I didn't understand you response"
   exit 1
@@ -137,5 +138,5 @@ echo ""
 echo "Lets start cloudunit"
 echo ""
 
-cd /home/$CU_USER/cloudunit/cu-compose
-sh - $CU_USER -c "./cu-docker-compose.sh with-elk"
+cd /home/"$CU_USER"/cloudunit/cu-compose
+su $CU_USER -c "bash cu-docker-compose.sh with-elk"
