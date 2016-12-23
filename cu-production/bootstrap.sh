@@ -133,4 +133,4 @@ echo "Lets start cloudunit"
 echo ""
 
 cd /home/$CU_USER/cloudunit/cu-compose
-sh $CU_USER -c "./cu-docker-compose.sh with-elk"
+sh - $CU_USER -c "./cu-docker-compose.sh with-elk"
