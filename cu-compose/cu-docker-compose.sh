@@ -18,6 +18,7 @@
 ## FUNCTIONS
 ##
 ##
+
 function check-env {
   if [ -f .env ]; then
     source .env
