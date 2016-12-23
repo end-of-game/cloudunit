@@ -13,12 +13,6 @@ if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     exit 1
 fi
 
-echo ""
-echo ""
-read -p "- Domain : " domain
-echo ""
-echo ""
-
 # INIT
 apt-get update
 apt-get install -y git
