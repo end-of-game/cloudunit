@@ -24,7 +24,7 @@ Run the command below as `root` to create `admincu` user and install Docker.
 curl -sSL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/get.cloudunit.sh | sh
 ```
 
-If all prerequisites are met you can start installation procedure, you can add argument to the script in order to install different version of cloudunit, by default dev one will be installed :
+If all prerequisites are met, you can start installation procedure, you can add argument to the script in order to install different version of cloudunit, by default dev one will be installed :
 
 ```
 ./bootstrap.sh
