@@ -74,10 +74,15 @@ angular.module('webuiApp.editApplication', [])
             url: '/monitoringApplication',
             template: '<edit-app-monitoring-application app="editApp.application"></edit-app-monitoring-application>',
           })
+        .state('editApplication.jmxMonitoringKibana',
+          {
+            url: '/jmxMonitoringKibana',
+            template: '<edit-app-jmx-monitoring-kibana app="editApp.application"></edit-app-jmx-monitoring-kibana>',
+          })
         .state('editApplication.monitoringKibana',
           {
-            url: '/monitoringKibana',
-            template: '<edit-app-monitoring-kibana app="editApp.application"></edit-app-monitoring-kibana>',
+              url: '/monitoringKibana',
+              template: '<edit-app-monitoring-kibana app="editApp.application"></edit-app-monitoring-kibana>',
           })
         .state('editApplication.snapshot',
           {

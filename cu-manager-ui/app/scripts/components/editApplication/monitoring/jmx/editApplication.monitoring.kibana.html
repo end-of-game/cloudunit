@@ -14,11 +14,11 @@
   -->
 
 <div class="tab-pane vertical-spacing"
-     data-ng-class="{pending: monitoring.isLoading}">
+     data-ng-class="{pending: jmx.isLoading}">
 
     <div class="card">
         <div class="content clearfix">
-            <h3 class="title large">Metrics Containers Monitoring</h3>
+            <h3 class="title large">JMX Monitoring</h3>
 
             <p class="hint">Choose a component</p>
 
@@ -26,12 +26,12 @@
                 <a class="dropdown-toggle"
                    dropdown-toggle=""
                    selectbox="">
-                    {{ monitoring.myContainer.name }}
+                    {{ jmx.myContainer.name }}
                 </a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    <li data-ng-repeat="container in monitoring.containers">
+                    <li data-ng-repeat="container in jmx.containers">
                         <a ng-href=""
-                           data-ng-click="monitoring.myContainer = container; monitoring.getContainers(monitoring.myContainer)">
+                           data-ng-click="jmx.myContainer = container; jmx.getContainers(jmx.myContainer)">
                             {{container.name}}
                         </a>
                     </li>
@@ -40,7 +40,7 @@
         </div>
     </div>
 
-  <div id="monitoring" class="monitoring-kibana" style="margin: 0; height: 170vh;">
-    <iframe ng-src="{{monitoring.iframeUrl}}" frameborder="0" scrolling="no" style="display: block; background: #000; border: none; height: 160vh; width: 100%;"></iframe>
+  <div id="jmx" class="monitoring-kibana" style="margin: 0; height: 170vh;">
+    <iframe ng-src="{{jmx.iframeUrl}}" frameborder="0" scrolling="no" style="display: block; background: #000; border: none; height: 160vh; width: 100%;"></iframe>
   </div>
 </div>

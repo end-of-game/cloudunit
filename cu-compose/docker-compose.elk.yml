@@ -26,8 +26,8 @@ services:
     build:
       context: ./cu-elk/kibana
     image: cloudunit/elk-kibana
-    #ports:
-    #  - "5601:5601"
+    ports:
+      - "5601:5601"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro

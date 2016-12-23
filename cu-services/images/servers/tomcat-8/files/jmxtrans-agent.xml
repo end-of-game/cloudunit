@@ -37,7 +37,7 @@
         <elasticsearchPort>9200</elasticsearchPort>
         <elasticsearchClusterName>cu-mon</elasticsearchClusterName>
         <elasticsearchIndex>jmxtrans-%{yyyy.MM.dd}</elasticsearchIndex>
-        <nodeName>nodeName</nodeName><!--empty by default-->
+        <nodeName>tomcat</nodeName>
         <usePrefixAsType>true</usePrefixAsType>
     </outputWriter>
     <collectIntervalInSeconds>2</collectIntervalInSeconds>
