@@ -6,7 +6,22 @@ export CU_INSTALL_DIR=$CU_HOME/cu-production
 
 export COMPOSE_VERSION=1.9.0
 
+MIN_DOCKER_VERSION=1.12
+
 ROOTUID="0"
+
+intall_docker() {
+  # INSTALL DOCKER
+  apt-get install -y apt-transport-https ca-certificates
+  apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+  cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
+  apt-get install -y docker-engine
+  usermod -aG docker admincu
+  service docker stop
+  sh /home/admincu/cloudunit/cu-production/generate-certs.sh
+  cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
+  service docker start
+}
 
 if [ "$(id -u)" -ne "$ROOTUID" ] ; then
     echo "This script must be executed with root privileges."
@@ -15,7 +30,9 @@ fi
 
 # INIT
 apt-get update
-apt-get install -y git
+if [ ! -f /usr/bin/git ]; then
+  apt-get install -y git
+fi
 
 [ -n "$GIT_BRANCH" ] && echo "No branch argument supplied. Exit..." && exit 1
 
@@ -43,24 +60,27 @@ apt-get install -y haveged
 cd /home/$CU_USER && git clone https://github.com/Treeptik/cloudunit.git -b $GIT_BRANCH
 chown -R $CU_USER:$CU_USER /home/$CU_USER
 
-# INSTALL DOCKER
-apt-get install -y apt-transport-https ca-certificates
-apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
-apt-get update
-apt-get install -y docker-engine
 apt-get install -y mysql-client
-usermod -aG docker admincu
-service docker stop
-sh /home/admincu/cloudunit/cu-production/generate-certs.sh
-cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
-service docker start
 
-# install Docker Compose
-# @see http://docs.docker.com/compose/install/
-curl -o docker-compose -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
-chmod a+x docker-compose
-sudo mv docker-compose /usr/local/bin
+if [ -f /usr/bin/docker ]; then
+  if [ "$(docker info | grep 'Server Version' | cut -c17-20)" = "$MIN_DOCKER_VERSION" ]; then
+    echo "Docker version is good, continue"
+  else
+    echo "Docker version is not the right one lets upgrade"
+    intall_docker
+  fi
+else
+  echo "Lets install docker from official repo"
+  intall_docker
+fi
+
+if [ ! -f /usr/local/bin/docker-compose ]; then
+  # install Docker Compose
+  # @see http://docs.docker.com/compose/install/
+  curl -o docker-compose -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
+  chmod a+x docker-compose
+  sudo mv docker-compose /usr/local/bin
+fi
 
 # Install log rotate
 cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
@@ -96,8 +116,9 @@ echo "Lets get application images"
 echo ""
 
 echo "Would you prefer to build or pull images [default is pull]"
-read $PUSHPULL
-if [ -n "$PUSHPULL" ] || [ "$PUSHPULL" == "pull" ]; then
+read PUSHPULL
+if [ "$PUSHPULL" = "" ] || [ "$PUSHPULL" == "pull" ]; then
+  PUSHPULL="pull"
   echo "Lets pull all image go take a cofee"
   docker pull cloudunit/tomcat-8
   docker pull cloudunit/postgresql-9-3
