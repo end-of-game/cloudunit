@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo $1
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
