@@ -1,5 +1,6 @@
 #!/bin/bash
-echo $1
+
+export GIT_BRANCH=dev
 export CU_USER=admincu
 export CU_HOME=/home/$CU_USER/cloudunit
 export CU_INSTALL_DIR=$CU_HOME/cu-production
@@ -31,11 +32,6 @@ fi
 apt-get update
 if [ ! -f /usr/bin/git ]; then
   apt-get install -y git
-fi
-
-if [ -z "$1" ]; then
-  echo "No branch argument supplied so dev will be used"
-  GIT_BRANCH=dev
 fi
 
 BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
