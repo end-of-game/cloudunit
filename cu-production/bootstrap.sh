@@ -34,8 +34,9 @@ if [ ! -f /usr/bin/git ]; then
   apt-get install -y git
 fi
 
-[ -n "$GIT_BRANCH" ] && echo "No branch argument supplied. Exit..." && exit 1
-
+if [ -n "$GIT_BRANCH" ]; then
+  echo "No branch argument supplied so dev will be used"
+fi
 BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
 echo git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH
 if [ ! "$BRANCH_EXIST" ];
@@ -123,7 +124,7 @@ if [ "$PUSHPULL" = "" ] || [ "$PUSHPULL" == "pull" ]; then
   docker pull cloudunit/tomcat-8
   docker pull cloudunit/postgresql-9-3
 elif [ "$PUSHPULL" = "build" ]; then
-  cd /home/$CU_USER/cu-services && build-services.sh all
+  cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
 else
   echo "I didn't understand you response"
   exit 1
@@ -133,4 +134,4 @@ echo ""
 echo "Lets start cloudunit"
 echo ""
 
-cd /home/$CU_USER/cu-compose && cu-docker-compose.sh with-elk
+cd /home/$CU_USER/cloudunit/cu-compose && ./cu-docker-compose.sh with-elk
