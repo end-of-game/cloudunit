@@ -59,5 +59,4 @@ check_prerequisite() {
 
 check_prerequisite
 
-curl -sSL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstrap.sh > bootstrap.sh 
-sh bootstrap.sh
+curl -sSL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstrap.sh > bootstrap.sh
