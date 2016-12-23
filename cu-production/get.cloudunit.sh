@@ -61,4 +61,3 @@ check_prerequisite
 
 curl -sSL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production/bootstrap.sh > bootstrap.sh
 chmod +x bootstrap.sh
-./bootstrap.sh
