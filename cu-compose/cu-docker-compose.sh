@@ -121,6 +121,13 @@ function generate-env {
   else
     echo "MYSQL_DATABASE=cloudunit" >> .env
   fi
+  echo "Which git branch would you want to deploy : [ default to 'dev' ]"
+  read MYSQL_DATABASE
+  if [ -n "$BRANCH" ]; then
+    echo "BRANCH=$BRANCH" >> .env
+  else
+    echo "BRANCH=dev" >> .env
+  fi
   echo "HOSTNAME=$HOSTNAME" >> .env
 }
 

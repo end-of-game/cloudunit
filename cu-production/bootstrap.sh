@@ -23,9 +23,8 @@ echo ""
 apt-get update
 apt-get install -y git
 
-[ -z "$1" ] && echo "No branch argument supplied. Exit..." && exit 1
-
-export GIT_BRANCH=$1
+[ -n "$GIT_BRANCH" ] && echo "No branch argument supplied. Exit..." && exit 1
+  
 BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
 echo git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH
 if [ ! "$BRANCH_EXIST" ];
@@ -36,7 +35,7 @@ if [ ! "$BRANCH_EXIST" ];
 fi
 
 # CREATE ADMINCU USER admincu account
-useradd -m -s /bin/bash $CU_USER
+useradd -m -u 10000 -g 10000 -s /bin/bash $CU_USER
 
 # PROVISION THE ENV
 apt-get install -y nmap
