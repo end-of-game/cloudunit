@@ -124,11 +124,30 @@ read PUSHPULL
 if [ "$PUSHPULL" = "" ] || [ "$PUSHPULL" == "pull" ]; then
   PUSHPULL="pull"
   echo "Lets pull all image go take a cofee"
+  docker pull cloudunit/tomcat-6
+  docker pull cloudunit/tomcat-7
   docker pull cloudunit/tomcat-8
+  docker pull cloudunit/tomcat-85
+  docker pull cloudunit/tomcat-9
   docker pull cloudunit/postgresql-9-3
+  docker pull cloudunit/postgresql-9-4
+  docker pull cloudunit/postgresql-9-5
+  docker pull cloudunit/fatjar
+  docker pull cloudunit/wildfly-8
+  docker pull cloudunit/wildfly-9
+  docker pull cloudunit/wildfly-10
+  docker pull cloudunit/apache-2-2
+  docker pull cloudunit/mysql-5-5
+  docker pull cloudunit/mysql-5-6
+  docker pull cloudunit/mysql-5-7
+  docker pull cloudunit/postgis-2-2
+  docker pull cloudunit/rabbitmq-3.6
+  docker pull cloudunit/activemq-5.13
+  docker pull cloudunit/elasticsearch-2.4
+
 elif [ "$PUSHPULL" = "build" ]; then
   echo "image have been builded"
-  #cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
+  cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
 else
   echo "I didn't understand you response"
   exit 1
