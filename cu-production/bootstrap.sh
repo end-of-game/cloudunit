@@ -14,7 +14,7 @@ export COMPOSE_VERSION=1.9.0
 
 MIN_DOCKER_VERSION=1.12
 
-ROOTUID="0"
+readonly ROOTUID="0"
 
 intall_docker() {
   # INSTALL DOCKER
@@ -28,43 +28,92 @@ intall_docker() {
   service docker start
 }
 
-if [ "$(id -u)" -ne "$ROOTUID" ] ; then
-    echo "This script must be executed with root privileges."
-    exit 1
-fi
+check_root() {
+    if [ "$(id -u)" -ne "$ROOTUID" ] ; then
+        echo "This script must be executed with root privileges."
+        exit 1
+    fi
+}
 
-# INIT
-apt-get update
-if [ ! -f /usr/bin/git ]; then
-  apt-get install -y git
-fi
+# check if the branch exists or not
+check_git_branch() {
+    apt-get update
+    if [ ! -f /usr/bin/git ]; then
+      apt-get install -y git
+    fi
 
-BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
-echo git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH
-if [ ! "$BRANCH_EXIST" ];
-  then
-    echo "The branch $1 is not valid. Please choose one the following branches: "
-    git ls-remote --heads https://github.com/Treeptik/cloudunit
-    exit 1
-fi
+    BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
+    echo git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH
+    if [ ! "$BRANCH_EXIST" ];
+      then
+        echo "The branch $1 is not valid. Please choose one the following branches: "
+        git ls-remote --heads https://github.com/Treeptik/cloudunit
+        exit 1
+    fi
+}
 
 # CREATE ADMINCU USER admincu account
+create_admincu_user() {
+    groupadd -g 10000 $CU_USER
+    useradd -m -u 10000 -g $CU_USER -G docker,sudo -s /bin/bash $CU_USER
+}
 
-groupadd -g 10000 $CU_USER
-useradd -m -u 10000 -g $CU_USER -G docker,sudo -s /bin/bash $CU_USER
+install_dependencies() {
+    # PROVISION THE ENV
+    apt-get install -y nmap
+    apt-get install -y htop
+    apt-get install -y ncdu
+    apt-get install -y git
+    apt-get install -y haveged
+    apt-get install -y mysql-client
+}
 
-# PROVISION THE ENV
-apt-get install -y nmap
-apt-get install -y htop
-apt-get install -y ncdu
-apt-get install -y git
-apt-get install -y haveged
+clone_project() {
+    # CLONE CLOUDUNIT
+    cd /home/$CU_USER && git clone https://github.com/Treeptik/cloudunit.git -b $GIT_BRANCH
+    chown -R $CU_USER:$CU_USER /home/$CU_USER
+}
 
-# CLONE CLOUDUNIT
-cd /home/$CU_USER && git clone https://github.com/Treeptik/cloudunit.git -b $GIT_BRANCH
-chown -R $CU_USER:$CU_USER /home/$CU_USER
+install_docker_compose() {
+    if [ ! -f /usr/local/bin/docker-compose ]; then
+      curl -o docker-compose -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
+      chmod a+x docker-compose
+      sudo mv docker-compose /usr/local/bin
+    fi
+}
 
-apt-get install -y mysql-client
+install_log_rotation() {
+    # Install log rotate
+    cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
+}
+
+install_cron() {
+    # Install cron restart
+    mkdir -p /home/"$CU_USER"/.cloudunit
+    cp $CU_INSTALL_DIR/files/cron.sh /home/"$CU_USER"/.cloudunit/cron.sh
+    echo "*/3 * * * * admincu /home/"$CU_USER"/.cloudunit/cron.sh" >> /etc/crontab
+    chmod +x /home/"$CU_USER"/.cloudunit/cron.sh
+}
+
+override_rights() {
+    chown -R $CU_USER /home/"$CU_USER"/
+    chown -R $CU_USER /home/"$CU_USER"/.cloudunit
+}
+
+add_user_to_sudoers() {
+    # Add admincu to sudoers group
+    cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
+    usermod -g sudo $CU_USER
+}
+
+#
+#
+# MAIN
+#
+#
+
+check_root
+check_git_branch
 
 if [ -f /usr/bin/docker ]; then
   if [ "$(docker info | grep 'Server Version' | cut -c17-20)" = "$MIN_DOCKER_VERSION" ]; then
@@ -78,39 +127,22 @@ else
   intall_docker
 fi
 
-if [ ! -f /usr/local/bin/docker-compose ]; then
-  # install Docker Compose
-  # @see http://docs.docker.com/compose/install/
-  curl -o docker-compose -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
-  chmod a+x docker-compose
-  sudo mv docker-compose /usr/local/bin
-fi
+install_docker_compose
+install_log_rotation
+install_cron
 
-# Install log rotate
-cp $CU_INSTALL_DIR/files/docker-logrotate /etc/logrotate.d/
-
-# Install cron restart
-mkdir -p /home/"$CU_USER"/.cloudunit
-cp $CU_INSTALL_DIR/files/cron.sh /home/"$CU_USER"/.cloudunit/cron.sh
-echo "*/3 * * * * admincu /home/"$CU_USER"/.cloudunit/cron.sh" >> /etc/crontab
-
-chmod +x /home/"$CU_USER"/.cloudunit/cron.sh
-chown -R $CU_USER /home/"$CU_USER"/
-chown -R $CU_USER /home/"$CU_USER"/.cloudunit
-
-# Add admincu to sudoers group
-cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
-usermod -g sudo $CU_USER
+override_rights
+add_user_to_sudoers
 
 # copy the environment file
-cp -f $CU_INSTALL_DIR/files/environment /etc/environment
-sed -i "s/DOMAIN_NAME/$domain/g" /etc/environment
+#cp -f $CU_INSTALL_DIR/files/environment /etc/environment
+#sed -i "s/DOMAIN_NAME/$domain/g" /etc/environment
 
 # display values to declare
-echo ""
-echo "You have to declare into your dns"
-echo ""
-cat /etc/environment
+#echo ""
+#echo "You have to declare into your dns"
+#echo ""
+#cat /etc/environment
 
 # Change admincu passwd
 passwd $CU_USER
@@ -121,14 +153,14 @@ echo ""
 
 echo "Would you prefer to build or pull images [default is pull]"
 read PUSHPULL
-if [ "$PUSHPULL" = "" ] || [ "$PUSHPULL" == "pull" ]; then
+if [[ "$PUSHPULL" == "pull" ]]; then
   PUSHPULL="pull"
   echo "Lets pull all image go take a cofee"
   docker pull cloudunit/tomcat-8
   docker pull cloudunit/postgresql-9-3
-elif [ "$PUSHPULL" = "build" ]; then
+elif [[ "$PUSHPULL" == "build" ]]; then
   echo "image have been builded"
-  #cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
+  cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
 else
   echo "I didn't understand you response"
   exit 1
@@ -139,4 +171,4 @@ echo "Lets start cloudunit"
 echo ""
 
 cd /home/"$CU_USER"/cloudunit/cu-compose
-su $CU_USER -c "bash cu-docker-compose.sh with-elk"
+su $CU_USER -c "/bin/bash cu-docker-compose.sh with-elk"
