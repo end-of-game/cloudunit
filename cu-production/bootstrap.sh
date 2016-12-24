@@ -20,9 +20,12 @@ intall_docker() {
   # INSTALL DOCKER
   apt-get install -y apt-transport-https ca-certificates
   apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-  cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
   apt-get install -y docker-engine
+}
+
+configure_docker() {
   service docker stop
+  cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
   sh /home/"$CU_USER"/cloudunit/cu-production/generate-certs.sh
   cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
   service docker start
@@ -77,6 +80,8 @@ else
   echo "Lets install docker from official repo"
   intall_docker
 fi
+
+configure_docker
 
 if [ ! -f /usr/local/bin/docker-compose ]; then
   # install Docker Compose
