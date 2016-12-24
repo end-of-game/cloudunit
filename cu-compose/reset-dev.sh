@@ -42,6 +42,7 @@ echo -e "Removing containers And Volumes"
 echo "***************************"
 
 docker-compose  -f docker-compose.elk.yml -f docker-compose.dev.yml kill
+docker-compose  -f docker-compose.elk.yml -f docker-compose.dev.yml rm -f 
 docker volume rm cucompose_gitlab-logs
 docker volume rm cucompose_mysqldata
 docker volume rm cucompose_redis-data
@@ -54,3 +55,4 @@ docker network create skynet
 docker-compose  --file docker-compose.dev.yml \
                 --file docker-compose.elk.yml \
                 up -d
+
