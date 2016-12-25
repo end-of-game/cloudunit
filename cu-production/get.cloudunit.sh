@@ -22,17 +22,17 @@ done
 check_prerequisite() {
 	# Check memory
 	if [ $(free -m | awk '/^Mem:/{print $2}') -ge 7000 ]; then
-		printf "Memory Size \033[1;32m[OK]\033[0m\n"
+		printf "\033[1;32m[OK]\033[0m Memory Size \n"
 	else
-		printf "Memory Size \033[1;31m[KO]\033[0m\n"
+		printf "\033[1;31m[KO]\033[0m Memory Size \n"
 		exit 1
 	fi
 
 	# Check Cpu number
 	if [ $(nproc --all) -ge 2 ]; then
-		printf "CPU Number \033[1;32m[OK]\033[0m\n"
+		printf "\033[1;32m[OK]\033[0m CPU Number \n"
 	else
-		printf "CPU Number \033[1;31m[KO]\033[0m\n"
+		printf "\033[1;31m[KO]\033[0m CPU Number \n"
 		exit 1
 	fi
 
@@ -41,18 +41,18 @@ check_prerequisite() {
 	if [ "$distribution" = "Ubuntu" ]; then
 		distribution_version=$(cat /etc/issue | cut -c8-12)
 		if [ "$distribution_version" = "14.04" ] || [ "$distribution_version" = "16.04" ]; then
-			printf "$distribution version $distribution_version \033[1;32m[OK]\033[0m\n"
+			printf "\033[1;32m[OK]\033[0m $distribution version $distribution_version \n"
 		else
-			printf "Wrong $distribution Version (should be 14.04 or 16.04) \033[1;31m[KO]\033[0m\n"
+			printf "\033[1;31m[KO]\033[0m Wrong $distribution Version (should be 14.04 or 16.04)\n"
 			exit 1
 		fi
 	fi
 
 	# Check kernel version
 	if [ "$(uname -r | cut -c1)" -ge 4 ]; then
-		printf "Kernel version \033[1;32m[OK]\033[0m\n"
+		printf "\033[1;32m[OK]\033[0m Kernel version \n"
 	else
-		printf "Kernel version sould be 4 or higher please upgrade you kernel \033[1;31m[KO]\033[0m\n"
+		printf "\033[1;31m[KO]\033[0m Kernel version sould be 4 or higher please upgrade you kernel \n"
 		exit 1
 	fi
 }
