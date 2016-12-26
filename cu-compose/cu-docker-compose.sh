@@ -57,49 +57,49 @@ function generate-env {
   if [ -n "$CU_MANAGER_DOMAIN" ]; then
     echo "CU_MANAGER_DOMAIN=$CU_MANAGER_DOMAIN" >> .env
   else
-    echo "CU_MANAGER_DOMAIN=admin.$CU_DOMAIN" >> .env
+    echo "CU_MANAGER_DOMAIN=admin-$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Gitlab domain : [ default to gitlab-"$CU_DOMAIN" ]"
   read CU_GITLAB_DOMAIN
   if [ -n "$CU_GITLAB_DOMAIN" ]; then
     echo "CU_GITLAB_DOMAIN=$CU_GITLAB_DOMAIN" >> .env
   else
-    echo "CU_GITLAB_DOMAIN=gitlab.$CU_DOMAIN" >> .env
+    echo "CU_GITLAB_DOMAIN=gitlab-$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Jenkins domain : [ default to jenkins-"$CU_DOMAIN" ]"
   read CU_JENKINS_DOMAIN
   if [ -n "$CU_JENKINS_DOMAIN" ]; then
     echo "CU_JENKINS_DOMAIN=$CU_JENKINS_DOMAIN" >> .env
   else
-    echo "CU_JENKINS_DOMAIN=jenkins.$CU_DOMAIN" >> .env
+    echo "CU_JENKINS_DOMAIN=jenkins-$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Kibana domain : [ default to kibana-"$CU_DOMAIN" ]"
   read CU_KIBANA_DOMAIN
   if [ -n "$CU_KIBANA_DOMAIN" ]; then
     echo "CU_KIBANA_DOMAIN=$CU_KIBANA_DOMAIN" >> .env
   else
-    echo "CU_KIBANA_DOMAIN=kibana.$CU_DOMAIN" >> .env
+    echo "CU_KIBANA_DOMAIN=kibana-$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Letschat domain : [ default to letschat-"$CU_DOMAIN" ]"
   read CU_LETSCHAT_DOMAIN
   if [ -n "$CU_LETSCHAT_DOMAIN" ]; then
     echo "CU_LETSCHAT_DOMAIN=$CU_LETSCHAT_DOMAIN" >> .env
   else
-    echo "CU_LETSCHAT_DOMAIN=letschat.$CU_DOMAIN" >> .env
+    echo "CU_LETSCHAT_DOMAIN=letschat-$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Nexus domain : [ default to nexus-"$CU_DOMAIN" ]"
   read CU_NEXUS_DOMAIN
   if [ -n "$CU_NEXUS_DOMAIN" ]; then
     echo "CU_NEXUS_DOMAIN=$CU_NEXUS_DOMAIN" >> .env
   else
-    echo "CU_NEXUS_DOMAIN=nexus.$CU_DOMAIN" >> .env
+    echo "CU_NEXUS_DOMAIN=nexus-$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Sonar domain : [ default to sonar-"$CU_DOMAIN" ]"
   read CU_SONAR_DOMAIN
   if [ -n "$CU_SONAR_DOMAIN" ]; then
     echo "CU_SONAR_DOMAIN=$CU_SONAR_DOMAIN" >> .env
   else
-    echo "CU_SONAR_DOMAIN=sonar.$CU_DOMAIN" >> .env
+    echo "CU_SONAR_DOMAIN=sonar-$CU_DOMAIN" >> .env
   fi
   echo "Enter Elasticsearch URL : [ default to elasticsearch ]"
   read ELASTICSEARCH_URL
