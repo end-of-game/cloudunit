@@ -26,7 +26,7 @@ install_docker() {
   apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
   apt-get update
   apt-get install -y docker-engine
-  usermod -g docker $CU_USER
+  usermod -a -G docker $CU_USER
 }
 
 generate_certs() {
