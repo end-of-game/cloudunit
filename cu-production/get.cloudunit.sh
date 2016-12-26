@@ -55,6 +55,14 @@ check_prerequisite() {
 		printf "\033[1;31m[KO]\033[0m Kernel version sould be 4 or higher please upgrade you kernel \n"
 		exit 1
 	fi
+	
+	# Check AUFS filesystem
+	if grep -qw aufs /proc/filesystems; then
+                printf "\033[1;32m[OK]\033[0m AUFS in Kernel \n"
+        else
+                printf "\033[1;31m[KO]\033[0m AUFS is not present in kernel, install extra kernel package \n"
+                exit 1
+	fi
 }
 
 check_prerequisite
