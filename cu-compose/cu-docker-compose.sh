@@ -116,10 +116,11 @@ function generate-env {
     echo "MYSQL_ROOT_PASSWORD=changeit" >> .env
   fi
   echo "Enter mysql root database name : [ default to 'cloudunit' ]"
+  read MYSQL_DATABASE
   if [ -n "$MYSQL_DATABSE" ]; then
     echo "MYSQL_DATABASE=$MYSQL_DATABASE" >> .env
   else 
-    echo "MYSQL_DATABASE=cloudunit"
+    echo "MYSQL_DATABASE=cloudunit" >> .env
   fi
   #echo "Which git branch would you want to deploy : [ default to 'dev' ]"
   #read MYSQL_DATABASE
