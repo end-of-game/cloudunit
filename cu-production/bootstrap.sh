@@ -203,6 +203,10 @@ else
   install_docker
 fi
 
+if [ -f /root/.docker/ca.pem ]; then
+  generate_certs
+fi
+
 install_docker_compose
 install_log_rotation
 install_cron
