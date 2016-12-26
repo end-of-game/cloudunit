@@ -203,7 +203,7 @@ else
   install_docker
 fi
 
-if [ -f /root/.docker/ca.pem ]; then
+if [ ! -f /root/.docker/ca.pem ]; then
   generate_certs
 fi
 
