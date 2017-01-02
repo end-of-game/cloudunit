@@ -154,6 +154,8 @@ question_pull_or_build() {
       cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
     elif [ "$PUSHPULL" = "continue" ]; then
       echo "No action... we use current images"
+    elif [ -n "$PUSHPULL" ]; then
+      pull_images_from_dockerhub
     else
       echo "Sorry but I didn't understand you response..."
       question_pull_or_build
