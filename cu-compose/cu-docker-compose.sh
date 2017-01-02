@@ -52,12 +52,12 @@ function generate-env {
     echo "CU_SUB_DOMAIN=" >> .env
   fi
   source .env
-  echo "Enter CU Manager domain : [ default to admin-"$CU_DOMAIN" ]"
+  echo "Enter CU Manager domain : [ default to "$CU_DOMAIN" ]"
   read CU_MANAGER_DOMAIN
   if [ -n "$CU_MANAGER_DOMAIN" ]; then
     echo "CU_MANAGER_DOMAIN=$CU_MANAGER_DOMAIN" >> .env
   else
-    echo "CU_MANAGER_DOMAIN=admin-$CU_DOMAIN" >> .env
+    echo "CU_MANAGER_DOMAIN=$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Gitlab domain : [ default to gitlab-"$CU_DOMAIN" ]"
   read CU_GITLAB_DOMAIN
