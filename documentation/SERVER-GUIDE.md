@@ -33,9 +33,11 @@ If all prerequisites are met, you can start installation procedure, you can add 
 During installation process, some information have to be set mannually like domain name to access to your server. For example : `cu01.cloudunit.io` or `cloudunit.local` and the password for `admincu` user.
 
 All module images (tomcat, mysql, postgresql ....) will be downloaded automatically
-```
+
 
 # FAQ
+
+```
 
 ## How to install a 4.x kernel with AUFS support
 
