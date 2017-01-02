@@ -36,7 +36,13 @@ All module images (tomcat, mysql, postgresql ....) will be downloaded automatica
 
 ## Add your own certificate
 
-Rename Public key in traefik.crt and private key in traefik.key and copy these files into cu-compose/cu-traefik/certs and restart the stack.
+Once done execute these commands to copy you certificates into the traefik and restart the container :
+
+```
+docker cp your-public-key.pem cu-traefik:/certs/traefik.crt 
+docker cp your-private-key.pem cu-traefik:/certs/traefik.key
+docker restart cu-traefik
+```
 
 # FAQ
 
