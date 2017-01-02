@@ -36,7 +36,7 @@ All module images (tomcat, mysql, postgresql ....) will be downloaded automatica
 
 ## Add your own certificate
 
-Rename Public key in traefik.crt and private key in traefik.key and copy these file into cu-compose/cu-traefik/certs and restart the stack.
+Rename Public key in traefik.crt and private key in traefik.key and copy these files into cu-compose/cu-traefik/certs and restart the stack.
 
 # FAQ
 
