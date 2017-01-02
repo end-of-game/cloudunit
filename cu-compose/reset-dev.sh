@@ -48,6 +48,13 @@ docker volume rm cucompose_mysqldata
 docker volume rm cucompose_redis-data
 docker network rm skynet
 
+for container in $(docker ps -aq --format '{{.Names}}' --filter "label=origin=application"); do
+  echo "Delete applicative container "$container
+  docker rm -f $container
+  docker volume rm $container
+  docker volume ls -qf dangling=true | xargs -r docker volume rm
+done
+
 echo "*******************************"
 echo -e "Starting..."
 echo "*******************************"

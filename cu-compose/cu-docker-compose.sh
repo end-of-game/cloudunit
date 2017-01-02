@@ -168,6 +168,7 @@ function reset {
       docker volume rm $container
       docker volume ls -qf dangling=true | xargs -r docker volume rm
     done
+
     docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
     docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
     docker volume rm cucompose_elasticsearch-data
