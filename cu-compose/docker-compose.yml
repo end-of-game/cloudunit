@@ -149,3 +149,4 @@ volumes:
   jenkins-home:
   traefik-certs:
   redis-data:
+  nexus-data:
