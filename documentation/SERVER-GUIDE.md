@@ -34,6 +34,9 @@ During installation process, some information have to be set mannually like doma
 
 All module images (tomcat, mysql, postgresql ....) will be downloaded automatically
 
+## Add your own certificate
+
+Rename Public key in traefik.crt and private key in traefik.key and copy these file into cu-compose/cu-traefik/certs and restart the stack.
 
 # FAQ
 
