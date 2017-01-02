@@ -101,7 +101,7 @@ function generate-env {
   else
     echo "CU_SONAR_DOMAIN=sonar-$CU_DOMAIN" >> .env
   fi
-  echo "Enter Elasticsearch URL : [ default to elasticsearch ]"
+  echo "Enter Elasticsearch rest API URL if you want to use external database : [ default to internal elasticsearch ]"
   read ELASTICSEARCH_URL
   if [ -n "$ELASTICSEARCH_URL" ]; then
     echo "ELASTICSEARCH_URL=$ELASTICSEARCH_URL" >> .env
