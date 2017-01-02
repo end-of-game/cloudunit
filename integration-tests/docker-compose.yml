@@ -20,8 +20,8 @@ services:
       ports:
         - "3306:3306"
       environment:
-          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-          - MYSQL_DATABASE=${MYSQL_DATABASE}
+          - MYSQL_ROOT_PASSWORD=changeit
+          - MYSQL_DATABASE=cloudunit
       volumes:
             - mysqldata:/var/lib/mysql
             - /etc/localtime:/etc/localtime:ro
