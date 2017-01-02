@@ -14,7 +14,14 @@ public class EnvUnitFactory {
 
     public static EnvUnit fromLine(String line) {
         String[] tokens = line.split("=");
-        EnvUnit envUnit = new EnvUnit(tokens[0], tokens[1]);
+        EnvUnit envUnit = null;
+        if (tokens.length == 2) {
+            envUnit = new EnvUnit(tokens[0], tokens[1]);
+        } else if (tokens.length == 1){
+            envUnit = new EnvUnit(tokens[0], "");
+        } else {
+            envUnit = new EnvUnit("", "");
+        }
         return envUnit;
     }
 

@@ -30,12 +30,13 @@ public class EnvUnitTest {
                 "PWD=/\n" +
                 "SHLVL=1\n" +
                 "HOME=/root\n" +
+                "CU_SERVER_MANAGER_PORT=\n" +
                 "CU_LOGS=/cloudunit/appconf/logs\n" +
                 "CU_SCRIPTS=/cloudunit/scripts\n" +
                 "_=/usr/bin/env\n";
 
         List<EnvUnit> envUnits = EnvUnitFactory.fromOutput(output);
-        Assert.assertEquals("Output should contains 12 CU env", 12, envUnits.size());
+        Assert.assertEquals("Output should contains 13 CU env", 13, envUnits.size());
     }
 
     @Test
