@@ -1,85 +1,57 @@
 version: '2'
 services:
 
-  java:
-      container_name: java
-      image: cloudunit/java
-      network_mode: bridge
-
-  dnsdock:
-      container_name: cuplatform_dnsdock_1
-      image: tonistiigi/dnsdock:v1.10.0
-      volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      command: -nameserver="8.8.8.8" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
-      network_mode: bridge
-
-  hipache:
-      container_name: cuplatform_hipache_1
-      image: tutum/hipache:0.3.1
-      ports:
-          - "80:80"
-      links:
-          - redis:redis
-      volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
-
   redis:
-      container_name: cuplatform_redis_1
+      container_name: cu-redis
       image: redis:3.0.1
       ports:
-          - 6379:6379
+        - "6379:6379"
       command: redis-server --appendonly yes
       volumes:
           - /etc/localtime:/etc/localtime:ro
           - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
+          - redis-data:/data
+      labels:
+          - "traefik.enable=false"
 
   mysql:
-      container_name: cuplatform_mysql_1
+      container_name: cu-mysql
       image: mysql:5.7.4
-      depends_on:
-           - mysqldata
       ports:
-           - "3307:3306"
+        - "3306:3306"
       environment:
-          - MYSQL_ROOT_PASSWORD=changeit
-          - MYSQL_DATABASE=cloudunit
-      volumes_from:
-           - mysqldata
+          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+          - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes:
+            - mysqldata:/var/lib/mysql
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
+      labels:
+            - "traefik.enable=false"
 
+  traefik:
+      container_name: cu-traefik
+      image: traefik
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
+      ports:
+          - "80:80"
+          - "443:443"
+          - "9090:8080"
+      volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - ./cu-traefik/traefik.toml:/traefik.toml
+          - /etc/localtime:/etc/localtime:ro
+          - /etc/timezone:/etc/timezone:ro
+          - ./cu-traefik/certs:/certs
+      labels:
+        - "traefik.enable=false"
+
+networks:
+  default:
+    external:
+      name: skynet
+
+volumes:
   mysqldata:
-      container_name: cuplatform_mysqldata_1
-      image: ubuntu:14.04
-      volumes:
-          - /home/admincu/mysql_home:/var/lib/mysql
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
-
-  cadvisor:
-      container_name: cuplatform_cadvisor_1
-      image: google/cadvisor:0.14.0
-      environment:
-          - DB_USER=root
-          - DB_PASS=root
-          - DB_NAME=cadvisor
-      volumes:
-          - /:/rootfs:ro
-          - /var/run:/var/run:rw
-          - /sys:/sys:ro
-          - /var/lib/docker:/var/lib/docker:ro
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      command: --housekeeping_interval=5s
-      network_mode: bridge
-
-
+  traefik-certs:
+  redis-data:
