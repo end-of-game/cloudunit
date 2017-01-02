@@ -19,7 +19,7 @@ services:
           - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
           - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes:
-            - mysqldata:/var/lib/mysql
+            - cu-mysqldata:/var/lib/mysql
             - /etc/localtime:/etc/localtime:ro
             - /etc/timezone:/etc/timezone:ro
       labels:
@@ -104,6 +104,20 @@ services:
           - "traefik.backend=jenkins"
           - "traefik.port=8080"
           - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
+
+  nexus:
+      container_name: cu-nexus
+      image: sonatype/nexus3:3.2.0
+      volumes:
+        - "nexus-data:/nexus-data"
+      environment:
+        - "JAVA_MIN_MEM=1024m"
+        - "JAVA_MAX_MEM=1024m"
+      labels:
+        - "traefik.frontend.entryPoints=https"
+        - "traefik.backend=cu-nexus"
+        - "traefik.port=8081"
+        - "traefik.frontend.rule=Host:${CU_NEXUS_DOMAIN}"
 
   traefik:
       container_name: cu-traefik

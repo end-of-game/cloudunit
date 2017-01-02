@@ -86,6 +86,20 @@ services:
         - "traefik.port=9090"
         - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
 
+  nexus:
+      container_name: cu-nexus
+      image: sonatype/nexus3:3.2.0
+      volumes:
+        - "nexus-data:/nexus-data"
+      environment:
+        - "JAVA_MIN_MEM=512m"
+        - "JAVA_MAX_MEM=512m"
+      labels:
+        - "traefik.frontend.entryPoints=https"
+        - "traefik.backend=cu-nexus"
+        - "traefik.port=8081"
+        - "traefik.frontend.rule=Host:nexus.${CU_DOMAIN}"
+
   traefik:
       container_name: cu-traefik
       env_file: .env
@@ -115,3 +129,4 @@ volumes:
   jenkins-home:
   traefik-certs:
   redis-data:
+  nexus-data:
