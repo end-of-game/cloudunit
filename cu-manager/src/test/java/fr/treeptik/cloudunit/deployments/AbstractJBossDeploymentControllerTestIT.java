@@ -34,7 +34,7 @@ public abstract class AbstractJBossDeploymentControllerTestIT extends AbstractDe
                 .andExpect(status().is2xxSuccessful());
             String urlToCall = String.format("http://%s-johndoe%s/wildfly-wicket-ear-war",
                     applicationName.toLowerCase(),
-                    domain);
+                    domainSuffix);
             Optional<String> content = waitForContent(urlToCall);
             
             assertTrue(content.isPresent());

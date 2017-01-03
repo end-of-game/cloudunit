@@ -299,7 +299,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public Application start(Application application) throws ServiceException {
 		try {
 			logger.debug("start : Methods parameters : " + application);
-
 			application.getModules().stream().forEach(m -> {
 				try {
 					moduleService.startModule(m.getName());
@@ -308,9 +307,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 				}
 			});
 			Server server = application.getServer();
-			logger.info("old server ip : " + server.getContainerIP());
 			server = serverService.startServer(server);
-
 			logger.info("ApplicationService : Application successfully started ");
 		} catch (PersistenceException e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);

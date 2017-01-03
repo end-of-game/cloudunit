@@ -62,7 +62,9 @@ USER cloudunit
 
 VOLUME /opt/cloudunit/
 
-CMD ["/opt/cloudunit/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["run"]
 
 LABEL origin application
 LABEL application-type wildfy

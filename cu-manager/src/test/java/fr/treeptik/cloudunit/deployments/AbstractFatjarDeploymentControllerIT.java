@@ -11,6 +11,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
@@ -75,6 +76,9 @@ public abstract class AbstractFatjarDeploymentControllerIT
         applicationName = "App" + new Random().nextInt(100000);
     }
 
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
+    private String domainSuffix;
+
     @Before
     public void setup() {
         logger.info("setup");
@@ -111,7 +115,6 @@ public abstract class AbstractFatjarDeploymentControllerIT
             ResultActions resultats =
                     mockMvc.perform(post("/application").session(session).contentType(MediaType.APPLICATION_JSON).content(jsonString));
             resultats.andExpect(status().isOk());
-
             resultats =
                     mockMvc.perform(MockMvcRequestBuilders.fileUpload("/application/" + applicationName + "/deploy")
                             .file(downloadAndPrepareFileToDeploy(binary,
@@ -119,13 +122,16 @@ public abstract class AbstractFatjarDeploymentControllerIT
                             .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
             resultats.andExpect(status().is2xxSuccessful());
 
-            String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe.cloudunit.dev";
-            logger.debug(urlToCall);
+            // test the application content page
+            String urlToCall = String.format("http://%s-johndoe%s",
+                    applicationName.toLowerCase(),
+                    domainSuffix);
+
             int i = 0;
             String content = null;
             while (i++ < TestUtils.NB_ITERATION_MAX) {
                 content = getUrlContentPage(urlToCall);
-                logger.debug(content);
+                System.out.println(content);
                 Thread.sleep(1000);
                 if (content == null || !content.contains("502")) {
                     break;
@@ -133,7 +139,7 @@ public abstract class AbstractFatjarDeploymentControllerIT
             }
             logger.debug(content);
             if (content != null) {
-                Assert.assertTrue(content.contains("Greetings from Spring Boot!"));
+                Assert.assertTrue(content.contains("Greetings from Spring Boot"));
             }
         } catch (Exception e) {
             logger.error(e.getMessage());

@@ -59,22 +59,10 @@ public abstract class AbstractDeploymentControllerIT {
     @Inject
     private UserService userService;
     @Value("#{systemEnvironment['CU_DOMAIN']}")
-    private String domainSuffix;
-    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomainPrefix;
-    protected String domain;
+    protected String domainSuffix;
 
     public AbstractDeploymentControllerIT() {
         super();
-    }
-
-    @PostConstruct
-    public void init() {
-        if (subdomainPrefix != null) {
-            domain = subdomainPrefix + "." + domainSuffix;
-        } else {
-            domain = "." + domainSuffix;
-        }
     }
 
     protected ResultActions deployApp(String appName) throws Exception {
@@ -215,7 +203,7 @@ public abstract class AbstractDeploymentControllerIT {
             // test the application content page
             String urlToCall = String.format("http://%s-johndoe%s/%s",
                     applicationName.toLowerCase(),
-                    domain, appName);
+                    domainSuffix, appName);
     
             Optional<String> contentPage = waitForContent(urlToCall);
             assertTrue(contentPage.isPresent());
@@ -238,7 +226,7 @@ public abstract class AbstractDeploymentControllerIT {
                     "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + archiveName);
             String urlToCall = String.format("http://%s-johndoe%s/%s",
                     applicationName.toLowerCase(),
-                    domain, context);
+                    domainSuffix, context);
             String content = getUrlContentPage(urlToCall);
             assertThat(content, containsString("CloudUnit PaaS"));
         } finally {
