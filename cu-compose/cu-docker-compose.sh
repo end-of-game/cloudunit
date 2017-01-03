@@ -45,56 +45,50 @@ function generate-env {
   read CU_DOMAIN
   echo "CU_DOMAIN=$CU_DOMAIN" >> .env
   echo "Enter CU Sub Domain : [ no default ]"
-  read CU_SUB_DOMAIN
-  if [ -n "$CU_SUB_DOMAIN" ]; then
-    echo "CU_SUB_DOMAIN=$CU_DOMAIN" >> .env
-  else
-    echo "CU_SUB_DOMAIN=" >> .env
-  fi
   source .env
-  echo "Enter CU Manager domain : [ default to "$CU_DOMAIN" ]"
+  echo "Enter CU Manager domain : [ default to https://"$CU_DOMAIN" ]"
   read CU_MANAGER_DOMAIN
   if [ -n "$CU_MANAGER_DOMAIN" ]; then
     echo "CU_MANAGER_DOMAIN=$CU_MANAGER_DOMAIN" >> .env
   else
     echo "CU_MANAGER_DOMAIN=$CU_DOMAIN" >> .env
   fi
-  echo "Enter CU Gitlab domain : [ default to gitlab-"$CU_DOMAIN" ]"
+  echo "Enter CU Gitlab domain : [ default to https://gitlab-"$CU_DOMAIN" ]"
   read CU_GITLAB_DOMAIN
   if [ -n "$CU_GITLAB_DOMAIN" ]; then
     echo "CU_GITLAB_DOMAIN=$CU_GITLAB_DOMAIN" >> .env
   else
     echo "CU_GITLAB_DOMAIN=gitlab-$CU_DOMAIN" >> .env
   fi
-  echo "Enter CU Jenkins domain : [ default to jenkins-"$CU_DOMAIN" ]"
+  echo "Enter CU Jenkins domain : [ default to https://jenkins-"$CU_DOMAIN" ]"
   read CU_JENKINS_DOMAIN
   if [ -n "$CU_JENKINS_DOMAIN" ]; then
     echo "CU_JENKINS_DOMAIN=$CU_JENKINS_DOMAIN" >> .env
   else
     echo "CU_JENKINS_DOMAIN=jenkins-$CU_DOMAIN" >> .env
   fi
-  echo "Enter CU Kibana domain : [ default to kibana-"$CU_DOMAIN" ]"
+  echo "Enter CU Kibana domain : [ default to https://kibana-"$CU_DOMAIN" ]"
   read CU_KIBANA_DOMAIN
   if [ -n "$CU_KIBANA_DOMAIN" ]; then
     echo "CU_KIBANA_DOMAIN=$CU_KIBANA_DOMAIN" >> .env
   else
     echo "CU_KIBANA_DOMAIN=kibana-$CU_DOMAIN" >> .env
   fi
-  echo "Enter CU Letschat domain : [ default to letschat-"$CU_DOMAIN" ]"
+  echo "Enter CU Letschat domain : [ default to https://letschat-"$CU_DOMAIN" ]"
   read CU_LETSCHAT_DOMAIN
   if [ -n "$CU_LETSCHAT_DOMAIN" ]; then
     echo "CU_LETSCHAT_DOMAIN=$CU_LETSCHAT_DOMAIN" >> .env
   else
     echo "CU_LETSCHAT_DOMAIN=letschat-$CU_DOMAIN" >> .env
   fi
-  echo "Enter CU Nexus domain : [ default to nexus-"$CU_DOMAIN" ]"
+  echo "Enter CU Nexus domain : [ default to https://nexus-"$CU_DOMAIN" ]"
   read CU_NEXUS_DOMAIN
   if [ -n "$CU_NEXUS_DOMAIN" ]; then
     echo "CU_NEXUS_DOMAIN=$CU_NEXUS_DOMAIN" >> .env
   else
     echo "CU_NEXUS_DOMAIN=nexus-$CU_DOMAIN" >> .env
   fi
-  echo "Enter CU Sonar domain : [ default to sonar-"$CU_DOMAIN" ]"
+  echo "Enter CU Sonar domain : [ default to https://sonar-"$CU_DOMAIN" ]"
   read CU_SONAR_DOMAIN
   if [ -n "$CU_SONAR_DOMAIN" ]; then
     echo "CU_SONAR_DOMAIN=$CU_SONAR_DOMAIN" >> .env
