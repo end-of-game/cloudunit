@@ -118,6 +118,18 @@ add_user_to_sudoers() {
 }
 
 pull_images_from_dockerhub() {
+  docker pull cloudunit/base-jessie
+  docker pull cloudunit/base-12.04
+  docker pull cloudunit/base-14.04
+  docker pull cloudunit/base-16.04
+  docker pull cloudunit/java
+  docker pull cloudunit/redis-3-2
+  docker pull cloudunit/manager
+  docker pull cloudunit/elk-kibana
+  docker pull cloudunit/elk-elasticsearch
+  docker pull cloudunit/jenkins
+  docker pull traefik
+  cloudunit/elk-monitoring-agents
   docker pull cloudunit/tomcat-6
   docker pull cloudunit/tomcat-7
   docker pull cloudunit/tomcat-8
