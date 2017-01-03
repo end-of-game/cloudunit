@@ -123,7 +123,7 @@ public abstract class AbstractFatjarDeploymentControllerIT
             resultats.andExpect(status().is2xxSuccessful());
 
             // test the application content page
-            String urlToCall = String.format("http://%s-johndoe%s",
+            String urlToCall = String.format("http://%s-johndoe.%s",
                     applicationName.toLowerCase(),
                     domainSuffix);
 
@@ -175,7 +175,11 @@ public abstract class AbstractFatjarDeploymentControllerIT
                                 "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + binary))
                         .session(session).contentType(MediaType.MULTIPART_FORM_DATA)).andDo(print());
         resultats.andExpect(status().is2xxSuccessful());
-        String urlToCall = "http://" + applicationName.toLowerCase() + "-johndoe.cloudunit.dev";
+        // test the application content page
+        String urlToCall = String.format("http://%s-johndoe.%s",
+                applicationName.toLowerCase(),
+                domainSuffix);
+
         logger.debug(urlToCall);
         int i = 0;
         String content = null;
@@ -193,8 +197,8 @@ public abstract class AbstractFatjarDeploymentControllerIT
             Assert.assertTrue(content.contains("CloudUnit PaaS"));
         }
 
-        String url2AddAnUser = "http://" + applicationName.toLowerCase()
-                + "-johndoe.cloudunit.dev/create?email=johndoe@gmail.com&name=johndoe";
+        String url2AddAnUser = String.format("http://%s-johndoe.%s/create?email=johndoe@gmail.com&name=johndoe",
+                applicationName.toLowerCase(), domainSuffix);
 
         // Add a module MYSQL
         resultats = mockMvc.perform(get(url2AddAnUser)

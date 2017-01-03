@@ -4,10 +4,6 @@ ENV TINI_VERSION v0.10.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
-# add custom scripts
-ADD scripts /opt/cloudunit/scripts
-RUN chmod +x /opt/cloudunit/scripts/*
-
 RUN mkdir -p /opt/cloudunit/fatjar &&  \
     mkdir -p /opt/cloudunit/fatjar/logs \
     mkdir -p /opt/cloudunit/backup &&  \
@@ -16,6 +12,10 @@ RUN mkdir -p /opt/cloudunit/fatjar &&  \
     mkdir -p /opt/cloudunit/shared && \
     mkdir -p /opt/cloudunit/scripts && \
     mkdir -p /opt/cloudunit/tmp
+
+# add custom scripts
+ADD scripts /opt/cloudunit/scripts
+RUN chmod +x /opt/cloudunit/scripts/*
 
 WORKDIR /opt/cloudunit
 

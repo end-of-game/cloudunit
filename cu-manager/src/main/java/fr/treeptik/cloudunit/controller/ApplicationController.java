@@ -362,6 +362,11 @@ public class ApplicationController implements Serializable {
             // set the application in pending mode
             applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
             applicationService.stop(application);
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			applicationService.start(application);
             // wait for modules and servers starting
             applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
