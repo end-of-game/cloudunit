@@ -106,6 +106,7 @@ public abstract class AbstractDeploymentControllerIT {
         return Stream.generate(() -> {
                     try {
                         Thread.sleep(1000);
+                        System.out.println(url);
                         return getUrlContentPage(url);
                     } catch (ParseException | IOException | InterruptedException e) {
                         return null;
@@ -155,7 +156,7 @@ public abstract class AbstractDeploymentControllerIT {
 
     @Test
     public void test_deploySimpleWithContextApplicationTest() throws Exception {
-        deploySimpleApplicationTest("helloworld.war", "/helloworld");
+        deploySimpleApplicationTest("helloworld.war", "helloworld");
     }
 
     @Test
@@ -201,14 +202,14 @@ public abstract class AbstractDeploymentControllerIT {
                 .andExpect(status().is2xxSuccessful());
     
             // test the application content page
-            String urlToCall = String.format("http://%s-johndoe%s/%s",
+            String urlToCall = String.format("http://%s-johndoe.%s/%s",
                     applicationName.toLowerCase(),
                     domainSuffix, appName);
     
             Optional<String> contentPage = waitForContent(urlToCall);
             assertTrue(contentPage.isPresent());
             assertThat(contentPage.get(), containsString(keywordInPage));
-    
+
             // remove the module
             removeModule(module)
                 .andExpect(status().isOk());
@@ -224,11 +225,12 @@ public abstract class AbstractDeploymentControllerIT {
             deployArchive(
                     archiveName,
                     "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + archiveName);
-            String urlToCall = String.format("http://%s-johndoe%s/%s",
+            String urlToCall = String.format("http://%s-johndoe.%s/%s",
                     applicationName.toLowerCase(),
                     domainSuffix, context);
-            String content = getUrlContentPage(urlToCall);
-            assertThat(content, containsString("CloudUnit PaaS"));
+            Optional<String> contentPage = waitForContent(urlToCall);
+            assertTrue(contentPage.isPresent());
+            assertThat(contentPage.get(), containsString("CloudUnit PaaS"));
         } finally {
             deleteApplication();
         }

@@ -32,7 +32,7 @@ public abstract class AbstractJBossDeploymentControllerTestIT extends AbstractDe
             String earUrl = "https://github.com/Treeptik/cloudunit/releases/download/1.0/wildfly-wicket-ear-ear.ear";
             deployArchive("wildfly-wicket-ear-ear.ear", earUrl)
                 .andExpect(status().is2xxSuccessful());
-            String urlToCall = String.format("http://%s-johndoe%s/wildfly-wicket-ear-war",
+            String urlToCall = String.format("http://%s-johndoe.%s/wildfly-wicket-ear-war",
                     applicationName.toLowerCase(),
                     domainSuffix);
             Optional<String> content = waitForContent(urlToCall);

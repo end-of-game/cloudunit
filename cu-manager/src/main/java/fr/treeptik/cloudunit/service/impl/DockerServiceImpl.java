@@ -91,6 +91,8 @@ public class DockerServiceImpl implements DockerService {
             args.add(user.getLogin());
             args.add(user.getPassword());
         }
+        //Map<String, String> ports = new HashMap<>();
+        //ports.put("8000/tcp", "");
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, imageSubType, volumesFrom, args,
                 volumes, envs, null, "skynet", domain);
         dockerCloudUnitClient.createContainer(container);

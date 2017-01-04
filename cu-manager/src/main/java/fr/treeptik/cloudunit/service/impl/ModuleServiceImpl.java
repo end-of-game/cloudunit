@@ -250,7 +250,6 @@ public class ModuleServiceImpl implements ModuleService {
             if (isModuleRemoving) {
                 List<EnvironmentVariable> envs = environmentService
                         .loadEnvironnmentsByContainer(application.getServer().getName());
-
                         environmentService.delete(user, envs.stream()
                         .filter(e -> e.getKeyEnv().toLowerCase()
                                 .contains(module.getImage().getPrefixEnv().toLowerCase()))
@@ -258,11 +257,13 @@ public class ModuleServiceImpl implements ModuleService {
                         application.getServer().getName());
             }
             logger.info("Module successfully removed ");
-        } catch (PersistenceException e) {
-            logger.error("Error database :  " + module.getName() + " : " + e);
-            throw new ServiceException("Error database :  " + e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            logger.error(module.toString(), e);
+        } catch (Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append(user.toString());
+            msgError.append(module.toString());
+            msgError.append(", isModuleRemoving:").append(isModuleRemoving);
+            msgError.append(", previousApplicationStatus:").append(previousApplicationStatus);
+            throw new ServiceException(msgError.toString(), e);
         }
     }
 

@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -166,8 +167,8 @@ public class ModuleController implements Serializable {
         try {
             // Application occupée
             applicationService.setStatus(application, Status.PENDING);
-
-            moduleService.remove(user, moduleName, true, previousApplicationStatus);
+            String containerName = NamingUtils.getContainerName(applicationName, moduleName, user.getLogin());
+            moduleService.remove(user, containerName, true, previousApplicationStatus);
 
             logger.info("-- removeModule " + applicationName + " to " + moduleName + " successful-- ");
 

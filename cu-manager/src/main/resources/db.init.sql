@@ -69,7 +69,10 @@ VALUES
 
 INSERT IGNORE INTO `Image_exposedPorts` (`exposedPorts`,`exposedPorts_KEY`,`Image_id`)
 VALUES
--- mysql ports values --
+  -- mysql ports values --
+("8000", "TCP", 12),
+
+  -- mysql ports values --
 
 ("3306", "TCP", 20),
 ("3306", "TCP", 21),
