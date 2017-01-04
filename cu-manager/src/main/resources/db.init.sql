@@ -23,8 +23,8 @@ INSERT IGNORE INTO `Image`
   (62, 'wildfly-10', 'cloudunit/wildfly-10', 'WildFly 10.0.0', 'wildfly', 'server', '','APPSERVER'),
   (70, 'fatjar', 'cloudunit/fatjar', 'FatJar', 'fatjar', 'server', '', 'STANDALONE'),
   (80, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', '', 'WEBSERVER'),
-  (90, 'activemq-5.13.2', 'cloudunit/activemq-5.13.2', 'ActiveMQ 5.13.2', 'activemq', 'module', '', 'MESSAGE_BROKER'),
-  (100, 'rabbitmq-3.6.5-1', 'cloudunit/rabbitmq-3.6.5-1', 'RabbitMQ 3.6.5-1', 'rabbitmq', 'module', '', 'MESSAGE_BROKER'),
+  (90, 'activemq-5.13', 'cloudunit/activemq-5.13', 'ActiveMQ 5.13.2', 'activemq', 'module', '', 'MESSAGE_BROKER'),
+  (100, 'rabbitmq-3.6', 'cloudunit/rabbitmq-3.6', 'RabbitMQ 3.6.5-1', 'rabbitmq', 'module', '', 'MESSAGE_BROKER'),
   (110, 'elasticsearch-2.4', 'cloudunit/elasticsearch-2.4', 'Elasticsearch 2.4', 'elasticsearch', 'module', '', 'SEARCH_ENGINE'),
   (120, 'nginx-1.10', 'cloudunit/nginx-1.10', 'Nginx 1.10', 'nginx', 'server', 'server', 'WEBSERVER');
 

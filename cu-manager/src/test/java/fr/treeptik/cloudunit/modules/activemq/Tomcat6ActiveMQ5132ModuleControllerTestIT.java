@@ -24,7 +24,7 @@ public class Tomcat6ActiveMQ5132ModuleControllerTestIT extends AbstractModuleCon
 
     public Tomcat6ActiveMQ5132ModuleControllerTestIT() {
         super.server = "tomcat-6";
-        super.module = "activemq-5.13.2";
+        super.module = "activemq-5.13";
         super.numberPort = "61616";
         super.managerPrefix = "";
         super.managerSuffix = "";

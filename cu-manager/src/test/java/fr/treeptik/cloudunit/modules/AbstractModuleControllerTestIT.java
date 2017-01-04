@@ -124,11 +124,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     @Inject
     private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
 
-    @BeforeClass
-    public static void initEnv() {
-        applicationName = "app" + new Random().nextInt(100000);
-    }
-
     @PostConstruct
     public void init() {
         if (subdomainPrefix != null) {
@@ -139,9 +134,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     @Before
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         logger.info("setup");
-
+        applicationName = "app" + new Random().nextInt(100000);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .addFilters(springSecurityFilterChain)
                 .build();
@@ -248,7 +243,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
+        String genericModule = NamingUtils.getContainerName(applicationName, module, "johndoe");
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -289,7 +284,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
+        String module1 = NamingUtils.getContainerName(applicationName, module, "johndoe");
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
@@ -326,7 +321,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         resultats.andExpect(status().isOk());
 
         // Expected values
-        String module1 = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
+        String module1 = NamingUtils.getContainerName(applicationName, module, "johndoe");
 
         // Stop the application
         jsonString = "{\"applicationName\":\"" + applicationName + "\"}";
@@ -398,7 +393,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                     "application/sql",
                     new FileInputStream(testScriptPath));
 
-            String genericModule = cuInstanceName.toLowerCase() + "-johndoe-" + applicationName.toLowerCase() + "-" + module;
+            String genericModule = NamingUtils.getContainerName(applicationName, module, "johndoe");
 
             ResultActions result = mockMvc.perform(
                     fileUpload("/module/{moduleName}/run-script", genericModule)
@@ -538,7 +533,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                         .and().ignoreExceptions()
                         .until(() -> {
                             try {
-
                                 "elasticsearch".contains(TestUtils.getUrlContentPage(url));
                             } catch (IOException e) {
                                 e.printStackTrace();

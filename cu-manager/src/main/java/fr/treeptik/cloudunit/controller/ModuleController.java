@@ -159,19 +159,18 @@ public class ModuleController implements Serializable {
 
         User user = authentificationUtils.getAuthentificatedUser();
         Application application = applicationService.findByNameAndUser(user, applicationName);
-
         // We must be sure there is no running action before starting new one
         authentificationUtils.canStartNewAction(user, application, locale);
-
         Status previousApplicationStatus = application.getStatus();
         try {
             // Application occupée
             applicationService.setStatus(application, Status.PENDING);
-            String containerName = NamingUtils.getContainerName(applicationName, moduleName, user.getLogin());
+            String containerName = moduleName;
+            if (!moduleName.contains("-")) {
+                containerName = NamingUtils.getContainerName(applicationName, moduleName, user.getLogin());
+            }
             moduleService.remove(user, containerName, true, previousApplicationStatus);
-
             logger.info("-- removeModule " + applicationName + " to " + moduleName + " successful-- ");
-
         } catch (Exception e) {
             // Application en erreur
             logger.error(applicationName + " // " + moduleName, e);
