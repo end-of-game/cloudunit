@@ -129,7 +129,7 @@ public class Apache2ControllerTestIT {
             resultats =
                     mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
             resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error(e.getLocalizedMessage());
         }
     }

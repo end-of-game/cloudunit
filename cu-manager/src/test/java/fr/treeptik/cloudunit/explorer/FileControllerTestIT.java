@@ -161,8 +161,8 @@ public class FileControllerTestIT {
         ResultActions resultActions = upload(fileArchive, "/opt/cloudunit/");
         resultActions.andExpect(status().isOk());
 
-        String containerId = "int-johndoe-"+applicationName+"-tomcat-8";
-        String url = "/file/unzip/container/"+containerId+"/application/"+applicationName
+        String container = applicationName+"-johndoe";
+        String url = "/file/unzip/container/"+container+"/application/"+applicationName
                 +"?path=/opt/cloudunit&fileName=archive.zip";
         resultActions = this.mockMvc
                 .perform(
@@ -209,14 +209,14 @@ public class FileControllerTestIT {
     }
 
     private void saveContentIntoRemoteFile(String fileName, String path, String content) throws Exception {
-        String containerId = "int-johndoe-"+applicationName+"-tomcat-8";
+        String container = applicationName+"-johndoe";
         FileRequestBody body = new FileRequestBody();
         body.setFileName(fileName);
         body.setFilePath(path);
         body.setFileContent(content);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(body);
-        String url = "/file/content/container/"+containerId+"/application/"+applicationName;
+        String url = "/file/content/container/"+container+"/application/"+applicationName;
         ResultActions resultats = this.mockMvc
                 .perform(
                         put(url)
@@ -242,7 +242,7 @@ public class FileControllerTestIT {
     }
 
     private ResultActions upload(File localFile, String remotePath) throws Exception {
-        String container = "int-johndoe-"+applicationName+"-tomcat-8";
+        String container = applicationName+"-johndoe";
         String url = "/file/container/"+container+"/application/"+applicationName+"?path="+remotePath;
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", localFile.getName(),
                 "multipart/form-data", new FileInputStream(localFile));
@@ -253,7 +253,7 @@ public class FileControllerTestIT {
     }
 
     private ResultActions getContentAsString(String remotePath, String remoteFileName) throws Exception {
-        String container = "int-johndoe-"+applicationName+"-tomcat-8";
+        String container = applicationName+"-johndoe";
         String url = "/file/content/container/"+container+"/application/"+applicationName
                 +"?path="+remotePath
                 +"&fileName="+remoteFileName;
@@ -266,7 +266,7 @@ public class FileControllerTestIT {
     }
 
     private ResultActions listFiles(String remotePath) throws Exception {
-        String container = "int-johndoe-"+applicationName+"-tomcat-8";
+        String container = applicationName+"-johndoe";
         String url = "/file/container/"+container+"?path="+remotePath;
         ResultActions resultats = this.mockMvc
                 .perform(

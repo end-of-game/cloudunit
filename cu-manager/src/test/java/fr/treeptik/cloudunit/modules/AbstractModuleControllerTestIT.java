@@ -25,6 +25,7 @@ import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
 import fr.treeptik.cloudunit.utils.TestUtils;
 import junit.framework.TestCase;
@@ -67,7 +68,6 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -84,51 +84,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    CloudUnitApplicationContext.class,
-    MockServletContext.class
+        CloudUnitApplicationContext.class,
+        MockServletContext.class
 })
 @ActiveProfiles("integration")
 public abstract class AbstractModuleControllerTestIT extends TestCase {
 
+    protected static String applicationName;
     protected final Logger logger = LoggerFactory
-        .getLogger(AbstractModuleControllerTestIT.class);
-
+            .getLogger(AbstractModuleControllerTestIT.class);
     @Autowired
     protected WebApplicationContext context;
-
     protected MockMvc mockMvc;
-
-    @Inject
-    private ObjectMapper objectMapper;
-
-    @Inject
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private Filter springSecurityFilterChain;
-
-    @Inject
-    private UserService userService;
-
-    @Value("${cloudunit.instance.name}")
-    private String cuInstanceName;
-
     @Value("${ip.box.vagrant}")
     protected String ipVagrantBox;
-
     protected MockHttpSession session;
-
-    protected static String applicationName;
-
-    @Value("#{systemEnvironment['CU_DOMAIN']}")
-    private String domainSuffix;
-    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomainPrefix;
     protected String domain;
-
-    @Inject
-    private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
-
     protected String server;
     protected String module;
     protected String numberPort;
@@ -136,6 +107,27 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     protected String managerSuffix;
     protected String managerPageContent;
     protected String testScriptPath;
+    @Inject
+    private ObjectMapper objectMapper;
+    @Inject
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private Filter springSecurityFilterChain;
+    @Inject
+    private UserService userService;
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
+    private String domainSuffix;
+    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
+    private String subdomainPrefix;
+    @Inject
+    private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
+
+    @BeforeClass
+    public static void initEnv() {
+        applicationName = "app" + new Random().nextInt(100000);
+    }
 
     @PostConstruct
     public void init() {
@@ -146,18 +138,13 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         }
     }
 
-    @BeforeClass
-    public static void initEnv() {
-        applicationName = "app" + new Random().nextInt(100000);
-    }
-
     @Before
     public void setup() throws Exception {
         logger.info("setup");
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-            .addFilters(springSecurityFilterChain)
-            .build();
+                .addFilters(springSecurityFilterChain)
+                .build();
 
         User user = null;
         try {
@@ -174,15 +161,15 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         session = new MockHttpSession();
         String secContextAttr = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
         session.setAttribute(secContextAttr,
-            securityContext);
+                securityContext);
 
         // create an application server
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
         mockMvc.perform(post("/application")
-        		.session(session)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonString))
-        	.andExpect(status().isOk());
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andExpect(status().isOk());
     }
 
     @After
@@ -194,7 +181,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         mockMvc.perform(delete("/application/" + applicationName)
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+                .andExpect(status().isOk());
 
         SecurityContextHolder.clearContext();
         session.invalidate();
@@ -205,9 +192,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("Cannot add a module because application name missing");
         String jsonString = "{\"applicationName\":\"" + "" + "\", \"imageName\":\"" + module + "\"}";
         ResultActions resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().is4xxClientError());
     }
 
@@ -216,9 +203,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("Cannot add a module because application name missing");
         String jsonString = "{\"applicationName\":\"" + "UFO" + "\", \"imageName\":\"" + module + "\"}";
         ResultActions resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().is4xxClientError());
     }
 
@@ -227,9 +214,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("Cannot add a module because module name empty");
         String jsonString = "{\"applicationName\":\"" + "REALAPP" + "\", \"imageName\":\"" + "" + "\"}";
         ResultActions resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().is4xxClientError());
     }
 
@@ -238,9 +225,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("Cannot add a module because module name empty");
         String jsonString = "{\"applicationName\":\"" + "REALAPP" + "\", \"imageName\":\"" + "UFO" + "\"}";
         ResultActions resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().is4xxClientError());
     }
 
@@ -255,9 +242,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         // add a module
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().isOk());
 
         // Expected values
@@ -265,24 +252,24 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+                .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(genericModule));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modules[0].status").value("START"))
+                .andExpect(jsonPath("$.modules[0].name").value(genericModule));
 
         // remove a module
         resultats = mockMvc.perform(delete("/module/" + applicationName + "/" + genericModule)
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON));
         resultats.andExpect(status().isOk());
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+                .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0]").doesNotExist());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modules[0]").doesNotExist());
     }
 
     @Test
@@ -296,9 +283,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         // add a first module
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().isOk());
 
         // Expected values
@@ -306,18 +293,18 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         // get the detail of the applications to verify modules addition
         resultats = mockMvc.perform(get("/application/" + applicationName)
-            .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
+                .session(session).contentType(MediaType.APPLICATION_JSON)).andDo(print());
         resultats
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].status").value("START"))
-            .andExpect(jsonPath("$.modules[0].name").value(module1));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modules[0].status").value("START"))
+                .andExpect(jsonPath("$.modules[0].name").value(module1));
 
         // add a second module
         jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andExpect(status().is4xxClientError());
     }
 
@@ -332,9 +319,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         // add a first module
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
         resultats = mockMvc.perform(post("/module")
-            .session(session)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonString));
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
         resultats.andDo(print());
         resultats.andExpect(status().isOk());
 
@@ -368,18 +355,18 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         logger.info("Publish module port for external access");
 
         requestAddModule()
-        	.andExpect(status().isOk());
+                .andExpect(status().isOk());
 
         SpyMatcherDecorator<Integer> responseModuleIdSpy = new SpyMatcherDecorator<>(Integer.class);
         SpyMatcherDecorator<List> forwardedPort = new SpyMatcherDecorator<>(List.class);
 
         requestApplication()
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.modules[0].id", responseModuleIdSpy));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.modules[0].id", responseModuleIdSpy));
 
         Integer moduleId = responseModuleIdSpy.getMatchedValue();
         requestPublishPort(moduleId, numberPort)
-            .andExpect(status().isOk());
+                .andExpect(status().isOk());
 
         requestApplication()
                 .andExpect(status().isOk())
@@ -395,14 +382,14 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     protected abstract void checkConnection(String forwardedPort);
 
     private String getContainerName() {
-        return "int-johndoe-"+applicationName+"-"+module;
+        return NamingUtils.getContainerName(applicationName, module, "johndoe");
     }
-    
+
     @Test
     public void test_runScript() throws Exception {
         requestAddModule();
         String filename = FilenameUtils.getName(testScriptPath);
-        if(filename == null){
+        if (filename == null) {
             logger.info("No script found - test escape");
         } else {
             MockMultipartFile file = new MockMultipartFile(
@@ -423,31 +410,59 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         }
     }
 
+    private ResultActions requestPublishPort(Integer id, String number) throws Exception {
+        ModulePortResource request = ModulePortResource.of()
+                .withPublishPort(true)
+                .build();
+        String jsonString = objectMapper.writeValueAsString(request);
+        return mockMvc.perform(put("/module/" + id + "/ports/" + number)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andDo(print());
+    }
+
+    private ResultActions requestAddModule() throws Exception {
+        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
+        return mockMvc.perform(post("/module")
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andDo(print());
+    }
+
+    private ResultActions requestApplication() throws Exception {
+        return mockMvc.perform(get("/application/" + applicationName)
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
+
     /**
      * Inner class to check relational database connection
-     *
      */
     public class CheckDatabaseConnection {
 
         public void invoke(String forwardedPort, String keyUser, String keyPassword,
                            String keyDB, String driver, String jdbcUrlPrefix) {
             try {
-                String urlToCall = "/application/" + applicationName + "/container/"+getContainerName()+"/env";
+                String urlToCall = "/application/" + applicationName + "/container/" + getContainerName() + "/env";
                 ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
                 String contentResult = resultats.andReturn().getResponse().getContentAsString();
-                List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>(){});
+                List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>() {
+                });
                 final String user = envs.stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
                 final String password = envs.stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
                 final String database = envs.stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
-                final String jdbcUrl = jdbcUrlPrefix+ipVagrantBox+":"+forwardedPort+"/" + database;
+                final String jdbcUrl = jdbcUrlPrefix + ipVagrantBox + ":" + forwardedPort + "/" + database;
                 Class.forName(driver);
                 await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
-                       .and().ignoreExceptions()
-                       .until(() -> {
-                           try(final Connection connection = DriverManager.getConnection(jdbcUrl, user, password)){
-                               return  connection.isValid(1000);
-                           }
-                       });
+                        .and().ignoreExceptions()
+                        .until(() -> {
+                            try (final Connection connection = DriverManager.getConnection(jdbcUrl, user, password)) {
+                                return connection.isValid(1000);
+                            }
+                        });
             } catch (Exception e) {
                 e.printStackTrace();
                 Assert.fail();
@@ -457,7 +472,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     /**
      * Inner class to check message broker
-     *
      */
     public class CheckBrokerConnection {
         public void invoke(String forwardedPort, String keyUser, String keyPassword,
@@ -488,15 +502,15 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Missing " + keyDB))
                         .getValue();
-                String brokerURL = ipVagrantBox+":"+forwardedPort;
+                String brokerURL = ipVagrantBox + ":" + forwardedPort;
                 String message = "Hello world!";
 
-                switch(protocol){
-                    case "JMS" :
+                switch (protocol) {
+                    case "JMS":
                         Assert.assertEquals(message,
                                 checkBrokerConnectionUtils.checkActiveMQJMSProtocol(message, brokerURL));
                         break;
-                    case "AMQP" :
+                    case "AMQP":
                         Assert.assertEquals(message,
                                 checkBrokerConnectionUtils.checkRabbitMQAMQPProtocol(message, brokerURL, user, password, vhost));
                         break;
@@ -515,7 +529,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     /**
      * Inner class to check elasticsearch connection
-     *
      */
     public class CheckElasticSearchConnection {
         public void invoke(String forwardedPort) {
@@ -523,7 +536,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             try {
                 await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
                         .and().ignoreExceptions()
-                        .until(()-> {
+                        .until(() -> {
                             try {
 
                                 "elasticsearch".contains(TestUtils.getUrlContentPage(url));
@@ -540,13 +553,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     /**
      * Inner class to check redis connection
-     *
      */
     public class CheckRedisConnection {
 
         public void invoke(String forwardedPort) {
-            try(JedisPool pool = new JedisPool(
-                    new JedisPoolConfig(), ipVagrantBox, Integer.parseInt(forwardedPort), 3000)){
+            try (JedisPool pool = new JedisPool(
+                    new JedisPoolConfig(), ipVagrantBox, Integer.parseInt(forwardedPort), 3000)) {
                 Jedis jedis = pool.getResource();
             } catch (JedisConnectionException e) {
                 Assert.fail();
@@ -557,12 +569,11 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
     /**
      * Inner class to check redis connection
-     *
      */
     public class CheckMongoConnection {
         public void invoke(String forwardedPort) {
             MongoClient mongo = null;
-            try{
+            try {
                 mongo = new MongoClient(ipVagrantBox, Integer.parseInt(forwardedPort));
             } catch (UnknownHostException e) {
                 Assert.fail();
@@ -571,34 +582,6 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 mongo.close();
             }
         }
-    }
-
-    private ResultActions requestPublishPort(Integer id, String number) throws Exception {
-        ModulePortResource request = ModulePortResource.of()
-                .withPublishPort(true)
-                .build();
-        String jsonString = objectMapper.writeValueAsString(request);
-        return mockMvc.perform(put("/module/" + id + "/ports/" + number)
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
-                .andDo(print());
-    }
-
-    private ResultActions requestAddModule() throws Exception {
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"imageName\":\"" + module + "\"}";
-        return mockMvc.perform(post("/module")
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
-                .andDo(print());
-    }
-
-    private ResultActions requestApplication() throws Exception {
-        return mockMvc.perform(get("/application/" + applicationName)
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print());
     }
 
 }

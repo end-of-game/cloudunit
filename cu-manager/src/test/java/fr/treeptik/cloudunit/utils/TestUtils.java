@@ -26,12 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 
 /**
@@ -39,13 +34,12 @@ import java.net.URL;
  */
 public class TestUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestUtils.class);
-
     /**
      * Number of maximum iteration to test the content page.
      * Raise the value if some tests are not fonctional.
      */
     public static final Integer NB_ITERATION_MAX = 30;
+    private static final Logger logger = LoggerFactory.getLogger(TestUtils.class);
 
     /**
      * Return the content of an URL.
@@ -56,7 +50,7 @@ public class TestUtils {
      * @throws IOException
      */
     public static String getUrlContentPage(String url)
-        throws ParseException, IOException {
+            throws ParseException, IOException {
         HttpGet request = new HttpGet(url);
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpResponse response = httpClient.execute(request);
@@ -72,7 +66,7 @@ public class TestUtils {
      * @throws IOException
      */
     public static MockMultipartFile downloadAndPrepareFileToDeploy(String remoteFile, String path)
-        throws IOException {
+            throws IOException {
         URL url;
         File file = new File(remoteFile);
         try (OutputStream outputStream = new FileOutputStream(file)) {

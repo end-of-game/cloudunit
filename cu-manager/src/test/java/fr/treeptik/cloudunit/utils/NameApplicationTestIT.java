@@ -47,27 +47,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration")
 public class NameApplicationTestIT {
 
-    protected String release;
-
+    private static String applicationName;
     private final Logger logger = LoggerFactory.getLogger(AbstractApplicationControllerTestIT.class);
-
+    protected String release;
     @Autowired
     private WebApplicationContext context;
-
     private MockMvc mockMvc;
-
     @Inject
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private Filter springSecurityFilterChain;
-
     @Inject
     private UserService userService;
-
     private MockHttpSession session;
-
-    private static String applicationName;
 
     @BeforeClass
     public static void initEnv() {
@@ -130,7 +122,7 @@ public class NameApplicationTestIT {
             resultats =
                     mockMvc.perform(get("/application/" + applicationName).session(session).contentType(MediaType.APPLICATION_JSON));
             resultats.andExpect(jsonPath("name").value(applicationName.toLowerCase()));
-        } catch(Exception e) {
+        } catch (Exception e) {
             logger.error(e.getLocalizedMessage());
         }
     }

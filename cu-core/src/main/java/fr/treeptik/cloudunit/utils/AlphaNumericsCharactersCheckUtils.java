@@ -36,7 +36,6 @@ public class AlphaNumericsCharactersCheckUtils {
         value = Normalizer.normalize(value, Form.NFD);
         value = value.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
         value = value.replaceAll("[^-_a-zA-Z0-9\\s]", "").replace(" ", "");
-        value = value.toLowerCase();
         logger.debug("After : " + value);
         return value;
     }
@@ -46,7 +45,6 @@ public class AlphaNumericsCharactersCheckUtils {
         String nfdNormalizedString = Normalizer.normalize(value, Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         value = pattern.matcher(nfdNormalizedString).replaceAll("");
-        value = value.toLowerCase();
         logger.debug("After : " + value);
         return value;
     }

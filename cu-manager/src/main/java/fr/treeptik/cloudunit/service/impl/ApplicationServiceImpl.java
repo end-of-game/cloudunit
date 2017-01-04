@@ -141,7 +141,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public void checkCreate(User user, String application) throws CheckException, ServiceException {
 		try {
 			if (checkAppExist(user, application)) {
-				throw new CheckException(messageSource.getMessage("app.exists", null, locale));
+				throw new CheckException(application +" already exists !");
 			}
 			if (checkNameLength(application)) {
 				throw new CheckException("This name has length equal to zero : " + application);
