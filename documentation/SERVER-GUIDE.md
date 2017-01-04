@@ -30,6 +30,27 @@ If all prerequisites are met, you can start installation procedure, you can add 
 ./bootstrap.sh
 ```
 
+### Silent install
+
+In order to automate cloudunit installation, silent option can be passed to bootstrap script, an environement file must exist in the folder where you execute the script and must be named ".env". below an exemple of environment file :
+
+```
+# Set CloudUnit deployment Environment
+
+CU_DOMAIN=cloudunit.io   # Domain for all created application ex: myapp.cloudunit.io
+CU_MANAGER_DOMAIN=cloudunit.io  # Url within Cloudunit UI will be reachable
+CU_GITLAB_DOMAIN=gitlab-cloudunit.io   # Url within Gitlab UI will be reachable
+CU_JENKINS_DOMAIN=jenkins-cloudunit.io   # Url within Jenkins UI will be reachable
+CU_KIBANA_DOMAIN=kibana-cloudunit.io   # Url within Kibana UI will be reachable
+CU_LETSCHAT_DOMAIN=letschat-cloudunit.io  # Url within Lets Chat UI will be reachable
+CU_NEXUS_DOMAIN=nexus-cu02.cloudunit.io  # Url within Nexus UI will be reachable
+CU_SONAR_DOMAIN=sonar-cu02.cloudunit.io  # Url within Sonar UI will be reachable
+ELASTICSEARCH_URL=elasticsearch  # Url of elasticsearch database default to internal one
+MYSQL_ROOT_PASSWORD=changeit  # Change Mysql Root Password
+MYSQL_DATABASE=cloudunit  # Mysql Database name
+HOSTNAME=cloudunit-host  #  Server hostname
+```
+
 During installation process, some information have to be set mannually like domain name to access to your server. For example : `cu01.cloudunit.io` or `cloudunit.local` and the password for `admincu` user.
 
 All module images (tomcat, mysql, postgresql ....) will be downloaded automatically
@@ -43,6 +64,10 @@ docker cp /path/to/your-public-key.pem cu-traefik:/certs/traefik.crt
 docker cp /path/to/your-private-key.pem cu-traefik:/certs/traefik.key
 docker restart cu-traefik
 ```
+
+## Silent install
+
+In order to automate Cloudunit installation, silent option can be add 
 
 # FAQ
 
