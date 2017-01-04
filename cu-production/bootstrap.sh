@@ -6,7 +6,15 @@ if [ -z "$1" ]; then
   echo "Warning, you will clone and build the default branch : $GIT_BRANCH"
   echo ""
 else
-  export GIT_BRANCH=$1
+  if [ "$1" = "--silent" ] || [ "$1" = "-s" ]; then
+    echo "SILENT_INSTALL=yes" >> .env
+    export GIT_BRANCH=dev
+  elif [ "$2" = "--silent" ] || [ "$2" = "-s" ]; then
+    echo "SILENT_INSTALL=yes" >> .env
+    export GIT_BRANCH=$1
+  else
+    export GIT_BRANCH=$1
+  fi
 fi
 
 export CU_USER=admincu
@@ -129,7 +137,7 @@ pull_images_from_dockerhub() {
   docker pull cloudunit/elk-elasticsearch
   docker pull cloudunit/jenkins
   docker pull traefik
-  cloudunit/elk-monitoring-agents
+  docker pull cloudunit/elk-monitoring-agents
   docker pull cloudunit/tomcat-6
   docker pull cloudunit/tomcat-7
   docker pull cloudunit/tomcat-8
@@ -231,6 +239,10 @@ question_pull_or_build
 override_rights
 add_user_to_sudoers
 
+if [ -n "$SILENT_INSTALL" ] || [ "$SILENT_INSTALL" = "yes" ]; then
+  cp -f .env /home/${CU_USER}/cloudunit/cu-compose
+fi
+
 cd /home/${CU_USER}/cloudunit/cu-compose
 su $CU_USER -c "/bin/bash cu-docker-compose.sh with-elk"
 
@@ -240,4 +252,3 @@ echo "# CloudUnit is started but don't forget to set a password to $CU_USER"
 echo "# Command : passwd $CU_USER"
 echo "#"
 echo "#"
-
