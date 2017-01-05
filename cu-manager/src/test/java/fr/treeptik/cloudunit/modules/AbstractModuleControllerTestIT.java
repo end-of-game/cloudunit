@@ -96,8 +96,8 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     @Autowired
     protected WebApplicationContext context;
     protected MockMvc mockMvc;
-    @Value("${ip.box.vagrant}")
-    protected String ipVagrantBox;
+    @Value("${database.hostname}")
+    protected String databaseHostname;
     protected MockHttpSession session;
     protected String domain;
     protected String server;
@@ -371,7 +371,9 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 .andDo(print())
                 .andExpect(jsonPath(String.format("$.modules[0].ports[?(@.containerValue == %s)].hostValue", numberPort)
                         , forwardedPort));
-        checkConnection(forwardedPort.getMatchedValue().stream().findFirst().get().toString());
+        String port = forwardedPort.getMatchedValue().stream().findFirst().get().toString();
+        logger.info("checkConnection for : " + port);
+        checkConnection(port);
     }
 
     protected abstract void checkConnection(String forwardedPort);
@@ -449,7 +451,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                 final String user = envs.stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
                 final String password = envs.stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
                 final String database = envs.stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
-                final String jdbcUrl = jdbcUrlPrefix + ipVagrantBox + ":" + forwardedPort + "/" + database;
+                final String jdbcUrl = jdbcUrlPrefix + databaseHostname + ":" + forwardedPort + "/" + database;
                 Class.forName(driver);
                 await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
                         .and().ignoreExceptions()
@@ -497,7 +499,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Missing " + keyDB))
                         .getValue();
-                String brokerURL = ipVagrantBox + ":" + forwardedPort;
+                String brokerURL = databaseHostname + ":" + forwardedPort;
                 String message = "Hello world!";
 
                 switch (protocol) {
@@ -527,7 +529,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
      */
     public class CheckElasticSearchConnection {
         public void invoke(String forwardedPort) {
-            String url = String.format("http://%s:%s", ipVagrantBox, forwardedPort);
+            String url = String.format("http://%s:%s", databaseHostname, forwardedPort);
             try {
                 await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
                         .and().ignoreExceptions()
@@ -552,7 +554,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
 
         public void invoke(String forwardedPort) {
             try (JedisPool pool = new JedisPool(
-                    new JedisPoolConfig(), ipVagrantBox, Integer.parseInt(forwardedPort), 3000)) {
+                    new JedisPoolConfig(), databaseHostname, Integer.parseInt(forwardedPort), 3000)) {
                 Jedis jedis = pool.getResource();
             } catch (JedisConnectionException e) {
                 Assert.fail();
@@ -568,7 +570,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         public void invoke(String forwardedPort) {
             MongoClient mongo = null;
             try {
-                mongo = new MongoClient(ipVagrantBox, Integer.parseInt(forwardedPort));
+                mongo = new MongoClient(databaseHostname, Integer.parseInt(forwardedPort));
             } catch (UnknownHostException e) {
                 Assert.fail();
                 e.printStackTrace();
