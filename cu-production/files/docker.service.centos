@@ -8,7 +8,7 @@ Type=notify
 # the default is not to use systemd for cgroups because the delegate issues still
 # exists and systemd currently does not support the cgroup feature set required
 # for containers run by docker
-ExecStart=/usr/bin/dockerd--bip 172.17.42.1/16 --dns 172.17.42.1 --tlsverify --tlscacert=/root/.docker/ca.pem --tlscert=/root/.docker/server.pem --tlskey=/root/.docker/server-key.pem  -H=0.0.0.0:2376 --dns 8.8.8.8 -H unix:///var/run/docker.sock -s devicemapper --storage-opt=dm.thinpooldev=/dev/mapper/docker-thinpool --storage-opt=dm.use_deferred_removal=true --storage-opt=dm.use_deferred_deletion=true
+ExecStart=/usr/bin/dockerd --bip 172.17.42.1/16 --dns 172.17.42.1 --tlsverify --tlscacert=/root/.docker/ca.pem --tlscert=/root/.docker/server.pem --tlskey=/root/.docker/server-key.pem  -H=0.0.0.0:2376 --dns 8.8.8.8 -H unix:///var/run/docker.sock -s devicemapper --storage-opt=dm.thinpooldev=/dev/mapper/docker-thinpool --storage-opt=dm.use_deferred_removal=true --storage-opt=dm.use_deferred_deletion=true
 ExecReload=/bin/kill -s HUP $MAINPID
 # Having non-zero Limit*s causes performance problems due to accounting overhead
 # in the kernel. We recommend using cgroups to do container-local accounting.
