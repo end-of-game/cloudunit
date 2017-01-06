@@ -50,8 +50,9 @@ generate_certs() {
   if [ "$distribution" = "Ubuntu" ]; then
     cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
   else
-    lvcreate --wipesignatures y -n pool docker -l 95%VG
-    lvcreate --wipesignatures y -n poolmeta docker -l 1%VG
+    lvcreate --wipesignatures y -n thinpool docker -l 95%VG
+    lvcreate --wipesignatures y -n thinpoolmeta docker -l 1%VG
+    lvconvert -y --zero n -c 512K --thinpool docker/thinpool --poolmetadata docker/thinpoolmeta
     /bin/cp -rf $CU_INSTALL_DIR/files/docker.service.centos /lib/systemd/system/docker.service
     systemctl daemon-reload
   fi
