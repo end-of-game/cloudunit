@@ -29,18 +29,32 @@ readonly ROOTUID="0"
 
 install_docker() {
   # INSTALL DOCKER
-  cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
-  apt-get install -y apt-transport-https ca-certificates
-  apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-  apt-get update
-  apt-get install -y docker-engine
+
+  if [ "$distribution" = "Ubuntu" ]; then
+    cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
+    apt-get install -y apt-transport-https ca-certificates
+    apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    apt-get update
+    apt-get install -y docker-engine
+  else
+    cp $CU_INSTALL_DIR/file/docker.repo /etc/yum.repos.d/docker.repo
+    yum -y install docker-engine
+    systemctl enable docker.service
+  fi
   usermod -a -G docker $CU_USER
 }
 
 generate_certs() {
   service docker stop
   sh /home/"$CU_USER"/cloudunit/cu-production/generate-certs.sh
-  cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
+  if [ "$distribution" = "Ubuntu" ]; then
+    cp -f $CU_INSTALL_DIR/files/docker.service /etc/default/docker
+  else
+    lvcreate --wipesignatures y -n pool docker -l 95%VG
+    lvcreate --wipesignatures y -n poolmeta docker -l 1%VG
+    /bin/cp -rf $CU_INSTALL_DIR/files/docker.service.centos /lib/systemd/system/docker.service
+    systemctl daemon-reload
+  fi
   service docker start
 }
 
@@ -55,8 +69,13 @@ check_root() {
 # check if the branch exists or not
 check_git_branch() {
     if [ ! -f /usr/bin/git ]; then
+      if [ "$distribution" = "Ubuntu" ]; then
         apt-get update
         apt-get install -y git
+      else
+        yum update
+        yum -y install git
+      fi
     fi
 
     BRANCH_EXIST=$(git ls-remote --heads https://github.com/Treeptik/cloudunit $GIT_BRANCH)
@@ -72,19 +91,30 @@ check_git_branch() {
 # CREATE ADMINCU USER admincu account
 create_admincu_user() {
     groupadd -g 10000 $CU_USER
-    useradd -m -u 10000 -g $CU_USER -G sudo -s /bin/bash $CU_USER
+    if [ "$distribution" = "Ubuntu" ]; then
+      useradd -m -u 10000 -g $CU_USER -G sudo -s /bin/bash $CU_USER
+    else
+      useradd -m -u 10000 -g $CU_USER -G wheel -s /bin/bash $CU_USER
+    fi
     ls /home
 }
 
 install_dependencies() {
     # PROVISION THE ENV
-    apt-get update
-    apt-get install -y nmap
-    apt-get install -y htop
-    apt-get install -y ncdu
-    apt-get install -y git
-    apt-get install -y haveged
-    apt-get install -y mysql-client
+
+    if [ "$distribution" = "Ubuntu" ]; then
+      apt-get update
+      apt-get install -y nmap
+      apt-get install -y htop
+      apt-get install -y ncdu
+      apt-get install -y git
+      apt-get install -y haveged
+      apt-get install -y mysql-client
+    else
+      yum install epel-release -y
+      yum -y update
+      yum -y install nmap htop ncdu mariadb-devel git haveged
+    fi
 }
 
 clone_project() {
@@ -208,6 +238,13 @@ logo_pulling_dockerhub() {
 #
 
 check_root
+
+if [ -f /etc/redhat-release ]; then
+  distribution=$(cat /etc/redhat-release | cut -c1-6)
+else
+  distribution=$(cat /etc/issue | cut -c1-6)
+fi
+
 check_git_branch
 
 install_dependencies

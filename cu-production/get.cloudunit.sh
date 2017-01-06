@@ -37,7 +37,12 @@ check_prerequisite() {
 	fi
 
 	# Check host system distribution and version
-  distribution=$(cat /etc/issue | cut -c1-6)
+	if [ -f /etc/redhat-release ]; then
+		distribution=$(cat /etc/redhat-release | cut -c1-6)
+	else
+  	distribution=$(cat /etc/issue | cut -c1-6)
+	fi
+
 	if [ "$distribution" = "Ubuntu" ]; then
 		distribution_version=$(cat /etc/issue | cut -c8-12)
 		if [ "$distribution_version" = "14.04" ] || [ "$distribution_version" = "16.04" ]; then
@@ -46,22 +51,37 @@ check_prerequisite() {
 			printf "\033[1;31m[KO]\033[0m Wrong $distribution Version (should be 14.04 or 16.04)\n"
 			exit 1
 		fi
+	elif [ "$distribution" = "CentOS" ]; then
+		distribution_version=$(cat /etc/redhat-release | cut -c22-22)
+		if [ "$distribution_version" = "7" ]; then
+			printf "\033[1;32m[OK]\033[0m $distribution version $(cat /etc/redhat-release | cut -c22-24) \n"
+		else
+			printf "\033[1;31m[KO]\033[0m Wrong $(cat /etc/redhat-release | cut -c22-24) Version (should be 7.X)\n"
+			exit 1
+		fi
 	fi
 
 	# Check kernel version
-	if [ "$(uname -r | cut -c1)" -ge 4 ]; then
-		printf "\033[1;32m[OK]\033[0m Kernel version \n"
-	else
-		printf "\033[1;31m[KO]\033[0m Kernel version sould be 4 or higher please upgrade you kernel \n"
-		exit 1
-	fi
-	
-	# Check AUFS filesystem
-	if ! grep -q aufs /proc/filesystems && ! sh -c 'modprobe aufs'; then
-                printf "\033[1;31m[KO]\033[0m AUFS is not present in kernel, install extra kernel package \n"
-		exit 1
-        else
-	        printf "\033[1;32m[OK]\033[0m AUFS in Kernel \n"
+	if [ "$distribution" = "Ubuntu" ]; then
+		if [ "$(uname -r | cut -c1)" -ge 4 ]; then
+			printf "\033[1;32m[OK]\033[0m Kernel version \n"
+		else
+			printf "\033[1;31m[KO]\033[0m Kernel version sould be 4 or higher please upgrade you kernel \n"
+			exit 1
+		fi
+		# Check AUFS filesystem
+		if ! grep -q aufs /proc/filesystems && ! sh -c 'modprobe aufs'; then
+	  	printf "\033[1;31m[KO]\033[0m AUFS is not present in kernel, install extra kernel package \n"
+			exit 1
+	  else
+	    printf "\033[1;32m[OK]\033[0m AUFS in Kernel \n"
+		fi
+	elif [ "$distribution" = "CentOS"  ]; then
+		if [ ! -f /sbin/vgs ]; then
+			printf "\033[1;31m[KO]\033[0m LVM (Logical volume manager) is not available, install lvm2 package \n"
+		else
+			printf "\033[1;32m[OK]\033[0m LVM is installed, please create a volume group dedicated to docker named docker\n"
+		fi
 	fi
 }
 
