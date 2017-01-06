@@ -37,7 +37,7 @@ install_docker() {
     apt-get update
     apt-get install -y docker-engine
   else
-    cp $CU_INSTALL_DIR/file/docker.repo /etc/yum.repos.d/docker.repo
+    cp $CU_INSTALL_DIR/files/docker.repo /etc/yum.repos.d/docker.repo
     yum -y install docker-engine
     systemctl enable docker.service
   fi
