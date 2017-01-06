@@ -129,7 +129,7 @@ install_docker_compose() {
     if [ ! -f /usr/local/bin/docker-compose ]; then
       curl -o docker-compose -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
       chmod a+x docker-compose
-      sudo mv docker-compose /usr/local/bin
+      mv docker-compose /usr/local/bin
     fi
 }
 
