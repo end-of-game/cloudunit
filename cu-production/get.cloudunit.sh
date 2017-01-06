@@ -80,7 +80,11 @@ check_prerequisite() {
 		if [ ! -f /sbin/vgs ]; then
 			printf "\033[1;31m[KO]\033[0m LVM (Logical volume manager) is not available, install lvm2 package \n"
 		else
-			printf "\033[1;32m[OK]\033[0m LVM is installed, please create a volume group dedicated to docker named docker\n"
+			if vgdisplay | grep -q 'docker'; then
+  			printf "\033[1;32m[OK]\033[0m LVM is installed, volume group docker exist\n"
+			else
+  			printf "\033[1;31m[KO]\033[0m LVM is installed, but no docker volume group have been create, please create a dedicated and empty vg named docker \n"
+			fi
 		fi
 	fi
 }
