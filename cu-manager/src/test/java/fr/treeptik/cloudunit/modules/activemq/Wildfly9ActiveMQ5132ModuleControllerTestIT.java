@@ -24,7 +24,7 @@ public class Wildfly9ActiveMQ5132ModuleControllerTestIT extends AbstractModuleCo
 
     public Wildfly9ActiveMQ5132ModuleControllerTestIT() {
         super.server = "wildfly-9";
-        super.module = "activemq-5.13.2";
+        super.module = "activemq-5.13";
         super.numberPort = "61616";
         super.managerPrefix = "";
         super.managerSuffix = "";

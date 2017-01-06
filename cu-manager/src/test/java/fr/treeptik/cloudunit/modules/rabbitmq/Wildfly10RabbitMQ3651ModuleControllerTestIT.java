@@ -24,7 +24,7 @@ public class Wildfly10RabbitMQ3651ModuleControllerTestIT extends AbstractModuleC
 
     public Wildfly10RabbitMQ3651ModuleControllerTestIT() {
         super.server = "wildfly-10";
-        super.module = "rabbitmq-3.6.5-1";
+        super.module = "rabbitmq-3.6";
         super.numberPort = "5672";
         super.managerPrefix = "";
         super.managerSuffix = "";
