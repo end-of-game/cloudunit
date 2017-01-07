@@ -40,21 +40,21 @@ In order to automate cloudunit installation, silent option can be passed to boot
 ```
 # Set CloudUnit deployment Environment
 
-CU_DOMAIN=cloudunit.io   # Domain for all created application ex: myapp.cloudunit.io
-CU_MANAGER_DOMAIN=cloudunit.io  # Url within Cloudunit UI will be reachable
-CU_GITLAB_DOMAIN=gitlab-cloudunit.io   # Url within Gitlab UI will be reachable
-CU_JENKINS_DOMAIN=jenkins-cloudunit.io   # Url within Jenkins UI will be reachable
-CU_KIBANA_DOMAIN=kibana-cloudunit.io   # Url within Kibana UI will be reachable
-CU_LETSCHAT_DOMAIN=letschat-cloudunit.io  # Url within Lets Chat UI will be reachable
-CU_NEXUS_DOMAIN=nexus.cloudunit.io  # Url within Nexus UI will be reachable
-CU_SONAR_DOMAIN=sonar.cloudunit.io  # Url within Sonar UI will be reachable
-ELASTICSEARCH_URL=elasticsearch  # Url of elasticsearch database default to internal one
-MYSQL_ROOT_PASSWORD=changeit  # Change Mysql Root Password
-MYSQL_DATABASE=cloudunit  # Mysql Database name
-HOSTNAME=cloudunit-host  #  Server hostname
+CU_DOMAIN=cloudunit.io                    # Domain for all created application ex: myapp.cloudunit.io
+CU_MANAGER_DOMAIN=cloudunit.io            # Url within Cloudunit UI will be reachable
+CU_GITLAB_DOMAIN=gitlab.cloudunit.io      # Url within Gitlab UI will be reachable
+CU_JENKINS_DOMAIN=jenkins.cloudunit.io    # Url within Jenkins UI will be reachable
+CU_KIBANA_DOMAIN=kibana.cloudunit.io      # Url within Kibana UI will be reachable
+CU_LETSCHAT_DOMAIN=letschat.cloudunit.io  # Url within Lets Chat UI will be reachable
+CU_NEXUS_DOMAIN=nexus.cloudunit.io        # Url within Nexus UI will be reachable
+CU_SONAR_DOMAIN=sonar.cloudunit.io        # Url within Sonar UI will be reachable
+ELASTICSEARCH_URL=elasticsearch           # Url of elasticsearch database default to internal one
+MYSQL_ROOT_PASSWORD=changeit              # Change Mysql Root Password
+MYSQL_DATABASE=cloudunit                  # Mysql Database name
+HOSTNAME=cloudunit-host                   #  Server hostname
 ```
 
-During installation process, some information have to be set mannually like domain name to access to your server. For example : `cu01.cloudunit.io` or `cloudunit.local` and the password for `admincu` user.
+During installation process, some information have to be set mannually like domain name to access to your server. For example : `foo.cloudunit.io` or `cloudunit.local` and the password for `admincu` user.
 
 All module images (tomcat, mysql, postgresql ....) will be downloaded automatically
 
