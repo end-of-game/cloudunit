@@ -27,7 +27,10 @@ curl -sSL https://raw.githubusercontent.com/Treeptik/cloudunit/dev/cu-production
 If all prerequisites are met, you can start installation procedure, you can add argument to the script in order to install different version of cloudunit, by default **dev** one will be installed :
 
 ```
-./bootstrap.sh [dev|master]
+./bootstrap.sh [branch]
+./bootstrap.sh dev
+./bootstrap.sh master
+...
 ```
 
 ##### Silent install
