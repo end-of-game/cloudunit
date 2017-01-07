@@ -188,7 +188,7 @@ public class NameApplicationTestIT {
                         .session(session)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString));
-        resultats.andExpect(status().is4xxClientError());
+        resultats.andExpect(status().is5xxServerError());
     }
 
     @Test
