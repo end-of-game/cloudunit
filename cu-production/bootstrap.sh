@@ -137,6 +137,7 @@ install_docker_compose() {
         curl -o docker-compose -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m`
         chmod a+x docker-compose
         mv docker-compose /usr/bin
+      fi
     fi
 }
 
