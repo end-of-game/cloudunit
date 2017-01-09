@@ -39,7 +39,6 @@ services:
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
           - "CU_JENKINS_DOMAIN=${CU_JENKINS_DOMAIN}"
-          - "CU_SUB_DOMAIN=${CU_SUB_DOMAIN}"
           - "CU_DOMAIN=${CU_DOMAIN}"
           - "CU_GITLAB_DOMAIN=${CU_GITLAB_DOMAIN}"
           - "CU_KIBANA_DOMAIN=${CU_KIBANA_DOMAIN}"
@@ -81,13 +80,15 @@ services:
           - gitlab-data:/var/opt/gitlab
           - ./cu-gitlab-ce/gitlab.rb:/etc/gitlab/gitlab.rb
       hostname: '${CU_GITLAB_DOMAIN}'
+      ports:
+          - "1212:22"
       environment:
         GITLAB_OMNIBUS_CONFIG: |
                external_url 'https://${CU_GITLAB_DOMAIN}'
       labels:
           - "traefik.frontend.entryPoints=https"
           - "traefik.backend=gitlab"
-          - "traefik.port=8080"
+          - "traefik.port=443"
           - "traefik.frontend.rule=Host:${CU_GITLAB_DOMAIN}"
 
   jenkins:
