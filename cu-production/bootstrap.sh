@@ -71,10 +71,10 @@ check_root() {
 check_git_branch() {
     if [ ! -f /usr/bin/git ]; then
       if [ "$distribution" = "Ubuntu" ]; then
-        apt-get update
+        apt-get -y update
         apt-get install -y git
       else
-        yum update
+        yum -y update
         yum -y install git
       fi
     fi
@@ -104,7 +104,7 @@ install_dependencies() {
     # PROVISION THE ENV
 
     if [ "$distribution" = "Ubuntu" ]; then
-      apt-get update
+      apt-get -y update
       apt-get install -y nmap
       apt-get install -y htop
       apt-get install -y ncdu
