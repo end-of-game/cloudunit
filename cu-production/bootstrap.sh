@@ -34,7 +34,7 @@ install_docker() {
     cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
     apt-get install -y apt-transport-https ca-certificates
     apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    apt-get update
+    apt-get -y update
     apt-get install -y docker-engine
   else
     cp $CU_INSTALL_DIR/files/docker.repo /etc/yum.repos.d/docker.repo
