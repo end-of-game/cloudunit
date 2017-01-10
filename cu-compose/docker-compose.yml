@@ -5,9 +5,9 @@ services:
       container_name: cu-redis
       image: redis:3.0.1
       command: redis-server --appendonly yes
+      environment:
+          - "TZ=${TZ}"
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
           - redis-data:/data
       labels:
           - "traefik.enable=false"
@@ -16,12 +16,11 @@ services:
       container_name: cu-mysql
       image: mysql:5.7.4
       environment:
+          - "TZ=${TZ}"
           - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
           - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes:
             - mysqldata:/var/lib/mysql
-            - /etc/localtime:/etc/localtime:ro
-            - /etc/timezone:/etc/timezone:ro
       labels:
             - "traefik.enable=false"
 
@@ -31,11 +30,10 @@ services:
       user: "1000:999"
       volumes:
           - /var/run/docker.sock:/var/run/docker.sock
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
           - ./.cloudunit:/opt/tomcat/.cloudunit
           - /home/$USER/.docker:/opt/certificats
       environment:
+          - "TZ=${TZ}"
           - CATALINA_OPTS="-Dspring.profiles.active=production"
           - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
           - "CU_JENKINS_DOMAIN=${CU_JENKINS_DOMAIN}"
@@ -55,6 +53,7 @@ services:
       container_name: cu-advisor
       image: google/cadvisor:0.14.0
       environment:
+          - "TZ=${TZ}"
           - DB_USER=root
           - DB_PASS=root
           - DB_NAME=cadvisor
@@ -63,8 +62,6 @@ services:
           - /var/run:/var/run:rw
           - /sys:/sys:ro
           - /var/lib/docker:/var/lib/docker:ro
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
       labels:
           - "traefik.enable=false"
@@ -73,8 +70,6 @@ services:
       container_name: cu-gitlab
       image: gitlab/gitlab-ce:8.14.5-ce.0
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
           - gitlab-config:/etc/gitlab
           - gitlab-logs:/var/log/gitlab
           - gitlab-data:/var/opt/gitlab
@@ -82,6 +77,8 @@ services:
       hostname: '${CU_GITLAB_DOMAIN}'
       ports:
           - "1212:22"
+      environment:
+          - "TZ=${TZ}"
       environment:
         GITLAB_OMNIBUS_CONFIG: |
                external_url 'https://${CU_GITLAB_DOMAIN}'
@@ -98,8 +95,8 @@ services:
       image: cloudunit/jenkins
       volumes:
           - jenkins-home:/var/jenkins_home
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
+      environment:
+          - "TZ=${TZ}"
       labels:
           - "traefik.frontend.entryPoints=https"
           - "traefik.backend=jenkins"
@@ -112,6 +109,7 @@ services:
       volumes:
         - "nexus-data:/nexus-data"
       environment:
+        - "TZ=${TZ}"
         - "JAVA_MIN_MEM=1024m"
         - "JAVA_MAX_MEM=1024m"
       labels:
@@ -124,6 +122,8 @@ services:
       container_name: cu-traefik
       image: traefik
       command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
+      environment:
+          - "TZ=${TZ}"
       ports:
           - "80:80"
           - "443:443"
@@ -131,8 +131,6 @@ services:
       volumes:
           - /var/run/docker.sock:/var/run/docker.sock
           - ./cu-traefik/traefik.toml:/traefik.toml
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
           - ./cu-traefik/certs:/certs
       labels:
         - "traefik.enable=false"

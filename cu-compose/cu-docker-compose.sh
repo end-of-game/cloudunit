@@ -126,6 +126,11 @@ function generate-env {
   #  echo "BRANCH=dev" >> .env
   #fi
   echo "HOSTNAME=$HOSTNAME" >> .env
+  if [ -f /etc/redhat-release ]; then
+    echo "TZ=$(sed -n 2p /etc/localtime)" >> .env     
+  else
+    echo "TZ=$(cat /etc/timezone)" >> .env 
+  fi
 }
 
 function with-elk {
