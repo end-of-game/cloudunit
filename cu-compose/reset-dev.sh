@@ -57,7 +57,6 @@ for container in $(docker ps -aq --format '{{.Names}}' --filter "label=origin=ap
   echo "Delete applicative container "$container
   docker rm -f $container
   docker volume rm $container
-  docker volume ls -qf dangling=true | xargs -r docker volume rm
 done
 
 echo "*******************************"
