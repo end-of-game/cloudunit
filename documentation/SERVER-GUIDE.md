@@ -81,14 +81,14 @@ In order to automate Cloudunit installation, silent option can be add
 ```
 apt-get install linux-image-4.4.0-42-generic
 apt-get install -y linux-image-extra-$(uname -r)
-```
 
 ```
-```
+
 ## How to install lvm2 package for Centos Distro
 
 ```
 yum -y update && yum -y install lvm2
+
 ```
 
 ## How to restart the production environment without reseting data
