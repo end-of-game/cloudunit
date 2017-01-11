@@ -7,7 +7,7 @@ We hope to provide a simple installation following KISS principles.
 
 A virtual or baremetal server with
 * at least 8 GB RAM (32 GB or even 64 GB will be better!)
-* Ubuntu 14.04 LTS with a 4.x kernel with AUFS support (see FAQ if needed)
+* Ubuntu 14.04 LTS (with a 4.x kernel with AUFS support) Or Centos 7.x (With LVM2 package installed and a lvm vg named "docker") (see FAQ if needed)
 
 > No mysql server must be installed because one will be provided by CloudUnit. 
 > If one is already installed on the server, it will create a conflict on port 3306.
