@@ -84,8 +84,8 @@ apt-get install -y linux-image-extra-$(uname -r)
 ```
 
 ```
-
-## How to install lvm2 for CentOS
+```
+## How to install lvm2 package for Centos Distro
 
 ```
 apt -y update && apt -y install lvm2
