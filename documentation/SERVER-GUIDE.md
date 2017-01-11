@@ -74,7 +74,6 @@ In order to automate Cloudunit installation, silent option can be add
 
 # FAQ
 
-```
 
 ## How to install a 4.x kernel with AUFS support
 
@@ -89,6 +88,15 @@ apt-get install -y linux-image-extra-$(uname -r)
 ```
 yum -y update && yum -y install lvm2
 
+```
+
+## How to create a fullspace volume (Digital Ocean)
+
+```
+yum -y update && yum -y install lvm2
+fdisk -l
+pvcreate /dev/sda
+vgcreate docker /dev/sda
 ```
 
 ## How to restart the production environment without reseting data
