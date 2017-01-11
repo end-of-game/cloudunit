@@ -93,8 +93,6 @@ yum -y update && yum -y install lvm2
 ## How to create a fullspace volume (Digital Ocean)
 
 ```
-yum -y update && yum -y install lvm2
-fdisk -l
 pvcreate /dev/sda
 vgcreate docker /dev/sda
 ```
