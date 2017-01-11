@@ -88,7 +88,7 @@ apt-get install -y linux-image-extra-$(uname -r)
 ## How to install lvm2 package for Centos Distro
 
 ```
-apt -y update && apt -y install lvm2
+yum -y update && yum -y install lvm2
 ```
 
 ## How to restart the production environment without reseting data
