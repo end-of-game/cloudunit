@@ -63,7 +63,7 @@ All module images (tomcat, mysql, postgresql ....) will be downloaded automatica
 Once done execute these commands to copy you certificates into the traefik and restart the container :
 
 ```
-docker cp /path/to/your-public-key.pem cu-traefik:/certs/traefik.crt 
+docker cp /path/to/your-public-key.crt cu-traefik:/certs/traefik.crt 
 docker cp /path/to/your-private-key.pem cu-traefik:/certs/traefik.key
 docker restart cu-traefik
 ```
