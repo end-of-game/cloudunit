@@ -83,6 +83,14 @@ apt-get install linux-image-4.4.0-42-generic
 apt-get install -y linux-image-extra-$(uname -r)
 ```
 
+```
+
+## How to install lvm2 for CentOS
+
+```
+apt -y update && apt -y install lvm2
+```
+
 ## How to restart the production environment without reseting data
 
 ```
