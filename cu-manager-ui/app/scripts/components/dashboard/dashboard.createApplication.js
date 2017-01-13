@@ -58,7 +58,7 @@
     vm.isValid = isValid;
 
     vm.selectConfig = {
-      optgroupField: 'prefixId',
+      optgroupField: 'undef',
       optgroupLabelField: 'title',
       maxItems: 1,
       valueField: 'id',

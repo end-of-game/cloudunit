@@ -162,12 +162,10 @@ function reset {
         fi
     fi
 
-
     for container in $(docker ps -aq --format '{{.Names}}' --filter "label=origin=application"); do
       echo "Delete applicative container "$container
       docker rm -f $container
       docker volume rm $container
-      docker volume ls -qf dangling=true | xargs -r docker volume rm
     done
 
     docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
