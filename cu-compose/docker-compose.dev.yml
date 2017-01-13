@@ -67,7 +67,7 @@ services:
           GITLAB_OMNIBUS_CONFIG: |
               external_url 'http://${CU_GITLAB_DOMAIN}'
       labels:
-        - "traefik.frontend.entryPoints=https"
+        - "traefik.frontend.entryPoints=http"
         - "traefik.backend=cu-gitlab"
         - "traefik.port=80"
         - "traefik.frontend.rule=Host:gitlab.${CU_DOMAIN}"
@@ -79,11 +79,11 @@ services:
         context: cu-jenkins
       image: cloudunit/jenkins
       environment:
-        - "JAVA_OPTS=-Xmx1024m"
+         - "JAVA_OPTS=-Xmx512m"
       volumes:
         - jenkins-home:/var/jenkins_home
       labels:
-        - "traefik.frontend.entryPoints=https"
+        - "traefik.frontend.entryPoints=http"
         - "traefik.backend=cu-jenkins"
         - "traefik.port=8080"
         - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
@@ -91,13 +91,16 @@ services:
   nexus:
       container_name: cu-nexus
       image: sonatype/nexus3:3.2.0
+      ports:
+        - "9091:8081"
+        - "8123:8123"
       volumes:
         - "nexus-data:/nexus-data"
       environment:
         - "JAVA_MIN_MEM=512m"
         - "JAVA_MAX_MEM=512m"
       labels:
-        - "traefik.frontend.entryPoints=https"
+        - "traefik.frontend.entryPoints=http"
         - "traefik.backend=cu-nexus"
         - "traefik.port=8081"
         - "traefik.frontend.rule=Host:nexus.${CU_DOMAIN}"

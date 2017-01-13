@@ -120,6 +120,8 @@ services:
       image: sonatype/nexus3:3.2.0
       volumes:
         - "nexus-data:/nexus-data"
+      ports:
+        - "8123:8123"
       environment:
         - "TZ=${TZ}"
         - "JAVA_MIN_MEM=1024m"
