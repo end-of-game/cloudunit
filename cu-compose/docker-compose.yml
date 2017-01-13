@@ -103,6 +103,18 @@ services:
           - "traefik.port=8080"
           - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
 
+  sonarqube:
+    container_name: cu-sonar
+    image: 'sonarqube:6.2'
+    volumes:
+      - 'sonar-data:/opt/sonarqube/data'
+      - 'sonar-extensions:/opt/sonarqube/extensions'
+    labels:
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.backend=cu-sonar"
+      - "traefik.port=9000"
+      - "traefik.frontend.rule=Host:sonar.${CU_DOMAIN}"
+
   nexus:
       container_name: cu-nexus
       image: sonatype/nexus3:3.2.0
@@ -145,6 +157,8 @@ volumes:
   gitlab-config:
   gitlab-logs:
   gitlab-data:
+  sonar-data:
+  sonar-extensions:
   jenkins-home:
   traefik-certs:
   redis-data:
