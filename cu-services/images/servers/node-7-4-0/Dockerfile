@@ -4,6 +4,13 @@ RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
 ## CLOUDUNIT :: BEGINNING
+ENV CU_BACKUP /opt/cloudunit/backup
+ENV CU_HOOKS /opt/cloudunit/hooks
+ENV CU_JAVA /opt/cloudunit/java
+ENV CU_SCRIPTS /opt/cloudunit/scripts
+ENV CU_SHARED /opt/cloudunit/shared
+ENV CU_TMP /opt/cloudunit/tmp
+
 ENV CU_SERVER_RESTART_POST_DEPLOYMENT false
 ENV CU_SOFTWARE ""
 ENV CU_SERVER_MANAGER_PATH ""
@@ -43,6 +50,16 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
   && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-  && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+  && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+  && npm install express --save
 
-CMD [ "node" ]
+ADD index.js /index.js
+ADD docker-entrypoint.sh /docker-entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+LABEL origin application
+LABEL application-type node
+LABEL application-version 7-4-0

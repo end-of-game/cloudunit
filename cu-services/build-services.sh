@@ -38,6 +38,10 @@ function wildfly {
     docker build --rm $CACHE_STRATEGY -t cloudunit/wildfly-10   images/servers/wildfly-10
 }
 
+function node {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/node-7-4-0 images/servers/node-7-4-0
+}
+
 function postgre {
     docker build --rm $CACHE_STRATEGY -t cloudunit/postgresql-9-3 images/modules/postgresql-9-3
     docker build --rm $CACHE_STRATEGY -t cloudunit/postgresql-9-4 images/modules/postgresql-9-4
@@ -70,6 +74,7 @@ function elastic {
 function redis {
     docker build --rm $CACHE_STRATEGY -t cloudunit/redis-3-2 images/modules/redis-3-2
 }
+
 
 case "$1" in
 
@@ -143,6 +148,11 @@ echo "Building WildFly"
 wildfly
 ;;
 
+'node')
+echo "Building Node"
+node
+;;
+
 'all')
 echo "Building all"
 base
@@ -158,6 +168,7 @@ rabbitmq
 redis
 tomcat
 wildfly
+node
 ;;
 
 *)
@@ -182,6 +193,7 @@ echo "                    redis"
 echo "                    tomcat"
 echo "                    tools"
 echo "                    wildfly"
+echo "                    node"
 echo ""
 ;;
 
