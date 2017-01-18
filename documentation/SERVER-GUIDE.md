@@ -33,6 +33,9 @@ If all prerequisites are met, you can start installation procedure, you can add 
 ...
 ```
 
+You need to answer about the question : `build` or `pull` the images from dockerhub.
+The default value should be `build`
+
 ##### Silent install
 
 In order to automate cloudunit installation, silent option can be passed to bootstrap script, an environement file must exist in the folder where you execute the script and must be named ".env". below an exemple of environment file :
