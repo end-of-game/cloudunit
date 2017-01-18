@@ -1,0 +1,14 @@
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.springframework.boot:spring-boot-starter-web:1.4.3.RELEASE'
+    compile 'org.springframework.data:spring-data-redis:1.7.6.RELEASE'
+    compile 'redis.clients:jedis:2.9.0'
+    testCompile 'junit:junit:4.12'
+}
