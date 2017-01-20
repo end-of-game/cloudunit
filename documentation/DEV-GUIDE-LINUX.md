@@ -121,9 +121,13 @@ Open the project with your favorite IDE into **root** directory and add **cloudu
 Create a new maven task with **working directory** as `cloudunit/cu-manager`
 Use this option with maven : `clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant`
 
+**For Eclipse :**
+
 ![Architecture Dev](img/eclipse_root.png "Architecture Development")
 
 ![Architecture Dev](img/eclipse_conf.png "Architecture Development")
+
+**For Intellij :**
 
 ![Architecture Dev](img/intellij_root.png "Architecture Development")
 
