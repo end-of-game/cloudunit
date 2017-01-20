@@ -47,10 +47,10 @@ You need to add a local DNS entry pointing to the vagrant IP address.
 More precisely, any address ending with **.cloudunit.dev** should be directed to **192.168.50.4**. 
 On Ubuntu, a simple way to achieve this is to install dnsmasq:
 ```
-sudo apt-get install dnsmasq
-sudo vi /etc/dnsmasq.conf
+[Linux Host]    sudo apt-get install dnsmasq
+[Linux Host]    sudo vi /etc/dnsmasq.conf
 # Add the line: address=/.cloudunit.dev/192.168.50.4                      
-sudo service dnsmasq restart
+[Linux Host]    sudo service dnsmasq restart
 ```
 
 You should ping **foo.cloudunit.dev** to **192.168.50.4**
@@ -58,15 +58,15 @@ You should ping **foo.cloudunit.dev** to **192.168.50.4**
 ### Step 2 - How to install Vagrant plugins
 
 ```
-sudo apt-get install ruby-dev
-vagrant plugin install vagrant-reload
-vagrant plugin install vagrant-vbguest
+[Linux Host]    sudo apt-get install ruby-dev
+[Linux Host]    vagrant plugin install vagrant-reload
+[Linux Host]    vagrant plugin install vagrant-vbguest
 ```
 
 ### Step 3 - How to install source code
 
 ```
-cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
+[Linux Host]    cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
 ```
 
 ### Step 4 - How to install Angular Project dependencies 
