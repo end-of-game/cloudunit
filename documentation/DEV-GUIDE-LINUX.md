@@ -74,14 +74,14 @@ cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
 Follow these instructions :
 ```
 Installation Node 5.x :
-    curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
-    sudo apt-get install nodejs
+[Linux Host]    curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
+[Linux Host]    sudo apt-get install nodejs
 ```
 
 ```
-sudo npm install -g grunt grunt-cli bower 
-cd $HOME/cloudunit/cu-manager-ui && npm install
-cd $HOME/cloudunit/cu-manager-ui && bower install
+[Linux Host]    sudo npm install -g grunt grunt-cli bower 
+[Linux Host]    cd $HOME/cloudunit/cu-manager-ui && npm install
+[Linux Host]    cd $HOME/cloudunit/cu-manager-ui && bower install
 ```
 
 ### Step 5 - How to build the vagrant box
@@ -90,14 +90,14 @@ Warning because this step could need lot of times !
 
 If your machine has at least 8 GB Memory
 ```
-cd $HOME/cloudunit/cu-vagrant 
-./mediumbox.sh
+[Linux Host]    cd $HOME/cloudunit/cu-vagrant 
+[Linux Host]    ./mediumbox.sh
 ```
 
 If your machine has less than 8 GB Memory
 ```
-cd $HOME/cloudunit/cu-vagrant 
-./smallbox.sh
+[Linux Host]    cd $HOME/cloudunit/cu-vagrant 
+[Linux Host]    ./smallbox.sh
 ```
 
 
@@ -106,15 +106,15 @@ cd $HOME/cloudunit/cu-vagrant
 1 - Start the vagrantbox and run Docker into Vagrant
 
 ```
-cd $HOME/cloudunit/cu-vagrant 
-vagrant ssh
-cd cloudunit/cu-compose && ./reset-dev.sh
+[Linux Host]    cd $HOME/cloudunit/cu-vagrant 
+[Linux Host]    vagrant ssh
+[VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 2 - Run the UI for development **with** IDE (http://0.0.0.0:9000) from Linux Host (not vagrant)
 **Outside the vagrand box** 
 ```
-cd $HOME/cloudunit/cu-manager-ui && grunt serve
+[Linux Host]    cd $HOME/cloudunit/cu-manager-ui && grunt serve
 ```
 You can use default password and login
 ```
@@ -156,8 +156,8 @@ All questions and answers about dev tasks
 ## How to reset Environment Development
 
 ```
-vagrant ssh
-cd cloudunit/cu-compose && ./reset-dev.sh
+[Linux Host]    vagrant ssh
+[VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh
 ```
     
 ## How to rebuild images
@@ -165,9 +165,9 @@ cd cloudunit/cu-compose && ./reset-dev.sh
 Update your sources, build the images and reninit the database :
 
 ```
-vagrant ssh dev
-cd cloudunit/cu-compose && ./build-services.sh all
-cd cloudunit/cu-compose && ./reset-dev.sh
+[Linux Host]    vagrant ssh dev
+[VagrantBox]    cd cloudunit/cu-compose && ./build-services.sh all
+[VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
 ## How to run e2e test (selenium & protractor)
@@ -176,17 +176,17 @@ First of all, you have to install Google Chrome.
 Then, start the application ([see step 6](#step6)) in parallel.
 
 ```
-cd $HOME/cloudunit/cu-manager-ui
-grunt test
+[Linux Host]    cd $HOME/cloudunit/cu-manager-ui
+[Linux Host]    grunt test
 ```
 
 ## How to java backend without IDE
 **Outside the vagrand box** 
 ```
-cd $HOME/cloudunit
-mvn clean install -DskipTests
-cd $HOME/cloudunit/cu-manager
-mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+[Linux Host]    cd $HOME/cloudunit
+[Linux Host]    mvn clean install -DskipTests
+[Linux Host]    cd $HOME/cloudunit/cu-manager
+[Linux Host]    mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
 
 
