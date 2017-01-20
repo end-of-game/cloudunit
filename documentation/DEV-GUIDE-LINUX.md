@@ -18,7 +18,7 @@ You are reading the wright guide, if you want to setup an environment to contrib
 ### General Rules
 
 * You have to configure a local dns (see further) to send any requests from your host to VM (IP fixed at 192.168.50.4) 
-* You use your favorite idea (intellij, Eclipse) to develop the maven project into 'cloudunit/cu-manager'.
+* You use your favorite idea (intellij, Eclipse) to develop the maven project cloudunit
 * The backend is a spring application exposing a REST API
 * The frontend is an AngularJS 1.4 consuming the backend API from Spring Java
 * You run the project with an embedded tomcat via maven tasks (tomcat:run). No need to install Tomcat locally.
@@ -140,7 +140,7 @@ You can run CloudUnit with a Maven task easily as :
 
 ## INTELLIJ
 
-Open the project with your favorite IDE into **root** directory and add **cu-manager** as Maven Project.
+Open the project with your favorite IDE into **root** directory and add **cloudunit** as Maven Project.
 Simply select the **pom.xml** and right click to select this option.
 
 ![Architecture Dev](img/intellij_root.png "Architecture Development")
