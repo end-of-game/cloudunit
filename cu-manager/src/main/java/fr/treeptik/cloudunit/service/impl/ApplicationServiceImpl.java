@@ -106,9 +106,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Value("#{systemEnvironment['CU_DOMAIN']}")
 	private String domainSuffix;
 
-	@Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-	private String subdomainPrefix;
-
 	protected String domain;
 
 	@Value("${cloudunit.instance.name}")
@@ -123,11 +120,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         imageNames = imagesEnabled.stream().map(i -> i.getName()).collect(Collectors.toList());
 		logger.info("{} images have been loaded from database", imageNames.size());
 
-		if (subdomainPrefix != null) {
-			domain = subdomainPrefix + "." + domainSuffix;
-		} else {
-			domain = "." + domainSuffix;
-		}
+		domain = NamingUtils.getCloudUnitDomain(domainSuffix);
     }
 
     /**

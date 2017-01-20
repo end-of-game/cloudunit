@@ -77,9 +77,6 @@ public class ServerServiceImpl implements ServerService {
     @Value("#{systemEnvironment['CU_DOMAIN']}")
     private String domainSuffix;
 
-    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomainPrefix;
-
     protected String domain;
 
     @Inject
@@ -106,11 +103,7 @@ public class ServerServiceImpl implements ServerService {
 
     @PostConstruct
     public void init() throws ServiceException {
-        if (subdomainPrefix != null) {
-            domain = subdomainPrefix + "." + domainSuffix;
-        } else {
-            domain = "." + domainSuffix;
-        }
+		domain = NamingUtils.getCloudUnitDomain(domainSuffix);
     }
 
     /**

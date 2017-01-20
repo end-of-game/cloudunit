@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,9 +57,6 @@ public class DockerServiceImpl implements DockerService {
     @Value("#{systemEnvironment['CU_DOMAIN']}")
     private String domainSuffix;
 
-    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomainPrefix;
-
     protected String domain;
 
     @Inject
@@ -69,11 +67,7 @@ public class DockerServiceImpl implements DockerService {
 
     @PostConstruct
     public void init() {
-        if (subdomainPrefix != null) {
-            domain = subdomainPrefix + "." + domainSuffix;
-        } else {
-            domain = "." + domainSuffix;
-        }
+        domain = NamingUtils.getCloudUnitDomain(domainSuffix);
     }
 
     @Override

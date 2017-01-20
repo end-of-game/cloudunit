@@ -79,12 +79,7 @@ public class Application implements Serializable {
 	private String deploymentStatus;
 
 	public String getLocation(){
-	    String domain = null;
-        if (System.getenv("CU_SUB_DOMAIN") != null) {
-            domain = System.getenv("CU_SUB_DOMAIN") + "." + System.getenv("CU_DOMAIN");
-        } else {
-            domain = "." + System.getenv("CU_DOMAIN");
-        }
+		String domain = NamingUtils.getCloudUnitDomain(System.getenv("CU_DOMAIN"));
         return NamingUtils.getContainerName(name, null, user.getLogin()) + domain;
 	}
 

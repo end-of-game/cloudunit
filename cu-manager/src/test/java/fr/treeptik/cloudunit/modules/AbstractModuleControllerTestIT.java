@@ -119,18 +119,12 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     private String cuInstanceName;
     @Value("#{systemEnvironment['CU_DOMAIN']}")
     private String domainSuffix;
-    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomainPrefix;
     @Inject
     private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
 
     @PostConstruct
     public void init() {
-        if (subdomainPrefix != null) {
-            domain = subdomainPrefix + "." + domainSuffix;
-        } else {
-            domain = "." + domainSuffix;
-        }
+        domain = NamingUtils.getCloudUnitDomain(domainSuffix);
     }
 
     @Before

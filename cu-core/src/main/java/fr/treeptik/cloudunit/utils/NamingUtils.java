@@ -70,4 +70,18 @@ public class NamingUtils {
             return mode;
         }
     }
+
+    /**
+     * Normalize the domain name
+     */
+    public static String getCloudUnitDomain(String input) {
+        if (input == null || input.isEmpty()) {
+            return ".cloudunit.dev";
+        } else {
+            if (!input.startsWith(".")) {
+                input = "." + input;
+            }
+            return input;
+        }
+    }
 }
