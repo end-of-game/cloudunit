@@ -49,8 +49,11 @@ On Ubuntu, a simple way to achieve this is to install dnsmasq:
 ```
 [Linux Host]    sudo apt-get install dnsmasq
 [Linux Host]    sudo vi /etc/dnsmasq.conf
-# Add the line: address=/.cloudunit.dev/192.168.50.4                      
-[Linux Host]    sudo service dnsmasq restart
+```
+Copy the line at the end of file `address=/.cloudunit.dev/192.168.50.4`
+
+```
+[Linux Host]    sudo service dnsmasq restart
 ```
 
 You should ping **foo.cloudunit.dev** to **192.168.50.4**
@@ -59,8 +62,8 @@ You should ping **foo.cloudunit.dev** to **192.168.50.4**
 
 ```
 [Linux Host]    sudo apt-get install ruby-dev
-[Linux Host]    vagrant plugin install vagrant-reload
-[Linux Host]    vagrant plugin install vagrant-vbguest
+[Linux Host]    sudo vagrant plugin install vagrant-reload
+[Linux Host]    sudo vagrant plugin install vagrant-vbguest
 ```
 
 ### Step 3 - How to install source code
@@ -86,24 +89,23 @@ Installation Node 5.x :
 
 ### Step 5 - How to build the vagrant box
 
-Warning because this step could need lot of times !
+Warning because this step could take a long time!
 
-If your machine has at least 8 GB Memory
+If your machine has 16 GB Memory
 ```
 [Linux Host]    cd $HOME/cloudunit/cu-vagrant 
 [Linux Host]    ./mediumbox.sh
 ```
 
-If your machine has less than 8 GB Memory
+Otherwise your machine has 8 GB Memory
 ```
 [Linux Host]    cd $HOME/cloudunit/cu-vagrant 
 [Linux Host]    ./smallbox.sh
 ```
 
+### Step 6 - Start the application
 
-### <a name="step6"></a>Step 6 - How to start the application
-
-1 - Start the vagrantbox and run Docker into Vagrant
+#### Start the vagrantbox and run Docker into Vagrant
 
 ```
 [Linux Host]    cd $HOME/cloudunit/cu-vagrant 
@@ -111,20 +113,9 @@ If your machine has less than 8 GB Memory
 [VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
-2 - Run the UI for development **with** IDE (http://0.0.0.0:9000) from Linux Host (not vagrant)
-**Outside the vagrand box** 
-```
-[Linux Host]    cd $HOME/cloudunit/cu-manager-ui && grunt serve
-```
-You can use default password and login
-```
-login: johndoe
-password: abc2015
-```
+#### Run the IDE 
 
-# IDE CONFIGURATION
-
-## ECLIPSE 
+**ECLIPSE**
 
 In your favorite IDE, select Import in File menu then **Existing Maven project**.
 Into **root** directory, select **cu-manager** and Finish.
@@ -138,15 +129,29 @@ You can run CloudUnit with a Maven task easily as :
     
 ![Architecture Dev](img/eclipse_conf.png "Architecture Development")
 
-## INTELLIJ
+**INTELLIJ**
 
 Open the project with your favorite IDE into **root** directory and add **cloudunit** as Maven Project.
+Use this option with maven : `clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant`
 
 ![Architecture Dev](img/intellij_root.png "Architecture Development")
 
 You can run CloudUnit with a Maven task easily as :
     
 ![Architecture Dev](img/intellij_conf.png "Architecture Development")
+
+#### RUN ANGULAR JS
+**Outside the vagrand box** 
+
+```
+[Linux Host]    cd $HOME/cloudunit/cu-manager-ui && grunt serve
+```
+Open http://0.0.0.0:9000 and you can use default password and login 
+```
+login: johndoe
+password: abc2015
+```
+
 
 # FAQ
 
@@ -187,6 +192,7 @@ Then, start the application ([see step 6](#step6)) in parallel.
 [Linux Host]    cd $HOME/cloudunit/cu-manager
 [Linux Host]    mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
 ```
+
 
 
 
