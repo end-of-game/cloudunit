@@ -108,6 +108,8 @@ Otherwise your machine has 8 GB Memory
 #### Start the vagrantbox and run Docker into Vagrant
 
 ```
+[Linux Host]    cd $HOME/cloudunit
+[Linux Host]    mvn clean install -DskipTests
 [Linux Host]    cd $HOME/cloudunit/cu-vagrant 
 [Linux Host]    vagrant ssh
 [VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh [ press y ]
