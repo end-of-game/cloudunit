@@ -107,22 +107,12 @@ cd $HOME/cloudunit/cu-vagrant
 
 ```
 cd $HOME/cloudunit/cu-vagrant 
-vagrant up (if not running)
 vagrant ssh
 cd cloudunit/cu-compose && ./reset-dev.sh
 ```
 
-2 - Start the Java Backend from Linux
+2 - Run the UI for development **with** IDE (http://0.0.0.0:9000) from Linux Host (not vagrant)
 **Outside the vagrand box** 
-```
-cd $HOME/cloudunit
-mvn clean install -DskipTests
-cd $HOME/cloudunit/cu-manager
-mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
-```
-
-3 - Run the UI for development (http://0.0.0.0:9000) from Linux
-
 ```
 cd $HOME/cloudunit/cu-manager-ui && grunt serve
 ```
@@ -142,24 +132,18 @@ When you have **Setup Maven plugins connectors** window, click on Finish button.
 
 Select **pom.xml** in the package explorer and right click to select.
 
-
 ![Architecture Dev](img/eclipse_root.png "Architecture Development")
-
 
 You can run CloudUnit with a Maven task easily as :
     
 ![Architecture Dev](img/eclipse_conf.png "Architecture Development")
-
 
 ## INTELLIJ
 
 Open the project with your favorite IDE into **root** directory and add **cu-manager** as Maven Project.
 Simply select the **pom.xml** and right click to select this option.
 
-
 ![Architecture Dev](img/intellij_root.png "Architecture Development")
-
-
 
 You can run CloudUnit with a Maven task easily as :
     
@@ -195,5 +179,15 @@ Then, start the application ([see step 6](#step6)) in parallel.
 cd $HOME/cloudunit/cu-manager-ui
 grunt test
 ```
+
+## How to java backend without IDE
+**Outside the vagrand box** 
+```
+cd $HOME/cloudunit
+mvn clean install -DskipTests
+cd $HOME/cloudunit/cu-manager
+mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+```
+
 
 
