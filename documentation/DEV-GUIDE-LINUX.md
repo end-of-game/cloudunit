@@ -113,31 +113,20 @@ Otherwise your machine has 8 GB Memory
 [VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh [ press y ]
 ```
 
-#### Run the IDE 
+#### Run the IDE
 
-**ECLIPSE**
+In your favorite IDE, select Import in File menu then **Existing Maven project** the directory `cloudunit`
+Open the project with your favorite IDE into **root** directory and add **cloudunit** as Maven Project.
 
-In your favorite IDE, select Import in File menu then **Existing Maven project**.
-Into **root** directory, select **cu-manager** and Finish.
-When you have **Setup Maven plugins connectors** window, click on Finish button.
-
-Select **pom.xml** in the package explorer and right click to select.
+Create a new maven task with **working directory** as `cloudunit/cu-manager`
+Use this option with maven : `clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant`
 
 ![Architecture Dev](img/eclipse_root.png "Architecture Development")
 
-You can run CloudUnit with a Maven task easily as :
-    
 ![Architecture Dev](img/eclipse_conf.png "Architecture Development")
-
-**INTELLIJ**
-
-Open the project with your favorite IDE into **root** directory and add **cloudunit** as Maven Project.
-Use this option with maven : `clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant`
 
 ![Architecture Dev](img/intellij_root.png "Architecture Development")
 
-You can run CloudUnit with a Maven task easily as :
-    
 ![Architecture Dev](img/intellij_conf.png "Architecture Development")
 
 #### RUN ANGULAR JS
