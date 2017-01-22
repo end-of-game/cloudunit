@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      idle-timeout: 10000
+    jdbcUrl: jdbc:mysql://localhost:3306/weather
+    username: root
+    password: root
+
+hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+hibernate.show_sql: true
+hibernate.hbm2ddl.auto: update
+entitymanager.packagesToScan: fr.treeptik
+
