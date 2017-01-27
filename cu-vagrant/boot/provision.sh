@@ -66,7 +66,7 @@ sudo rm -f \
 #
 sudo apt-get update
 sudo apt-get install -y linux-image-extra-$(uname -r)
-sudo apt-get install -y docker-engine
+sudo apt-get install -y docker-engine=1.12.6-0~ubuntu-$(lsb_release -sc)
 sudo apt-get install -y mysql-client
 
 #sudo apt-mark hold docker-engine
