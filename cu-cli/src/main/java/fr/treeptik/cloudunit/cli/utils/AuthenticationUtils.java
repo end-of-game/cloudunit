@@ -43,10 +43,10 @@ public class AuthenticationUtils {
 	private Logger log;
 	
 	private Map<String, Object> map = new HashMap<>();
-	@Value("${host}")
+
+	@Value("${default.host}")
 	private String defaultHost;
-	@Value("${manager.version}")
-	private String apiVersion;
+
 	@Autowired
 	private UrlLoader urlLoader;
 	@Autowired

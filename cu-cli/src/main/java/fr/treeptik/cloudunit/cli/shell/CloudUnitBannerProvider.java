@@ -14,13 +14,20 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 public class CloudUnitBannerProvider implements BannerProvider, CommandMarker {
+    private static final String BANNER = "CloudUnit CLI";
 
-    @Value("${cli.version}")
+    private static final String WELCOME_MESSAGE =
+            "CloudUnit CLI %s - Create, deploy and manage your JAVA application into the Cloud";
+
+    @Value("${cloudunit.cli.version}")
     private String cliVersion;
+    
+    @Value("${cloudunit.cli.quiet:false}")
+    private boolean quiet;
 
     @Override
     public String getBanner() {
-        return FigletFont.convertOneLine("CloudUnit-CLI");
+        return unlessQuiet(FigletFont.convertOneLine(BANNER));
     }
 
     @Override
@@ -30,11 +37,15 @@ public class CloudUnitBannerProvider implements BannerProvider, CommandMarker {
 
     @Override
     public String getWelcomeMessage() {
-        return "CloudUnit " + cliVersion + " CLI - Create, deploy and manage your JAVA application into the Cloud";
+        return unlessQuiet(String.format(WELCOME_MESSAGE, cliVersion));
     }
 
     @Override
     public String getProviderName() {
         return "cloudunit-cli";
+    }
+    
+    private String unlessQuiet(String s) {
+        return quiet ? "" : s;
     }
 }

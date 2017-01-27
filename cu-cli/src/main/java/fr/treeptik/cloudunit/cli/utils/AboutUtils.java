@@ -29,10 +29,10 @@ public class AboutUtils {
     @Autowired
     private RestUtils restUtils;
     
-    @Value("${cli.version}")
+    @Value("${cloudunit.cli.version}")
     private String version;
     
-    @Value("${cli.timestamp}")
+    @Value("${cloudunit.cli.timestamp}")
     private String timestamp;
     
     public String getAbout() {

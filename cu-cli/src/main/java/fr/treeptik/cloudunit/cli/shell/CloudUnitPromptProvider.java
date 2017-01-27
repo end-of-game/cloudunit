@@ -3,6 +3,7 @@ package fr.treeptik.cloudunit.cli.shell;
 import java.text.MessageFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.shell.core.CommandMarker;
@@ -22,6 +23,9 @@ public class CloudUnitPromptProvider implements PromptProvider, CommandMarker {
     private static final String PROMPT_CONNECTED = "{0} {1}> ";
     private static final String PROMPT_APPLICATION_SELECTED = "{0} {1} {2}> ";
     private static final String PROMPT_EXPLORER = "{0} {1} [{2}]> ";
+    
+    @Value("${cloudunit.cli.quiet:false}")
+    private boolean quiet;
 
     @Autowired
     private AuthenticationUtils authenticationUtils;
@@ -39,7 +43,9 @@ public class CloudUnitPromptProvider implements PromptProvider, CommandMarker {
 
     @Override
     public String getPrompt() {
-        if (!authenticationUtils.isConnected()) {
+        if (quiet) {
+            return "";
+        } else if (!authenticationUtils.isConnected()) {
             return MessageFormat.format(PROMPT_NOT_CONNECTED, APPLICATION_NAME);
         } else if (!applicationUtils.isApplicationSelected()) {
             return MessageFormat.format(PROMPT_CONNECTED,
