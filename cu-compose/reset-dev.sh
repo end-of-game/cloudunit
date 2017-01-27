@@ -15,16 +15,20 @@
 
 source .env
 
+if [ "$CU_COMPOSE_FILES" = "" ]; then
+    CU_COMPOSE_FILES="-f docker-compose.elk.yml -f docker-compose.dev.yml"
+fi
+
 if [[ $USER != "vagrant" ]]; then
     echo "This script must be run as vagrant user for dev environment"
     exit 1
 fi
 
 if [ "$1" != "-y" ]; then
-    echo "Are you sure to delete them ? [y/n]"
+    echo "All containers will be deleted. Do you want to proceed ? [y/n]"
     read PROD_ASW
     if [ "$PROD_ASW" != "y" ] && [ "$PROD_ASW" != "n" ]; then
-        echo "Entrer y ou n!"
+        echo "Enter y or n!"
         exit 1
     elif [ "$PROD_ASW" = "n" ]; then
         exit 1
@@ -46,8 +50,8 @@ echo "***************************"
 echo -e "Removing containers And Volumes"
 echo "***************************"
 
-docker-compose  -f docker-compose.elk.yml -f docker-compose.dev.yml kill
-docker-compose  -f docker-compose.elk.yml -f docker-compose.dev.yml rm -f 
+docker-compose $CU_COMPOSE_FILES kill
+docker-compose $CU_COMPOSE_FILES rm -f 
 docker volume rm cucompose_gitlab-logs
 docker volume rm cucompose_mysqldata
 docker volume rm cucompose_redis-data
@@ -63,7 +67,5 @@ echo "*******************************"
 echo -e "Starting..."
 echo "*******************************"
 docker network create skynet
-docker-compose  --file docker-compose.dev.yml \
-                --file docker-compose.elk.yml \
-                up -d
+docker-compose $CU_COMPOSE_FILES up -d
 
