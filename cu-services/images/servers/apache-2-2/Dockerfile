@@ -28,7 +28,7 @@ RUN apt-get update \
         && apt-get install -y --no-install-recommends --no-install-suggests netcat \
 	    && rm -r /var/lib/apt/lists/*
 
-ENV HTTPD_VERSION 2.2.31
+ENV HTTPD_VERSION 2.2.32
 ENV HTTPD_SHA1 e3b55387112206307ba76526820a2627472f3787
 ENV HTTPD_BZ2_URL https://www.apache.org/dist/httpd/httpd-$HTTPD_VERSION.tar.bz2
 
