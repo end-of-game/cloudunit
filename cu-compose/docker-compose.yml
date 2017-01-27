@@ -30,7 +30,7 @@ services:
       user: "1000:999"
       volumes:
           - /var/run/docker.sock:/var/run/docker.sock
-          - ./.cloudunit:/opt/tomcat/.cloudunit
+          - /home/$USER/.cloudunit:/opt/tomcat/.cloudunit
           - /home/$USER/.docker:/opt/certificats
       environment:
           - "TZ=${TZ}"
