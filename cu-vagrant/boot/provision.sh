@@ -32,7 +32,7 @@ cp -f /home/$CU_USER/cloudunit/cu-vagrant/files/profile /home/$CU_USER/.profile
 source /home/$CU_USER/.profile
 cp -f /home/$CU_USER/cloudunit/cu-vagrant/files/hosts /etc/hosts
 cp -f /home/$CU_USER/cloudunit/cu-vagrant/files/environment /etc/environment
-cp -f /home/$CU_USER/cloudunit/cu-vagrant/files/.env /home/$CU_USER/cloudunit/cu-compose/.env
+cp -f /home/$CU_USER/cloudunit/cu-vagrant/files/.env.template /home/$CU_USER/cloudunit/cu-compose/.env
 cp -f /home/$CU_USER/cloudunit/cu-vagrant/files/.bashrc /home/$CU_USER/.bashrc
 sudo apt-get install -y apt-transport-https ca-certificates
 sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
