@@ -1,6 +1,10 @@
 package fr.treeptik.cloudunit.cli.shell;
 
 import com.github.lalyos.jfiglet.FigletFont;
+
+import fr.treeptik.cloudunit.cli.commands.CliFormatter;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -21,13 +25,13 @@ public class CloudUnitBannerProvider implements BannerProvider, CommandMarker {
 
     @Value("${cloudunit.cli.version}")
     private String cliVersion;
-    
-    @Value("${cloudunit.cli.quiet:false}")
-    private boolean quiet;
+
+    @Autowired
+    private CliFormatter formatter;
 
     @Override
     public String getBanner() {
-        return unlessQuiet(FigletFont.convertOneLine(BANNER));
+        return formatter.unlessQuiet(FigletFont.convertOneLine(BANNER));
     }
 
     @Override
@@ -37,15 +41,11 @@ public class CloudUnitBannerProvider implements BannerProvider, CommandMarker {
 
     @Override
     public String getWelcomeMessage() {
-        return unlessQuiet(String.format(WELCOME_MESSAGE, cliVersion));
+        return formatter.unlessQuiet(String.format(WELCOME_MESSAGE, cliVersion));
     }
 
     @Override
     public String getProviderName() {
         return "cloudunit-cli";
-    }
-    
-    private String unlessQuiet(String s) {
-        return quiet ? "" : s;
     }
 }
