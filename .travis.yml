@@ -4,6 +4,7 @@ services:
   - docker
 
 before_install:
+  - chmod 0600 ~/.gnupg/gpg.conf
   - docker pull ubuntu
   - docker ps -a
 
