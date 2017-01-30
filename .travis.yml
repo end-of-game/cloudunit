@@ -8,4 +8,4 @@ before_install:
   - docker ps -a
 
 script:
-- mvn clean install -DskipTests
+- cd cu-services && ./build-services.sh nginx
