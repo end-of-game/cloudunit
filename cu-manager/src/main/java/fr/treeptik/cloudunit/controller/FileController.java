@@ -282,7 +282,7 @@ public class FileController {
 		if (FileUnit.tar().test(fileName)) {
 			command = "tar xvf " + realPath + " -C " + path;
 		} else if (FileUnit.zip().test(fileName)) {
-			command = "unzip " + realPath + " -d " + path;
+			command = "unzip " + realPath + " -o -d " + path;
 		} else {
 			throw new CheckException("Cannot decompress this file. Extension is not right : " + realPath);
 		}
