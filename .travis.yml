@@ -8,6 +8,6 @@ before_install:
   - docker ps -a
 
 script:
-- cd cu-services && ./build-services.sh all > /dev/null
+- cd cu-services && ./build-services.sh nginx > /dev/null
 - cd cu-services && ./check_build_images.sh
 - docker images
