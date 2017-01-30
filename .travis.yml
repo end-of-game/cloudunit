@@ -5,8 +5,8 @@ services:
 
 before_install:
   - chmod 0600 ~/.gnupg/gpg.conf
-  - docker pull ubuntu
   - docker ps -a
 
 script:
-- cd cu-services && ./build-services.sh all
+- cd cu-services && ./check_build_images.sh
+- docker images
