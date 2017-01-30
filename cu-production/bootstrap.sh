@@ -35,7 +35,8 @@ install_docker() {
     apt-get install -y apt-transport-https ca-certificates
     apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
     apt-get -y update
-    apt-get install -y docker-engine
+    apt-get install -y docker-engine=1.12.6-0~ubuntu-$(lsb_release -sc)
+
   else
     cp $CU_INSTALL_DIR/files/docker.repo /etc/yum.repos.d/docker.repo
     yum -y install docker-engine
