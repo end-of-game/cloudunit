@@ -48,7 +48,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @EnableJpaRepositories("fr.treeptik.cloudunit.dao")
 @EnableTransactionManagement
-@Profile({"production", "integration", "vagrant"})
+@Profile({"production", "integration", "vagrant", "vagrant-demo"})
 public class DatabaseConfiguration {
 
     private Logger logger = LoggerFactory
