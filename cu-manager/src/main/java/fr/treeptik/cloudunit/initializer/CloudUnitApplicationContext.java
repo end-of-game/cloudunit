@@ -121,6 +121,19 @@ public class CloudUnitApplicationContext
     }
 
     @Bean
+    @Profile("vagrant-demo")
+    public static PropertySourcesPlaceholderConfigurer propertiesForDemo()
+            throws Exception {
+        String file = "application-vagrant-demo.properties";
+        PropertySourcesPlaceholderConfigurer pspc =
+                new PropertySourcesPlaceholderConfigurer();
+        pspc.setLocations(getResources(file));
+        pspc.setIgnoreUnresolvablePlaceholders(true);
+        pspc.setLocalOverride(true);
+        return pspc;
+    }
+
+    @Bean
     @Profile("integration")
     public static PropertySourcesPlaceholderConfigurer propertiesForIntegration()
             throws Exception {
