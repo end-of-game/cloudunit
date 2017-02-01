@@ -28,17 +28,6 @@ function with-elk {
 }
 
 function reset {
-    if [ "$1" != "-y" ]; then
-        echo "Are you sure to delete them ? [y/n]"
-        read PROD_ASW
-        if [ "$PROD_ASW" != "y" ] && [ "$PROD_ASW" != "n" ]; then
-            echo "Entrer y ou n!"
-            exit 1
-        elif [ "$PROD_ASW" = "n" ]; then
-            exit 1
-        fi
-    fi
-
     for container in $(docker ps -aq --format '{{.Names}}' --filter "label=origin=application"); do
       echo "Delete applicative container "$container
       docker rm -f $container
@@ -66,12 +55,8 @@ case "$1" in
 with-elk
 ;;
 
-'with-elk-and-selenium')
-init && with-elk-and-selenium
-;;
-
 'reset')
-reset
+reset $2
 ;;
 
 
@@ -81,7 +66,6 @@ echo "Usage $0 "
 echo "Example : $0 with-elk"
 echo "Choice between : "
 echo "                    with-elk"
-echo "                    with-elk-and-selenium"
 echo "                    reset"
 echo ""
 ;;
