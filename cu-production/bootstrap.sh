@@ -206,7 +206,7 @@ question_pull_or_build() {
     echo "Would you prefer to [build] or [pull] images (default is [pull])"
     echo "( pull / build / continue ) : "
     read PUSHPULL
-    if [ "$PUSHPULL" = "pull" ]; then
+    if [ "$PUSHPULL" = "pull" -o "$PUSHPULL" = "" ]; then
       logo_pulling_dockerhub
       pull_images_from_dockerhub
     elif [ "$PUSHPULL" = "build" ]; then
@@ -214,31 +214,21 @@ question_pull_or_build() {
       echo "image have been builded"
       cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
     elif [ "$PUSHPULL" = "continue" ]; then
-      echo "No action... we use current images"
+      echo "No action. We will use current images"
     elif [ -n "$PUSHPULL" ]; then
       pull_images_from_dockerhub
     else
-      echo "Sorry but I didn't understand you response..."
+      echo "Sorry, but I didn't understand your answer :("
       question_pull_or_build
     fi
 }
 
 logo_building_cloudunit() {
- echo " ____        _ _     _ _                ____ _                 _ _   _       _ _ "
- echo "| __ ) _   _(_) | __| (_)_ __   __ _   / ___| | ___  _   _  __| | | | |_ __ (_) |_ "
- echo "|  _ \| | | | | |/ _\` | | '_ \ / _\` | | |   | |/ _ \| | | |/ _\` | | | | '_ \| | __| "
- echo "| |_) | |_| | | | (_| | | | | | (_| | | |___| | (_) | |_| | (_| | |_| | | | | | |_ "
- echo "|____/ \__,_|_|_|\__,_|_|_| |_|\__, |  \____|_|\___/ \__,_|\__,_|\___/|_| |_|_|\__| "
- echo "                                |___/"
+ echo "Building CloudUnit..."
 }
 
 logo_pulling_dockerhub() {
- echo "____        _ _ _               ____             _             _   _       _"
- echo "|  _ \ _   _| | (_)_ __   __ _  |  _ \  ___   ___| | _____ _ __| | | |_   _| |__"
- echo "| |_) | | | | | | | '_ \ / _\` | | | | |/ _ \ / __| |/ / _ \ '__| |_| | | | | '_ \ "
- echo "|  __/| |_| | | | | | | | (_| | | |_| | (_) | (__|   <  __/ |  |  _  | |_| | |_) | "
- echo "|_|    \__,_|_|_|_|_| |_|\__, | |____/ \___/ \___|_|\_\___|_|  |_| |_|\__,_|_.__/ "
- echo "                          |___/"
+echo "Pulling CloudUnit..."
 }
 
 #
@@ -293,9 +283,9 @@ fi
 cd /home/${CU_USER}/cloudunit/cu-compose
 su $CU_USER -c "/bin/bash cu-docker-compose.sh with-elk"
 
-echo "#"
-echo "#"
-echo "# CloudUnit is started but don't forget to set a password to $CU_USER"
-echo "# Command : passwd $CU_USER"
-echo "#"
-echo "#"
+echo "  ____ _                 _ _   _       _ _   "
+echo " / ___| | ___  _   _  __| | | | |_ __ (_) |_ "
+echo "| |   | |/ _ \| | | |/ _\` | | | | '_ \| | __|"
+echo "| |___| | (_) | |_| | (_| | |_| | | | | | |_ "
+echo " \____|_|\___/ \__,_|\__,_|\___/|_| |_|_|\__|"
+echo "                           is up and running!"
