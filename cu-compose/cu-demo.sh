@@ -19,7 +19,13 @@
 ##
 ##
 
+if [[ $USER != "vagrant" ]]; then
+    echo "This script must be run as vagrant user for demo environment"
+    exit 1
+fi
+
 function with-elk {
+    cp ./.env.demo.xip.io .env
     source .env
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
