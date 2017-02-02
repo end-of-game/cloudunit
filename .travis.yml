@@ -2,10 +2,11 @@ sudo: required
 
 services:
   - docker
+  - maven
 
 before_install:
-  - docker pull ubuntu
   - docker ps -a
 
 script:
-- mvn clean install -DskipTests
+- cd cu-services && ./build-services.sh nginx
+- ./check_build_images.sh
