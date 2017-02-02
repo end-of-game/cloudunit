@@ -14,7 +14,7 @@ script:
 - docker images
 - ./check_build_images.sh
 - pwd
-- cd ~
-- mvn install -DskipTests=true
+- cd /home/travis/build/Treeptik/cloudunit/cu-manager &&  mvn install -DskipTests
+
 
 
