@@ -1,8 +1,10 @@
 sudo: required
+language: java
 
 services:
   - docker
   - maven
+
 
 before_install:
   - docker version
@@ -11,3 +13,8 @@ script:
 - cd cu-services && ./build-services.sh all
 - docker images
 - ./check_build_images.sh
+- pwd
+- cd ~
+- mvn install -DskipTests=true
+
+
