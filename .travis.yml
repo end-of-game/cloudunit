@@ -9,4 +9,5 @@ before_install:
 
 script:
 - cd cu-services && ./build-services.sh nginx
+- docker images
 - ./check_build_images.sh
