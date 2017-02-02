@@ -5,9 +5,9 @@ services:
   - maven
 
 before_install:
-  - docker ps -a
+  - docker version
 
 script:
-- cd cu-services && ./build-services.sh nginx > /dev/null
+- cd cu-services && ./build-services.sh all > /dev/null
 - docker images
 - ./check_build_images.sh
