@@ -1,4 +1,4 @@
-FROM kibana:5.1.1
+FROM kibana:5.1.2
 HEALTHCHECK CMD curl --fail http://localhost:5601/ || exit 1
 
 ENV PATH /usr/share/kibana/node/bin:$PATH

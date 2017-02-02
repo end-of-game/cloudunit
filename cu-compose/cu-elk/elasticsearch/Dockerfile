@@ -1,4 +1,4 @@
-FROM elasticsearch:5.1.1
+FROM elasticsearch:5.1.2
 HEALTHCHECK CMD curl --fail http://localhost:9200/ || exit 1
 
 COPY config ./config

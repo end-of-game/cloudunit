@@ -11,6 +11,10 @@ then
     sed -i $PATTERN_PASSWD /opt/cloudunit/tomcat/conf/tomcat-users.xml
 fi
 
+if [ -z "$APPLICATIVE_LOGGING" ] || [ "$APPLICATIVE_LOGGING" -eq 1 ]; then
+  /opt/cloudunit/logging-agents/filebeat/filebeat -c /opt/cloudunit/logging-agents/filebeat/conf.d/tomcat.yml -path.data /tmp&
+fi
+
 if [[ $1 == "run" ]]; then
   exec catalina.sh "run"
 fi

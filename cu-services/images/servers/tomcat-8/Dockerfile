@@ -95,8 +95,6 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "run" ]
 
-EXPOSE 8080
-
 LABEL origin application
 LABEL application-type tomcat
 LABEL application-version tomcat-$TOMCAT_VERSION

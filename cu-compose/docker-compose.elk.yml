@@ -18,6 +18,22 @@ services:
     labels:
        - "traefik.enable=false"
 
+  logstash:
+    container_name: cu-logstash
+    build:
+      context: ./cu-elk/logstash
+    image: cloudunit/elk-logstash
+    ports:
+      - "12201:12201/udp"
+    volumes:
+      - ./cu-elk/logstash/conf.d:/etc/logstash/conf.d
+      #- ./cu-elk/logstash/patterns:/etc/logstash/patterns
+    environment:
+      - "TZ=${TZ}"
+    command: -f /etc/logstash/conf.d/
+    labels:
+       - "traefik.enable=false"
+
   kibana:
     container_name: cu-kibana
     build:
@@ -57,6 +73,21 @@ services:
     depends_on:
       - elasticsearch
 
+  logging-agents:
+    container_name: cu-logging-agents
+    hostname: ${HOSTNAME}
+    build:
+      context: cu-elk/logging-agents
+    image: cloudunit/elk-logging-agents
+    volumes:
+      - logging-agents:/opt/cloudunit/logging-agents
+    environment:
+      - "TZ=${TZ}"
+      - "LOGSTASH_URL=logstash"
+      - "HOSTNAME=${HOSTNAME}"
+    labels:
+      - "traefik.enable=false"
+
 networks:
   default:
     external:
@@ -64,3 +95,4 @@ networks:
 volumes:
   elasticsearch-data:
   monitoring-agents:
+  logging-agents:

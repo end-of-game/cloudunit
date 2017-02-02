@@ -11,9 +11,8 @@ then
     sed -i $PATTERN_PASSWD /opt/cloudunit/tomcat/conf/tomcat-users.xml
 fi
 
-# if $APPLICATIVE_MONITORING doesn't exist or is equals to 1
-if [ -z "$APPLICATIVE_MONITORING" ] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
-	/opt/cloudunit/monitoring-agents/metricbeat/metricbeat -c /opt/cloudunit/monitoring-agents/metricbeat/conf.d/nginx.yml&
+if [ -z "$APPLICATIVE_LOGGING" ] || [ "$APPLICATIVE_LOGGING" -eq 1 ]; then
+  /opt/cloudunit/logging-agents/filebeat/filebeat -c /opt/cloudunit/logging-agents/filebeat/conf.d/tomcat.yml -path.data /tmp&
 fi
 
 # if $JMX_MONITORING doesn't exist or is equals to 1

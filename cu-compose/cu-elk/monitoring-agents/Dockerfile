@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 MAINTAINER s.musso@treeptik.fr
 
-ENV METRICBEAT_VERSION 5.1.1
+ENV METRICBEAT_VERSION 5.1.2
 
 ## Get Metricbeat binaries
 RUN mkdir -p /opt/cloudunit/monitoring-agents \

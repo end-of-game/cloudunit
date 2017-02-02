@@ -7,6 +7,10 @@ if [ -f "/opt/cloudunit/tmp/boot.jar" ]; then
     ls -la /opt/cloudunit/fatjar/
 fi
 
+if [ -z "$APPLICATIVE_LOGGING" ] || [ "$APPLICATIVE_LOGGING" -eq 1 ]; then
+  /opt/cloudunit/logging-agents/filebeat/filebeat -c /opt/cloudunit/logging-agents/filebeat/conf.d/fatjar.yml -path.data /tmp&
+fi
+
 # if `docker run` first argument start with `--` the user is passing fatjar launcher arguments
 if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]] ; then
   eval "exec java $JAVA_OPTS -jar /opt/cloudunit/fatjar/boot.jar  \"\$@\""
