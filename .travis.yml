@@ -8,11 +8,13 @@ services:
 before_install:
   - docker version
 
+install: travis_wait 30 mvn install
+
 script:
+- echo $USER
 - cd cu-services && ./build-services.sh all
 - docker images
 - ./check_build_images.sh
-- pwd
 - cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -B
-- cd /home/travis/build/Treeptik/cloudunit/cu-manager &&  mvn test "-Dtest=*IT"
+- cd /home/travis/build/Treeptik/cloudunit/cu-manager &&  mvn travis_wait 30 test "-Dtest=*IT"
 
