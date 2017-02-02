@@ -8,6 +8,6 @@ before_install:
   - docker version
 
 script:
-- cd cu-services && ./build-services.sh all > /dev/null
+- cd cu-services && ./build-services.sh all
 - docker images
 - ./check_build_images.sh
