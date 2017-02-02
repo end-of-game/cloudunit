@@ -14,5 +14,5 @@ script:
 - docker images
 - ./check_build_images.sh
 - pwd
-- cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests
+- cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -B
 
