@@ -1,0 +1,140 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<section data-ng-cloak="" id="account">
+  <header class="header clearfix">
+    <div class="page-header">
+      <div class="page-title">
+        <a class="icon-button primary"
+           data-ng-href="#dashboard"
+           ripple=""
+           tooltip=""
+           data-title="Retour"
+           data-placement="bottom">
+          <i class="icon-whhg pageback"></i>
+        </a>
+
+        <h2 class="title">
+          Manage Images
+        </h2>
+      </div>
+    </div>
+  </header>
+
+	<div class="account-image-card card col-lg-12">
+		<div class="content clearfix lol" id="settings-account-image">
+
+			<h3 class="title">Images</h3>
+
+			<div class="no-data" ng-if="!accountImage.listImages.length">
+				<p>No images are available yet !</p>
+			</div>
+
+			<table class="table" ng-if="accountImage.listImages.length">
+				<thead>
+					<tr>
+						<th ng-click="accountImage.order('path')"><i class="icon-whhg"  ng-show="accountImage.predicate == 'path'" ng-class="{ 'arrow-down': !accountImage.reverse, 'arrow-up': accountImage.reverse }"></i> namespace</th>
+						<th ng-click="accountImage.order('name')"><i class="icon-whhg"  ng-show="accountImage.predicate == 'name'" ng-class="{ 'arrow-down': !accountImage.reverse, 'arrow-up': accountImage.reverse }"></i> name</th>
+						<th ng-click="accountImage.order('prefixEnv')"><i class="icon-whhg"  ng-show="accountImage.predicate == 'prefixEnv'" ng-class="{ 'arrow-down': !accountImage.reverse, 'arrow-up': accountImage.reverse }"></i> category</th>
+						<th ng-click="accountImage.order('imageType')"><i class="icon-whhg"  ng-show="accountImage.predicate == 'imageType'" ng-class="{ 'arrow-down': !accountImage.reverse, 'arrow-up': accountImage.reverse }"></i> type</th>
+						<th>Actions</th>
+					</tr>
+						</thead>
+							<tbody>
+								<tr 
+									dir-paginate="img in accountImage.listImages | orderBy:accountImage.predicate:accountImage.reverse | itemsPerPage: accountImage.pageSize track by img.id"
+									data-current-page="accountImage.currentPage">
+									<td>
+											<span editable-text="img.path" e-name="path" e-form="rowform" e-required>
+													<span class="clipboard" id="path-{{img.id}}"
+													data-title="Copy to clipboard"
+													tooltip=""
+													ngclipboard data-clipboard-target="#path-{{img.id}}">{{ img.path }}</span>
+											</span>
+									</td>
+									<td>
+											<span editable-text="img.name" e-name="name" e-form="rowform"  e-required>
+													<span class="clipboard" id="name-{{img.id}}"
+													data-title="Copy to clipboard"
+													tooltip=""
+													ngclipboard data-clipboard-target="#name-{{img.id}}">{{ img.displayName }}</span>
+											</span>
+									</td>
+									<td>
+											<span editable-text="img.prefixEnv" e-name="prefixEnv" e-form="rowform" e-required>
+													<span class="clipboard" id="prefix-env-{{img.id}}"
+													data-title="Copy to clipboard"
+													tooltip=""
+													ngclipboard data-clipboard-target="#prefix-env-{{img.id}}">{{ img.prefixEnv }}</span>
+											</span>
+									</td>
+									<td>
+											<span editable-text="img.imageType" e-name="imageType" e-form="rowform" e-required>
+													<span class="clipboard" id="image-type-{{img.id}}"
+													data-title="Copy to clipboard"
+													tooltip=""
+													ngclipboard data-clipboard-target="#image-type-{{img.id}}">{{ img.imageType }}</span>
+											</span>
+									</td>
+									<td>
+										<button class="icon-button"
+											ripple=""
+											tooltip=""
+											data-title="Remove image"
+											data-placement="bottom"
+											ng-click="accountImage.removeImage(img)">
+											<i class="icon-whhg trash"></i>
+										</button>
+										<button ng-if="img.enable" class="icon-button"
+											ripple=""
+											tooltip=""
+											data-title="Disable image"
+											data-placement="bottom"
+											ng-click="accountImage.disableImage(img)">
+											<i class="icon-whhg brokenlink"></i>
+										</button>
+										<button ng-if="!img.enable" class="icon-button"
+											ripple=""
+											tooltip=""
+											data-title="Enable image"
+											data-placement="bottom"
+											ng-click="accountImage.enableImage(img)">
+											<i class="icon-whhg brokenlink"></i>
+										</button>
+							</td>
+						</tr>
+				</tbody>
+			</table>
+			<dir-pagination-controls ng-if="accountImage.listImages.length"></dir-pagination-controls>
+
+			<div class="alert alert-danger" data-ng-show="accountImage.manageErrorMsg">
+					<button type="button"
+					class="close"
+					ng-click="accountImage.manageErrorMsg = ''">
+					<span>&times;</span>
+			</button>
+			<p>{{accountImage.manageErrorMsg}}</p>
+			</div>
+			<div class="alert alert-info" data-ng-show="accountImage.manageNoticeMsg">
+				<button type="button"
+					class="close"
+					ng-click="accountImage.manageNoticeMsg = ''">
+					<span>&times;</span>
+				</button>
+				<p>{{accountImage.manageNoticeMsg}}</p>
+			</div>
+		</div>
+	</div>
+</section>

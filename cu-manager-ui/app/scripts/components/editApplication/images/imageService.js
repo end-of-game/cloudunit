@@ -63,7 +63,7 @@
     // Liste de toutes les images
     function findAll() {
       var listImages = $resource('image/all');
-      return listImages.query();
+      return listImages.query().$promise;
     }
   }
 
