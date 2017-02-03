@@ -61,25 +61,23 @@
         }
 
         function getContainers(selectedContainer) {
-            console.log(selectedContainer);
             vm.isLoading = true;
             return ApplicationService.listContainers($stateParams.name)
                 .then(function onGetContainersComplete(containers) {
                     vm.containers = containers;
                     vm.myContainer = selectedContainer || containers[0];
-
+                    console.log(vm.myContainer);
                     setTimeout(function () {
                         MonitoringService.getKibanaLocation()
                             .then(function (url) {
                                 vm.isLoading = false;
-                                //console.log(vm.myContainer.name.contains("mysql"))
-                                //if (vm.myContainer.name.contains("mysql")){
-                                var str = vm.myContainer.name.split("-")
-                                if ((str.length) != 2) {
-                                    var apptype = str[1]
-                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/"+ apptype +"?embed=true&_g=(refreshInterval:('$$hashKey':'object:1633',display:'10 seconds',pause:!f,section:1,value:10000),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'(metricset.module: docker AND docker.container.name: " + vm.myContainer.name + ") OR (metricset.module: " + apptype + " AND beat.name: " + vm.myContainer.name + ")')),title:"+ apptype +",uiState:())");
-                                } else {
+                                if (vm.myContainer.type == "server") {
                                     vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Container-Dashboard-Graph?embed=true&_g=(refreshInterval:('$$hashKey':'object:1633',display:'10 seconds',pause:!f,section:1,value:10000),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'docker.container.name:+" + vm.myContainer.name + "')),title:'Container+Dashboard+Graph',uiState:())");
+                                }
+                                else {
+                                    var tokens = vm.myContainer.name.split("-");
+                                    var moduleName= tokens[tokens.length -2];
+                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/"+ moduleName +"?embed=true&_g=(refreshInterval:('$$hashKey':'object:1633',display:'10 seconds',pause:!f,section:1,value:10000),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'(metricset.module: docker AND docker.container.name: " + vm.myContainer.name + ") OR (metricset.module: " + moduleName + " AND beat.name: " + vm.myContainer.name + ")')),title:"+ moduleName +",uiState:())");
                                 }
                             })
                             .catch(function (response) {

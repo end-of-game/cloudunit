@@ -400,8 +400,8 @@ public class DockerCloudUnitClient {
                         "Docker API answers with a 301 error code : " + dockerResponse.getBody());
             case 304:
                 logger.error("Docker API answers with a 304 error code : " + dockerResponse.getBody());
-                throw new ErrorDockerJSONException(
-                        "Docker API answers with a 304 error code : " + dockerResponse.getBody());
+                // For example, we don't throw an exception if we ask to start a container already started
+                break;
             case 400:
                 logger.error("Docker API answers with a 400 error code : " + dockerResponse.getBody());
                 throw new ErrorDockerJSONException(
