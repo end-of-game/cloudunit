@@ -20,57 +20,68 @@
     </h2>
   </div>
 </div>
-
-<p>
-<a data-ng-href="https://{{homepage.friends.jenkins}}"
-   data-title="Jenkins"
-   target="_blank"
-   data-placement="bottom">
-    {{homepage.friends.jenkins}}
-</a>
-</p>
-
-<p>
-<a data-ng-href="https://{{homepage.friends.gitlab}}"
-   data-title="Gitlab"
-   target="_blank"
-   data-placement="bottom">
-    {{homepage.friends.gitlab}}
-</a>
-</p>
-
-<p>
-<a data-ng-href="https://{{homepage.friends.nexus}}"
-   data-title="Nexus"
-   target="_blank"
-   data-placement="bottom">
-    {{homepage.friends.nexus}}
-</a>
-</p>
-
-<p>
-<a data-ng-href="https://{{homepage.friends.letschat}}"
-   data-title="Let's Chat"
-   target="_blank"
-   data-placement="bottom">
-    {{homepage.friends.letschat}}
-</a>
-</p>
-
-<p>
-<a data-ng-href="https://{{homepage.friends.kibana}}"
-   data-title="Kibana"
-   target="_blank"
-   data-placement="bottom">
-    {{homepage.friends.kibana}}
-</a>
-</p>
-
-<p>
-<a data-ng-href="https://{{homepage.friends.sonar}}"
-   data-title="SonarQube"
-   target="_blank"
-   data-placement="bottom">
-    {{homepage.friends.sonar}}
-</a>
-</p>
+<ul class="grid">
+  <li class="jenkins-container">
+    <a href="https://{{homepage.friends.jenkins}}" data-title="Jenkins" target="_blank">
+      <div class="jenkins"></div>
+      <br>
+      <h3 class="grid-title">Jenkins</h3>
+    </a>
+  </li>
+  <li class="gitlab-container">
+    <a href="https://{{homepage.friends.gitlab}}" data-title="Gitlab" target="_blank">
+      <div class="gitlab"></div>
+      <br>
+      <h3 class="grid-title">GitLab</h3>
+    </a>
+  </li>
+  <li class="sonar-container">
+    <a href="https://{{homepage.friends.sonar}}" data-title="SonarQube"  target="_blank">
+      <div class="sonar"></div>
+      <br>
+      <h3 class="grid-title">Sonar</h3>
+    </a>
+  </li>
+  <li class="letschat-container">
+    <a href="https://{{homepage.friends.letschat}}" data-title="Let's Chat'" target="_blank">
+      <div class="letschat"></div>
+      <br>
+      <h3 class="grid-title">Let's Chat</h3>
+    </a>
+  </li>
+  <li class="kibana-container">
+    <a data-ng-href="https://{{homepage.friends.kibana}}" data-title="Kibana" target="_blank">
+      <div class="kibana"></div>
+      <br>
+      <h3 class="grid-title">Kibana</h3>
+    </a>
+  </li>
+  <li class="nexus-container pending">
+    <a href="https://{{homepage.friends.nexus}}" data-title="Nexus" target="_blank">
+      <div class="nexus"></div>	
+      <br>
+      <h3 class="grid-title">Nexus</h3>
+    </a>
+  </li>
+  <li class="default-container">
+    <a target="_blank">
+      <div class="default"></div>	
+      <br>
+      <h3 class="grid-title">Anonymous</h3>
+    </a>
+  </li>
+  <li class="default-container">
+    <a target="_blank">
+      <div class="default"></div>	
+      <br>
+      <h3 class="grid-title">Anonymous</h3>
+    </a>
+  </li>
+  <li class="default-container">
+    <a target="_blank">
+      <div class="default"></div>	
+      <br>
+      <h3 class="grid-title">Anonymous</h3>
+    </a>
+  </li>
+</ul>
