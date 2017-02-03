@@ -14,5 +14,7 @@ script:
 - docker images
 - ./check_build_images.sh
 - cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -B
+- cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose with-elk
+- docker ps -a
 - cd /home/travis/build/Treeptik/cloudunit/cu-manager && travis_wait 60 mvn test "-Dtest=*IT"
 
