@@ -10,7 +10,7 @@ before_install:
 
 script:
 - echo $USER
-- cd cu-services && travis_wait 30 ./build-services.sh all
+- cd cu-services && travis_wait 60 ./build-services.sh all
 - docker images
 - ./check_build_images.sh
 - cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -B
