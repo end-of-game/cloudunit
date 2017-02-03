@@ -54,9 +54,10 @@
     }
     .status {
       @include clearfix();
+      margin-bottom: 15px;
     }
     .features {
-      padding: 16px 0px;
+      padding: 6px 0px 0px 0px;
       color: $color-muted;
       margin-bottom: 32px;
 
