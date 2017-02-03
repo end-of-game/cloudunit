@@ -10,10 +10,10 @@ PASSPHRASE=changeit
 
 # Origin from https://raw.githubusercontent.com/ksahnine/docker/master/gen-docker-certs.sh
 
-if [[ $USER != "root" ]]; then
-    echo "This script must be run as admincu"
-    exit 1
-fi
+#if [[ $USER != "root" ]]; then
+#    echo "This script must be run as admincu"
+#    exit 1
+#fi
 
 dhostname="localhost"
 dip="172.17.42.1"
@@ -39,7 +39,7 @@ sudo openssl x509 -passin pass:$PASSPHRASE -req -days 365 -in client.csr -CA $CA
 
 ## Nettoyage
 sudo rm -f client.csr server.csr extfile.cnf ca.srl
-sudo chmod 0400 $CA_KEY $CLIENT_KEY $SERVER_KEY
+sudo chmod 0444 $CA_KEY $CLIENT_KEY $SERVER_KEY
 sudo chmod 0444 $CA_CERT $SERVER_CERT $CLIENT_CERT
 
 ## Instruction

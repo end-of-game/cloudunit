@@ -23,12 +23,13 @@ ENV MAVEN_HOME /usr/share/maven
 ENV JAVA_HOME /cloudunit/java/jdk1.8.0_25
 
 # Dépendances Debian
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y git
-RUN apt-get install -y wget
-RUN apt-get install -y git-core
-RUN apt-get install -y unzip
+RUN apt-get update \
+    && apt-get install -y curl \
+    && apt-get install -y git \
+    && apt-get install -y wget \
+    && apt-get install -y git-core \
+    && apt-get install -y unzip \
+	&& rm -r /var/lib/apt/lists/*
 
 # Fix pour permettre de tirer correctement certaines dépendances
 RUN git config --global url."https://".insteadOf git://
@@ -41,9 +42,7 @@ RUN mkdir -p /cloudunit/java && wget https://github.com/Treeptik/cloudunit/relea
 RUN tar -xvf /tmp/jdk-8u25-linux-x64.tar.gz -C /cloudunit/java
 RUN rm /tmp/jdk-*
 
-RUN groupadd -r -g 1001 cloudunit && useradd -r -g cloudunit -u 1001 cloudunit
 RUN mkdir -p /home/cloudunit/app
-RUN chown -R cloudunit /home/cloudunit/app
 
 WORKDIR /home/cloudunit/app
 
@@ -88,8 +87,8 @@ RUN chmod +x $CATALINA_HOME/scripts/*.sh
 # Create tomcat user
 ARG user=tomcat
 ARG group=tomcat
-ARG uid=1000
-ARG gid=1000
+ARG uid=10000
+ARG gid=10000
 
 RUN groupadd -g ${gid} ${group}  && \
 	useradd -u ${uid} -g ${gid} -d ${CATALINA_HOME} tomcat && \
@@ -103,11 +102,12 @@ RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war /opt/tomcat/
 RUN ls -la /opt/tomcat/webapps
 RUN unzip /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war -d /opt/tomcat/webapps/ROOT
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager-ui/dist/* /opt/tomcat/webapps/ROOT
+RUN chown -R tomcat /home/cloudunit/
 RUN chown -R tomcat /opt/tomcat
 
 EXPOSE 8080
-EXPOSE 8009
 
 USER tomcat
 
 CMD ["tomcat.sh"]
+

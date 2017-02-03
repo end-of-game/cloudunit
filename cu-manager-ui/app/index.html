@@ -16,167 +16,171 @@
 
 <html class="no-js" id="ng-app" data-ng-app="webuiApp" data-ng-cloak="" ng-strict-di>
 <head>
-  <title>CloudUnit</title>
-  <meta charset="UTF-8">
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width">
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-  <!-- build:css(.) styles/vendor.css -->
-  <!-- bower:css -->
-  <link rel="stylesheet" href="bower_components/ng-table/ng-table.css" />
-  <link rel="stylesheet" href="bower_components/chartist/dist/chartist.min.css" />
-  <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css" />
-  <link rel="stylesheet" href="bower_components/textAngular/dist/textAngular.css" />
-  <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.css" />
-  <link rel="stylesheet" href="bower_components/metrics-graphics/dist/metricsgraphics.css" />
-  <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
-  <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css" />
-  <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css" />
-  <link rel="stylesheet" href="bower_components/angular-ui-switch/angular-ui-switch.css" />
-  <!-- endbower -->
-  <!-- endbuild -->
-  <!-- build:css(.tmp) styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css"/>
-  <!-- endbuild -->
+    <title>CloudUnit</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/ng-table/ng-table.css"/>
+    <link rel="stylesheet" href="bower_components/chartist/dist/chartist.min.css"/>
+    <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css"/>
+    <link rel="stylesheet" href="bower_components/textAngular/dist/textAngular.css"/>
+    <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.css"/>
+    <link rel="stylesheet" href="bower_components/metrics-graphics/dist/metricsgraphics.css"/>
+    <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css"/>
+    <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css"/>
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css"/>
+    <link rel="stylesheet" href="bower_components/angular-ui-switch/angular-ui-switch.css"/>
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css"/>
+    <!-- endbuild -->
 </head>
 <body data-ng-controller="MainCtrl as main" ng-class="{frozen: main.isFrozen}">
 <!--[if lt IE 10]>
 <div class="upgrade-browser" data-ng-init="browserOutdated = true">
-  <div class="card">
-    <div class="content">
-      <h2>Sorry, CloudUnit currently does not support Internet Explorer under version 10</h2>
+    <div class="card">
+        <div class="content">
+            <h2>Sorry, CloudUnit currently does not support Internet Explorer under version 10</h2>
 
-      <p class="browsehappy">
-        Please <a href="http://browsehappy.com/">upgrade
-        your browser</a> to improve your experience.</p>
+            <p class="browsehappy">
+                Please <a href="http://browsehappy.com/">upgrade
+                your browser</a> to improve your experience.</p>
+        </div>
     </div>
-  </div>
 </div>
 <![endif]-->
 
 <div data-ng-hide="main.browserOutdated">
-  <header id="header" class="app-bar" data-ng-show="main.isLogged()">
-    <div class="app-bar-header">
-      <h1 class="app-bar-brand">
-        <a class="brand" ui-sref="dashboard">
-          <img class="logo" src="styles/images/logo-cloudunit.png"></a>
-        <span class="badge">{{main.CUEnv}}</span>
-      </h1>
-      <ul class="primary-links">
-        <li><a ui-sref="dashboard">Dashboard</a></li>
-        <li class="disabled"><a ui-sref="snapshots">App Templates</a></li>
-        <li><a ui-sref="mainTimeline">Messages</a></li>
-        <li>
-          <div class="dropdown" dropdown>
-            <a class="dropdown-toggle"
-               dropdown-toggle> Scripting
-            </a>
-            <ul class="dropdown-menu" role="menu">
-              <li>
-                <a ui-sref="scriptingPlay">
-                  Play Script
-                </a>
-              </li>
-              <li>
-                <a ui-sref="scriptingManage">
-                  Manage Script
-                </a>
-              </li>
+    <header id="header" class="app-bar" data-ng-show="main.isLogged()">
+        <div class="app-bar-header">
+            <h1 class="app-bar-brand">
+                <a class="brand" ui-sref="dashboard">
+                    <img class="logo" src="styles/images/logo-cloudunit.png"></a>
+                <span class="badge">{{main.CUEnv}}</span>
+            </h1>
+            <ul class="primary-links">
+                <li><a ui-sref="dashboard">Dashboard</a></li>
+                <li class="disabled"><a ui-sref="snapshots">App Templates</a></li>
+                <li><a ui-sref="mainTimeline">Messages</a></li>
+                <li>
+                    <div class="dropdown" dropdown>
+                        <a class="dropdown-toggle"
+                           dropdown-toggle> Scripting
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ui-sref="scriptingPlay">
+                                    Play Script
+                                </a>
+                            </li>
+                            <li>
+                                <a ui-sref="scriptingManage">
+                                    Manage Script
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li><a ui-sref="editVolume">Volumes</a></li>
+                <li><a ui-sref="monitoring">Monitoring</a></li>
+                <li><a ui-sref="homepage">Portal</a></li>
+                <li class="app-bar-cli">
+                    <div class="dropdown" dropdown>
+                        <a class="dropdown-toggle"
+                           dropdown-toggle> CLI
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="/resources/CloudUnitCLI.jar" target="_blank">
+                                    Download Jar
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/Treeptik/cloudunit-cli" target="_blank">
+                                    Documentation on Github
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
-          </div>
-        </li>
-        <li><a ui-sref="editVolume">Volumes</a></li>
-        <li><a ui-sref="monitoring">Monitoring</a></li>
-        <li class="app-bar-cli">
-          <div class="dropdown" dropdown>
-            <a class="dropdown-toggle"
-               dropdown-toggle> CLI
-            </a>
-            <ul class="dropdown-menu" role="menu">
-              <li>
-                <a href="/resources/CloudUnitCLI.jar" target="_blank">
-                  Download Jar
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/Treeptik/cloudunit-cli" target="_blank">
-                  Documentation on Github
-                </a>
-              </li>
+        </div>
+        <div class="app-bar-icons">
+            <ul class="icon-bar">
+                <li class="button-container">
+                    <a data-ng-if="main.isAdmin" id="account-link" href="#account/admin" class="icon-button secondary"
+                       ripple=""
+                       tooltip="" data-title="Admin" data-placement="bottom">
+                        <i class="icon-whhg groups-friends"></i>
+                    </a>
+                </li>
+                <li class="button-container">
+                    <a id="account-link" ng-href="#/account/profil" class="icon-button secondary" ripple=""
+                       tooltip="" data-title="Account" data-placement="bottom">
+                        <i class="icon-whhg useralt"></i>
+                    </a>
+                </li>
+                <li class="button-container">
+                    <button id="about-btn" class="icon-button secondary" data-toggle="modal" data-target="#about"
+                            ripple="" tooltip=""
+                            data-title="About" data-placement="bottom">
+                        <i class="icon-whhg info-sign"></i>
+                    </button>
+                </li>
+                <li>
+                    <button id="logout-btn" class="icon-button secondary" data-ng-click="main.logout()" ripple=""
+                            tooltip=""
+                            data-title="Logout" data-placement="bottom">
+                        <i class="icon-whhg exit"></i>
+                    </button>
+                </li>
             </ul>
-          </div>  
-        </li>
-      </ul>
-    </div>
-    <div class="app-bar-icons">
-      <ul class="icon-bar">
-        <li class="button-container">
-          <a data-ng-if="main.isAdmin" id="account-link" href="#account/admin" class="icon-button secondary" ripple=""
-             tooltip="" data-title="Admin" data-placement="bottom">
-            <i class="icon-whhg groups-friends"></i>
-          </a>
-        </li>
-        <li class="button-container">
-          <a id="account-link" ng-href="#/account/profil" class="icon-button secondary" ripple=""
-             tooltip="" data-title="Account" data-placement="bottom">
-            <i class="icon-whhg useralt"></i>
-          </a>
-        </li>
-        <li class="button-container">
-          <button id="about-btn" class="icon-button secondary" data-toggle="modal" data-target="#about" ripple="" tooltip=""
-                  data-title="About" data-placement="bottom">
-            <i class="icon-whhg info-sign"></i>
-          </button>
-        </li>
-        <li>
-          <button id="logout-btn" class="icon-button secondary" data-ng-click="main.logout()" ripple="" tooltip=""
-                  data-title="Logout" data-placement="bottom">
-            <i class="icon-whhg exit"></i>
-          </button>
-        </li>
-      </ul>
-    </div>
-  </header>
+        </div>
+    </header>
 
-  <div class="modal" id="about">
-    <div class="modal-inner">
-      <div class="content clearfix">
-        <h3>About CloudUnit Manager</h3>
-        <div class="readonly">
-          <label for="about-version">API Version</label>
-          <input id="about-version" type="text" value="{{ main.about.version }}" readonly/>
+    <div class="modal" id="about">
+        <div class="modal-inner">
+            <div class="content clearfix">
+                <h3>About CloudUnit Manager</h3>
+                <div class="readonly">
+                    <label for="about-version">API Version</label>
+                    <input id="about-version" type="text" value="{{ main.about.version }}" readonly/>
+                </div>
+                <div class="readonly">
+                    <label for="about-timestamp">API Build Timestamp</label>
+                    <input id="about-timestamp" type="text" value="{{ main.about.timestamp }}" readonly/>
+                </div>
+                <div class="actions pull-right">
+                    <button type="button" class="button secondary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
         </div>
-        <div class="readonly">
-          <label for="about-timestamp">API Build Timestamp</label>
-          <input id="about-timestamp" type="text" value="{{ main.about.timestamp }}" readonly/>
-        </div>
-        <div class="actions pull-right">
-          <button type="button" class="button secondary" data-dismiss="modal">OK</button>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <div class="main">
-    <div data-ui-view></div>
-  </div>
-  <div class="lockscreen">
-    <div class="card">
-      <div class="alert alert-info">
-        <div class="spinner">
-          <div class="rect1"></div>
-          <div class="rect2"></div>
-          <div class="rect3"></div>
-          <div class="rect4"></div>
-          <div class="rect5"></div>
-        </div>
-        <h3 class="title large">System busy</h3>
-
-        <p class="body">A process is running, this dialog will close automatically.</p>
-      </div>
+    <div class="main">
+        <div data-ui-view></div>
     </div>
-  </div>
+    <div class="lockscreen">
+        <div class="card">
+            <div class="alert alert-info">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+                <h3 class="title large">System busy</h3>
+
+                <p class="body">A process is running, this dialog will close automatically.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -268,6 +272,7 @@
 <!--Services-->
 <script src="scripts/shared/services/userService.js"></script>
 <script src="scripts/shared/services/applicationService.js"></script>
+<script src="scripts/shared/services/homepageService.js"></script>
 <script src="scripts/shared/services/snapshotService.js"></script>
 <script src="scripts/shared/services/moduleService.js"></script>
 <script src="scripts/shared/services/scriptingService.js"></script>
@@ -344,8 +349,8 @@
 <script src="scripts/components/editApplication/images/imageService.js"></script>
 <script src="scripts/components/editApplication/monitoring/containers/editApplication.monitoring.containers.js"></script>
 <script src="scripts/components/editApplication/monitoring/kibana/editApplication.monitoring.kibana.js"></script>
+<script src="scripts/components/editApplication/monitoring/jmx/editApplication.monitoring.kibana.js"></script>
 <script src="scripts/components/editApplication/monitoring/monitoringService.js"></script>
-<script src="scripts/components/editApplication/monitoring/application/editApplication.monitoring.application.js"></script>
 <script src="scripts/components/editApplication/servers/editApplication.servers.js"></script>
 
 <script src="scripts/components/editApplication/overview/editApplication.overview.js"></script>
@@ -369,6 +374,9 @@
 <!--timeline-->
 <script src="scripts/components/mainTimeline/mainTimeline.config.js"></script>
 <script src="scripts/components/mainTimeline/mainTimeline.js"></script>
+<!--homepage-->
+<script src="scripts/components/homepage/homepage.config.js"></script>
+<script src="scripts/components/homepage/homepage.js"></script>
 <!--account-->
 <script src="scripts/components/account/account.config.js"></script>
 <script src="scripts/components/account/account.admin.js"></script>

@@ -67,7 +67,7 @@ public class ModuleUtils {
     public String getListModules() {
         applicationUtils.checkConnectedAndApplicationSelected();
         
-        String dockerManagerIP = applicationUtils.getCurrentApplication().getManagerIp();
+        String dockerManagerIP = authenticationUtils.finalHost;
         statusCommand.setExitStatut(0);
         MessageConverter.buildLightModuleMessage(applicationUtils.getCurrentApplication(), dockerManagerIP);
 

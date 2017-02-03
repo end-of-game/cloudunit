@@ -1,138 +1,151 @@
 version: '2'
 services:
 
-  java:
-      container_name: java
-      image: cloudunit/java
-      network_mode: bridge
-
-  dnsdock:
-      container_name: cuplatform_dnsdock_1
-      image: tonistiigi/dnsdock:v1.10.0
-      volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      ports:
-          - "172.17.42.1:53:53/udp"
-      command: -nameserver="8.8.8.8:53" -http=":80" -dns=":53" -verbose="true" -environment="cloud" -domain="unit"
-      network_mode: bridge
-
-  hipache:
-      container_name: cuplatform_hipache_1
-      image: tutum/hipache:0.3.1
-      ports:
-          - "80:80"
-      links:
-          - redis:redis
-      volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
-
   redis:
-      container_name: cuplatform_redis_1
+      container_name: cu-redis
       image: redis:3.0.1
       ports:
-          - "6379:6379"
+        - "6379:6379"
       command: redis-server --appendonly yes
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+        - redis-data:/data
+      labels:
+        - "traefik.enable=false"
 
   mysql:
-      container_name: cuplatform_mysql_1
+      container_name: cu-mysql
+      env_file: .env
       image: mysql:5.7.4
-      depends_on:
-           - mysqldata
       ports:
-           - "3306:3306"
+        - "3306:3306"
       environment:
-          - MYSQL_ROOT_PASSWORD
-          - MYSQL_DATABASE=cloudunit
-      volumes_from:
-           - mysqldata
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
       volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
-
-  mysqldata:
-      container_name: cuplatform_mysqldata_1
-      image: ubuntu:14.04
-      volumes:
-          - /home/vagrant/mysql_home:/var/lib/mysql
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
-
-  nginx:
-      container_name: cuplatform_nginx_1
-      build:
-        context: nginx
-      image: cloudunit/nginx
-      ports:
-          - "443:443"
-      volumes:
-          - ./nginx/sites-enabled:/etc/nginx/sites-enabled
-          - ./nginx/cloudunit.io:/etc/ssl/cloudunit.io
-          - ./nginx/www:/var/www
-          - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-          - ./nginx/log:/var/log/nginx
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-      network_mode: bridge
+        - mysqldata:/var/lib/mysql
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+      labels:
+        - "traefik.enable=false"
 
   cadvisor:
       container_name: cuplatform_cadvisor_1
       image: google/cadvisor:0.14.0
       environment:
-          - DB_USER=root
-          - DB_PASS=root
-          - DB_NAME=cadvisor
+        - DB_USER=root
+        - DB_PASS=root
+        - DB_NAME=cadvisor
       ports:
         - "8081:8080"
       volumes:
-          - /:/rootfs:ro
-          - /var/run:/var/run:rw
-          - /sys:/sys:ro
-          - /var/lib/docker:/var/lib/docker:ro
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
+        - /:/rootfs:ro
+        - /var/run:/var/run:rw
+        - /sys:/sys:ro
+        - /var/lib/docker:/var/lib/docker:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
       command: --housekeeping_interval=5s
-      network_mode: bridge
+      labels:
+        - "traefik.enable=false"
 
   gitlab:
-      container_name: cuplatform_gitlab_1
-      image: gitlab/gitlab-ce:8.12.3-ce.0
-      ports:
-          - "480:80"
-      depends_on:
-          - nginx
+      env_file: .env
+      container_name: cu-gitlab
+      image: gitlab/gitlab-ce:8.14.5-ce.0
       volumes:
-          - /etc/localtime:/etc/localtime:ro
-          - /etc/timezone:/etc/timezone:ro
-          - /srv/gitlab/config:/etc/gitlab
-          - /srv/gitlab/logs:/var/log/gitlab
-          - /srv/gitlab/data:/var/opt/gitlab
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+        - gitlab-config:/etc/gitlab
+        - gitlab-logs:/var/log/gitlab
+        - gitlab-data:/var/opt/gitlab
+        - ./cu-gitlab-ce/gitlab.rb:/etc/gitlab/gitlab.rb
       # Define the CU_GITLAB_DOMAIN into /etc/environment
       hostname: '${CU_GITLAB_DOMAIN}'
-      #environment:
-      #    GITLAB_OMNIBUS_CONFIG: |
-      #        external_url 'https://${CU_GITLAB_DOMAIN}'
-      network_mode: bridge
+      environment:
+          GITLAB_OMNIBUS_CONFIG: |
+              external_url 'http://${CU_GITLAB_DOMAIN}'
+      labels:
+        - "traefik.frontend.entryPoints=http"
+        - "traefik.backend=cu-gitlab"
+        - "traefik.port=80"
+        - "traefik.frontend.rule=Host:gitlab.${CU_DOMAIN}"
 
   jenkins:
-      container_name: cuplatform_jenkins_1
+      container_name: cu-jenkins
+      user: root
       build:
         context: cu-jenkins
       image: cloudunit/jenkins
-      ports:
-         - "9080:8080"
-         - "50000:50000"
-      depends_on:
-          - nginx
+      environment:
+         - "JAVA_OPTS=-Xmx512m"
       volumes:
-          - /home/vagrant/jenkins_home:/var/jenkins_home
-      network_mode: bridge
+        - jenkins-home:/var/jenkins_home
+      labels:
+        - "traefik.frontend.entryPoints=http"
+        - "traefik.backend=cu-jenkins"
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
+
+  nexus:
+      container_name: cu-nexus
+      image: sonatype/nexus3:3.2.0
+      ports:
+        - "9091:8081"
+        - "8123:8123"
+      volumes:
+        - "nexus-data:/nexus-data"
+      environment:
+        - "JAVA_MIN_MEM=512m"
+        - "JAVA_MAX_MEM=512m"
+      labels:
+        - "traefik.frontend.entryPoints=http"
+        - "traefik.backend=cu-nexus"
+        - "traefik.port=8081"
+        - "traefik.frontend.rule=Host:nexus.${CU_DOMAIN}"
+#
+#  sonarqube:
+#    container_name: cu-sonar
+#    image: 'sonarqube:6.2'
+#    volumes:
+#      - 'sonar-data:/opt/sonarqube/data'
+#      - 'sonar-extensions:/opt/sonarqube/extensions'
+#    labels:
+#      - "traefik.frontend.entryPoints=http"
+#      - "traefik.backend=cu-sonar"
+#      - "traefik.port=9000"
+#      - "traefik.frontend.rule=Host:sonar.${CU_DOMAIN}"
+
+  traefik:
+      container_name: cu-traefik
+      env_file: .env
+      image: traefik
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
+      ports:
+        - "80:80"
+        - "443:443"
+        - "9090:8080"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./cu-traefik/traefik.toml:/traefik.toml
+        - ./cu-traefik/certs:/certs
+      labels:
+        - "traefik.enable=false"
+
+networks:
+  default:
+    external:
+      name: skynet
+
+volumes:
+  mysqldata:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  jenkins-home:
+  sonar-data:
+  sonar-extensions:
+  traefik-certs:
+  redis-data:
+  nexus-data:

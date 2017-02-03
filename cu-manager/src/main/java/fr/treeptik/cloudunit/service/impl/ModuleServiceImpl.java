@@ -16,17 +16,16 @@
 package fr.treeptik.cloudunit.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +33,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,7 +59,6 @@ import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
 
 @Service
@@ -84,26 +81,8 @@ public class ModuleServiceImpl implements ModuleService {
     @Inject
     private DockerService dockerService;
 
-    @Value("${suffix.cloudunit.io}")
-    private String suffixCloudUnitIO;
-
-    @Value("${database.password}")
-    private String databasePassword;
-
-    @Value("${env.exec}")
-    private String envExec;
-
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
-
-    @Value("${database.hostname}")
-    private String databaseHostname;
-
-    @Value("${docker.endpoint.mode}")
-    private String dockerEndpointMode;
-
-    @Value("${docker.manager.ip:192.168.50.4:4243}")
-    private String dockerManagerIp;
 
     @Inject
     private ApplicationEventPublisher applicationEventPublisher;
@@ -118,40 +97,14 @@ public class ModuleServiceImpl implements ModuleService {
 
         // General informations
         checkImageExist(imageName);
-        Module module = new Module();
         Image image = imageService.findByName(imageName);
         checkModuleAlreadyPresent(image.getPrefixEnv(), application.getId());
-        module.setImage(image);
-        module.setName(imageName);
-        module.setApplication(application);
-        module.setStatus(Status.PENDING);
-        module.setStartDate(new Date());
-
-        //initialise module exposable ports
-        final List<Port> ports = new ArrayList<>();
-        final Module m = module;
-        image.getExposedPorts().keySet().stream()
-                .forEach(p -> {
-                    ports.add(new Port(p, image.getExposedPorts().get(p), null, false, m));
-                });
-        module.setPorts(ports);
+        Module module = application.addModule(image);
 
         // Build a custom container
-        String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
-                + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
-                + AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(module.getApplication().getName()) + "-"
-                + module.getName();
+        String containerName = NamingUtils.getContainerName(module.getApplication().getName(), module.getImage().getPrefixEnv(), user.getLogin());
         String imagePath = module.getImage().getPath();
         logger.debug("imagePath:" + imagePath);
-
-        String subdomain = System.getenv("CU_SUB_DOMAIN");
-        if (subdomain == null) {
-            subdomain = "";
-        }
-        logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-
-        module.setInternalDNSName(containerName + "." + imageName + ".cloud.unit");
-        module.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
 
         try {
             Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs = getModuleEnvironmentVariables(image,
@@ -173,10 +126,9 @@ public class ModuleServiceImpl implements ModuleService {
             logger.error("ServerService Error : Create Server " + e);
             throw new ServiceException(e.getLocalizedMessage(), e);
         } catch (DockerJSONException e) {
-            StringBuilder msgError = new StringBuilder(512);
-            msgError.append("server=").append(module);
-            logger.error("" + msgError, e);
-            throw new ServiceException(msgError.toString(), e);
+            logger.error("module = {}", module);
+            logger.error("Error detail", e);
+            throw new ServiceException("Error while creating a module", e);
         }
         return module;
     }
@@ -298,7 +250,6 @@ public class ModuleServiceImpl implements ModuleService {
             if (isModuleRemoving) {
                 List<EnvironmentVariable> envs = environmentService
                         .loadEnvironnmentsByContainer(application.getServer().getName());
-
                         environmentService.delete(user, envs.stream()
                         .filter(e -> e.getKeyEnv().toLowerCase()
                                 .contains(module.getImage().getPrefixEnv().toLowerCase()))
@@ -306,11 +257,13 @@ public class ModuleServiceImpl implements ModuleService {
                         application.getServer().getName());
             }
             logger.info("Module successfully removed ");
-        } catch (PersistenceException e) {
-            logger.error("Error database :  " + module.getName() + " : " + e);
-            throw new ServiceException("Error database :  " + e.getLocalizedMessage(), e);
-        } catch (DockerJSONException e) {
-            logger.error(module.toString(), e);
+        } catch (Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append(user.toString());
+            msgError.append(module.toString());
+            msgError.append(", isModuleRemoving:").append(isModuleRemoving);
+            msgError.append(", previousApplicationStatus:").append(previousApplicationStatus);
+            throw new ServiceException(msgError.toString(), e);
         }
     }
 
@@ -323,8 +276,8 @@ public class ModuleServiceImpl implements ModuleService {
             module = findByName(moduleName);
             module = dockerService.startModule(moduleName, module);
             applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
-            if (!module.getIsInitialized()) {
-                module.setIsInitialized(true);
+            if (!module.isInitialized()) {
+                module.setInitialized(true);
                 module = moduleDAO.save(module);
                 applicationEventPublisher
                         .publishEvent(new HookEvent(new Hook(moduleName, RemoteExecAction.MODULE_POST_START_ONCE)));

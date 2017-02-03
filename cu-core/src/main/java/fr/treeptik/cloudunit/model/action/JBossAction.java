@@ -59,7 +59,6 @@ public class JBossAction
     @Override
     public Snapshot cloneProperties(Snapshot snapshot) {
         snapshot.setType(parent.getImage().getName());
-        snapshot.setJvmRelease(parent.getJvmRelease());
         snapshot.setJvmOptions(parent.getJvmOptions());
         snapshot.setJvmMemory(parent.getJvmMemory());
         return snapshot;

@@ -15,27 +15,24 @@
 
 package fr.treeptik.cloudunit.modules;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.treeptik.cloudunit.dto.EnvUnit;
 import fr.treeptik.cloudunit.dto.ModulePortResource;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
 import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
-import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
 import junit.framework.TestCase;
-import org.apache.commons.io.FilenameUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,17 +51,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
-import java.io.FileInputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -74,51 +64,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    CloudUnitApplicationContext.class,
-    MockServletContext.class
+        CloudUnitApplicationContext.class,
+        MockServletContext.class
 })
 @ActiveProfiles("integration")
 public class ModulesControllerTestIT extends TestCase {
 
+    protected static String applicationName;
     protected final Logger logger = LoggerFactory
-        .getLogger(ModulesControllerTestIT.class);
-
+            .getLogger(ModulesControllerTestIT.class);
     @Autowired
     protected WebApplicationContext context;
-
     protected MockMvc mockMvc;
-
-    @Inject
-    private ObjectMapper objectMapper;
-
-    @Inject
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private Filter springSecurityFilterChain;
-
-    @Inject
-    private UserService userService;
-
-    @Value("${cloudunit.instance.name}")
-    private String cuInstanceName;
-
-    @Value("${ip.box.vagrant}")
-    protected String ipVagrantBox;
-
     protected MockHttpSession session;
-
-    protected static String applicationName;
-
-    @Value("${suffix.cloudunit.io}")
-    private String domainSuffix;
-
-    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomain;
-
-    @Inject
-    private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
-
     protected String server = "tomcat-8";
     protected String module;
     protected String numberPort;
@@ -126,6 +84,16 @@ public class ModulesControllerTestIT extends TestCase {
     protected String managerSuffix;
     protected String managerPageContent;
     protected String testScriptPath;
+    @Inject
+    private ObjectMapper objectMapper;
+    @Inject
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private Filter springSecurityFilterChain;
+    @Inject
+    private UserService userService;
+    @Inject
+    private CheckBrokerConnectionUtils checkBrokerConnectionUtils;
 
     @BeforeClass
     public static void initEnv() {
@@ -137,8 +105,8 @@ public class ModulesControllerTestIT extends TestCase {
         logger.info("setup");
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-            .addFilters(springSecurityFilterChain)
-            .build();
+                .addFilters(springSecurityFilterChain)
+                .build();
 
         User user = null;
         try {
@@ -155,7 +123,7 @@ public class ModulesControllerTestIT extends TestCase {
         session = new MockHttpSession();
         String secContextAttr = HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY;
         session.setAttribute(secContextAttr,
-            securityContext);
+                securityContext);
 
     }
 
@@ -163,10 +131,10 @@ public class ModulesControllerTestIT extends TestCase {
         // create an application server
         String jsonString = "{\"applicationName\":\"" + applicationName + "\", \"serverName\":\"" + server + "\"}";
         mockMvc.perform(post("/application")
-        		.session(session)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonString))
-        	.andExpect(status().isOk());
+                .session(session)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString))
+                .andExpect(status().isOk());
     }
 
     @After

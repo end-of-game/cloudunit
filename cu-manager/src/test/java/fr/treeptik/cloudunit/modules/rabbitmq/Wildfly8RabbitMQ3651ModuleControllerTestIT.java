@@ -24,7 +24,7 @@ public class Wildfly8RabbitMQ3651ModuleControllerTestIT extends AbstractModuleCo
 
     public Wildfly8RabbitMQ3651ModuleControllerTestIT() {
         super.server = "wildfly-8";
-        super.module = "rabbitmq-3.6.5-1";
+        super.module = "rabbitmq-3.6";
         super.numberPort = "5672";
         super.managerPrefix = "";
         super.managerSuffix = "";

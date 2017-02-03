@@ -12,6 +12,10 @@ function base {
     docker build --rm $CACHE_STRATEGY -t cloudunit/base-16.04 images/base-16.04
 }
 
+function nginx {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/nginx-1.10 images/servers/nginx-10
+}
+
 function apache {
     docker build --rm $CACHE_STRATEGY -t cloudunit/apache-2-2 images/servers/apache-2-2
 }
@@ -67,10 +71,6 @@ function redis {
     docker build --rm $CACHE_STRATEGY -t cloudunit/redis-3-2 images/modules/redis-3-2
 }
 
-function tools {
-    docker build --rm $CACHE_STRATEGY -t cloudunit/java images/tools/java
-}
-
 case "$1" in
 
 'activemq')
@@ -106,6 +106,11 @@ mongo
 'mysql')
 echo "Building Mysql"
 mysql
+;;
+
+'nginx')
+echo "Building Nginx"
+nginx
 ;;
 
 'postgre')
@@ -147,11 +152,11 @@ elastic
 fatjar
 mongo
 mysql
+nginx
 postgre
 rabbitmq
 redis
 tomcat
-tools
 wildfly
 ;;
 
@@ -170,6 +175,7 @@ echo "                    elastic"
 echo "                    fatjar"
 echo "                    mongo"
 echo "                    mysql"
+echo "                    nginx"
 echo "                    postgre"
 echo "                    rabbitmq"
 echo "                    redis"

@@ -44,17 +44,14 @@ RUN apt-get update && apt-get install -y perl --no-install-recommends && rm -rf 
 RUN apt-get update && apt-get install -y libaio1 pwgen && rm -rf /var/lib/apt/lists/*
 
 ENV MYSQL_MAJOR 5.5
-ENV MYSQL_VERSION 5.5.53
+ENV MYSQL_VERSION 5.5.54
 
-ENV MYSQL_MAJOR 5.5
-ENV MYSQL_VERSION 5.5.53
-
+# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 RUN apt-get update && apt-get install -y ca-certificates wget --no-install-recommends && rm -rf /var/lib/apt/lists/* \
 	&& wget "https://cdn.mysql.com/Downloads/MySQL-$MYSQL_MAJOR/mysql-$MYSQL_VERSION-linux2.6-x86_64.tar.gz" -O mysql.tar.gz \
 	&& wget "https://cdn.mysql.com/Downloads/MySQL-$MYSQL_MAJOR/mysql-$MYSQL_VERSION-linux2.6-x86_64.tar.gz.asc" -O mysql.tar.gz.asc \
 	&& apt-get purge -y --auto-remove ca-certificates wget \
 	&& export GNUPGHOME="$(mktemp -d)" \
-# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5 \
 	&& gpg --batch --verify mysql.tar.gz.asc mysql.tar.gz \
 	&& rm -r "$GNUPGHOME" mysql.tar.gz.asc \
@@ -80,9 +77,9 @@ RUN mkdir -p /etc/mysql/conf.d \
 		echo '!includedir /etc/mysql/conf.d/'; \
 	} > /etc/mysql/my.cnf
 
+# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 RUN mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
-# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 	&& chmod 777 /var/run/mysqld
 
 VOLUME /var/lib/mysql
@@ -93,3 +90,7 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306
 CMD ["mysqld"]
+
+LABEL origin application
+LABEL application-type mysql
+LABEL application-version $MYSQL_VERSION

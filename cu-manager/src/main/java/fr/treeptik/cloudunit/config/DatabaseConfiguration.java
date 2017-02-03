@@ -48,7 +48,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @EnableJpaRepositories("fr.treeptik.cloudunit.dao")
 @EnableTransactionManagement
-@Profile({"production", "integration", "vagrant"})
+@Profile({"production", "integration", "vagrant", "vagrant-demo"})
 public class DatabaseConfiguration {
 
     private Logger logger = LoggerFactory
@@ -83,8 +83,8 @@ public class DatabaseConfiguration {
         logger.debug("Configuring Datasource");
         String databaseUrl = String.format("jdbc:mysql://%s:%s/%s?%s",
                 databaseHostname, databasePort, databaseSchema, databaseOptions);
-        logger.debug("database.url:" + databaseUrl);
-        logger.debug("database.user:" + databaseUser);
+        logger.info("database.url:" + databaseUrl);
+        logger.info("database.user:" + databaseUser);
         HikariConfig config = new HikariConfig();
         config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         config.addDataSourceProperty("url", databaseUrl);
@@ -102,7 +102,7 @@ public class DatabaseConfiguration {
         return new HikariDataSource(config);
     }
 
-    @Bean
+    @Bean(name = "dataSourceInitializer")
     public DataSourceInitializer dataSourceInitializer(
         final DataSource dataSource) {
         final DataSourceInitializer initializer = new DataSourceInitializer();

@@ -1,4 +1,4 @@
 #!/bin/bash
 
-MEMORY=8092 vagrant up
+MEMORY=9000 vagrant up
 vagrant ssh

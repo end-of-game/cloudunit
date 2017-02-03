@@ -1,10 +1,11 @@
-FROM cloudunit/base-jessie
+FROM debian:jessie
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 #RUN groupadd -r www-data && useradd -r --create-home -g www-data www-data
 
 ENV HTTPD_PREFIX /usr/local/apache2
 ENV PATH $HTTPD_PREFIX/bin:$PATH
+
 RUN mkdir -p "$HTTPD_PREFIX" \
 	&& chown www-data:www-data "$HTTPD_PREFIX"
 WORKDIR $HTTPD_PREFIX
@@ -20,10 +21,15 @@ RUN apt-get update \
 		libaprutil1-dev \
 		libpcre++0 \
 		libssl1.0.0 \
+		netcat \
 	&& rm -r /var/lib/apt/lists/*
 
-ENV HTTPD_VERSION 2.2.31
-ENV HTTPD_SHA1 e3b55387112206307ba76526820a2627472f3787
+RUN apt-get update \
+        && apt-get install -y --no-install-recommends --no-install-suggests netcat \
+	    && rm -r /var/lib/apt/lists/*
+
+ENV HTTPD_VERSION 2.2.32
+ENV HTTPD_SHA1 36dc7f2ac97627192dcff0a121408b897f91b121
 ENV HTTPD_BZ2_URL https://www.apache.org/dist/httpd/httpd-$HTTPD_VERSION.tar.bz2
 
 RUN set -x \
@@ -42,7 +48,6 @@ RUN set -x \
 	\
 	&& wget -O httpd.tar.bz2 "$HTTPD_BZ2_URL" \
 	&& echo "$HTTPD_SHA1 *httpd.tar.bz2" | sha1sum -c - \
-# see https://httpd.apache.org/download.cgi#verify
 	&& wget -O httpd.tar.bz2.asc "$HTTPD_BZ2_URL.asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B1B96F45DFBDCCF974019235193F180AB55D9977 \
@@ -56,8 +61,6 @@ RUN set -x \
 	\
 	&& ./configure \
 		--prefix="$HTTPD_PREFIX" \
-# https://httpd.apache.org/docs/2.2/programs/configure.html
-# Caveat: --enable-mods-shared=all does not actually build all modules. To build all modules then, one might use:
 		--enable-mods-shared='all ssl ldap cache proxy authn_alias mem_cache file_cache authnz_ldap charset_lite dav_lock disk_cache' \
 	&& make -j"$(nproc)" \
 	&& make install \
@@ -83,13 +86,19 @@ ENV CU_SERVER_PORT 80
 ENV CU_SERVER_RESTART_POST_CREDENTIALS true
 ENV CU_DEFAULT_LOG_FILE access.log
 ENV CU_LOGS STDOUT
-ENV CU_DEFAULT_JAVA_RELEASE " "
-ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS " "
 
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
+
+# Ennable apache status app
+RUN echo "<Location /server-status>" >> /usr/local/apache2/conf/httpd.conf \
+  && echo "		SetHandler server-status" >> /usr/local/apache2/conf/httpd.conf \
+	&& echo "		Order deny,allow" >> /usr/local/apache2/conf/httpd.conf \
+	&& echo "		Deny from all" >> /usr/local/apache2/conf/httpd.conf \
+	&& echo "		Allow from 127.0.0.1" >> /usr/local/apache2/conf/httpd.conf \
+	&& echo "</Location>" >> /usr/local/apache2/conf/httpd.conf
 
 ## CLOUDUNIT :: END
 

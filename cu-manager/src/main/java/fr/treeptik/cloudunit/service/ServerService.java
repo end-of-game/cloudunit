@@ -52,16 +52,14 @@ public interface ServerService {
 
 	boolean checkStatusPENDING(Server server) throws ServiceException;
 
-	Server update(Server server, String memory, String options, String release, boolean restorePreviousEnv)
+	Server update(Server server, String memory, String options, boolean restorePreviousEnv)
 			throws ServiceException;
 
 	Server findByContainerID(String id) throws ServiceException;
 
 	void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException;
 
-	Server create(Server server, String tag) throws ServiceException, CheckException;
-
-	void addCredentialsForServerManagement(Server server, User user) throws ServiceException;
+	Server create(Server server) throws ServiceException, CheckException;
 
 	void addVolume(Application application, VolumeAssociationDTO volumeAssociationDTO) throws ServiceException, CheckException;
 

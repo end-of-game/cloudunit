@@ -12,8 +12,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,17 +54,10 @@ public class DockerServiceImpl implements DockerService {
     @Inject
     private ContainerMapper containerMapper;
 
-    @Value("${database.password}")
-    private String databasePassword;
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
+    private String domainSuffix;
 
-    @Value("${env.exec}")
-    private String envExec;
-
-    @Value("${database.hostname}")
-    private String databaseHostname;
-
-    @Value("${suffix.cloudunit.io}")
-    private String suffixCloudUnitIO;
+    protected String domain;
 
     @Inject
     private DockerClient dockerClient;
@@ -70,21 +65,30 @@ public class DockerServiceImpl implements DockerService {
     @Inject
     private DockerCloudUnitClient dockerCloudUnitClient;
 
+    @PostConstruct
+    public void init() {
+        domain = NamingUtils.getCloudUnitDomain(domainSuffix);
+    }
+
     @Override
-    public void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
-                             boolean createMainVolume, List<String> volumes) throws DockerJSONException {
-        List<String> volumesFrom = Arrays.asList("java");
-        if (volumes == null) {
-            volumes = new ArrayList<>();
-        }
-        if (createMainVolume) {
-            dockerCloudUnitClient.createVolume(containerName, "runtime");
-        }
-        // always mount the associated volume
+    public void createServer(String containerName, Server server, String imagePath, String imageSubType, User user, List<String> envs,
+                             boolean createMainVolume, List<String> volumes) throws DockerJSONException, ServiceException {
+        if (volumes == null) { volumes = new ArrayList<>(); }
+        if (createMainVolume) { dockerCloudUnitClient.createVolume(containerName, "runtime"); }
         volumes.add(containerName + ":/opt/cloudunit:rw");
+        List<String> volumesFrom = Arrays.asList("cu-monitoring-agents");
         logger.info("Volumes to add : " + volumes.toString());
-        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, volumesFrom, null,
-                volumes, envs, null);
+        List<String> args = null;
+        if (server.isApplicationServer()) {
+            args = new ArrayList<>();
+            args.add("run");
+            args.add(user.getLogin());
+            args.add(user.getPassword());
+        }
+        //Map<String, String> ports = new HashMap<>();
+        //ports.put("8000/tcp", "");
+        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, imageSubType, volumesFrom, args,
+                volumes, envs, null, "skynet", domain);
         dockerCloudUnitClient.createContainer(container);
     }
 
@@ -312,16 +316,15 @@ public class DockerServiceImpl implements DockerService {
         }
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
-
+        List<String> volumesFrom = Arrays.asList("cu-monitoring-agents");
         // map ports
-        final Map<String, String> ports =  new HashMap<>();
-        module.getPorts().stream()
+        Map<String, String> ports = module.getPorts().stream()
                 .filter(p -> p.getOpened())
-                .forEach(p->{
-                         ports.put(String.format("%s/tcp", p.getContainerValue()), p.getHostValue());
-                });
-        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, null, volumes,
-                envs, ports);
+                .collect(Collectors.toMap(
+                        p -> String.format("%s/tcp", p.getContainerValue()),
+                        p -> p.getHostValue()));
+        DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, volumesFrom, null, volumes,
+                envs, ports, "skynet", domain);
         dockerCloudUnitClient.createContainer(container);
     }
 
@@ -341,7 +344,7 @@ public class DockerServiceImpl implements DockerService {
         try {
             LogStream stream = dockerClient.logs(container, DockerClient.LogsParam.stdout(), DockerClient.LogsParam.stderr());
             String logs = stream.readFully();
-            logger.debug(logs);
+            if (logger.isDebugEnabled()) { logger.debug(logs); }
             return logs;
         } catch (Exception e) {
             logger.error(container, e);

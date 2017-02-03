@@ -14,49 +14,81 @@
  */
 
 (function () {
-  'use strict';
+    'use strict';
 
-  angular
-    .module ( 'webuiApp.editApplication' )
-    .component ( 'editAppMonitoringKibana', Monitoring() );
+    angular
+        .module('webuiApp.editApplication')
+        .component('editAppMonitoringKibana', Monitoring());
 
-  function Monitoring () {
-    return {
-      templateUrl: 'scripts/components/editApplication/monitoring/kibana/editApplication.monitoring.kibana.html',
-      bindings: {
-        app: '='
-      },
-      controller: [
-        '$scope',
-        'MonitoringService',
-        '$sce',
-        'ErrorService',
-        MonitoringCtrl
-      ],
-      controllerAs: 'monitoring',
-    };
-  }
+    function Monitoring() {
+        return {
+            templateUrl: 'scripts/components/editApplication/monitoring/kibana/editApplication.monitoring.kibana.html',
+            bindings: {
+                app: '='
+            },
+            controller: [
+                '$scope',
+                'ApplicationService',
+                '$stateParams',
+                'MonitoringService',
+                '$sce',
+                'ErrorService',
+                MonitoringCtrl
+            ],
+            controllerAs: 'monitoring',
+        };
+    }
 
-  function MonitoringCtrl ( $scope, MonitoringService, $sce, ErrorService ) {
+    function MonitoringCtrl($scope, ApplicationService, $stateParams, MonitoringService, $sce, ErrorService) {
 
-    // ------------------------------------------------------------------------
-    // MONITORING
-    // ------------------------------------------------------------------------
+        // ------------------------------------------------------------------------
+        // MONITORING
+        // ------------------------------------------------------------------------
 
-    var vm = this;
+        var vm = this;
+        vm.containers = [];
+        vm.myContainer = {};
+        vm.isLoading = true;
+        vm.getContainers = getContainers;
+        vm.monitoringService = MonitoringService;
 
-    vm.$onInit = function() {
-      setTimeout(function() {
+        vm.$onDestroy = function () {
+            vm.monitoringService.stopPollStats();
+        };
 
-        MonitoringService.getKibanaLocation()
-          .then(function(url) {
-            vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Dockbeat-Per-Container-Dashboard-Graph?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Dockbeat-Per-Container-CPU-Graph,panelIndex:3,row:1,size_x:6,size_y:3,type:visualization),(col:7,id:Dockbeat-Per-Container-Memory-Graph,panelIndex:4,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-Net-Error-Graph,panelIndex:5,row:4,size_x:6,size_y:3,type:visualization),(col:7,id:Dockbeat-Global-Net-Usage-Graph,panelIndex:6,row:4,size_x:6,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-IO-Usage-Graph,panelIndex:7,row:7,size_x:12,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'containerName:+" + vm.app.server.name + "')),title:'Dockbeat+Per+Container+Dashboard+Graph',uiState:())");
-                //                                       "/app/kibana#/dashboard/Dockbeat-Per-Container-Dashboard-Graph?embed=true&_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:Dockbeat-Per-Container-CPU-Graph,panelIndex:3,row:1,size_x:12,size_y:3,type:visualization),(col:1,id:Dockbeat-Per-Container-Memory-Graph,panelIndex:4,row:4,size_x:12,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-Net-Error-Graph,panelIndex:5,row:7,size_x:12,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-Net-Usage-Graph,panelIndex:6,row:10,size_x:12,size_y:3,type:visualization),(col:1,id:Dockbeat-Global-IO-Usage-Graph,panelIndex:12,row:13,size_x:12,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'containerName:+" + vm.app.server.name + "')),title:'Dockbeat+Per+Container+Dashboard+Graph',uiState:())");
-          })
-          .catch(function(response) {
-            ErrorService.handle(response);
-          })
-      }, 0);
-    }    
-  }
-}) ();
+        vm.$onInit = function () {
+            getContainers();
+        }
+
+        function getContainers(selectedContainer) {
+            vm.isLoading = true;
+            return ApplicationService.listContainers($stateParams.name)
+                .then(function onGetContainersComplete(containers) {
+                    vm.containers = containers;
+                    vm.myContainer = selectedContainer || containers[0];
+                    console.log(vm.myContainer);
+                    setTimeout(function () {
+                        MonitoringService.getKibanaLocation()
+                            .then(function (url) {
+                                vm.isLoading = false;
+                                if (vm.myContainer.type == "server") {
+                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/Container-Dashboard-Graph?embed=true&_g=(refreshInterval:('$$hashKey':'object:1633',display:'10 seconds',pause:!f,section:1,value:10000),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'docker.container.name:+" + vm.myContainer.name + "')),title:'Container+Dashboard+Graph',uiState:())");
+                                }
+                                else {
+                                    var tokens = vm.myContainer.name.split("-");
+                                    var moduleName= tokens[tokens.length -2];
+                                    vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/"+ moduleName +"?embed=true&_g=(refreshInterval:('$$hashKey':'object:1633',display:'10 seconds',pause:!f,section:1,value:10000),time:(from:now-1h,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'(metricset.module: docker AND docker.container.name: " + vm.myContainer.name + ") OR (metricset.module: " + moduleName + " AND beat.name: " + vm.myContainer.name + ")')),title:"+ moduleName +",uiState:())");
+                                }
+                            })
+                            .catch(function (response) {
+                                ErrorService.handle(response);
+                            })
+                    }, 0);
+                })
+                .catch(function onGetContainersError(reason) {
+                    console.error(reason); //debug
+                });
+        }
+    }
+
+})();

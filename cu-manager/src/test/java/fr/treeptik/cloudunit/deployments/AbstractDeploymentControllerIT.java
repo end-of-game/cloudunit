@@ -58,11 +58,8 @@ public abstract class AbstractDeploymentControllerIT {
     private Filter springSecurityFilterChain;
     @Inject
     private UserService userService;
-    @Value("${suffix.cloudunit.io}")
-    private String domainSuffix;
-    @Value("#{systemEnvironment['CU_SUB_DOMAIN']}")
-    private String subdomain;
-    protected String domain;
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
+    protected String domainSuffix;
 
     public AbstractDeploymentControllerIT() {
         super();
@@ -109,6 +106,7 @@ public abstract class AbstractDeploymentControllerIT {
         return Stream.generate(() -> {
                     try {
                         Thread.sleep(1000);
+                        System.out.println(url);
                         return getUrlContentPage(url);
                     } catch (ParseException | IOException | InterruptedException e) {
                         return null;
@@ -119,15 +117,6 @@ public abstract class AbstractDeploymentControllerIT {
             .limit(TestUtils.NB_ITERATION_MAX)
             .filter(content -> content != null && !content.contains("404"))
             .findFirst();
-    }
-
-    @PostConstruct
-    public void init() {
-        if (subdomain != null) {
-            domain = subdomain + domainSuffix;
-        } else {
-            domain = domainSuffix;
-        }
     }
 
     @Before
@@ -167,7 +156,7 @@ public abstract class AbstractDeploymentControllerIT {
 
     @Test
     public void test_deploySimpleWithContextApplicationTest() throws Exception {
-        deploySimpleApplicationTest("helloworld.war", "/helloworld");
+        deploySimpleApplicationTest("helloworld.war", "helloworld");
     }
 
     @Test
@@ -213,14 +202,14 @@ public abstract class AbstractDeploymentControllerIT {
                 .andExpect(status().is2xxSuccessful());
     
             // test the application content page
-            String urlToCall = String.format("http://%s-johndoe-admin%s/%s",
+            String urlToCall = String.format("http://%s-johndoe.%s/%s",
                     applicationName.toLowerCase(),
-                    domain, appName);
+                    domainSuffix, appName);
     
             Optional<String> contentPage = waitForContent(urlToCall);
             assertTrue(contentPage.isPresent());
             assertThat(contentPage.get(), containsString(keywordInPage));
-    
+
             // remove the module
             removeModule(module)
                 .andExpect(status().isOk());
@@ -236,11 +225,12 @@ public abstract class AbstractDeploymentControllerIT {
             deployArchive(
                     archiveName,
                     "https://github.com/Treeptik/CloudUnit/releases/download/1.0/" + archiveName);
-            String urlToCall = String.format("http://%s-johndoe-admin%s/%s",
+            String urlToCall = String.format("http://%s-johndoe.%s/%s",
                     applicationName.toLowerCase(),
-                    domain, context);
-            String content = getUrlContentPage(urlToCall);
-            assertThat(content, containsString("CloudUnit PaaS"));
+                    domainSuffix, context);
+            Optional<String> contentPage = waitForContent(urlToCall);
+            assertTrue(contentPage.isPresent());
+            assertThat(contentPage.get(), containsString("CloudUnit PaaS"));
         } finally {
             deleteApplication();
         }

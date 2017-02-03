@@ -24,7 +24,7 @@ public class Tomcat6RabbitMQ3651ModuleControllerTestIT extends AbstractModuleCon
 
     public Tomcat6RabbitMQ3651ModuleControllerTestIT() {
         super.server = "tomcat-6";
-        super.module = "rabbitmq-3.6.5-1";
+        super.module = "rabbitmq-3.6";
         super.numberPort = "5672";
         super.managerPrefix = "";
         super.managerSuffix = "";

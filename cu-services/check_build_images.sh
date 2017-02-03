@@ -20,7 +20,6 @@ images_list_expected+=('cloudunit/tomcat-85')
 images_list_expected+=('cloudunit/tomcat-8')
 images_list_expected+=('cloudunit/tomcat-7')
 images_list_expected+=('cloudunit/tomcat-6')
-images_list_expected+=('cloudunit/java')
 images_list_expected+=('cloudunit/base-jessie')
 images_list_expected+=('cloudunit/base-16.04')
 images_list_expected+=('cloudunit/base-14.04')
@@ -29,6 +28,7 @@ images_list_expected+=('cloudunit/elasticsearch-2.4')
 images_list_expected+=('cloudunit/rabbitmq-3.6')
 images_list_expected+=('cloudunit/activemq-5.13')
 images_list_expected+=('cloudunit/fatjar')
+images_list_expected+=('cloudunit/nginx-1.10')
 
 # Function to test if a value exist in array
 in_array() {

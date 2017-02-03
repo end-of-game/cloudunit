@@ -18,4 +18,8 @@ if [ "$1" = 'mongod' ]; then
 	fi
 fi
 
+if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
+	/opt/cloudunit/monitoring-agents/metricbeat/metricbeat -c /opt/cloudunit/monitoring-agents/metricbeat/conf.d/mongodb.yml&
+fi
+
 exec "$@"

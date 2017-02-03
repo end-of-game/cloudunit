@@ -23,6 +23,9 @@ RUN npm install -g bower gulp
 RUN apt-get install maven -y
 RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
 
+RUN mkdir /root/.m2
+ADD settings.xml /root/.m2/settings.xml
+
 RUN rm -rf /var/lib/apt/lists/*
 
 USER jenkins

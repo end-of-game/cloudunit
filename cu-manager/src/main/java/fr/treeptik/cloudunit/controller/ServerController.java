@@ -108,7 +108,7 @@ public class ServerController implements Serializable {
 
 		try {
 			Server server = application.getServer();
-			serverService.update(server, input.getJvmMemory(), input.getJvmOptions(), input.getJvmRelease(), false);
+			serverService.update(server, input.getJvmMemory(), input.getJvmOptions(), false);
 
 		} catch (Exception e) {
 			applicationService.setStatus(application, Status.FAIL);

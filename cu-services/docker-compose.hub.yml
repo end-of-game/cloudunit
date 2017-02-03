@@ -97,8 +97,5 @@ services:
   elk-dockbeat:
     image: cloudunit/elk-dockbeat
 
-  jmxtrans:
-    image: jmxtrans/jmxtrans
-
   jenkins:
     image: cloudunit/cu-jenkins

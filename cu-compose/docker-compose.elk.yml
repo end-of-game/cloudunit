@@ -2,61 +2,65 @@ version: '2'
 services:
 
   elasticsearch:
+    container_name: cu-elasticsearch
     build:
       context: ./cu-elk/elasticsearch
     image: cloudunit/elk-elasticsearch
-    ports:
-      - "9200:9200"
+    #ports:
+    #  - "9200:9200"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /srv/cu-elk/elasticsearch:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
     environment:
+      - "TZ=${TZ}"
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
-
-  logstash:
-    build:
-      context: ./cu-elk/logstash
-    image: cloudunit/elk-logstash
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /srv/cu-elk/logstash/conf:/etc/logstash/conf.d
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./cu-elk/logstash/conf.d:/etc/logstash/conf.d
-      - ./cu-elk/logstash/curator:/etc/curator
-    environment:
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-    depends_on:
-      - elasticsearch
+    labels:
+       - "traefik.enable=false"
 
   kibana:
-    container_name: cuplatform_kibana_1
+    container_name: cu-kibana
     build:
       context: ./cu-elk/kibana
     image: cloudunit/elk-kibana
     ports:
       - "5601:5601"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
       - ./cu-elk/kibana/file:/opt/cloudunit/file
     environment:
-      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+      - "TZ=${TZ}"
+      - "ELASTICSEARCH_URL=http://$ELASTICSEARCH_URL:9200"
     depends_on:
       - elasticsearch
-    network_mode: bridge
+    labels:
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.backend=kibana"
+      - "traefik.port=5601"
+      - "traefik.frontend.rule=Host:${CU_KIBANA_DOMAIN}"
 
-  dockbeat-polling:
+  monitoring-agents:
+    container_name: cu-monitoring-agents
+    hostname: ${HOSTNAME}
     build:
-      context: cu-elk/poller/dockbeat/
-    image: cloudunit/elk-dockbeat
+      context: cu-elk/monitoring-agents
+    image: cloudunit/elk-monitoring-agents
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: -e
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./cu-elk/monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
+      - monitoring-agents:/opt/cloudunit/monitoring-agents
+    environment:
+      - "TZ=${TZ}"
+      - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
+      - "HOSTNAME=${HOSTNAME}"
+    labels:
+      - "traefik.enable=false"
     depends_on:
       - elasticsearch
+
+networks:
+  default:
+    external:
+      name: skynet
+volumes:
+  elasticsearch-data:
+  monitoring-agents:

@@ -1,4 +1,4 @@
-FROM cloudunit/base-14.04
+FROM openjdk:8-jdk
 
 RUN set -ex \
 	&& for key in \
@@ -21,7 +21,7 @@ RUN set -ex \
 	done
 
 ARG TOMCAT_VERSION
-ENV TOMCAT_VERSION ${TOMCAT_VERSION:-8.0.37}
+ENV TOMCAT_VERSION ${TOMCAT_VERSION:-8.0.39}
 
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
@@ -38,16 +38,31 @@ ENV TOMCAT_TGZ_URL https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v
 ENV PATH $CATALINA_HOME/bin:$PATH
 
 ## CLOUDUNIT :: BEGINNING
+# Create directory for CloudUnit
+RUN mkdir -p /opt/cloudunit/backup &&  \
+    mkdir -p /opt/cloudunit/hooks/ && \
+    mkdir -p /opt/cloudunit/java && \
+    mkdir -p /opt/cloudunit/shared && \
+    mkdir -p /opt/cloudunit/scripts && \
+    mkdir -p /opt/cloudunit/tmp
+
+WORKDIR /opt/cloudunit
+
+# Environment variables
+ENV CU_BACKUP /opt/cloudunit/backup
+ENV CU_HOOKS /opt/cloudunit/hooks
+ENV CU_JAVA /opt/cloudunit/java
+ENV CU_SCRIPTS /opt/cloudunit/scripts
+ENV CU_SHARED /opt/cloudunit/shared
+ENV CU_TMP /opt/cloudunit/tmp
+
 ENV CU_SERVER_RESTART_POST_DEPLOYMENT false
 ENV CU_SOFTWARE $CATALINA_HOME
-ENV CU_SERVER_MANAGER_PATH /manager/html?
+ENV CU_SERVER_MANAGER_PATH manager/html
 ENV CU_SERVER_MANAGER_PORT 8080
 ENV CU_SERVER_PORT 8080
-ENV CU_SERVER_RESTART_POST_CREDENTIALS true
 ENV CU_DEFAULT_LOG_FILE catalina.log
 ENV CU_LOGS $CATALINA_HOME/logs
-ENV CU_DEFAULT_JAVA_RELEASE "jdk1.8.0_25"
-ENV JAVA_HOME /opt/cloudunit/java/$CU_DEFAULT_JAVA_RELEASE
 ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m -XX:MaxPermSize=256m -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 ## CLOUDUNIT :: END
 
@@ -63,10 +78,12 @@ RUN cd $HOME \
 ## CLOUDUNIT :: BEGINNING
 RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/javamelody-1.61.0.jar \
     && mv javamelody-1.61.0.jar $CU_SOFTWARE/lib/javamelody-1.61.0.jar
-COPY files/web.xml $CU_SOFTWARE/conf/web.xml
 COPY files/tomcat-users.xml $CU_SOFTWARE/conf/tomcat-users.xml
+COPY files/web.xml $CU_SOFTWARE/conf/web.xml
 COPY files/logging.properties $CU_SOFTWARE/conf/logging.properties
-## CLOUDUNIT :: END
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar \
+    && mv jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar $CU_SOFTWARE/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar
+COPY files/jmxtrans-agent.xml /opt/cloudunit/conf/jmxtrans-agent.xml
 
 RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
@@ -74,10 +91,13 @@ USER cloudunit
 
 VOLUME /opt/cloudunit
 
-CMD ["catalina.sh", "run"]
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD [ "run" ]
+
+EXPOSE 8080
 
 LABEL origin application
 LABEL application-type tomcat
-LABEL application-version $TOMCAT_VERSION
-LABEL argos-template tomcat.template
-LABEL argos-output elasticsearch
+LABEL application-version tomcat-$TOMCAT_VERSION
+## CLOUDUNIT :: END

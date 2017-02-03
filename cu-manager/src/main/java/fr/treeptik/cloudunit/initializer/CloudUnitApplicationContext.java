@@ -86,12 +86,6 @@ public class CloudUnitApplicationContext
 
     private final static Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
 
-    /*
-    @Override
-    public void addFormatters(FormatterRegistry formatterRegistry) {
-        formatterRegistry.addConverter(new StringToJsonInputConverter());
-    }
-    */
     @Value("${cloudunit.instance.name}")
     private String cuInstanceName;
 
@@ -118,6 +112,19 @@ public class CloudUnitApplicationContext
     public static PropertySourcesPlaceholderConfigurer propertiesForProduction()
             throws Exception {
         String file = "application-production.properties";
+        PropertySourcesPlaceholderConfigurer pspc =
+                new PropertySourcesPlaceholderConfigurer();
+        pspc.setLocations(getResources(file));
+        pspc.setIgnoreUnresolvablePlaceholders(true);
+        pspc.setLocalOverride(true);
+        return pspc;
+    }
+
+    @Bean
+    @Profile("vagrant-demo")
+    public static PropertySourcesPlaceholderConfigurer propertiesForDemo()
+            throws Exception {
+        String file = "application-vagrant-demo.properties";
         PropertySourcesPlaceholderConfigurer pspc =
                 new PropertySourcesPlaceholderConfigurer();
         pspc.setLocations(getResources(file));

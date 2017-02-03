@@ -15,21 +15,19 @@
 
 package fr.treeptik.cloudunit.logs;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import fr.treeptik.cloudunit.dto.VolumeResource;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.UserService;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
@@ -50,11 +48,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
-import javax.validation.constraints.AssertTrue;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -66,39 +62,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration")
 public class LogsControllerTestIT {
 
-    protected String release;
-
+    private static String applicationName;
     private final Logger logger = LoggerFactory.getLogger(LogsControllerTestIT.class);
-
     @Autowired
     private WebApplicationContext context;
-
     private MockMvc mockMvc;
-
     @Inject
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private Filter springSecurityFilterChain;
-
     @Inject
     private UserService userService;
-
     private MockHttpSession session;
-
     private ObjectMapper mapper = new ObjectMapper();
-
-    private static String applicationName;
-
-    @BeforeClass
-    public static void initEnv() {
-        applicationName = "app" + new Random().nextInt(100000);
-    }
 
     @Before
     public void setup() throws Exception {
         logger.info("setup");
 
+        applicationName = "app" + new Random().nextInt(100000);
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(springSecurityFilterChain).build();
 
         User user = null;
@@ -127,33 +109,63 @@ public class LogsControllerTestIT {
     }
 
 
-    /**
-     * Gather logs from all Tomcats
-     *
-     * @throws Exception
-     */
     @Test
-    public void test_display_logs_from_tomcat()
-        throws Exception {
+    public void test_display_logs_from_tomcat6()
+            throws Exception {
         display_logs_from_tomcat("tomcat-6");
+    }
+
+    @Test
+    public void test_display_logs_from_tomcat7()
+            throws Exception {
         display_logs_from_tomcat("tomcat-7");
+    }
+
+    @Test
+    public void test_display_logs_from_tomcat8()
+            throws Exception {
         display_logs_from_tomcat("tomcat-8");
+    }
+
+    @Test
+    public void test_display_logs_from_tomcat85()
+            throws Exception {
         display_logs_from_tomcat("tomcat-85");
+    }
+
+    @Test
+    public void test_display_logs_from_tomcat9()
+            throws Exception {
         display_logs_from_tomcat("tomcat-9");
     }
 
-    /**
-     * List Files from all Tomcats
-     *
-     * @throws Exception
-     */
     @Test
-    public void test_list_files_from_tomcat()
+    public void test_list_files_from_tomcat6()
             throws Exception {
         list_files_from_tomcat("tomcat-6");
+    }
+
+    @Test
+    public void test_list_files_from_tomcat7()
+            throws Exception {
         list_files_from_tomcat("tomcat-7");
+    }
+
+    @Test
+    public void test_list_files_from_tomcat8()
+            throws Exception {
         list_files_from_tomcat("tomcat-8");
+    }
+
+    @Test
+    public void test_list_files_from_tomcat85()
+            throws Exception {
         list_files_from_tomcat("tomcat-85");
+    }
+
+    @Test
+    public void test_list_files_from_tomcat9()
+            throws Exception {
         list_files_from_tomcat("tomcat-9");
     }
 
@@ -170,6 +182,7 @@ public class LogsControllerTestIT {
 
     private void display_logs_from_apache(String release) throws Exception {
         createApplication(applicationName, release);
+        Thread.sleep(10000);
         gatherAndCheckLogs(release, "stdout", "Apache");
         deleteApplication(applicationName);
     }
@@ -178,6 +191,7 @@ public class LogsControllerTestIT {
         String fileToGather = "catalina.log";
         String keyWord = "Catalina";
         createApplication(applicationName, release);
+        Thread.sleep(10000);
         gatherAndCheckLogs(release, fileToGather, keyWord);
         deleteApplication(applicationName);
     }
@@ -186,13 +200,14 @@ public class LogsControllerTestIT {
             throws Exception {
         String fileToCheck = "catalina.log";
         createApplication(applicationName, release);
+        Thread.sleep(10000);
         list_files_and_check_presence(release, fileToCheck);
         deleteApplication(applicationName);
     }
 
     private void gatherAndCheckLogs(String release, String fileToGather, String keyWord) throws Exception {
-        String container = "int-johndoe-"+applicationName+"-"+release;
-        String url = "/logs/" + applicationName + "/container/" + container + "/source/"+fileToGather+"/rows/10";
+        String container = applicationName + "-johndoe";
+        String url = "/logs/" + applicationName + "/container/" + container + "/source/" + fileToGather + "/rows/10";
         ResultActions resultActions =
                 mockMvc.perform(get(url).session(session).contentType(MediaType.APPLICATION_JSON));
         resultActions.andExpect(status().isOk());
@@ -218,13 +233,15 @@ public class LogsControllerTestIT {
     }
 
     private void list_files_and_check_presence(String release, String fileToCheck) throws Exception {
-        String container = "int-johndoe-"+applicationName+"-"+release;
+        String container = applicationName + "-johndoe";
         String url = "/logs/sources/" + applicationName + "/container/" + container;
+        logger.info("url:" + url);
         ResultActions resultActions =
                 mockMvc.perform(get(url).session(session).contentType(MediaType.APPLICATION_JSON));
         resultActions.andExpect(status().isOk());
         String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
         logger.info(contentAsString);
+        logger.info(fileToCheck);
         Assert.assertTrue(contentAsString.contains(fileToCheck));
     }
 

@@ -65,7 +65,7 @@ import java.util.Properties;
 public class DatabaseConfigurationTest {
 
     private Logger logger = LoggerFactory
-        .getLogger(DatabaseConfigurationTest.class);
+            .getLogger(DatabaseConfigurationTest.class);
 
     @Value("${database.hostname}")
     private String databaseHostname;
@@ -110,7 +110,7 @@ public class DatabaseConfigurationTest {
 
     @Bean
     public DataSourceInitializer dataSourceInitializer(
-        final DataSource dataSource) {
+            final DataSource dataSource) {
         final DataSourceInitializer initializer = new DataSourceInitializer();
         initializer.setDataSource(dataSource);
         initializer.setDatabasePopulator(databasePopulator());

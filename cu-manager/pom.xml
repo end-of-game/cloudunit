@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>fr.treeptik</groupId>
 		<artifactId>cloudunit</artifactId>
-		<version>1.8</version>
+		<version>1.9-SNAPSHOT</version>
 	</parent>
 	<artifactId>cu-manager</artifactId>
 	<packaging>war</packaging>
@@ -39,7 +39,7 @@
 
 		<!-- Dependencies properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>4.3.0.RELEASE</spring.version>
+		<spring.version>4.3.2.RELEASE</spring.version>
 		<spring.security.version>3.2.6.RELEASE</spring.security.version>
 		<hibernate.version>5.1.0.Final</hibernate.version>
 		<codahale.metrics.version>3.0.1</codahale.metrics.version>
@@ -48,7 +48,6 @@
 		<!-- surefire argLine empty by default it will be populated by plugin contributing 
 			to the surefire and failsafe argument line. -->
 		<surefireArgLine />
-
 	</properties>
 
 	<repositories>

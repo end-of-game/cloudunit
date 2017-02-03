@@ -21,7 +21,7 @@ package fr.treeptik.cloudunit.servers;
 public class Tomcat85ApplicationControllerTestIT extends AbstractApplicationControllerTestIT {
 
     public Tomcat85ApplicationControllerTestIT() {
-        super("tomcat-85", "jdk1.8.0_25");
+        super("tomcat-85");
     }
 
 }

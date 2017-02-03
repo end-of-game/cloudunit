@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.treeptik.cloudunit.docker.model.Network;
+import fr.treeptik.cloudunit.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -348,7 +349,7 @@ public class DockerCloudUnitClient {
         }
     }
 
-    public void connectToNetwork(String id, String containerId) throws DockerJSONException, IOException {
+    public void connectToNetwork(String id, String containerId) throws DockerJSONException, ServiceException {
         try {
             logger.info("The client attempts to add container to a network...");
             Network network = findNetwork(id);
@@ -356,6 +357,8 @@ public class DockerCloudUnitClient {
             handleDockerAPIError(dockerResponse);
         } catch (FatalDockerJSONException e) {
             throw new DockerJSONException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ServiceException(e.getMessage(), e);
         }
     }
 
@@ -397,8 +400,8 @@ public class DockerCloudUnitClient {
                         "Docker API answers with a 301 error code : " + dockerResponse.getBody());
             case 304:
                 logger.error("Docker API answers with a 304 error code : " + dockerResponse.getBody());
-                throw new ErrorDockerJSONException(
-                        "Docker API answers with a 304 error code : " + dockerResponse.getBody());
+                // For example, we don't throw an exception if we ask to start a container already started
+                break;
             case 400:
                 logger.error("Docker API answers with a 400 error code : " + dockerResponse.getBody());
                 throw new ErrorDockerJSONException(

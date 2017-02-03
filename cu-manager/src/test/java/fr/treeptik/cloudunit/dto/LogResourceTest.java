@@ -1,11 +1,8 @@
 package fr.treeptik.cloudunit.dto;
 
-import fr.treeptik.cloudunit.factory.EnvUnitFactory;
 import fr.treeptik.cloudunit.factory.LogResourceFactory;
 import org.junit.Assert;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import java.util.List;
 

@@ -24,7 +24,7 @@ public class CheckBrokerConnectionUtils {
     public String checkActiveMQJMSProtocol(String messageAsString,
                                            String url) throws JMSException {
         ActiveMQConnectionFactory activeMQConnectionFactory =
-                new ActiveMQConnectionFactory(String.format("tcp://%s",url));
+                new ActiveMQConnectionFactory(String.format("tcp://%s", url));
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory(activeMQConnectionFactory);
         JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
         Destination destination = new ActiveMQQueue("myQueue");

@@ -4,11 +4,11 @@ INSERT IGNORE INTO `Role` (`id`, `description`) VALUES
 
 INSERT IGNORE INTO `Image`
     (`id`, `name`, `path`, `displayName`, `prefixEnv`, `imageType`, `managerName`, `imageSubType`) VALUES
-  (10, 'tomcat-6', 'cloudunit/tomcat-6', 'Tomcat 6.0.45', 'tomcat', 'server', '', null),
-  (11, 'tomcat-7', 'cloudunit/tomcat-7', 'Tomcat 7.0.70', 'tomcat', 'server', '',  null),
-  (12, 'tomcat-8', 'cloudunit/tomcat-8', 'Tomcat 8.0.37', 'tomcat', 'server', '', null),
-  (13, 'tomcat-85', 'cloudunit/tomcat-85', 'Tomcat 8.5.5', 'tomcat', 'server', '', null),
-  (14, 'tomcat-9', 'cloudunit/tomcat-9', 'Tomcat 9.0.0.M10', 'tomcat', 'server', '', null),
+  (10, 'tomcat-6', 'cloudunit/tomcat-6', 'Tomcat 6.0.45', 'tomcat', 'server', '', 'APPSERVER'),
+  (11, 'tomcat-7', 'cloudunit/tomcat-7', 'Tomcat 7.0.70', 'tomcat', 'server', '',  'APPSERVER'),
+  (12, 'tomcat-8', 'cloudunit/tomcat-8', 'Tomcat 8.0.39', 'tomcat', 'server', '', 'APPSERVER'),
+  (13, 'tomcat-85', 'cloudunit/tomcat-85', 'Tomcat 8.5.9', 'tomcat', 'server', '', 'APPSERVER'),
+  (14, 'tomcat-9', 'cloudunit/tomcat-9', 'Tomcat 9.0.0.M15', 'tomcat', 'server', '', 'APPSERVER'),
   (20, 'mysql-5-5', 'cloudunit/mysql-5-5', 'MySQL 5.5.49', 'mysql', 'module', 'phpmyadmin', 'DATABASE'),
   (21, 'mysql-5-6', 'cloudunit/mysql-5-6', 'MySQL 5.6.30', 'mysql', 'module', 'phpmyadmin', 'DATABASE'),
   (22, 'mysql-5-7', 'cloudunit/mysql-5-7', 'MySQL 5.7.12', 'mysql', 'module', 'phpmyadmin', 'DATABASE'),
@@ -18,25 +18,26 @@ INSERT IGNORE INTO `Image`
   (51, 'postgresql-9-4', 'cloudunit/postgresql-9-4', 'PostgreSQL 9.4', 'postgresql', 'module', 'phppgadmin', 'DATABASE'),
   (52, 'postgresql-9-5', 'cloudunit/postgresql-9-5', 'PostgreSQL 9.5', 'postgresql', 'module', 'phppgadmin', 'DATABASE'),
   (53, 'postgis-2-2', 'cloudunit/postgis-2-2', 'PostGIS 2.2.1 (9.4)', 'postgresql', 'module', 'phppgadmin','DATABASE'),
-  (60, 'wildfly-8', 'cloudunit/wildfly-8', 'WildFly 8.2.1', 'wildfly', 'server', '',null),
-  (61, 'wildfly-9', 'cloudunit/wildfly-9', 'WildFly 9.0.2', 'wildfly', 'server', '', null),
-  (62, 'wildfly-10', 'cloudunit/wildfly-10', 'WildFly 10.0.0', 'wildfly', 'server', '',null),
-  (70, 'fatjar', 'cloudunit/fatjar', 'FatJar', 'fatjar', 'server', '',null),
-  (80, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', '', null),
-  (90, 'activemq-5.13.2', 'cloudunit/activemq-5.13.2', 'ActiveMQ 5.13.2', 'activemq', 'module', '', 'MESSAGE_BROKER'),
-  (100, 'rabbitmq-3.6.5-1', 'cloudunit/rabbitmq-3.6.5-1', 'RabbitMQ 3.6.5-1', 'rabbitmq', 'module', '', 'MESSAGE_BROKER'),
-  (110, 'elasticsearch-2.4', 'cloudunit/elasticsearch-2.4', 'Elasticsearch 2.4', 'elasticsearch', 'module', '', 'SEARCH_ENGINE');
+  (60, 'wildfly-8', 'cloudunit/wildfly-8', 'WildFly 8.2.1', 'wildfly', 'server', '','APPSERVER'),
+  (61, 'wildfly-9', 'cloudunit/wildfly-9', 'WildFly 9.0.2', 'wildfly', 'server', '', 'APPSERVER'),
+  (62, 'wildfly-10', 'cloudunit/wildfly-10', 'WildFly 10.0.0', 'wildfly', 'server', '','APPSERVER'),
+  (70, 'fatjar', 'cloudunit/fatjar', 'FatJar', 'fatjar', 'server', '', 'STANDALONE'),
+  (80, 'apache-2-2', 'cloudunit/apache-2-2', 'Apache 2.2.22', 'apache', 'server', '', 'WEBSERVER'),
+  (90, 'activemq-5.13', 'cloudunit/activemq-5.13', 'ActiveMQ 5.13.2', 'activemq', 'module', '', 'MESSAGE_BROKER'),
+  (100, 'rabbitmq-3.6', 'cloudunit/rabbitmq-3.6', 'RabbitMQ 3.6.5-1', 'rabbitmq', 'module', '', 'MESSAGE_BROKER'),
+  (110, 'elasticsearch-2.4', 'cloudunit/elasticsearch-2.4', 'Elasticsearch 2.4', 'elasticsearch', 'module', '', 'SEARCH_ENGINE'),
+  (120, 'nginx-1.10', 'cloudunit/nginx-1.10', 'Nginx 1.10', 'nginx', 'server', 'server', 'WEBSERVER');
 
 INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariables`,`moduleEnvironmentVariables_KEY`,`Image_id`)
 VALUES
     ("MYSQL_USER", "USER", 20),
     ("MYSQL_PASSWORD", "PASSWORD", 20),
     ("MYSQL_DATABASE", "NAME", 20),
-    
+
     ("MYSQL_USER", "USER", 21),
     ("MYSQL_PASSWORD", "PASSWORD", 21),
     ("MYSQL_DATABASE", "NAME", 21),
-        
+
     ("MYSQL_USER", "USER", 22),
     ("MYSQL_PASSWORD", "PASSWORD", 22),
     ("MYSQL_DATABASE", "NAME", 22),
@@ -68,7 +69,10 @@ VALUES
 
 INSERT IGNORE INTO `Image_exposedPorts` (`exposedPorts`,`exposedPorts_KEY`,`Image_id`)
 VALUES
--- mysql ports values --
+  -- mysql ports values --
+("8000", "TCP", 12),
+
+  -- mysql ports values --
 
 ("3306", "TCP", 20),
 ("3306", "TCP", 21),
@@ -115,6 +119,3 @@ INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `
 VALUES
   (2, 'scott', 'tiger', 'scott.tiger@gmail.com', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 2, 1, '2014-02-22 09:22:06', 'scott',
    'user');
-
-INSERT IGNORE INTO `Metric` (`id`, `name`, `url`, `serverName`, `suffix`) VALUES (1, "memoryHeap", "java.lang:type=Memory/HeapMemoryUsage", "all", "used")
-   ,(2, "threadCount", "java.lang:type=Threading", "all", "ThreadCount"), (3, "currentThreadsBusy", 'Catalina:name="http-bio-8080",type=ThreadPool', "tomcat", "currentThreadsBusy") ;

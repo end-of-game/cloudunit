@@ -15,25 +15,19 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +42,6 @@ import fr.treeptik.cloudunit.config.events.ServerStopEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dao.ServerDAO;
 import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
-import fr.treeptik.cloudunit.dto.VolumeResource;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
@@ -66,8 +59,6 @@ import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.VolumeAssociationService;
 import fr.treeptik.cloudunit.service.VolumeService;
-import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
-import fr.treeptik.cloudunit.utils.HipacheRedisUtils;
 
 @Service
 public class ServerServiceImpl implements ServerService {
@@ -80,28 +71,15 @@ public class ServerServiceImpl implements ServerService {
 	@Inject
 	private ApplicationDAO applicationDAO;
 
-	@Inject
-	private HipacheRedisUtils hipacheRedisUtils;
-
-	@Value("${cloudunit.max.servers:1}")
-	private String maxServers;
-
-	@Value("${suffix.cloudunit.io}")
-	private String suffixCloudUnitIO;
-
-	@Value("${database.password}")
-	private String databasePassword;
-
-	@Value("${env.exec}")
-	private String envExec;
-
 	@Value("${cloudunit.instance.name}")
 	private String cuInstanceName;
 
-	@Value("${database.hostname}")
-	private String databaseHostname;
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
+    private String domainSuffix;
 
-	@Inject
+    protected String domain;
+
+    @Inject
 	private DockerService dockerService;
 
 	@Inject
@@ -123,11 +101,16 @@ public class ServerServiceImpl implements ServerService {
 		return this.serverDAO;
 	}
 
-	/**
-	 * Save app in just in DB, not create container use principally to charge
-	 * status.PENDING of entity until it's really functionnal
-	 */
-	@Override
+    @PostConstruct
+    public void init() throws ServiceException {
+		domain = NamingUtils.getCloudUnitDomain(domainSuffix);
+    }
+
+    /**
+     * Save app in just in DB, not create container use principally to charge
+     * status.PENDING of entity until it's really functionnal
+     */
+    @Override
 	@Transactional
 	public Server saveInDB(Server server) throws ServiceException {
 		server = serverDAO.save(server);
@@ -140,112 +123,48 @@ public class ServerServiceImpl implements ServerService {
 	 * new server or another one coming from registry.
 	 *
 	 * @param server
-	 * @param tagName
 	 * @return
 	 * @throws ServiceException
 	 * @throws CheckException
 	 */
 	@Override
 	@Transactional
-	public Server create(Server server, String tagName) throws ServiceException, CheckException {
-
-		if (tagName == null) {
-			tagName = "";
-		}
+	public Server create(Server server) throws ServiceException, CheckException {
 
 		logger.debug("create : Methods parameters : " + server);
 		logger.info("ServerService : Starting creating Server " + server.getName());
 
-		// General informations
-		server.setStatus(Status.PENDING);
-		server.setJvmOptions("");
-		server.setStartDate(new Date());
-
+		// General information
 		Application application = server.getApplication();
 		User user = server.getApplication().getUser();
 
 		// Build a custom container
-		String containerName = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(cuInstanceName.toLowerCase()) + "-"
-					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(user.getLogin()) + "-"
-					+ AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(server.getApplication().getName()) + "-"
-					+ server.getName();
+		String containerName = NamingUtils.getContainerName(server.getApplication().getName()
+                                                            , null
+															,server.getApplication().getUser().getLogin());
 
-		String imagePath = server.getImage().getPath() + tagName;
-		logger.debug("imagePath:" + imagePath);
-
-		String subdomain = System.getenv("CU_SUB_DOMAIN");
-		if (subdomain == null) {
-			subdomain = "";
-		}
-		logger.info("env.CU_SUB_DOMAIN=" + subdomain);
-
-		server.getApplication().setSuffixCloudUnitIO(subdomain + suffixCloudUnitIO);
-
+		String imagePath = server.getImage().getPath();
+		String imageSubType = server.getImage().getImageSubType().toString();
 		try {
-			dockerService.createServer(containerName, server, imagePath, user, null, true, null);
+            dockerService.createServer(containerName, server, imagePath, imageSubType, user, null, true, null);
 			server = dockerService.startServer(containerName, server);
 			server = serverDAO.saveAndFlush(server);
-
-			if (logger.isDebugEnabled()) {
-				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_PORT"));
-				logger.debug(dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
-				logger.debug(application.getLocation());
-			}
-
-			hipacheRedisUtils.createRedisAppKey(server.getApplication(), server.getContainerIP(),
-					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
-
-			// Update server with all its informations
-			server.setManagerLocation("http://manager-" + application.getLocation().substring(7)
-					+ dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH"));
+			// Update server with all its information
+			server.setManagerLocation(String.format("http://%s/%s",
+                    containerName + domain, dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH")));
 			server.setStatus(Status.START);
-			server.setJvmMemory(512L);
-			server.setJvmRelease(dockerService.getEnv(server.getName(), "CU_DEFAULT_JAVA_RELEASE"));
 			server = this.update(server);
-
-			addCredentialsForServerManagement(server, user);
-			String needToRestart = dockerService.getEnv(server.getName(), "CU_SERVER_RESTART_POST_CREDENTIALS");
-			if ("true".equalsIgnoreCase(needToRestart)) {
-				dockerService.stopContainer(server.getName());
-				dockerService.startServer(server.getName(), server);
-			}
-			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
-
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);
-			// Removing a creating container if an error has occurred with
-			// the database
-			// DockerContainer.remove(dockerContainer,
-			// application.getManagerIp());
-
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		} catch (DockerJSONException e) {
 			StringBuilder msgError = new StringBuilder(512);
 			msgError.append("server=").append(server);
-			msgError.append(", tagName=[").append(tagName).append("]");
 			logger.error("" + msgError, e);
 			throw new ServiceException(msgError.toString(), e);
 		}
 		logger.info("ServerService : Server " + server.getName() + " successfully created.");
 		return server;
-	}
-
-	@Override
-	public void addCredentialsForServerManagement(Server server, final User user) throws ServiceException {
-		try {
-			Map<String, String> kvStore = new HashMap<String, String>() {
-				private static final long serialVersionUID = 1L;
-				{
-					put("CU_USER", user.getLogin());
-					put("CU_PASSWORD", user.getPassword());
-				}
-			};
-			dockerService.execCommand(server.getName(), RemoteExecAction.ADD_USER.getCommand(kvStore));
-		} catch (FatalDockerJSONException fex) {
-			fex.printStackTrace();
-			throw new ServiceException(fex.getMessage());
-		}
 	}
 
 	/**
@@ -285,13 +204,6 @@ public class ServerServiceImpl implements ServerService {
 		logger.info("ServerService : Starting updating Server " + server.getName());
 		try {
 			serverDAO.save(server);
-
-			Application application = server.getApplication();
-
-			hipacheRedisUtils.updateServerAddress(application, server.getContainerIP(),
-					dockerService.getEnv(server.getName(), "CU_SERVER_PORT"),
-					dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PORT"));
-
 		} catch (PersistenceException | FatalDockerJSONException e) {
 			logger.error("ServerService Error : update Server" + e);
 			e.printStackTrace();
@@ -319,8 +231,6 @@ public class ServerServiceImpl implements ServerService {
 				logger.error("Cannot delete the container ["+serverName+"]. Maybe already destroyed");
 			}
 
-			// Remove server on cloudunit :
-			hipacheRedisUtils.removeServerAddress(application);
 			serverDAO.delete(server);
 
 			logger.info("ServerService : Server successfully removed ");
@@ -442,11 +352,10 @@ public class ServerServiceImpl implements ServerService {
 
 	@CacheEvict(value = "env", allEntries = true)
 	@Transactional
-	public Server update(Server server, String jvmMemory, String options, String jvmRelease, boolean restorePreviousEnv)
+	public Server update(Server server, String jvmMemory, String options, boolean restorePreviousEnv)
 			throws ServiceException {
 
 		String previousJvmMemory = server.getJvmMemory().toString();
-		String previousJvmRelease = server.getJvmRelease();
 		String previousJvmOptions = server.getJvmOptions();
 
 		options = options == null ? "" : options;
@@ -461,23 +370,18 @@ public class ServerServiceImpl implements ServerService {
 			currentJvmMemory = jvmOptions + " " + currentJvmMemory;
 			envs.add("JAVA_OPTS=" + currentJvmMemory);
 
-			// Add the jmv env variable to set the jvm release
-			envs.add("JAVA_HOME=/opt/cloudunit/java/" + jvmRelease);
-
 			dockerService.stopContainer(server.getName());
 			dockerService.removeContainer(server.getName(), false);
 			List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
 					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
 							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
 					.collect(Collectors.toList());
-			dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+			dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),
 					server.getApplication().getUser(), envs, false, volumes);
 			server = startServer(server);
-			addCredentialsForServerManagement(server, server.getApplication().getUser());
 
 			server.setJvmMemory(Long.valueOf(jvmMemory));
 			server.setJvmOptions(jvmOptions);
-			server.setJvmRelease(jvmRelease);
 			server = saveInDB(server);
 
 		} catch (Exception e) {
@@ -485,17 +389,14 @@ public class ServerServiceImpl implements ServerService {
 				StringBuilder msgError = new StringBuilder();
 				msgError.append("jvmMemory:").append(jvmMemory).append(",");
 				msgError.append("jvmOptions:").append(jvmOptions).append(",");
-				msgError.append("jvmRelease:").append(jvmRelease);
 				throw new ServiceException(msgError.toString(), e);
 			} else {
 				// Rollback to previous configuration
 				logger.warn("Restore the previous environment for jvm configuration. Maybe a syntax error");
-				update(server, previousJvmMemory, previousJvmOptions, previousJvmRelease, false);
+				update(server, previousJvmMemory, previousJvmOptions, false);
 			}
 		}
-
 		return server;
-
 	}
 
 	/**
@@ -592,10 +493,10 @@ public class ServerServiceImpl implements ServerService {
 				.collect(Collectors.toList());
 		List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
 				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
-		dockerService.createServer(server.getName(), server, server.getImage().getPath(),
+		dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),
 				server.getApplication().getUser(), envs, false, volumes);
 		server = startServer(server);
-		addCredentialsForServerManagement(server, server.getApplication().getUser());
+		//addCredentialsForServerManagement(server, server.getApplication().getUser());
 	}
 
 	private void checkVolumeFormat(VolumeAssociationDTO volume) throws ServiceException {

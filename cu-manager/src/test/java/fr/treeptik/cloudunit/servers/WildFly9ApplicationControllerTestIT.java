@@ -36,6 +36,6 @@ package fr.treeptik.cloudunit.servers;
 public class WildFly9ApplicationControllerTestIT extends AbstractApplicationControllerTestIT {
 
     public WildFly9ApplicationControllerTestIT() {
-        super("wildfly-9", "jdk1.7.0_55");
+        super("wildfly-9");
     }
 }

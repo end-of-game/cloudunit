@@ -45,8 +45,7 @@ public class MessageConverter {
                 new String[] { application.getName(),
                         application.getUser().getLastName() + " " + application.getUser().getFirstName(),
                         DateUtils.formatDate(application.getDate()),
-                        application.getServer().getImage().getName().toUpperCase(), application.getStatus().toString(),
-                        application.getJvmRelease() },
+                        application.getServer().getImage().getName().toUpperCase(), application.getStatus().toString()},
 
         });
 
@@ -77,20 +76,18 @@ public class MessageConverter {
 
         String[][] tab = new String[2][7];
         tab[0][0] = "TYPE";
-        tab[0][1] = "ADDRESS";
-        tab[0][2] = "SSH PORT";
-        tab[0][3] = "STATUS";
-        tab[0][4] = "JVM OPTS";
-        tab[0][5] = "MEMORY";
-        tab[0][6] = "MANAGER LOCATION";
+        tab[0][1] = "SSH PORT";
+        tab[0][2] = "STATUS";
+        tab[0][3] = "JVM OPTS";
+        tab[0][4] = "MEMORY";
+        tab[0][5] = "MANAGER LOCATION";
 
         tab[1][0] = server.getImage().getName().toUpperCase();
-        tab[1][1] = application.getSuffixCloudUnitIO().substring(1);
-        tab[1][2] = server.getSshPort();
-        tab[1][3] = server.getStatus().toString();
-        tab[1][4] = server.getJvmOptions() != "" ? server.getJvmOptions() : "NONE";
-        tab[1][5] = server.getJvmMemory() + "";
-        tab[1][6] = server.getManagerLocation() + " ";
+        tab[1][1] = server.getSshPort();
+        tab[1][2] = server.getStatus().toString();
+        tab[1][3] = server.getJvmOptions() != "" ? server.getJvmOptions() : "NONE";
+        tab[1][4] = server.getJvmMemory() + "";
+        tab[1][5] = server.getManagerLocation() + " ";
 
         printer.print(tab);
 

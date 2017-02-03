@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,7 +134,7 @@ public class ApplicationUtils {
         checkConnectedAndApplicationSelected();
 
         useApplication(currentApplication.getName());
-        String dockerManagerIP = currentApplication.getManagerIp();
+        String dockerManagerIP = authenticationUtils.finalHost;
         statusCommand.setExitStatut(0);
 
         MessageConverter.buildApplicationMessage(currentApplication, dockerManagerIP);
@@ -491,7 +492,7 @@ public class ApplicationUtils {
         return "This environment variable has successful been updated";
     }
 
-    public String listAllEnvironmentVariables(String applicationName) {
+    public String listAllEnvironmentVariables(String applicationName, boolean export) {
         Application application = getSpecificOrCurrentApplication(applicationName);
         
         try {
@@ -500,13 +501,23 @@ public class ApplicationUtils {
                             + "/container/" + application.getServer().getName() + "/environmentVariables",
                     authenticationUtils.getMap()).get("body");
             
-            MessageConverter.buildListEnvironmentVariables(JsonConverter.getEnvironmentVariables(response));
-
-            return JsonConverter.getEnvironmentVariables(response).size() + " variables found!";
+            List<EnvironmentVariable> variables = JsonConverter.getEnvironmentVariables(response);
+            
+            if (export) {
+                return envVarExportScript(variables);
+            } else {
+                MessageConverter.buildListEnvironmentVariables(variables);
+                return JsonConverter.getEnvironmentVariables(response).size() + " variables found!";
+            }
         } catch (ManagerResponseException e) {
             throw new CloudUnitCliException("Couldn't list environment variables", e);
         }
+    }
 
+    private String envVarExportScript(List<EnvironmentVariable> variables) {
+        return variables.stream()
+            .map(v -> String.format("export %s=%s", v.getKeyEnv(), v.getValueEnv()))
+            .collect(Collectors.joining("\n"));
     }
 
     public String listContainers(String applicationName) {

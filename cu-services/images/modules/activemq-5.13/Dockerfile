@@ -66,3 +66,7 @@ WORKDIR /opt/activemq
 
 #ENTRYPOINT ["/app/init"]
 CMD ["/app/run.sh"]
+
+LABEL origin application
+LABEL application-type activemq
+LABEL application-version $ACTIVEMQ_VERSION

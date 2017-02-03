@@ -58,6 +58,7 @@ public class Port implements Serializable {
     }
 
     public String getHostValue() {
+        if (hostValue == null) { return ""; }
         return hostValue;
     }
 

@@ -7,8 +7,6 @@
 # We cannot update the jar with application server without playing with signal traps...
 # and we don't want.
 
-set -x
-
 CU_USER=$1
 CU_PASSWORD=$2
 CU_FILE=$3

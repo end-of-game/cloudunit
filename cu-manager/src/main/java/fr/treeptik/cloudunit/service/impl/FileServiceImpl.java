@@ -55,7 +55,7 @@ public class FileServiceImpl implements FileService {
 	@Inject
 	private DockerService dockerService;
 
-	@Value("${docker.manager.ip:192.168.50.4:4243}")
+	@Value("${docker.socket.location}")
 	private String dockerManagerIp;
 
 	@Value("${docker.endpoint.mode}")
@@ -141,19 +141,21 @@ public class FileServiceImpl implements FileService {
 	 */
 	public String tailFile(String containerId, String filename, Integer maxRows) throws ServiceException {
 		String execOutput = "";
+		String command = null;
 		try {
 			String logDir = getLogDirectory(containerId);
 			if (!logDir.endsWith("/")) {
 				logDir = logDir + "/";
 			}
-			final String command = "tail -n " + maxRows + " " + logDir + filename;
+			command = "tail -n " + maxRows + " " + logDir + filename;
 			execOutput = dockerService.execCommand(containerId, command);
 			if (execOutput != null && execOutput.contains("cannot access") == false) {
 				return execOutput;
 			}
 		} catch (FatalDockerJSONException e) {
 			StringBuilder builder = new StringBuilder(256);
-			builder.append("containerId=").append(containerId);
+			builder.append(command);
+			builder.append(", containerId=").append(containerId);
 			builder.append(",file=").append(filename);
 			builder.append(",nbRows=").append(maxRows);
 			throw new ServiceException(builder.toString(), e);

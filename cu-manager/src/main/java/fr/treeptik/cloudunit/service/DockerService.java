@@ -20,6 +20,7 @@ import java.util.List;
 
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
+import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
 import fr.treeptik.cloudunit.model.User;
@@ -32,8 +33,8 @@ DockerService {
 
 	void addEnv(String containerId, String key, String value) throws FatalDockerJSONException;
 
-	void createServer(String containerName, Server server, String imagePath, User user, List<String> envs,
-			boolean createMainVolume, List<String> volumes) throws DockerJSONException;
+	void createServer(String containerName, Server server, String imagePath, String imageType, User user, List<String> envs,
+			boolean createMainVolume, List<String> volumes) throws DockerJSONException, ServiceException;
 
 	Server startServer(String containerName, Server server) throws DockerJSONException;
 

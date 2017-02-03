@@ -107,7 +107,10 @@ public class MonitoringController {
 	 * @return
 	 */
 	@RequestMapping("/location")
-	public ResponseEntity<String> getServiceLocation(@Value("${location.service.monitoring}") String location) {
+	public ResponseEntity<String> getServiceLocation(@Value("#{environment.CU_KIBANA_DOMAIN}") String location) {
+		if (location != null && !location.startsWith("https")) {
+			location = "https://" + location;
+		}
 		return ResponseEntity.ok(location);
 	}
 

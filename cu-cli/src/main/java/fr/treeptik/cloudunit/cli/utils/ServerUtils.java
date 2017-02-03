@@ -45,7 +45,7 @@ public class ServerUtils {
 	@Autowired
 	private RestUtils restUtils;
 
-	private List<String> availableJavaVersion = Arrays.asList(new String[] { "jdk1.7.0_55", "jdk1.8.0_25" });
+	private List<String> availableJavaVersion = Arrays.asList(new String[] { "java7", "java8", "java9" });
 
 	private List<String> availableMemoryValues = Arrays.asList("512", "1024", "2048", "3072");
 
@@ -63,7 +63,6 @@ public class ServerUtils {
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
 		parameters.put("jvmMemory", memory);
-		parameters.put("jvmRelease", applicationUtils.getCurrentApplication().getJvmRelease());
 		parameters.put("jvmOptions", applicationUtils.getCurrentApplication().getServer().getJvmOptions().toString());
 		try {
 			restUtils.sendPutCommand(authenticationUtils.finalHost + "/server/configuration/jvm",
@@ -87,7 +86,6 @@ public class ServerUtils {
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("applicationName", applicationUtils.getCurrentApplication().getName());
 		parameters.put("jvmOptions", opts);
-		parameters.put("jvmRelease", applicationUtils.getCurrentApplication().getJvmRelease());
 		parameters.put("jvmMemory", applicationUtils.getCurrentApplication().getServer().getJvmMemory().toString());
 		try {
 			restUtils.sendPutCommand(authenticationUtils.finalHost + "/server/configuration/jvm",

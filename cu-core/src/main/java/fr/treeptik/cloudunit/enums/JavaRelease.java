@@ -5,8 +5,9 @@ package fr.treeptik.cloudunit.enums;
  */
 public enum JavaRelease {
 
-    Java7("Java JDK 7.0.55", "jdk1.7.0_55"),
-    Java8("Java JDK 8.0.25", "jdk1.8.0_25");
+    Java7("Java 7", "java7"),
+    Java8("Java 8", "java8"),
+    Java9("Java 9", "java9");
 
     private final String label;
     private final String version;

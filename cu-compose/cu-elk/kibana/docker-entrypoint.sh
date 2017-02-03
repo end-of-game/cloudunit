@@ -19,7 +19,8 @@ echo 'Waiting for elasticsearch Up and Running'
 until $(curl --output /dev/null --silent --head --fail http://elasticsearch:9200); do
   sleep 2s
 done
-  sleep 1s
+
+sleep 1s
 
 if $(curl --output /dev/null --silent --head --fail http://elasticsearch:9200/.kibana)
 then

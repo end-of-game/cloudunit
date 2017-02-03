@@ -292,29 +292,6 @@ public class UserServiceImpl
         logger.info("UserService : User " + user.getLastName()
                 + " password successfully updated.");
 
-        try {
-
-            for (Application application : listApplications) {
-                Server server = application.getServer();
-                configShell.put("port", server.getSshPort());
-                configShell.put("dockerManagerAddress", server
-                        .getApplication().getManagerIp());
-                String command = "sh /cloudunit/scripts/change-password.sh "
-                        + userLogin + " " + newPassword;
-                configShell.put("password", application.getUser()
-                        .getPassword());
-                shellUtils.executeShell(command, configShell);
-
-                String commandSource = "source /etc/environment";
-                logger.debug(commandSource);
-
-                shellUtils.executeShell(commandSource, configShell);
-            }
-
-        } catch (Exception e) {
-            logger.error("change Passsword - Error execute ssh Request - " + e);
-            throw new ServiceException(e.getLocalizedMessage(), e);
-        }
     }
 
     @Override

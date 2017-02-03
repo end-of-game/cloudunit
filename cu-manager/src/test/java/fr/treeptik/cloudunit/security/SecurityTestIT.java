@@ -221,30 +221,6 @@ public class SecurityTestIT extends TestCase {
     }
 
     @Test
-    public void test11_User2triesToManageAliasForApplicationUser1() throws Exception {
-
-        logger.info("************************************************");
-        logger.info(" User2 attemps to manage the application's User1  ");
-        logger.info("************************************************");
-
-        String jsonString = "{\"applicationName\":\"" + applicationName + "\",\"alias\":\"myAlias\"}";
-        // create the alias
-        ResultActions resultats = this.mockMvc
-            .perform(
-                post("/application/alias").session(session2)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonString)).andDo(print());
-        resultats.andExpect(status().is5xxServerError());
-
-        // delete the alias
-        resultats = this.mockMvc
-            .perform(
-                delete("/application/" + applicationName + "/alias/myalias").session(session2)
-                    .contentType(MediaType.APPLICATION_JSON)).andDo(print());
-        resultats.andExpect(status().is5xxServerError());
-    }
-
-    @Test
     public void test12_User2triesToChangeConfigForApplicationUser1() throws Exception {
 
         logger.info("************************************************");
@@ -253,7 +229,7 @@ public class SecurityTestIT extends TestCase {
 
         final String jsonString =
             "{\"applicationName\":\"" + applicationName
-                + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"\",\"jvmRelease\":\"jdk1.8.0_25\",\"location\":\"webui\"}";
+                + "\",\"jvmMemory\":\"512\",\"jvmOptions\":\"\",\"jvmRelease\":\"java8\",\"location\":\"webui\"}";
         ResultActions resultats =
             this.mockMvc.perform(put("/server/configuration/jvm").session(session2).contentType(MediaType.APPLICATION_JSON).content(jsonString)).andDo(print());
         resultats.andExpect(status().is5xxServerError());

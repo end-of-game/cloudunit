@@ -1,0 +1,18 @@
+sudo: required
+language: java
+
+services:
+  - docker
+  - maven
+
+before_install:
+  - docker version
+
+script:
+- echo $USER
+- cd cu-services && travis_wait 30 ./build-services.sh all
+- docker images
+- ./check_build_images.sh
+- cd /home/travis/build/Treeptik/cloudunit &&  travis_wait 30 mvn install -DskipTests -B
+- cd /home/travis/build/Treeptik/cloudunit/cu-manager && travis_wait 30 mvn test "-Dtest=*IT"
+

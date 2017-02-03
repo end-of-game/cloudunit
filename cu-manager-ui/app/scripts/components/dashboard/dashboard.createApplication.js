@@ -56,7 +56,7 @@
     vm.isPending = false;
     vm.createApplication = createApplication;
     vm.isValid = isValid;
-
+   
     vm.selectConfig = {
       optgroupField: 'prefixId',
       optgroupLabelField: 'title',
@@ -82,9 +82,9 @@
 
       function success(serverImages) {
         vm.serverImages = serverImages;
-
          serverImages.forEach(function (element, index) {
           var rang = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[index].prefixEnv);
+          serverImages[index].prefixId = (serverImages[index].prefixId > 0)?serverImages[index].prefixId:-serverImages[index].prefixId;
           if(rang == -1) {
             vm.group.push({
               id: serverImages[index].prefixId,

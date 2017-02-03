@@ -45,6 +45,22 @@ public class NamingUtils {
     }
 
     /**
+     * Create the container name
+     */
+    public final static String getContainerName(String applicationName, String nature, String userLogin){
+        String value = "error";
+        if (nature != null && !nature.isEmpty()) {
+            if (nature.indexOf("-") != -1) {
+                nature = nature.substring(0, nature.indexOf("-"));
+            }
+            value = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(applicationName) + "-" + nature + "-" + userLogin;
+        } else {
+            value = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(applicationName) + "-" + userLogin;
+        }
+        return value.toLowerCase();
+    }
+
+    /**
      * To decide if we use unix or http/https  mode to access docker socket
      */
     public static String getProtocolSocket(boolean isUnix, String mode) {
@@ -52,6 +68,20 @@ public class NamingUtils {
             return "unix";
         } else {
             return mode;
+        }
+    }
+
+    /**
+     * Normalize the domain name
+     */
+    public static String getCloudUnitDomain(String input) {
+        if (input == null || input.isEmpty()) {
+            return ".cloudunit.dev";
+        } else {
+            if (!input.startsWith(".")) {
+                input = "." + input;
+            }
+            return input;
         }
     }
 }

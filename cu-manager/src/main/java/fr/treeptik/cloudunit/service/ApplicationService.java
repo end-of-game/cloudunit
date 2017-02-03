@@ -35,11 +35,7 @@ public interface ApplicationService {
 
 	List<Application> findAllByUser(User user) throws ServiceException;
 
-	Long countApp(User user) throws ServiceException;
-
-	void isValid(String applicationName, String serverName) throws ServiceException, CheckException;
-
-	void checkCreate(Application application, String serverName) throws CheckException, ServiceException;
+	public void checkCreate(User user, String application) throws CheckException, ServiceException;
 
 	Application saveInDB(Application application) throws ServiceException;
 
@@ -55,29 +51,12 @@ public interface ApplicationService {
 
 	List<ContainerUnit> listContainers(String applicationName) throws ServiceException;
 
-	List<String> getListAliases(Application application) throws ServiceException;
-
-	void addNewAlias(Application application, String alias) throws ServiceException, CheckException;
-
-	void updateAliases(Application application) throws ServiceException;
-
-	void removeAlias(Application application, String alias) throws ServiceException, CheckException;
-
 	Application remove(Application application, User user) throws ServiceException, CheckException;
 
-	Application create(String applicationName, String login, String serverName, String tagName, String origin)
-			throws ServiceException, CheckException;
-
-	void removePort(Application application, Integer port) throws CheckException, ServiceException;
-
-	Integer countApplicationsForImage(String cuInstanceName, User user, String tag)
-			throws CheckException, ServiceException;
+	Application create(String applicationName, String serverName) throws ServiceException, CheckException;
 
 	boolean isStarted(String name);
 
 	boolean isStopped(String name);
-
-	PortToOpen addPort(Application application, String nature, Integer port, Boolean isQuickAccess)
-			throws ServiceException;
 
 }
