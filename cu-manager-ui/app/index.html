@@ -113,6 +113,13 @@
         <div class="app-bar-icons">
             <ul class="icon-bar">
                 <li class="button-container">
+                    <a data-ng-if="main.isAdmin" id="account-link" href="#account/image" class="icon-button secondary"
+                       ripple=""
+                       tooltip="" data-title="Image" data-placement="bottom">
+                        <i class="icon-whhg rocket-launch"></i>
+                    </a>
+                </li>
+                <li class="button-container">
                     <a data-ng-if="main.isAdmin" id="account-link" href="#account/admin" class="icon-button secondary"
                        ripple=""
                        tooltip="" data-title="Admin" data-placement="bottom">
@@ -383,6 +390,7 @@
 <script src="scripts/components/account/list/account.admin.list.js"></script>
 <script src="scripts/components/account/logs/account.admin.logs.js"></script>
 <script src="scripts/components/account/profil/account.admin.profil.js"></script>
+<script src="scripts/components/account/image/account.admin.image.js"></script>
 <script src="scripts/components/account/user/account.user.js"></script>
 <script src="scripts/components/account/adminService.js"></script>
 <!--error-->
