@@ -13,3 +13,6 @@ hibernate.show_sql: true
 hibernate.hbm2ddl.auto: update
 entitymanager.packagesToScan: fr.treeptik
 
+server:
+  port: 8081
+
