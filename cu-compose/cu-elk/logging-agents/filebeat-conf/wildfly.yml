@@ -27,12 +27,20 @@ filebeat.prospectors:
   paths:
     - /opt/cloudunit/wildfly/standalone/log/server.log
   document_type: wildfly-server
+  multiline:
+    match: after
+    negate: true
+    pattern: "^[0-9]{2}-[A-Z]{1}[a-z]{2}-[0-9]{4}"
 
 - input_type: log
   paths:
     - /opt/cloudunit/wildfly/standalone/log/*
   document_type: wildfly-unknown
   exclude_files: ["server.log"]
+  multiline:
+    match: after
+    negate: true
+    pattern: "^[0-9]{2}-[A-Z]{1}[a-z]{2}-[0-9]{4}"
     #- c:\programdata\elasticsearch\logs\*
 
   # Configure the file encoding for reading files with international characters

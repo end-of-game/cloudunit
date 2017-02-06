@@ -27,6 +27,10 @@ filebeat.prospectors:
   paths:
     - /opt/cloudunit/fatjar/logs/*
   document_type: fatjar-unknown
+  multiline:
+    pattern: '^\['
+    negate:  true
+    match:   after
     #- c:\programdata\elasticsearch\logs\*
 
   # Configure the file encoding for reading files with international characters

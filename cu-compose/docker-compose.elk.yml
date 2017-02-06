@@ -88,6 +88,19 @@ services:
     labels:
       - "traefik.enable=false"
 
+  data-cleaner:
+    container_name: cu-data-cleaner
+    build:
+      context: cu-elk/data-cleaner
+    image: cloudunit/elk-data-cleaner
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - "TZ=${TZ}"
+      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+    labels:
+      - "traefik.enable=false"
+
 networks:
   default:
     external:

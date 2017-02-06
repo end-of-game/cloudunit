@@ -18,18 +18,6 @@ RUN useradd metricbeat \
     && apt-get autoremove \
     && ln -sf /dev/stdout /var/log/metricbeat
 
-RUN set -x \
-	&& wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | apt-key add - \
-	&& echo "deb http://packages.elastic.co/curator/4/debian stable main" > /etc/apt/sources.list.d/elastic.list \
-	&& apt update \
-	&& apt install elasticsearch-curator \
-  && rm -rf /docker docker-$DOCKER_CLIENT.tgz /var/lib/apt/lists/*
-
-COPY curator /etc/curator
-
-RUN set -x \
-  && echo "00 2 * * * curator --config /etc/curator/curator.yml /etc/curator/purge-index"
-
 WORKDIR /opt/cloudunit/monitoring-agents/metricbeat
 COPY ./docker-entrypoint.sh /
 VOLUME /opt/cloudunit/monitoring-agents
