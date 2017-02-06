@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"io"
 	"net/http"
-	"gopkg.in/robfig/cron.v2"
 	"golang.org/x/net/context"
   "github.com/docker/docker/client"
   "github.com/docker/docker/api/types"
@@ -64,8 +63,6 @@ func deletedoc(container_name string, ELASTICSEARCH_URL string) {
 }
 
 func main() {
-  cron := cron.New()
-	c.AddFunc("00 2 * * *", func() { purgeindex() })
   client, err := client.NewClient("unix:///var/run/docker.sock", "1.25", nil, nil)
   if err != nil {
 		panic(err)
