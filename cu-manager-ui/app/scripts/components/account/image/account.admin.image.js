@@ -51,23 +51,52 @@
 
 
     vm.$onInit = function() {
-			ImageService.findAll()
-				.then(function(images) {
-					vm.listImages = images;
-				})
-				.catch ( function (response) {
-        	ErrorService.handle(response);
-        });
+			getListImage();
     }
 
 		/////////////////////////////////////////////
-		
+		function getListImage() {
+			ImageService.findAll()
+				.then(function(images) {
+					console.log(images);
+					vm.listImages = images;
+				});
+		}
+
 		function enableImage(image) {
 			console.log('enable', image);
+
+			ImageService.enable ( image.name )
+        .then ( function(response) {
+            getListImage();
+            cleanMessage();
+            vm.manageNoticeMsg = 'image successfully enabled !';
+        }).catch (function(response) {
+          cleanMessage();
+          if(response.data.message) {
+            vm.manageErrorMsg = response.data.message;
+          } else {
+            vm.manageErrorMsg = 'An error has been encountered !';
+          };  
+        });
 		}
 
 		function disableImage(image) {
 			console.log('disable', image);
+
+			ImageService.disable ( image.name )
+        .then ( function(response) {
+            getListImage();
+            cleanMessage();
+            vm.manageNoticeMsg = 'image successfully disabled !';
+        }).catch (function(response) {
+          cleanMessage();
+          if(response.data.message) {
+            vm.manageErrorMsg = response.data.message;
+          } else {
+            vm.manageErrorMsg = 'An error has been encountered !';
+          };  
+        });
 		}
 		
 		function pullImage(image) {
@@ -76,8 +105,27 @@
 
 		function removeImage(image) {
 			console.log('remove', image);
+
+			ImageService.remove ( image.name )
+        .then ( function(response) {
+            getListImage();
+            cleanMessage();
+            vm.manageNoticeMsg = 'image successfully removed !';
+        }).catch (function(response) {
+          cleanMessage();
+          if(response.data.message) {
+            vm.manageErrorMsg = response.data.message;
+          } else {
+            vm.manageErrorMsg = 'An error has been encountered !';
+          };  
+        });
 		}
 
+    function cleanMessage() {
+      vm.manageErrorMsg = '';
+      vm.manageNoticeMsg = '';
+    }
+		
 		function order (predicate) {
       vm.reverse = (vm.predicate === predicate) ? !vm.reverse : false;
       vm.predicate = predicate;

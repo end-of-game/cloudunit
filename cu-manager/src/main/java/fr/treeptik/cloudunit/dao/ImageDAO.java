@@ -30,11 +30,11 @@ public interface ImageDAO
     Image findByName(@Param("name") String name)
         throws DataAccessException;
 
-    @Query("select i from Image i")
+    @Query("select i from Image i where i.isEnable is TRUE")
     List<Image> findAllEnabledImages()
         throws DataAccessException;
 
-    @Query("select i from Image i where i.imageType=:imageType")
+    @Query("select i from Image i where i.imageType=:imageType and i.isEnable is TRUE")
     List<Image> findAllEnabledImagesByType(@Param("imageType") String imageType)
         throws DataAccessException;
 

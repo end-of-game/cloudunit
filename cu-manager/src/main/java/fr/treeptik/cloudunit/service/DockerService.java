@@ -74,4 +74,8 @@ DockerService {
 	void stopContainer(String containerName) throws DockerJSONException;
 
 	String logs(String container) throws FatalDockerJSONException;
+
+	void deleteImage(String imageName) throws FatalDockerJSONException;
+
+	List<String> listImages() throws FatalDockerJSONException;
 }
