@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.google.common.collect.ImmutableList;
+import com.spotify.docker.client.messages.Image;
 import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -351,4 +353,43 @@ public class DockerServiceImpl implements DockerService {
             return null;
         }
     }
+
+    @Override
+    public void deleteImage(String imageName) throws FatalDockerJSONException {
+        try {
+            imageName = "cloudunit/" + imageName;
+            System.out.println(imageName);
+            this.dockerClient.removeImage(imageName);
+        } catch (DockerException | InterruptedException e) {
+
+            StringBuilder msgError = new StringBuilder();
+            throw new FatalDockerJSONException(msgError.toString(), e);
+
+
+//            logger.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<String> listImages() throws FatalDockerJSONException {
+        List<String> imagesId = new ArrayList<>();
+
+        try {
+            List<Image> images = dockerClient.listImages(DockerClient.ListImagesFilterParam.allImages());
+            ImmutableList<String> tmp = null;
+            for(int i = 0; i < images.size(); i++) {
+                tmp = images.get(i).repoTags().asList();
+                for(int j = 0; j < tmp.size(); j++) {
+                    imagesId.add(tmp.get(j));
+                }
+            }
+//            imagesId = images.stream().map(c -> c.repoTags()).collect(Collectors.toList(), ImmutableList::copyOf);
+        } catch (DockerException | InterruptedException e) {
+            logger.error(e.getMessage());
+        }
+
+        return imagesId;
+    }
+
+
 }

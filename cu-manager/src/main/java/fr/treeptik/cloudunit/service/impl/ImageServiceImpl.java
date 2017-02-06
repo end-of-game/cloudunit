@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.service.impl;
 import fr.treeptik.cloudunit.dao.ImageDAO;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,9 @@ public class ImageServiceImpl
 
     @Inject
     private ImageDAO imageDAO;
+
+    @Inject
+    private DockerService dockerService;
 
     public ImageDAO getImageDAO() {
         return this.imageDAO;
@@ -124,6 +128,7 @@ public class ImageServiceImpl
         try {
             logger.debug("start findAll");
             List<Image> images = imageDAO.findAll();
+            images = this.checkImagesPulled(images);
             logger.info("ImageService : All Images found ");
             return images;
         } catch (PersistenceException e) {
@@ -154,7 +159,7 @@ public class ImageServiceImpl
         Image image;
         try {
             image = this.findByName(imageName);
-            image.setStatus(Image.ENABLED);
+            image.setEnable(Image.ENABLED);
             image = this.update(image);
         } catch (ServiceException e) {
             throw new ServiceException(
@@ -171,7 +176,7 @@ public class ImageServiceImpl
         Image image;
         try {
             image = this.findByName(imageName);
-            image.setStatus(Image.DISABLED);
+            image.setEnable(Image.DISABLED);
             image = this.update(image);
         } catch (ServiceException e) {
             throw new ServiceException(
@@ -186,6 +191,7 @@ public class ImageServiceImpl
         try {
             logger.debug("start find enabled images");
             List<Image> images = imageDAO.findAllEnabledImages();
+            images = this.checkImagesPulled(images);
             logger.info("ImageService : enabled found ");
             return images;
         } catch (PersistenceException e) {
@@ -225,5 +231,24 @@ public class ImageServiceImpl
             throw new ServiceException(e.getLocalizedMessage(), e);
 
         }
+    }
+
+    @Override
+    public void delete(String imageName) {
+        dockerService.deleteImage(imageName);
+    }
+
+    private List<Image> checkImagesPulled ( List<Image> images ) {
+        List<String> listImages = this.dockerService.listImages();
+
+        images.stream().m
+        for (String tag:
+                listImages
+             ) {
+            System.out.println(tag);
+
+        }
+
+        return images;
     }
 }

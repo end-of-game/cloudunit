@@ -19,10 +19,9 @@ import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.service.ImageService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -68,4 +67,22 @@ public class ImageController {
         return apiVersion;
     }
 
+
+    @RequestMapping(value = "/{imageName}/enabled", method = RequestMethod.PUT)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void enableImage(@PathVariable String imageName) throws ServiceException {
+        imageService.enableImage(imageName);
+    }
+
+    @RequestMapping(value = "/{imageName}/disabled", method = RequestMethod.PUT)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void disableImage(@PathVariable String imageName) throws ServiceException {
+        imageService.disableImage(imageName);
+    }
+
+    @RequestMapping(value = "/{imageName}", method = RequestMethod.DELETE)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteImage(@PathVariable String imageName) throws ServiceException {
+        imageService.delete(imageName);
+    }
 }
