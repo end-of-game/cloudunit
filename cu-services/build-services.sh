@@ -71,8 +71,11 @@ function redis {
     docker build --rm $CACHE_STRATEGY -t cloudunit/redis-3-2 images/modules/redis-3-2
 }
 
-function vertx3 {
-    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx3 images/servers/vertx3
+function vertx33 {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-ruby images/servers/vertx33-ruby
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-js images/servers/vertx33-js
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-groovy images/servers/vertx33-groovy
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-java images/servers/vertx33-java
 }
 
 case "$1" in
@@ -142,9 +145,9 @@ echo "Building Tools"
 tools
 ;;
 
-'vertx3')
+'vertx33')
 echo "Building Vertx"
-vertx3
+vertx33
 ;;
 
 'wildfly')
@@ -166,7 +169,7 @@ postgre
 rabbitmq
 redis
 tomcat
-vertx3
+vertx33
 wildfly
 ;;
 
@@ -191,7 +194,7 @@ echo "                    rabbitmq"
 echo "                    redis"
 echo "                    tomcat"
 echo "                    tools"
-echo "                    vertx3"
+echo "                    vertx33"
 echo "                    wildfly"
 echo ""
 ;;

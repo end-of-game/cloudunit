@@ -27,7 +27,13 @@ public class NamingUtils {
      * Evaluate the context to display in UI in function the file deployed.
      * ROOT.war and all .jar don't have specific context
      */
-    private static Predicate<String> evaluateCtx = s -> fileEndsWith("ROOT.war").or(fileEndsWith(".jar")).test(s);
+    private static Predicate<String> evaluateCtx =
+            s -> fileEndsWith("ROOT.war")
+                    .or(fileEndsWith(".jar")
+                            .or(fileEndsWith(".java"))
+                            .or(fileEndsWith(".rb"))
+                            .or(fileEndsWith(".groovy"))
+                            .or(fileEndsWith(".js"))).test(s);
 
     /**
      * Define the rule for Application Context.

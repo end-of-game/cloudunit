@@ -37,7 +37,7 @@ public class FilesUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(FilesUtils.class);
 
-	public static String[] suffixesDeployment = { ".war", ".ear", ".jar" };
+	public static String[] suffixesDeployment = { ".war", ".ear", ".jar", ".rb", ".js", ".java", ".groovy" };
 
 	public static String[] notAllowed = { ".docker", "init-service-ok" };
 

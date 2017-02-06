@@ -27,7 +27,10 @@ INSERT IGNORE INTO `Image`
   (100, 'rabbitmq-3.6', 'cloudunit/rabbitmq-3.6', 'RabbitMQ 3.6.5-1', 'rabbitmq', 'module', '', 'MESSAGE_BROKER'),
   (110, 'elasticsearch-2.4', 'cloudunit/elasticsearch-2.4', 'Elasticsearch 2.4', 'elasticsearch', 'module', '', 'SEARCH_ENGINE'),
   (120, 'nginx-1.10', 'cloudunit/nginx-1.10', 'Nginx 1.10', 'nginx', 'server', '', 'WEBSERVER'),
-  (130, 'vertx3', 'cloudunit/vertx3', 'Vertx 3.3.3', 'vertx', 'server', '', 'STANDALONE');
+  (130, 'vertx33-ruby', 'cloudunit/vertx33-ruby', 'Vertx 3.3 Ruby', 'vertx', 'server', '', 'STANDALONE'),
+  (131, 'vertx33-js', 'cloudunit/vertx33-js', 'Vertx 3.3 Javascript', 'vertx', 'server', '', 'STANDALONE'),
+  (132, 'vertx33-groovy', 'cloudunit/vertx33-groovy', 'Vertx 3.3 Groovy', 'vertx', 'server', '', 'STANDALONE'),
+  (133, 'vertx33-java', 'cloudunit/vertx33-java', 'Vertx 3.3 Java', 'vertx', 'server', '', 'STANDALONE');
 
 INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariables`,`moduleEnvironmentVariables_KEY`,`Image_id`)
 VALUES
