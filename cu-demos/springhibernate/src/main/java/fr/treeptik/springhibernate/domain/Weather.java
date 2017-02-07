@@ -2,7 +2,7 @@ package fr.treeptik.springhibernate.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 /**
  * Created by guillaume on 18/01/17.
@@ -21,7 +21,7 @@ public class Weather implements Serializable {
     @Enumerated(EnumType.STRING)
     private WeatherEnum weather;
 
-    private OffsetDateTime dateTime;
+    private LocalDateTime dateTime;
 
     public Long getId() {
         return id;
@@ -40,8 +40,7 @@ public class Weather implements Serializable {
         return weather;
     }
 
-
-    public OffsetDateTime getDateTime() {
+    public LocalDateTime getDateTime() {
         return dateTime;
     }
 
@@ -61,7 +60,9 @@ public class Weather implements Serializable {
         this.weather = weather;
     }
 
-    public void setDateTime(OffsetDateTime dateTime) {
+    public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
+
+
 }

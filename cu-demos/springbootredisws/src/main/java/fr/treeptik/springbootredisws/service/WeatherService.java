@@ -1,4 +1,4 @@
-package fr.treeptik.springbootredisws.controller;
+package fr.treeptik.springbootredisws.service;
 
 import fr.treeptik.springbootredisws.domain.Weather;
 

@@ -1,10 +1,10 @@
-class UsersApi {
+class LocationApi {
 
     static requestHeaders() {
         return {}
     }
 
-    static getWeather() {
+    static getAllLocations() {
         const headers = this.requestHeaders();
         const request = new Request(`${process.env.API_HOST}/weather`, {
             method: 'GET',
@@ -15,9 +15,7 @@ class UsersApi {
         }).catch(error => {
             return error;
         });
-
     }
-
 }
 
-export default UsersApi;
+export default LocationApi;

@@ -7,9 +7,10 @@ import {Provider} from "react-redux";
 import {Router, browserHistory} from "react-router";
 import routes from "./routes";
 import {loadLocations} from "./actions/WeatherActions";
+
 const store = configureStore();
 
-store.dispatch((loadLocations));
+store.dispatch((loadLocations()));
 
 render(
     <Provider store={store}>

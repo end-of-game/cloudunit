@@ -1,6 +1,7 @@
 package fr.treeptik.springbootredisws.controller;
 
 import fr.treeptik.springbootredisws.domain.Weather;
+import fr.treeptik.springbootredisws.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

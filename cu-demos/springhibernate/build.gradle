@@ -12,4 +12,8 @@ dependencies {
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
     compile group: 'org.springframework', name: 'spring-orm', version: '4.3.5.RELEASE'
     compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.2.6.Final'
+    compile 'org.springframework.data:spring-data-jpa:1.11.0.RELEASE'
+    compile 'org.aspectj:aspectjweaver:1.8.10'
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.0")
+
 }
