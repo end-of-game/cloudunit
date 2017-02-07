@@ -17,7 +17,9 @@ package fr.treeptik.cloudunit.controller;
 
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ImageService;
+import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -35,6 +37,9 @@ public class ImageController {
 
     @Value("${api.version}")
     private String apiVersion;
+
+    @Inject
+    private AuthentificationUtils authentificationUtils;
 
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     public
@@ -80,9 +85,23 @@ public class ImageController {
         imageService.disableImage(imageName);
     }
 
-    @RequestMapping(value = "/{imageName}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{imageId}", method = RequestMethod.DELETE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteImage(@PathVariable String imageName) throws ServiceException {
-        imageService.delete(imageName);
+    public void deleteImage(@PathVariable Integer imageId) throws ServiceException {
+        imageService.delete(imageId);
     }
+
+    @RequestMapping(value = "/pull", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void pullImage( @RequestBody Image image) throws ServiceException {
+        User user = authentificationUtils.getAuthentificatedUser();
+        authentificationUtils.forbidUser(user);
+        try {
+            imageService.pull(image.getPath());
+        } finally {
+            authentificationUtils.allowUser(user);
+        }
+
+    }
+
 }

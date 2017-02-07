@@ -355,18 +355,24 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
+    public void pullImage(String imageName) throws FatalDockerJSONException {
+        try {
+            this.dockerClient.pull(imageName);
+        } catch (DockerException | InterruptedException e) {
+            StringBuilder msgError = new StringBuilder();
+            throw new FatalDockerJSONException(msgError.toString(), e);
+        }
+    }
+
+    @Override
     public void deleteImage(String imageName) throws FatalDockerJSONException {
         try {
-            imageName = "cloudunit/" + imageName;
             System.out.println(imageName);
             this.dockerClient.removeImage(imageName);
         } catch (DockerException | InterruptedException e) {
 
             StringBuilder msgError = new StringBuilder();
             throw new FatalDockerJSONException(msgError.toString(), e);
-
-
-//            logger.error(e.getMessage());
         }
     }
 
@@ -376,20 +382,18 @@ public class DockerServiceImpl implements DockerService {
 
         try {
             List<Image> images = dockerClient.listImages(DockerClient.ListImagesFilterParam.allImages());
-            ImmutableList<String> tmp = null;
-            for(int i = 0; i < images.size(); i++) {
-                tmp = images.get(i).repoTags().asList();
-                for(int j = 0; j < tmp.size(); j++) {
-                    imagesId.add(tmp.get(j));
+            ImmutableList<String> currentTags = null;
+            for (Image image: images) {
+                currentTags = image.repoTags().asList();
+                for (String tag: currentTags) {
+                    imagesId.add(tag);
                 }
             }
-//            imagesId = images.stream().map(c -> c.repoTags()).collect(Collectors.toList(), ImmutableList::copyOf);
         } catch (DockerException | InterruptedException e) {
             logger.error(e.getMessage());
         }
 
         return imagesId;
     }
-
 
 }

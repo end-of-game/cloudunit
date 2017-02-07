@@ -69,3 +69,11 @@
 .table > tbody > tr > td {
   vertical-align: middle;
 }
+
+.table > tbody > tr.inactive-line {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table > tbody > tr.active-line {
+  background-color: $color-primary;
+}
