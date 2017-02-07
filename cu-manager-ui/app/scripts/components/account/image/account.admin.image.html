@@ -55,7 +55,8 @@
 							<tbody>
 								<tr 
 									dir-paginate="img in accountImage.listImages | orderBy:accountImage.predicate:accountImage.reverse | itemsPerPage: accountImage.pageSize track by img.id"
-									data-current-page="accountImage.currentPage">
+									data-current-page="accountImage.currentPage"
+									ng-class="{ 'inactive-line': !img.pull, 'active-line': img.enable && img.pull}">
 									<td>
 											<span editable-text="img.path" e-name="path" e-form="rowform" e-required>
 													<span class="clipboard" id="path-{{img.id}}"
@@ -89,23 +90,70 @@
 											</span>
 									</td>
 									<td>
-										<button class="icon-button"
+										<button ng-if="img.pull" class="icon-button danger"
 											ripple=""
 											tooltip=""
 											data-title="Remove image"
 											data-placement="bottom"
-											ng-click="accountImage.removeImage(img)">
+
+											sweetalert
+											sweet-options="{'title':'Removal confirmation required',
+											'text':'Caution, no application could used this image.',
+											'type':'warning',
+											'showCancelButton':true,
+											'confirmButtonText':'REMOVE IMAGE!',
+											'cancelButtonText':'CANCEL',
+											'closeOnConfirm':false,
+											'closeOnCancel':false,
+											'animation': 'slide-from-top'}"
+											sweet-confirm-option="{'title':'Removed!','text':'The image has been removed!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+											sweet-cancel-option="{'title':'Cancelled!','text':'The image is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+											sweet-on-confirm="accountImage.removeImage(img)">
 											<i class="icon-whhg trash"></i>
 										</button>
-										<button ng-if="img.enable" class="icon-button"
+										<button ng-if="!img.pull" class="icon-button"
+											ripple=""
+											tooltip=""
+											data-title="Pull image"
+											data-placement="bottom"
+											
+											sweetalert
+											sweet-options="{'title':'Pull confirmation required',
+											'text':'Pull an image can take a few moment.',
+											'type':'warning',
+											'showCancelButton':true,
+											'confirmButtonText':'PULL IMAGE!',
+											'cancelButtonText':'CANCEL',
+											'closeOnConfirm':false,
+											'closeOnCancel':false,
+											'animation': 'slide-from-top'}"
+											sweet-confirm-option="{'title':'Downloaded!','text':'The image has been pulled!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+											sweet-cancel-option="{'title':'Cancelled!','text':'The image hasn't been pulled,'type':'error', 'showConfirmButton': false, 'timer': 1000}"
+											sweet-on-confirm="accountImage.pullImage(img)">
+											<i class="icon-whhg download"></i>
+										</button>
+										<button ng-if="img.enable && img.pull" class="icon-button"
 											ripple=""
 											tooltip=""
 											data-title="Disable image"
 											data-placement="bottom"
-											ng-click="accountImage.disableImage(img)">
+											
+											sweetalert
+											sweet-options="{'title':'confirmation required',
+											'text':'Caution, no application could see this image.',
+											'type':'warning',
+											'showCancelButton':true,
+											'confirmButtonText':'DISABLE IMAGE!',
+											'cancelButtonText':'CANCEL',
+											'closeOnConfirm':false,
+											'closeOnCancel':false,
+											'animation': 'slide-from-top'}"
+											sweet-confirm-option="{'title':'Disabled!','text':'The image is now unavailable!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+											sweet-cancel-option="{'title':'Cancelled!','text':'The image is always available','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+											sweet-on-confirm="accountImage.disableImage(img)">
 											<i class="icon-whhg eye-close"></i>
 										</button>
-										<button ng-if="!img.enable" class="icon-button"
+										<button ng-if="!img.enable && img.pull" class="icon-button"
 											ripple=""
 											tooltip=""
 											data-title="Enable image"

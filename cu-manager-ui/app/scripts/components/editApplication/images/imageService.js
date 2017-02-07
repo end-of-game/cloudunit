@@ -39,7 +39,8 @@
       findAll: findAll,
       enable: enable,
       disable: disable,
-      remove: remove
+      remove: remove,
+      pull: pull
     };
 
 
@@ -70,11 +71,17 @@
     }
     
     // Supprime une image
-    function remove(imageName) {
-      var dir = $resource ( 'image/:imageName' );
+    function remove(imageID) {
+      var dir = $resource ( 'image/:imageID' );
       return dir.delete ( { 
-            imageName: imageName
+            imageID: imageID
         }, {} ).$promise; 
+    }
+
+    // Ajout d'une image
+    function pull(image) {
+      var dir = $resource ( 'image/pull' );
+      return dir.save ( {}, image ).$promise; 
     }
 
     // rend indisponible l'image
@@ -119,4 +126,3 @@
   }
 
 })();
-

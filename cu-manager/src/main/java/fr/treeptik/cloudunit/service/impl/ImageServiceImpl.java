@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ImageServiceImpl
@@ -159,6 +160,7 @@ public class ImageServiceImpl
         Image image;
         try {
             image = this.findByName(imageName);
+
             image.setEnable(Image.ENABLED);
             image = this.update(image);
         } catch (ServiceException e) {
@@ -234,21 +236,23 @@ public class ImageServiceImpl
     }
 
     @Override
-    public void delete(String imageName) {
-        dockerService.deleteImage(imageName);
+    public void delete(Integer imageId) {
+        dockerService.deleteImage(imageDAO.findOne(imageId).getPath());
     }
 
-    private List<Image> checkImagesPulled ( List<Image> images ) {
+    @Override
+    public void pull(String imageName) {
+        dockerService.pullImage(imageName);
+    }
+
+    private List<Image> checkImagesPulled(List<Image> images) {
         List<String> listImages = this.dockerService.listImages();
-
-        images.stream().m
-        for (String tag:
-                listImages
-             ) {
-            System.out.println(tag);
-
+        for (String tag: listImages) {
+            images = images.stream().map( image -> {
+                if(tag.contains(image.getPath())) image.setPull(true);
+             return image;
+            }).collect(Collectors.toList());
         }
-
         return images;
     }
 }

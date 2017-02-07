@@ -56,6 +56,9 @@ public class Image implements Serializable {
 
     private boolean isEnable;
 
+    @Transient
+    private boolean isPull;
+
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
     private Map<PortType, String> exposedPorts;
@@ -145,9 +148,7 @@ public class Image implements Serializable {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
 
     public String getPrefixEnv() {
         return prefixEnv;
@@ -169,9 +170,11 @@ public class Image implements Serializable {
         return isEnable;
     }
 
-    public void setEnable(boolean enable) {
-        this.isEnable = enable;
-    }
+    public void setEnable(boolean enable) { this.isEnable = enable; }
+
+    public void setPull(boolean pull) { isPull = pull; }
+
+    public boolean isPull() { return isPull; }
 
     // do not remove prefixId use for splitting server by nature
     public Integer getPrefixId() {

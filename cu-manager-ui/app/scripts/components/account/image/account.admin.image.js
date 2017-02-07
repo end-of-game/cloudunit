@@ -37,7 +37,7 @@
     
     var vm = this;
     
-		vm.pageSize = 5;
+		vm.pageSize = 10;
     vm.currentPage = 1;
 
 		vm.predicate = 'name';
@@ -64,8 +64,6 @@
 		}
 
 		function enableImage(image) {
-			console.log('enable', image);
-
 			ImageService.enable ( image.name )
         .then ( function(response) {
             getListImage();
@@ -82,9 +80,7 @@
 		}
 
 		function disableImage(image) {
-			console.log('disable', image);
-
-			ImageService.disable ( image.name )
+			ImageService.disable ( image.id )
         .then ( function(response) {
             getListImage();
             cleanMessage();
@@ -100,13 +96,23 @@
 		}
 		
 		function pullImage(image) {
-			console.log('pullImage', image);
+      ImageService.pull(image)
+        .then ( function(response) {
+            getListImage();
+            cleanMessage();
+            vm.manageNoticeMsg = 'image successfully pulled !';
+        }).catch (function(response) {
+          cleanMessage();
+          if(response.data.message) {
+            vm.manageErrorMsg = response.data.message;
+          } else {
+            vm.manageErrorMsg = 'An error has been encountered !';
+          };  
+        });
 		}
 
 		function removeImage(image) {
-			console.log('remove', image);
-
-			ImageService.remove ( image.name )
+			ImageService.remove ( image.id )
         .then ( function(response) {
             getListImage();
             cleanMessage();
@@ -116,7 +122,7 @@
           if(response.data.message) {
             vm.manageErrorMsg = response.data.message;
           } else {
-            vm.manageErrorMsg = 'An error has been encountered !';
+            vm.manageErrorMsg = 'An error has been encountered maybe an application already use this image !';
           };  
         });
 		}
