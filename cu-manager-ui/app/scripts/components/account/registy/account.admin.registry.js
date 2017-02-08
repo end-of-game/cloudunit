@@ -17,51 +17,51 @@
   'use strict';
   angular
     .module('webuiApp.account')
-    .component('accountProfil', accountProfil());
+    .component('accountRegistry', accountRegistry());
 
-  function accountProfil(){
+  function accountRegistry(){
     return {
-      templateUrl: 'scripts/components/account/profil/account.admin.profil.html',
+      templateUrl: 'scripts/components/account/registry/account.admin.registry.html',
       bindings: {},
       controller: [
         'AdminService',
         'ErrorService',
-        AccountProfilCtrl
+        AccountRegistryCtrl
       ],
-      controllerAs: 'accountProfil',
+      controllerAs: 'accountImage',
     };
   }
 
-  function AccountProfilCtrl(AdminService, ErrorService) {
+  function AccountRegistryCtrl(AdminService, ErrorService) {
     
     var vm = this;
+		vm.saveRegistryConf = saveRegistryConf;
 
-    // Config JVM
-    vm.oldPassword = '';
-    vm.newPassword = '';
-    vm.confirmPassword = '';
-    vm.errorMsg = '';
-    vm.noticeMsg = '';
-
-    vm.changePassword = changePassword;
-
-    // Function to change password account  
-    function changePassword(oldPassword, newPassword, confirmPassword) {
-      if(newPassword !== confirmPassword) {
-        vm.errorMsg = "Confirmation password error!";
-      } else {
-        AdminService.changePassword(oldPassword, newPassword)
-          .then(function(res) {
-            vm.noticeMsg = 'Password successfully update!';
-            vm.errorMsg = '';
-          }).catch(function(err) {
-            vm.errorMsg = 'Your current password is not correct. Please retry!';
-            vm.noticeMsg = '';
-          });
-      }
+    vm.$onInit = function() {
 
     }
 
+		/////////////////////////////////////////////
+
+		function saveRegistryConf(image) {
+			AdminService.enable ( image.name )
+        .then ( function(response) {
+            cleanMessage();
+            vm.manageNoticeMsg = 'registry information registred !';
+        }).catch (function(response) {
+          cleanMessage();
+          if(response.data.message) {
+            vm.manageErrorMsg = response.data.message;
+          } else {
+            vm.manageErrorMsg = 'An error has been encountered !';
+          };  
+        });
+		}
+
+    function cleanMessage() {
+      vm.errorMsg = '';
+      vm.noticeMsg = '';
+    }
+		
   }
 })();
-

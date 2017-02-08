@@ -113,6 +113,13 @@
         <div class="app-bar-icons">
             <ul class="icon-bar">
                 <li class="button-container">
+                    <a data-ng-if="main.isAdmin" id="account-link" href="#account/registry" class="icon-button secondary"
+                       ripple=""
+                       tooltip="" data-title="Registry" data-placement="bottom">
+                        <i class="icon-whhg cloudaltprivate"></i>
+                    </a>
+                </li>
+                <li class="button-container">
                     <a data-ng-if="main.isAdmin" id="account-link" href="#account/image" class="icon-button secondary"
                        ripple=""
                        tooltip="" data-title="Image" data-placement="bottom">
