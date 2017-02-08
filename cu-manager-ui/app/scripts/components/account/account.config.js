@@ -46,6 +46,13 @@ angular.module('webuiApp.account', [])
             isFree: false
           }
         })
+        .state('account.registry', {
+          url: '/registry',
+          template: '<account-registry></account-registry>',
+          data: {
+            isFree: false
+          }
+        })
         .state('account.logs', {
           url: '/logs/:login',
           template: '<account-logs></account-logs>',
