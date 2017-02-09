@@ -357,7 +357,7 @@ public class DockerServiceImpl implements DockerService {
     @Override
     public void pullImage(String imageName) throws FatalDockerJSONException {
         try {
-            this.dockerClient.pull(imageName);
+            this.dockerClient.pull(imageName+":latest");
         } catch (DockerException | InterruptedException e) {
             StringBuilder msgError = new StringBuilder();
             throw new FatalDockerJSONException(msgError.toString(), e);
