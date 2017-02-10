@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by gborg on 06/02/17.
  */
-public class ImageRessource implements Serializable {
+public class ImageResource implements Serializable {
 
     private Integer id;
     private String name;
@@ -24,7 +24,7 @@ public class ImageRessource implements Serializable {
 
     private String prefixEnv;
 
-    private Integer isEnable;
+    private boolean isEnable;
 
     public void setName(String name) {
         this.name = name;
@@ -54,7 +54,7 @@ public class ImageRessource implements Serializable {
         this.prefixEnv = prefixEnv;
     }
 
-    public void setEnable(Integer enable) {
+    public void setEnable(boolean enable) {
         isEnable = enable;
     }
 
@@ -91,7 +91,7 @@ public class ImageRessource implements Serializable {
         return prefixEnv;
     }
 
-    public Integer isEnable() {
+    public boolean isEnable() {
         return isEnable;
     }
 
@@ -110,10 +110,10 @@ public class ImageRessource implements Serializable {
     }
 
 
-    public ImageRessource() {
+    public ImageResource() {
     }
 
-    public ImageRessource(Image image) {
+    public ImageResource(Image image) {
         this.id = image.getId();
         this.name = image.getName();
         this.displayName = image.getDisplayName();
