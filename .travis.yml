@@ -22,9 +22,9 @@ script:
   - cd cu-services && travis_wait 60 ./build-services.sh tomcat
   - sudo cat /etc/default/docker
   - docker images
-  # - ./check_build_images.sh
+  #- ./check_build_images.sh
   - cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -B
   - cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.template /home/travis/build/Treeptik/cloudunit/cu-compose/.env
-  #- cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
+  - cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
   - docker ps -a
   - cd /home/travis/build/Treeptik/cloudunit/cu-manager && mvn test "-Dtest=*Tomcat8ApplicationControllerTestIT"
