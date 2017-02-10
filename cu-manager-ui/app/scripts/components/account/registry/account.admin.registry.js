@@ -59,13 +59,12 @@
     function getListRegistry() {
       AdminService.getListRegistry()
         .then(function(registries) {
-          console.log(registries);
           vm.listRegistry = registries;
         });
     }
 
-    function addRegistry ( registry ) {
-      AdminService.addRegistry ( registry )
+    function addRegistry ( endpoint, username, password, email ) {
+      AdminService.addRegistry ( endpoint, username, password, email )
         .then ( function(response) {
           cleanMessage();
           vm.manageNoticeMsg = 'registry information registred !';

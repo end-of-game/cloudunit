@@ -126,19 +126,19 @@
     }
 
     function getListRegistry ( ) {
-      var dir = $resource ( '/registry/' );
+      var dir = $resource ( '/registry' );
       return dir.query ( { } ).$promise;      
     }
 
-    function addRegistry ( registry ) {
+    function addRegistry ( endpoint, username, password, email ) {
         var data = {
-            endpoint: registry.endpoint,
-            username: registry.username,
-            password: registry.password,
-            email: registry.email
+            endpoint: endpoint,
+            username: username,
+            password: password,
+            email: email
         };
 
-        var dir = $resource ( '/registry/' );
+        var dir = $resource ( '/registry' );
         return dir.save ( { }, data ).$promise;
     }
   }

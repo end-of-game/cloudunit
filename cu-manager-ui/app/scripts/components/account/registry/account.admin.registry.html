@@ -123,11 +123,11 @@
 				<div class="rect5"></div>
 			</div>
 
-			<div class="no-data" ng-if="!accountRegistry.listImages.length">
+			<div class="no-data" ng-if="!accountRegistry.listRegistry.length">
 				<p>No registry is available yet !</p>
 			</div>
 
-			<table class="table" ng-if="accountRegistry.listImages.length">
+			<table class="table" ng-if="accountRegistry.listRegistry.length">
 				<thead>
 					<tr>
 						<th ng-click="accountRegistry.order('endpoint')"><i class="icon-whhg"  ng-show="accountRegistry.predicate == 'endpoint'" ng-class="{ 'arrow-down': !accountRegistry.reverse, 'arrow-up': accountRegistry.reverse }"></i> endpoint</th>
@@ -165,10 +165,10 @@
 											</span>
 									</td>
 									<td>
-										<button ng-if="registry.pull" class="icon-button danger"
+										<button class="icon-button danger"
 											ripple=""
 											tooltip=""
-											data-title="Remove image"
+											data-title="Remove Registry"
 											data-placement="bottom"
 
 											sweetalert
@@ -191,7 +191,6 @@
 				</tbody>
 			</table>
 			<dir-pagination-controls ng-if="accountRegistry.listRegistry.length"></dir-pagination-controls>
-
 			<div class="alert alert-danger" data-ng-show="accountRegistry.errorMsg">
 					<button type="button"
 					class="close"

@@ -20,7 +20,7 @@ public class RegistryController {
     @Inject
     private RegistryService registryService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public
     @ResponseBody
     ResponseEntity<List<RegistryResource>> listAllRegistry()
@@ -30,7 +30,7 @@ public class RegistryController {
         return ResponseEntity.status(HttpStatus.OK).body(registryList);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public
     @ResponseBody
