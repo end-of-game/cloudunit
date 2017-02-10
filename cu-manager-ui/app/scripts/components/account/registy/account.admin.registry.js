@@ -28,7 +28,7 @@
         'ErrorService',
         AccountRegistryCtrl
       ],
-      controllerAs: 'accountImage',
+      controllerAs: 'accountRegistry',
     };
   }
 
