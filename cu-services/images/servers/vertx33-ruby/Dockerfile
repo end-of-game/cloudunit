@@ -39,4 +39,4 @@ CMD [ "run" ]
 
 LABEL origin application
 LABEL application-type vertx-ruby
-LABEL application-version vertx-ruby-33
+LABEL application-version 33

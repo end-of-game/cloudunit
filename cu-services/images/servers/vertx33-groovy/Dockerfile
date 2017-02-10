@@ -39,6 +39,4 @@ CMD [ "run" ]
 
 LABEL origin application
 LABEL application-type vertx-groovy
-LABEL application-version vertx-groovy-33
-
-
+LABEL application-version 33

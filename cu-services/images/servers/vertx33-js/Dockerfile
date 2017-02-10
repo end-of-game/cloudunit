@@ -39,4 +39,4 @@ CMD [ "run" ]
 
 LABEL origin application
 LABEL application-type vertx-js
-LABEL application-version vertx-js-33
+LABEL application-version 33

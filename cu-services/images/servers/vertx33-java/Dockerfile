@@ -39,4 +39,4 @@ CMD [ "run" ]
 
 LABEL origin application
 LABEL application-type vertx-java
-LABEL application-version vertx-java-33
+LABEL application-version 33
