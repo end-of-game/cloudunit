@@ -37,3 +37,8 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "run" ]
 
+LABEL origin application
+LABEL application-type vertx-groovy
+LABEL application-version vertx-groovy-33
+
+

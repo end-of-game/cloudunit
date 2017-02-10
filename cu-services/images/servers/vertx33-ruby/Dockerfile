@@ -37,6 +37,6 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "run" ]
 
-#ENTRYPOINT ["sh", "-c"]
-#CMD ["vertx run verticle.rb -cp $VERTICLE_HOME/*"]
-
+LABEL origin application
+LABEL application-type vertx-ruby
+LABEL application-version vertx-ruby-33

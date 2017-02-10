@@ -37,3 +37,6 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "run" ]
 
+LABEL origin application
+LABEL application-type vertx-java
+LABEL application-version vertx-java-33
