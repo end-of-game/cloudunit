@@ -77,7 +77,7 @@ DockerService {
 
 	void pullImage(String imageName) throws FatalDockerJSONException;
 
-	void deleteImage(String imageName) throws FatalDockerJSONException;
+	void deleteImage(String imageName) throws ServiceException;
 
-	List<String> listImages() throws FatalDockerJSONException;
+	List<String> listImages() throws ServiceException;
 }

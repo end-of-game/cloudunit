@@ -38,10 +38,29 @@
 
 			<h3 class="title">Images</h3>
 
+			<div class="alert alert-danger" data-ng-show="accountImage.manageErrorMsg">
+				<button type="button"
+						class="close"
+						ng-click="accountImage.manageErrorMsg = ''">
+					<span>&times;</span>
+				</button>
+				<p>{{accountImage.manageErrorMsg}}</p>
+			</div>
+			<div class="alert alert-info" data-ng-show="accountImage.manageNoticeMsg">
+				<button type="button"
+						class="close"
+						ng-click="accountImage.manageNoticeMsg = ''">
+					<span>&times;</span>
+				</button>
+				<p>{{accountImage.manageNoticeMsg}}</p>
+			</div>
+
 			<div class="no-data" ng-if="!accountImage.listImages.length">
 				<p>No images are available yet !</p>
 			</div>
 
+			<dir-pagination-controls ng-if="accountImage.listImages.length"></dir-pagination-controls>
+			
 			<table class="table" ng-if="accountImage.listImages.length">
 				<thead>
 					<tr>
@@ -167,22 +186,6 @@
 			</table>
 			<dir-pagination-controls ng-if="accountImage.listImages.length"></dir-pagination-controls>
 
-			<div class="alert alert-danger" data-ng-show="accountImage.manageErrorMsg">
-					<button type="button"
-					class="close"
-					ng-click="accountImage.manageErrorMsg = ''">
-					<span>&times;</span>
-			</button>
-			<p>{{accountImage.manageErrorMsg}}</p>
-			</div>
-			<div class="alert alert-info" data-ng-show="accountImage.manageNoticeMsg">
-				<button type="button"
-					class="close"
-					ng-click="accountImage.manageNoticeMsg = ''">
-					<span>&times;</span>
-				</button>
-				<p>{{accountImage.manageNoticeMsg}}</p>
-			</div>
 		</div>
 	</div>
 </section>

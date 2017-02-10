@@ -365,19 +365,17 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public void deleteImage(String imageName) throws FatalDockerJSONException {
+    public void deleteImage(String imageName) throws ServiceException {
         try {
-            System.out.println(imageName);
             this.dockerClient.removeImage(imageName);
         } catch (DockerException | InterruptedException e) {
-
             StringBuilder msgError = new StringBuilder();
-            throw new FatalDockerJSONException(msgError.toString(), e);
+            throw new ServiceException("Cannot delete image : " + imageName + ", maybe used.", e);
         }
     }
 
     @Override
-    public List<String> listImages() throws FatalDockerJSONException {
+    public List<String> listImages() throws ServiceException {
         List<String> imagesId = new ArrayList<>();
 
         try {

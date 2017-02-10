@@ -247,7 +247,7 @@ public class ImageServiceImpl
         dockerService.pullImage(imageName);
     }
 
-    private List<Image> checkImagesPulled(List<Image> images) {
+    private List<Image> checkImagesPulled(List<Image> images) throws ServiceException {
         List<String> listImages = this.dockerService.listImages();
         for (String tag: listImages) {
             images = images.stream().map( image -> {
