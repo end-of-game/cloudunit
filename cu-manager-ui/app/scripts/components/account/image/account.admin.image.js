@@ -58,7 +58,6 @@
 		function getListImage() {
 			ImageService.findAll()
 				.then(function(images) {
-					console.log(images);
 					vm.listImages = images;
 				});
 		}

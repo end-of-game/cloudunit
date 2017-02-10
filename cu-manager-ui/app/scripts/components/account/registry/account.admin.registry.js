@@ -35,33 +35,60 @@
   function AccountRegistryCtrl(AdminService, ErrorService) {
     
     var vm = this;
-		vm.saveRegistryConf = saveRegistryConf;
+    vm.listRegistry = [];
+    vm.endpoint = '';
+    vm.username = '';
+    vm.password = '';
+    vm.email = '';
+
+		vm.pageSize = 10;
+    vm.currentPage = 1;
+
+		vm.predicate = 'endpoint';
+    vm.reverse = false;
+    vm.order = order;
+
+		vm.addRegistry = addRegistry;
 
     vm.$onInit = function() {
-
+      getListRegistry();
     }
 
 		/////////////////////////////////////////////
 
-		function saveRegistryConf(image) {
-			AdminService.enable ( image.name )
+    function getListRegistry() {
+      AdminService.getListRegistry()
+        .then(function(registries) {
+          console.log(registries);
+          vm.listRegistry = registries;
+        });
+    }
+
+    function addRegistry ( registry ) {
+      AdminService.addRegistry ( registry )
         .then ( function(response) {
-            cleanMessage();
-            vm.manageNoticeMsg = 'registry information registred !';
-        }).catch (function(response) {
+          cleanMessage();
+          vm.manageNoticeMsg = 'registry information registred !';
+          getListRegistry();
+        })
+        .catch(function(response) {
           cleanMessage();
           if(response.data.message) {
             vm.manageErrorMsg = response.data.message;
           } else {
             vm.manageErrorMsg = 'An error has been encountered !';
-          };  
-        });
-		}
+          };
+        });  
+    }
 
     function cleanMessage() {
       vm.errorMsg = '';
       vm.noticeMsg = '';
     }
 		
+    function order (predicate) {
+      vm.reverse = (vm.predicate === predicate) ? !vm.reverse : false;
+      vm.predicate = predicate;
+    }
   }
 })();

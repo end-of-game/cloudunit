@@ -33,8 +33,75 @@
     </div>
   </header>
 
-	<div class="account-registry-card card col-lg-12">
-		<div class="content clearfix " id="settings-account-registry">
+	<div class="account-registry-form-card card col-lg-12">
+		<div class="content clearfix " id="settings-account-registry-form">
+			<h3 class="title">Registries</h3>
+			<form id="add-registry"
+						name="addRegistryForm"
+						class="clearfix" novalidate=""
+						data-ng-submit="accountRegistry.addRegistry(accountRegistry.registry.endpoint, accountRegistry.registry.password,
+						accountRegistry.registry.username, accountRegistry.registry.email)">
+
+				<div class="input-group-inline col-lg-5">      
+					<input type="text"
+							name="endpoint"
+							class="input-effect col-xs-12 marge-label" 
+							id="endpoint"
+							data-ng-model="accountRegistry.registry.endpoint"
+							required="">
+					<span class="bar"></span>
+					<label class="label-effect">Endpoint</label>
+				</div>
+
+				<div class="input-group-inline col-lg-5">      
+					<input type="text"
+							name="endpoint"
+							class="input-effect col-xs-12 marge-label" 
+							id="endpoint"
+							data-ng-model="accountRegistry.registry.username"
+							required="">
+					<span class="bar"></span>
+					<label class="label-effect">Username</label>
+				</div>
+				<div class="input-group-inline col-lg-5">      
+					<input type="password"
+							name="password"
+							class="input-effect col-xs-12 marge-label" 
+							id="endpoint"
+							data-ng-model="accountRegistry.registry.password"
+							required="">
+					<span class="bar"></span>
+					<label class="label-effect">Password</label>
+				</div>
+				<div class="input-group-inline col-lg-5">      
+					<input type="email"
+							name="email"
+							class="input-effect col-xs-12 marge-label" 
+							id="endpoint"
+							data-ng-model="accountRegistry.registry.email"
+							required="">
+					<span class="bar"></span>
+					<label class="label-effect">Email</label>
+				</div>
+				<div class="actions">
+					<div class="secondary-actions pull-right">
+						<button type="submit"
+										class="registry-btn button-effect primary pull-right"
+										data-ng-disabled="!accountRegistry.endpoint && !accountRegistry.username
+										 && !accountRegistry.password && !accountRegistry.email">
+							<span>Add registry</span>
+						</button>
+					</div>
+				</div>
+				{{accountRegistry.registry}}
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="account-registry-list-card card col-lg-12">
+
+		<div class="content clearfix " id="settings-account-registry-list">
 
 			<h3 class="title">Registries</h3>
 
