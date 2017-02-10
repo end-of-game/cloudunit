@@ -67,5 +67,7 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
 
 LABEL origin application
-LABEL application-type wildfy
+LABEL application-type wildfly
+LABEL logging enabled
+LABEL logging-type file
 LABEL application-version $WILDFLY_VERSION

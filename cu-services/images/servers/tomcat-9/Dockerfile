@@ -99,4 +99,6 @@ CMD [ "run" ]
 LABEL origin application
 LABEL application-type tomcat
 LABEL application-version tomcat-$TOMCAT_VERSION
+LABEL logging enabled
+LABEL logging-type file
 ## CLOUDUNIT :: END
