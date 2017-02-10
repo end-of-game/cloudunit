@@ -236,8 +236,10 @@ public class ImageServiceImpl
     }
 
     @Override
-    public void delete(Integer imageId) {
-        dockerService.deleteImage(imageDAO.findOne(imageId).getPath());
+    public void delete(Integer imageId) throws ServiceException {
+        Image image = imageDAO.findOne(imageId);
+        dockerService.deleteImage(image.getPath());
+        this.disableImage(image.getName());
     }
 
     @Override

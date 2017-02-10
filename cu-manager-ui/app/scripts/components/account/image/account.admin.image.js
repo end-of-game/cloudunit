@@ -80,7 +80,7 @@
 		}
 
 		function disableImage(image) {
-			ImageService.disable ( image.id )
+			ImageService.disable ( image.name )
         .then ( function(response) {
             getListImage();
             cleanMessage();
