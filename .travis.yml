@@ -24,4 +24,4 @@ script:
 - cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.template /home/travis/build/Treeptik/cloudunit/cu-compose/.env
 - cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
 - docker ps -a
-- cd /home/travis/build/Treeptik/cloudunit/cu-manager && travis_wait 60 mvn test "-Dtest=*IT"
+- cd /home/travis/build/Treeptik/cloudunit/cu-manager && travis_wait 60 mvn test "-Dtest=*Tomcat8ApplicationControllerTestIT"
