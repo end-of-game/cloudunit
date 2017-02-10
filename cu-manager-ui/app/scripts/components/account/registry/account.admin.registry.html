@@ -35,19 +35,28 @@
 
 	<div class="account-registry-form-card card col-lg-12">
 		<div class="content clearfix " id="settings-account-registry-form">
-			<h3 class="title">Registries</h3>
+			<h3 class="title large">Add Registry</h3>
+
+			<div class="spinner">
+				<div class="rect1"></div>
+				<div class="rect2"></div>
+				<div class="rect3"></div>
+				<div class="rect4"></div>
+				<div class="rect5"></div>
+			</div>
+			
 			<form id="add-registry"
 						name="addRegistryForm"
 						class="clearfix" novalidate=""
-						data-ng-submit="accountRegistry.addRegistry(accountRegistry.registry.endpoint, accountRegistry.registry.password,
-						accountRegistry.registry.username, accountRegistry.registry.email)">
+						data-ng-submit="accountRegistry.addRegistry(accountRegistry.endpoint, accountRegistry.password,
+						accountRegistry.username, accountRegistry.email)">
 
 				<div class="input-group-inline col-lg-5">      
 					<input type="text"
 							name="endpoint"
-							class="input-effect col-xs-12 marge-label" 
+							class="input-effect col-xs-12" 
 							id="endpoint"
-							data-ng-model="accountRegistry.registry.endpoint"
+							data-ng-model="accountRegistry.endpoint"
 							required="">
 					<span class="bar"></span>
 					<label class="label-effect">Endpoint</label>
@@ -55,20 +64,22 @@
 
 				<div class="input-group-inline col-lg-5">      
 					<input type="text"
-							name="endpoint"
-							class="input-effect col-xs-12 marge-label" 
-							id="endpoint"
-							data-ng-model="accountRegistry.registry.username"
+							name="username"
+							class="input-effect col-xs-12" 
+							id="username"
+							data-ng-model="accountRegistry.username"
 							required="">
 					<span class="bar"></span>
 					<label class="label-effect">Username</label>
 				</div>
+				<br><br>
+				<br><br>
 				<div class="input-group-inline col-lg-5">      
 					<input type="password"
 							name="password"
-							class="input-effect col-xs-12 marge-label" 
-							id="endpoint"
-							data-ng-model="accountRegistry.registry.password"
+							class="input-effect col-xs-12" 
+							id="password"
+							data-ng-model="accountRegistry.password"
 							required="">
 					<span class="bar"></span>
 					<label class="label-effect">Password</label>
@@ -76,9 +87,9 @@
 				<div class="input-group-inline col-lg-5">      
 					<input type="email"
 							name="email"
-							class="input-effect col-xs-12 marge-label" 
-							id="endpoint"
-							data-ng-model="accountRegistry.registry.email"
+							class="input-effect col-xs-12" 
+							id="email"
+							data-ng-model="accountRegistry.email"
 							required="">
 					<span class="bar"></span>
 					<label class="label-effect">Email</label>
@@ -87,13 +98,12 @@
 					<div class="secondary-actions pull-right">
 						<button type="submit"
 										class="registry-btn button-effect primary pull-right"
-										data-ng-disabled="!accountRegistry.endpoint && !accountRegistry.username
-										 && !accountRegistry.password && !accountRegistry.email">
+										data-ng-disabled="!accountRegistry.endpoint || !accountRegistry.username
+										 || !accountRegistry.password || !accountRegistry.email">
 							<span>Add registry</span>
 						</button>
 					</div>
 				</div>
-				{{accountRegistry.registry}}
 				</div>
 			</form>
 		</div>
@@ -104,6 +114,14 @@
 		<div class="content clearfix " id="settings-account-registry-list">
 
 			<h3 class="title">Registries</h3>
+			
+			<div class="spinner">
+				<div class="rect1"></div>
+				<div class="rect2"></div>
+				<div class="rect3"></div>
+				<div class="rect4"></div>
+				<div class="rect5"></div>
+			</div>
 
 			<div class="no-data" ng-if="!accountRegistry.listImages.length">
 				<p>No registry is available yet !</p>

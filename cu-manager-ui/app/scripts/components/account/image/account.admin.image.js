@@ -36,7 +36,8 @@
   function AccountImageCtrl(AdminService, ErrorService, ImageService) {
     
     var vm = this;
-    
+    vm.listImages = [];
+
 		vm.pageSize = 10;
     vm.currentPage = 1;
 

@@ -38,6 +38,21 @@
 
 			<h3 class="title">Images</h3>
 
+			<div class="spinner">
+				<div class="rect1"></div>
+				<div class="rect2"></div>
+				<div class="rect3"></div>
+				<div class="rect4"></div>
+				<div class="rect5"></div>
+			</div>
+
+			<div id="status-filter" class="subheader-form">
+				<div class="input-group inline">
+					<span class="label">Filter by keyword:</span>
+					<input ng-model="accountImage.searchText">
+				</div>
+			</div>
+
 			<div class="alert alert-danger" data-ng-show="accountImage.manageErrorMsg">
 				<button type="button"
 						class="close"
@@ -59,7 +74,7 @@
 				<p>No images are available yet !</p>
 			</div>
 
-			<dir-pagination-controls ng-if="accountImage.listImages.length"></dir-pagination-controls>
+			<dir-pagination-controls style="float: right" ng-if="accountImage.listImages.length"></dir-pagination-controls>
 			
 			<table class="table" ng-if="accountImage.listImages.length">
 				<thead>
@@ -73,7 +88,7 @@
 						</thead>
 							<tbody>
 								<tr 
-									dir-paginate="img in accountImage.listImages | orderBy:accountImage.predicate:accountImage.reverse | itemsPerPage: accountImage.pageSize track by img.id"
+									dir-paginate="img in accountImage.listImages | filter:accountImage.searchText |orderBy:accountImage.predicate:accountImage.reverse | itemsPerPage: accountImage.pageSize track by img.id"
 									data-current-page="accountImage.currentPage"
 									ng-class="{ 'inactive-line': !img.pull, 'active-line': img.enable && img.pull}">
 									<td>
