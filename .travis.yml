@@ -4,6 +4,7 @@ language: java
 services:
   - docker
   - maven
+  - gradle
 
 before_install:
   - docker version
@@ -18,7 +19,8 @@ before_install:
 script:
 - echo $USER
 - ps -ef | grep docker
-# - cd cu-services && travis_wait 60 ./build-services.sh all
+#- cd cu-services && travis_wait 60 ./build-services.sh tomcat
+- cat /etc/default/docker
 #- docker images
 # - ./check_build_images.sh
 #- cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -B
