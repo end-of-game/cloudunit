@@ -60,6 +60,7 @@ public class ApplicationConfig
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/snapshot/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/module/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/admin/*");
+        security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/registry/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/image/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/scripting/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/gitlab/*");

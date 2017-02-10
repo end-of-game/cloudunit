@@ -1,0 +1,128 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<section data-ng-cloak="" id="account">
+  <header class="header clearfix">
+    <div class="page-header">
+      <div class="page-title">
+        <a class="icon-button primary"
+           data-ng-href="#dashboard"
+           ripple=""
+           tooltip=""
+           data-title="Retour"
+           data-placement="bottom">
+          <i class="icon-whhg pageback"></i>
+        </a>
+
+        <h2 class="title">
+          Manage Registry
+        </h2>
+      </div>
+    </div>
+  </header>
+
+	<div class="account-registry-card card col-lg-12">
+		<div class="content clearfix lol" id="settings-account-registry">
+
+			<h3 class="title">Registries</h3>
+
+			<div class="no-data" ng-if="!accountRegistry.listImages.length">
+				<p>No registry is available yet !</p>
+			</div>
+
+			<table class="table" ng-if="accountRegistry.listImages.length">
+				<thead>
+					<tr>
+						<th ng-click="accountRegistry.order('endpoint')"><i class="icon-whhg"  ng-show="accountRegistry.predicate == 'endpoint'" ng-class="{ 'arrow-down': !accountRegistry.reverse, 'arrow-up': accountRegistry.reverse }"></i> endpoint</th>
+						<th ng-click="accountRegistry.order('username')"><i class="icon-whhg"  ng-show="accountRegistry.predicate == 'username'" ng-class="{ 'arrow-down': !accountRegistry.reverse, 'arrow-up': accountRegistry.reverse }"></i> username</th>
+						<th ng-click="accountRegistry.order('email')"><i class="icon-whhg"  ng-show="accountRegistry.predicate == 'email'" ng-class="{ 'arrow-down': !accountRegistry.reverse, 'arrow-up': accountRegistry.reverse }"></i> email</th>
+						<th>Actions</th>
+					</tr>
+						</thead>
+							<tbody>
+								<tr 
+									dir-paginate="registry in accountRegistry.listRegistry | orderBy:accountRegistry.predicate:accountRegistry.reverse | itemsPerPage: accountRegistry.pageSize track by registry.id"
+									data-current-page="accountRegistry.currentPage">
+									<td>
+											<span editable-text="registry.path" e-name="path" e-form="rowform" e-required>
+													<span class="clipboard" id="path-{{registry.id}}"
+													data-title="Copy to clipboard"
+													tooltip=""
+													ngclipboard data-clipboard-target="#path-{{registry.id}}">{{ registry.endpoint }}</span>
+											</span>
+									</td>
+									<td>
+											<span editable-text="registry.name" e-name="name" e-form="rowform"  e-required>
+													<span class="clipboard" id="name-{{registry.id}}"
+													data-title="Copy to clipboard"
+													tooltip=""
+													ngclipboard data-clipboard-target="#name-{{registry.id}}">{{ registry.username }}</span>
+											</span>
+									</td>
+									<td>
+											<span editable-text="registry.prefixEnv" e-name="prefixEnv" e-form="rowform" e-required>
+													<span class="clipboard" id="prefix-env-{{registry.id}}"
+													data-title="Copy to clipboard"
+													tooltip=""
+													ngclipboard data-clipboard-target="#prefix-env-{{registry.id}}">{{ registry.email }}</span>
+											</span>
+									</td>
+									<td>
+										<button ng-if="registry.pull" class="icon-button danger"
+											ripple=""
+											tooltip=""
+											data-title="Remove image"
+											data-placement="bottom"
+
+											sweetalert
+											sweet-options="{'title':'Removal confirmation required',
+											'text':'Caution, no image could be used from this registry.',
+											'type':'warning',
+											'showCancelButton':true,
+											'confirmButtonText':'REMOVE REGISTRY!',
+											'cancelButtonText':'CANCEL',
+											'closeOnConfirm':false,
+											'closeOnCancel':false,
+											'animation': 'slide-from-top'}"
+											sweet-confirm-option="{'title':'Removed!','text':'The registry has been removed!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+											sweet-cancel-option="{'title':'Cancelled!','text':'The registry is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+											sweet-on-confirm="accountRegistry.removeRegistry(registry)">
+											<i class="icon-whhg trash"></i>
+										</button>
+							</td>
+						</tr>
+				</tbody>
+			</table>
+			<dir-pagination-controls ng-if="accountRegistry.listRegistry.length"></dir-pagination-controls>
+
+			<div class="alert alert-danger" data-ng-show="accountRegistry.errorMsg">
+					<button type="button"
+					class="close"
+					ng-click="accountRegistry.errorMsg = ''">
+					<span>&times;</span>
+			</button>
+			<p>{{accountRegistry.errorMsg}}</p>
+			</div>
+			<div class="alert alert-info" data-ng-show="accountRegistry.noticeMsg">
+				<button type="button"
+					class="close"
+					ng-click="accountRegistry.noticeMsg = ''">
+					<span>&times;</span>
+				</button>
+				<p>{{accountRegistry.noticeMsg}}</p>
+			</div>
+		</div>
+	</div>
+</section>
