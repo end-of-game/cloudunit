@@ -5,6 +5,8 @@ services:
       container_name: cu-redis
       image: redis:3.0.1
       command: redis-server --appendonly yes
+      ports:
+        - "6379:6379"
       environment:
           - "TZ=${TZ}"
       volumes:
@@ -15,6 +17,8 @@ services:
   mysql:
       container_name: cu-mysql
       image: mysql:5.7.4
+      ports:
+        - "3306:3306"
       environment:
           - "TZ=${TZ}"
           - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
