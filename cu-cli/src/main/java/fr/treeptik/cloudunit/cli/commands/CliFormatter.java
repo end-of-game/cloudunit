@@ -30,22 +30,22 @@ public class CliFormatter {
      * @return the given string, if not in quiet mode; an empty string otherwise.
      */
     public String unlessQuiet(String s) {
-        return quiet ? "" : s;
+        return quiet ? null : s;
     }
     
     public <T> String table(TableColumn<T>[] columns, Collection<T> items) {
         StringBuilder sb = new StringBuilder();
         
         for (TableColumn<T> column : columns) {
-            sb.append(String.format("%"+column.getWidth()+"s", column.getHeader()));
+            sb.append(String.format("%-"+column.getWidth()+"s", column.getHeader()));
         }
-        sb.append("\n");
+
         
         for (T item : items) {
-            for (TableColumn<T> column : columns) {
-                sb.append(String.format("%"+column.getWidth()+"s", column.getValue(item)));
-            }
             sb.append("\n");
+            for (TableColumn<T> column : columns) {
+                sb.append(String.format("%-"+column.getWidth()+"s", column.getValue(item)));
+            }
         }
         
         return sb.toString();

@@ -27,7 +27,6 @@ import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
-import fr.treeptik.cloudunit.cli.Messages;
 import fr.treeptik.cloudunit.cli.tables.ApplicationTableColumn;
 import fr.treeptik.cloudunit.cli.tables.EnvironmentVariableTableColumn;
 import fr.treeptik.cloudunit.cli.utils.ApplicationUtils;
@@ -56,8 +55,6 @@ public class ApplicationCommands implements CommandMarker {
     private static final String APPLICATION_STOPPED = "Application \"{0}\" has been stopped";
     private static final String APPLICATION_USING = "Using application \"{0}\"";
     private static final String APPLICATION_DEPLOYED = "Application \"{0}\" deployed. Access at {1}";
-    private static final String ALIAS_ADDED = Messages.getString("application.ALIAS_ADDED");
-    private static final String ALIAS_REMOVED = Messages.getString("application.ALIAS_REMOVED");
 	
     @Autowired
 	private ApplicationUtils applicationUtils;
@@ -71,7 +68,7 @@ public class ApplicationCommands implements CommandMarker {
 	    if (application == null) {
 	        return "No application selected";
 	    }
-		return String.format(APPLICATION_INFO, application.getName(),
+		return MessageFormat.format(APPLICATION_INFO, application.getName(),
                 application.getUser().getLastName(),
                 application.getUser().getFirstName(),
                 DateUtils.formatDate(application.getDate()),
@@ -109,7 +106,7 @@ public class ApplicationCommands implements CommandMarker {
 	    if (removed) {
 	        return formatter.unlessQuiet(MessageFormat.format(APPLICATION_REMOVED, applicationName));
 	    } else {
-	        return "";
+	        return null;
 	    }
 	}
 
@@ -150,35 +147,6 @@ public class ApplicationCommands implements CommandMarker {
         return formatter.unlessQuiet(message);
 	}
 
-	@CliCommand(value = "list-aliases", help = "Display all application aliases")
-	public String listAlias(
-			@CliOption(key = { "", "name" }, mandatory = false, help = HELP_APPLICATION_NAME) String applicationName) {
-		List<String> aliases = applicationUtils.listAllAliases(applicationName);
-        return formatter.list(aliases);
-	}
-
-	@CliCommand(value = "add-alias", help = "Add a new alias")
-	public String addAlias(
-			@CliOption(key = { "" }, mandatory = false, help = HELP_APPLICATION_NAME) String applicationName,
-			@CliOption(key = { "alias" }, mandatory = true, help = "Alias to access to your apps") String alias) {
-		applicationUtils.addNewAlias(applicationName, alias);
-		
-        Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
-		String message = MessageFormat.format(ALIAS_ADDED, alias, application.getName());
-        return formatter.unlessQuiet(message);
-	}
-
-	@CliCommand(value = "rm-alias", help = "Remove an existing alias")
-	public String rmAlias(
-			@CliOption(key = { "", "name" }, mandatory = false, help = HELP_APPLICATION_NAME) String applicationName,
-			@CliOption(key = { "alias" }, mandatory = true, help = "Alias to access to your apps") String alias) {
-		applicationUtils.removeAlias(applicationName, alias);
-		
-        Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
-		String message = MessageFormat.format(ALIAS_REMOVED, alias, application.getName());
-		return formatter.unlessQuiet(message);
-	}
-
 	@CliCommand(value = "create-env-var", help = "Create a new environment variable")
 	public String createEnvironmentVariable(
 			@CliOption(key = {"name"}, mandatory = false, help = HELP_APPLICATION_NAME) String applicationName,
@@ -209,7 +177,8 @@ public class ApplicationCommands implements CommandMarker {
 			@CliOption(key = {"", "new-key"}, mandatory = true, help = "New key to the environment variable") String newKey,
 			@CliOption(key = {"", "value"}, mandatory = true, help = "New value to the environment variable") String value) {
 		applicationUtils.updateEnvironmentVariable(applicationName, oldKey, newKey, value);
-		return formatter.unlessQuiet("OK");
+
+		return null;
 	}
 
     @CliCommand(value = "list-env-var", help = "List all environment variables")

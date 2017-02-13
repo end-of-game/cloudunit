@@ -20,7 +20,7 @@ public enum ApplicationTableColumn implements TableColumn<Application> {
                     item.getUser().getLastName());
         }
     },
-    CREATED(10) {
+    CREATED(20) {
         @Override
         public String getValue(Application item) {
             return DateUtils.formatDate(item.getDate());

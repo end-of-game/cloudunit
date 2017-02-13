@@ -15,10 +15,8 @@
 
 package fr.treeptik.cloudunit.cli.utils;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +98,6 @@ public class AuthenticationUtils {
         } else {
             finalHost = selectedHost;
         }
-        log.log(Level.INFO, MessageFormat.format("Connecting to {0}...", finalHost));
 
         try {
             // trying to connect with host manager
