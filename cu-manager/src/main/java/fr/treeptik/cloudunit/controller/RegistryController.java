@@ -38,4 +38,10 @@ public class RegistryController {
             throws ServiceException {
         registryService.createNewRegistry(registry.getEndpoint(), registry.getUsername(), registry.getPassword(), registry.getEmail());
     }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteRegistry(@PathVariable Integer id) throws ServiceException {
+        registryService.deleteRegistry(id);
+    }
 }

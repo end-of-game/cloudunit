@@ -33,7 +33,7 @@
     </div>
   </header>
 
-	<div class="account-registry-form-card card col-lg-12">
+	<div ng-if="accountRegistry.listRegistry.length < 1" class="account-registry-form-card card col-lg-12">
 		<div class="content clearfix " id="settings-account-registry-form">
 			<h3 class="title large">Add Registry</h3>
 
@@ -113,7 +113,7 @@
 
 		<div class="content clearfix " id="settings-account-registry-list">
 
-			<h3 class="title">Registries</h3>
+			<h3 class="title">Registry</h3>
 			
 			<div class="spinner">
 				<div class="rect1"></div>
@@ -183,7 +183,7 @@
 											'animation': 'slide-from-top'}"
 											sweet-confirm-option="{'title':'Removed!','text':'The registry has been removed!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
 											sweet-cancel-option="{'title':'Cancelled!','text':'The registry is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
-											sweet-on-confirm="accountRegistry.removeRegistry(registry)">
+											sweet-on-confirm="accountRegistry.deleteRegistry(registry)">
 											<i class="icon-whhg trash"></i>
 										</button>
 							</td>

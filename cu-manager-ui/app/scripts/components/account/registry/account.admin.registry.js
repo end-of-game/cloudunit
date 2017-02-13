@@ -49,6 +49,7 @@
     vm.order = order;
 
 		vm.addRegistry = addRegistry;
+    vm.deleteRegistry = deleteRegistry;
 
     vm.$onInit = function() {
       getListRegistry();
@@ -68,6 +69,23 @@
         .then ( function(response) {
           cleanMessage();
           vm.manageNoticeMsg = 'registry information registred !';
+          getListRegistry();
+        })
+        .catch(function(response) {
+          cleanMessage();
+          if(response.data.message) {
+            vm.manageErrorMsg = response.data.message;
+          } else {
+            vm.manageErrorMsg = 'An error has been encountered !';
+          };
+        });  
+    }
+
+    function deleteRegistry ( registry ) {
+      AdminService.deleteRegistry ( registry.id )
+        .then ( function(response) {
+          cleanMessage();
+          vm.manageNoticeMsg = 'registry has been deleted !';
           getListRegistry();
         })
         .catch(function(response) {

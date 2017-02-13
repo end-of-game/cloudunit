@@ -38,20 +38,6 @@
 
 			<h3 class="title">Images</h3>
 
-			<div class="spinner">
-				<div class="rect1"></div>
-				<div class="rect2"></div>
-				<div class="rect3"></div>
-				<div class="rect4"></div>
-				<div class="rect5"></div>
-			</div>
-
-			<div id="status-filter" class="subheader-form">
-				<div class="input-group inline">
-					<span class="label">Filter by keyword:</span>
-					<input ng-model="accountImage.searchText">
-				</div>
-			</div>
 
 			<div class="alert alert-danger" data-ng-show="accountImage.manageErrorMsg">
 				<button type="button"
@@ -68,6 +54,21 @@
 					<span>&times;</span>
 				</button>
 				<p>{{accountImage.manageNoticeMsg}}</p>
+			</div>
+			
+			<div class="spinner">
+				<div class="rect1"></div>
+				<div class="rect2"></div>
+				<div class="rect3"></div>
+				<div class="rect4"></div>
+				<div class="rect5"></div>
+			</div>
+
+			<div id="status-filter" class="subheader-form">
+				<div class="input-group inline">
+					<span class="label">Filter by keyword:</span>
+					<input ng-model="accountImage.searchText">
+				</div>
 			</div>
 
 			<div class="no-data" ng-if="!accountImage.listImages.length">

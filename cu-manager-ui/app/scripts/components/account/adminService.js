@@ -39,7 +39,8 @@
       getUserLogs: getUserLogs,
       changePassword: changePassword,
       getListRegistry: getListRegistry,
-      addRegistry: addRegistry
+      addRegistry: addRegistry,
+      deleteRegistry: deleteRegistry
     };
 
     function changePassword(oldPassword, newPassword) {
@@ -140,6 +141,13 @@
 
         var dir = $resource ( '/registry' );
         return dir.save ( { }, data ).$promise;
+    }
+
+    function deleteRegistry ( registryID ) {
+        var dir = $resource ( 'registry/:id' );
+        return dir.delete ( {
+            id: registryID
+        }, {} ).$promise; 
     }
   }
 })();
