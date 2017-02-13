@@ -9,6 +9,7 @@ import org.springframework.shell.core.CommandMarker;
 import org.springframework.shell.plugin.PromptProvider;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.cli.commands.CliFormatter;
 import fr.treeptik.cloudunit.cli.utils.ApplicationUtils;
 import fr.treeptik.cloudunit.cli.utils.AuthenticationUtils;
 import fr.treeptik.cloudunit.cli.utils.FileUtils;
@@ -22,6 +23,9 @@ public class CloudUnitPromptProvider implements PromptProvider, CommandMarker {
     private static final String PROMPT_CONNECTED = "{0} {1}> ";
     private static final String PROMPT_APPLICATION_SELECTED = "{0} {1} {2}> ";
     private static final String PROMPT_EXPLORER = "{0} {1} [{2}]> ";
+    
+    @Autowired
+    private CliFormatter formatter;
 
     @Autowired
     private AuthenticationUtils authenticationUtils;
@@ -39,7 +43,9 @@ public class CloudUnitPromptProvider implements PromptProvider, CommandMarker {
 
     @Override
     public String getPrompt() {
-        if (!authenticationUtils.isConnected()) {
+        if (formatter.isQuiet()) {
+            return "";
+        } else if (!authenticationUtils.isConnected()) {
             return MessageFormat.format(PROMPT_NOT_CONNECTED, APPLICATION_NAME);
         } else if (!applicationUtils.isApplicationSelected()) {
             return MessageFormat.format(PROMPT_CONNECTED,

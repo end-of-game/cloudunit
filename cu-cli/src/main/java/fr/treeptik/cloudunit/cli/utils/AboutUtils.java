@@ -1,8 +1,9 @@
 package fr.treeptik.cloudunit.cli.utils;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fr.treeptik.cloudunit.cli.CloudUnitCliException;
@@ -29,25 +30,19 @@ public class AboutUtils {
     @Autowired
     private RestUtils restUtils;
     
-    @Value("${cli.version}")
-    private String version;
-    
-    @Value("${cli.timestamp}")
-    private String timestamp;
-    
-    public String getAbout() {
+    public Optional<AboutResource> getAbout() {
         if (authentificationUtils.isConnected()) {
             try {
                 String url = authentificationUtils.finalHost + urlLoader.aboutPrefix;
                 String result = restUtils.sendGetCommand(url, authentificationUtils.getMap())
                         .get(RestUtils.BODY);
                 AboutResource aboutApi = JsonConverter.getAbout(result);
-                return MessageConverter.buildAbout(version, timestamp, aboutApi);
+                return Optional.of(aboutApi);
             } catch (ManagerResponseException e) {
                 throw new CloudUnitCliException(NO_INFORMATION, e);
             }
         } else {
-            return MessageConverter.buildAbout(version, timestamp);
+            return Optional.empty();
         }
     }
 

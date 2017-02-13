@@ -32,7 +32,7 @@ public class VolumeService {
 	 * @param name
 	 * @return
 	 */
-	public String createVolume(String name) {
+	public void createVolume(String name) {
 	    authenticationUtils.checkConnected();
 	    
 	    getVolumes().stream()
@@ -48,8 +48,6 @@ public class VolumeService {
 		} catch (ManagerResponseException e) {
 		    throw new CloudUnitCliException("Couldn't create volume", e);
 		}
-
-		return name;
 	}
 	
 	private List<Volume> getVolumes() {
@@ -68,20 +66,17 @@ public class VolumeService {
 	/**
 	 * @return list of volumes as text
 	 */
-	public String displayVolumes() {
+	public List<Volume> displayVolumes() {
 	    authenticationUtils.checkConnected();
 	    
-		List<Volume> volumes = getVolumes();
-		
-		String volumesAsTxt = MessageConverter.buildListVolumes(volumes);
-		return volumesAsTxt;
+		return getVolumes();
 	}
 
 	/**
 	 * @param name
 	 * @return
 	 */
-	public String removeVolume(String name) {
+	public void removeVolume(String name) {
 	    authenticationUtils.checkConnected();
 	    
 		int id = getVolumes().stream()
@@ -95,7 +90,5 @@ public class VolumeService {
 		} catch (ManagerResponseException e) {
 		    throw new CloudUnitCliException("Couldn't remove volume", e);
 		}
-		
-		return MessageFormat.format("Volume \"{0}\" has been removed", name);
 	}
 }

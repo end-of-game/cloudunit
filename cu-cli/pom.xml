@@ -24,14 +24,8 @@
 		<maven.surefire.plugin.version>2.18</maven.surefire.plugin.version>
 
 		<!-- CloudUnit Properties -->
-
-		<cloudunit.ip>localhost</cloudunit.ip>
-		<cloudunit.port>8080</cloudunit.port>
-		<cloudunit.version>${project.version}</cloudunit.version>
-		<cli.version>${project.version}</cli.version>
-		<cli.timestamp>${maven.build.timestamp}</cli.timestamp>
-		<api.version>0</api.version>
-
+		<build.version>${project.version}</build.version>
+		<build.timestamp>${maven.build.timestamp}</build.timestamp>
 	</properties>
 
 	<dependencies>
@@ -251,7 +245,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<host>http://127.0.0.1:8080</host>
+				<default.host>http://127.0.0.1:8080</default.host>
 			</properties>
 		</profile>
 	</profiles>
