@@ -28,6 +28,7 @@ function with-datamgmt {
     cp ./.env.demo.xip.io .env
     source .env
     docker network create skynet
+    docker network create datamgmt
     docker-compose  -f docker-compose.datamgmt.yml \
                     -f docker-compose.demo.yml \
     up -d
@@ -46,7 +47,7 @@ function reset {
     docker volume rm cucompose_gitlab-logs
     docker volume rm cucompose_mysqldata
     docker volume rm cucompose_redis-data
-    docker network rm skynet
+    docker network rm skynet datamgmt
 }
 
 ##
