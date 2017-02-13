@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Component;
 import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import fr.treeptik.cloudunit.cli.Guard;
 import fr.treeptik.cloudunit.cli.Messages;
-import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.JsonConverter;
@@ -54,9 +52,6 @@ public class FileUtils {
 
 	@Autowired
 	private AuthenticationUtils authentificationUtils;
-
-	@Autowired
-	private ShellStatusCommand statusCommand;
 
 	@Autowired
 	private RestUtils restUtils;
@@ -90,7 +85,7 @@ public class FileUtils {
         checkInFileExplorer();
     }
 
-    public String createDirectory(String path) {
+    public void createDirectory(String path) {
         checkConnectedAndInFileExplorer();
         
         String url = authentificationUtils.finalHost + "/file/container/" + currentContainerId
@@ -100,10 +95,9 @@ public class FileUtils {
         } catch (ManagerResponseException e) {
             throw new CloudUnitCliException("Couldn't create directory", e);
         }
-        return MessageFormat.format("Directory \"{0}\" created", path);
     }
 
-    public String openExplorer(String containerName) {
+    public void openExplorer(String containerName) {
         applicationUtils.checkConnectedAndApplicationSelected();
         
 		Application application = applicationUtils.getCurrentApplication();
@@ -126,7 +120,6 @@ public class FileUtils {
 		}
 
 		currentPath = "/";
-		return "Explorer opened";
 	}
 
     /**
@@ -135,13 +128,11 @@ public class FileUtils {
      * @return
      * @throws ManagerResponseException
      */
-	public String closeExplorer() throws ManagerResponseException {
+	public void closeExplorer() throws ManagerResponseException {
         checkConnectedAndInFileExplorer();
 	        
 		currentContainerId = null;
 		currentPath = null;
-		
-		return "Explorer closed";
 	}
 
     /**
@@ -150,14 +141,13 @@ public class FileUtils {
      * @return
      * @throws ManagerResponseException
      */
-	public String listFiles() throws ManagerResponseException {
+	public List<FileUnit> listFiles() throws ManagerResponseException {
         checkConnectedAndInFileExplorer();
 	    
 		String url = authentificationUtils.finalHost + "/file/container/" + currentContainerId + "?path="+ currentPath;
 		String json = restUtils.sendGetCommand(url, authentificationUtils.getMap()).get("body");
 
-		String result = MessageConverter.buildListFileUnit(JsonConverter.getFileUnits(json));
-		return result;
+		return JsonConverter.getFileUnits(json);
 	}
 
     /**
@@ -167,15 +157,13 @@ public class FileUtils {
      * @return
      * @throws ManagerResponseException
      */
-	public String changeDirectory(String directoryName) throws ManagerResponseException {
+	public void changeDirectory(String directoryName) throws ManagerResponseException {
         checkConnectedAndInFileExplorer();
 	    
 		String url = authentificationUtils.finalHost + "/file/container/" + currentContainerId + "?path=" + currentPath;
 		String json = restUtils.sendGetCommand(url, authentificationUtils.getMap()).get("body");
 		JsonConverter.getFileUnits(json);
 		currentPath = directoryName;
-		statusCommand.setExitStatut(0);
-		return "Current directory is " + directoryName;
 	}
 
     /**
@@ -184,7 +172,7 @@ public class FileUtils {
      * @param fileName
      * @return
      */
-	public String unzip(String fileName) {
+	public void unzip(String fileName) {
         checkConnectedAndInFileExplorer();
 	    
         String currentPath = fileName.substring(0, fileName.lastIndexOf("/"));
@@ -198,10 +186,9 @@ public class FileUtils {
 		} catch (ManagerResponseException e) {
 		    throw new CloudUnitCliException("Couldn't unzip file", e);
 		}
-		return "File unzipped";
 	}
 
-	public String uploadFile(File path) {
+	public void uploadFile(File path) {
         checkConnectedAndInFileExplorer();
 	    
 		File file = path;
@@ -216,10 +203,8 @@ public class FileUtils {
 			restUtils.sendPostForUpload(authentificationUtils.finalHost + "/file/container/" + currentContainerId
 					+ "/application/" + applicationUtils.getCurrentApplication().getName() + "?path=" + currentPath, params);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, "File not found! Check the path file");
-			statusCommand.setExitStatut(1);
+		    throw new CloudUnitCliException("File not found! Check the path file");
 		}
-		return "File uploaded";
 	}
 
     /**
@@ -260,7 +245,7 @@ public class FileUtils {
 				+ "/application/" + applicationUtils.getCurrentApplication().getName() + "?path=" + currentPath + "/fileName/"
 				+ fileName, destFileName, params);
 		
-		return MessageFormat.format("File downloaded to {0}", destFileName);
+		return destFileName;
 	}
 
 	private String getAvailableContainerNames() {

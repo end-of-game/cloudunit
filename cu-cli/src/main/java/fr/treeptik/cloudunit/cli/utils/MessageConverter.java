@@ -37,7 +37,7 @@ public class MessageConverter {
 
     private static Logger logger = Logger.getLogger("MessageConverter");
 
-    public static void buildLightModuleMessage(Application application, String dockerManagerIP) {
+    public static void buildLightModuleMessage(Application application) {
 
         List<Module> modules = application.getModules();
         if (modules.size() < 1) {

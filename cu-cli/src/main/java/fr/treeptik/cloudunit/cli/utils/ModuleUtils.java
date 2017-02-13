@@ -16,8 +16,8 @@
 package fr.treeptik.cloudunit.cli.utils;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import fr.treeptik.cloudunit.cli.Guard;
 import fr.treeptik.cloudunit.cli.Messages;
-import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.RestUtils;
@@ -37,9 +36,6 @@ import fr.treeptik.cloudunit.model.Module;
 
 @Component
 public class ModuleUtils {
-    private static final String MODULES_COUNT = Messages.getString("module.MODULES_COUNT");
-    private static final String MODULE_REMOVED = Messages.getString("module.MODULE_REMOVED");
-    private static final String MODULE_ADDED = Messages.getString("module.MODULE_ADDED");
     private static final String NO_MODULES = Messages.getString("module.NO_MODULES");
     private static final String NO_SUCH_MODULE = Messages.getString("module.NO_SUCH_MODULE");
 
@@ -59,23 +55,15 @@ public class ModuleUtils {
     private Logger log;
 
     @Autowired
-    private ShellStatusCommand statusCommand;
-
-    @Autowired
     private RestUtils restUtils;
 
-    public String getListModules() {
+    public List<Module> getListModules() {
         applicationUtils.checkConnectedAndApplicationSelected();
         
-        String dockerManagerIP = authenticationUtils.finalHost;
-        statusCommand.setExitStatut(0);
-        MessageConverter.buildLightModuleMessage(applicationUtils.getCurrentApplication(), dockerManagerIP);
-
-        int size = applicationUtils.getCurrentApplication().getModules().size();
-        return MessageFormat.format(MODULES_COUNT, size);
+        return applicationUtils.getCurrentApplication().getModules();
     }
 
-    public String addModule(final String imageName, final File script) {
+    public void addModule(final String imageName, final File script) {
         applicationUtils.checkConnectedAndApplicationSelected();
         
         checkUtils.checkImageExists(imageName);
@@ -90,13 +78,9 @@ public class ModuleUtils {
         } catch (ManagerResponseException e) {
             throw new CloudUnitCliException("Couldn't add module", e);
         }
-        
-        return MessageFormat.format(MODULE_ADDED,
-                imageName,
-                applicationUtils.getCurrentApplication().getName());
     }
 
-    public String removeModule(String moduleName) {
+    public void removeModule(String moduleName) {
         applicationUtils.checkConnectedAndApplicationSelected();
 
         Module module = findModule(moduleName);
@@ -109,10 +93,6 @@ public class ModuleUtils {
         } catch (ManagerResponseException e) {
             throw new CloudUnitCliException("Couldn't remove module", e);
         }
-
-        return MessageFormat.format(MODULE_REMOVED,
-                moduleName,
-                applicationUtils.getCurrentApplication().getName());
     }
 
     private Module findModule(String moduleName) {
@@ -130,7 +110,7 @@ public class ModuleUtils {
         return module.get();
     }
 
-    public String managePort(String moduleName, final String port, final Boolean open) {
+    public void managePort(String moduleName, final String port, final Boolean open) {
         applicationUtils.checkConnectedAndApplicationSelected();
         
         Module module = findModule(moduleName);
@@ -147,11 +127,9 @@ public class ModuleUtils {
         } catch (ManagerResponseException e) {
             throw new CloudUnitCliException("Couldn't change port", e);
         }
-
-        return "OK";
     }
 
-    public String runScript(String moduleName, File file) {
+    public void runScript(String moduleName, File file) {
         applicationUtils.checkConnectedAndApplicationSelected();
         
         Module module = findModule(moduleName);
@@ -165,11 +143,7 @@ public class ModuleUtils {
             urlLoader.modulePrefix,
             module.getName());
         
-        log.info("Running script...");
-        
         restUtils.sendPostForUpload(url, parameters);
-        
-        return "Done";
     }
 
 }

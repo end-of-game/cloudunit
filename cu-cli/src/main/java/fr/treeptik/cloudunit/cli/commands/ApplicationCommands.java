@@ -209,7 +209,7 @@ public class ApplicationCommands implements CommandMarker {
 			@CliOption(key = {"", "new-key"}, mandatory = true, help = "New key to the environment variable") String newKey,
 			@CliOption(key = {"", "value"}, mandatory = true, help = "New value to the environment variable") String value) {
 		applicationUtils.updateEnvironmentVariable(applicationName, oldKey, newKey, value);
-		return "";
+		return formatter.unlessQuiet("OK");
 	}
 
     @CliCommand(value = "list-env-var", help = "List all environment variables")

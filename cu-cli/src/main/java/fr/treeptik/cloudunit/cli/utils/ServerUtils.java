@@ -53,7 +53,7 @@ public class ServerUtils {
 	 * @param memory
 	 * @return
 	 */
-	public String changeMemory(String memory) {
+	public void changeMemory(String memory) {
 	    applicationUtils.checkApplicationSelected();
 
 		if (!availableMemoryValues.contains(memory)) {
@@ -70,8 +70,6 @@ public class ServerUtils {
 		} catch (ManagerResponseException e) {
 		    throw new CloudUnitCliException("Couldn't change memory", e);
 		}
-
-		return "Change memory on " + applicationUtils.getCurrentApplication().getName() + " successful";
 	}
 
 	/**
@@ -80,7 +78,7 @@ public class ServerUtils {
 	 * @param opts
 	 * @return
 	 */
-	public String addOpts(String opts) {
+	public void addOpts(String opts) {
         applicationUtils.checkApplicationSelected();
 
 		Map<String, String> parameters = new HashMap<>();
@@ -93,8 +91,6 @@ public class ServerUtils {
 		} catch (ManagerResponseException e) {
 			throw new CloudUnitCliException("Couldn't add JVM option", e);
 		}
-
-		return "Add java options to " + applicationUtils.getCurrentApplication().getName() + " application successfully";
 	}
 
 	/**
@@ -104,7 +100,7 @@ public class ServerUtils {
 	 * @param jvmRelease
 	 * @return
 	 */
-	public String changeJavaVersion(String applicationName, String jvmRelease) {
+	public void changeJavaVersion(String applicationName, String jvmRelease) {
 	    Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
 	    
 		if (!availableJavaVersion.contains(jvmRelease)) {
@@ -122,11 +118,9 @@ public class ServerUtils {
 		} catch (ManagerResponseException e) {
 		    throw new CloudUnitCliException("Couldn't change Java version", e);
 		}
-
-		return "Your java version has been successfully changed";
 	}
 
-	public String openPort(String applicationName, String portToOpen, String portNature) {
+	public void openPort(String applicationName, String portToOpen, String portNature) {
 	    Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
 
 		Map<String, String> parameters = new HashMap<>();
@@ -138,9 +132,8 @@ public class ServerUtils {
 			restUtils.sendPostCommand(authenticationUtils.finalHost + "/application/ports",
 					authenticationUtils.getMap(), parameters).get("body");
 		} catch (ManagerResponseException e) {
+		    throw new CloudUnitCliException("Couldn't open port", e);
 		}
-
-		return "The port " + portToOpen + " was been successfully opened on "+ application.getName();
 	}
 
 	/**
@@ -148,7 +141,7 @@ public class ServerUtils {
 	 * @param portToOpen
 	 * @return
 	 */
-	public String removePort(String applicationName, String portToOpen) {
+	public void removePort(String applicationName, String portToOpen) {
         Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
 
 		try {
@@ -158,11 +151,9 @@ public class ServerUtils {
 		} catch (ManagerResponseException e) {
 		    throw new CloudUnitCliException("Couldn't remove port", e);
 		}
-
-		return "The port " + portToOpen + " was been successfully closed on " + application.getName();
 	}
 
-	public String mountVolume(String name, String path, Boolean mode, String containerName, String applicationName) {
+	public void mountVolume(String name, String path, Boolean mode, String containerName, String applicationName) {
 	    Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
 	    
 		if (containerName == null)
@@ -184,19 +175,15 @@ public class ServerUtils {
 		} catch (ManagerResponseException e) {
 		    throw new CloudUnitCliException("Couldn't mount volume", e);
 		}
-
-		return "This volume has successful been mounted";
 	}
 
-	public String unmountVolume(String name, String containerName) {
+	public void unmountVolume(String name, String containerName) {
 		try {
 			restUtils.sendDeleteCommand(authenticationUtils.finalHost + "/server/volume/" + name + "/container/" +
 					containerName, authenticationUtils.getMap());
 		} catch (ManagerResponseException e) {
 		    throw new CloudUnitCliException("Couldn't unmount volume", e);
 		}
-
-		return "This volume has successful been unmounted";
 	}
 
 }

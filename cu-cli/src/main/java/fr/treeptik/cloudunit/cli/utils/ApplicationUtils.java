@@ -41,7 +41,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import fr.treeptik.cloudunit.cli.Guard;
 import fr.treeptik.cloudunit.cli.Messages;
-import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.JsonConverter;
@@ -65,9 +64,6 @@ public class ApplicationUtils {
 
     @Autowired
     private AuthenticationUtils authenticationUtils;
-
-    @Autowired
-    private ShellStatusCommand statusCommand;
 
     @Autowired
     private RestUtils restUtils;
@@ -422,7 +418,7 @@ public class ApplicationUtils {
         return containers;
     }
 
-    public String listCommands(String containerName) {
+    public List<Command> listCommands(String containerName) {
         String response;
 
         try {
@@ -432,26 +428,15 @@ public class ApplicationUtils {
                     authenticationUtils.getMap()).get("body");
 
         } catch (ManagerResponseException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't list commands.", e);
         }
 
-        MessageConverter.buildListCommands(JsonConverter.getCommands(response));
-
-        statusCommand.setExitStatut(0);
-
-        return JsonConverter.getCommands(response).size() + " commands found!";
+        return JsonConverter.getCommands(response);
     }
 
-    public String execCommand(String name, String containerName, String arguments) {
-
+    public void execCommand(String name, String containerName, String arguments) {
         if (containerName == null) {
-            if (getCurrentApplication() == null) {
-                statusCommand.setExitStatut(1);
-                return ANSIConstants.ANSI_RED
-                        + "No application is currently selected by the following command line : use <application name>"
-                        + ANSIConstants.ANSI_RESET;
-            }
+            checkConnectedAndApplicationSelected();
             containerName = getCurrentApplication().getServer().getName();
         }
 
@@ -467,11 +452,7 @@ public class ApplicationUtils {
                     authenticationUtils.getMap(), entity);
 
         } catch (ManagerResponseException | JsonProcessingException e) {
-            statusCommand.setExitStatut(1);
-            return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+            throw new CloudUnitCliException("Couldn't execute command.", e);
         }
-        statusCommand.setExitStatut(0);
-
-        return "The command " + name + " has been executed";
     }
 }
