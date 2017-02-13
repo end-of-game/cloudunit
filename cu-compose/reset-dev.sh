@@ -16,7 +16,7 @@
 source .env
 
 if [ "$CU_COMPOSE_FILES" = "" ]; then
-    CU_COMPOSE_FILES="-f docker-compose.elk.yml -f docker-compose.dev.yml"
+    CU_COMPOSE_FILES="-f docker-compose.datamgmt.yml -f docker-compose.dev.yml"
 fi
 
 if [[ $USER != "vagrant" ]]; then
@@ -51,7 +51,7 @@ echo -e "Removing containers And Volumes"
 echo "***************************"
 
 docker-compose $CU_COMPOSE_FILES kill
-docker-compose $CU_COMPOSE_FILES rm -f 
+docker-compose $CU_COMPOSE_FILES rm -f
 docker volume rm cucompose_gitlab-logs
 docker volume rm cucompose_mysqldata
 docker volume rm cucompose_redis-data
@@ -68,4 +68,3 @@ echo -e "Starting..."
 echo "*******************************"
 docker network create skynet
 docker-compose $CU_COMPOSE_FILES up -d
-

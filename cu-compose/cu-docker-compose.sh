@@ -127,24 +127,24 @@ function generate-env {
   #fi
   echo "HOSTNAME=$HOSTNAME" >> .env
   if [ -f /etc/redhat-release ]; then
-    echo "TZ=$(sed -n 2p /etc/localtime)" >> .env     
+    echo "TZ=$(sed -n 2p /etc/localtime)" >> .env
   else
-    echo "TZ=$(cat /etc/timezone)" >> .env 
+    echo "TZ=$(cat /etc/timezone)" >> .env
   fi
 }
 
-function with-elk {
+function with-datamgmt {
     check-env
     source .env
     docker network create skynet
-    docker-compose  -f docker-compose.elk.yml \
+    docker-compose  -f docker-compose.datamgmt.yml \
                     -f docker-compose.yml \
     up -d
 }
 
-function with-elk-and-selenium {
+function with-datamgmt-and-selenium {
     docker network create skynet
-    docker-compose  -f docker-compose.elk.yml \
+    docker-compose  -f docker-compose.datamgmt.yml \
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
     up -d
@@ -168,8 +168,8 @@ function reset {
       docker volume rm $container
     done
 
-    docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
-    docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
+    docker-compose  -f docker-compose.datamgmt.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
+    docker-compose  -f docker-compose.datamgmt.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
     docker volume rm cucompose_elasticsearch-data
     docker volume rm cucompose_gitlab-logs
     docker volume rm cucompose_mysqldata
@@ -185,12 +185,12 @@ function reset {
 
 case "$1" in
 
-'with-elk')
-with-elk
+'with-datamgmt')
+with-datamgmt
 ;;
 
-'with-elk-and-selenium')
-init && with-elk-and-selenium
+'with-datamgmt-and-selenium')
+init && with-datamgmt-and-selenium
 ;;
 
 'reset')
@@ -201,10 +201,10 @@ reset
 *)
 echo ""
 echo "Usage $0 "
-echo "Example : $0 with-elk"
+echo "Example : $0 with-datamgmt"
 echo "Choice between : "
-echo "                    with-elk"
-echo "                    with-elk-and-selenium"
+echo "                    with-datamgmt"
+echo "                    with-datamgmt-and-selenium"
 echo "                    reset"
 echo ""
 ;;

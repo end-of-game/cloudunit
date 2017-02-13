@@ -24,11 +24,11 @@ if [[ $USER != "vagrant" ]]; then
     exit 1
 fi
 
-function with-elk {
+function with-datamgmt {
     cp ./.env.demo.xip.io .env
     source .env
     docker network create skynet
-    docker-compose  -f docker-compose.elk.yml \
+    docker-compose  -f docker-compose.datamgmt.yml \
                     -f docker-compose.demo.yml \
     up -d
 }
@@ -40,8 +40,8 @@ function reset {
       docker volume rm $container
     done
 
-    docker-compose  -f docker-compose.elk.yml -f docker-compose.demo.yml kill
-    docker-compose  -f docker-compose.elk.yml -f docker-compose.demo.yml rm -f
+    docker-compose  -f docker-compose.datamgmt.yml -f docker-compose.demo.yml kill
+    docker-compose  -f docker-compose.datamgmt.yml -f docker-compose.demo.yml rm -f
     docker volume rm cucompose_elasticsearch-data
     docker volume rm cucompose_gitlab-logs
     docker volume rm cucompose_mysqldata
@@ -57,8 +57,8 @@ function reset {
 
 case "$1" in
 
-'with-elk')
-with-elk
+'with-datamgmt')
+with-datamgmt
 ;;
 
 'reset')
@@ -69,9 +69,9 @@ reset $2
 *)
 echo ""
 echo "Usage $0 "
-echo "Example : $0 with-elk"
+echo "Example : $0 with-datamgmt"
 echo "Choice between : "
-echo "                    with-elk"
+echo "                    with-datamgmt"
 echo "                    reset"
 echo ""
 ;;
