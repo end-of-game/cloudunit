@@ -86,7 +86,7 @@ RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jmxtrans-ag
 COPY files/jmxtrans-agent.xml /opt/cloudunit/conf/jmxtrans-agent.xml
 ENV JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/cloudunit/tomcat/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar=/opt/cloudunit/conf/jmxtrans-agent.xml"
 
-RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudunit
+RUN groupadd -r cloudunit --gid=1000 && useradd -r -g cloudunit --uid=1000 cloudunit
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
 USER cloudunit
 

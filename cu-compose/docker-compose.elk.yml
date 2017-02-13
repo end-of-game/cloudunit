@@ -2,51 +2,83 @@ version: '2'
 services:
 
   elasticsearch:
-    container_name: cu-elasticsearch
+    container_name: datamgmt-elasticsearch
     build:
-      context: ./cu-elk/elasticsearch
-    image: cloudunit/elk-elasticsearch
-    #ports:
-    #  - "9200:9200"
+      context: ./cu-datamgmt/elasticsearch
+    image: cloudunit/datamgmt-elasticsearch
+#    ports:
+#      - "9200:9200"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     environment:
       - "TZ=${TZ}"
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-    privileged: true
-    command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
+    command: -E cluster.name="datamgmt" -E node.master=true -E node.data=true
+    labels:
+      - "traefik.enable=false"
+
+  logstash:
+    container_name: datamgmt-logstash
+    hostname: datamgmt-logstash
+    build:
+      context: ./cu-datamgmt/logstash
+    image: cloudunit/datamgmt-logstash
+    ports:
+      - "9600:9600"
+      - "12201:12201/udp"
+    volumes:
+     - ./cu-datamgmt/logstash/conf.d:/etc/logstash/conf.d
+    environment:
+      - "TZ=${TZ}"
+    depends_on:
+      - elasticsearch
+    command: -f /etc/logstash/conf.d/ --http.host 0.0.0.0
     labels:
        - "traefik.enable=false"
 
   kibana:
-    container_name: cu-kibana
+    container_name: datamgmt-kibana
+    hostname: datamgmt-kibana
     build:
-      context: ./cu-elk/kibana
-    image: cloudunit/elk-kibana
+      context: ./cu-datamgmt/kibana
+    image: cloudunit/datamgmt-kibana
     ports:
       - "5601:5601"
     volumes:
-      - ./cu-elk/kibana/file:/opt/cloudunit/file
+      - ./cu-datamgmt/kibana/file:/opt/cloudunit/file
     environment:
       - "TZ=${TZ}"
-      - "ELASTICSEARCH_URL=http://$ELASTICSEARCH_URL:9200"
+      - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
     depends_on:
       - elasticsearch
+    command: kibana
     labels:
       - "traefik.frontend.entryPoints=https"
       - "traefik.backend=kibana"
       - "traefik.port=5601"
       - "traefik.frontend.rule=Host:${CU_KIBANA_DOMAIN}"
 
+  datamgmt-manager:
+    container_name: datamgmt-manager
+    hostname: datamgmt-manager
+    build:
+      context: ./cu-datamgmt/datamgmt
+    image: cloudunit/datamgmt-manager
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - elasticsearch
+      - logstash
+
   monitoring-agents:
     container_name: cu-monitoring-agents
     hostname: ${HOSTNAME}
     build:
-      context: cu-elk/monitoring-agents
-    image: cloudunit/elk-monitoring-agents
+      context: ./cu-datamgmt/monitoring-agents
+    image: cloudunit/datamgmt-monitoring-agents
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./cu-elk/monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
+      - ./cu-datamgmt/monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
       - monitoring-agents:/opt/cloudunit/monitoring-agents
     environment:
       - "TZ=${TZ}"
@@ -56,9 +88,15 @@ services:
       - "traefik.enable=false"
     depends_on:
       - elasticsearch
+    networks:
+      - default
+      - external
 
 networks:
   default:
+    external:
+      name: datamgmt
+  external:
     external:
       name: skynet
 volumes:
