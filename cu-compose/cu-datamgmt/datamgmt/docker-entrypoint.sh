@@ -18,4 +18,4 @@ until $(curl --output /dev/null --silent --head --fail $LOGSTASH_URL); do
   sleep 1s
 done
 
-/opt/datamgmt/manager/datamgmt
+/opt/datamgmt/datamgmt --logging

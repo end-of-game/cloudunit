@@ -6,8 +6,8 @@ services:
     build:
       context: ./cu-datamgmt/elasticsearch
     image: cloudunit/datamgmt-elasticsearch
-#    ports:
-#      - "9200:9200"
+    ports:
+      - "9200:9200"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     environment:

@@ -4,14 +4,12 @@ MAINTAINER s.musso@treeptik.fr
 ENV DATAMGMT_MANAGER_VERSION 0.1
 
 ## Get DATAMGMT MANAGER binaries
-RUN mkdir -p /opt/datamgmt/manager \
-    && apk update && apk add curl glib \
-    && cd /opt/datamgmt/manager \
+RUN apk update && apk add curl git glib \
+    && mkdir /opt && cd /opt \
+    && git clone https://github.com/Treeptik/datamgmt \
     && rm -rf /var/cache/apk/*
 
-WORKDIR /opt/datamgmt/manager
-
-COPY datamgmt .
+WORKDIR /opt/datamgmt/
 
 COPY docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
