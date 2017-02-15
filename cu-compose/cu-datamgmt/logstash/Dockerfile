@@ -1,4 +1,4 @@
-FROM logstash:5.1.2
+FROM logstash:5.2
 
 HEALTHCHECK CMD curl --fail http://localhost:9600/ || exit 1
 

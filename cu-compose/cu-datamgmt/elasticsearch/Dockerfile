@@ -1,5 +1,5 @@
-FROM elasticsearch:5.1.2
-ENV $ELASTICSEARCH_VERSION 5.1.2
+FROM elasticsearch:5.2
+ENV $ELASTICSEARCH_VERSION 5.2
 
 HEALTHCHECK CMD curl --fail http://localhost:9200/ || exit 1
 
