@@ -369,7 +369,6 @@ public class DockerServiceImpl implements DockerService {
         try {
             this.dockerClient.removeImage(imageName);
         } catch (DockerException | InterruptedException e) {
-            StringBuilder msgError = new StringBuilder();
             throw new ServiceException("Cannot delete image : " + imageName + ", maybe used.", e);
         }
     }

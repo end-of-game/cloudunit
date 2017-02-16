@@ -15,33 +15,36 @@
 
 package fr.treeptik.cloudunit.controller;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.inject.Inject;
-import java.util.List;
 
 @Controller
 @RequestMapping("/image")
 public class ImageController {
-
     @Inject
     private ImageService imageService;
-
-    @Value("${api.version}")
-    private String apiVersion;
 
     @Inject
     private AuthentificationUtils authentificationUtils;
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    @GetMapping(value = "/all")
     public
     @ResponseBody
     List<Image> listAllImages()
@@ -64,14 +67,6 @@ public class ImageController {
         throws ServiceException {
         return imageService.findEnabledImagesByType("server");
     }
-
-    @RequestMapping(value = "/version", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    String getVersion() {
-        return apiVersion;
-    }
-
 
     @RequestMapping(value = "/{imageName}/enabled", method = RequestMethod.PUT)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)

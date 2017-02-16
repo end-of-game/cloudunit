@@ -23,7 +23,7 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Status;
+import fr.treeptik.cloudunit.model.Port;
 import fr.treeptik.cloudunit.model.User;
 
 public interface ModuleService {
@@ -44,10 +44,7 @@ public interface ModuleService {
 
     Module findByContainerID(String id) throws ServiceException;
 
-    void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
-            throws ServiceException, CheckException;
-
-    void remove(User user, Module module, Boolean isModuleRemoving, Status previousApplicationStatus)
+    void remove(User user, Module module, boolean removingModule)
             throws ServiceException, CheckException;
 
     Module stopModule(String moduleName) throws ServiceException;
@@ -56,8 +53,8 @@ public interface ModuleService {
 
     Module create(String imageName, Application application, User user) throws ServiceException, CheckException;
 
-    Module publishPort(Integer id, Boolean publishPort, String port, User user) throws ServiceException, CheckException;
+    Port publishPort(Module module, boolean open, String port, User user) throws ServiceException, CheckException;
 
-    String runScript(String moduleName, MultipartFile file) throws ServiceException;
+    String runScript(Module module, MultipartFile file) throws ServiceException;
 
 }

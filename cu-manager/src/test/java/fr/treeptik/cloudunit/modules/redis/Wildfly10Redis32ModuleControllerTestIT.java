@@ -32,7 +32,7 @@ public class Wildfly10Redis32ModuleControllerTestIT extends AbstractModuleContro
     }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
             new CheckRedisConnection().invoke(forwardedPort);
     }
 }

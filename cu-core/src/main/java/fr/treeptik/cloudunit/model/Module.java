@@ -15,6 +15,7 @@
 package fr.treeptik.cloudunit.model;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -145,7 +146,21 @@ public class Module extends Container implements Serializable {
     }
 
     public List<Port> getPorts() {
-        return ports;
+        return Collections.unmodifiableList(ports);
+    }
+    
+    public boolean hasPort(String portNumber) {
+        return ports.stream()
+                .filter(p -> p.getContainerValue().equals(portNumber))
+                .findAny()
+                .isPresent();
+    }
+    
+    public Port getPort(String portNumber) {
+        return ports.stream()
+                .filter(p -> p.getContainerValue().equals(portNumber))
+                .findAny()
+                .get();
     }
 
     public void setPorts(List<Port> ports) {

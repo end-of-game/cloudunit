@@ -32,7 +32,7 @@ public class Tomcat7Mongo26ModuleControllerTestIT extends AbstractModuleControll
     }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
         new CheckMongoConnection().invoke(forwardedPort);
     }
 }

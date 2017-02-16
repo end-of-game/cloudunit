@@ -32,7 +32,7 @@ public class Wildfly10ElasticSearch24ModuleControllerTestIT extends AbstractModu
     }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
         new CheckElasticSearchConnection().invoke(forwardedPort);
     }
 }

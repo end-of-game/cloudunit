@@ -16,19 +16,29 @@ package fr.treeptik.cloudunit.model;/*
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Deployment implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue
 	private Integer id;
+	
+	private String contextPath;
+	
+	private String filename;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern = "YYYY-MM-dd HH:mm")
@@ -40,6 +50,18 @@ public class Deployment implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	private DeploymentType type;
+	
+	protected Deployment() {}
+	
+	public Deployment(Application application, String filename) {
+	    this.application = application;
+	    this.filename = filename;
+	    this.type = DeploymentType.from(filename);
+	    this.contextPath = this.type.getContextPath(filename);
+	    this.date = new Date();
+	    
+	    application.addDeployment(this);
+	}
 
 	public Integer getId() {
 		return id;
@@ -48,6 +70,14 @@ public class Deployment implements Serializable {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	
+	public String getFilename() {
+        return filename;
+    }
+	
+	public String getContextPath() {
+        return contextPath;
+    }
 
 	public Date getDate() {
 		return date;

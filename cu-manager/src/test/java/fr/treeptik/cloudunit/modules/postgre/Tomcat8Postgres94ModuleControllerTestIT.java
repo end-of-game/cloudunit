@@ -47,7 +47,7 @@ public class Tomcat8Postgres94ModuleControllerTestIT extends AbstractModuleContr
     }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
         new CheckDatabaseConnection().invoke(forwardedPort, "POSTGRES_USER",
                 "POSTGRES_PASSWORD", "POSTGRES_DB", "org.postgresql.Driver", "jdbc:postgresql://");
     }

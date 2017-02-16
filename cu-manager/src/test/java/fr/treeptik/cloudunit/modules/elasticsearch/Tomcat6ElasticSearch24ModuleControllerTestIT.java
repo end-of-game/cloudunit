@@ -32,7 +32,7 @@ public class Tomcat6ElasticSearch24ModuleControllerTestIT extends AbstractModule
     }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
         new CheckElasticSearchConnection().invoke(forwardedPort);
     }
 }

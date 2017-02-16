@@ -34,8 +34,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.spotify.docker.client.exceptions.DockerException;
-
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.config.events.ServerStartEvent;
@@ -57,9 +55,8 @@ import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
 
 @Controller
-@RequestMapping("/server")
+@RequestMapping("/applications/{id}/server")
 public class ServerController implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	private final Locale locale = Locale.ENGLISH;
@@ -83,11 +80,6 @@ public class ServerController implements Serializable {
 
 	/**
 	 * Set the JVM Options and Memory
-	 *
-	 * @param input
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
 	 */
 	@CloudUnitSecurable
 	@RequestMapping(value = "/configuration/jvm", method = RequestMethod.PUT)

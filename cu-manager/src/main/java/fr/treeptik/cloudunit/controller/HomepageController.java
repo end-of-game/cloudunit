@@ -1,12 +1,12 @@
 package fr.treeptik.cloudunit.controller;
 
-import fr.treeptik.cloudunit.dto.AboutResource;
-import fr.treeptik.cloudunit.dto.HomepageResource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import fr.treeptik.cloudunit.dto.HomepageResource;
 
 /**
  * Created by nicolas on 12/12/2016.

@@ -33,7 +33,6 @@ import fr.treeptik.cloudunit.service.UserService;
 
 @Component
 public class AuthentificationUtils {
-
 	@Inject
 	private UserService userService;
 

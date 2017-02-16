@@ -13,36 +13,6 @@ import java.util.function.Predicate;
  * Created by nicolas on 26/09/2016.
  */
 public class NamingUtils {
-
-    /**
-     * Test the suffix for a String without case
-     * @param extension
-     * @return
-     */
-    private static Predicate<String> fileEndsWith(String extension) {
-        return f -> f.toLowerCase().endsWith(extension.toLowerCase());
-    }
-
-    /**
-     * Evaluate the context to display in UI in function the file deployed.
-     * ROOT.war and all .jar don't have specific context
-     */
-    private static Predicate<String> evaluateCtx =
-            s -> fileEndsWith("ROOT.war")
-                    .or(fileEndsWith(".jar")
-                            .or(fileEndsWith(".java"))
-                            .or(fileEndsWith(".rb"))
-                            .or(fileEndsWith(".groovy"))
-                            .or(fileEndsWith(".js"))).test(s);
-
-    /**
-     * Define the rule for Application Context.
-     * If war is ROOT.war by convention, Context is /
-     * Else the context is the war name without extension
-     */
-    public static Function<String, String> getContext =
-            s ->  evaluateCtx.test(s) ? "/" : ("/"+ FilenameUtils.getBaseName(s));
-
     /**
      * Create the alias name for open port feature
     */

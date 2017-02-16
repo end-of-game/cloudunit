@@ -17,13 +17,13 @@ package fr.treeptik.cloudunit.service;
 
 import java.util.List;
 
-import fr.treeptik.cloudunit.model.PortToOpen;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Deployment;
 import fr.treeptik.cloudunit.model.Status;
 import fr.treeptik.cloudunit.model.User;
 
@@ -43,7 +43,7 @@ public interface ApplicationService {
 
 	void setStatus(Application application, Status status) throws ServiceException;
 
-	Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException;
+	Deployment deploy(MultipartFile file, Application application) throws ServiceException, CheckException;
 
 	Application start(Application application) throws ServiceException;
 

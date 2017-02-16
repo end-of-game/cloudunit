@@ -33,6 +33,8 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -60,9 +62,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-@EnableAspectJAutoProxy
 @Configuration
+@EnableAspectJAutoProxy
 @EnableWebMvc
+@EnableHypermediaSupport(type = HypermediaType.HAL)
 @ComponentScan(basePackages = {"fr.treeptik.cloudunit.controller",
         "fr.treeptik.cloudunit.dao", "fr.treeptik.cloudunit.docker",
         "fr.treeptik.cloudunit.docker.model", "fr.treeptik.cloudunit.config",
@@ -75,14 +78,9 @@ import java.util.Properties;
 })
 @PropertySource({"classpath:/application.properties"})
 @PropertySource({"classpath:/maven.properties"})
-public class CloudUnitApplicationContext
-        extends WebMvcConfigurerAdapter {
-
-    // Allow for longer running Docker commands, esp. database scripts.
-    private static final int READ_TIMEOUT_MILLIS = 1 * 60 * 1000;
-
+public class CloudUnitApplicationContext extends WebMvcConfigurerAdapter {
     // Max file size
-    private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
+    private static final int MAX_UPLOAD_SIZE = 300_000_000;
 
     private final static Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
 

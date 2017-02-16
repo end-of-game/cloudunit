@@ -32,7 +32,7 @@ public class Wildfly10Mongo26ModuleControllerTestIT extends AbstractModuleContro
     }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
             new CheckMongoConnection().invoke(forwardedPort);
     }
 }

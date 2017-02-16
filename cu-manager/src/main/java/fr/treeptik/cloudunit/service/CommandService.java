@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CommandService {
 
-    List<Command> listCommandByContainer(String applicationName, String containerName) throws ServiceException;
+    List<Command> listCommandByContainer(String containerId) throws ServiceException;
 
-    String execCommand(Command command, String containerName, String applicationName) throws ServiceException;
+    String execCommand(String containerId, Command command, List<String> arguments) throws ServiceException;
 }

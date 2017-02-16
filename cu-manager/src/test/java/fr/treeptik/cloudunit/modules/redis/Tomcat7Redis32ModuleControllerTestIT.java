@@ -32,7 +32,7 @@ public class Tomcat7Redis32ModuleControllerTestIT extends AbstractModuleControll
     }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
         new CheckRedisConnection().invoke(forwardedPort);
     }
 }

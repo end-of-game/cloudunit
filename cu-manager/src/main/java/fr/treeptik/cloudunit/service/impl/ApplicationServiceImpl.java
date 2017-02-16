@@ -15,7 +15,6 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
 import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
 import fr.treeptik.cloudunit.dao.ApplicationDAO;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
@@ -46,7 +46,6 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Deployment;
-import fr.treeptik.cloudunit.model.DeploymentType;
 import fr.treeptik.cloudunit.model.Image;
 import fr.treeptik.cloudunit.model.Module;
 import fr.treeptik.cloudunit.model.Server;
@@ -237,7 +236,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			List<Module> listModules = application.getModules();
 			for (Module module : listModules) {
 				try {
-					moduleService.remove(user, module, false, application.getStatus());
+					moduleService.remove(user, module, false);
 				} catch (ServiceException | CheckException e) {
 					application.setStatus(Status.FAIL);
 					logger.error("ApplicationService Error : failed to remove module " + module.getName()
@@ -292,7 +291,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public Application start(Application application) throws ServiceException {
 		try {
 			logger.debug("start : Methods parameters : " + application);
-			application.getModules().stream().forEach(m -> {
+			application.getModules().forEach(m -> {
 				try {
 					moduleService.startModule(m.getName());
 				} catch (ServiceException e) {
@@ -314,7 +313,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		try {
 			Server server = application.getServer();
 			serverService.stopServer(server);
-			application.getModules().stream().forEach(m -> {
+			application.getModules().forEach(m -> {
 				try {
 					moduleService.stopModule(m.getName());
 				} catch (ServiceException e) {
@@ -339,10 +338,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		try {
 			logger.debug("start findAll");
 			List<Application> listApplications = applicationDAO.findAll();
-			for (Application application : listApplications) {
-				application.setServer(serverService.findByApp(application));
-				application.setModules(moduleService.findByAppAndUser(application.getUser(), application.getName()));
-			}
 			logger.debug("ApplicationService : All Applications found ");
 			return listApplications;
 		} catch (PersistenceException e) {
@@ -376,45 +371,46 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	@Transactional
-	public Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException {
+	public Deployment deploy(MultipartFile file, Application application) throws ServiceException, CheckException {
+        String filename = file.getOriginalFilename();
+        Deployment deployment = deploymentService.create(application, filename);
 		try {
-			// get app with all its components
-		    String filename = file.getOriginalFilename();
 			String containerId = application.getServer().getContainerID();
 			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
 			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
-			String contextPath = NamingUtils.getContext.apply(filename);
+
 			@SuppressWarnings("serial")
             Map<String, String> kvStore = new HashMap<String, String>() {
 				{
 					put("CU_USER", application.getUser().getLogin());
 					put("CU_PASSWORD", application.getUser().getPassword());
                     put("CU_FILE", filename);
-					put("CU_CONTEXT_PATH", contextPath);
+					put("CU_CONTEXT_PATH", deployment.getContextPath());
 				}
 			};
 			String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
 			logger.info ("Deploy command {}", result);
-			Deployment deployment = deploymentService.create(application, DeploymentType.from(filename), contextPath);
-			application.addDeployment(deployment);
-			application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
+			
+            String needRestart = dockerService.getEnv(containerId, "CU_SERVER_RESTART_POST_DEPLOYMENT");
+            if ("true".equalsIgnoreCase(needRestart)){
+                // set the application in pending mode
+                applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+                stop(application);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                start(application);
+                // wait for modules and servers starting
+                applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+            }
 
-			// If application is anything else than .jar or ROOT.war
-			// we need to clean for the next deployment.
-			if (!"/".equalsIgnoreCase(contextPath)) {
-				@SuppressWarnings("serial")
-				HashMap<String, String> kvStore2 = new HashMap<String, String>() {
-					{
-						put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
-					}
-				};
-				dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
-			}
 		} catch (Exception e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 
-		return application;
+		return deployment;
 	}
 
 	/**

@@ -19,19 +19,9 @@ import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Deployment;
-import fr.treeptik.cloudunit.model.DeploymentType;
-
-import java.util.List;
 
 public interface DeploymentService {
-
-    Deployment find(Deployment deployment)
-        throws ServiceException;
-
-    List<Deployment> findByApp(Application application)
-        throws ServiceException;
-
-    Deployment create(Application application, DeploymentType deploymentType, String contextPath)
+    Deployment create(Application application, String filename)
         throws ServiceException, CheckException;
 
 }

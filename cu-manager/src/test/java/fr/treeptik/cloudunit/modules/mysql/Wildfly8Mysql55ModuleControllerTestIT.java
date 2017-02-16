@@ -47,7 +47,7 @@ public class Wildfly8Mysql55ModuleControllerTestIT extends AbstractModuleControl
         super.testScriptPath = "src/test/resources/mysql/test.sql";    }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
         new CheckDatabaseConnection().invoke(forwardedPort, "MYSQL_USER",
                 "MYSQL_PASSWORD", "MYSQL_DATABASE", "com.mysql.jdbc.Driver", "jdbc:mysql://");
     }

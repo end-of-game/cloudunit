@@ -17,15 +17,34 @@ package fr.treeptik.cloudunit.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import fr.treeptik.cloudunit.utils.AlphaNumericsCharactersCheckUtils;
 import fr.treeptik.cloudunit.utils.NamingUtils;
 
@@ -33,11 +52,6 @@ import fr.treeptik.cloudunit.utils.NamingUtils;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "name", "cuInstanceName" }))
 public class Application implements Serializable {
-
-	public static final String ALREADY_DEPLOYED = "ALREADY_DEPLOYED";
-
-	public static final String NONE = "NONE";
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -65,71 +79,40 @@ public class Application implements Serializable {
 
 	@OrderBy("id asc")
 	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY)
-	private Set<Module> modules;
+	private List<Module> modules;
 
 	@OneToOne(mappedBy = "application", fetch = FetchType.LAZY)
 	private Server server;
 
 	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-	private Set<Deployment> deployments;
+	private List<Deployment> deployments;
 
-	@ElementCollection
-	private Set<String> aliases;
-
-	private String deploymentStatus;
-
-	public String getLocation(){
-		String domain = NamingUtils.getCloudUnitDomain(System.getenv("CU_DOMAIN"));
-        return NamingUtils.getContainerName(name, null, user.getLogin()) + domain;
-	}
-
-	public String getContextPath() {
-		return contextPath;
-	}
-
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
+	@Enumerated(EnumType.STRING)
+	private DeploymentStatus deploymentStatus;
 
 	private String contextPath;
 
 	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
-	@OrderBy(value = "port")
-	private Set<PortToOpen> portsToOpen;
+	private List<EnvironmentVariable> environmentVariables;
 
-	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "application")
-	private Set<EnvironmentVariable> environmentVariables;
-
-	public Application() {
-		date = new Date();
-		// todo : create an enum for deployment status
-		deploymentStatus = Application.NONE;
-		status = Status.PENDING;
-	}
+	protected Application() {}
 
 	private Application(Builder builder) {
-	    this();
-
         this.name = builder.name;
         this.displayName = builder.displayName;
         this.cuInstanceName = builder.cuInstanceName;
         this.status = builder.status;
         this.user = builder.user;
-        this.deploymentStatus = builder.deploymentStatus;
-        this.contextPath = builder.contextPath;
         this.environmentVariables = builder.environmentVariables;
-        this.portsToOpen = builder.portsToOpen;
-
-        this.modules = new HashSet<>();
-        this.deployments = new HashSet<>();
-        this.aliases = new HashSet<>();
+        this.modules = new ArrayList<>();
+        this.deployments = new ArrayList<>();
         
         this.server = new Server(this, builder.image);
 
 		if ("webserver".equalsIgnoreCase(server.getImage().getImageSubType().toString())) {
-			this.deploymentStatus = Application.ALREADY_DEPLOYED;
+			this.deploymentStatus = DeploymentStatus.DEPLOYED;
 		} else {
-			this.deploymentStatus = Application.NONE;
+			this.deploymentStatus = DeploymentStatus.NONE;
 		}
 
 	}
@@ -187,6 +170,10 @@ public class Application implements Serializable {
 		this.status = status;
 	}
 
+    public DeploymentStatus getDeploymentStatus() {
+        return deploymentStatus;
+    }
+
 	public User getUser() {
 		return user;
 	}
@@ -196,17 +183,23 @@ public class Application implements Serializable {
 	}
 
 	public List<Module> getModules() {
-		if (modules != null) {
-			return new ArrayList<>(modules);
-		} else {
-			return new ArrayList<>();
-		}
-	}
-
-	public void setModules(List<Module> modules) {
-		this.modules = new HashSet<>(modules);
+	    return Collections.unmodifiableList(modules);
 	}
 	
+	public boolean hasModule(String name) {
+	    return modules.stream()
+	            .filter(m -> m.getImage().getName().equals(name))
+	            .findAny()
+	            .isPresent();
+	}
+	
+	public Module getModule(String name) {
+	    return modules.stream()
+	            .filter(m -> m.getImage().getName().equals(name))
+	            .findAny()
+	            .get();
+	}
+
 	public Module addModule(Image image) {
 	    Module module = new Module(this, image);
 	    modules.add(module);
@@ -218,6 +211,27 @@ public class Application implements Serializable {
 		module.setApplication(null);
 		modules.remove(module);
 	}
+	
+	public List<Container> getContainers() {
+	    List<Container> result = new ArrayList<>();
+	    result.add(server);
+	    result.addAll(modules);
+	    return Collections.unmodifiableList(result);
+	}
+	
+	public boolean hasContainer(String containerId) {
+	    return getContainers().stream()
+                .filter(c -> c.getContainerID().equals(containerId))
+                .findAny()
+                .isPresent();
+	}
+	
+	public Container getContainer(String containerId) {
+	    return getContainers().stream()
+	            .filter(c -> c.getContainerID().equals(containerId))
+	            .findAny()
+	            .get();
+	}
 
 	public Date getDate() {
 		return date;
@@ -228,98 +242,70 @@ public class Application implements Serializable {
 	}
 
 	public List<Deployment> getDeployments() {
-		if (deployments != null) {
-			return new ArrayList<>(deployments);
-		} else {
-			return new ArrayList<>();
-		}
+	    return Collections.unmodifiableList(deployments);
 	}
 
-	public void setDeployments(List<Deployment> deployments) {
-		this.deployments = new HashSet<>(deployments);
+	public void addDeployment(Deployment deployment) {
+	    deployments.add(deployment);
+	    
+	    deploymentStatus = DeploymentStatus.DEPLOYED;
+        contextPath = deployment.getContextPath();
 	}
+	
+    public String getLocation(){
+        String domain = NamingUtils.getCloudUnitDomain(System.getenv("CU_DOMAIN"));
+        return NamingUtils.getContainerName(name, null, user.getLogin()) + domain;
+    }
 
-	public void addDeployment(Deployment deployment) { this.deployments.add(deployment); }
-
-	public Set<String> getAliases() {
-		return aliases;
-	}
-
-	public void setAliases(Set<String> aliases) {
-		this.aliases = aliases;
-	}
+    public String getContextPath() {
+        return contextPath;
+    }
 
 	@Override
 	public String toString() {
-		return "Application{" + "id=" + id + ", name='" + name + '\'' + ", status=" + status + ", date=" + date + "}'";
+	    return new ToStringBuilder(this)
+	            .append("id", id)
+	            .append("name", name)
+	            .append("status", status)
+	            .append("date", date)
+	            .toString();
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
-		return result;
+	    return new HashCodeBuilder()
+	            .append(user)
+	            .append(name)
+	            .toHashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (!(obj instanceof Application)) return false;
+		
 		Application other = (Application) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (user == null) {
-			if (other.user != null)
-				return false;
-		} else if (!user.equals(other.user))
-			return false;
-		return true;
-	}
-
-	public String getDeploymentStatus() {
-		return deploymentStatus;
-	}
-
-	public void setDeploymentStatus(String deploymentStatus) {
-		this.deploymentStatus = deploymentStatus;
-	}
-
-	public Set<PortToOpen> getPortsToOpen() {
-
-		if (portsToOpen == null) {
-			return new HashSet<>();
-		}
-
-		return this.portsToOpen;
+		
+		return new EqualsBuilder()
+		        .append(this.user, other.user)
+		        .append(this.name, other.name)
+		        .isEquals();
 	}
 
     public static final class Builder {
-
         private final String name;
         private String displayName;
         private String cuInstanceName;
         private Status status;
         private User user;
-        private String restHost;
-        private String deploymentStatus;
-        private String contextPath;
-        private Set<PortToOpen> portsToOpen;
-        private Set<EnvironmentVariable> environmentVariables;
+        private List<EnvironmentVariable> environmentVariables = new ArrayList<>();
         private Image image;
 
         private Builder(String displayName, Image image) {
             this.displayName = displayName;
             this.image = image;
             this.name = AlphaNumericsCharactersCheckUtils.convertToAlphaNumerics(displayName).toLowerCase();
+            this.status = Status.PENDING;
         }
 
         public Builder withDisplayName(String displayName) {
@@ -342,28 +328,8 @@ public class Application implements Serializable {
             return this;
         }
 
-        public Builder withRestHost(String restHost) {
-            this.restHost = restHost;
-            return this;
-        }
-
-        public Builder withDeploymentStatus(String deploymentStatus) {
-            this.deploymentStatus = deploymentStatus;
-            return this;
-        }
-
-        public Builder withContextPath(String contextPath) {
-            this.contextPath = contextPath;
-            return this;
-        }
-
-        public Builder withPortsToOpen(Set<PortToOpen> portsToOpen) {
-            this.portsToOpen = portsToOpen;
-            return this;
-        }
-
-        public Builder withEnvironmentVariables(Set<EnvironmentVariable> environmentVariables) {
-            this.environmentVariables = environmentVariables;
+        public Builder addEnvironmentVariable(EnvironmentVariable environmentVariable) {
+            this.environmentVariables.add(environmentVariable);
             return this;
         }
 

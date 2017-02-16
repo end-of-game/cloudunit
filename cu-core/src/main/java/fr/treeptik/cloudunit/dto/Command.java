@@ -1,45 +1,42 @@
 package fr.treeptik.cloudunit.dto;
 
+import java.util.Collections;
 import java.util.List;
 
-public class Command {
+import org.apache.commons.io.FilenameUtils;
 
+public class Command {
 	private String name;
 
-	private Integer argumentNumber;
+	private String path;
+	
+	private List<String> argumentNames;
 
-	private List<String> arguments;
+	protected Command() {}
 
-	public String getName() {
-		return name;
+	public Command(String path, List<String> argumentNames) {
+		this.name = FilenameUtils.getBaseName(path);
+		this.path = path;
+		this.argumentNames = argumentNames;
 	}
 
-	public Integer getArgumentNumber() {
-		return argumentNumber;
-	}
+    public String getName() {
+        return name;
+    }
+    
+    public String getPath() {
+        return path;
+    }
 
-	public List<String> getArguments() {
-		return arguments;
+	public List<String> getArgumentNames() {
+        return Collections.unmodifiableList(argumentNames);
+    }
+	
+	public void addArgumentName(String argumentName) {
+	    argumentNames.add(argumentName);
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setArgumentNumber(Integer argumentNumber) {
-		this.argumentNumber = argumentNumber;
-	}
-
-	public Command() {
-	}
-
-	public Command(String name, Integer argumentNumber, List<String> arguments) {
-		this.name = name;
-		this.argumentNumber = argumentNumber;
-		this.arguments = arguments;
-	}
-
-	public void setArguments(List<String> arguments) {
-		this.arguments = arguments;
+	
+	public String getCommandLine(List<String> arguments) {
+	    return String.format("%s %s", path, String.join(" ", arguments));
 	}
 }

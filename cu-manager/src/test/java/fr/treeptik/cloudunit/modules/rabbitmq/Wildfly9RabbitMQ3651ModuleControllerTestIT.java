@@ -32,7 +32,7 @@ public class Wildfly9RabbitMQ3651ModuleControllerTestIT extends AbstractModuleCo
     }
 
     @Override
-    protected void checkConnection(String forwardedPort) {
+    protected void checkConnection(String forwardedPort) throws Exception {
         new CheckBrokerConnection().invoke(forwardedPort, "RABBITMQ_DEFAULT_USER",
                 "RABBITMQ_DEFAULT_PASS", "RABBITMQ_DEFAULT_VHOST", "AMQP");
     }

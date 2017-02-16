@@ -19,13 +19,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +58,7 @@ import fr.treeptik.cloudunit.service.FileService;
 import fr.treeptik.cloudunit.service.ImageService;
 import fr.treeptik.cloudunit.service.ModuleService;
 import fr.treeptik.cloudunit.utils.ModuleUtils;
+import fr.treeptik.cloudunit.utils.NamingUtils;
 
 @Service
 public class ModuleServiceImpl implements ModuleService {
@@ -179,21 +178,18 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     @CacheEvict("env")
-    public Module publishPort(Integer id, Boolean publishPort, String port, User user) throws ServiceException, CheckException {
-        Module module = findById(id);
-        Optional<Port> optionalPort = module.getPorts().stream()
-                .filter(p -> p.getContainerValue().equals(port)).findAny();
-        if (optionalPort.isPresent()) {
-            Port portToBind = optionalPort.get();
-            portToBind.setOpened(publishPort);
-            portDAO.save(portToBind);
-        }
-        module = findById(id);
-        if (module == null) {
-            throw new CheckException("Module not found");
-        }
+    public Port publishPort(Module module, boolean open, String portNumber, User user) throws ServiceException, CheckException {
+        Port port = module.getPorts().stream()
+                .filter(p -> p.getContainerValue().equals(portNumber))
+                .findAny()
+                .orElseThrow(() -> new CheckException(String.format("Port number %s isn't supported by this module", portNumber)));
+        
+        port.setOpened(open);
+        portDAO.save(port);
+
         List<String> envs = environmentService.loadEnvironnmentsByContainer(module.getName()).stream()
-                .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
+                .map(e -> e.getKeyEnv() + "=" + e.getValueEnv())
+                .collect(Collectors.toList());
         dockerService.removeContainer(module.getName(), false);
         dockerService.createModule(module.getName(), module, module.getImage().getPath(), user, envs, false,
                 new ArrayList<>());
@@ -201,7 +197,7 @@ public class ModuleServiceImpl implements ModuleService {
         module = moduleDAO.save(module);
         applicationEventPublisher.publishEvent(new ModuleStartEvent(module));
 
-        return module;
+        return port;
     }
 
     public void checkImageExist(String moduleName) throws ServiceException {
@@ -209,7 +205,6 @@ public class ModuleServiceImpl implements ModuleService {
         if (image == null) {
             throw new ServiceException("Error : the module " + moduleName + " is not available");
         }
-
     }
 
     @Override
@@ -231,23 +226,14 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     @Transactional
-    public void remove(User user, String moduleName, Boolean isModuleRemoving, Status previousApplicationStatus)
+    public void remove(User user, Module module, boolean removingModule)
             throws ServiceException, CheckException {
-        Module module = findByName(moduleName);
-        remove(user, module, isModuleRemoving, previousApplicationStatus);
-    }
-
-    @Override
-    @Transactional
-    public void remove(User user, Module module, Boolean isModuleRemoving, Status previousApplicationStatus)
-            throws ServiceException, CheckException {
-
         try {
             dockerService.removeContainer(module.getName(), true);
             Application application = module.getApplication();
             application.removeModule(module);
             moduleDAO.delete(module);
-            if (isModuleRemoving) {
+            if (removingModule) {
                 List<EnvironmentVariable> envs = environmentService
                         .loadEnvironnmentsByContainer(application.getServer().getName());
                         environmentService.delete(user, envs.stream()
@@ -261,8 +247,7 @@ public class ModuleServiceImpl implements ModuleService {
             StringBuilder msgError = new StringBuilder();
             msgError.append(user.toString());
             msgError.append(module.toString());
-            msgError.append(", isModuleRemoving:").append(isModuleRemoving);
-            msgError.append(", previousApplicationStatus:").append(previousApplicationStatus);
+            msgError.append(", isModuleRemoving:").append(removingModule);
             throw new ServiceException(msgError.toString(), e);
         }
     }
@@ -378,10 +363,8 @@ public class ModuleServiceImpl implements ModuleService {
     }
     
     @Override
-    public String runScript(String moduleName, MultipartFile file) throws ServiceException {
+    public String runScript(Module module, MultipartFile file) throws ServiceException {
         try {
-            Module module = findByName(moduleName);
-            
             String filename = file.getOriginalFilename();
             String containerId = module.getContainerID();
             String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");

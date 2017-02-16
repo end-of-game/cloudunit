@@ -15,27 +15,35 @@
 
 package fr.treeptik.cloudunit.modules;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-import fr.treeptik.cloudunit.dto.EnvUnit;
-import fr.treeptik.cloudunit.dto.ModulePortResource;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
-import fr.treeptik.cloudunit.utils.NamingUtils;
-import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
-import fr.treeptik.cloudunit.utils.TestUtils;
-import junit.framework.TestCase;
+import static org.awaitility.Awaitility.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.servlet.Filter;
+
 import org.apache.commons.io.FilenameUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
@@ -54,28 +62,26 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
+
+import fr.treeptik.cloudunit.dto.EnvironmentVariableResource;
+import fr.treeptik.cloudunit.dto.PortResource;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
+import fr.treeptik.cloudunit.utils.NamingUtils;
+import fr.treeptik.cloudunit.utils.SpyMatcherDecorator;
+import fr.treeptik.cloudunit.utils.TestUtils;
+import junit.framework.TestCase;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.servlet.Filter;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-import static org.awaitility.Awaitility.await;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 /**
@@ -370,7 +376,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
         checkConnection(port);
     }
 
-    protected abstract void checkConnection(String forwardedPort);
+    protected abstract void checkConnection(String forwardedPort) throws Exception;
 
     private String getContainerName() {
         return NamingUtils.getContainerName(applicationName, module, "johndoe");
@@ -402,9 +408,7 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     }
 
     private ResultActions requestPublishPort(Integer id, String number) throws Exception {
-        ModulePortResource request = ModulePortResource.of()
-                .withPublishPort(true)
-                .build();
+        PortResource request = new PortResource(true);
         String jsonString = objectMapper.writeValueAsString(request);
         return mockMvc.perform(put("/module/" + id + "/ports/" + number)
                 .session(session)
@@ -435,29 +439,25 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
     public class CheckDatabaseConnection {
 
         public void invoke(String forwardedPort, String keyUser, String keyPassword,
-                           String keyDB, String driver, String jdbcUrlPrefix) {
-            try {
-                String urlToCall = "/application/" + applicationName + "/container/" + getContainerName() + "/env";
-                ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
-                String contentResult = resultats.andReturn().getResponse().getContentAsString();
-                List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>() {
-                });
-                final String user = envs.stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
-                final String password = envs.stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
-                final String database = envs.stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
-                final String jdbcUrl = jdbcUrlPrefix + databaseHostname + ":" + forwardedPort + "/" + database;
-                Class.forName(driver);
-                await("Testing database connection...").atMost(5, TimeUnit.SECONDS)
-                        .and().ignoreExceptions()
-                        .until(() -> {
-                            try (final Connection connection = DriverManager.getConnection(jdbcUrl, user, password)) {
-                                return connection.isValid(1000);
-                            }
-                        });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Assert.fail();
-            }
+                           String keyDB, String driver, String jdbcUrlPrefix) throws Exception {
+            String urlToCall = "/application/" + applicationName + "/container/" + getContainerName() + "/env";
+            ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
+            String contentResult = resultats.andReturn().getResponse().getContentAsString();
+            Resources<EnvironmentVariableResource> envs =
+                    objectMapper.readValue(contentResult, new TypeReference<Resources<EnvironmentVariableResource>>() {});
+            final String user = envs.getContent().stream().filter(e -> e.getKey().equals(keyUser)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyUser)).getValue();
+            final String password = envs.getContent().stream().filter(e -> e.getKey().equals(keyPassword)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyPassword)).getValue();
+            final String database = envs.getContent().stream().filter(e -> e.getKey().equals(keyDB)).findFirst().orElseThrow(() -> new RuntimeException("Missing " + keyDB)).getValue();
+            final String jdbcUrl = jdbcUrlPrefix + databaseHostname + ":" + forwardedPort + "/" + database;
+            Class.forName(driver);
+            await("Testing database connection...")
+            .atMost(5, TimeUnit.SECONDS)
+            .and().ignoreExceptions()
+            .until(() -> {
+                try (final Connection connection = DriverManager.getConnection(jdbcUrl, user, password)) {
+                    return connection.isValid(1000);
+                }
+            });
         }
     }
 
@@ -475,20 +475,20 @@ public abstract class AbstractModuleControllerTestIT extends TestCase {
             try {
                 ResultActions resultats = mockMvc.perform(get(urlToCall).session(session).contentType(MediaType.APPLICATION_JSON));
                 contentResult = resultats.andReturn().getResponse().getContentAsString();
-                List<EnvUnit> envs = objectMapper.readValue(contentResult, new TypeReference<List<EnvUnit>>() {
-                });
+                Resources<EnvironmentVariableResource> envs =
+                        objectMapper.readValue(contentResult, new TypeReference<Resources<EnvironmentVariableResource>>() {});
                 contentResult = resultats.andReturn().getResponse().getContentAsString();
-                user = envs.stream()
+                user = envs.getContent().stream()
                         .filter(e -> e.getKey().equals(keyUser))
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Missing " + keyUser))
                         .getValue();
-                password = envs.stream()
+                password = envs.getContent().stream()
                         .filter(e -> e.getKey().equals(keyPassword))
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Missing " + keyPassword))
                         .getValue();
-                vhost = envs.stream()
+                vhost = envs.getContent().stream()
                         .filter(e -> e.getKey().equals(keyDB))
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Missing " + keyDB))

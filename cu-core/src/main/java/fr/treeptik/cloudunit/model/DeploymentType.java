@@ -13,14 +13,18 @@ package fr.treeptik.cloudunit.model;/*
  * For any questions, contact us : contact@treeptik.fr
  */
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.util.EnumSet;
+
+import org.apache.commons.io.FilenameUtils;
 
 public enum DeploymentType {
     WAR("war"),
     EAR("ear"),
-    JAR("jar");
+    JAR("jar"),
+    JAVA("java"),
+    GROOVY("groovy"),
+    RUBY("rb"),
+    JAVASCRIPT("js");
 
     private String extension;
 
@@ -33,5 +37,14 @@ public enum DeploymentType {
                 .filter(t -> FilenameUtils.getExtension(name).equalsIgnoreCase(t.extension))
                 .findFirst()
                 .orElse(DeploymentType.JAR);
+    }
+    
+    public String getContextPath(String filename) {
+        String basename = FilenameUtils.getBaseName(filename);
+        if (this == WAR && !"ROOT".equals(basename)) {
+            return "/" + basename;
+        } else {
+            return "/";
+        }
     }
 }

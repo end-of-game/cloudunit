@@ -441,16 +441,12 @@ public class ApplicationUtils {
         }
 
         try {
-            Command command = new Command();
-            command.setName(name);
-            command.setArguments(Arrays.asList(arguments.split(",")));
             ObjectMapper objectMapper = new ObjectMapper();
-            String entity = objectMapper.writeValueAsString(command);
+            String entity = objectMapper.writeValueAsString(Arrays.asList(arguments.split(",")));
             restUtils.sendPostCommand(
                     authenticationUtils.finalHost + urlLoader.actionApplication + currentApplication.getName()
                             + "/container/" + currentApplication.getServer().getName() + "/command/" + name + "/exec",
                     authenticationUtils.getMap(), entity);
-
         } catch (ManagerResponseException | JsonProcessingException e) {
             throw new CloudUnitCliException("Couldn't execute command.", e);
         }

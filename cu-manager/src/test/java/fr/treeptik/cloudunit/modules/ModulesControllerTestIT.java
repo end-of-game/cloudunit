@@ -15,14 +15,15 @@
 
 package fr.treeptik.cloudunit.modules;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.treeptik.cloudunit.dto.ModulePortResource;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.UserService;
-import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
-import junit.framework.TestCase;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.Random;
+
+import javax.inject.Inject;
+import javax.servlet.Filter;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -49,13 +50,14 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.inject.Inject;
-import javax.servlet.Filter;
-import java.util.Random;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.initializer.CloudUnitApplicationContext;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
+import fr.treeptik.cloudunit.utils.CheckBrokerConnectionUtils;
+import junit.framework.TestCase;
 
 
 /**
@@ -157,18 +159,6 @@ public class ModulesControllerTestIT extends TestCase {
         return mockMvc.perform(delete("/application/" + applicationName)
                 .session(session)
                 .contentType(MediaType.APPLICATION_JSON));
-    }
-
-    private ResultActions requestPublishPort(Integer id, String number) throws Exception {
-        ModulePortResource request = ModulePortResource.of()
-                .withPublishPort(true)
-                .build();
-        String jsonString = objectMapper.writeValueAsString(request);
-        return mockMvc.perform(put("/module/" + id + "/ports/" + number)
-                .session(session)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
-                .andDo(print());
     }
 
     private ResultActions requestAddModule(String module) throws Exception {
