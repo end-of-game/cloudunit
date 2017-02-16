@@ -97,8 +97,9 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "run" ]
 
 LABEL origin application
-LABEL application-type tomcat
 LABEL application-version tomcat-$TOMCAT_VERSION
+LABEL application-type tomcat
+LABEL application-logs-path $CU_LOGS
 LABEL logging enabled
 LABEL logging-type file
 ## CLOUDUNIT :: END

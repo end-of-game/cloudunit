@@ -98,8 +98,9 @@ CMD [ "run" ]
 EXPOSE 8080
 
 LABEL origin application
-LABEL application-type tomcat
 LABEL application-version tomcat-$TOMCAT_VERSION
+LABEL application-type tomcat
+LABEL application-logs-path $CU_LOGS
 LABEL logging enabled
 LABEL logging-type file
 ## CLOUDUNIT :: END

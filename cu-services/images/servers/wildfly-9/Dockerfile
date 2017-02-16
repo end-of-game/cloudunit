@@ -66,8 +66,10 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["run"]
 
+
 LABEL origin application
+LABEL application-version wildfly-$WILDFLY_VERSION
 LABEL application-type wildfly
+LABEL application-logs-path $CU_LOGS
 LABEL logging enabled
 LABEL logging-type file
-LABEL application-version $WILDFLY_VERSION

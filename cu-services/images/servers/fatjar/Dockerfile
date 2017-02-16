@@ -52,7 +52,8 @@ COPY binary/boot.jar $CU_SOFTWARE/boot.jar
 ENTRYPOINT ["/tini", "--", "/docker-entrypoint.sh"]
 
 LABEL origin application
+LABEL application-version tomcat-undef
 LABEL application-type fatjar
-LABEL application-version undef
+LABEL application-logs-path $CU_LOGS
 LABEL logging enabled
 LABEL logging-type file
