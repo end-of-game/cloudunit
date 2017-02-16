@@ -138,7 +138,8 @@ function with-datamgmt {
     source .env
     docker network create skynet
     docker network create datamgmt
-    docker-compose  -f docker-compose.datamgmt.yml \
+    docker build -q -t cloudunit/datamgmt-filebeat cu-datamgmt/datamgmt/
+    docker-compose  -f cu-datamgmt/docker-compose.datamgmt.yml \
                     -f docker-compose.yml \
     up -d
 }
@@ -146,7 +147,8 @@ function with-datamgmt {
 function with-datamgmt-and-selenium {
     docker network create skynet
     docker network create datamgmt
-    docker-compose  -f docker-compose.datamgmt.yml \
+    docker build -q -t cloudunit/datamgmt-filebeat cu-datamgmt/datamgmt/
+    docker-compose  -f cu-datamgmt/docker-compose.datamgmt.yml \
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
     up -d
@@ -170,8 +172,8 @@ function reset {
       docker volume rm $container
     done
 
-    docker-compose  -f docker-compose.datamgmt.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
-    docker-compose  -f docker-compose.datamgmt.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
+    docker-compose -f cu-datamgmt/docker-compose.datamgmt.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
+    docker-compose -f cu-datamgmt/docker-compose.datamgmt.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
     docker volume rm cucompose_elasticsearch-data
     docker volume rm cucompose_gitlab-logs
     docker volume rm cucompose_mysqldata

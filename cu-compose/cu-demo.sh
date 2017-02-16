@@ -29,7 +29,8 @@ function with-datamgmt {
     source .env
     docker network create skynet
     docker network create datamgmt
-    docker-compose  -f docker-compose.datamgmt.yml \
+    docker build -q -t cloudunit/datamgmt-filebeat cu-datamgmt/datamgmt/
+    docker-compose  -f cu-datamgmt/docker-compose.datamgmt.yml \
                     -f docker-compose.demo.yml \
     up -d
 }
@@ -41,8 +42,8 @@ function reset {
       docker volume rm $container
     done
 
-    docker-compose  -f docker-compose.datamgmt.yml -f docker-compose.demo.yml kill
-    docker-compose  -f docker-compose.datamgmt.yml -f docker-compose.demo.yml rm -f
+    docker-compose  -f cu-datamgmt/docker-compose.datamgmt.yml -f docker-compose.demo.yml kill
+    docker-compose  -f cu-datamgmt/docker-compose.datamgmt.yml -f docker-compose.demo.yml rm -f
     docker volume rm cucompose_elasticsearch-data
     docker volume rm cucompose_gitlab-logs
     docker volume rm cucompose_mysqldata

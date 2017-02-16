@@ -16,7 +16,7 @@
 source .env
 
 if [ "$CU_COMPOSE_FILES" = "" ]; then
-    CU_COMPOSE_FILES="-f docker-compose.datamgmt.yml -f docker-compose.dev.yml"
+    CU_COMPOSE_FILES="-f cu-datamgmt/docker-compose.datamgmt.yml -f docker-compose.dev.yml"
 fi
 
 if [[ $USER != "vagrant" ]]; then
