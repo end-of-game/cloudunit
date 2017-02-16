@@ -2,7 +2,7 @@
 set -e
 
 #Chown ???
-if [[ ! -z "$APPLICATION_TYPE" ]]
+if [[ -z "$APPLICATION_TYPE" ]] || [[ "$APPLICATION_TYPE" == "" ]]
 then
   echo "No application type defined"
   export APPLICATION_TYPE=default
