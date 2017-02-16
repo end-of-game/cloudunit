@@ -4,7 +4,7 @@ services:
   elasticsearch:
     container_name: datamgmt-elasticsearch
     build:
-      context: ./cu-datamgmt/elasticsearch
+      context: ./elasticsearch
     image: cloudunit/datamgmt-elasticsearch
     ports:
       - "9200:9200"
@@ -21,13 +21,13 @@ services:
     container_name: datamgmt-logstash
     hostname: datamgmt-logstash
     build:
-      context: ./cu-datamgmt/logstash
+      context: ./logstash
     image: cloudunit/datamgmt-logstash
     ports:
       - "9600:9600"
       - "12201:12201/udp"
     volumes:
-     - ./cu-datamgmt/logstash/conf.d:/etc/logstash/conf.d
+     - ./logstash/conf.d:/etc/logstash/conf.d
     environment:
       - "TZ=${TZ}"
     depends_on:
@@ -40,12 +40,12 @@ services:
     container_name: datamgmt-kibana
     hostname: datamgmt-kibana
     build:
-      context: ./cu-datamgmt/kibana
+      context: ./kibana
     image: cloudunit/datamgmt-kibana
     ports:
       - "5601:5601"
     volumes:
-      - ./cu-datamgmt/kibana/file:/opt/cloudunit/file
+      - ./kibana/file:/opt/cloudunit/file
     environment:
       - "TZ=${TZ}"
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
@@ -62,7 +62,7 @@ services:
     container_name: datamgmt-manager
     hostname: datamgmt-manager
     build:
-      context: ./cu-datamgmt/datamgmt
+      context: ./datamgmt
     image: cloudunit/datamgmt-manager
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -74,11 +74,11 @@ services:
     container_name: cu-monitoring-agents
     hostname: ${HOSTNAME}
     build:
-      context: ./cu-datamgmt/monitoring-agents
+      context: ./monitoring-agents
     image: cloudunit/datamgmt-monitoring-agents
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./cu-datamgmt/monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
+      - ./monitoring-agents/metricbeat-conf:/opt/cloudunit/monitoring-agents/metricbeat/conf.d
       - monitoring-agents:/opt/cloudunit/monitoring-agents
     environment:
       - "TZ=${TZ}"
