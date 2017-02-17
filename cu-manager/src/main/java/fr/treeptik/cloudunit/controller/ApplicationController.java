@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
@@ -227,17 +228,23 @@ public class ApplicationController {
 	 * Return the list of applications for an User
 	 */
 	@GetMapping
-	public ResponseEntity<?> findAllByUser() throws ServiceException {
+	public ResponseEntity<?> findAllByUser(@RequestParam(defaultValue = "") String name) throws ServiceException {
 		User user = this.authentificationUtils.getAuthentificatedUser();
 		List<Application> applications = applicationService.findAllByUser(user);
 
 		logger.debug("Number of applications {}", applications.size());
 		
+		if (!name.equals("")) {
+		    applications = applications.stream()
+		            .filter(a -> a.getName().contains(name))
+		            .collect(Collectors.toList());
+		}
+		
 		Resources<ApplicationResource> resources = new Resources<>(applications.stream()
 		        .map(this::toResource)
 		        .collect(Collectors.toList()));
 		
-		resources.add(linkTo(methodOn(ApplicationController.class).findAllByUser()).withSelfRel());
+		resources.add(linkTo(methodOn(ApplicationController.class).findAllByUser(name)).withSelfRel());
 		return ResponseEntity.ok(resources);
 	}
 }
