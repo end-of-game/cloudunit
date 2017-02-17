@@ -45,11 +45,11 @@ container destroy with label logging=enabled and logging-type=file.
 
 ### Workflow applicative container creation
 
-1) If a container is created with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
+         1) If a container is created with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
 
-2) Once the event catched the manager create a filebeat container with a volumes from the applicative container with logs file inside. For security and permission concern, GID of the user in filebeat container is the same as the user in applicative one. The configuration file used by filebeat must have the name as the "application-type" label value, in order to use custom log file path another label can be add "application-logs-path".
+         2) Once the event catched the manager create a filebeat container with a volumes from the applicative container with logs file inside. For security and permission concern, GID of the user in filebeat container is the same as the user in applicative one. The configuration file used by filebeat must have the name as the "application-type" label value, in order to use custom log file path another label can be add "application-logs-path".
 
-3) filebeat send logs content into logstash within filebeat protocol.
+         3) filebeat send logs content into logstash within filebeat protocol.
 
 ### Workflow applicative container destroy
 
