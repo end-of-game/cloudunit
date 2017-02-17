@@ -228,7 +228,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Transactional
 	@CacheEvict(value = "env", allEntries = true)
 	public Application remove(Application application, User user) throws ServiceException, CheckException {
-
+		application =  applicationDAO.findOne(application.getId());
 		try {
 			logger.info("Starting removing application " + application.getName());
 

@@ -44,7 +44,7 @@ function ApplicationService ( $resource, $http, $interval, $q, traverson ) {
     traverson.registerMediaType(TraversonJsonHalAdapter.mediaType, TraversonJsonHalAdapter);
 
     var traversonService = traverson
-        .from('http://localhost:9000/applications')
+        .from('/applications')
         .jsonHal()
         .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'} });
 
@@ -96,168 +96,85 @@ function about () {
 
 // Liste des applications
 function list () {
-    // return $http.get ( 'application' ).then ( function ( response ) {
-    //     return angular.copy ( response.data );
-    // } )
-
-   var res = 
-        [
-        {
-            "id":2,
-            "name":"plop",
-            "displayName":"plop",
-            "cuInstanceName":"DEV",
-            "origin":null,
-            "status":"START",
-            "date":"2016-11-07 15:03",
-            "user":{
-                "id":1,
-                "login":"johndoe",
-                "firstName":"John",
-                "lastName":"Doe",
-                "organization":"admin",
-                "signin":"2013-08-22 07:22",
-                "lastConnection":null,
-                "email":"johndoe.doe@gmail.com",
-                "status":1,
-                "role":{
-                "id":1,
-                "description":"ROLE_ADMIN"
-            }
-        },
-        "modules":[
-        ],
-        "server":{
-            "id":3,
-            "startDate":"2016-11-07 15:03",
-            "name":"dev-johndoe-plop-tomcat-7",
-            "containerID":"e8bbc8d0dc73",
-            "memorySize":null,
-            "containerIP":"172.17.0.8",
-            "status":"START",
-            "image":{
-            "id":11,
-            "name":"tomcat-7",
-            "path":"cloudunit/tomcat-7",
-            "displayName":"Tomcat 7.0.70",
-            "status":null,
-            "imageType":"server",
-            "managerName":"",
-            "prefixEnv":"tomcat",
-            "exposedPorts":null,
-            "prefixId":-868129468,
-            "imageSubType":null,
-            "moduleEnvironmentVariables":null
-        },
-        "internalDNSName":null,
-        "sshPort":null,
-        "jvmMemory":512,
-        "jvmOptions":"",
-        "jvmRelease":"jdk1.8.0_25",
-        "managerLocation":"http://manager-plop-johndoe-admin.cloudunit.dev/manager/html?",
-        "containerFullID":null
-        },
-        "deployments":[
-        ],
-        "aliases":[
-        ],
-        "suffixCloudUnitIO":".cloudunit.dev",
-        "domainName":".cloudunit.dev",
-        "managerIp":"192.168.50.4:4243",
-        "managerPort":null,
-        "jvmRelease":"jdk1.8.0_25",
-        "deploymentStatus":"NONE",
-        "contextPath":null,
-        "portsToOpen":[
-        ],
-        "location":"http://plop-johndoe-admin.cloudunit.dev",
-        "aclone":false
-        }
-    ];
-    
-    return toPromise(traversonService
+    return traversonService
         .newRequest()
         .getResource()
-        .result);
-    // return $http.get ( 'applications' ).then ( function ( response ) {
-    //     return angular.copy ( res );
-    // })
-}
-
-function toPromise(promise) {
-    var q = $q.defer();
-
-    promise
-        .then(function (response) {
-            if(response.status === undefined || (response.status>= 200 && response.status < 300)) {
-                 if(response.body) {
-                     q.resolve(JSON.parse(response.body));
-                 } else {
-                     q.resolve('');
-                 }
+        .result
+        .then(function(res) {
+            if(res._embedded) {
+                return res._embedded.applicationResourceList;
             } else {
-                 if(response.body) {
-                     q.reject(JSON.parse(response.body));
-                 } else {
-                     q.reject('');
-                 }
+                return [];
             }
-        });
-
-    return q.promise;
+        })
 }
 
 // Creation d'une application
 function create ( applicationName, serverName ) {
-    // var output = {};
-    // output.applicationName = applicationName;
-    // output.serverName = serverName;
-
-    // return Application.save ( JSON.stringify ( output ) ).$promise;
     var payload = {
         name: applicationName,
         serverType: serverName 
     };
-    console.log("payload", payload);
-    return toPromise(traversonService.post(payload).result);
 
+    return traversonService
+        .post(payload)
+        .result;
 }
 
 // Démarrer une application
 function start ( applicationName ) {
-    var output = {};
-    output.applicationName = applicationName;
-    var Application = $resource ( 'application/start' );
-    return Application.save ( JSON.stringify ( output ) ).$promise;
+     traversonService
+        .newRequest()
+        .follow('applicationResourceList[name:' + applicationName + ']', 'start')
+        .post()
+        .result;
 }
 
 // Démarrer une application
 function restart ( applicationName ) {
-    var output = {};
-    output.applicationName = applicationName;
-    var Application = $resource ( 'application/restart' );
-    return Application.save ( JSON.stringify ( output ) );
+     traversonService
+        .newRequest()
+        .follow('applicationResourceList[name:' + applicationName + ']', 'restart')
+        .post()
+        .result;
 }
 
 // Arrêter une application
 function stop ( applicationName ) {
-    var output = {};
-    output.applicationName = applicationName;
-    var Application = $resource ( 'application/stop' );
-    return Application.save ( JSON.stringify ( output ) );
+     traversonService
+        .newRequest()
+        .follow('applicationResourceList[name:' + applicationName + ']', 'stop')
+        .post()
+        .result;
 }
 
 // Teste la validite d'une application avant qu'on puisse la creer
 function isValid ( applicationName, serverName ) {
-    var validity = $resource ( 'application/verify/' + applicationName + '/' + serverName );
-    return validity.get ().$promise;
+    // var validity = $resource ( 'application/verify/' + applicationName + '/' + serverName );
+    // return validity.get ().$promise;
+    return traversonService
+
+        .withTemplateParameters({name: applicationName})
+        .newRequest()
+        .getResource()
+        .result
+        .then(function(res) {
+            console.log('isValid', res)
+            if(res._embedded) {
+                return res._embedded.applicationResourceList;
+            } else {
+                return [];
+            }
+        })
 }
+
 
 // Suppression d'une application
 function remove ( applicationName ) {
-    Application.get ( { id: applicationName }, function ( ref ) {
-        ref.$delete ();
-    } );
+    traversonService
+        .newRequest()
+        .follow('applicationResourceList[name:' + applicationName + ']', 'delete')
+        .delete();
 }
 
 // Récupération d'une application selon son nom

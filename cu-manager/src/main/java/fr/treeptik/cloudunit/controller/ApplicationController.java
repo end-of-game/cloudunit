@@ -83,7 +83,24 @@ public class ApplicationController {
             Integer id = application.getId();
             resource.add(linkTo(methodOn(ApplicationController.class).detail(id))
                     .withSelfRel());
-        } catch (CheckException | ServiceException e) {
+			if(application.getStatus() == Status.STOP) {
+				resource.add(linkTo(methodOn(ApplicationController.class).startApplication(id))
+						.withRel("start"));
+			}
+
+			if(application.getStatus() == Status.START) {
+				resource.add(linkTo(methodOn(ApplicationController.class).stopApplication(id))
+						.withRel("stop"));
+				resource.add(linkTo(methodOn(ApplicationController.class).restartApplication(id))
+						.withRel("restart"));
+			}
+
+				resource.add(linkTo(methodOn(ApplicationController.class).deleteApplication(id))
+						.withRel("delete"));
+//			resource.add(linkTo(methodOn(ModuleController.class).getModules(id))
+//					.withRel("modules"));
+
+        } catch (CheckException | InterruptedException | ServiceException e) {
             // ignore
         }
 	    
@@ -108,6 +125,7 @@ public class ApplicationController {
 
 	@CloudUnitSecurable
 	@PostMapping("/{id}/restart")
+	@Transactional
 	public ResponseEntity<?> restartApplication(@PathVariable Integer id)
 			throws ServiceException, CheckException, InterruptedException {
 		Application application = applicationDAO.findOne(id);
@@ -128,6 +146,7 @@ public class ApplicationController {
 
 	@CloudUnitSecurable
 	@PostMapping(value = "/{id}/start")
+	@Transactional
 	public ResponseEntity<?> startApplication(@PathVariable Integer id)
 			throws ServiceException, CheckException, InterruptedException {
 		Application application = applicationDAO.findOne(id);
@@ -152,6 +171,7 @@ public class ApplicationController {
 
 	@CloudUnitSecurable
 	@PostMapping("/{id}/stop")
+	@Transactional
 	public ResponseEntity<?> stopApplication(@PathVariable Integer id) throws ServiceException, CheckException {
 		Application application = applicationDAO.findOne(id);
 		
@@ -236,7 +256,7 @@ public class ApplicationController {
 		
 		if (!name.equals("")) {
 		    applications = applications.stream()
-		            .filter(a -> a.getName().contains(name))
+		            .filter(a -> a.getName().equals(name))
 		            .collect(Collectors.toList());
 		}
 		

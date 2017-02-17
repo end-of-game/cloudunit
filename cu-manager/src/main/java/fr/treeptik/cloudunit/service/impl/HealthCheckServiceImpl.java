@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -45,6 +46,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     private ApplicationEventPublisher publisher;
 
     @Override
+    @Transactional
     public void checkAndRebootApplications(){
         try {
             List<Application> applications = applicationService.findAll();

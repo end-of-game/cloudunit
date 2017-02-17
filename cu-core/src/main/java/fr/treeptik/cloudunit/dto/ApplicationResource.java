@@ -27,7 +27,7 @@ public class ApplicationResource extends ResourceSupport {
     
     private Status status;
     
-    @JsonFormat(pattern = "YYYY-MM-ddTHH:mm:ss")
+    @JsonFormat(pattern = "YYYY-MM-dd'T'HH:mm:ss")
     private Date creationDate;
     
     public ApplicationResource() {}

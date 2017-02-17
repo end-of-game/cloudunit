@@ -27,7 +27,7 @@ import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 
 @Controller
-@RequestMapping("/applications/{id}/containers/{containerId}")
+@RequestMapping("/applications/{id}/containers")
 public class ContainerController {
     @Inject
     private AuthentificationUtils authentificationUtils;
