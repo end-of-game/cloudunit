@@ -1,6 +1,6 @@
 # A automated logging manager for docker environment
 
-datamgmt will manage file logging and send it all to a logstash grocker/parser.
+datamgmt will manage file logging for docker container and send it all to a logstash grocker/parser.
 
 Application supported:
 * Tomcat(s)
@@ -29,5 +29,11 @@ Once the stack up and running let's execute a simple tomcat app with docker labe
 ```
 docker run -d --name=test-app -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
 ```
+or with log driver to handle stdout container logs
+```
+docker run -d --name=test-app -log-driver=gelf --log-opt gelf-address=udp://localhost:12201 --log-opt tag=tomcat -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
+```
 
 Let's check that logs are sent, connect to kibana web interface (http://localhost:5601/) and check documents in logstash index.
+
+# Quickstart
