@@ -3,10 +3,10 @@ set -e
 
 # Run as user "kibana" if the command is "kibana"
 if [ "$1" = 'kibana' ]; then
- 	if [ "$ELASTICSEARCH_URL" != "http://:9200" ]; then
+ 	if [ "$ELASTICSEARCH_URL" != "" ]; then
 		sed -ri "s!^(\#\s*)?(elasticsearch\.url:).*!\2 '$ELASTICSEARCH_URL'!" /etc/kibana/kibana.yml
 	else
-		ELASTICSEARCH_URL=http://elasticsearch:9200
+		export ELASTICSEARCH_URL=http://elasticsearch:9200
 	fi
 	set -- gosu kibana tini -- "$@"
 fi

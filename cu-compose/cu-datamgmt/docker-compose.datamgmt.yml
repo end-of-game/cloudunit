@@ -51,7 +51,6 @@ services:
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
     depends_on:
       - elasticsearch
-    command: kibana
     labels:
       - "traefik.frontend.entryPoints=https"
       - "traefik.backend=kibana"
