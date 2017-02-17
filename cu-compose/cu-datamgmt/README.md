@@ -20,12 +20,14 @@ docker build -t cloudunit/datamgmt-filebeat datamgmt/tools/filebeat/
 
 In order handle logs, we need to start somme tools. All the stack could be loaded with a compose file :
 ```
+docker network create datagmgt
+docker network create skynet
 docker-compose -f docker-compose.datamgmt.yml up -d
 ```
 
 Once the stack up and running let's execute a simple tomcat app with docker labels :
 ```
-docker run -d --name test-app -l application-type tomcat -l logging enabled -l logging-type file -l application-logs-path /usr/local/tomcat/logs tomcat:9-alpine
+docker run -d --name=test-app -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
 ```
 
 Let's check that logs are sent, connect to kibana web interface and check logs:
