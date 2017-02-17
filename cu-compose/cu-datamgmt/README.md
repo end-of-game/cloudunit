@@ -29,8 +29,8 @@ Once the stack up and running let's execute a simple tomcat app with docker labe
 ```
 docker run -d --name=test-app -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
 
-or
-(or with log driver to catch stdout container logs)
+or with log driver to catch stdout container logs
+
 docker run -d --name=test-app -log-driver=gelf --log-opt gelf-address=udp://localhost:12201 --log-opt tag=tomcat -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
 ```
 or with log driver to handle stdout container logs
