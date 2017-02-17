@@ -43,20 +43,24 @@ container create with label logging=enabled and logging-type=file,
 container stop, die, kill with label logging=enabled and logging-type=file,
 container destroy with label logging=enabled and logging-type=file.
 
-## Workflow applicative container creation
+### Workflow applicative container creation
 
 1) If a container is created with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
+
 2) Once the event catched the manager create a filebeat container with a volumes from the applicative container with logs file inside. For security and permission concern, GID of the user in filebeat container is the same as the user in applicative one. The configuration file used by filebeat must have the name as the "application-type" label value, in order to use custom log file path another label can be add "application-logs-path".
+
 3) filebeat send logs content into logstash within filebeat protocol.
 
-## Workflow applicative container destroy
+### Workflow applicative container destroy
 
 1) If a container is destroyed with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
+
 2) manager will delete filebeat container and all logs data stored in elasticsearch backend
 
-## Workflow applicative container stop, die, kill
+### Workflow applicative container stop, die, kill
 
 1) If a container stopped, died or is killed with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
+
 2) manager will wait 2 seconds and if the applicative container still exist and is not running the filebeat container will be stopped without backend data deletion, otherwhise the container sill exist and running so nothing have to be done or the container doesn't exist anymore and do nothing because a destroy event will be catched by manager.
 
 
