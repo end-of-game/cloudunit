@@ -34,9 +34,9 @@ filebeat.prospectors:
   document_type: tomcat-unknown
   exclude_files: ["localhost_access_log.*.txt"]
   multiline:
-    match: after
-    negate: true
-    pattern: '^\['
+    pattern: '^[[:space:]]'
+    negate:  false
+    match:   after
 
     #- c:\programdata\elasticsearch\logs\*
 

@@ -25,7 +25,7 @@ filebeat.prospectors:
 #------------------------------ Log prospector --------------------------------
 - input_type: log
   paths:
-    - /opt/cloudunit/fatjar/logs/*
+    - ${APPLICATION_LOGS_PATH:/opt/cloudunit/fatjar/logs}/*
   document_type: fatjar-unknown
   multiline:
     pattern: '^\['

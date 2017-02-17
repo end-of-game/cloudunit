@@ -34,7 +34,7 @@ filebeat.prospectors:
 
 - input_type: log
   paths:
-    - /opt/cloudunit/wildfly/standalone/log/*
+    - ${APPLICATION_LOGS_PATH:/opt/cloudunit/wildfly/standalone/log}/*
   document_type: wildfly-unknown
   exclude_files: ["server.log"]
   multiline:

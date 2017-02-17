@@ -25,8 +25,8 @@ filebeat.prospectors:
 #------------------------------ Log prospector --------------------------------
 - input_type: log
   paths:
-    - ${LOG_PATH}/*
-  document_type: ${LOG_TYPE:unknown}
+    - ${APPLICATION_LOGS_PATH}/*
+  document_type: ${APPLICATION_TYPE:unknown}
     #- c:\programdata\elasticsearch\logs\*
 
   # Configure the file encoding for reading files with international characters
