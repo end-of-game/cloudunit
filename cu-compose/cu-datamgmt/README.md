@@ -36,4 +36,8 @@ docker run -d --name=test-app -log-driver=gelf --log-opt gelf-address=udp://loca
 
 Let's check that logs are sent, connect to kibana web interface (http://localhost:5601/) and check documents in logstash index.
 
-# Quickstart
+# How does it work (Advanced)
+
+## Container creation
+
+
