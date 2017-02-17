@@ -1,6 +1,6 @@
-# A automated logging manager for docker environment
+# A automated logging manager for Cloudunit
 
-datamgmt will manage file logging and send it all to a logstash grocker/parser.
+datamgmt will manage file logging for docker container and send it all to a logstash grocker/parser.
 
 Application supported:
 * Tomcat(s)
@@ -28,7 +28,41 @@ docker-compose -f docker-compose.datamgmt.yml up -d
 Once the stack up and running let's execute a simple tomcat app with docker labels :
 ```
 docker run -d --name=test-app -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
+
+or with log driver to catch stdout container logs too
+
+docker run -d --name=test-app --log-driver=gelf --log-opt gelf-address=udp://localhost:12201 --log-opt tag=tomcat -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
 ```
 
-Let's check that logs are sent, connect to kibana web interface and check logs:
-[[https://github.com/username/repository/blob/master/img/octocat.png|alt=octocat]]
+Let's check that logs are sent, connect to kibana web interface (http://localhost:5601/) and check documents in logstash index.
+
+# How does it work (Advanced)
+
+datamgmt-manager listen some specifics events on docker socket. These event are :
+container create with label logging=enabled and logging-type=file,
+container stop, die, kill with label logging=enabled and logging-type=file,
+container destroy with label logging=enabled and logging-type=file.
+
+### Workflow applicative container creation
+
+1) If a container is created with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
+
+2) Once the event catched the manager create a filebeat container with a volumes from the applicative container with logs file inside. For security and permission concern, GID of the user in filebeat container is the same as the user in applicative one. The configuration file used by filebeat must have the name as the "application-type" label value, in order to use custom log file path, another label can be add "application-logs-path".
+
+3) filebeat send logs content into logstash within filebeat protocol.
+
+### Workflow applicative container destroy
+
+1) If a container is destroyed with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
+
+2) manager will delete filebeat container and all logs data stored in elasticsearch backend
+
+### Workflow applicative container stop, die, kill
+
+1) If a container stopped, died or is killed with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
+
+2) manager will wait 2 seconds and if the applicative container still exist and is not running the filebeat container will be stopped without backend data deletion, otherwhise the container sill exist and running so nothing have to be done or the container doesn't exist anymore and do nothing because a destroy event will be catched by manager.
+
+
+
+
