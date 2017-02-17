@@ -1,4 +1,4 @@
-# A automated logging manager for docker environment
+# A automated logging manager for Cloudunit
 
 datamgmt will manage file logging for docker container and send it all to a logstash grocker/parser.
 
