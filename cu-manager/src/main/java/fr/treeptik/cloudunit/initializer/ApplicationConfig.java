@@ -56,6 +56,7 @@ public class ApplicationConfig
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/logs/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/messages/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/application/*");
+        security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/applications/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/server/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/snapshot/*");
         security.addMappingForUrlPatterns(securityDispatcherTypes, false, "/module/*");

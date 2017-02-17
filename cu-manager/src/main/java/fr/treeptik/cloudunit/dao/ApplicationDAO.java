@@ -27,26 +27,17 @@ import java.util.List;
 public interface ApplicationDAO extends JpaRepository<Application, Integer> {
 
 	@Query("Select distinct a from Application a " + "left join fetch a.server s "
-			+ "left join fetch a.modules m left join fetch a.deployments " + "left join fetch a.aliases "
-			+ "left join fetch a.portsToOpen "
-			+ "left join fetch m.ports "
+			+ "left join fetch a.modules m "//left join fetch a.deployments "
+			//+ "left join fetch m.ports "
 			+ "where a.user.id=:userId and a.name=:name and a.cuInstanceName=:cuInstanceName")
 	Application findByNameAndUser(@Param("userId") Integer userId, @Param("name") String name,
 			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
 
 	@Query("Select distinct a from Application a " + "join fetch a.server " + "left join fetch a.modules "
-			+ "left join fetch a.deployments " + "left join fetch a.aliases " + "left join fetch a.portsToOpen "
+//			+ "left join fetch a.deployments "
 			+ "where a.user.id=:userId and a.cuInstanceName=:cuInstanceName")
 	public List<Application> findAllByUser(@Param("userId") Integer userId,
 			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
-
-	@Query("select al from Application a left join a.aliases al where a.name=:name "
-			+ "and a.cuInstanceName=:cuInstanceName")
-	public List<String> findAllAliases(@Param("name") String applicationName,
-			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
-
-	@Query("select al from Application a left join a.aliases al")
-	public List<String> findAliasesForAllApps() throws DataAccessException;
 
 	@Query("Select a from Application a where a.name=:name and a.user.login=:login  "
 			+ "and a.cuInstanceName=:cuInstanceName")

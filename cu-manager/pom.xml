@@ -141,6 +141,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.springframework.plugin/spring-plugin-core -->
+		<dependency>
+			<groupId>org.springframework.plugin</groupId>
+			<artifactId>spring-plugin-core</artifactId>
+			<version>1.2.0.RELEASE</version>
+		</dependency>
 
 		<!-- Spring Security -->
 
@@ -608,25 +614,25 @@
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>2.5</version>
 			</plugin>
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-dependency-plugin</artifactId>
-			    <version>2.10</version>
-			    <executions>
-			        <execution>
-			            <id>copy-cli</id>
-			            <phase>prepare-package</phase>
-			            <goals>
-			                <goal>get</goal>
-			            </goals>
-			            <configuration>
-			                <artifact>fr.treeptik:cu-cli:${project.version}</artifact>
-			                <transitive>false</transitive>
-			                <destination>${project.build.directory}/${project.build.finalName}/resources/CloudUnitCLI.jar</destination>
-			            </configuration>
-			        </execution>
-			    </executions>
-			</plugin>
+			<!--<plugin>-->
+			    <!--<groupId>org.apache.maven.plugins</groupId>-->
+			    <!--<artifactId>maven-dependency-plugin</artifactId>-->
+			    <!--<version>2.10</version>-->
+			    <!--<executions>-->
+			        <!--<execution>-->
+			            <!--<id>copy-cli</id>-->
+			            <!--<phase>prepare-package</phase>-->
+			            <!--<goals>-->
+			                <!--<goal>get</goal>-->
+			            <!--</goals>-->
+			            <!--<configuration>-->
+			                <!--<artifact>fr.treeptik:cu-cli:${project.version}</artifact>-->
+			                <!--<transitive>false</transitive>-->
+			                <!--<destination>${project.build.directory}/${project.build.finalName}/resources/CloudUnitCLI.jar</destination>-->
+			            <!--</configuration>-->
+			        <!--</execution>-->
+			    <!--</executions>-->
+			<!--</plugin>-->
 		</plugins>
 		<pluginManagement>
 			<plugins>
