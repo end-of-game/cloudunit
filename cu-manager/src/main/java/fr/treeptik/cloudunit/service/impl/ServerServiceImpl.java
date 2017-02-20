@@ -15,14 +15,15 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +46,6 @@ import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
-import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
@@ -59,6 +59,7 @@ import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.ServerService;
 import fr.treeptik.cloudunit.service.VolumeAssociationService;
 import fr.treeptik.cloudunit.service.VolumeService;
+import fr.treeptik.cloudunit.utils.NamingUtils;
 
 @Service
 public class ServerServiceImpl implements ServerService {
@@ -136,12 +137,12 @@ public class ServerServiceImpl implements ServerService {
 
 		// General information
 		Application application = server.getApplication();
-		User user = server.getApplication().getUser();
+        User user = application.getUser();
 
 		// Build a custom container
-		String containerName = NamingUtils.getContainerName(server.getApplication().getName()
+		String containerName = NamingUtils.getContainerName(application.getName()
                                                             , null
-															,server.getApplication().getUser().getLogin());
+															,application.getUser().getLogin());
 
 		String imagePath = server.getImage().getPath();
 		String imageSubType = server.getImage().getImageSubType().toString();
@@ -153,7 +154,7 @@ public class ServerServiceImpl implements ServerService {
 			server.setManagerLocation(String.format("http://%s/%s",
                     containerName + domain, dockerService.getEnv(server.getName(), "CU_SERVER_MANAGER_PATH")));
 			server.setStatus(Status.START);
-			server = this.update(server);
+			server = saveInDB(server);
 		} catch (PersistenceException e) {
 			logger.error("ServerService Error : Create Server " + e);
 			throw new ServiceException(e.getLocalizedMessage(), e);
@@ -196,23 +197,6 @@ public class ServerServiceImpl implements ServerService {
 		} else {
 			return false;
 		}
-	}
-
-	@Transactional
-	public Server update(Server server) throws ServiceException {
-
-		logger.info("ServerService : Starting updating Server " + server.getName());
-		try {
-			serverDAO.save(server);
-		} catch (PersistenceException | FatalDockerJSONException e) {
-			logger.error("ServerService Error : update Server" + e);
-			e.printStackTrace();
-			throw new ServiceException("Error database : " + e.getLocalizedMessage(), e);
-		}
-
-		logger.info("ServerService : Server " + server.getName() + " successfully updated.");
-
-		return server;
 	}
 
 	@Override
@@ -286,7 +270,7 @@ public class ServerServiceImpl implements ServerService {
 			// Call the hook for pre start
 			server.setStartDate(new Date());
 			applicationDAO.saveAndFlush(application);
-			server = this.update(server);
+			server = this.saveInDB(server);
 			server = dockerService.startServer(server.getName(), server);
 
 			applicationEventPublisher.publishEvent(new ServerStartEvent(server));
@@ -352,69 +336,31 @@ public class ServerServiceImpl implements ServerService {
 
 	@CacheEvict(value = "env", allEntries = true)
 	@Transactional
-	public Server update(Server server, String jvmMemory, String options, boolean restorePreviousEnv)
-			throws ServiceException {
+	public Server update(Server server) throws ServiceException {
+        List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .collect(Collectors.toList());
+        
+        String currentJvmOptions = dockerService.getEnv(server.getName(), "JAVA_OPTS");
+        String jvmSystemOptions = currentJvmOptions.substring(currentJvmOptions.lastIndexOf("-Xms"));
+        jvmSystemOptions = jvmSystemOptions.replaceAll(
+                "(-Xm[sx])\\d+",
+                String.format("$1%s", Matcher.quoteReplacement(server.getJvmMemory().toString())));
+        
+        envs.add(String.format("JAVA_OPTS=%s %s", server.getJvmOptions(), jvmSystemOptions));
+        
+		dockerService.stopContainer(server.getName());
+		dockerService.removeContainer(server.getName(), false);
+		List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
+				.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
+						+ v.getVolumeAssociations().stream().findFirst().get().getMode())
+				.collect(Collectors.toList());
+		dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),
+				server.getApplication().getUser(), envs, false, volumes);
+		server = startServer(server);
+		server = saveInDB(server);
 
-		String previousJvmMemory = server.getJvmMemory().toString();
-		String previousJvmOptions = server.getJvmOptions();
-
-		options = options == null ? "" : options;
-		final String jvmOptions = options.replaceAll("//", "\\\\/\\\\/");
-
-		try {
-			List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
-					.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
-			String currentJvmMemory = dockerService.getEnv(server.getName(), "JAVA_OPTS");
-			currentJvmMemory = currentJvmMemory.replaceAll(previousJvmMemory, jvmMemory);
-			currentJvmMemory = currentJvmMemory.substring(currentJvmMemory.lastIndexOf("-Xms"));
-			currentJvmMemory = jvmOptions + " " + currentJvmMemory;
-			envs.add("JAVA_OPTS=" + currentJvmMemory);
-
-			dockerService.stopContainer(server.getName());
-			dockerService.removeContainer(server.getName(), false);
-			List<String> volumes = volumeService.loadAllByContainerName(server.getName()).stream()
-					.map(v -> v.getName() + ":" + v.getVolumeAssociations().stream().findFirst().get().getPath() + ":"
-							+ v.getVolumeAssociations().stream().findFirst().get().getMode())
-					.collect(Collectors.toList());
-			dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),
-					server.getApplication().getUser(), envs, false, volumes);
-			server = startServer(server);
-
-			server.setJvmMemory(Long.valueOf(jvmMemory));
-			server.setJvmOptions(jvmOptions);
-			server = saveInDB(server);
-
-		} catch (Exception e) {
-			if (!restorePreviousEnv) {
-				StringBuilder msgError = new StringBuilder();
-				msgError.append("jvmMemory:").append(jvmMemory).append(",");
-				msgError.append("jvmOptions:").append(jvmOptions).append(",");
-				throw new ServiceException(msgError.toString(), e);
-			} else {
-				// Rollback to previous configuration
-				logger.warn("Restore the previous environment for jvm configuration. Maybe a syntax error");
-				update(server, previousJvmMemory, previousJvmOptions, false);
-			}
-		}
 		return server;
-	}
-
-	/**
-	 * Change the version of the jvm
-	 *
-	 * @param application
-	 * @param javaVersion
-	 * @throws CheckException
-	 * @throws ServiceException
-	 */
-	@Override
-	public void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException {
-		logger.info("Starting changing to java version " + javaVersion + ", the application " + application.getName());
-		try {
-			// todo
-		} catch (Exception e) {
-			throw new ServiceException(application + ", javaVersion:" + javaVersion, e);
-		}
 	}
 
 	@Override
@@ -492,7 +438,7 @@ public class ServerServiceImpl implements ServerService {
 						+ ":" + v.getVolumeAssociations().stream().findFirst().get().getMode())
 				.collect(Collectors.toList());
 		List<String> envs = environmentService.loadEnvironnmentsByContainer(server.getName()).stream()
-				.map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
+				.map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.toList());
 		dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),
 				server.getApplication().getUser(), envs, false, volumes);
 		server = startServer(server);

@@ -198,7 +198,7 @@ public class ApplicationCommands implements CommandMarker {
     
     private String variablesExportScript(List<EnvironmentVariable> variables) {
         return variables.stream()
-            .map(v -> String.format("export %s=\"%s\"", v.getKeyEnv(), v.getValueEnv()))
+            .map(v -> String.format("export %s=\"%s\"", v.getKey(), v.getValue()))
             .collect(Collectors.joining("\n"));
     }
 

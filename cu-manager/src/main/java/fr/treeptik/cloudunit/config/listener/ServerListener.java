@@ -68,7 +68,7 @@ public class ServerListener {
 				server.setStatus(Status.FAIL);
 			}
 			logger.info("Server status : " + server.getStatus());
-			serverService.update(server);
+			serverService.saveInDB(server);
 		} catch (Exception e) {
 			logger.error(server.toString(), e);
 			e.printStackTrace();
@@ -91,7 +91,7 @@ public class ServerListener {
 				server.setStatus(Status.FAIL);
 			}
 			logger.info("Server status : " + server.getStatus());
-			serverService.update(server);
+			serverService.saveInDB(server);
 		} catch (Exception e) {
 			logger.error(server.getName(), e);
 			e.printStackTrace();

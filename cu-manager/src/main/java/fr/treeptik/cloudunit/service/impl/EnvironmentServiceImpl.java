@@ -212,16 +212,12 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     @Transactional
     @CacheEvict(value = "env", allEntries = true)
     public EnvironmentVariable update(User user, EnvironmentVariable environmentVariable, String applicationName,
-            String containerName, Integer id) throws ServiceException {
+            String containerName) throws ServiceException {
         checkEnvironmentVariableConsistence(environmentVariable, containerName);
         Application application = null;
         try {
-            loadEnvironnment(id);
             application = applicationService.findByNameAndUser(user, applicationName);
             stopAndRemoveContainer(containerName, application);
-            environmentVariable.setId(id);
-            environmentVariable.setContainerName(containerName);
-            environmentVariable.setApplication(application);
             environmentVariable = environmentDAO.save(environmentVariable);
             recreateAndMountVolumes(containerName, application);
         } catch (CheckException e) {
@@ -245,13 +241,13 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     }
 
     private void checkEnvironmentVariableConsistence(EnvironmentVariable environmentVariable, String containerName) {
-        if (environmentVariable.getKeyEnv() == null || environmentVariable.getKeyEnv().isEmpty())
+        if (environmentVariable.getKey() == null || environmentVariable.getKey().isEmpty())
             throw new CheckException("This key is not consistent !");
-        if (!environmentVariable.getKeyEnv().matches("^[-a-zA-Z0-9_]*$"))
-            throw new CheckException("This key is not consistent : " + environmentVariable.getKeyEnv());
+        if (!environmentVariable.getKey().matches("^[-a-zA-Z0-9_]*$"))
+            throw new CheckException("This key is not consistent : " + environmentVariable.getKey());
         List<EnvironmentVariable> environmentList = environmentDAO.findByContainer(containerName);
         Optional<EnvironmentVariable> value = environmentList.stream()
-                .filter(v -> v.getKeyEnv().equals(environmentVariable.getKeyEnv())).findFirst();
+                .filter(v -> v.getKey().equals(environmentVariable.getKey())).findFirst();
         if (value.isPresent())
             throw new CheckException("This key already exists");
     }
@@ -267,7 +263,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                         + ":" + v.getVolumeAssociations().stream().findFirst().get().getMode())
                 .collect(Collectors.toList());
         List<String> envs = loadEnvironnmentsByContainer(containerName).stream()
-                .map(e -> e.getKeyEnv() + "=" + e.getValueEnv()).collect(Collectors.toList());
+                .map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.toList());
         Server server = serverService.findByName(containerName);
         if (server != null) {
             dockerService.createServer(server.getName(), server, server.getImage().getPath(), server.getImage().getImageSubType().toString(),

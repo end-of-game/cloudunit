@@ -6,13 +6,13 @@ public enum EnvironmentVariableTableColumn implements TableColumn<EnvironmentVar
     KEY(30) {
         @Override
         public String getValue(EnvironmentVariable item) {
-            return item.getKeyEnv();
+            return item.getKey();
         }
     },
     VALUE(50) {
         @Override
         public String getValue(EnvironmentVariable item) {
-            return item.getValueEnv();
+            return item.getValue();
         }
     };
 

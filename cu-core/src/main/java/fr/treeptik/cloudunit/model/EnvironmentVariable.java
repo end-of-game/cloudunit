@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -20,9 +22,9 @@ public class EnvironmentVariable implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
-	private String keyEnv;
+	private String key;
 
-	private String valueEnv;
+	private String value;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -34,7 +36,12 @@ public class EnvironmentVariable implements Serializable {
 	public EnvironmentVariable() {
 	}
 
-	public Integer getId() {
+	public EnvironmentVariable(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public Integer getId() {
 		return id;
 	}
 
@@ -42,20 +49,20 @@ public class EnvironmentVariable implements Serializable {
 		this.id = id;
 	}
 
-	public String getKeyEnv() {
-		return keyEnv;
+	public String getKey() {
+		return key;
 	}
 
-	public void setKeyEnv(String keyEnv) {
-		this.keyEnv = keyEnv;
+	public void setKey(String key) {
+		this.key = key;
 	}
 
-	public String getValueEnv() {
-		return valueEnv;
+	public String getValue() {
+		return value;
 	}
 
-	public void setValueEnv(String valueEnv) {
-		this.valueEnv = valueEnv;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public Application getApplication() {
@@ -76,7 +83,7 @@ public class EnvironmentVariable implements Serializable {
 
 	@Override
 	public String toString() {
-		return "EnvironmentVariable [id=" + id + ", keyEnv=" + keyEnv + ", valueEnv=" + valueEnv + "]";
+		return ToStringBuilder.reflectionToString(this);
 	}
 
 }

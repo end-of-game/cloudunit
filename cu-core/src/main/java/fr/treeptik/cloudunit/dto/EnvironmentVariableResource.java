@@ -3,14 +3,19 @@ package fr.treeptik.cloudunit.dto;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.hateoas.ResourceSupport;
+
+import fr.treeptik.cloudunit.model.EnvironmentVariable;
 
 public class EnvironmentVariableResource extends ResourceSupport {
     private static EnvironmentVariableResource fromEnvLine(String line) {
@@ -34,14 +39,26 @@ public class EnvironmentVariableResource extends ResourceSupport {
         return resources;
     }
     
+    @NotNull
+    @javax.validation.constraints.Pattern(regexp = "^[0-9A-Z_]*$")
     private String key;
     
+    @NotNull
     private String value;
     
     public EnvironmentVariableResource(String key, String value) {
-        super();
         this.key = key;
         this.value = value;
+    }
+
+    public EnvironmentVariableResource(EnvironmentVariable variable) {
+        this.key = variable.getKey();
+        this.value = variable.getValue();
+    }
+    
+    public EnvironmentVariableResource(Map.Entry<String, String> variable) {
+        this.key = variable.getKey();
+        this.value = variable.getValue();
     }
 
     public String getKey() {

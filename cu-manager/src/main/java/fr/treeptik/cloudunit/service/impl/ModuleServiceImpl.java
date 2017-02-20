@@ -143,17 +143,17 @@ public class ModuleServiceImpl implements ModuleService {
         List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
 
-            environmentVariable.setKeyEnv(
+            environmentVariable.setKey(
                     String.format("CU_%s_%s_%s", image.getImageSubType(),
                             kv.getKey().toString(), image.getPrefixEnv().toUpperCase()));
-            environmentVariable.setValueEnv(kv.getValue().getValue());
+            environmentVariable.setValue(kv.getValue().getValue());
             return environmentVariable;
         }).collect(Collectors.toList());
 
         EnvironmentVariable environmentVariable = new EnvironmentVariable();
-        environmentVariable.setKeyEnv(String.format("CU_%s_DNS_%s",
+        environmentVariable.setKey(String.format("CU_%s_DNS_%s",
                 image.getImageSubType(), image.getPrefixEnv().toUpperCase()));
-        environmentVariable.setValueEnv(module.getInternalDNSName());
+        environmentVariable.setValue(module.getInternalDNSName());
         environmentVariables.add(environmentVariable);
         return environmentVariables;
     }
@@ -162,8 +162,8 @@ public class ModuleServiceImpl implements ModuleService {
                                                              Map<ModuleEnvironmentRole, ModuleEnvironmentVariable> moduleEnvs) {
         List<EnvironmentVariable> environmentVariables = moduleEnvs.entrySet().stream().map(kv -> {
             EnvironmentVariable environmentVariable = new EnvironmentVariable();
-            environmentVariable.setKeyEnv(kv.getValue().getName());
-            environmentVariable.setValueEnv(kv.getValue().getValue());
+            environmentVariable.setKey(kv.getValue().getName());
+            environmentVariable.setValue(kv.getValue().getValue());
             return environmentVariable;
         }).collect(Collectors.toList());
         return environmentVariables;
@@ -188,7 +188,7 @@ public class ModuleServiceImpl implements ModuleService {
         portDAO.save(port);
 
         List<String> envs = environmentService.loadEnvironnmentsByContainer(module.getName()).stream()
-                .map(e -> e.getKeyEnv() + "=" + e.getValueEnv())
+                .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.toList());
         dockerService.removeContainer(module.getName(), false);
         dockerService.createModule(module.getName(), module, module.getImage().getPath(), user, envs, false,
@@ -237,7 +237,7 @@ public class ModuleServiceImpl implements ModuleService {
                 List<EnvironmentVariable> envs = environmentService
                         .loadEnvironnmentsByContainer(application.getServer().getName());
                         environmentService.delete(user, envs.stream()
-                        .filter(e -> e.getKeyEnv().toLowerCase()
+                        .filter(e -> e.getKey().toLowerCase()
                                 .contains(module.getImage().getPrefixEnv().toLowerCase()))
                         .collect(Collectors.toList()), application.getName(),
                         application.getServer().getName());

@@ -94,6 +94,8 @@ public class ModuleController implements Serializable {
                     .withSelfRel());
             resource.add(linkTo(methodOn(ApplicationController.class).detail(id))
                     .withRel("application"));
+            resource.add(linkTo(methodOn(ContainerController.class).getContainer(id, module.getContainerID()))
+                    .withRel("container"));
         } catch (CheckException | ServiceException e) {
             // ignore
         }

@@ -11,7 +11,7 @@ import fr.treeptik.cloudunit.model.User;
 public interface EnvironmentService {
 
     EnvironmentVariable update(User user, EnvironmentVariable environmentVariable, String applicationName,
-            String containerName, Integer id) throws ServiceException;
+            String containerName) throws ServiceException;
 
     EnvironmentVariable loadEnvironnment(int id) throws ServiceException, CheckException;
 

@@ -350,7 +350,7 @@ public class ApplicationUtils {
         List<EnvironmentVariable> environmentVariables = JsonConverter.getEnvironmentVariables(response);
         
         EnvironmentVariable variable = environmentVariables.stream()
-                .filter(var -> var.getKeyEnv().equals(key))
+                .filter(var -> var.getKey().equals(key))
                 .findAny().orElseThrow(() -> new CloudUnitCliException(MessageFormat.format(NO_SUCH_ENV_VAR, key)));
         return variable;
     }

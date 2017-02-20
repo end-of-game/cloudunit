@@ -17,14 +17,11 @@ package fr.treeptik.cloudunit.service;
 
 import java.util.List;
 
-import com.spotify.docker.client.exceptions.DockerException;
-
 import fr.treeptik.cloudunit.dto.VolumeAssociationDTO;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Application;
 import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.User;
 
 public interface ServerService {
 
@@ -33,8 +30,6 @@ public interface ServerService {
 	Server findById(Integer id) throws ServiceException;
 
 	Server remove(String serverName) throws ServiceException;
-
-	Server update(Server server) throws ServiceException;
 
 	Server startServer(Server server) throws ServiceException;
 
@@ -52,12 +47,9 @@ public interface ServerService {
 
 	boolean checkStatusPENDING(Server server) throws ServiceException;
 
-	Server update(Server server, String memory, String options, boolean restorePreviousEnv)
-			throws ServiceException;
+	Server update(Server server) throws ServiceException;
 
 	Server findByContainerID(String id) throws ServiceException;
-
-	void changeJavaVersion(Application application, String javaVersion) throws CheckException, ServiceException;
 
 	Server create(Server server) throws ServiceException, CheckException;
 

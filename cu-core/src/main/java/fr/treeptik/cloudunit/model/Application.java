@@ -103,7 +103,6 @@ public class Application implements Serializable {
         this.cuInstanceName = builder.cuInstanceName;
         this.status = builder.status;
         this.user = builder.user;
-        this.environmentVariables = builder.environmentVariables;
         this.modules = new ArrayList<>();
         this.deployments = new ArrayList<>();
         
@@ -298,7 +297,6 @@ public class Application implements Serializable {
         private String cuInstanceName;
         private Status status;
         private User user;
-        private List<EnvironmentVariable> environmentVariables = new ArrayList<>();
         private Image image;
 
         private Builder(String displayName, Image image) {
@@ -325,11 +323,6 @@ public class Application implements Serializable {
 
         public Builder withUser(User user) {
             this.user = user;
-            return this;
-        }
-
-        public Builder addEnvironmentVariable(EnvironmentVariable environmentVariable) {
-            this.environmentVariables.add(environmentVariable);
             return this;
         }
 

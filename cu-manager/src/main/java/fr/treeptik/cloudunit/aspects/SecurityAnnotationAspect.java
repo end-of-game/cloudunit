@@ -15,13 +15,8 @@
 
 package fr.treeptik.cloudunit.aspects;
 
-import fr.treeptik.cloudunit.dto.JsonInput;
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.UserService;
+import javax.inject.Inject;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -31,10 +26,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import fr.treeptik.cloudunit.dao.ApplicationDAO;
+import fr.treeptik.cloudunit.dto.JsonInput;
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.service.UserService;
 
 /**
- * Annotation needed to verify that an user has a real access to a application for its lifecyle.
+ * Annotation needed to verify that an user has a real access to a application for its lifecycle.
  * So we could stop an intrusion if user1 wants to stop an application of user2 for example.
  */
 @Component
@@ -47,10 +48,10 @@ public class SecurityAnnotationAspect {
     private UserService userService;
 
     @Inject
-    private ApplicationService applicationService;
+    private ApplicationDAO applicationDAO;
 
-    @Before("@annotation(fr.treeptik.cloudunit.aspects.CloudUnitSecurable) && args(applicationName)")
-    public void verifyRelationBetweenUserAndApplication(JoinPoint joinPoint, String applicationName) {
+    @Before("@annotation(fr.treeptik.cloudunit.aspects.CloudUnitSecurable) && args(id)")
+    public void verifyRelationBetweenUserAndApplication(JoinPoint joinPoint, Integer id) {
 
         UserDetails principal = null;
         JsonInput jsonInput = null;
@@ -58,17 +59,9 @@ public class SecurityAnnotationAspect {
             principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             User user = userService.findByLogin(principal.getUsername());
 
-            if (joinPoint.getArgs() == null) {
-                logger.error("Error on annotation aspect : " + joinPoint.getStaticPart().getSignature());
-            } else {
-                if (joinPoint.getArgs()[0] instanceof JsonInput) {
-                    jsonInput = (JsonInput) joinPoint.getArgs()[0];
-                    applicationName = jsonInput.getApplicationName();
-                }
-                Application application = applicationService.findByNameAndUser(user, applicationName);
-                if (application == null) {
-                    throw new IllegalArgumentException("This application does not exist on this account : " + applicationName + "," + user);
-                }
+            Application application = applicationDAO.findOne(id);
+            if (application != null && !application.getUser().equals(user)) {
+                throw new IllegalArgumentException(String.format("This application does not exist on this account : %s, %s", application.getName(), user));
             }
 
         } catch (ServiceException | CheckException e) {
