@@ -27,7 +27,7 @@ docker-compose -f docker-compose.datamgmt.yml up -d
 
 Once the stack up and running let's execute a simple tomcat app with docker labels :
 ```
-docker run -d --name=test-app -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
+docker run -d --name=test-app -v /usr/local/tomcat/logs -l application-type=tomcat -l logging=enabled -l logging-type=file -l application-logs-path="/usr/local/tomcat/logs" tomcat:9-alpine
 
 or with log driver to catch stdout container logs too
 
