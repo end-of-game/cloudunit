@@ -11,6 +11,8 @@ Below logging Application are groked/parsed by logstash out of the box:
 
 This agent will listen on docker event and if specific labels have been set on the container, it will grep logs file inside the container with a filebeat agent and send all logs to a logstash. Once the applicative container is deleted, logging container is deleted as well as the data stored in the elasticsearch backend.
 
+![alt tag](https://github.com/Treeptik/cloudunit/raw/205-logging-capabilities/documentation/img/datamgmt-logging-concept.jpg)
+
 # Quickstart
 
 In order to use filebeat module we have to build the image :
