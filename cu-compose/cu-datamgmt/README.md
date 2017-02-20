@@ -20,7 +20,7 @@ docker build -t cloudunit/datamgmt-filebeat datamgmt/tools/filebeat/
 
 In order handle logs, we need to start somme tools. All the stack could be loaded with a compose file :
 ```
-docker network create datagmgt
+docker network create datamgmt
 docker network create skynet
 docker-compose -f docker-compose.datamgmt.yml up -d
 ```
