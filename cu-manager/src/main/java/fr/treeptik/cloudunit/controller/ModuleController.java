@@ -32,6 +32,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -94,8 +95,13 @@ public class ModuleController implements Serializable {
                     .withSelfRel());
             resource.add(linkTo(methodOn(ApplicationController.class).detail(id))
                     .withRel("application"));
+
             resource.add(linkTo(methodOn(ContainerController.class).getContainer(id, module.getContainerID()))
                     .withRel("container"));
+
+            resource.add(linkTo(methodOn(ModuleController.class).getModules(id))
+                .withSelfRel());
+
         } catch (CheckException | ServiceException e) {
             // ignore
         }
@@ -149,6 +155,7 @@ public class ModuleController implements Serializable {
     }
     
     @GetMapping
+    @Transactional
     public ResponseEntity<?> getModules(@PathVariable Integer id) {
         Application application = applicationDAO.findOne(id);
 
@@ -160,6 +167,8 @@ public class ModuleController implements Serializable {
         Resources<ModuleResource> resources = new Resources<>(modules.stream()
                 .map(this::toResource)
                 .collect(Collectors.toList()));
+        resources.add(linkTo(methodOn(ModuleController.class).getModules(id))
+                .withSelfRel());
         return ResponseEntity.ok(resources);
     }
 

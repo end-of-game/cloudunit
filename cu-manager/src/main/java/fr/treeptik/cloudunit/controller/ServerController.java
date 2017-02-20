@@ -99,7 +99,7 @@ public class ServerController implements Serializable {
 	}
 	
 	@GetMapping
-	public ResponseEntity<?> getServer(Integer id) {
+	public ResponseEntity<?> getServer(@PathVariable  Integer id) {
 	    Application application = applicationDAO.findOne(id);
 	    
 	    if (application == null || application.getServer() == null) {

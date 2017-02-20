@@ -95,11 +95,12 @@ public class ApplicationController {
 						.withRel("restart"));
 			}
 
-				resource.add(linkTo(methodOn(ApplicationController.class).deleteApplication(id))
+			resource.add(linkTo(methodOn(ApplicationController.class).deleteApplication(id))
 						.withRel("delete"));
-//			resource.add(linkTo(methodOn(ModuleController.class).getModules(id))
-//					.withRel("modules"));
-
+			resource.add(linkTo(methodOn(ModuleController.class).getModules(id))
+					.withRel("modules"));
+			resource.add(linkTo(methodOn(ServerController.class).getServer(id))
+					.withRel("server"));
         } catch (CheckException | InterruptedException | ServiceException e) {
             // ignore
         }

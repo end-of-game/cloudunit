@@ -84,6 +84,7 @@ function assignObject(target) {
             }
         }
     }
+    console.log('assignObject', target);
     return target;
 };
 
@@ -153,18 +154,18 @@ function isValid ( applicationName, serverName ) {
     // var validity = $resource ( 'application/verify/' + applicationName + '/' + serverName );
     // return validity.get ().$promise;
     return traversonService
-
+        .withRequestOptions({
+            qs: { name: applicationName }
+        })
         .withTemplateParameters({name: applicationName})
         .newRequest()
         .getResource()
         .result
         .then(function(res) {
-            console.log('isValid', res)
             if(res._embedded) {
-                return res._embedded.applicationResourceList;
-            } else {
-                return [];
+                return res._embedded.applicationResourceList.length;
             }
+            return false;
         })
 }
 
@@ -180,11 +181,42 @@ function remove ( applicationName ) {
 // Récupération d'une application selon son nom
 function findByName ( applicationName ) {
     var self = this;
-    return $http.get ( 'application/' + applicationName ).then ( function ( response ) {
-        return assignObject(self.state, response.data);
-    } ).catch ( function () {
+    var res = null;
+    var q = $q.defer();
+
+    var request = traversonService
+    .newRequest()
+    .follow('applicationResourceList[name:' + applicationName + ']', 'self')
+    .getResource();
+
+    request
+    .result
+    .then(function(app, plop) {
+        res = app;
+        request.continue().then(function(request) {
+            request
+            .newRequest()
+            .follow('modules')
+            .getResource()
+            .result
+            .then(function(modules) {
+                res.modules = modules;
+                return request
+                .newRequest()
+                .follow('server')
+                .getResource()
+                .result
+            })
+            .then(function(server) {
+                    res.server = server;
+                    console.log('esfsf', res);
+                     q.resolve(assignObject(self.state, res));
+                });
+        });
+    }).catch ( function () {
         stopPolling.call ( self );
-    } )
+    });
+    return q.promise;
 }
 
 function init ( applicationName ) {
@@ -193,6 +225,7 @@ function init ( applicationName ) {
         self.timer = pollApp.call ( self, applicationName );
     }
     return findByName.call ( self, applicationName ).then ( function ( response ) {
+        console.log(response);
         self.state = response;
     } );
 }
