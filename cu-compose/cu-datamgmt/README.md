@@ -39,9 +39,9 @@ Let's check that logs are sent, connect to kibana web interface (http://localhos
 # How does it work (Advanced)
 
 datamgmt-manager listen some specifics events on docker socket. These event are :
-container create with label logging=enabled and logging-type=file,
-container stop, die, kill with label logging=enabled and logging-type=file,
-container destroy with label logging=enabled and logging-type=file.
+* container create with label logging=enabled and logging-type=file,
+* container stop, die, kill with label logging=enabled and logging-type=file,
+* container destroy with label logging=enabled and logging-type=file.
 
 ### Workflow applicative container creation
 
