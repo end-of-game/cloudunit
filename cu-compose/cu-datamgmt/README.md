@@ -43,7 +43,7 @@ datamgmt-manager listen some specifics events on docker socket. These event are 
 * container stop, die, kill with label logging=enabled and logging-type=file,
 * container destroy with label logging=enabled and logging-type=file.
 
-### Workflow applicative container creation
+### Applicative container creation
 
 1) If a container is created with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
 
@@ -51,13 +51,13 @@ datamgmt-manager listen some specifics events on docker socket. These event are 
 
 3) filebeat send logs content into logstash within filebeat protocol.
 
-### Workflow applicative container destroy
+### Applicative container destroy
 
 1) If a container is destroyed with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
 
 2) manager will delete filebeat container and all logs data stored in elasticsearch backend
 
-### Workflow applicative container stop, die, kill
+### Applicative container stop, die, kill
 
 1) If a container stopped, died or is killed with label "application-type=xxx", "logging=enabled" and "logging-type=file" the event is catched
 
