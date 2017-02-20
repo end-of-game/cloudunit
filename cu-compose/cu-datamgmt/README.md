@@ -4,8 +4,8 @@ datamgmt will manage file logging for docker container and send it all to a logs
 
 Below logging Application are groked/parsed by logstash out of the box:
 * Tomcat(s)
-* JBoss / WildFly 10 in progress
-* FatJar for SpringBoot, Vertx, PlayFramework...
+* JBoss / WildFly 10
+* FatJar for SpringBoot
 
 # How does it work
 
