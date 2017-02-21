@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableList;
 import com.spotify.docker.client.messages.Image;
+import fr.treeptik.cloudunit.config.DockerConfiguration;
 import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,9 @@ public class DockerServiceImpl implements DockerService {
     @Inject
     private DockerCloudUnitClient dockerCloudUnitClient;
 
+    @Inject
+    private DockerConfiguration dockerConfiguration;
+
     @PostConstruct
     public void init() {
         domain = NamingUtils.getCloudUnitDomain(domainSuffix);
@@ -78,7 +82,10 @@ public class DockerServiceImpl implements DockerService {
         if (volumes == null) { volumes = new ArrayList<>(); }
         if (createMainVolume) { dockerCloudUnitClient.createVolume(containerName, "runtime"); }
         volumes.add(containerName + ":/opt/cloudunit:rw");
-        List<String> volumesFrom = Arrays.asList("cu-monitoring-agents");
+        List<String> volumesFrom = null;
+        if (dockerConfiguration.isAgentPresent()) {
+            volumesFrom = Arrays.asList("cu-monitoring-agents");
+        }
         logger.info("Volumes to add : " + volumes.toString());
         List<String> args = null;
         if (server.isApplicationServer()) {
@@ -190,6 +197,21 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
+    public Boolean exists(String containerName) throws FatalDockerJSONException {
+        try {
+            if (containerName == null || containerName.isEmpty()) return false;
+            if (!containerName.startsWith("/")) containerName = "/" + containerName;
+            final String realName = containerName;
+            List<List<String>> containers = listContainers();
+            return containers.stream().anyMatch(c -> c.contains(realName));
+        } catch (Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append("containerName=").append(containerName);
+            throw new FatalDockerJSONException(msgError.toString(), e);
+        }
+    }
+
+    @Override
     public Boolean isStoppedGracefully(String containerName) throws FatalDockerJSONException {
         try {
             final ContainerInfo info = dockerClient.inspectContainer(containerName);
@@ -206,11 +228,11 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
-    public List<String> listContainers() throws FatalDockerJSONException {
-        List<String> containersId = null;
+    public List<List<String>> listContainers() throws FatalDockerJSONException {
+        List<List<String>> containersId = null;
         try {
             List<Container> containers = dockerClient.listContainers(DockerClient.ListContainersParam.allContainers());
-            containersId = containers.stream().map(c -> c.id()).collect(Collectors.toList());
+            containersId = containers.stream().map(c -> c.names()).collect(Collectors.toList());
         } catch (DockerException | InterruptedException e) {
             logger.error(e.getMessage());
         }
@@ -318,7 +340,10 @@ public class DockerServiceImpl implements DockerService {
         }
         volumes.add(containerName + ":/opt/cloudunit:rw");
         logger.info("Volumes to add : " + volumes.toString());
-        List<String> volumesFrom = Arrays.asList("cu-monitoring-agents");
+        List<String> volumesFrom = null;
+        if (dockerConfiguration.isAgentPresent()) {
+            volumesFrom = Arrays.asList("cu-monitoring-agents");
+        }
         // map ports
         Map<String, String> ports = module.getPorts().stream()
                 .filter(p -> p.getOpened())
