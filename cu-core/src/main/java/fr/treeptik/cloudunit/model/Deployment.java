@@ -32,6 +32,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Deployment implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+    private static final String LOCATION_FORMAT = "http://%s%s";
+
 	@Id
 	@GeneratedValue
 	private Integer id;
@@ -50,6 +52,8 @@ public class Deployment implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	private DeploymentType type;
+
+    private String location;
 	
 	protected Deployment() {}
 	
@@ -59,6 +63,7 @@ public class Deployment implements Serializable {
 	    this.type = DeploymentType.from(filename);
 	    this.contextPath = this.type.getContextPath(filename);
 	    this.date = new Date();
+	    this.location = String.format(LOCATION_FORMAT, application.getLocation(), this.contextPath);
 	    
 	    application.addDeployment(this);
 	}
@@ -102,5 +107,9 @@ public class Deployment implements Serializable {
 	public void setType(DeploymentType type) {
 		this.type = type;
 	}
+
+    public String getLocation() {
+        return location;
+    }
 
 }
