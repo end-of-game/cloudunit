@@ -63,7 +63,7 @@ import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.NamingUtils;
 
 @Service
-@DependsOn("dataSourceInitializer")
+@DependsOn({"dataSourceInitializer", "dockerConfiguration"})
 public class ApplicationServiceImpl implements ApplicationService {
 
 	Locale locale = Locale.ENGLISH;
