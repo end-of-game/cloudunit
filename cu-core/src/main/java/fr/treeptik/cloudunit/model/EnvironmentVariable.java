@@ -2,12 +2,7 @@ package fr.treeptik.cloudunit.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -22,6 +17,7 @@ public class EnvironmentVariable implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@Column(name = "\"key\"")
 	private String key;
 
 	private String value;

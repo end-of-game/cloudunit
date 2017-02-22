@@ -101,6 +101,10 @@ public class ApplicationController {
 					.withRel("modules"));
 			resource.add(linkTo(methodOn(ServerController.class).getServer(id))
 					.withRel("server"));
+			resource.add(linkTo(methodOn(DeploymentController.class).findAllByApplication(id))
+					.withRel("deployments"));
+			resource.add(linkTo(methodOn(ContainerController.class).getContainers(id))
+					.withRel("containers"));
         } catch (CheckException | InterruptedException | ServiceException e) {
             // ignore
         }

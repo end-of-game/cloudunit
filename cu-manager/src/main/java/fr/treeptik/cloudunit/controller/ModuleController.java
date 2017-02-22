@@ -129,6 +129,7 @@ public class ModuleController implements Serializable {
      */
     @CloudUnitSecurable
     @PostMapping
+    @Transactional
     public ResponseEntity<?> addModule(@PathVariable Integer id, @Valid @RequestBody ModuleResource request)
             throws ServiceException, CheckException {
         Application application = applicationDAO.findOne(id);
@@ -264,6 +265,7 @@ public class ModuleController implements Serializable {
      */
     @CloudUnitSecurable
     @DeleteMapping("/{moduleName}")
+    @Transactional
     public ResponseEntity<?> removeModule(@PathVariable Integer id, @PathVariable String moduleName)
             throws ServiceException, CheckException {
         
@@ -273,7 +275,7 @@ public class ModuleController implements Serializable {
             return ResponseEntity.notFound().build();
         }
         
-        Module module = application.getModule(moduleName);
+        Module  module = application.getModule(moduleName);
         
         // We must be sure there is no running action before starting new one
         User user = authentificationUtils.getAuthentificatedUser();

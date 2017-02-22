@@ -13,6 +13,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,6 +64,7 @@ public class DeploymentController {
      * Deploy a web application
      */
     @PostMapping(consumes = "multipart/form-data")
+    @Transactional
     public ResponseEntity<?> deploy(
             @PathVariable Integer id,
             @RequestPart("file") MultipartFile fileUpload)
@@ -83,6 +85,7 @@ public class DeploymentController {
     }
 
     @GetMapping
+    @Transactional
     public ResponseEntity<?> findAllByApplication(@PathVariable Integer id) {
         Application application = applicationDAO.findOne(id);
         
@@ -102,6 +105,7 @@ public class DeploymentController {
     }
     
     @GetMapping("/{deploymentId}")
+    @Transactional
     public ResponseEntity<?> findOne(@PathVariable Integer id, @PathVariable Integer deploymentId) {
         Application application = applicationDAO.findOne(id);
         

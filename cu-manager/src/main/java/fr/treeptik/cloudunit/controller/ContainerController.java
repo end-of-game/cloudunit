@@ -10,10 +10,12 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
+import fr.treeptik.cloudunit.model.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,10 +36,6 @@ import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Container;
-import fr.treeptik.cloudunit.model.EnvironmentVariable;
-import fr.treeptik.cloudunit.model.User;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.EnvironmentService;
 import fr.treeptik.cloudunit.service.VolumeService;
@@ -66,7 +64,20 @@ public class ContainerController {
     
     private ContainerResource toResource(Application application, Container container) {
         ContainerResource resource = new ContainerResource(container);
-        
+
+        try {
+            Integer applicationId = application.getId();
+            String containerId = container.getContainerID();
+            resource.add(linkTo(methodOn(ContainerController.class).getContainer(applicationId, containerId))
+                    .withSelfRel());
+
+            resource.add(linkTo(methodOn(ContainerController.class).displayEnv(applicationId, containerId))
+                    .withRel("env"));
+
+        } catch (CheckException | ServiceException e) {
+            // ignore
+        }
+
         return resource;
     }
     
@@ -79,6 +90,7 @@ public class ContainerController {
     }
     
     @GetMapping
+    @Transactional
     public ResponseEntity<?> getContainers(@PathVariable Integer id) {
         Application application = applicationDAO.findOne(id);
         
@@ -91,11 +103,15 @@ public class ContainerController {
         Resources<ContainerResource> resources = new Resources<>(containers.stream()
                 .map(c -> toResource(application, c))
                 .collect(Collectors.toList()));
-        
+
+        resources.add(linkTo(methodOn(ContainerController.class).getContainers(id))
+                .withSelfRel());
+
         return ResponseEntity.ok(resources);
     }
     
     @GetMapping("/{containerId}")
+    @Transactional
     public ResponseEntity<?> getContainer(@PathVariable Integer id, @PathVariable String containerId) {
         Application application = applicationDAO.findOne(id);
         
@@ -113,6 +129,7 @@ public class ContainerController {
      */
     @CloudUnitSecurable
     @GetMapping("/{containerId}/env")
+    @Transactional
     public ResponseEntity<?> displayEnv(
             @PathVariable Integer id,
             @PathVariable String containerId)
@@ -134,6 +151,7 @@ public class ContainerController {
     }
     
     @GetMapping("/{containerId}/env-vars/")
+    @Transactional
     public ResponseEntity<?> getEnvironmentVariables(@PathVariable Integer id, @PathVariable String containerId)
             throws ServiceException {
         Application application = applicationDAO.findOne(id);
@@ -161,6 +179,7 @@ public class ContainerController {
     
     // FIXME this method should probably be combined with the update method
     @PostMapping("/{containerId}/env-vars")
+    @Transactional
     public ResponseEntity<?> addEnvironmentVariable(
             @PathVariable Integer id,
             @PathVariable String containerId,
@@ -187,6 +206,7 @@ public class ContainerController {
     }
     
     @GetMapping("/{containerId}/env-vars/{key}")
+    @Transactional
     public ResponseEntity<?> getEnvironmentVariable(
             @PathVariable Integer id,
             @PathVariable String containerId,
@@ -211,6 +231,7 @@ public class ContainerController {
     }
     
     @PutMapping("/{containerId}/env-vars/{key}")
+    @Transactional
     public ResponseEntity<?> updateEnvironmentVariable(
             @PathVariable Integer id,
             @PathVariable String containerId,
@@ -242,6 +263,7 @@ public class ContainerController {
     }
     
     @DeleteMapping("/{containerId}/env-vars/{key}")
+    @Transactional
     public ResponseEntity<?> deleteEnvironmentVariable(
             @PathVariable Integer id,
             @PathVariable String containerId,
