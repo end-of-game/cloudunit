@@ -70,9 +70,12 @@ public class ContainerController {
             String containerId = container.getContainerID();
             resource.add(linkTo(methodOn(ContainerController.class).getContainer(applicationId, containerId))
                     .withSelfRel());
-
+            resource.add(linkTo(methodOn(ApplicationController.class).detail(applicationId))
+                    .withRel("application"));
             resource.add(linkTo(methodOn(ContainerController.class).displayEnv(applicationId, containerId))
                     .withRel("env"));
+            resource.add(linkTo(methodOn(ContainerController.class).getEnvironmentVariables(applicationId, containerId))
+                    .withRel("env-vars"));
 
         } catch (CheckException | ServiceException e) {
             // ignore
@@ -85,6 +88,19 @@ public class ContainerController {
             Application application, Container container,
             EnvironmentVariable variable) {
         EnvironmentVariableResource resource = new EnvironmentVariableResource(variable);
+        
+        Integer id = application.getId();
+        String containerId = container.getContainerID();
+        String key = variable.getKey();
+        
+        try {
+            resource.add(linkTo(methodOn(ContainerController.class).getEnvironmentVariable(id, containerId, key))
+                    .withSelfRel());
+            resource.add(linkTo(methodOn(ContainerController.class).getContainer(id, containerId))
+                    .withRel("container"));
+        } catch (ServiceException e) {
+            // ignore
+        }
         
         return resource;
     }
@@ -144,7 +160,14 @@ public class ContainerController {
             User user = authentificationUtils.getAuthentificatedUser();
             String env = dockerService.execCommand(containerId, RemoteExecAction.GATHER_CU_ENV.getCommand() + " " + user.getLogin());
 
-            return ResponseEntity.ok(EnvironmentVariableResource.fromEnv(env));
+            Resources<EnvironmentVariableResource> resources = new Resources<>(EnvironmentVariableResource.fromEnv(env));
+            
+            resources.add(linkTo(methodOn(ContainerController.class).displayEnv(id, containerId))
+                    .withSelfRel());
+            resources.add(linkTo(methodOn(ContainerController.class).getContainer(id, containerId))
+                    .withRel("container"));
+            
+            return ResponseEntity.ok(resources);
         } catch (FatalDockerJSONException e) {
             throw new ServiceException(application.getName() + ", " + containerId, e);
         }
@@ -171,6 +194,8 @@ public class ContainerController {
         
         resources.add(linkTo(methodOn(ContainerController.class).getEnvironmentVariables(id, containerId))
                 .withSelfRel());
+        resources.add(linkTo(methodOn(ContainerController.class).getContainer(id, containerId))
+                .withRel("container"));
         resources.add(linkTo(methodOn(ApplicationController.class).detail(id))
                 .withRel("application"));
         
