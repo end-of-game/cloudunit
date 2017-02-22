@@ -28,11 +28,22 @@
     .factory ( 'EnvironmentVariableService', EnvironmentVariableService );
 
     EnvironmentVariableService.$inject = [
-      '$resource'
+      '$resource',
+      '$q',
+      'traverson'
     ];
 
 
-  function EnvironmentVariableService ( $resource ) {
+  function EnvironmentVariableService ( $resource, $q, traverson ) {
+
+
+    traverson.registerMediaType(TraversonJsonHalAdapter.mediaType, TraversonJsonHalAdapter);
+
+    var traversonService = traverson
+        .from('/applications')
+        .jsonHal()
+        .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'} });
+
 
     return {
         getVariableEnvironment: getVariableEnvironment,
@@ -71,12 +82,64 @@
         }, {} ).$promise; 
     }
 
-    function getVariableEnvironment ( applicationName, containerName ) {
-        var dir = $resource ( 'application/:applicationName/container/:containerName/env' );
-        return dir.query ( {
-            applicationName: applicationName,
-            containerName: containerName
-        } ).$promise;      
+
+function concatTraverse () {
+  var q = $q.defer();
+  var promises = [];
+  var argumentsFollow = arguments;
+  var request = traversonService
+    .newRequest()
+    .follow([].shift.call(argumentsFollow))
+    .getResource();
+    
+    
+    
+    return request
+    .result
+    .then(function(response) {
+        
+        var result = [];
+
+        angular.forEach(argumentsFollow, function(argumentFollow) {
+            var intermediatePromise = $q.defer();
+            request.continue().then(function(subRequest) {
+                subRequest
+                .newRequest()
+                .follow(argumentFollow)
+                .getResource()
+                .result
+                .then(function(subResponse) {
+                    if(result.length > 0) {
+                        result.concat(subResponse);
+                    } else {
+                        result = subResponse;
+                    }
+                    intermediatePromise.resolve();
+                });        
+            });
+            promises.push(intermediatePromise.promise);
+        });
+
+        $q.all(promises).then( function() {
+          q.resolve(result);
+        })
+        return q.promise;
+    })
+
+}
+
+
+
+    function getVariableEnvironment ( applicationName, containers ) {
+      var data = [
+         ['applicationResourceList[name:' + applicationName + ']', 'self', 'containers', 'self'], 
+      ]
+      angular.forEach(containers, function(container) {
+        data.push(
+         ['containerResourceList[containerId:' + container.containerId + ']', 'env']
+        )
+      });
+      return concatTraverse.apply(this, data);
     }
   }
 }) ();

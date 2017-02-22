@@ -13,6 +13,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
+(function () {
 'use strict';
 
 /**
@@ -23,27 +24,58 @@
  * Factory in the webuiApp.
  */
 
-angular.module('webuiApp')
-    .factory('ModuleService', [
+angular
+    .module('webuiApp')
+    .factory('ModuleService', ModuleService);
+
+    ModuleService.$inject = [
         '$resource',
-        function ($resource) {
-
-            var ModuleService = {};
-            var Module = $resource('module/:applicationName/:moduleName');
-
-            // Ajout d'un module
-            ModuleService.addModule = function (applicationName, imageName) {
-                var output = {};
-                output.applicationName = applicationName;
-                output.imageName = imageName;
-                return Module.save(JSON.stringify(output)).$promise;
-            };
-
-            // Suppression d'un module
-            ModuleService.removeModule = function (applicationName, moduleName) {
-                return Module.delete({applicationName: applicationName, moduleName: moduleName}).$promise;
-            };
-            return ModuleService;
-        }
+        'traverson'
     ]
-);
+    
+    function ModuleService($resource, traverson) {
+
+        var Module = $resource('module/:applicationName/:moduleName');
+
+        traverson.registerMediaType(TraversonJsonHalAdapter.mediaType, TraversonJsonHalAdapter);
+
+        var traversonService = traverson
+            .from('/applications')
+            .jsonHal()
+            .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'} });
+        
+        return {
+            addModule: addModule,
+            removeModule: removeModule
+        };
+
+        // Ajout d'un module
+        function addModule(applicationName, moduleName) {
+
+            return traversonService
+                .newRequest()
+                .follow('applicationResourceList[name:' + applicationName + ']', 'modules')
+                .post({
+                    name: moduleName
+                })
+                .result;
+            // var output = {};
+            // output.applicationName = applicationName;
+            // output.imageName = imageName;
+            // return Module.save(JSON.stringify(output)).$promise;
+        };
+
+        // Suppression d'un module
+        function removeModule (applicationName, moduleName) {
+
+            return traversonService
+                .newRequest()
+                .follow('applicationResourceList[name:' + applicationName + ']', 'modules', 'moduleResourceList[name:' + imageName + ']')
+                .delete()
+                .result;
+
+            // return Module.delete({applicationName: applicationName, moduleName: moduleName}).$promise;
+        };
+    }
+
+}) ();

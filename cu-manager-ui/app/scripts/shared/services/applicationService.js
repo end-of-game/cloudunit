@@ -84,7 +84,6 @@ function assignObject(target) {
             }
         }
     }
-    console.log('assignObject', target);
     return target;
 };
 
@@ -124,7 +123,7 @@ function create ( applicationName, serverName ) {
 
 // Démarrer une application
 function start ( applicationName ) {
-     traversonService
+     return traversonService
         .newRequest()
         .follow('applicationResourceList[name:' + applicationName + ']', 'start')
         .post()
@@ -133,7 +132,7 @@ function start ( applicationName ) {
 
 // Démarrer une application
 function restart ( applicationName ) {
-     traversonService
+     return traversonService
         .newRequest()
         .follow('applicationResourceList[name:' + applicationName + ']', 'restart')
         .post()
@@ -142,7 +141,7 @@ function restart ( applicationName ) {
 
 // Arrêter une application
 function stop ( applicationName ) {
-     traversonService
+     return traversonService
         .newRequest()
         .follow('applicationResourceList[name:' + applicationName + ']', 'stop')
         .post()
@@ -178,8 +177,262 @@ function remove ( applicationName ) {
         .delete();
 }
 
+
+function flatTraverse () {
+  var q = $q.defer();
+  var promises = [];
+  var argumentsFollow = arguments;
+  var request = traversonService
+    .newRequest()
+    .follow([].shift.call(argumentsFollow))
+    .getResource();
+
+    return request
+    .result
+    .then(function(response) {
+        angular.forEach(argumentsFollow, function(argumentFollow) {
+            var intermediatePromise = $q.defer();
+            request.continue().then(function(subRequest) {
+                var property = argumentFollow[0];
+                subRequest
+                .newRequest()
+                .follow(argumentFollow)
+                .getResource()
+                .result
+                .then(function(subResponse) {
+                    if(Object.keys(subResponse).length <= 1) {
+                        subResponse = [];
+                    }
+                    if(subResponse._embedded) {
+                        subResponse = subResponse._embedded[Object.keys(subResponse._embedded)[0]];
+                    }
+                    Object.defineProperty(response, property, {
+                            value: subResponse,
+                            writable: true,
+                            enumerable: true,
+                            configurable: true
+                    });
+                    intermediatePromise.resolve();
+                });        
+            });
+            promises.push(intermediatePromise.promise);
+        });
+
+        $q.all(promises).then( function(test) {
+          q.resolve(response);
+        })
+        return q.promise;
+    })
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function flatTraverseGood () {
+  var q = $q.defer();
+  var promises = [];
+  var argumentsFollow = arguments;
+  var request = traversonService
+    .newRequest()
+    .follow([].shift.call(argumentsFollow))
+    .getResource();
+
+    return request
+    .result
+    .then(function(response) {
+        for(var i = 0; i < argumentsFollow.length; i++) {
+            let intermediatePromise = $q.defer();
+            request.continue().then(function(subRequest) {
+                var property = argumentsFollow[0][argumentsFollow[0].length - 1];
+                // console.log(property);
+                subRequest
+                .newRequest()
+                .follow([].shift.call(argumentsFollow))
+                .getResource()
+                .result
+                .then(function(subResponse) {
+                    if(Object.keys(subResponse).length <= 1) {
+                        subResponse = [];
+                    }
+                    Object.defineProperty(response, property, {
+                            value: subResponse,
+                            writable: true,
+                            enumerable: true,
+                            configurable: true
+                    });
+                    // console.log('SUB ', response);
+                    intermediatePromise.resolve();
+                    // console.log('after RESOLVE'); 
+                    
+                });        
+            });
+            // intermediatePromise.promise.then(function() {
+            //     console.log('END PROMISE');
+            // })
+            // console.log('before ADD in TAB');
+            promises.push(intermediatePromise.promise);
+        }
+        // setTimeout(function() {
+        //     q.resolve(response);    
+        // }, 2000);
+        // recursiveTraverse(request, argumentsFollow)
+        //     .then(function(res) {
+        //         q.resolve(Object.assign(response, res));
+        //     })
+        $q.all(promises).then( function(test) {
+            // console.log('RESPONSE', test);
+          q.resolve(response);
+        }).catch(function(err){
+            console.error('ERR', err);
+        });
+        return q.promise;
+    })
+
+    
+}
+
+function recursiveTraverse(request, links) {
+    var q = $q.defer();
+
+    // console.log('links', links[0]);
+    // console.log('request', request);
+    if(links.length > 0) {
+        return request.continue().then(function(subRequest) {
+            var property = links[0][links[0].length - 1];
+            console.log(property);
+            subRequest
+            .newRequest()
+            .follow([].shift.call(links))
+            .getResource()
+            .result
+            .then(function(response) {
+                // var lol = recursiveTraverse(request, links);
+                // console.log('#######', lol);
+                // var lil = Object.assign(response, lol);
+                // response[property] = lol;
+
+
+                recursiveTraverse(request, links)
+                    .then(function(subResponse) {
+                        console.log(subResponse);
+                        Object.defineProperty(response, property, {
+                        value: subResponse,
+                        writable: true,
+                        enumerable: true,
+                        configurable: true
+                    });
+                    
+                    console.log('recursive response', response);
+                    return q.resolve(response);
+                })
+            });
+        });
+    }
+    q.resolve({});
+    return q.promise;
+}
+ 
+ function findByName (applicationName) {
+     var self = this;
+
+     return flatTraverse(
+         ['applicationResourceList[name:' + applicationName + ']', 'self'],
+         ['modules'],
+         ['server'],
+         ['deployments'],
+         ['containers']
+    ).then(function(response) {
+        // console.log('RESPONSE', response);
+        return response;
+    }).catch(function(err) {
+        console.error(err);
+        stopPolling.call ( self );
+    });
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Récupération d'une application selon son nom
-function findByName ( applicationName ) {
+function findByNameOLd ( applicationName ) {
     var self = this;
     var res = null;
     var q = $q.defer();
@@ -191,7 +444,7 @@ function findByName ( applicationName ) {
 
     request
     .result
-    .then(function(app, plop) {
+    .then(function(app) {
         res = app;
         request.continue().then(function(request) {
             request
@@ -200,6 +453,11 @@ function findByName ( applicationName ) {
             .getResource()
             .result
             .then(function(modules) {
+                if(modules._embedded) {
+                    modules = modules._embedded.modules;
+                } else {
+                    modules = [];
+                }
                 res.modules = modules;
                 return request
                 .newRequest()
@@ -209,7 +467,7 @@ function findByName ( applicationName ) {
             })
             .then(function(server) {
                     res.server = server;
-                    console.log('esfsf', res);
+                    // console.log('res', res);
                      q.resolve(assignObject(self.state, res));
                 });
         });
@@ -225,7 +483,6 @@ function init ( applicationName ) {
         self.timer = pollApp.call ( self, applicationName );
     }
     return findByName.call ( self, applicationName ).then ( function ( response ) {
-        console.log(response);
         self.state = response;
     } );
 }

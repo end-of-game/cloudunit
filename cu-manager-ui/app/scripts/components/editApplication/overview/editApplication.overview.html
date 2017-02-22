@@ -71,7 +71,7 @@
               readonly="">
           </div>
 
-          <div class="readonly">
+          <div class="readonly" ng-if="overview.app.server.jvmOptions">
             <label for="jvm-options">JVM options: </label>
             <input class="code clipboard"
                    id="jvm-options"
@@ -83,7 +83,7 @@
                    ngclipboard data-clipboard-target="#jvm-options">
           </div>
 
-          <div class="readonly">
+          <div class="readonly" ng-if="overview.app.server.jvmRelease">
             <label for="jvm-release">JVM Release: </label>
             <input class="code clipboard"
                    id="jvm-release"
