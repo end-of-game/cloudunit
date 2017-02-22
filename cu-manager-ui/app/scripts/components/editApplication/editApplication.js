@@ -85,7 +85,6 @@
     
     vm.applicationService.init($stateParams.name).then(function() {
       vm.application = vm.applicationService.state;
-      console.log('Here', vm.applicationService.state);
       vm.currentServer = vm.applicationService.state.server.image.displayName;
       vm.monitoringApplicationMenu();
       $rootScope.$broadcast('application:ready', {

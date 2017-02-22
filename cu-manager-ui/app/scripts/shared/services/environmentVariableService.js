@@ -29,22 +29,14 @@
 
     EnvironmentVariableService.$inject = [
       '$resource',
-      '$q',
-      'traverson'
+      'TraversonService'
     ];
 
 
-  function EnvironmentVariableService ( $resource, $q, traverson ) {
+  function EnvironmentVariableService ( $resource, TraversonService ) {
 
-
-    traverson.registerMediaType(TraversonJsonHalAdapter.mediaType, TraversonJsonHalAdapter);
-
-    var traversonService = traverson
-        .from('/applications')
-        .jsonHal()
-        .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'} });
-
-
+    var environmentVariableTraversonService = new TraversonService.Instance('/applications');
+    
     return {
         getVariableEnvironment: getVariableEnvironment,
         getListSettingsEnvironmentVariable: getListSettingsEnvironmentVariable,
@@ -139,7 +131,9 @@ function concatTraverse () {
          ['containerResourceList[containerId:' + container.containerId + ']', 'env']
         )
       });
-      return concatTraverse.apply(this, data);
+      console.log(containers);
+      return environmentVariableTraversonService
+        .concatTraverson.apply(this, data);
     }
   }
 }) ();

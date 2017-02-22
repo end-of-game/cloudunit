@@ -31,23 +31,16 @@ ApplicationService.$inject = [
 '$resource',
 '$http',
 '$interval',
-'$q',
-'traverson'
+'TraversonService'
 ];
 
 
-function ApplicationService ( $resource, $http, $interval, $q, traverson ) {
+function ApplicationService ( $resource, $http, $interval, TraversonService ) {
     var Application;
 
     Application = $resource ( 'application/:id', { id: '@name' } );
 
-    traverson.registerMediaType(TraversonJsonHalAdapter.mediaType, TraversonJsonHalAdapter);
-
-    var traversonService = traverson
-        .from('/applications')
-        .jsonHal()
-        .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'} });
-
+    var applicationTraversonService = new TraversonService.Instance('/applications');
     return {
         about: about,
         list: list,
@@ -96,7 +89,8 @@ function about () {
 
 // Liste des applications
 function list () {
-    return traversonService
+    return applicationTraversonService
+        .traversonService
         .newRequest()
         .getResource()
         .result
@@ -106,7 +100,7 @@ function list () {
             } else {
                 return [];
             }
-        })
+        }).catch(function(err){copnsole.error(err);});
 }
 
 // Creation d'une application
@@ -116,14 +110,16 @@ function create ( applicationName, serverName ) {
         serverType: serverName 
     };
 
-    return traversonService
+    return applicationTraversonService
+        .traversonService
         .post(payload)
         .result;
 }
 
 // Démarrer une application
 function start ( applicationName ) {
-     return traversonService
+     return applicationTraversonService
+        .traversonService
         .newRequest()
         .follow('applicationResourceList[name:' + applicationName + ']', 'start')
         .post()
@@ -132,7 +128,8 @@ function start ( applicationName ) {
 
 // Démarrer une application
 function restart ( applicationName ) {
-     return traversonService
+     return applicationTraversonService
+        .traversonService
         .newRequest()
         .follow('applicationResourceList[name:' + applicationName + ']', 'restart')
         .post()
@@ -141,7 +138,8 @@ function restart ( applicationName ) {
 
 // Arrêter une application
 function stop ( applicationName ) {
-     return traversonService
+     return applicationTraversonService
+        .traversonService
         .newRequest()
         .follow('applicationResourceList[name:' + applicationName + ']', 'stop')
         .post()
@@ -152,7 +150,8 @@ function stop ( applicationName ) {
 function isValid ( applicationName, serverName ) {
     // var validity = $resource ( 'application/verify/' + applicationName + '/' + serverName );
     // return validity.get ().$promise;
-    return traversonService
+    return applicationTraversonService
+        .traversonService
         .withRequestOptions({
             qs: { name: applicationName }
         })
@@ -171,205 +170,24 @@ function isValid ( applicationName, serverName ) {
 
 // Suppression d'une application
 function remove ( applicationName ) {
-    traversonService
+    applicationTraversonService
+        .traversonService
         .newRequest()
         .follow('applicationResourceList[name:' + applicationName + ']', 'delete')
         .delete();
 }
 
-
-function flatTraverse () {
-  var q = $q.defer();
-  var promises = [];
-  var argumentsFollow = arguments;
-  var request = traversonService
-    .newRequest()
-    .follow([].shift.call(argumentsFollow))
-    .getResource();
-
-    return request
-    .result
-    .then(function(response) {
-        angular.forEach(argumentsFollow, function(argumentFollow) {
-            var intermediatePromise = $q.defer();
-            request.continue().then(function(subRequest) {
-                var property = argumentFollow[0];
-                subRequest
-                .newRequest()
-                .follow(argumentFollow)
-                .getResource()
-                .result
-                .then(function(subResponse) {
-                    if(Object.keys(subResponse).length <= 1) {
-                        subResponse = [];
-                    }
-                    if(subResponse._embedded) {
-                        subResponse = subResponse._embedded[Object.keys(subResponse._embedded)[0]];
-                    }
-                    Object.defineProperty(response, property, {
-                            value: subResponse,
-                            writable: true,
-                            enumerable: true,
-                            configurable: true
-                    });
-                    intermediatePromise.resolve();
-                });        
-            });
-            promises.push(intermediatePromise.promise);
-        });
-
-        $q.all(promises).then( function(test) {
-          q.resolve(response);
-        })
-        return q.promise;
-    })
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function flatTraverseGood () {
-  var q = $q.defer();
-  var promises = [];
-  var argumentsFollow = arguments;
-  var request = traversonService
-    .newRequest()
-    .follow([].shift.call(argumentsFollow))
-    .getResource();
-
-    return request
-    .result
-    .then(function(response) {
-        for(var i = 0; i < argumentsFollow.length; i++) {
-            let intermediatePromise = $q.defer();
-            request.continue().then(function(subRequest) {
-                var property = argumentsFollow[0][argumentsFollow[0].length - 1];
-                // console.log(property);
-                subRequest
-                .newRequest()
-                .follow([].shift.call(argumentsFollow))
-                .getResource()
-                .result
-                .then(function(subResponse) {
-                    if(Object.keys(subResponse).length <= 1) {
-                        subResponse = [];
-                    }
-                    Object.defineProperty(response, property, {
-                            value: subResponse,
-                            writable: true,
-                            enumerable: true,
-                            configurable: true
-                    });
-                    // console.log('SUB ', response);
-                    intermediatePromise.resolve();
-                    // console.log('after RESOLVE'); 
-                    
-                });        
-            });
-            // intermediatePromise.promise.then(function() {
-            //     console.log('END PROMISE');
-            // })
-            // console.log('before ADD in TAB');
-            promises.push(intermediatePromise.promise);
-        }
-        // setTimeout(function() {
-        //     q.resolve(response);    
-        // }, 2000);
-        // recursiveTraverse(request, argumentsFollow)
-        //     .then(function(res) {
-        //         q.resolve(Object.assign(response, res));
-        //     })
-        $q.all(promises).then( function(test) {
-            // console.log('RESPONSE', test);
-          q.resolve(response);
-        }).catch(function(err){
-            console.error('ERR', err);
-        });
-        return q.promise;
-    })
-
-    
-}
-
-function recursiveTraverse(request, links) {
-    var q = $q.defer();
-
-    // console.log('links', links[0]);
-    // console.log('request', request);
-    if(links.length > 0) {
-        return request.continue().then(function(subRequest) {
-            var property = links[0][links[0].length - 1];
-            console.log(property);
-            subRequest
-            .newRequest()
-            .follow([].shift.call(links))
-            .getResource()
-            .result
-            .then(function(response) {
-                // var lol = recursiveTraverse(request, links);
-                // console.log('#######', lol);
-                // var lil = Object.assign(response, lol);
-                // response[property] = lol;
-
-
-                recursiveTraverse(request, links)
-                    .then(function(subResponse) {
-                        console.log(subResponse);
-                        Object.defineProperty(response, property, {
-                        value: subResponse,
-                        writable: true,
-                        enumerable: true,
-                        configurable: true
-                    });
-                    
-                    console.log('recursive response', response);
-                    return q.resolve(response);
-                })
-            });
-        });
-    }
-    q.resolve({});
-    return q.promise;
-}
- 
  function findByName (applicationName) {
      var self = this;
-
-     return flatTraverse(
+     return applicationTraversonService
+        .flatTraverson(
          ['applicationResourceList[name:' + applicationName + ']', 'self'],
          ['modules'],
          ['server'],
          ['deployments'],
          ['containers']
     ).then(function(response) {
-        // console.log('RESPONSE', response);
+        console.log('RESPONSE', response);
         return response;
     }).catch(function(err) {
         console.error(err);
@@ -377,105 +195,6 @@ function recursiveTraverse(request, links) {
     });
  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Récupération d'une application selon son nom
-function findByNameOLd ( applicationName ) {
-    var self = this;
-    var res = null;
-    var q = $q.defer();
-
-    var request = traversonService
-    .newRequest()
-    .follow('applicationResourceList[name:' + applicationName + ']', 'self')
-    .getResource();
-
-    request
-    .result
-    .then(function(app) {
-        res = app;
-        request.continue().then(function(request) {
-            request
-            .newRequest()
-            .follow('modules')
-            .getResource()
-            .result
-            .then(function(modules) {
-                if(modules._embedded) {
-                    modules = modules._embedded.modules;
-                } else {
-                    modules = [];
-                }
-                res.modules = modules;
-                return request
-                .newRequest()
-                .follow('server')
-                .getResource()
-                .result
-            })
-            .then(function(server) {
-                    res.server = server;
-                    // console.log('res', res);
-                     q.resolve(assignObject(self.state, res));
-                });
-        });
-    }).catch ( function () {
-        stopPolling.call ( self );
-    });
-    return q.promise;
-}
 
 function init ( applicationName ) {
     var self = this;
