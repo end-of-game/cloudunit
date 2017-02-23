@@ -237,6 +237,15 @@
 	width: 390px;
 }
 
+.mattermost-container:hover .mattermost {
+	background-image: url('./images/homepage/mattermost-color.png');	
+}
+
+.mattermost {
+	background-image: url('./images/homepage/mattermost.png');
+	width: 220px;
+}
+
 .elastic-container:hover .elastic {
 	background-image: url('./images/homepage/elastic-color.png');	
 }
