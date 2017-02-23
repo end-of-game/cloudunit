@@ -50,6 +50,18 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -70,4 +82,13 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation><activeByDefault>true</activeByDefault></activation>
+      <properties>
+        <mongo.host>192.168.50.4</mongo.host>
+      </properties>
+    </profile>
+  </profiles>
 </project>

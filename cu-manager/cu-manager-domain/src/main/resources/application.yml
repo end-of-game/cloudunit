@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      host: 192.168.50.4
+      host: ${mongo.host}
 logging:
   level:
     root: info
