@@ -120,22 +120,22 @@
     <table class="table" ng-if="environment.env.length">
         <thead>
         <tr>
-          <th ng-click="environment.order('keyEnv')"><i class="icon-whhg"  ng-show="environment.predicate == 'keyEnv'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i> Key</th>
-          <th ng-click="environment.order('valueEnv')"><i class="icon-whhg"  ng-show="environment.predicate == 'valueEnv'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i>  Value</th>
+          <th ng-click="environment.order('key')"><i class="icon-whhg"  ng-show="environment.predicate == 'key'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i> Key</th>
+          <th ng-click="environment.order('value')"><i class="icon-whhg"  ng-show="environment.predicate == 'value'" ng-class="{ 'arrow-down': !environment.reverse, 'arrow-up': environment.reverse }"></i>  Value</th>
           <th>Actions</th>
         </tr>
         </thead>
         <tbody>
           <tr 
-            dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by env.id"
+            dir-paginate="env in environment.env | orderBy:environment.predicate:environment.reverse | itemsPerPage: environment.pageSize track by env.key"
             data-current-page="environment.currentPage">
             <td>
               <span>
                 <span class="clipboard"
                   data-title="Copy to clipboard"
                   e-name="key" e-form="rowform"
-                  editable-text="env.keyEnv">
-                    <span ngclipboard data-clipboard-target="#value-{{env.id}}" id="key-{{env.id}}">{{ env.keyEnv }}</span>
+                  editable-text="env.key">
+                    <span ngclipboard data-clipboard-target="#value-{{env.id}}" id="key-{{env.id}}">{{ env.key }}</span>
                   </span>
               </span>
             </td>
@@ -144,8 +144,8 @@
                 <span class="clipboard"
                   data-title="Copy to clipboard"
                   e-name="value" e-form="rowform"
-                  editable-text="env.valueEnv">
-                      <span ngclipboard data-clipboard-target="#value-{{env.id}}" id="value-{{env.id}}">{{ env.valueEnv }}</span>
+                  editable-text="env.value">
+                      <span ngclipboard data-clipboard-target="#value-{{env.id}}" id="value-{{env.id}}">{{ env.value }}</span>
                   </span>
               </span>
             </td>

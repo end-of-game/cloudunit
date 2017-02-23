@@ -19,7 +19,7 @@ import fr.treeptik.cloudunit.model.EnvironmentVariable;
 
 public class EnvironmentVariableResource extends ResourceSupport {
     private static EnvironmentVariableResource fromEnvLine(String line) {
-        Matcher m = Pattern.compile("([0-9A-Z_]*)=(.*)").matcher(line);
+        Matcher m = Pattern.compile("([0-9a-zA-Z_]*)=(.*)").matcher(line);
         if (!m.matches() && m.groupCount() == 2) {
             throw new IllegalArgumentException(String.format("Line cannot be parsed as an environment variable: %s", line));
         }
@@ -45,7 +45,9 @@ public class EnvironmentVariableResource extends ResourceSupport {
     
     @NotNull
     private String value;
-    
+
+    public EnvironmentVariableResource() {}
+
     public EnvironmentVariableResource(String key, String value) {
         this.key = key;
         this.value = value;

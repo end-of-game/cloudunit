@@ -210,7 +210,7 @@ public class ContainerController {
             @PathVariable String containerId,
             @Valid @RequestBody EnvironmentVariableResource request) throws ServiceException {
         Application application = applicationDAO.findOne(id);
-        
+
         if (application == null || !application.hasContainer(containerId)) {
             return ResponseEntity.notFound().build();
         }

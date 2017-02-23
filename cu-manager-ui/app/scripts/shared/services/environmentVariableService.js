@@ -14,7 +14,7 @@
  */
 
 (function () {
-  'use strict';
+	'use strict';
 
   /**
    * @ngdoc service
@@ -23,117 +23,77 @@
    * # EnvironmentVariableService
    * Factory in the webuiApp.
    */
-  angular
-    .module ( 'webuiApp' )
-    .factory ( 'EnvironmentVariableService', EnvironmentVariableService );
+	angular
+		.module('webuiApp')
+		.factory('EnvironmentVariableService', EnvironmentVariableService);
 
-    EnvironmentVariableService.$inject = [
-      '$resource',
-      'TraversonService'
-    ];
-
-
-  function EnvironmentVariableService ( $resource, TraversonService ) {
-
-    var environmentVariableTraversonService = new TraversonService.Instance('/applications');
-    
-    return {
-        getVariableEnvironment: getVariableEnvironment,
-        getListSettingsEnvironmentVariable: getListSettingsEnvironmentVariable,
-        addEnvironmentVariable: addEnvironmentVariable,
-        deleteEnvironmentVariable: deleteEnvironmentVariable
-    };
-
-    function getListSettingsEnvironmentVariable ( applicationName, containerName ) {
-        var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables' );
-        return dir.query ( {
-            applicationName: applicationName,
-            containerName: containerName
-        } ).$promise;      
-    }
-
-    function addEnvironmentVariable ( applicationName, containerName, environmentVariableKey, environmentVariableValue ) {
-        var data = {
-            keyEnv: environmentVariableKey,
-            valueEnv: environmentVariableValue
-        };
-
-        var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables' );
-        return dir.save ( {
-            applicationName: applicationName,
-            containerName: containerName
-        }, data ).$promise;
-    }
-
-    function deleteEnvironmentVariable ( applicationName, containerName, environmentVariableID ) {
-        var dir = $resource ( 'application/:applicationName/container/:containerName/environmentVariables/:id' );
-        return dir.delete ( { 
-            applicationName: applicationName,
-            containerName: containerName,
-            id: environmentVariableID
-        }, {} ).$promise; 
-    }
+	EnvironmentVariableService.$inject = [
+		'$resource',
+		'TraversonService'
+	];
 
 
-function concatTraverse () {
-  var q = $q.defer();
-  var promises = [];
-  var argumentsFollow = arguments;
-  var request = traversonService
-    .newRequest()
-    .follow([].shift.call(argumentsFollow))
-    .getResource();
-    
-    
-    
-    return request
-    .result
-    .then(function(response) {
-        
-        var result = [];
+	function EnvironmentVariableService($resource, TraversonService) {
 
-        angular.forEach(argumentsFollow, function(argumentFollow) {
-            var intermediatePromise = $q.defer();
-            request.continue().then(function(subRequest) {
-                subRequest
-                .newRequest()
-                .follow(argumentFollow)
-                .getResource()
-                .result
-                .then(function(subResponse) {
-                    if(result.length > 0) {
-                        result.concat(subResponse);
-                    } else {
-                        result = subResponse;
-                    }
-                    intermediatePromise.resolve();
-                });        
-            });
-            promises.push(intermediatePromise.promise);
-        });
+		var environmentVariableTraversonService = new TraversonService.Instance('/applications');
 
-        $q.all(promises).then( function() {
-          q.resolve(result);
-        })
-        return q.promise;
-    })
+		return {
+			getVariableEnvironment: getVariableEnvironment,
+			getListSettingsEnvironmentVariable: getListSettingsEnvironmentVariable,
+			addEnvironmentVariable: addEnvironmentVariable,
+			deleteEnvironmentVariable: deleteEnvironmentVariable
+		};
 
-}
+		function getListSettingsEnvironmentVariable(applicationName, container) {
+			return environmentVariableTraversonService
+				.concatTraverson(
+				['applicationResourceList[name:' + applicationName + ']', 'self', 'containers', 'self'],
+				['containerResourceList[name:' + container.name + ']', 'env-vars']);
+		}
 
+		function addEnvironmentVariable(applicationName, container, environmentVariableKey, environmentVariableValue) {
+			var payload = {
+				key: environmentVariableKey,
+				value: environmentVariableValue
+			};
+			console.log('addEnvironmentVariable', payload);
+			return environmentVariableTraversonService
+				.traversonService
+				.newRequest()
+				.follow('applicationResourceList[name:' + applicationName + ']', 'self',
+				 'containers', 'containerResourceList[name:' + container.name + ']', 'self', 'env-vars')
+				.post(payload)
+				.result
+				   .then ( function(response) {
+        console.log(response)
+        } )
+        .catch (function(err){
+			console.error(err);
+		});
+		}
 
+		function deleteEnvironmentVariable(applicationName, container, environmentVariableKey) {
+			return environmentVariableTraversonService
+				.traversonService
+				.newRequest()
+				.follow('applicationResourceList[name:' + applicationName + ']', 'self',
+				'containers','containerResourceList[name:' + container.name + ']', 'self',
+				'env-vars', 'environmentVariableResourceList[key:' + environmentVariableKey + ']', 'self' )
+				.delete()
+				.result;
+		}
 
-    function getVariableEnvironment ( applicationName, containers ) {
-      var data = [
-         ['applicationResourceList[name:' + applicationName + ']', 'self', 'containers', 'self'], 
-      ]
-      angular.forEach(containers, function(container) {
-        data.push(
-         ['containerResourceList[containerId:' + container.containerId + ']', 'env']
-        )
-      });
-      console.log(containers);
-      return environmentVariableTraversonService
-        .concatTraverson.apply(this, data);
-    }
-  }
-}) ();
+		function getVariableEnvironment(applicationName, containers) {
+			var data = [
+				['applicationResourceList[name:' + applicationName + ']', 'self', 'containers', 'self'],
+			]
+			angular.forEach(containers, function (container) {
+				data.push(
+					['containerResourceList[name:' + container.name + ']', 'env']
+				)
+			});
+			return environmentVariableTraversonService
+				.concatTraverson.apply(this, data);
+		}
+	}
+})();
