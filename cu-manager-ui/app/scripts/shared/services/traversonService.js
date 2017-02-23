@@ -34,15 +34,98 @@
 
 
 	function TraversonService($q, traverson) {
-
+		// define content-type application/hal+json 
 		traverson.registerMediaType(TraversonJsonHalAdapter.mediaType, TraversonJsonHalAdapter);
 
 		return {
 			Instance: Instance
 		}
 
+		// new traversal's service instance
 		function Instance(traversonFrom) {
 			var that = this;
+
+			// basis URL link traversal
+			function buildRequest(rootUrl) {
+				return that.traversonService
+					.newRequest()
+					.follow(rootUrl)
+					.getResource();
+			}
+
+			// add response resources to final result as property
+			function addPropertyToResponse(response, propertyToAdd, subResponse) {
+				if (Object.keys(subResponse).length <= 1) {
+					subResponse = [];
+				}
+				if (subResponse._embedded) {
+					subResponse = subResponse._embedded[Object.keys(subResponse._embedded)[0]];
+				}
+				Object.defineProperty(response, propertyToAdd, {
+					value: subResponse,
+					writable: true,
+					enumerable: true,
+					configurable: true
+				});	
+				return response;
+			}
+
+			// concat response resources to final result array
+			function addArrayToResponse(result, subResponse) {
+				if (subResponse._embedded) {
+					subResponse = subResponse._embedded[Object.keys(subResponse._embedded)[0]];
+				}
+				else if(subResponse._links){
+					subResponse = [];
+				}
+				if (result.length > 0) {
+					result.concat(subResponse);
+				} else {
+					result = subResponse;
+				}
+				return result;
+			}
+
+			function requestEachResource(isFlatten, argumentsFollow) {
+				var q = $q.defer();
+				var promises = [];
+				var request = buildRequest([].shift.call(argumentsFollow));
+
+				return request
+					.result
+					.then(function (response) {
+						var result = [];
+						angular.forEach(argumentsFollow, function (argumentFollow) {
+							var intermediatePromise = $q.defer();
+							
+							request.continue().then(function (subRequest) {
+								subRequest
+									.newRequest()
+									.follow(argumentFollow)
+									.getResource()
+									.result
+									.then(function (subResponse) { //subResponse contains one final response's part
+										if(isFlatten) {
+											result = addPropertyToResponse(response, argumentFollow[0], subResponse);
+										} else {
+											result = addArrayToResponse(result, subResponse);
+										}
+										intermediatePromise.resolve();
+									});
+							});
+							promises.push(intermediatePromise.promise);
+						});
+
+						// after all asynchronous request finished
+						// return the final response
+						$q.all(promises).then(function () {
+							q.resolve(result);
+						})
+						return q.promise;
+					});
+			}
+			/////////////////////////////////////////////////////////
+
 			this.traversonService = traverson
 				.from(traversonFrom)
 				.jsonHal()
@@ -59,51 +142,8 @@
 			 * 
 			 * @returns {Object} wich contains all Resource requested
 			 */
-			this.flatTraverson = function () {
-				var q = $q.defer();
-				var promises = [];
-				var argumentsFollow = arguments;
-				var request = that.traversonService
-					.newRequest()
-					.follow([].shift.call(argumentsFollow))
-					.getResource();
-
-				return request
-					.result
-					.then(function (response) {
-						angular.forEach(argumentsFollow, function (argumentFollow) {
-							var intermediatePromise = $q.defer();
-							request.continue().then(function (subRequest) {
-								var property = argumentFollow[0];
-								subRequest
-									.newRequest()
-									.follow(argumentFollow)
-									.getResource()
-									.result
-									.then(function (subResponse) {
-										if (Object.keys(subResponse).length <= 1) {
-											subResponse = [];
-										}
-										if (subResponse._embedded) {
-											subResponse = subResponse._embedded[Object.keys(subResponse._embedded)[0]];
-										}
-										Object.defineProperty(response, property, {
-											value: subResponse,
-											writable: true,
-											enumerable: true,
-											configurable: true
-										});
-										intermediatePromise.resolve();
-									});
-							});
-							promises.push(intermediatePromise.promise);
-						});
-
-						$q.all(promises).then(function (test) {
-							q.resolve(response);
-						})
-						return q.promise;
-					});
+			this.flatTraverson = function (...args) {
+				return requestEachResource(true, args);
 			}
 
 			/**
@@ -116,50 +156,8 @@
 			 * all other index are request wich be concat and return in a array so each of them have to return a array
 			 * @returns {Array} Array with all subResource array concat
 			 */
-			this.concatTraverson = function () {
-
-				var q = $q.defer();
-				var promises = [];
-				var argumentsFollow = arguments;
-				var request = that.traversonService
-					.newRequest()
-					.follow([].shift.call(argumentsFollow))
-					.getResource();
-				return request
-					.result
-					.then(function (response) {
-						var result = [];
-						angular.forEach(argumentsFollow, function (argumentFollow) {
-							var intermediatePromise = $q.defer();
-							request.continue().then(function (subRequest) {
-								subRequest
-									.newRequest()
-									.follow(argumentFollow)
-									.getResource()
-									.result
-									.then(function (subResponse) {
-										if (subResponse._embedded) {
-											subResponse = subResponse._embedded[Object.keys(subResponse._embedded)[0]];
-										}
-										else if(subResponse._links){
-											subResponse = [];
-										}
-										if (result.length > 0) {
-											result.concat(subResponse);
-										} else {
-											result = subResponse;
-										}
-										intermediatePromise.resolve();
-									});
-							});
-							promises.push(intermediatePromise.promise);
-						});
-
-						$q.all(promises).then(function () {
-							q.resolve(result);
-						})
-						return q.promise;
-					})
+			this.concatTraverson = function (...args) {
+				return requestEachResource(false, args)
 			}
 		}
 
