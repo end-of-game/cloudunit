@@ -14,17 +14,15 @@ services:
       labels:
         - "traefik.enable=false"
 
-  mysql:
-      container_name: cu-mysql
+  mongo:
+      container_name: cu-mongo
       env_file: .env
-      image: mysql:5.7.4
+      image: mongo:3.4.2
       ports:
-        - "3306:3306"
-      environment:
-        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - "27017:27017"
       volumes:
-        - mysqldata:/var/lib/mysql
+        - mongo-data:/data/db
+        - mongo-config:/data/configdb
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
       labels:
@@ -50,60 +48,60 @@ services:
       labels:
         - "traefik.enable=false"
 
-  gitlab:
-      env_file: .env
-      container_name: cu-gitlab
-      image: gitlab/gitlab-ce:8.14.5-ce.0
-      volumes:
-        - /etc/localtime:/etc/localtime:ro
-        - /etc/timezone:/etc/timezone:ro
-        - gitlab-config:/etc/gitlab
-        - gitlab-logs:/var/log/gitlab
-        - gitlab-data:/var/opt/gitlab
-        - ./cu-gitlab-ce/gitlab.rb:/etc/gitlab/gitlab.rb
-      # Define the CU_GITLAB_DOMAIN into /etc/environment
-      hostname: '${CU_GITLAB_DOMAIN}'
-      environment:
-          GITLAB_OMNIBUS_CONFIG: |
-              external_url 'http://${CU_GITLAB_DOMAIN}'
-      labels:
-        - "traefik.frontend.entryPoints=http"
-        - "traefik.backend=cu-gitlab"
-        - "traefik.port=80"
-        - "traefik.frontend.rule=Host:gitlab.${CU_DOMAIN}"
-
-  jenkins:
-      container_name: cu-jenkins
-      user: root
-      build:
-        context: cu-jenkins
-      image: cloudunit/jenkins
-      environment:
-         - "JAVA_OPTS=-Xmx512m"
-      volumes:
-        - jenkins-home:/var/jenkins_home
-      labels:
-        - "traefik.frontend.entryPoints=http"
-        - "traefik.backend=cu-jenkins"
-        - "traefik.port=8080"
-        - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
-
-  nexus:
-      container_name: cu-nexus
-      image: sonatype/nexus3:3.2.0
-      ports:
-        - "9091:8081"
-        - "8123:8123"
-      volumes:
-        - "nexus-data:/nexus-data"
-      environment:
-        - "JAVA_MIN_MEM=512m"
-        - "JAVA_MAX_MEM=512m"
-      labels:
-        - "traefik.frontend.entryPoints=http"
-        - "traefik.backend=cu-nexus"
-        - "traefik.port=8081"
-        - "traefik.frontend.rule=Host:nexus.${CU_DOMAIN}"
+#  gitlab:
+#      env_file: .env
+#      container_name: cu-gitlab
+#      image: gitlab/gitlab-ce:8.14.5-ce.0
+#      volumes:
+#        - /etc/localtime:/etc/localtime:ro
+#        - /etc/timezone:/etc/timezone:ro
+#        - gitlab-config:/etc/gitlab
+#        - gitlab-logs:/var/log/gitlab
+#        - gitlab-data:/var/opt/gitlab
+#        - ./cu-gitlab-ce/gitlab.rb:/etc/gitlab/gitlab.rb
+#      # Define the CU_GITLAB_DOMAIN into /etc/environment
+#      hostname: '${CU_GITLAB_DOMAIN}'
+#      environment:
+#          GITLAB_OMNIBUS_CONFIG: |
+#              external_url 'http://${CU_GITLAB_DOMAIN}'
+#      labels:
+#        - "traefik.frontend.entryPoints=http"
+#        - "traefik.backend=cu-gitlab"
+#        - "traefik.port=80"
+#        - "traefik.frontend.rule=Host:gitlab.${CU_DOMAIN}"
+#
+#  jenkins:
+#      container_name: cu-jenkins
+#      user: root
+#      build:
+#        context: cu-jenkins
+#      image: cloudunit/jenkins
+#      environment:
+#         - "JAVA_OPTS=-Xmx512m"
+#      volumes:
+#        - jenkins-home:/var/jenkins_home
+#      labels:
+#        - "traefik.frontend.entryPoints=http"
+#        - "traefik.backend=cu-jenkins"
+#        - "traefik.port=8080"
+#        - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
+#
+#  nexus:
+#      container_name: cu-nexus
+#      image: sonatype/nexus3:3.2.0
+#      ports:
+#        - "9091:8081"
+#        - "8123:8123"
+#      volumes:
+#        - "nexus-data:/nexus-data"
+#      environment:
+#        - "JAVA_MIN_MEM=512m"
+#        - "JAVA_MAX_MEM=512m"
+#      labels:
+#        - "traefik.frontend.entryPoints=http"
+#        - "traefik.backend=cu-nexus"
+#        - "traefik.port=8081"
+#        - "traefik.frontend.rule=Host:nexus.${CU_DOMAIN}"
 #
 #  sonarqube:
 #    container_name: cu-sonar
@@ -139,7 +137,8 @@ networks:
       name: skynet
 
 volumes:
-  mysqldata:
+  mongo-data:
+  mongo-config:
   gitlab-config:
   gitlab-logs:
   gitlab-data:

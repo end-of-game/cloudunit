@@ -11,7 +11,8 @@
     <parent>
         <groupId>fr.treeptik</groupId>
         <artifactId>cloudunit</artifactId>
-        <version>1.10-SNAPSHOT</version>
+        <version>[0.0.1,999]</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <properties>
