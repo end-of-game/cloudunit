@@ -6,8 +6,7 @@
   <artifactId>cu-manager-domain</artifactId>
   <packaging>jar</packaging>
 
-  <name>cu-manager-domain</name>
-  <description>CloudUnit Manager Domain Service</description>
+  <name>CloudUnit Manager Domain Service</name>
 
   <parent>
     <groupId>fr.treeptik</groupId>
