@@ -70,7 +70,7 @@
         .config([
             '$urlRouterProvider',
             function ($urlRouterProvider) {
-                $urlRouterProvider.otherwise('/login');
+                $urlRouterProvider.otherwise('/dashboard');
             },])
         .constant('moment', moment)
         // moment locale config

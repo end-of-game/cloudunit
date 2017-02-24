@@ -39,7 +39,7 @@
       if (error.status === 401) {
         console.log(error);
         $rootScope.$broadcast(':unauthorized', {
-          message: 'The username or password you entered was incorrect.',
+          message: 'You must be connected to access.',
         });
       }
 
