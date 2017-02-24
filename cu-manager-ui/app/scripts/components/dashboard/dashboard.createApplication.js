@@ -30,7 +30,9 @@
   function CreateApp(){
     return {
       templateUrl: 'scripts/components/dashboard/dashboard.createApplication.html',
-      bindings: {},
+      bindings: {
+        app: '='
+      },
       controller: [
         '$rootScope',
         'ApplicationService',
@@ -130,20 +132,28 @@
     }
 
     function isValid(applicationName, serverName) {
-        ApplicationService.isValid(applicationName, serverName)
-        .then(success)
-        .catch(error);
-
-        function success() {
-          vm.notValidated = false;
-          vm.message = '';
-        }
-
-        function error(response) {
-          vm.message = response.data.message;
+      if(!vm.app.filter(function(application) {return application.displayName === applicationName; }).length) {
+        vm.notValidated = false;
+        vm.message = '';
+      } else {
+          vm.message = 'Application\'s name already exists';
           vm.notValidated = true;
           vm.isPending = false;
-        }
+      }
+        // ApplicationService.isValid(applicationName, serverName)
+        // .then(success)
+        // .catch(error);
+
+        // function success() {
+        //   vm.notValidated = false;
+        //   vm.message = '';
+        // }
+
+        // function error(response) {
+        //   vm.message = response.data.message;
+        //   vm.notValidated = true;
+        //   vm.isPending = false;
+        // }
     }
   }
 })();

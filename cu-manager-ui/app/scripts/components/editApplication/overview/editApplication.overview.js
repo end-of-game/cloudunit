@@ -51,7 +51,7 @@
 
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
-      if(vm.app.server.status === 'START') {
+      if(vm.app.status === 'START') {     
         initializeEnvVar();
       }
     });
@@ -66,15 +66,18 @@
 
 
     function initializeEnvVar() {
-      EnvironmentVariableService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
+      EnvironmentVariableService.getVariableEnvironment(vm.app.name, vm.app.containers)
+      .then(function (data) {
+        console.log('initializeEnvVar', data);
         vm.app.env = data;
 
+        // TODO
         angular.forEach(vm.app.modules, function(value, key) {
-            vm.portList[value.id] = value.ports;
-            EnvironmentVariableService.getVariableEnvironment($stateParams.name, value.name)
-            .then(function successCallback(response) {
-              vm.listEnvModule[value.id] = response;
-            });
+            // vm.portList[value.id] = value.ports;
+            // EnvironmentVariableService.getVariableEnvironment($stateParams.name, value.name)
+            // .then(function successCallback(response) {
+            //   vm.listEnvModule[value.id] = response;
+            // });
         });
       });
     }

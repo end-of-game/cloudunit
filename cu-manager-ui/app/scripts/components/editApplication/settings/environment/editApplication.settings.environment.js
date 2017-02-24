@@ -68,13 +68,14 @@
     ////////////////////////////////////////////////
 
     function getListEnvironmentVariable() {
-      EnvironmentVariableService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer.name)
+      EnvironmentVariableService.getListSettingsEnvironmentVariable($stateParams.name, vm.myContainer)
         .then(function(response) {
+          // console.log('getListEnvironmentVariable', response);
           vm.env = response;
         })
-        .catch(function(response) {
-          ErrorService.handle(response);
-        });
+        // .catch(function(response) {
+        //   ErrorService.handle(response);
+        // });
     }
 
     function getContainers ( ) {
@@ -99,13 +100,13 @@
         .then(function() {
           getListEnvironmentVariable();
         })
-        .catch(function(response) {
-          ErrorService.handle(response);
-        });
+        // .catch(function(response) {
+        //   ErrorService.handle(response);
+        // });
     }
 
     function deleteEnv (environmentVariable) {
-      EnvironmentVariableService.deleteEnvironmentVariable (  $stateParams.name, vm.myContainer.name, environmentVariable.id )
+      EnvironmentVariableService.deleteEnvironmentVariable (  $stateParams.name, vm.myContainer, environmentVariable.key )
         .then ( function() {
           cleanMessage();
           vm.env.splice(vm.env.indexOf(environmentVariable), 1);
@@ -115,7 +116,7 @@
     }
 
     function addEnv (environmentVariableKey, environmentVariableValue) {
-      EnvironmentVariableService.addEnvironmentVariable($stateParams.name, vm.myContainer.name, environmentVariableKey, environmentVariableValue)
+      EnvironmentVariableService.addEnvironmentVariable($stateParams.name, vm.myContainer, environmentVariableKey, environmentVariableValue)
         .then ( function(env) {
           cleanMessage();
           getListEnvironmentVariable();

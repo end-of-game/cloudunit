@@ -13,32 +13,48 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-'use strict';
+(function () {
+	'use strict';
 
-/**
- * @ngdoc service
- * @name webuiApp.JVMService
- * @description
- * Factory in the webuiApp.
- */
-angular.module('webuiApp')
-    .factory('JVMService', [
-        '$resource',
-        function ($resource) {
+  /**
+   * @ngdoc service
+   * @name webuiApp.JVMService
+   * @description
+   * # JVMService
+   * Factory in the webuiApp.
+   */
+	angular
+		.module('webuiApp')
+		.factory('JVMService', JVMService);
 
-            var JVMService = {};
+	JVMService.$inject = [
+		'TraversonService'
+	];
 
-            // Liste de toutes les images qui sont activés quelque soit leur type
-            JVMService.saveConfigurationJVM = function (applicationName, jvmMemory, jvmOptions, jvmRelease) {
-                var options = $resource('server/configuration/jvm',
-                    {},
-                    { 'update': { method: 'PUT' }
-                    });
-                return options.update({applicationName: applicationName, jvmMemory: jvmMemory, jvmOptions: jvmOptions, jvmRelease: jvmRelease, location:'webui'});
-            };
 
-            return JVMService;
-        }
-    ]
-);
+	function JVMService(TraversonService) {
 
+        var jvmTraversonService = new TraversonService.Instance('/applications');
+
+		return {
+			saveConfigurationJVM: saveConfigurationJVM
+		}
+
+		function saveConfigurationJVM(applicationName, server, jvmMemory, jvmOptions, jvmRelease) {
+            console.log('saveConfigurationJVM', server);
+            server.jvmMemory = jvmMemory;
+            server.jvmOptions = jvmOptions;
+            if(jvmRelease) {
+                server.jvmRelease = jvmRelease;
+            }
+            
+            console.log('saveConfigurationJVM After', server);
+            return jvmTraversonService
+				.traversonService
+				.newRequest()
+				.follow('applicationResourceList[name:' + applicationName + ']', 'self', 'server')
+				.put(server)
+				.result;
+		}
+	}
+})();

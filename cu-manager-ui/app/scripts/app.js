@@ -48,6 +48,7 @@
                 'xeditable',
                 'ng-sweet-alert',
                 'uiSwitch',
+                'traverson',
 
                 //shared modules
                 'webuiApp.filters',

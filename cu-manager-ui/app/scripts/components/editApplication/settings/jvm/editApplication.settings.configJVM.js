@@ -64,7 +64,7 @@
     // Function to save the JVM parameters
     function saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease) {
       jvmOptions = $filter('cleanEscapeSlashAndReverse')(jvmOptions, false);
-      JVMService.saveConfigurationJVM(applicationName, jvmMemory, jvmOptions, jvmRelease);
+      JVMService.saveConfigurationJVM(applicationName, vm.application.server, jvmMemory, jvmOptions, jvmRelease);
       $scope.$emit('workInProgress', { delay: 10000 });
     }
 

@@ -14,227 +14,274 @@
 */
 
 (function () {
-    'use strict';
+	'use strict';
 
-/**
-* @ngdoc service
-* @name webuiApp.ApplicationService
-* @description
-* # ApplicationService
-* Factory in the webuiApp.
-*/
-angular
-.module ( 'webuiApp' )
-.factory ( 'ApplicationService', ApplicationService );
+	/**
+	* @ngdoc service
+	* @name webuiApp.ApplicationService
+	* @description
+	* # ApplicationService
+	* Factory in the webuiApp.
+	*/
+	angular
+		.module('webuiApp')
+		.factory('ApplicationService', ApplicationService);
 
-ApplicationService.$inject = [
-'$resource',
-'$http',
-'$interval'
-];
-
-
-function ApplicationService ( $resource, $http, $interval ) {
-    var Application;
-
-    Application = $resource ( 'application/:id', { id: '@name' } );
+	ApplicationService.$inject = [
+		'$resource',
+		'$http',
+		'$interval',
+		'TraversonService'
+	];
 
 
-    return {
-        about: about,
-        list: list,
-        create: create,
-        start: start,
-        stop: stop,
-        isValid: isValid,
-        remove: remove,
-        findByName: findByName,
-        listContainers: listContainers,
-        createAlias: createAlias,
-        removeAlias: removeAlias,
-        createPort: createPort,
-        removePort: removePort,
-        openPort: openPort,
-        restart: restart,
-        init: init,
-        state: {},
-        stopPolling: stopPolling
-    };
+	function ApplicationService($resource, $http, $interval, TraversonService) {
+		var Application;
+
+		Application = $resource('application/:id', { id: '@name' });
+
+		var applicationTraversonService = new TraversonService.Instance('/applications');
+		return {
+			about: about,
+			list: list,
+			create: create,
+			start: start,
+			stop: stop,
+			isValid: isValid,
+			remove: remove,
+			findByName: findByName,
+			listContainers: listContainers,
+			createAlias: createAlias,
+			removeAlias: removeAlias,
+			createPort: createPort,
+			removePort: removePort,
+			openPort: openPort,
+			restart: restart,
+			init: init,
+			state: {},
+			stopPolling: stopPolling
+		};
 
 
-///////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////
 
-function assignObject(target) {
-    target = Object(target);
-    for (var index = 1; index < arguments.length; index++) {
-        var source = arguments[index];
-        if (source != null) {
-            for (var key in source) {
-                if (Object.prototype.hasOwnProperty.call(source, key)) {
-                    target[key] = source[key];
-                }
-            }
-        }
-    }
-    return target;
-};
+		function assignObject(target) {
+			target = Object(target);
+			for (var index = 1; index < arguments.length; index++) {
+				var source = arguments[index];
+				if (source != null) {
+					for (var key in source) {
+						if (Object.prototype.hasOwnProperty.call(source, key)) {
+							target[key] = source[key];
+						}
+					}
+				}
+			}
+			return target;
+		};
 
-// A propos du manager
-function about () {
-    return $http.get ( 'about' ).then ( function ( response ) {
-        return angular.copy ( response.data );
-    } )
-}
+		// A propos du manager
+		function about() {
+			return $http.get('about').then(function (response) {
+				return angular.copy(response.data);
+			})
+		}
 
-// Liste des applications
-function list () {
-    return $http.get ( 'application' ).then ( function ( response ) {
-        return angular.copy ( response.data );
-    } )
-}
+		// Liste des applications
+		function list() {
+			return applicationTraversonService
+				.traversonService
+				.newRequest()
+				.getResource()
+				.result
+				.then(function (res) {
+					if (res._embedded) {
+						return res._embedded.applicationResourceList;
+					} else {
+						return [];
+					}
+				}).catch(function (err) { console.error(err); });
+		}
 
-// Creation d'une application
-function create ( applicationName, serverName ) {
-    var output = {};
-    output.applicationName = applicationName;
-    output.serverName = serverName;
+		// Creation d'une application
+		function create(applicationName, serverName) {
+			var payload = {
+				name: applicationName,
+				serverType: serverName
+			};
 
-    return Application.save ( JSON.stringify ( output ) ).$promise;
-}
+			return applicationTraversonService
+				.traversonService
+				.post(payload)
+				.result;
+		}
 
-// Démarrer une application
-function start ( applicationName ) {
-    var output = {};
-    output.applicationName = applicationName;
-    var Application = $resource ( 'application/start' );
-    return Application.save ( JSON.stringify ( output ) ).$promise;
-}
+		// Démarrer une application
+		function start(applicationName) {
+			return applicationTraversonService
+				.traversonService
+				.newRequest()
+				.follow('applicationResourceList[name:' + applicationName + ']', 'start')
+				.post()
+				.result;
+		}
 
-// Démarrer une application
-function restart ( applicationName ) {
-    var output = {};
-    output.applicationName = applicationName;
-    var Application = $resource ( 'application/restart' );
-    return Application.save ( JSON.stringify ( output ) );
-}
+		// Démarrer une application
+		function restart(applicationName) {
+			return applicationTraversonService
+				.traversonService
+				.newRequest()
+				.follow('applicationResourceList[name:' + applicationName + ']', 'restart')
+				.post()
+				.result;
+		}
 
-// Arrêter une application
-function stop ( applicationName ) {
-    var output = {};
-    output.applicationName = applicationName;
-    var Application = $resource ( 'application/stop' );
-    return Application.save ( JSON.stringify ( output ) );
-}
+		// Arrêter une application
+		function stop(applicationName) {
+			return applicationTraversonService
+				.traversonService
+				.newRequest()
+				.follow('applicationResourceList[name:' + applicationName + ']', 'stop')
+				.post()
+				.result;
+		}
 
-// Teste la validite d'une application avant qu'on puisse la creer
-function isValid ( applicationName, serverName ) {
-    var validity = $resource ( 'application/verify/' + applicationName + '/' + serverName );
-    return validity.get ().$promise;
-}
-
-// Suppression d'une application
-function remove ( applicationName ) {
-    Application.get ( { id: applicationName }, function ( ref ) {
-        ref.$delete ();
-    } );
-}
-
-// Récupération d'une application selon son nom
-function findByName ( applicationName ) {
-    var self = this;
-    return $http.get ( 'application/' + applicationName ).then ( function ( response ) {
-        return assignObject(self.state, response.data);
-    } ).catch ( function () {
-        stopPolling.call ( self );
-    } )
-}
-
-function init ( applicationName ) {
-    var self = this;
-    if ( !self.timer ) {
-        self.timer = pollApp.call ( self, applicationName );
-    }
-    return findByName.call ( self, applicationName ).then ( function ( response ) {
-        self.state = response;
-    } );
-}
-
-function pollApp ( applicationName ) {
-    var self = this;
-    return $interval ( function () {
-        findByName.call ( self, applicationName ).then ( function ( response ) {
-            return self.state = response;
-        } );
-    }, 2000 )
-}
-
-function stopPolling () {
-    if ( this.timer ) {
-        $interval.cancel ( this.timer );
-        this.timer = null;
-    }
-}
-
-// Liste de toutes les container d'une application en fonction du type server/module
-function listContainers ( applicationName ) {
-    var container = $resource ( 'application/:applicationName/containers' );
-    return container.query ( { applicationName: applicationName } ).$promise;
-}
-
-// Gestion des alias
-
-function createAlias ( applicationName, alias ) {
-    var data = {
-        applicationName: applicationName,
-        alias: alias
-    };
-    return $http.post ( 'application/alias', data );
-}
-
-function removeAlias ( applicationName, alias ) {
-    return $http.delete ( 'application/' + applicationName + '/alias/' + alias );
-}
+		// Teste la validite d'une application avant qu'on puisse la creer
+		function isValid(applicationName, serverName) {
+			// var validity = $resource ( 'application/verify/' + applicationName + '/' + serverName );
+			// return validity.get ().$promise;
+			return applicationTraversonService
+				.traversonService
+				.withRequestOptions({
+					qs: { name: applicationName }
+				})
+				.withTemplateParameters({ name: applicationName })
+				.newRequest()
+				.getResource()
+				.result
+				.then(function (res) {
+					if (res._embedded) {
+						return res._embedded.applicationResourceList.length;
+					}
+					return false;
+				})
+		}
 
 
-// Gestion des ports
+		// Suppression d'une application
+		function remove(applicationName) {
+			applicationTraversonService
+				.traversonService
+				.newRequest()
+				.follow('applicationResourceList[name:' + applicationName + ']', 'delete')
+				.delete();
+		}
 
-function createPort ( applicationName, number, nature, isQuickAccess ) {
-    var data = {
-        applicationName: applicationName,
-        portToOpen: number,
-        portNature: nature,
-        portQuickAccess: isQuickAccess
-    };
-    return $http.post ( 'application/ports', data );
-}
+		function findByName(applicationName) {
+			var self = this;
+			return applicationTraversonService
+				.flatTraverson(
+				['applicationResourceList[name:' + applicationName + ']', 'self'],
+				['modules'],
+				['server'],
+				['deployments'],
+				['containers']
+				).catch(function (err) {
+					console.error(err);
+					stopPolling.call(self);
+				});
+		}
 
-function removePort ( applicationName, number ) {
-    return $http.delete ( 'application/' + applicationName + '/ports/' + number );
-}
 
- function openPort(moduleID, statePort, portInContainer) {
-    var data = {
-        publishPort: statePort
-    };
+		function init(applicationName) {
+			var self = this;
+			if (!self.timer) {
+				self.timer = pollApp.call(self, applicationName);
+			}
+			return findByName.call(self, applicationName).then(function (response) {
+				self.state = response;
+			});
+		}
 
-    var dir = $resource ( '/module/:moduleID/ports/:portInContainer' ,
-    { 
-        moduleID: moduleID,
-        portInContainer: portInContainer
-    },
-    { 
-        'update': { 
-            method: 'PUT',
-            transformResponse: function ( data, headers ) {
-                var response = {};
-                response = JSON.parse(data);
-                return response;
-            }
-        }
-    }
-    );
-    return dir.update( { }, data ).$promise;
-}
+		function pollApp(applicationName) {
+			var self = this;
+			return $interval(function () {
+				findByName.call(self, applicationName).then(function (response) {
+					return self.state = response;
+				});
+			}, 2000)
+		}
 
-}
-}) ();
+		function stopPolling() {
+			if (this.timer) {
+				$interval.cancel(this.timer);
+				this.timer = null;
+			}
+		}
+
+		// Liste de toutes les container d'une application en fonction du type server/module
+		function listContainers(applicationName) {
+			return applicationTraversonService
+				.concatTraverson(
+				['applicationResourceList[name:' + applicationName + ']', 'self'],
+				['containers']
+			);
+		}
+
+		// Gestion des alias
+
+		function createAlias(applicationName, alias) {
+			var data = {
+				applicationName: applicationName,
+				alias: alias
+			};
+			return $http.post('application/alias', data);
+		}
+
+		function removeAlias(applicationName, alias) {
+			return $http.delete('application/' + applicationName + '/alias/' + alias);
+		}
+
+
+		// Gestion des ports
+
+		function createPort(applicationName, number, nature, isQuickAccess) {
+			var data = {
+				applicationName: applicationName,
+				portToOpen: number,
+				portNature: nature,
+				portQuickAccess: isQuickAccess
+			};
+			return $http.post('application/ports', data);
+		}
+
+		function removePort(applicationName, number) {
+			return $http.delete('application/' + applicationName + '/ports/' + number);
+		}
+
+		function openPort(moduleID, statePort, portInContainer) {
+			var data = {
+				publishPort: statePort
+			};
+
+			var dir = $resource('/module/:moduleID/ports/:portInContainer',
+				{
+					moduleID: moduleID,
+					portInContainer: portInContainer
+				},
+				{
+					'update': {
+						method: 'PUT',
+						transformResponse: function (data, headers) {
+							var response = {};
+							response = JSON.parse(data);
+							return response;
+						}
+					}
+				}
+			);
+			return dir.update({}, data).$promise;
+		}
+
+	}
+})();
