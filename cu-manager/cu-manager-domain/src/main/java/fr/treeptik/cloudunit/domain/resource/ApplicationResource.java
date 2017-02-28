@@ -5,7 +5,7 @@ import javax.validation.constraints.Pattern;
 
 import org.springframework.hateoas.ResourceSupport;
 
-import fr.treeptik.cloudunit.domain.model.Application;
+import fr.treeptik.cloudunit.domain.core.Application;
 
 public class ApplicationResource extends ResourceSupport {
     @NotNull

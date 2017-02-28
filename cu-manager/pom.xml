@@ -14,6 +14,8 @@
   <modules>
     <module>cu-manager-domain</module>
     <module>cu-manager-ui</module>
+    <module>cu-docker-orchestrator</module>
+    <module>cu-orchestrator-core</module>
   </modules>
 
   <dependencyManagement>

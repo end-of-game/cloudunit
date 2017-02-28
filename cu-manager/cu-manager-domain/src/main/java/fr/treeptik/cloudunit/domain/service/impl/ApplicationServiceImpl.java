@@ -3,21 +3,26 @@ package fr.treeptik.cloudunit.domain.service.impl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import fr.treeptik.cloudunit.domain.model.Application;
-import fr.treeptik.cloudunit.domain.model.Image;
+import fr.treeptik.cloudunit.domain.core.Application;
+import fr.treeptik.cloudunit.domain.core.Image;
+import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
+import fr.treeptik.cloudunit.domain.repository.ImageRepository;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
-import fr.treeptik.cloudunit.domain.service.ImageService;
+import fr.treeptik.cloudunit.domain.service.OrchestratorService;
 
-@Service
+@Component
 public class ApplicationServiceImpl implements ApplicationService {
     @Autowired
     private ApplicationRepository applicationRepository;
     
     @Autowired
-    private ImageService imageService;
+    private ImageRepository imageRepository;
+    
+    @Autowired
+    private OrchestratorService orchestratorService;
     
     public void setApplicationRepository(ApplicationRepository applicationRepository) {
         this.applicationRepository = applicationRepository;
@@ -47,15 +52,32 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     @Override
     public void delete(Application application) {
+        // Use of stream avoids ConcurrentModificationException
+        application.getServices().stream().forEach(service -> {
+            removeService(application, service);
+        });
+        
         applicationRepository.delete(application);
     }
     
-    public void addService(String imageName) {
-        Optional<Image> image = imageService.findByName(imageName);
+    @Override
+    public Service addService(Application application, String imageName) {
+        Image image = imageRepository.findByName(imageName)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Image %s could not be found", imageName)));
         
-        if (!image.isPresent()) {
-            throw new IllegalArgumentException(String.format("Image %s could not be found", imageName));
-        }        
+        Service service = application.addService(image);
+        
+        orchestratorService.createContainer(application, service.getContainerName(), image);
+        
+        applicationRepository.save(application);
+        
+        return service;
+    }
+    
+    public void removeService(Application application, Service service) {
+        orchestratorService.deleteContainer(application, service.getContainerName());
+        
+        application.removeService(service.getName());
     }
 
 }

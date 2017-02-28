@@ -1,18 +1,18 @@
 version: '2'
 services:
 
-  redis:
-      container_name: cu-redis
-      image: redis:3.0.1
-      ports:
-        - "6379:6379"
-      command: redis-server --appendonly yes
-      volumes:
-        - /etc/localtime:/etc/localtime:ro
-        - /etc/timezone:/etc/timezone:ro
-        - redis-data:/data
-      labels:
-        - "traefik.enable=false"
+#  redis:
+#      container_name: cu-redis
+#      image: redis:3.0.1
+#      ports:
+#        - "6379:6379"
+#      command: redis-server --appendonly yes
+#      volumes:
+#        - /etc/localtime:/etc/localtime:ro
+#        - /etc/timezone:/etc/timezone:ro
+#        - redis-data:/data
+#      labels:
+#        - "traefik.enable=false"
 
   mongo:
       container_name: cu-mongo
@@ -28,26 +28,26 @@ services:
       labels:
         - "traefik.enable=false"
 
-  cadvisor:
-      container_name: cuplatform_cadvisor_1
-      image: google/cadvisor:0.14.0
-      environment:
-        - DB_USER=root
-        - DB_PASS=root
-        - DB_NAME=cadvisor
-      ports:
-        - "8081:8080"
-      volumes:
-        - /:/rootfs:ro
-        - /var/run:/var/run:rw
-        - /sys:/sys:ro
-        - /var/lib/docker:/var/lib/docker:ro
-        - /etc/localtime:/etc/localtime:ro
-        - /etc/timezone:/etc/timezone:ro
-      command: --housekeeping_interval=5s
-      labels:
-        - "traefik.enable=false"
-
+#  cadvisor:
+#      container_name: cuplatform_cadvisor_1
+#      image: google/cadvisor:0.14.0
+#      environment:
+#        - DB_USER=root
+#        - DB_PASS=root
+#        - DB_NAME=cadvisor
+#      ports:
+#        - "8081:8080"
+#      volumes:
+#        - /:/rootfs:ro
+#        - /var/run:/var/run:rw
+#        - /sys:/sys:ro
+#        - /var/lib/docker:/var/lib/docker:ro
+#        - /etc/localtime:/etc/localtime:ro
+#        - /etc/timezone:/etc/timezone:ro
+#      command: --housekeeping_interval=5s
+#      labels:
+#        - "traefik.enable=false"
+#
 #  gitlab:
 #      env_file: .env
 #      container_name: cu-gitlab
@@ -139,12 +139,12 @@ networks:
 volumes:
   mongo-data:
   mongo-config:
-  gitlab-config:
-  gitlab-logs:
-  gitlab-data:
-  jenkins-home:
-  sonar-data:
-  sonar-extensions:
+#  gitlab-config:
+#  gitlab-logs:
+#  gitlab-data:
+#  jenkins-home:
+#  sonar-data:
+#  sonar-extensions:
   traefik-certs:
-  redis-data:
-  nexus-data:
+#  redis-data:
+#  nexus-data:

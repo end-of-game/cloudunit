@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.repository.Repository;
 
-import fr.treeptik.cloudunit.domain.model.Application;
+import fr.treeptik.cloudunit.domain.core.Application;
 
 public interface ApplicationRepository extends Repository<Application, String> {
     public Optional<Application> findOne(String id);

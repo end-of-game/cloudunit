@@ -8,11 +8,6 @@
   <name>CloudUnit</name>
 
   <modules>
-    <module>cu-core</module>
-    <module>cu-cli</module>
-    <module>cu-docker-api</module>
-
-    <module>cu-maven</module>
     <module>cu-manager</module>
   </modules>
 

@@ -1,10 +1,12 @@
 package fr.treeptik.cloudunit.domain.test;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import javax.json.Json;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -15,13 +17,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.treeptik.cloudunit.domain.resource.ApplicationResource;
+import fr.treeptik.cloudunit.domain.resource.ServiceResource;
 
 @Component
 public class ApplicationTemplate {
     @Autowired
     private MockMvc mockMvc;
+    
     @Autowired
     private ObjectMapper objectMapper;
+    
+    @Autowired(required = false)
+    @Qualifier("testApplicationName")
+    private String testApplicationName;
 
     public ApplicationTemplate() {}
     
@@ -44,6 +52,15 @@ public class ApplicationTemplate {
         return result;
     }
     
+    public ApplicationResource createAndAssumeApplication() throws Exception {
+        return createAndAssumeApplication(testApplicationName);
+    }
+    
+    public ApplicationResource createAndAssumeApplication(String applicationName) throws Exception {
+        return getApplication(createApplication(applicationName)
+                .andExpect(status().isCreated()));
+    }
+    
     protected <T> T getResult(ResultActions result, Class<T> type) throws Exception {
         String content = result.andReturn().getResponse().getContentAsString();
         return objectMapper.readValue(content, type);
@@ -62,6 +79,19 @@ public class ApplicationTemplate {
         String url = application.getLink(Link.REL_SELF).getHref();
         ResultActions result = mockMvc.perform(delete(url));
         return result;
+    }
+
+    public ResultActions addService(ApplicationResource application, String serverName) throws Exception {
+        String uri = application.getLink("cu:services").getHref();
+        ServiceResource request = new ServiceResource(serverName);
+        
+        return mockMvc.perform(post(uri)
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    public ServiceResource getService(ResultActions result) throws Exception {
+        return getResult(result, ServiceResource.class);
     }
     
 }

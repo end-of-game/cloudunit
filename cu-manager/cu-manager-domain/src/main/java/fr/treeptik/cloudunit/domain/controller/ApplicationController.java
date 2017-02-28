@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import fr.treeptik.cloudunit.domain.model.Application;
+import fr.treeptik.cloudunit.domain.core.Application;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
 import fr.treeptik.cloudunit.domain.resource.ApplicationResource;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
@@ -44,15 +43,13 @@ public class ApplicationController {
         
         resource.add(linkTo(methodOn(ApplicationController.class).getApplication(application.getId()))
                 .withSelfRel());
-
-        resource.add(linkTo(methodOn(ApplicationController.class).deleteApplication(application.getId()))
-                .withRel("delete"));
+        resource.add(linkTo(methodOn(ServiceController.class).getServices(application.getId()))
+                .withRel("cu:services"));
 
         return resource;
     }
     
     @PostMapping
-    @Transactional
     public ResponseEntity<?> createApplication(@Valid @RequestBody ApplicationResource request) {
         Application application = applicationService.create(request.getName());
         
@@ -61,7 +58,6 @@ public class ApplicationController {
     }
 
     @GetMapping
-    @Transactional(readOnly = true)
     public ResponseEntity<?> getApplications() {
         List<Application> applications = applicationRepository.findAll();
         
