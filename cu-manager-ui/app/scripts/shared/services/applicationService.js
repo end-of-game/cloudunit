@@ -107,9 +107,8 @@
 		function create(applicationName, serverName) {
 			var payload = {
 				name: applicationName,
-				serverType: serverName
+				// serverType: serverName TODO
 			};
-
 			return applicationTraversonService
 				.traversonService
 				.post(payload)
@@ -170,6 +169,7 @@
 
 		// Suppression d'une application
 		function remove(applicationName) {
+			console.log(applicationName);
 			applicationTraversonService
 				.traversonService
 				.newRequest()

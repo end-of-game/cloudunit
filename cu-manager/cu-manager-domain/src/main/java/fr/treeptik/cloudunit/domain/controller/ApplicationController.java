@@ -44,7 +44,10 @@ public class ApplicationController {
         
         resource.add(linkTo(methodOn(ApplicationController.class).getApplication(application.getId()))
                 .withSelfRel());
-        
+
+        resource.add(linkTo(methodOn(ApplicationController.class).deleteApplication(application.getId()))
+                .withRel("delete"));
+
         return resource;
     }
     

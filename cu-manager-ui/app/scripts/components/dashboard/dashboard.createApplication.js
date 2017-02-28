@@ -78,31 +78,32 @@
     };
 
     vm.$onInit = function() {
-       ImageService.findEnabledServer()
-        .then(success)
-        .catch(error);
+      // TODO
+      //  ImageService.findEnabledServer()
+      //   .then(success)
+      //   .catch(error);
 
-      function success(serverImages) {
-        vm.serverImages = serverImages;
-         serverImages.forEach(function (element, index) {
-          var rang = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[index].prefixEnv);
-          serverImages[index].prefixId = (serverImages[index].prefixId > 0)?serverImages[index].prefixId:-serverImages[index].prefixId;
-          if(rang == -1) {
-            vm.group.push({
-              id: serverImages[index].prefixId,
-              title: serverImages[index].prefixEnv,
-            });
-          }
-         });
+      // function success(serverImages) {
+      //   vm.serverImages = serverImages;
+      //    serverImages.forEach(function (element, index) {
+      //     var rang = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[index].prefixEnv);
+      //     serverImages[index].prefixId = (serverImages[index].prefixId > 0)?serverImages[index].prefixId:-serverImages[index].prefixId;
+      //     if(rang == -1) {
+      //       vm.group.push({
+      //         id: serverImages[index].prefixId,
+      //         title: serverImages[index].prefixEnv,
+      //       });
+      //     }
+      //    });
          
-        $rootScope.$broadcast('app:serverImages', {serverImages: vm.group});
+      //   $rootScope.$broadcast('app:serverImages', {serverImages: vm.group});
         
-        vm.serverImageChoice = serverImages[0];
-      }
+      //   vm.serverImageChoice = serverImages[0];
+      // }
 
-      function error(response) {
-        ErrorService.handle(response);
-      }  
+      // function error(response) {
+      //   ErrorService.handle(response);
+      // }  
     }
     
     function createApplication(applicationName, serverName) {

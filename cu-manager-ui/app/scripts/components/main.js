@@ -92,9 +92,10 @@
 
       if (toState.name !== 'login') {
         getUserRole();
-        if (!timer) {
-          timer = UserService.checkUserStatus();
-        }
+        // TODO
+        // if (!timer) {
+        //   timer = UserService.checkUserStatus();
+        // }
       }
 
       if (toState.name === 'login') {
@@ -105,9 +106,10 @@
 
     function getUserRole() {
       if (isLogged()) {
-        UserService.profile().then(function(user) {
-          vm.isAdmin = user.data.role.description === 'ROLE_ADMIN';
-        });
+        // TODO
+        // UserService.profile().then(function(user) {
+        //   vm.isAdmin = user.data.role.description === 'ROLE_ADMIN';
+        // });
       }
     }
 
@@ -118,9 +120,10 @@
     }
 
     function getAbout() {
-      ApplicationService.about().then(function (response) {
-        vm.about = response;
-      });
+      // TODO
+      // ApplicationService.about().then(function (response) {
+      //   vm.about = response;
+      // });
     }
 
     function logout() {
@@ -134,7 +137,9 @@
     }
 
     function isLogged() {
-      return UserService.isLogged();
+      // TODO
+      // return UserService.isLogged();
+      return true;
     }
   }
 })();

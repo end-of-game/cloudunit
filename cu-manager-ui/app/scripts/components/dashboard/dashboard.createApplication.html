@@ -58,9 +58,9 @@
               type="submit"
               class="button-effect primary pull-right"
               click-once=""
-              data-ng-disabled="createApp.notValidated || createApp.createAppForm.name.$error.maxlength || !createApp.serverImageSelect2 || !createApp.applicationName"
+              data-ng-disabled=" createApp.createAppForm.name.$error.maxlength || !createApp.applicationName"
               data-ng-click="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
-        <span>Create New App</span>
+        <span>Create New App</span> <!-- TODO createApp.notValidated || !createApp.serverImageSelect2 ||-->
       </button>
     </form>
 
