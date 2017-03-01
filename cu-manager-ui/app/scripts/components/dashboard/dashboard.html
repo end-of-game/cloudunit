@@ -29,6 +29,7 @@
       </div>
     </div>
   </header>
+
   <div class="page-content" id="dashboard">
     <div class="page full">
       <div class="subheader">
@@ -151,7 +152,44 @@
                 data-ng-class="{selected: dashboard.selectedDisplayStyle == 'List'}">
           <i class="icon-whhg list-th"></i>
         </button>
+      </div>
+      
+  <div ng-if="dashboard.applicationsSelectedAction.length" class="dashboard-actions">
+      <!--<div  ng-repeat="applicationName in dashboard.applicationsSelectedAction">
+        {{applicationName}}
+      </div>-->
+      <!--data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"-->
+      
 
+          <a ng-repeat="application in dashboard.applicationsSelectedAction"
+             id="preview-link"
+             class="icon-button"
+             
+             tooltip="{{application.name}}"
+            
+             data-placement="bottom">
+            <span><i class="icon-whhg cms"></i></span>
+          </a>
+          
+          <button ng-click="dashboard.deleteActions(dashboard.applicationsSelectedAction)"
+                  style="height: 37px"
+                  class="alias-btn button-effect primary pull-right"
+                  data-ng-disabled="false">
+            <span>Delete</span>
+          </button>
+          <button ng-click="dashboard.stopActions(dashboard.applicationsSelectedAction)"
+                  ng-disabled="!dashboard.actions.stop" style="height: 37px"
+                  class="alias-btn button-effect primary pull-right"
+                  data-ng-disabled="false">
+            <span>Stop</span>
+          </button>
+          <button ng-click="dashboard.startActions(dashboard.applicationsSelectedAction)"
+                  ng-disabled="!dashboard.actions.start" style="height: 37px"
+                  class="alias-btn button-effect primary pull-right"
+                  data-ng-disabled="false">
+            <span>Start</span>
+          </button>
+          <!--{{dashboard.actions}}-->
       </div>
       <div class="cards">
         <!--create application-->
@@ -238,10 +276,13 @@
                         'animation': 'slide-from-top'}"
                         sweet-confirm-option="{'title':'Deleted!','text':'Your application has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
                         sweet-cancel-option="{'title':'Cancelled!','text':'Your application is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
-                        sweet-on-confirm="dashboard.deleteApplication(application.name)">
+                        sweet-on-confirm="dashboard.deleteApplication(application)">
                   <i class="icon-whhg trash"></i>
                 </button>
-
+                <label class="switch">
+                  <input ng-disabled="application.status === 'PENDING'" ng-click="dashboard.selectedAction(application)"  type="checkbox">
+                  <div class="slider"></div>
+                </label>
                 <a class="icon-button secondary"
                    data-ng-hide="application.status==='STOP' || application.deploymentStatus !== 'ALREADY_DEPLOYED'"
                    data-ng-href="http://{{ application.location }}{{ application.contextPath }}"

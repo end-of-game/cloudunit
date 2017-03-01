@@ -29,6 +29,10 @@
     -ms-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+
+    &.checked {
+      box-shadow: 2px 7px 15px 0 rgba(51, 204,255, 0.5);
+    }
     footer {
       min-height: 14px;
     }
@@ -292,4 +296,24 @@
       left: 0;
       right: 0;
     }
+}
+
+@keyframes dropHeader {
+  0% {
+    transform: translateY(-100%) scaleY(0);
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+}
+.dashboard-actions {
+  display: block;
+  height: 50px;
+  padding: 7px;
+  background-color: rgba(0, 0, 0, 0.03);
+  animation-name: dropHeader;
+  animation-duration: 0.6s;
+  animation-timing-function: ease-in-out;
+  animation-delay: 0.6s;
+  animation-fill-mode: backwards;
 }

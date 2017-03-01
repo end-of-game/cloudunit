@@ -55,6 +55,16 @@
     vm.toggleServer = toggleServer;
     vm.buffer = '';
     vm.selectedDisplayStyle = 'Grid';
+    vm.applicationsSelectedAction = [];
+    vm.selectedAction = selectedAction;
+    vm.deleteActions = deleteActions;
+    vm.stopActions = stopActions;
+    vm.startActions = startActions;
+
+    vm.actions = {
+      stop: true,
+      start: true
+    };
     // vm.checkCancel = checkCancel;
     update();
 
@@ -119,26 +129,91 @@
     }
 
     // Delete the application
-    function deleteApplication(applicationName) {
-      ApplicationService.remove(applicationName);
+    function deleteApplication(application) {
+      ApplicationService.remove(application.name)
+        .then(function() {
+          selectedAction(application)
+        });
     }
 
     function toggleServer(application) {
       if (application.status === 'START') {
-        stopApplication(application.name);
+        stopApplication(application);
       } else if (application.status === 'STOP') {
-        startApplication(application.name);
+        startApplication(application);
       }
     }
 
     // Start the application
-    function startApplication(applicationName) {
-      ApplicationService.start(applicationName);
+    function startApplication(application) {
+      ApplicationService.start(application.name)
+        .then(function() {
+          checkActions();
+        });
     }
 
     // Stop the application
-    function stopApplication(applicationName) {
-      ApplicationService.stop(applicationName);
+    function stopApplication(application) {
+      ApplicationService.stop(application.name)
+        .then(function() {
+          checkActions();
+        });
     }
+
+    function selectedAction (application) {
+      // console.log('selectedAction', application);
+      var index = vm.applicationsSelectedAction.map(function(application) { return application.name; }).indexOf(application.name);
+      // var index = vm.applicationsSelectedAction.indexOf(applicationName);
+      if( index === -1) {
+        vm.applicationsSelectedAction.push(application);
+      } else {
+        vm.applicationsSelectedAction.splice(index, 1);
+      }
+      checkActions();
+      // console.log(vm.applicationsSelectedAction);
+    }
+
+    function deleteActions(applications) {
+      applications.map(function(application) {
+        deleteApplication(application);
+      });
+      vm.applicationsSelectedAction = [];
+    }
+
+    function stopActions(applications) {
+      applications.map(function(application) {
+        stopApplication(application);
+      });
+      vm.applicationsSelectedAction = [];
+    }
+
+    function startActions(applications) {
+      applications.map(function(application) {
+        startApplication(application);
+      });
+      vm.applicationsSelectedAction = [];
+    }
+
+    function checkActions() {
+      vm.actions = {
+        stop: true,
+        start: true
+      }
+      vm.applicationsSelectedAction.map(function(application) {
+        console.log('checkActions');
+        switch (application.status) {
+          case 'START': 
+            vm.actions.start = false;
+            break;
+          case 'STOP': 
+            vm.actions.stop = false;
+            break;
+          default:
+            break;
+        }  
+      });
+      
+    }
+
   }
 })();
