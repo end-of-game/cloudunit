@@ -152,6 +152,14 @@
                 data-ng-class="{selected: dashboard.selectedDisplayStyle == 'List'}">
           <i class="icon-whhg list-th"></i>
         </button>
+
+        <label class="switch large">
+          <input ng-click="dashboard.applicationsSelectedAction = 
+          (dashboard.applicationsSelectedAction.length === dashboard.applications.length) ? [] : dashboard.applications"
+            ng-checked="dashboard.applicationsSelectedAction.length === dashboard.application.length"
+            type="checkbox" />
+          <div class="slider"></div>
+        </label>
       </div>
       
   <div ng-if="dashboard.applicationsSelectedAction.length" class="dashboard-actions">
@@ -160,7 +168,7 @@
              class="icon-button"
              tooltip="{{application.name}}"
              data-placement="bottom"
-             ng-click="dashboard.selectedAction(application)">
+             ng-click="dashboard.selectForAction(application)">
             <span><i class="icon-whhg deletefolder"></i></span>
           </a>
           <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.deleteApplication)"
@@ -273,7 +281,7 @@
                 </button>
                 <label class="switch">
                   <input ng-disabled="application.status === 'PENDING'"
-                    ng-click="dashboard.selectedAction(application)" 
+                    ng-click="dashboard.selectForAction(application)" 
                     ng-checked="application.checked"
                     type="checkbox" />
                   <div class="slider"></div>
@@ -288,14 +296,14 @@
                    data-placement="bottom">
                   <i class="icon-whhg preview"></i>
                 </a>
-                <a class="snapshot-link icon-button secondary"
+                <!--<a class="snapshot-link icon-button secondary"
                    data-ng-href="#editApplication/{{application.name}}/snapshot"
                    ripple=""
                    tooltip=""
                    data-title="Create template"
                    data-placement="bottom">
                   <i class="icon-whhg copy"></i>
-                </a>
+                </a>-->
                 <a class="logs-link icon-button secondary"
                    data-ng-href="#editApplication/{{application.name}}/logs"
                    ripple=""
@@ -305,6 +313,7 @@
                   <i class="icon-whhg rawaccesslogs"></i>
                 </a>
                 <button class="server-btn icon-button secondary"
+                        ng-if="!application.checked"
                         data-ng-click="dashboard.toggleServer(application)"
                         ripple=""
                         tooltip=""

@@ -29,10 +29,7 @@
     -ms-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
-
-    &.checked {
-      box-shadow: 2px 7px 15px 0 rgba(51, 204,255, 0.5);
-    }
+    
     footer {
       min-height: 14px;
     }
@@ -239,6 +236,18 @@
       left: 4px;
     }
   }
+
+.application {
+  &.stop .content {
+    box-shadow: 2px 7px 15px 0 rgba(240, 173, 78, 0.5);
+  }
+  &.error .content {
+    box-shadow: 2px 7px 15px 0 rgba(217, 83, 79, 0.5);
+  }
+  .content.checked {
+    box-shadow: 2px 7px 15px 0 rgba(51, 204, 255, 0.5);
+  }
+}
 
 .application.start .status {
   color: #8bc34a;

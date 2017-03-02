@@ -59,7 +59,7 @@
     vm.buffer = '';
     vm.selectedDisplayStyle = 'Grid';
     vm.applicationsSelectedAction = [];
-    vm.selectedAction = selectedAction;
+    vm.selectForAction = selectForAction;
     vm.executeAction = executeAction;
 
     // vm.checkCancel = checkCancel;
@@ -113,6 +113,7 @@
           }
         }
         
+        // checked if application selected for actions
         applications = applications.map(function(refreshApplication){
             if((vm.applicationsSelectedAction
                   .map(function(application) { return application.name; })
@@ -124,12 +125,14 @@
           return refreshApplication;
         });
 
+        // check if application has been deleted concurrently for actions
         vm.applicationsSelectedAction = applications.filter(function(refreshApplication) {
           return (vm.applicationsSelectedAction.map(function(application) { return application.name; })
                     .indexOf(refreshApplication.name) !== -1)
         });
 
-        vm.applications = applications;     
+        vm.applications = applications;
+        // update actions concurrently
         checkActions();
         return vm.applications;
       }
@@ -178,9 +181,11 @@
         });
     }
 
-    function selectedAction (application) {
-      var index = vm.applicationsSelectedAction.map(function(application) { return application.name; }).indexOf(application.name);
-      // var index = vm.applicationsSelectedAction.indexOf(applicationName);
+    // push/remove application in applicationsSelectedAction
+    function selectForAction (application) {
+      var index = vm.applicationsSelectedAction
+        .map(function(application) { return application.name; })
+        .indexOf(application.name);
       if( index === -1) {
         vm.applicationsSelectedAction.push(application);
       } else {
@@ -189,6 +194,8 @@
       checkActions();
     }
 
+    // execute action on selectedAction
+    // if status authorize to execute action
     function executeAction(applications, actionFunction) {
         applications.map(function(application) {
           if((actionFunction === vm.stopApplication && application.status === 'START')
@@ -199,6 +206,8 @@
         vm.applicationsSelectedAction = [];
     }
 
+    // check if one action could be apply an action
+    // this action could be true
     function checkActions() {
       vm.actions = {
         stop: false,
@@ -216,7 +225,6 @@
             break;
         }  
       });
-      
     }
 
   }
