@@ -52,14 +52,15 @@
     vm.selectedServer = '';
     vm.search = '';
     vm.deleteApplication = deleteApplication;
+    vm.stopApplication = stopApplication;
+    vm.startApplication = startApplication;
+
     vm.toggleServer = toggleServer;
     vm.buffer = '';
     vm.selectedDisplayStyle = 'Grid';
     vm.applicationsSelectedAction = [];
     vm.selectedAction = selectedAction;
-    vm.deleteActions = deleteActions;
-    vm.stopActions = stopActions;
-    vm.startActions = startActions;
+    vm.executeAction = executeAction;
 
     vm.actions = {
       stop: true,
@@ -132,7 +133,11 @@
     function deleteApplication(application) {
       ApplicationService.remove(application.name)
         .then(function() {
-          selectedAction(application)
+          vm.applicationsSelectedAction = vm.applicationsSelectedAction.filter(
+            function(applicationAction) {
+              return applicationAction.name !== application.name;
+            });
+            checkActions();
         });
     }
 
@@ -161,7 +166,6 @@
     }
 
     function selectedAction (application) {
-      // console.log('selectedAction', application);
       var index = vm.applicationsSelectedAction.map(function(application) { return application.name; }).indexOf(application.name);
       // var index = vm.applicationsSelectedAction.indexOf(applicationName);
       if( index === -1) {
@@ -170,43 +174,27 @@
         vm.applicationsSelectedAction.splice(index, 1);
       }
       checkActions();
-      // console.log(vm.applicationsSelectedAction);
     }
 
-    function deleteActions(applications) {
+    function executeAction(applications, actionFunction) {
       applications.map(function(application) {
-        deleteApplication(application);
-      });
-      vm.applicationsSelectedAction = [];
-    }
-
-    function stopActions(applications) {
-      applications.map(function(application) {
-        stopApplication(application);
-      });
-      vm.applicationsSelectedAction = [];
-    }
-
-    function startActions(applications) {
-      applications.map(function(application) {
-        startApplication(application);
+        actionFunction.call(this, application);
       });
       vm.applicationsSelectedAction = [];
     }
 
     function checkActions() {
       vm.actions = {
-        stop: true,
-        start: true
+        stop: false,
+        start: false
       }
       vm.applicationsSelectedAction.map(function(application) {
-        console.log('checkActions');
         switch (application.status) {
           case 'START': 
-            vm.actions.start = false;
+            vm.actions.stop = true;
             break;
           case 'STOP': 
-            vm.actions.stop = false;
+            vm.actions.start = true;
             break;
           default:
             break;

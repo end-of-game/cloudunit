@@ -155,41 +155,32 @@
       </div>
       
   <div ng-if="dashboard.applicationsSelectedAction.length" class="dashboard-actions">
-      <!--<div  ng-repeat="applicationName in dashboard.applicationsSelectedAction">
-        {{applicationName}}
-      </div>-->
-      <!--data-ng-class="{'disabled':editApp.application.status==='STOP' || editApp.application.status==='PENDING' || editApp.application.deploymentStatus !== 'ALREADY_DEPLOYED' }"-->
-      
-
           <a ng-repeat="application in dashboard.applicationsSelectedAction"
              id="preview-link"
              class="icon-button"
-             
              tooltip="{{application.name}}"
-            
-             data-placement="bottom">
-            <span><i class="icon-whhg cms"></i></span>
+             data-placement="bottom"
+             ng-click="dashboard.selectedAction(application)">
+            <span><i class="icon-whhg deletefolder"></i></span>
           </a>
-          
-          <button ng-click="dashboard.deleteActions(dashboard.applicationsSelectedAction)"
+          <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.deleteApplication)"
                   style="height: 37px"
                   class="alias-btn button-effect primary pull-right"
                   data-ng-disabled="false">
             <span>Delete</span>
           </button>
-          <button ng-click="dashboard.stopActions(dashboard.applicationsSelectedAction)"
+          <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.stopApplication)"
                   ng-disabled="!dashboard.actions.stop" style="height: 37px"
                   class="alias-btn button-effect primary pull-right"
                   data-ng-disabled="false">
             <span>Stop</span>
           </button>
-          <button ng-click="dashboard.startActions(dashboard.applicationsSelectedAction)"
+          <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.startApplication)"
                   ng-disabled="!dashboard.actions.start" style="height: 37px"
                   class="alias-btn button-effect primary pull-right"
                   data-ng-disabled="false">
             <span>Start</span>
           </button>
-          <!--{{dashboard.actions}}-->
       </div>
       <div class="cards">
         <!--create application-->
@@ -197,7 +188,6 @@
         <create-app></create-app>
 
         <!--application list-->
-
         <div id='application-{{application.name}}'
              class="application {{ application.status | lowercase}}"
              ng-class="{'card': dashboard.selectedDisplayStyle == 'Grid',
