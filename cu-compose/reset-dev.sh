@@ -15,13 +15,14 @@
 
 source .env
 
-if [ "$CU_COMPOSE_FILES" = "" ]; then
-    CU_COMPOSE_FILES="-f docker-compose.elk.yml -f docker-compose.dev.yml"
-fi
-
 if [[ $USER != "vagrant" ]]; then
     echo "This script must be run as vagrant user for dev environment"
     exit 1
+fi
+
+if [ "$CU_COMPOSE_FILES" = "" ]; then
+    #CU_COMPOSE_FILES="-f docker-compose.mattermost.yml -f docker-compose.elk.yml -f docker-compose.dev.yml"
+    CU_COMPOSE_FILES="-f docker-compose.elk.yml -f docker-compose.dev.yml"
 fi
 
 if [ "$1" != "-y" ]; then

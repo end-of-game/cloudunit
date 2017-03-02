@@ -112,37 +112,37 @@ VALUES
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
-  (1, 'John', 'Doe', 'johndoe.doe@gmail.com', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 1, 1, '2013-08-22 09:22:06', 'johndoe',
+  (1, 'John', 'Doe', 'johndoe.doe@gmail.com', 'tziuDh8EJJpo8kU7CXbI5A==', 1, 1, '2013-08-22 09:22:06', 'johndoe',
    'admin');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
-  (2, 'scott', 'tiger', 'scott.tiger@gmail.com', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 1, 1, '2014-02-22 09:22:06', 'scott',
+  (2, 'scott', 'tiger', 'scott.tiger@gmail.com', 'tziuDh8EJJpo8kU7CXbI5A==', 1, 1, '2014-02-22 09:22:06', 'scott',
    'user');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
-  (3, 'user1', 'test1', 'usertest1@treeptik.fr', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 1, 1, '2013-08-22 09:22:06', 'usertest1',
+  (3, 'user1', 'test1', 'usertest1@treeptik.fr', 'tziuDh8EJJpo8kU7CXbI5A==', 1, 1, '2013-08-22 09:22:06', 'usertest1',
    'user');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
-  (4, 'user2', 'test2', 'usertest2@treeptik.fr', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 1, 1, '2013-08-22 09:22:06', 'usertest2',
+  (4, 'user2', 'test2', 'usertest2@treeptik.fr', 'tziuDh8EJJpo8kU7CXbI5A==', 1, 1, '2013-08-22 09:22:06', 'usertest2',
    'user');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
-  (5, 'user3', 'test3', 'usertest3@treeptik.fr', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 1, 1, '2013-08-22 09:22:06', 'usertest3',
+  (5, 'user3', 'test3', 'usertest3@treeptik.fr', 'tziuDh8EJJpo8kU7CXbI5A==', 1, 1, '2013-08-22 09:22:06', 'usertest3',
    'user');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
-  (6, 'user4', 'test4', 'usertest4@treeptik.fr', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 1, 1, '2013-08-22 09:22:06', 'usertest4',
+  (6, 'user4', 'test4', 'usertest4@treeptik.fr', 'tziuDh8EJJpo8kU7CXbI5A==', 1, 1, '2013-08-22 09:22:06', 'usertest4',
    'user');
 
 INSERT IGNORE INTO `User` (`id`, `firstName`, `lastName`, `email`, `password`, `role_id`, `status`, `signin`, `login`, `organization`)
 VALUES
-  (7, 'user5', 'test5', 'usertest5@treeptik.fr', 'cVwsWoHVZ28Qf9fHE0W4Qg==', 1, 1, '2013-08-22 09:22:06', 'usertest5',
+  (7, 'user5', 'test5', 'usertest5@treeptik.fr', 'tziuDh8EJJpo8kU7CXbI5A==', 1, 1, '2013-08-22 09:22:06', 'usertest5',
    'user');
 INSERT IGNORE INTO `Metric` (`id`, `name`, `url`, `serverName`, `suffix`) VALUES (1, "memoryHeap", "java.lang:type=Memory/HeapMemoryUsage", "all", "used")
    ,(2, "threadCount", "java.lang:type=Threading", "all", "ThreadCount"), (3, "currentThreadsBusy", 'Catalina:name="http-bio-8080",type=ThreadPool', "tomcat", "currentThreadsBusy") ;

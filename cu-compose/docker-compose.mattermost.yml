@@ -1,0 +1,54 @@
+version: "2"
+
+services:
+
+  db:
+    build:
+      context: ./cu-mattermost/db
+    restart: unless-stopped
+    volumes:
+      - mattermost-dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=mmuser
+      - POSTGRES_PASSWORD=mmuser_password
+      - POSTGRES_DB=mattermost
+      - "TZ=${TZ}"
+
+  app:
+    build:
+      context: ./cu-mattermost/app
+    restart: unless-stopped
+    volumes:
+      - mattermost-appconfig:/mattermost/config:rw
+      - mattermost-appdata:/mattermost/data:rw
+    environment:
+      - MM_USERNAME=mmuser
+      - MM_PASSWORD=mmuser_password
+      - MM_DBNAME=mattermost
+      - "TZ=${TZ}"
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: ./cu-mattermost/web
+    restart: unless-stopped
+    environment:
+      - "TZ=${TZ}"
+    labels:
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.backend=cu-mattermost"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:${CU_MATTERMOST_DOMAIN}"
+    depends_on:
+      - app
+
+networks:
+  default:
+    external:
+      name: skynet
+
+volumes:
+  mattermost-appdata:
+  mattermost-appconfig:
+  mattermost-dbdata:
