@@ -9,18 +9,18 @@ public class HomepageResource {
     private String kibana;
     private String nexus;
     private String sonar;
-    private String letschat;
+    private String mattermost;
 
     public HomepageResource() {
     }
 
-    public HomepageResource(String jenkins, String gitlab, String kibana, String nexus, String sonar, String letschat) {
+    public HomepageResource(String jenkins, String gitlab, String kibana, String nexus, String sonar, String mattermost) {
         this.jenkins = jenkins;
         this.gitlab = gitlab;
         this.kibana = kibana;
         this.nexus = nexus;
         this.sonar = sonar;
-        this.letschat = letschat;
+        this.mattermost = mattermost;
     }
 
     public String getJenkins() {
@@ -43,7 +43,7 @@ public class HomepageResource {
         return sonar;
     }
 
-    public String getLetschat() {
-        return letschat;
+    public String getMattermost() {
+        return mattermost;
     }
 }
