@@ -14,29 +14,7 @@
  *     For any questions, contact us : contact@treeptik.fr
  */
 
-// .switch {
-//   background: #EEEEEE;
-//   border: none;
-//   height: 20px;
-//   position: relative;
-//   top: 5px;
-//   left: 5px;
-// }
-// .switch small {
-//   background: #DDDDDD;
-//   height: 20px;
-//   width: 20px;
-// }
-// .switch.checked {
-//   background: #33CCFF;
-// }
-// .switch.checked small {
-//   left: 30px;
-// }
-
-
-
-/* The switch - the box around the slider */
+/* box autour du slider */
 .switch {
   position: relative;
   display: inline-block;
@@ -45,10 +23,9 @@
   vertical-align: middle;
 }
 
-/* Hide default HTML checkbox */
+/* Cacher HTML checkbox par defaut*/
 .switch input {display:none;}
 
-/* The slider */
 .slider {
   position: absolute;
   cursor: pointer;

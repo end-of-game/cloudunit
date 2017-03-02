@@ -62,10 +62,6 @@
     vm.selectedAction = selectedAction;
     vm.executeAction = executeAction;
 
-    vm.actions = {
-      stop: true,
-      start: true
-    };
     // vm.checkCancel = checkCancel;
     update();
 
@@ -117,7 +113,24 @@
           }
         }
         
+        applications = applications.map(function(refreshApplication){
+            if((vm.applicationsSelectedAction
+                  .map(function(application) { return application.name; })
+                  .indexOf(refreshApplication.name) !== -1)) {
+                    refreshApplication.checked = true;
+            } else {
+              refreshApplication.checked = false;
+            }
+          return refreshApplication;
+        });
+
+        vm.applicationsSelectedAction = applications.filter(function(refreshApplication) {
+          return (vm.applicationsSelectedAction.map(function(application) { return application.name; })
+                    .indexOf(refreshApplication.name) !== -1)
+        });
+
         vm.applications = applications;     
+        checkActions();
         return vm.applications;
       }
 
@@ -177,10 +190,13 @@
     }
 
     function executeAction(applications, actionFunction) {
-      applications.map(function(application) {
-        actionFunction.call(this, application);
-      });
-      vm.applicationsSelectedAction = [];
+        applications.map(function(application) {
+          if((actionFunction === vm.stopApplication && application.status === 'START')
+            || (actionFunction === vm.startApplication && application.status === 'STOP')) {
+            actionFunction.call(this, application);
+          }
+        });
+        vm.applicationsSelectedAction = [];
     }
 
     function checkActions() {

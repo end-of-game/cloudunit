@@ -134,7 +134,6 @@ function isValid ( applicationName, serverName ) {
 
 // Suppression d'une application
 function remove ( applicationName ) {
-    console.log('remove', applicationName);
     return Application.get ( { id: applicationName }, function ( ref ) {
         ref.$delete ();
     } ).$promise;

@@ -194,7 +194,9 @@
               'smaller': dashboard.selectedDisplayStyle == 'Grid',
               'list': dashboard.selectedDisplayStyle == 'List'}"
              data-ng-repeat="application in dashboard.applications | orderBy:'id'  | filter:{displayName: searchText} | appByServerImage: dashboard.selectedServer track by $index">
-          <div class="content">
+          <div class="content"
+            ng-class="{'checked': application.checked}">
+            
             <h3 class="title">
               {{application.displayName}}
               <a data-ng-href="#editApplication/{{ application.name }}/overview"
@@ -270,7 +272,10 @@
                   <i class="icon-whhg trash"></i>
                 </button>
                 <label class="switch">
-                  <input ng-disabled="application.status === 'PENDING'" ng-click="dashboard.selectedAction(application)"  type="checkbox">
+                  <input ng-disabled="application.status === 'PENDING'"
+                    ng-click="dashboard.selectedAction(application)" 
+                    ng-checked="application.checked"
+                    type="checkbox" />
                   <div class="slider"></div>
                 </label>
                 <a class="icon-button secondary"
