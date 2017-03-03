@@ -84,6 +84,16 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <profiles>
+            <profile>dev</profile>
+            <!--
+            <profile>int</profile>
+            <profile>prod</profile>
+            <profile>travis</profile>
+            -->
+          </profiles>
+        </configuration>
       </plugin>
     </plugins>
   </build>
