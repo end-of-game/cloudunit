@@ -124,6 +124,15 @@
   content: "\f14a"
 }
 
+.icon-tech.check:before {
+  content: "\ea52"
+}
+
+.icon-tech.uncheck:before {
+  content: "\ea53";
+  font-weight: bold;
+}
+
 .icon-whhg {
   font-family: 'webhostinghub-glyphs';
   speak: none;
@@ -985,7 +994,7 @@
 .icon-whhg.razor:before{content:'\f416'}
 .icon-whhg.reademail:before{content:'\f173'}
 .icon-whhg.record:before{content:'\f189'}
-.icon-whhg.rectangle:before{content:'\25ad'}
+.icon-whhg.rectangle:before{content:'\25ad';   font-weight: bold;}
 .icon-whhg.recycle:before{content:'\f297'}
 .icon-whhg.reddit:before{content:'\f154'}
 .icon-whhg.redirect:before{content:'\f054'}
