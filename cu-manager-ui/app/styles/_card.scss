@@ -238,14 +238,8 @@
   }
 
 .application {
-  &.stop .content {
-    box-shadow: 2px 7px 15px 0 rgba(240, 173, 78, 0.5);
-  }
-  &.error .content {
-    box-shadow: 2px 7px 15px 0 rgba(217, 83, 79, 0.5);
-  }
   .content.checked {
-    box-shadow: 2px 7px 15px 0 rgba(51, 204, 255, 0.5);
+    box-shadow: 2px 7px 15px 0 rgba(51, 51, 51, 0.5);
   }
 }
 
@@ -307,14 +301,6 @@
     }
 }
 
-@keyframes dropHeader {
-  0% {
-    transform: translateY(-100%) scaleY(0);
-  }
-  100% {
-    transform: translateY(0) scaleY(1);
-  }
-}
 .dashboard-actions {
   display: block;
   height: 50px;

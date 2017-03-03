@@ -156,12 +156,11 @@
         <label class="switch large">
           <input ng-click="dashboard.applicationsSelectedAction = 
           (dashboard.applicationsSelectedAction.length === dashboard.applications.length) ? [] : dashboard.applications"
-            ng-checked="dashboard.applicationsSelectedAction.length === dashboard.application.length"
+            ng-checked="(dashboard.applicationsSelectedAction.length === dashboard.applications.length)"
             type="checkbox" />
           <div class="slider"></div>
         </label>
       </div>
-      
   <div ng-if="dashboard.applicationsSelectedAction.length" class="dashboard-actions">
           <a ng-repeat="application in dashboard.applicationsSelectedAction"
              id="preview-link"
@@ -171,22 +170,32 @@
              ng-click="dashboard.selectForAction(application)">
             <span><i class="icon-whhg deletefolder"></i></span>
           </a>
-          <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.deleteApplication)"
-                  style="height: 37px"
+          <button style="height: 37px"
                   class="alias-btn button-effect primary pull-right"
-                  data-ng-disabled="false">
+                  sweetalert
+
+                  sweet-options="{'title':'Removal confirmation required',
+                  'text':'Caution, this is a permanent action. Once you delete apps, you cannot get it back. These apps will no longer be available.',
+                  'type':'warning',
+                  'showCancelButton':true,
+                  'confirmButtonText':'PERMANENTLY DELETE!',
+                  'cancelButtonText':'CANCEL',
+                  'closeOnConfirm':false,
+                  'closeOnCancel':false,
+                  'animation': 'slide-from-top'}"
+                  sweet-confirm-option="{'title':'Deleted!','text':'Your applications has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-cancel-option="{'title':'Cancelled!','text':'Your applications is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-on-confirm="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.deleteApplication)">
             <span>Delete</span>
           </button>
           <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.stopApplication)"
                   ng-disabled="!dashboard.actions.stop" style="height: 37px"
-                  class="alias-btn button-effect primary pull-right"
-                  data-ng-disabled="false">
+                  class="alias-btn button-effect primary pull-right">
             <span>Stop</span>
           </button>
           <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.startApplication)"
                   ng-disabled="!dashboard.actions.start" style="height: 37px"
-                  class="alias-btn button-effect primary pull-right"
-                  data-ng-disabled="false">
+                  class="alias-btn button-effect primary pull-right">
             <span>Start</span>
           </button>
       </div>

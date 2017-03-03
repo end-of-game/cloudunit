@@ -199,7 +199,8 @@
     function executeAction(applications, actionFunction) {
         applications.map(function(application) {
           if((actionFunction === vm.stopApplication && application.status === 'START')
-            || (actionFunction === vm.startApplication && application.status === 'STOP')) {
+            || (actionFunction === vm.startApplication && application.status === 'STOP')
+            || (actionFunction === vm.deleteApplication)) {
             actionFunction.call(this, application);
           }
         });
