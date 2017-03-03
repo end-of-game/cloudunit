@@ -154,14 +154,18 @@
         </button>
 
         <button class="icon-button"
+            ng-class="{'selected': (dashboard.applicationsSelectedAction.length === dashboard.applications.length && dashboard.applicationsSelectedAction.length !== 0)}"
+            ng-if="dashboard.applications.length !== 0"
+            style="margin-left: 20px;"
             tooltip=""
             type="button"
-            data-title="Select App"
+            data-title="Select all App"
             ng-click="dashboard.applicationsSelectedAction = 
-          (dashboard.applicationsSelectedAction.length === dashboard.applications.length) ? [] : dashboard.applications">
-            <i style="margin-left: 20px" class="icon-whhg" 
-            data-ng-class="{'rectangle': !(dashboard.applicationsSelectedAction.length === dashboard.applications.length),
-            'check': (dashboard.applicationsSelectedAction.length === dashboard.applications.length)}"></i>
+            (dashboard.applicationsSelectedAction.length === dashboard.applications.length) ? [] : dashboard.applications">
+            <i class="icon-tech"
+              style="font-size: 22px;"
+              data-ng-class="{'uncheck': !(dashboard.applicationsSelectedAction.length === dashboard.applications.length),
+              'check': (dashboard.applicationsSelectedAction.length === dashboard.applications.length) }"></i>
         </button>
       </div>
       <div ng-class="{'show': dashboard.applicationsSelectedAction.length}" class="dashboard-toolbar">
@@ -229,7 +233,7 @@
                   type="button"
                   data-title="Select App"
                   ng-click="dashboard.selectForAction(application)">
-                  <i style="margin: 0" class="icon-whhg" data-ng-class="{'rectangle': !application.checked, 'check': application.checked}"></i>
+                  <i style="margin: 0" class="icon-tech" data-ng-class="{'uncheck': !application.checked, 'check': application.checked}"></i>
               </button>
             </h3>
 
