@@ -153,25 +153,27 @@
           <i class="icon-whhg list-th"></i>
         </button>
 
-        <label class="switch large">
-          <input ng-click="dashboard.applicationsSelectedAction = 
-          (dashboard.applicationsSelectedAction.length === dashboard.applications.length) ? [] : dashboard.applications"
-            ng-checked="(dashboard.applicationsSelectedAction.length === dashboard.applications.length)"
-            type="checkbox" />
-          <div class="slider"></div>
-        </label>
+        <button class="icon-button"
+            tooltip=""
+            type="button"
+            data-title="Select App"
+            ng-click="dashboard.applicationsSelectedAction = 
+          (dashboard.applicationsSelectedAction.length === dashboard.applications.length) ? [] : dashboard.applications">
+            <i style="margin-left: 20px" class="icon-whhg" 
+            data-ng-class="{'rectangle': !(dashboard.applicationsSelectedAction.length === dashboard.applications.length),
+            'check': (dashboard.applicationsSelectedAction.length === dashboard.applications.length)}"></i>
+        </button>
       </div>
-  <div ng-if="dashboard.applicationsSelectedAction.length" class="dashboard-actions">
+      <div ng-class="{'show': dashboard.applicationsSelectedAction.length}" class="dashboard-toolbar">
           <a ng-repeat="application in dashboard.applicationsSelectedAction"
-             id="preview-link"
-             class="icon-button"
-             tooltip="{{application.name}}"
-             data-placement="bottom"
-             ng-click="dashboard.selectForAction(application)">
+            id="preview-link"
+            class="icon-button"
+            tooltip="{{application.name}}"
+            data-placement="bottom"
+            ng-click="dashboard.selectForAction(application)">
             <span><i class="icon-whhg deletefolder"></i></span>
           </a>
-          <button style="height: 37px"
-                  class="alias-btn button-effect primary pull-right"
+          <button class="alias-btn button-effect small primary pull-right"
                   sweetalert
 
                   sweet-options="{'title':'Removal confirmation required',
@@ -189,13 +191,13 @@
             <span>Delete</span>
           </button>
           <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.stopApplication)"
-                  ng-disabled="!dashboard.actions.stop" style="height: 37px"
-                  class="alias-btn button-effect primary pull-right">
+                  ng-disabled="!dashboard.actions.stop"
+                  class="small alias-btn button-effect primary pull-right">
             <span>Stop</span>
           </button>
           <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.startApplication)"
-                  ng-disabled="!dashboard.actions.start" style="height: 37px"
-                  class="alias-btn button-effect primary pull-right">
+                  ng-disabled="!dashboard.actions.start"
+                  class="small alias-btn button-effect primary pull-right">
             <span>Start</span>
           </button>
       </div>
@@ -221,6 +223,14 @@
                  ripple="">
                 <span>Manage</span>
               </a>
+
+              <button class="icon-button"
+                  tooltip=""
+                  type="button"
+                  data-title="Select App"
+                  ng-click="dashboard.selectForAction(application)">
+                  <i style="margin: 0" class="icon-whhg" data-ng-class="{'rectangle': !application.checked, 'check': application.checked}"></i>
+              </button>
             </h3>
 
             <div class="status">
@@ -288,13 +298,6 @@
                         sweet-on-confirm="dashboard.deleteApplication(application)">
                   <i class="icon-whhg trash"></i>
                 </button>
-                <label class="switch">
-                  <input ng-disabled="application.status === 'PENDING'"
-                    ng-click="dashboard.selectForAction(application)" 
-                    ng-checked="application.checked"
-                    type="checkbox" />
-                  <div class="slider"></div>
-                </label>
                 <a class="icon-button secondary"
                    data-ng-hide="application.status==='STOP' || application.deploymentStatus !== 'ALREADY_DEPLOYED'"
                    data-ng-href="http://{{ application.location }}{{ application.contextPath }}"
