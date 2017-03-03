@@ -13,7 +13,6 @@
 
   <modules>
     <module>cu-manager-domain</module>
-    <module>cu-manager-ui</module>
     <module>cu-docker-orchestrator</module>
     <module>cu-orchestrator-core</module>
   </modules>
@@ -26,6 +25,12 @@
         <version>1.5.1.RELEASE</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>2.0.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
