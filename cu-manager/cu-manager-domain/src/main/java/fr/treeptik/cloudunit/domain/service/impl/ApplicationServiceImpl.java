@@ -124,7 +124,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .map(s -> s.getState())
                 .collect(Collectors.toList());
         
-        LOGGER.info("Application {} {} - service states: {}",
+        LOGGER.debug("Application {} {} - service states: {}",
                 application.getName(),
                 application.getState(),
                 serviceStates.stream()
