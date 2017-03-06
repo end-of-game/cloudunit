@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.domain.core;
 
+import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.core.ImageType;
 
 public abstract class Service {
@@ -20,6 +21,7 @@ public abstract class Service {
     private String imageName;
     private String name;
     private String containerName;
+    private ContainerState state;
     
     protected Service() {}
     
@@ -27,6 +29,7 @@ public abstract class Service {
         this.name = image.getBasename();
         this.containerName = String.format("%s-%s", application.getName(), image.getBasename());
         this.imageName = image.getName();
+        this.state = ContainerState.STOPPED;
     }
 
     public String getImageName() {
@@ -36,7 +39,15 @@ public abstract class Service {
     public String getName() {
         return name;
     }
-
+    
+    public ContainerState getState() {
+        return state;
+    }
+    
+    public void setState(ContainerState state) {
+        this.state = state;
+    }
+    
     public String getContainerName() {
         return containerName;
     }

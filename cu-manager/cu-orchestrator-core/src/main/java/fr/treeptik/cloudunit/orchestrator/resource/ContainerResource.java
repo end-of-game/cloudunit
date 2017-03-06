@@ -24,7 +24,7 @@ public class ContainerResource extends ResourceSupport {
     public ContainerResource() {}
     
     public ContainerResource(Container container) {
-        this.containerId = container.getId();
+        this.containerId = container.getContainerId();
         this.name = container.getName();
         this.imageName = container.getImageName();
         this.state = container.getState();

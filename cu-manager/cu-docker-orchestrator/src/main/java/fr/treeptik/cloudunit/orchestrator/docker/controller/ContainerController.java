@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.treeptik.cloudunit.orchestrator.core.Container;
+import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ImageRepository;
@@ -43,8 +44,20 @@ public class ContainerController {
     private ContainerResource toResource(Container container) {
         ContainerResource resource = new ContainerResource(container);
         
-        resource.add(linkTo(methodOn(ContainerController.class).getContainer(container.getName()))
+        String name = container.getName();
+        
+        resource.add(linkTo(methodOn(ContainerController.class).getContainer(name))
                 .withSelfRel());
+        
+        if (container.getState() == ContainerState.STOPPED) {
+            resource.add(linkTo(methodOn(ContainerController.class).start(name))
+                    .withRel("cu:start"));
+        }
+        
+        if (container.getState() == ContainerState.STARTED) {
+            resource.add(linkTo(methodOn(ContainerController.class).stop(name))
+                    .withRel("cu:stop"));
+        }
         
         return resource;
     }
@@ -83,6 +96,22 @@ public class ContainerController {
     public ResponseEntity<?> getContainer(@PathVariable String name) {
         return withContainer(name, container -> {
             return ResponseEntity.ok(toResource(container));
+        });
+    }
+    
+    @PostMapping("/{name}/start")
+    public ResponseEntity<?> start(@PathVariable String name) {
+        return withContainer(name, container -> {
+            dockerService.startContainer(container);
+            return ResponseEntity.noContent().build();
+        });
+    }
+    
+    @PostMapping("/{name}/stop")
+    public ResponseEntity<?> stop(@PathVariable String name) {
+        return withContainer(name, container -> {
+            dockerService.stopContainer(container);
+            return ResponseEntity.noContent().build();
         });
     }
     

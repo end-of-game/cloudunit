@@ -74,6 +74,21 @@ public class ApplicationTemplate {
     public ApplicationResource getApplication(ResultActions result) throws Exception {
         return getResult(result, ApplicationResource.class);
     }
+    
+    public ApplicationResource refreshApplication(ApplicationResource application) throws Exception {
+        String uri = application.getLink(Link.REL_SELF).getHref();
+        return getApplication(mockMvc.perform(get(uri)));
+    }
+    
+    public ResultActions startApplication(ApplicationResource application) throws Exception {
+        String uri = application.getLink("cu:start").getHref();
+        return mockMvc.perform(post(uri));
+    }
+
+    public ResultActions stopApplication(ApplicationResource application) throws Exception {
+        String uri = application.getLink("cu:stop").getHref();
+        return mockMvc.perform(post(uri));
+    }
 
     public ResultActions deleteApplication(ApplicationResource application) throws Exception {
         String url = application.getLink(Link.REL_SELF).getHref();
@@ -93,5 +108,9 @@ public class ApplicationTemplate {
     public ServiceResource getService(ResultActions result) throws Exception {
         return getResult(result, ServiceResource.class);
     }
-    
+
+    public ServiceResource refreshService(ServiceResource service) throws Exception {
+        String uri = service.getLink(Link.REL_SELF).getHref();
+        return getService(mockMvc.perform(get(uri)));
+    }
 }

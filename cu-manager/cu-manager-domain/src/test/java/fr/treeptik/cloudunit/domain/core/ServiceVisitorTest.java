@@ -1,4 +1,4 @@
-package fr.treeptik.cloudunit.domain.model;
+package fr.treeptik.cloudunit.domain.core;
 
 import static org.junit.Assert.*;
 

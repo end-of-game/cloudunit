@@ -7,4 +7,8 @@ public interface DockerService {
     Container createContainer(String name, Image image);
 
     void deleteContainer(Container container);
+
+    void startContainer(Container container);
+
+    void stopContainer(Container container);
 }

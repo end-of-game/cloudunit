@@ -3,8 +3,9 @@ package fr.treeptik.cloudunit.domain.controller;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import java.net.URI;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.treeptik.cloudunit.domain.core.Application;
+import fr.treeptik.cloudunit.domain.core.ApplicationState;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
 import fr.treeptik.cloudunit.domain.resource.ApplicationResource;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
@@ -41,10 +43,21 @@ public class ApplicationController {
     private ApplicationResource toResource(Application application) {
         ApplicationResource resource = new ApplicationResource(application);
         
-        resource.add(linkTo(methodOn(ApplicationController.class).getApplication(application.getId()))
+        String id = application.getId();
+        resource.add(linkTo(methodOn(ApplicationController.class).getApplication(id))
                 .withSelfRel());
-        resource.add(linkTo(methodOn(ServiceController.class).getServices(application.getId()))
+        resource.add(linkTo(methodOn(ServiceController.class).getServices(id))
                 .withRel("cu:services"));
+        
+        if (EnumSet.of(ApplicationState.CREATED, ApplicationState.STOPPED).contains(application.getState())) {
+            resource.add(linkTo(methodOn(ApplicationController.class).start(id))
+                    .withRel("cu:start"));
+        }
+        
+        if (application.getState() == ApplicationState.STARTED) {
+            resource.add(linkTo(methodOn(ApplicationController.class).stop(id))
+                    .withRel("cu:stop"));
+        }
 
         return resource;
     }
@@ -68,31 +81,48 @@ public class ApplicationController {
         
         resources.add(linkTo(methodOn(ApplicationController.class).getApplications())
                 .withSelfRel());
+        resources.add(linkTo(methodOn(ApplicationController.class).getApplication(null))
+                .withRel("cu:application"));
         
         return ResponseEntity.ok(resources);
     }
     
     @GetMapping("/{id}")
     public ResponseEntity<?> getApplication(@PathVariable String id) {
-        Optional<Application> application = applicationRepository.findOne(id);
-        
-        if (!application.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        return ResponseEntity.ok(toResource(application.get()));
+        return withApplication(id, application ->
+            ResponseEntity.ok(toResource(application)));
+    }
+    
+    @PostMapping("/{id}/start")
+    public ResponseEntity<?> start(@PathVariable String id) {
+        return withApplication(id, application -> {
+            applicationService.startApplication(application);
+            
+            return ResponseEntity.noContent().build();
+        });
+    }
+    
+    @PostMapping("/{id}/stop")
+    public ResponseEntity<?> stop(@PathVariable String id) {
+        return withApplication(id, application -> {
+            applicationService.stopApplication(application);
+            
+            return ResponseEntity.noContent().build();
+        });
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteApplication(@PathVariable String id) {
-        Optional<Application> application = applicationRepository.findOne(id);
-        
-        if (!application.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        applicationService.delete(application.get());
-        
-        return ResponseEntity.noContent().build();
+        return withApplication(id, application -> {
+            applicationService.delete(application);
+            
+            return ResponseEntity.noContent().build();            
+        });
+    }
+    
+    private ResponseEntity<?> withApplication(String id, Function<Application, ResponseEntity<?>> mapper) {
+        return applicationRepository.findOne(id)
+                .map(mapper)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
