@@ -1,0 +1,12 @@
+---
+spring:
+  profiles: dev
+zuul:
+  addProxyHeaders: false
+  routes:
+    applications:
+      url: http://localhost:8080/applications/
+    containers:
+      url: http://localhost:8081/containers/
+server:
+  port: 9000
