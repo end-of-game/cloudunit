@@ -9,6 +9,9 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
 
+import fr.treeptik.cloudunit.orchestrator.core.*;
+import fr.treeptik.cloudunit.orchestrator.docker.repository.ImageRepository;
+import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -24,10 +27,6 @@ import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.Event;
 import com.spotify.docker.client.messages.Event.Type;
 
-import fr.treeptik.cloudunit.orchestrator.core.Container;
-import fr.treeptik.cloudunit.orchestrator.core.ContainerEventListener;
-import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
-import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.service.DockerService;
 import fr.treeptik.cloudunit.orchestrator.docker.service.ServiceException;
@@ -41,7 +40,7 @@ public class DockerServiceImpl implements DockerService {
     
     @Autowired
     private ContainerRepository containerRepository;
-    
+
     @Autowired
     private DockerClient docker;
 
@@ -80,6 +79,27 @@ public class DockerServiceImpl implements DockerService {
     }
 
     @Override
+    public Variable addVariable(Container container, String key, String value) {
+        MDC.put("container", container.toString());
+
+        LOGGER.info("adding variable to container");
+
+        try {
+            doDeleteContainer(container);
+        } catch (DockerException | InterruptedException e) {
+            LOGGER.error("Couldn't delete container", e);
+        }
+        Variable variable = container.addVariable(key, value);
+        containerRepository.save(container);
+        try {
+            doCreateContainer(container);
+        } catch (DockerException | InterruptedException e) {
+            LOGGER.error("Couldn't create container", e);
+        }
+        return variable;
+    }
+
+    @Override
     public Container createContainer(String name, Image image) {
         Container container = new Container(name, image);
         
@@ -109,6 +129,7 @@ public class DockerServiceImpl implements DockerService {
                 .hostname(container.getName())
                 .image(container.getImageName())
                 .labels(labels)
+                .env(container.getVariablesAsList())
                 .build();
         
         ContainerCreation containerCreation = docker.createContainer(config, container.getName());
@@ -128,16 +149,20 @@ public class DockerServiceImpl implements DockerService {
         
         LOGGER.info("Deleting container");
         try {
-            docker.removeContainer(container.getName(), RemoveContainerParam.forceKill(true));
+            doDeleteContainer(container);
 
             container.setState(ContainerState.REMOVING);
             containerRepository.save(container);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't delete a container", e);
-            throw new ServiceException("Couldn't delte a container", e);
+            throw new ServiceException("Couldn't delete a container", e);
         } finally {
             MDC.remove("container");
         }
+    }
+
+    private void doDeleteContainer(Container container) throws DockerException, InterruptedException {
+        docker.removeContainer(container.getName(), RemoveContainerParam.forceKill(true));
     }
 
     @Override
@@ -220,4 +245,5 @@ public class DockerServiceImpl implements DockerService {
         containerRepository.delete(container);
         containerListeners.forEach(listener -> listener.onContainerRemove(container));
     }
+
 }

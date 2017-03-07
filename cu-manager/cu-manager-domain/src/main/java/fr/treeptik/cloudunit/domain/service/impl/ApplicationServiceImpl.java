@@ -22,7 +22,6 @@ import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 public class ApplicationServiceImpl implements ApplicationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationServiceImpl.class);
 
-    
     @Autowired
     private ApplicationRepository applicationRepository;
     
