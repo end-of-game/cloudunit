@@ -282,6 +282,16 @@
     -ms-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+    .features-icon-tech:before {
+      position: absolute;
+      /*left: 75px;
+      right: auto;*/
+      left: auto;
+      right: 160px;
+      top: 55px;
+      -webkit-transform: scale(6);
+      transform: scale(6);
+    }
     .features {
       p {
         float: left;

@@ -63,28 +63,31 @@
   content: "\e902"
 }
 .icon-tech.hornetq:before {
-  content: "\e901";
+  content: "\e90e";
 }
 .icon-tech.rabbitmq:before {
   content: "\e913";
 }
 .icon-tech.memcached:before {
-  content: "\e902";
+  content: "\e90f";
 }
-.icon-tech.elasticsearch:before {
+.icon-tech.apache:before {
   content: "\e900";
 }
+.icon-tech.elasticsearch:before {
+  content: "\e90d";
+}
 .icon-tech.influxdb:before {
-  content: "\e907";
+  content: "\e911";
 }
 .icon-tech.solr:before {
-  content: "\e911";
+  content: "\e912";
 }
 .icon-tech.postgresql:before {
   content: "\f14a";
 }
 .icon-tech.postgis:before {
-  content: "\f14a";
+  content: "\f14b";
 }
 .icon-tech.redis:before {
   content: "\f150";
@@ -104,7 +107,7 @@
 .icon-tech.tomcat:before {
   content: "\e910";
 }
-.icon-tech.wildfly {
+.icon-tech.wildfly2:before {
   transform: scale(2.2);
   -webkit-transform: scale(2.2);
 
@@ -112,14 +115,34 @@
     content: "\e914";
   }
 }
+.icon-tech.wildfly:before {
+  content: "\e907";
+}
+/*.icon-tech.wildfly:before {
+  content: "\e904";
+  //transform: scale(14.2);
+  //-webkit-transform: scale(14.2);
+}*/
 .icon-tech.fatjar:before {
-  content: "\e91c";
+  content: "\e903";
 }
 
+.icon-tech.nginx:before {
+  content: "\e905";
+  /*
+  transform: scale(3);
+  -webkit-transform: scale(3);*/
+}
+
+.icon-tech.vertx:before {
+  content: "\e906";
+  /*
+  transform: scale(4);
+  transform: scale(4);*/
+}
 .icon-tech.activemq:before {
   content: "\e901";
 }
-
 .icon-tech.nothing:before {
   content: "\f14a"
 }
@@ -2228,4 +2251,13 @@
   position: relative;
   top: 1px;
   margin-right: 4px;
+}
+
+.features-icon-tech:before {
+  position: absolute;
+  right: 100px;
+  top: 120px;
+  -webkit-transform: scale(9.0);
+  /* color: #c7f1ff;*/
+  color: rgba(0, 0, 0, 0.1);
 }
