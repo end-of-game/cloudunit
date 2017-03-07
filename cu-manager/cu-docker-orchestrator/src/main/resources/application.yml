@@ -11,3 +11,6 @@ docker:
   client:
     endpointMode: HTTP
     uri: http://192.168.50.4:4243
+logging:
+  level:
+      fr.treeptik: debug

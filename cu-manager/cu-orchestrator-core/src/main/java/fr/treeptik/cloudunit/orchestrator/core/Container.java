@@ -35,11 +35,14 @@ public class Container {
     public String getName() {
         return name;
     }
-    
+
+    public void setPending() {
+        state = state.getPendingState();
+    }
     public ContainerState getState() {
         return state;
     }
-    
+
     public void setState(ContainerState state) {
         this.state = state;
     }

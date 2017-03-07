@@ -85,17 +85,14 @@ public class DockerServiceImpl implements DockerService {
         LOGGER.info("adding variable to container");
 
         try {
+            container.setPending();
+            containerRepository.save(container);
             doDeleteContainer(container);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't delete container", e);
         }
         Variable variable = container.addVariable(key, value);
         containerRepository.save(container);
-        try {
-            doCreateContainer(container);
-        } catch (DockerException | InterruptedException e) {
-            LOGGER.error("Couldn't create container", e);
-        }
         return variable;
     }
 
@@ -149,10 +146,9 @@ public class DockerServiceImpl implements DockerService {
         
         LOGGER.info("Deleting container");
         try {
-            doDeleteContainer(container);
-
             container.setState(ContainerState.REMOVING);
             containerRepository.save(container);
+            doDeleteContainer(container);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't delete a container", e);
             throw new ServiceException("Couldn't delete a container", e);
@@ -161,9 +157,6 @@ public class DockerServiceImpl implements DockerService {
         }
     }
 
-    private void doDeleteContainer(Container container) throws DockerException, InterruptedException {
-        docker.removeContainer(container.getName(), RemoveContainerParam.forceKill(true));
-    }
 
     @Override
     public void startContainer(Container container) {
@@ -171,8 +164,7 @@ public class DockerServiceImpl implements DockerService {
         try {
             container.setState(ContainerState.STARTING);
             containerRepository.save(container);
-            
-            docker.startContainer(container.getName());
+            doStartContainer(container);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't start a container", e);
         } finally {
@@ -205,6 +197,8 @@ public class DockerServiceImpl implements DockerService {
                 String name = event.actor().attributes().get("name");
                 containerRepository.findByName(name).ifPresent(container -> {
                     switch (event.action()) {
+                    case "create":
+                        onContainerCreate(container);
                     case "start":
                         onContainerStart(container);
                         break;
@@ -226,6 +220,29 @@ public class DockerServiceImpl implements DockerService {
         }
     }
 
+    private void doStartContainer(Container container) throws DockerException, InterruptedException {
+        docker.startContainer(container.getName());
+    }
+
+    private void doDeleteContainer(Container container) throws DockerException, InterruptedException {
+        docker.removeContainer(container.getName(), RemoveContainerParam.forceKill(true));
+    }
+
+    private void onContainerCreate(Container container) {
+        LOGGER.info("Container {} created", container.getName());
+        if (container.getState() == ContainerState.STOPPING) {
+            container.setState(ContainerState.STOPPED);
+        } else if (container.getState() == ContainerState.STARTING) {
+            try {
+                doStartContainer(container);
+            } catch (DockerException | InterruptedException e) {
+                LOGGER.error("Couldn't start container", e);
+            }
+        }
+        containerRepository.save(container);
+        containerListeners.forEach(listener -> listener.onContainerStart(container));
+    }
+
     private void onContainerStart(Container container) {
         LOGGER.info("Container {} started", container.getName());
         container.setState(ContainerState.STARTED);
@@ -242,8 +259,16 @@ public class DockerServiceImpl implements DockerService {
 
     private void onContainerRemove(Container container) {
         LOGGER.info("Container {} removed", container.getName());
-        containerRepository.delete(container);
-        containerListeners.forEach(listener -> listener.onContainerRemove(container));
+        if (container.getState() == ContainerState.REMOVING) {
+            containerRepository.delete(container);
+            containerListeners.forEach(listener -> listener.onContainerRemove(container));
+        } else {
+            try {
+                doCreateContainer(container);
+            } catch (DockerException | InterruptedException e) {
+                LOGGER.error("Couldn't create container", e);
+            }
+        }
     }
 
 }
