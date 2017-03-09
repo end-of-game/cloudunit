@@ -120,7 +120,7 @@
 			return applicationTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'start')
+				.follow('applicationResourceList[name:' + applicationName + ']', 'cu:start')
 				.post()
 				.result;
 		}
@@ -130,7 +130,7 @@
 			return applicationTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'restart')
+				.follow('applicationResourceList[name:' + applicationName + ']', 'cu:restart')
 				.post()
 				.result;
 		}
@@ -140,7 +140,7 @@
 			return applicationTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'stop')
+				.follow('applicationResourceList[name:' + applicationName + ']', 'cu:stop')
 				.post()
 				.result;
 		}
@@ -169,27 +169,36 @@
 
 		// Suppression d'une application
 		function remove(applicationName) {
-			console.log(applicationName);
 			applicationTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'delete')
+				.follow('applicationResourceList[name:' + applicationName + ']', 'self')
 				.delete();
 		}
 
 		function findByName(applicationName) {
+			console.log('findByName', applicationName);
 			var self = this;
 			return applicationTraversonService
 				.flatTraverson(
 				['applicationResourceList[name:' + applicationName + ']', 'self'],
-				['modules'],
-				['server'],
-				['deployments'],
-				['containers']
+				['cu:services']
 				).catch(function (err) {
 					console.error(err);
 					stopPolling.call(self);
 				});
+
+			// return applicationTraversonService
+			// 	.flatTraverson(
+			// 	['applicationResourceList[name:' + applicationName + ']', 'self'],
+			// 	['services'],
+			// 	['server'],
+			// 	['deployments'],
+			// 	['containers']
+			// 	).catch(function (err) {
+			// 		console.error(err);
+			// 		stopPolling.call(self);
+			// 	});
 		}
 
 

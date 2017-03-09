@@ -178,10 +178,10 @@
   @include make-lg-column(12, 1rem);
 }
 
-.start.pending .content,
+.starting.pending .content,
 .stop.pending .content,
 .pending.stop .content,
-.pending.start .content,
+.pending.starting .content,
 .pending .content,
 .app-creation .content,
 .fail .content,
@@ -236,7 +236,7 @@
     }
   }
 
-.application.start .status {
+.application.starting .status {
   color: #8bc34a;
 }
 
@@ -250,7 +250,7 @@
   }
 }
 
-.application.stop .status {
+.application.stop .status, .application.created .status {
   .subhead, .headline {
     color: $brand-warning;
   }

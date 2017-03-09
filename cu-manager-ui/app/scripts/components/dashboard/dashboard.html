@@ -68,7 +68,7 @@
                 </li>
                 <li>
                   <a ng-href=""
-                     data-ng-click="dashboard.selectedItem = 'Start'; dashboard.search = 'START' ">
+                     data-ng-click="dashboard.selectedItem = 'Starting'; dashboard.search = 'STARTING' ">
                     Start
                   </a>
                 </li>
@@ -76,6 +76,12 @@
                   <a ng-href=""
                      data-ng-click="dashboard.selectedItem = 'Stop'; dashboard.search = 'STOP' ">
                     Stop
+                  </a>
+                </li>
+                <li>
+                  <a ng-href=""
+                     data-ng-click="dashboard.selectedItem = 'Created'; dashboard.search = 'CREATED' ">
+                    Created
                   </a>
                 </li>
                 <li>
@@ -161,14 +167,14 @@
         <!--application list-->
 
         <div id='application-{{application.name}}'
-             class="application {{ application.status | lowercase}}"
+             class="application {{ application.state | lowercase}}"
              ng-class="{'card': dashboard.selectedDisplayStyle == 'Grid',
               'smaller': dashboard.selectedDisplayStyle == 'Grid',
               'list': dashboard.selectedDisplayStyle == 'List'}"
              data-ng-repeat="application in dashboard.applications | orderBy:'id'  | filter:{displayName: searchText} | appByServerImage: dashboard.selectedServer track by $index">
           <div class="content">
             <h3 class="title">
-              {{application.displayName}}
+              {{application.name}}
               <a data-ng-href="#editApplication/{{ application.name }}/overview"
                  class="edit-btn button raised primary pull-right"
                  ripple="">
@@ -178,10 +184,10 @@
 
             <div class="status">
               <p class="subhead">
-                {{ application.status | formatAppStatus}}
+                {{ application.state | formatAppStatus}}
                 <a href="https://treeptik.zendesk.com"
                    target="_blank"
-                   data-ng-show="application.status === 'FAIL'"
+                   data-ng-show="application.state === 'FAIL'"
                    tooltip=""
                    data-title="Contact support"
                    data-placement="bottom">
@@ -243,7 +249,7 @@
                 </button>
 
                 <a class="icon-button secondary"
-                   data-ng-hide="application.status==='STOP' || application.deploymentStatus !== 'ALREADY_DEPLOYED'"
+                   data-ng-hide="application.state==='STOP' || application.deploymentStatus !== 'ALREADY_DEPLOYED'"
                    data-ng-href="http://{{ application.location }}{{ application.contextPath }}"
                    target="_blank"
                    ripple=""
@@ -272,7 +278,7 @@
                         data-ng-click="dashboard.toggleServer(application)"
                         ripple=""
                         tooltip=""
-                        data-title="{{application.status === 'STOP' ? 'Start' : 'Stop'}}"
+                        data-title="{{application.state === 'STARTING' ? 'Stop' : 'STARTING'}}"
                         data-placement="bottom"
                         click-once="">
                   <i class="icon-whhg off"></i>

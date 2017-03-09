@@ -99,7 +99,7 @@
           if(!newApp){
             applications.push({
               name: vm.buffer,
-              status: 'PENDING'
+              state: 'PENDING'
             })
           } else {
             vm.buffer = '';
@@ -124,9 +124,9 @@
     }
 
     function toggleServer(application) {
-      if (application.status === 'START') {
+      if (application.state === 'STARTING') {
         stopApplication(application.name);
-      } else if (application.status === 'STOP') {
+      } else if (application.state === 'STOP' || application.state === 'CREATED') {
         startApplication(application.name);
       }
     }

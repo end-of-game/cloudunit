@@ -24,20 +24,23 @@
     return function (input) {
       var status = '';
       switch (input) {
-        case 'START':
-          status = 'Start';
+        case 'STARTING':
+          status = 'Starting';
           break;
         case 'STOP':
           status = 'Stop';
           break;
+        case 'CREATED':
+          status = 'Created';
+          break;
         case 'PENDING':
           status = 'Processing';
           break;
-        case 'FAIL':
+        case 'FAILED':
           status = 'Error';
           break;
         default :
-          status = 'Start';
+          status = 'Starting';
           break;
       }
       return status;
