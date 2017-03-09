@@ -9,9 +9,6 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
 
-import fr.treeptik.cloudunit.orchestrator.core.*;
-import fr.treeptik.cloudunit.orchestrator.docker.repository.ImageRepository;
-import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -27,6 +24,11 @@ import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.Event;
 import com.spotify.docker.client.messages.Event.Type;
 
+import fr.treeptik.cloudunit.orchestrator.core.Container;
+import fr.treeptik.cloudunit.orchestrator.core.ContainerEventListener;
+import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
+import fr.treeptik.cloudunit.orchestrator.core.Image;
+import fr.treeptik.cloudunit.orchestrator.core.Variable;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.service.DockerService;
 import fr.treeptik.cloudunit.orchestrator.docker.service.ServiceException;
@@ -84,15 +86,16 @@ public class DockerServiceImpl implements DockerService {
 
         LOGGER.info("adding variable to container");
 
+        Variable variable = container.addVariable(key, value);
+        containerRepository.save(container);
         try {
             container.setPending();
             containerRepository.save(container);
             doDeleteContainer(container);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't delete container", e);
+            throw new ServiceException("Couldn't delete container", e);
         }
-        Variable variable = container.addVariable(key, value);
-        containerRepository.save(container);
         return variable;
     }
 
@@ -118,28 +121,6 @@ public class DockerServiceImpl implements DockerService {
         }
     }
     
-    private void doCreateContainer(Container container) throws DockerException, InterruptedException {
-        Map<String, String> labels = new HashMap<>();
-        labels.put(FILTER_LABEL_KEY, FILTER_LABEL_VALUE);
-        
-        ContainerConfig config = ContainerConfig.builder()
-                .hostname(container.getName())
-                .image(container.getImageName())
-                .labels(labels)
-                .env(container.getVariablesAsList())
-                .build();
-        
-        ContainerCreation containerCreation = docker.createContainer(config, container.getName());
-
-        if (containerCreation.warnings() != null) {
-            containerCreation.warnings().forEach(warning -> {
-                LOGGER.warn(warning);
-            });
-        }
-        
-        container.setContainerId(containerCreation.id());
-    }
-
     @Override
     public void deleteContainer(Container container) {
         MDC.put("container", container.toString());
@@ -167,6 +148,7 @@ public class DockerServiceImpl implements DockerService {
             doStartContainer(container);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't start a container", e);
+            throw new ServiceException("Couldn't start a container", e);
         } finally {
             MDC.remove("container");
         }
@@ -179,14 +161,49 @@ public class DockerServiceImpl implements DockerService {
             container.setState(ContainerState.STOPPING);
             containerRepository.save(container);
 
-            docker.stopContainer(container.getName(), secondsBeforeKilling);
+            doStopContainer(container);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't start a container", e);
+            throw new ServiceException("Couldn't start a container", e);
         } finally {
             MDC.remove("container");
         }
     }
+
+    private void doCreateContainer(Container container) throws DockerException, InterruptedException {
+        Map<String, String> labels = new HashMap<>();
+        labels.put(FILTER_LABEL_KEY, FILTER_LABEL_VALUE);
+        
+        ContainerConfig config = ContainerConfig.builder()
+                .hostname(container.getName())
+                .image(container.getImageName())
+                .labels(labels)
+                .env(container.getVariablesAsList())
+                .build();
+        
+        ContainerCreation containerCreation = docker.createContainer(config, container.getName());
+
+        if (containerCreation.warnings() != null) {
+            containerCreation.warnings().forEach(warning -> {
+                LOGGER.warn(warning);
+            });
+        }
+        
+        container.setContainerId(containerCreation.id());
+    }
     
+    private void doStartContainer(Container container) throws DockerException, InterruptedException {
+        docker.startContainer(container.getName());
+    }
+
+    private void doStopContainer(Container container) throws DockerException, InterruptedException {
+        docker.stopContainer(container.getName(), secondsBeforeKilling);
+    }
+
+    private void doDeleteContainer(Container container) throws DockerException, InterruptedException {
+        docker.removeContainer(container.getName(), RemoveContainerParam.forceKill(true));
+    }
+
     private void listenContainerEvents() {
         try {
             for (Iterator<Event> events = docker.events(EventsParam.type(Type.CONTAINER)); events.hasNext();) {
@@ -199,6 +216,7 @@ public class DockerServiceImpl implements DockerService {
                     switch (event.action()) {
                     case "create":
                         onContainerCreate(container);
+                        break;
                     case "start":
                         onContainerStart(container);
                         break;
@@ -218,14 +236,6 @@ public class DockerServiceImpl implements DockerService {
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't listen to Docker events");
         }
-    }
-
-    private void doStartContainer(Container container) throws DockerException, InterruptedException {
-        docker.startContainer(container.getName());
-    }
-
-    private void doDeleteContainer(Container container) throws DockerException, InterruptedException {
-        docker.removeContainer(container.getName(), RemoveContainerParam.forceKill(true));
     }
 
     private void onContainerCreate(Container container) {
