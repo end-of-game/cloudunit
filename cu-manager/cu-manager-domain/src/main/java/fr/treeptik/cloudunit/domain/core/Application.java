@@ -11,6 +11,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -21,6 +25,9 @@ public class Application {
     private AtomicReference<ApplicationState> state;
     private Map<String, Service> servicesByName;
     private Map<String, String> serviceNamesByContainerName;
+    
+    @Version
+    private Long version;
     
     protected Application() {}
     
@@ -122,5 +129,28 @@ public class Application {
 
     public Service getServiceByContainerName(String containerName) {
         return servicesByName.get(serviceNamesByContainerName.get(containerName));
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Application)) return false;
+        
+        Application other = (Application) obj;
+        return new EqualsBuilder()
+                .append(this.name, other.name)
+                .isEquals();
+    }
+    
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(name)
+                .toHashCode();
+    }
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

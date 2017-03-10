@@ -1,11 +1,9 @@
 package fr.treeptik.cloudunit.orchestrator.docker.controller;
 
-import static org.awaitility.Awaitility.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.awaitility.Duration;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,62 +35,52 @@ public class ContainerControllerIT {
 
     @Autowired
     private ContainerTemplate containerTemplate;
-
-    private ContainerResource container;
     
     @Test
     public void testCreateContainer() throws Exception {
         ResultActions result = containerTemplate.createContainer(CONTAINER_NAME, IMAGE_NAME);
         result.andExpect(status().isCreated());
         
-        container = containerTemplate.getContainer(result);
+        ContainerResource container = containerTemplate.getContainer(result);
         try {
-            assertThat(container.getContainerId(), not(isEmptyString()));
+            assertThat(container.getState(), isOneOf(ContainerState.STOPPING, ContainerState.STOPPED));
         } finally {
-            result = containerTemplate.deleteContainer(container);
-            result.andExpect(status().isNoContent());
+            containerTemplate.deleteContainer(container)
+                .andExpect(status().isNoContent());
+            
+            containerTemplate.waitForRemoval(container);
         }
     }
     
     @Test
     public void testStartContainer() throws Exception {
-        container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
         
         try {
-            ResultActions result = containerTemplate.startContainer(container);
-            result.andExpect(status().isNoContent());
-            
-            await().atMost(Duration.FIVE_SECONDS).until(() -> {
-                container = containerTemplate.refreshContainer(container);
-                return container.getState() == ContainerState.STARTED;
-            });
+            containerTemplate.startContainer(container)
+                .andExpect(status().isNoContent());            
         } finally {
-            containerTemplate.deleteContainer(container);
-        }        
+            containerTemplate.waitWhilePending(container);
+            containerTemplate.deleteContainerAndWait(container);
+        }
     }
     
     @Test
     public void testStartStopContainer() throws Exception {
-        container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
         
         try {
-            ResultActions result = containerTemplate.startContainer(container);
-            result.andExpect(status().isNoContent());
+            containerTemplate.startContainer(container)
+                .andExpect(status().isNoContent());
             
-            await().atMost(Duration.FIVE_SECONDS).until(() -> {
-                container = containerTemplate.refreshContainer(container);
-                return container.getState() == ContainerState.STARTED;
-            });
-        
-            result = containerTemplate.stopContainer(container);
-            result.andExpect(status().isNoContent());
+            containerTemplate.waitWhilePending(container);
             
-            await().atMost(Duration.FIVE_SECONDS).until(() -> {
-                container = containerTemplate.refreshContainer(container);
-                return container.getState() == ContainerState.STOPPED;
-            });
+            container = containerTemplate.refreshContainer(container);
+            containerTemplate.stopContainer(container)
+                .andExpect(status().isNoContent());
         } finally {
-            containerTemplate.deleteContainer(container);
-        }        
+            containerTemplate.waitWhilePending(container);
+            containerTemplate.deleteContainerAndWait(container);
+        }
     }
 }

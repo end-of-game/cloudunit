@@ -9,8 +9,6 @@ import fr.treeptik.cloudunit.orchestrator.core.Container;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
 public class ContainerResource extends ResourceSupport {
-    private String containerId;
-    
     @NotNull
     @Pattern(regexp = "[a-zA-Z0-9][a-zA-Z0-9_.-]*")
     private String name;
@@ -24,7 +22,6 @@ public class ContainerResource extends ResourceSupport {
     public ContainerResource() {}
     
     public ContainerResource(Container container) {
-        this.containerId = container.getContainerId();
         this.name = container.getName();
         this.imageName = container.getImageName();
         this.state = container.getState();
@@ -33,14 +30,6 @@ public class ContainerResource extends ResourceSupport {
     public ContainerResource(String name, String imageName) {
         this.name = name;
         this.imageName = imageName;
-    }
-
-    public String getContainerId() {
-        return containerId;
-    }
-
-    public void setContainerId(String containerId) {
-        this.containerId = containerId;
     }
 
     public String getName() {

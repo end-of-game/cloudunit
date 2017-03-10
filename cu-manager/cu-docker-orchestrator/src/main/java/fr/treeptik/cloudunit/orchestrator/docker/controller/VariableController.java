@@ -1,26 +1,32 @@
 package fr.treeptik.cloudunit.orchestrator.docker.controller;
 
-import fr.treeptik.cloudunit.orchestrator.core.Container;
-import fr.treeptik.cloudunit.orchestrator.core.Variable;
-import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
-import fr.treeptik.cloudunit.orchestrator.docker.service.DockerService;
-import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+
+import java.net.URI;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import fr.treeptik.cloudunit.orchestrator.core.Container;
+import fr.treeptik.cloudunit.orchestrator.core.Variable;
+import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
+import fr.treeptik.cloudunit.orchestrator.docker.service.DockerService;
+import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
 
 @Controller
 @RequestMapping("/containers/{name}/variables")
@@ -68,6 +74,25 @@ public class VariableController {
         return withVariable(name, variableKey, (container, variable) -> {
            return ResponseEntity.ok(toResource(container.getName(), variable));
         });
+    }
+    
+    @PutMapping("/{variableKey}")
+    public ResponseEntity<?> updateVariable(@PathVariable String name, @PathVariable String variableKey,
+            @Valid @RequestBody VariableResource request) {
+        return withVariable(name, variableKey, (container, variable) -> {
+            variable = dockerService.updateVariable(container, variable, request.getValue());
+            
+            return ResponseEntity.ok(toResource(container.getName(), variable));
+        });
+    }
+    
+    @DeleteMapping("/{variableKey}")
+    public ResponseEntity<?> removeVariable(@PathVariable String name, @PathVariable String variableKey) {
+        return withVariable(name, variableKey, (container, variable) -> {
+            dockerService.removeVariable(container, variable);
+            
+            return ResponseEntity.noContent().build();
+        });        
     }
 
     private ResponseEntity<?> withContainer(String name, Function<Container, ResponseEntity<?>> mapper) {

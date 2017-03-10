@@ -1,12 +1,9 @@
 package fr.treeptik.cloudunit.orchestrator.docker.controller;
 
-import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
-import fr.treeptik.cloudunit.orchestrator.docker.test.ContainerTemplate;
-import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
-import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
-import org.awaitility.Awaitility;
-import org.awaitility.Duration;
-import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,27 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.Resources;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import fr.treeptik.cloudunit.orchestrator.docker.test.ContainerTemplate;
+import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
+import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
 
-/**
- * Created by nicolas on 07/03/2017.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("dev")
 public class VariableControllerIT {
-
     private static final String IMAGE_NAME = "cloudunit/tomcat-8";
 
     private static final String CONTAINER_NAME = "mycontainer";
@@ -48,25 +35,66 @@ public class VariableControllerIT {
     @Autowired
     private ContainerTemplate containerTemplate;
 
-    private ContainerResource container;
-
     @Test
     public void testAddVariable() throws Exception {
-        container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
         try {
             ResultActions result = containerTemplate.addVariable(container, "KEY1", "VALUE1");
-            ResultActions resultActions = result.andExpect(status().isCreated());
-            await().atMost(Duration.TEN_SECONDS).until(() -> {
-                container = containerTemplate.refreshContainer(container);
-                return container.getState() == ContainerState.STOPPED;
-            });
+            result.andExpect(status().isCreated());
+            
+            containerTemplate.waitWhilePending(container);
+            
             Resources<VariableResource> variables = containerTemplate.getVariables(container);
             assertThat(variables.getContent(), hasItem(allOf(
                     hasProperty("key", is("KEY1")),
                     hasProperty("value", is("VALUE1")))));
         } finally {
-            containerTemplate.deleteContainer(container);
+            containerTemplate.deleteContainerAndWait(container);
+        }
+    }
+    
+    @Test
+    public void testUpdateVariable() throws Exception {
+        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        try {
+            ResultActions result = containerTemplate.addVariable(container, "KEY1", "VALUE1");
+            
+            VariableResource variable = containerTemplate.getVariable(result);
+            
+            containerTemplate.waitWhilePending(container);
+            
+            result = containerTemplate.updateVariable(variable, "KEY1", "VALUE2");
+            result.andExpect(status().isOk());
+            
+            variable = containerTemplate.getVariable(result);
+            
+            assertEquals("VALUE2", variable.getValue());
+        } finally {
+            containerTemplate.waitWhilePending(container);
+            
+            containerTemplate.deleteContainerAndWait(container);
         }
     }
 
+    @Test
+    public void testDeleteVariable() throws Exception {
+        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        try {
+            ResultActions result = containerTemplate.addVariable(container, "KEY1", "VALUE1");
+            
+            VariableResource variable = containerTemplate.getVariable(result);
+            
+            containerTemplate.waitWhilePending(container);
+            
+            containerTemplate.deleteVariable(variable)
+                .andExpect(status().isNoContent());
+
+            containerTemplate.waitWhilePending(container);
+            
+            Resources<VariableResource> variables = containerTemplate.getVariables(container);
+            assertThat(variables.getContent(), empty());
+        } finally {
+            containerTemplate.deleteContainerAndWait(container);
+        }
+    }
 }

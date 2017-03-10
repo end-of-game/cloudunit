@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.spotify.docker.client.messages.ContainerConfig;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;

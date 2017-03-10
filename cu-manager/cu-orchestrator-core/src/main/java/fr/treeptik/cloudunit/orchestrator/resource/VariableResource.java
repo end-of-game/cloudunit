@@ -1,13 +1,9 @@
 package fr.treeptik.cloudunit.orchestrator.resource;
 
-import fr.treeptik.cloudunit.orchestrator.core.Variable;
 import org.springframework.hateoas.ResourceSupport;
 
-import java.util.Map;
+import fr.treeptik.cloudunit.orchestrator.core.Variable;
 
-/**
- * Created by nicolas on 07/03/2017.
- */
 public class VariableResource extends ResourceSupport {
 
     private String key;

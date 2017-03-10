@@ -10,7 +10,6 @@ import fr.treeptik.cloudunit.orchestrator.core.Container;
 public interface ContainerRepository extends Repository<Container, String> {
     Optional<Container> findOne(String id);
     Optional<Container> findByName(String name);
-    Optional<Container> findByContainerId(String containerId);
     
     List<Container> findAll();
     
