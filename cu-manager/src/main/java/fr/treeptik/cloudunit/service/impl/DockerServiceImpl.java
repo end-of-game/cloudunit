@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.service.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -16,9 +17,11 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.spotify.docker.client.messages.Image;
 import fr.treeptik.cloudunit.config.DockerConfiguration;
 import fr.treeptik.cloudunit.utils.NamingUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -134,6 +137,11 @@ public class DockerServiceImpl implements DockerService {
     @Override
     public String execCommand(String containerName, String command, boolean privileged) throws FatalDockerJSONException {
         return execCommand(containerName, command, privileged, false);
+    }
+
+    @Override
+    public void exportContainer(String containerName, final OutputStream outputFileStream) throws DockerException, InterruptedException, IOException {
+        IOUtils.copy(dockerClient.exportContainer(containerName), outputFileStream);
     }
 
     @Override

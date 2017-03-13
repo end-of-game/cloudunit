@@ -16,7 +16,9 @@
 package fr.treeptik.cloudunit.controller;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Locale;
 
@@ -24,13 +26,12 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.spotify.docker.client.exceptions.DockerException;
+import fr.treeptik.cloudunit.config.events.*;
 import fr.treeptik.cloudunit.dto.*;
-import fr.treeptik.cloudunit.model.PortToOpen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,10 +43,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
-import fr.treeptik.cloudunit.config.events.ApplicationFailEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationPendingEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
-import fr.treeptik.cloudunit.config.events.ApplicationStopEvent;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
@@ -82,6 +79,8 @@ public class ApplicationController implements Serializable {
 
 	@Inject
 	private ApplicationEventPublisher applicationEventPublisher;
+
+	private Locale locale = Locale.ENGLISH;
 
 	/**
 	 * To verify if an application exists or not.
@@ -414,8 +413,46 @@ public class ApplicationController implements Serializable {
 			logger.debug(content);
 			envUnits = EnvUnitFactory.fromOutput(content);
 		} catch (FatalDockerJSONException e) {
-			throw new ServiceException(applicationName + ", " + containerName, e);
+    			throw new ServiceException(applicationName + ", " + containerName, e);
 		}
 		return envUnits;
 	}
+
+	@RequestMapping(value = "/{applicationName}/containers/export", method = RequestMethod.POST)
+	@CloudUnitSecurable
+	public void exportApplication(@PathVariable final String applicationName)
+			throws ServiceException, CheckException {
+		// TODO
+//		downloadOrEditFile(applicationName, containerId, path, fileName, request, response, false);
+	}
+
+
+	@RequestMapping(value = "/{applicationName}/containers/{containerName}/export", method = RequestMethod.GET)
+	@CloudUnitSecurable
+	public void exportApplication(@PathVariable final String applicationName, @PathVariable final String containerName, HttpServletResponse response)
+			throws ServiceException, CheckException, DockerException, InterruptedException {
+
+        User user = authentificationUtils.getAuthentificatedUser();
+		Application application = applicationService.findByNameAndUser(user, applicationName);
+
+		String filename = containerName + ".tar.gz";
+		String mimeType = URLConnection.guessContentTypeFromName(filename);
+		String contentDisposition = String.format("attachment; filename=%s", filename);
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", contentDisposition);
+
+		// We must be sure there is no running action before starting new one
+		this.authentificationUtils.canStartNewAction(user, application, locale);
+        applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
+		try (OutputStream stream = response.getOutputStream()) {
+			this.dockerService.exportContainer(containerName, stream);
+			stream.flush(); // commits response!
+			stream.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+        applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+	}
+
 }

@@ -15,9 +15,11 @@
 
 package fr.treeptik.cloudunit.service;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import com.spotify.docker.client.exceptions.DockerException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -82,4 +84,6 @@ DockerService {
 	void deleteImage(String imageName) throws ServiceException;
 
 	List<String> listImages() throws ServiceException;
+
+	void exportContainer(String containerName, final OutputStream outputFileStream) throws FatalDockerJSONException, DockerException, InterruptedException, IOException;
 }
