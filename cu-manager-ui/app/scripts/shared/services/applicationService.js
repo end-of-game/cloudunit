@@ -58,7 +58,8 @@ function ApplicationService ( $resource, $http, $interval ) {
         restart: restart,
         init: init,
         state: {},
-        stopPolling: stopPolling
+        stopPolling: stopPolling,
+        exportContainer: exportContainer
     };
 
 
@@ -234,6 +235,13 @@ function removePort ( applicationName, number ) {
     }
     );
     return dir.update( { }, data ).$promise;
+}
+
+function exportContainer(applicationName) {
+    var dir = $resource ( 'application/:applicationName/containers/export' );
+    return dir.save ( { 
+        applicationName: applicationName
+    }, {} ).$promise; 
 }
 
 }

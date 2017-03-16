@@ -15,10 +15,10 @@
 
 package fr.treeptik.cloudunit.controller;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
+
 import java.net.URLConnection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,9 +29,17 @@ import javax.servlet.http.HttpServletResponse;
 import com.spotify.docker.client.exceptions.DockerException;
 import fr.treeptik.cloudunit.config.events.*;
 import fr.treeptik.cloudunit.dto.*;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,6 +63,7 @@ import fr.treeptik.cloudunit.service.ApplicationService;
 import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.utils.AuthentificationUtils;
 import fr.treeptik.cloudunit.utils.CheckUtils;
+
 
 /**
  * Controller about Application lifecycle Application is the main concept for
@@ -422,37 +431,172 @@ public class ApplicationController implements Serializable {
 	@CloudUnitSecurable
 	public void exportApplication(@PathVariable final String applicationName)
 			throws ServiceException, CheckException {
-		// TODO
-//		downloadOrEditFile(applicationName, containerId, path, fileName, request, response, false);
-	}
-
-
-	@RequestMapping(value = "/{applicationName}/containers/{containerName}/export", method = RequestMethod.GET)
-	@CloudUnitSecurable
-	public void exportApplication(@PathVariable final String applicationName, @PathVariable final String containerName, HttpServletResponse response)
-			throws ServiceException, CheckException, DockerException, InterruptedException {
 
         User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        // We must be sure there is no running action before starting new one
+        this.authentificationUtils.canStartNewAction(user, application, locale);
+        applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
+        List<ContainerUnit> listContainer = applicationService.listContainers(applicationName);
+        for (ContainerUnit container : listContainer) {
+            File file = new File("./export/" + container.getName() + ".tar.gz");
+
+            OutputStream out = null;
+            try {
+                out = new FileOutputStream(file);
+                this.dockerService.exportContainer(container.getName(), out);
+                out.flush();
+                out.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (InterruptedException | IOException | DockerException e) {
+                e.printStackTrace();
+            }
+            File finalFile = new File("./export/" + container.getName());
+            try {
+                CreateTarGZ();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+        }
+    }
+
+	@RequestMapping(value = "/{applicationName}/containers/export", method = RequestMethod.GET)
+	@CloudUnitSecurable
+	public void getExportApplication(@PathVariable final String applicationName, HttpServletResponse response)
+			throws ServiceException, CheckException {
+
+		User user = authentificationUtils.getAuthentificatedUser();
 		Application application = applicationService.findByNameAndUser(user, applicationName);
 
-		String filename = containerName + ".tar.gz";
+		// We must be sure there is no running action before starting new one
+		this.authentificationUtils.canStartNewAction(user, application, locale);
+		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
+		FileSystemResource resource = new FileSystemResource("./archive.tar.gz");
+		String filename = "archive.tar.gz";
 		String mimeType = URLConnection.guessContentTypeFromName(filename);
 		String contentDisposition = String.format("attachment; filename=%s", filename);
 		response.setContentType(mimeType);
 		response.setHeader("Content-Disposition", contentDisposition);
 
-		// We must be sure there is no running action before starting new one
-		this.authentificationUtils.canStartNewAction(user, application, locale);
-        applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-
 		try (OutputStream stream = response.getOutputStream()) {
-			this.dockerService.exportContainer(containerName, stream);
+			File f = new File("./archive.tar.gz");
+			byte[] arBytes = new byte[(int)f.length()];
+			FileInputStream is = new FileInputStream(f);
+			is.read(arBytes);
+			stream.write(arBytes);
 			stream.flush(); // commits response!
 			stream.close();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-        applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+
+		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+
 	}
 
+    private void CreateTarGZ()
+            throws FileNotFoundException, IOException
+    {
+
+            System.out.println(new File(".").getAbsolutePath());
+            String dirPath = "./export/";
+            String tarGzPath = "archive.tar.gz";
+            FileOutputStream fOut = new FileOutputStream(new File(tarGzPath));
+            BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+            GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(bOut);
+            TarArchiveOutputStream tOut = new TarArchiveOutputStream(gzOut);
+            addFileToTarGz(tOut, dirPath, "");
+
+            tOut.finish();
+            tOut.close();
+            gzOut.close();
+            bOut.close();
+            fOut.close();
+    }
+
+    private void addFileToTarGz(TarArchiveOutputStream tOut, String path, String base)
+            throws IOException
+    {
+        File f = new File(path);
+        System.out.println(f.exists());
+        String entryName = base + f.getName();
+        TarArchiveEntry tarEntry = new TarArchiveEntry(f, entryName);
+        tOut.putArchiveEntry(tarEntry);
+
+        if (f.isFile()) {
+            IOUtils.copyLarge(new FileInputStream(f), tOut);
+            tOut.closeArchiveEntry();
+        } else {
+            tOut.closeArchiveEntry();
+            File[] children = f.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    System.out.println(child.getName());
+                    addFileToTarGz(tOut, child.getAbsolutePath(), entryName + "/");
+                }
+            }
+        }
+    }
+   @RequestMapping(value = "/{applicationName}/containers/{containerName}/export", method = RequestMethod.GET)
+	@CloudUnitSecurable
+	public void exportApplication(@PathVariable final String applicationName, @PathVariable final String containerName, HttpServletResponse response)
+			throws ServiceException, CheckException {
+	    User user = authentificationUtils.getAuthentificatedUser();
+        Application application = applicationService.findByNameAndUser(user, applicationName);
+
+        String filename = containerName + ".tar.gz";
+        String mimeType = URLConnection.guessContentTypeFromName(filename);
+        String contentDisposition = String.format("attachment; filename=%s", filename);
+        response.setContentType(mimeType);
+       	response.setHeader("Content-Disposition", contentDisposition);
+
+        // We must be sure there is no running action before starting new one
+        this.authentificationUtils.canStartNewAction(user, application, locale);
+        applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+
+        try (OutputStream stream = response.getOutputStream()) {
+           this.dockerService.exportContainer(containerName, stream);
+           stream.flush(); // commits response!
+           stream.close();
+        } catch (IOException ex) {
+        ex.printStackTrace();
+       } catch (InterruptedException | DockerException e) {
+            e.printStackTrace();
+        }
+       applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+	}
+
+	private static List<File> unTar(final File inputFile, final File outputDir) throws FileNotFoundException, IOException, ArchiveException {
+		if (!outputDir.exists()) {
+			outputDir.mkdir();
+		}
+
+		final List<File> untaredFiles = new LinkedList<File>();
+		final InputStream is = new FileInputStream(inputFile);
+		final TarArchiveInputStream debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);
+		TarArchiveEntry entry = null;
+		while ((entry = (TarArchiveEntry)debInputStream.getNextEntry()) != null) {
+			final File outputFile = new File(outputDir, entry.getName());
+			if (entry.isDirectory()) {
+				if (!outputFile.exists()) {
+					if (!outputFile.mkdirs()) {
+						throw new IllegalStateException(String.format("Couldn't create directory %s.", outputFile.getAbsolutePath()));
+					}
+				}
+			} else {
+				final OutputStream outputFileStream = new FileOutputStream(outputFile);
+				IOUtils.copy(debInputStream, outputFileStream);
+				outputFileStream.close();
+			}
+			untaredFiles.add(outputFile);
+		}
+		debInputStream.close();
+
+		return untaredFiles;
+	}
 }

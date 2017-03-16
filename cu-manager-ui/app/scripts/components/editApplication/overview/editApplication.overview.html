@@ -16,19 +16,6 @@
     <div id="{{overview.app.name}}-server" class="card medium application overview {{overview.app.status | lowercase}}">
       <div class="content">
         <div class="pull-right">
-          <!--<a target="_blank"
-            ng-class="overview.app.status === 'Start' ? '' : 'inactive'"
-            href="{{ 'http://localhost:9000/application/' + overview.app.name + '/containers/' + overview.app.server.name + '/export' }}"
-            class="disabled">
-              <button class="icon-button"
-                  tooltip=""
-                  type="button"
-                  data-title="Download Image"
-                  data-placement="bottom"
-                  ng-click="overview.exportContainer(overview.app.name, overview.app.server.name)">
-                  <i class="icon-whhg download-alt"></i>
-              </button>
-          </a>-->
           <a
              id="preview-link"
              class="icon-button"
@@ -36,10 +23,29 @@
              data-ng-href="{{ 'http://localhost:9000/application/' + overview.app.name + '/containers/' + overview.app.server.name + '/export' }}"
              target="_blank"
              tooltip=""
-             data-title="Download Image"
+             data-title="Download Container"
              data-placement="bottom">
             <span><i class="icon-whhg download-alt"></i></span>
           </a>
+          <a ng-if="overview.isZip"
+             id="preview-link"
+             class="icon-button"
+             data-ng-class="{'disabled': overview.app.status!=='START' }"
+             data-ng-href="{{ 'http://localhost:9000/application/' + overview.app.name + '/containers/export' }}"
+             target="_blank"
+             tooltip=""
+             data-title="Download All Container"
+             data-placement="bottom">
+            <span><i class="icon-whhg circledownload"></i></span>
+          </a>
+          <button ng-if="!overview.isZip" class="icon-button"
+              tooltip=""
+              type="button"
+              data-title="Download All Image"
+              data-placement="bottom"
+              ng-click="overview.exportContainer(overview.app.name)">
+              <i class="icon-whhg zip"></i>
+          </button>
         </div>
         <div class="status">
           <p class="headline">
@@ -174,7 +180,7 @@
               data-ng-href="{{ 'http://localhost:9000/application/' + overview.app.name + '/containers/' + module.name + '/export' }}"
               target="_blank"
               tooltip=""
-              data-title="Download Image"
+              data-title="Download Container"
               data-placement="bottom">
               <span><i class="icon-whhg download-alt"></i></span>
             </a>
