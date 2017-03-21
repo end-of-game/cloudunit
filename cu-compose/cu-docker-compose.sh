@@ -192,7 +192,7 @@ with-elk
 ;;
 
 'with-elk-and-selenium')
-init && with-elk-and-selenium
+with-elk-and-selenium
 ;;
 
 'reset')
