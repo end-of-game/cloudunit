@@ -42,7 +42,7 @@ ENV RABBITMQ_LOGS=- RABBITMQ_SASL_LOGS=-
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 0A9AF2115F4687BD29803A206B73A36E6026DFCA
 RUN echo 'deb http://www.rabbitmq.com/debian testing main' > /etc/apt/sources.list.d/rabbitmq.list
 
-ENV RABBITMQ_VERSION 3.6.6-1
+ENV RABBITMQ_VERSION 3.6.8-1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		erlang erlang-mnesia erlang-public-key erlang-crypto erlang-ssl erlang-asn1 erlang-inets erlang-os-mon erlang-xmerl erlang-eldap \
