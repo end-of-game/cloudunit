@@ -570,33 +570,4 @@ public class ApplicationController implements Serializable {
         }
        applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 	}
-
-	private static List<File> unTar(final File inputFile, final File outputDir) throws FileNotFoundException, IOException, ArchiveException {
-		if (!outputDir.exists()) {
-			outputDir.mkdir();
-		}
-
-		final List<File> untaredFiles = new LinkedList<File>();
-		final InputStream is = new FileInputStream(inputFile);
-		final TarArchiveInputStream debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);
-		TarArchiveEntry entry = null;
-		while ((entry = (TarArchiveEntry)debInputStream.getNextEntry()) != null) {
-			final File outputFile = new File(outputDir, entry.getName());
-			if (entry.isDirectory()) {
-				if (!outputFile.exists()) {
-					if (!outputFile.mkdirs()) {
-						throw new IllegalStateException(String.format("Couldn't create directory %s.", outputFile.getAbsolutePath()));
-					}
-				}
-			} else {
-				final OutputStream outputFileStream = new FileOutputStream(outputFile);
-				IOUtils.copy(debInputStream, outputFileStream);
-				outputFileStream.close();
-			}
-			untaredFiles.add(outputFile);
-		}
-		debInputStream.close();
-
-		return untaredFiles;
-	}
 }
