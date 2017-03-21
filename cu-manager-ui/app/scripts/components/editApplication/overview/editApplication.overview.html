@@ -20,8 +20,7 @@
              id="preview-link"
              class="icon-button"
              data-ng-class="{'disabled': overview.app.status!=='START' }"
-             data-ng-href="{{ 'http://localhost:9000/application/' + overview.app.name + '/containers/' + overview.app.server.name + '/export' }}"
-             target="_blank"
+             data-ng-href="{{ '/application/' + overview.app.name + '/containers/' + overview.app.server.name + '/export' }}"
              tooltip=""
              data-title="Download Container"
              data-placement="bottom">
@@ -32,7 +31,6 @@
              class="icon-button"
              data-ng-class="{'disabled': overview.app.status!=='START' }"
              data-ng-href="{{ 'http://localhost:9000/application/' + overview.app.name + '/containers/export' }}"
-             target="_blank"
              tooltip=""
              data-title="Download All Container"
              data-placement="bottom">

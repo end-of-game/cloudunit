@@ -542,7 +542,8 @@ public class ApplicationController implements Serializable {
             }
         }
     }
-   @RequestMapping(value = "/{applicationName}/containers/{containerName}/export", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/{applicationName}/containers/{containerName}/export", method = RequestMethod.GET)
 	@CloudUnitSecurable
 	public void exportApplication(@PathVariable final String applicationName, @PathVariable final String containerName, HttpServletResponse response)
 			throws ServiceException, CheckException {
@@ -566,7 +567,7 @@ public class ApplicationController implements Serializable {
         } catch (IOException ex) {
         ex.printStackTrace();
        } catch (InterruptedException | DockerException e) {
-            e.printStackTrace();
+			logger.error(e.toString());
         }
        applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 	}
