@@ -19,9 +19,9 @@ public class RepositoryConfiguration {
     public CommandLineRunner populateImages(ImageRepository repository) {
         return args -> {
             repository.deleteAll();
-            repository.save(new Image("cloudunit/tomcat-8", ImageType.SERVER));
-            repository.save(new Image("cloudunit/tomcat-7", ImageType.SERVER));
-            repository.save(new Image("cloudunit/tomcat-6", ImageType.SERVER));
+            repository.save(new Image("cloudunit/tomcat:8", ImageType.SERVER));
+            repository.save(new Image("cloudunit/tomcat:7", ImageType.SERVER));
+            repository.save(new Image("cloudunit/tomcat:6", ImageType.SERVER));
         };
     }
 }
