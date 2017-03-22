@@ -20,6 +20,10 @@ function apache {
     docker build --rm $CACHE_STRATEGY -t cloudunit/apache-2-2 images/servers/apache-2-2
 }
 
+function glassfish {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/glassfish4 images/servers/glassfish4
+}
+
 function tomcat {
     docker build --rm $CACHE_STRATEGY -t cloudunit/tomcat-6     images/servers/tomcat-6
     docker build --rm $CACHE_STRATEGY -t cloudunit/tomcat-7     images/servers/tomcat-7

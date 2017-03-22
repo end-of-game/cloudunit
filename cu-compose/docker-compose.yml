@@ -117,7 +117,7 @@ services:
       - "traefik.frontend.entryPoints=https"
       - "traefik.backend=cu-sonar"
       - "traefik.port=9000"
-      - "traefik.frontend.rule=Host:sonar.${CU_SONAR_DOMAIN}"
+      - "traefik.frontend.rule=Host:${CU_SONAR_DOMAIN}"
 
   nexus:
       container_name: cu-nexus
