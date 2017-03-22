@@ -41,7 +41,7 @@ public class ServerIT {
     @Parameters(name = "{index} {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "cloudunit/tomcat-8" },
+            { "cloudunit/tomcat:8" },
         });
     }
     
@@ -66,6 +66,7 @@ public class ServerIT {
             ServiceResource service = applicationTemplate.getService(result);
             
             assertThat(service.getImageName(), containsString(serverName));
+            assertTrue(service.hasLink("cu:container"));
         } finally {
             applicationTemplate.deleteApplication(application);
         }

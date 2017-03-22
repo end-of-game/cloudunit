@@ -24,6 +24,7 @@ import org.springframework.web.client.RestOperations;
 
 import fr.treeptik.cloudunit.domain.core.Application;
 import fr.treeptik.cloudunit.domain.core.Image;
+import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
 import fr.treeptik.cloudunit.domain.repository.ImageRepository;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
@@ -129,10 +130,11 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
     }
 
     @Override
-    public void createContainer(Application application, String containerName, Image image) {
+    public void createContainer(Application application, Service service) {
         String uri = t.follow("cu:containers").asLink().getHref();
-        ContainerResource request = new ContainerResource(containerName, image.getName());
+        ContainerResource request = new ContainerResource(service.getContainerName(), service.getImageName());
         ContainerResource container = rest.postForObject(uri, request, ContainerResource.class);
+        service.setContainerUrl(container.getLink(Link.REL_SELF).getHref());
         monitorContainer(application, container);
     }
 

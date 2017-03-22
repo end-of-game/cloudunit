@@ -74,7 +74,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         
         Service service = application.addService(image);
         
-        orchestratorService.createContainer(application, service.getContainerName(), image);
+        orchestratorService.createContainer(application, service);
         
         applicationRepository.save(application);
         

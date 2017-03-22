@@ -17,17 +17,22 @@ public abstract class Service {
             throw new IllegalArgumentException();
         }
     }
+    
+    private static String containerName(String applicationName, String basename) {
+        return String.format("%s-%s", applicationName, basename);
+    }
 
     private String imageName;
     private String name;
     private String containerName;
+    private String containerUrl;
     private ContainerState state;
     
     protected Service() {}
     
     public Service(Application application, Image image) {
         this.name = image.getBasename();
-        this.containerName = String.format("%s-%s", application.getName(), image.getBasename());
+        this.containerName = containerName(application.getName(), image.getBasename());
         this.imageName = image.getName();
         this.state = ContainerState.STOPPED;
     }
@@ -50,6 +55,14 @@ public abstract class Service {
     
     public String getContainerName() {
         return containerName;
+    }
+    
+    public String getContainerUrl() {
+        return containerUrl;
+    }
+    
+    public void setContainerUrl(String containerUrl) {
+        this.containerUrl = containerUrl;
     }
 
     public abstract <R> R accept(ServiceVisitor<R> visitor);

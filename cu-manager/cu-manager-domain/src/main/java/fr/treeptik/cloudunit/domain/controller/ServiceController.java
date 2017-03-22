@@ -39,7 +39,12 @@ public class ServiceController {
         String appId = application.getId();
         String name = service.getName();
         
-        resource.add(linkTo(methodOn(ServiceController.class).getService(appId, name)).withSelfRel());
+        resource.add(linkTo(methodOn(ServiceController.class).getService(appId, name))
+                .withSelfRel());
+        resource.add(linkTo(methodOn(ApplicationController.class).getApplication(appId))
+                .withRel("cu:application"));
+        resource.add(new Link(service.getContainerUrl(),
+                "cu:container"));
         
         return resource;
     }
