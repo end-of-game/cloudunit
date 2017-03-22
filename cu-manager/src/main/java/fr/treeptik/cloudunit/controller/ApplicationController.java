@@ -35,6 +35,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -439,24 +440,30 @@ public class ApplicationController implements Serializable {
         this.authentificationUtils.canStartNewAction(user, application, locale);
         applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
 
+        String basePath = "./export/";
+        // erase export directory
+		File baseDir = new File (basePath);
+		try {
+			FileUtils.deleteDirectory(baseDir);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		baseDir.mkdir();
         List<ContainerUnit> listContainer = applicationService.listContainers(applicationName);
-        for (ContainerUnit container : listContainer) {
-            File file = new File("./export/" + container.getName() + ".tar.gz");
-
+        for (ContainerUnit container : listContainer) { // export each containers create a .tar.gz by container
+            File file = new File(basePath + container.getName() + ".tar.gz");
             OutputStream out = null;
             try {
                 out = new FileOutputStream(file);
                 this.dockerService.exportContainer(container.getName(), out);
                 out.flush();
                 out.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (InterruptedException | IOException | DockerException e) {
+            } catch ( InterruptedException | IOException | DockerException e) {
                 e.printStackTrace();
             }
-            File finalFile = new File("./export/" + container.getName());
+            File finalFile = new File(basePath + container.getName());
             try {
-                CreateTarGZ();
+                CreateTarGZ(basePath, "archive.tar.gz"); // package all sub .tar.gz in a main .tar.gz
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -475,16 +482,14 @@ public class ApplicationController implements Serializable {
 		// We must be sure there is no running action before starting new one
 		this.authentificationUtils.canStartNewAction(user, application, locale);
 		applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
-
-		FileSystemResource resource = new FileSystemResource("./archive.tar.gz");
 		String filename = "archive.tar.gz";
+		FileSystemResource resource = new FileSystemResource("./" + filename);
 		String mimeType = URLConnection.guessContentTypeFromName(filename);
 		String contentDisposition = String.format("attachment; filename=%s", filename);
 		response.setContentType(mimeType);
 		response.setHeader("Content-Disposition", contentDisposition);
-
 		try (OutputStream stream = response.getOutputStream()) {
-			File f = new File("./archive.tar.gz");
+			File f = new File(filename);
 			byte[] arBytes = new byte[(int)f.length()];
 			FileInputStream is = new FileInputStream(f);
 			is.read(arBytes);
@@ -494,18 +499,13 @@ public class ApplicationController implements Serializable {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-
 		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
 	}
 
-    private void CreateTarGZ()
+    private void CreateTarGZ(String dirPath, String tarGzPath)
             throws FileNotFoundException, IOException
     {
-
-            System.out.println(new File(".").getAbsolutePath());
-            String dirPath = "./export/";
-            String tarGzPath = "archive.tar.gz";
             FileOutputStream fOut = new FileOutputStream(new File(tarGzPath));
             BufferedOutputStream bOut = new BufferedOutputStream(fOut);
             GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(bOut);
@@ -523,7 +523,6 @@ public class ApplicationController implements Serializable {
             throws IOException
     {
         File f = new File(path);
-        System.out.println(f.exists());
         String entryName = base + f.getName();
         TarArchiveEntry tarEntry = new TarArchiveEntry(f, entryName);
         tOut.putArchiveEntry(tarEntry);
@@ -536,7 +535,6 @@ public class ApplicationController implements Serializable {
             File[] children = f.listFiles();
             if (children != null) {
                 for (File child : children) {
-                    System.out.println(child.getName());
                     addFileToTarGz(tOut, child.getAbsolutePath(), entryName + "/");
                 }
             }
