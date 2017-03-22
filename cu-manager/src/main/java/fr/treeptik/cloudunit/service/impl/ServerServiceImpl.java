@@ -452,8 +452,11 @@ public class ServerServiceImpl implements ServerService {
 		volume.getVolumeAssociations().add(volumeAssociation);
 		application.getServer().getVolumeAssociations().add(volumeAssociation);
 
-		stopAndRemoveServer(application.getServer(), application);
-		recreateAndMountVolumes(application.getServer(), application);
+		if (volumeAssociationDTO.getDeferedRestart() == null
+				|| !volumeAssociationDTO.getDeferedRestart()) {
+			stopAndRemoveServer(application.getServer(), application);
+			recreateAndMountVolumes(application.getServer(), application);
+		}
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -153,7 +154,8 @@ public class ServerUtils {
 		}
 	}
 
-	public void mountVolume(String name, String path, Boolean mode, String containerName, String applicationName) {
+	public void mountVolume(String name, String path, Boolean mode, String containerName, String applicationName,
+            boolean deferRestart) {
 	    Application application = applicationUtils.getSpecificOrCurrentApplication(applicationName);
 	    
 		if (containerName == null)
@@ -165,7 +167,7 @@ public class ServerUtils {
 			Map<String, String> parameters = new HashMap<>();
 			parameters.put("containerName", containerName);
 			parameters.put("path", path);
-
+            parameters.put("deferedRestart", Boolean.toString(deferRestart));
 			if(mode.equals(true)) parameters.put("mode", "ro");
 			else parameters.put("mode", "rw");
 

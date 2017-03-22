@@ -16,6 +16,16 @@ public class VolumeAssociationDTO implements Serializable {
 
 	private String applicationName;
 
+	private Boolean deferedRestart;
+
+	public Boolean getDeferedRestart() {
+		return deferedRestart;
+	}
+
+	public void setDeferedRestart(Boolean deferedRestart) {
+		this.deferedRestart = deferedRestart;
+	}
+
 	public String getContainerName() {
 		return containerName;
 	}

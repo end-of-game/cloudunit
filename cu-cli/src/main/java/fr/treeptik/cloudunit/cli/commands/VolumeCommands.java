@@ -44,8 +44,10 @@ public class VolumeCommands implements CommandMarker {
 			@CliOption(key = {"path"}, mandatory = true, help = "Path in the container") String path,
 			@CliOption(key = {"read-only"}, unspecifiedDefaultValue = "false", mandatory = false, help = "Mode read-only") boolean mode,
 			@CliOption(key = {"container-name"}, mandatory = false, help = "Container for the volume") String containerName,
-			@CliOption(key = {"application-name"}, mandatory = false, help = "Application for the volume") String applicationName) {
-		serverUtils.mountVolume(name, path, mode, containerName, applicationName);
+			@CliOption(key = {"application-name"}, mandatory = false, help = "Application for the volume") String applicationName,
+			@CliOption(key = {"deferRestart"}, mandatory = false, specifiedDefaultValue = "true", unspecifiedDefaultValue = "false",
+					help = "Defer the restart") boolean deferRestart) {
+		serverUtils.mountVolume(name, path, mode, containerName, applicationName, deferRestart);
 		return formatter.unlessQuiet("Volume mounted");
 	}
 
