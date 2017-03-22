@@ -14,10 +14,10 @@
   -->
 
 <div class="tab-pane card large vertical-spacing">
-  <div class="content clearfix" ng-if="modules.typeImage">
+  <!--<div class="content clearfix">
     <span ng-if="modules.errorAdding" class="alert alert-small alert-icon pull-right">{{ modules.errorAdding }}</span>
     <h3 class="title large">
-      Add module <i>{{ modules.typeImage }}</i>
+      Add module
     </h3>
 
     <div class="tile tile-sm module animate-module backcard" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}">
@@ -56,18 +56,18 @@
         <span class="text">{{ image.displayName }}</span>
       </button>
     </div>
-  </div>
+  </div>-->
 
-<div class="content clearfix" ng-if="!modules.typeImage">
+<div class="content clearfix">
     <h3 class="title large">Add a module</h3>
     
-    <div class="tile tile-sm module animate-module"  ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}" ng-init="modules.checkIconModule(modules.categorieImage)"
-    data-ng-repeat="image in modules.categorieImage | orderBy:'toString()' | filter:modules.typeImage:strict" style="animation-delay: {{ $index * 0.3 }}s" >
+    <div class="tile tile-sm module animate-module"  ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
+    data-ng-repeat="image in modules.serviceImages | orderBy:'toString()' track by $index" style="animation-delay: {{ $index * 0.3 }}s" >
       <button
         class="tile-content"
         ripple=""
         click-once=""
-        ui-sref="editApplication.addModule({ typeImage: image })" >
+        ng-click="modules.addService(image.name)" >
           <div class="spinner">
             <div class="rect1"></div>
             <div class="rect2"></div>
@@ -75,8 +75,8 @@
             <div class="rect4"></div>
             <div class="rect5"></div>
           </div>
-          <span class="image icon-tech icon-tech-default {{ image | truncatestringfilter | lowercase }}"></span>
-          <span class="text" style="text-transform: uppercase;">{{ image }}</span>
+          <span class="image icon-tech icon-tech-default"></span>
+          <span class="text" style="text-transform: uppercase;">{{ image.name }}</span>
         </button>
     </div>
   </div>

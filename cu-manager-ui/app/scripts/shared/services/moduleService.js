@@ -46,7 +46,20 @@ angular
         
         return {
             addModule: addModule,
-            removeModule: removeModule
+            removeModule: removeModule,
+            addService: addService
+        };
+
+        // Ajout d'un service
+        function addService(applicationName, serviceName) {
+
+            return traversonService
+                .newRequest()
+                .follow('applicationResourceList[name:' + applicationName + ']', 'cu:services')
+                .post({
+                    name: serviceName
+                })
+                .result;
         };
 
         // Ajout d'un module

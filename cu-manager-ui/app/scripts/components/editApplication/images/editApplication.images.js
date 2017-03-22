@@ -40,41 +40,36 @@
 
   function ModulesCtrl ( $rootScope, ImageService, ModuleService, $stateParams, $state, ErrorService) {
     var vm = this;
-    vm.moduleImages = [];
+    vm.serviceImages = [];
+    // vm.categorieImage = [];
+
     vm.categorieImage = [];
-    vm.addModule = addModule;
-    vm.typeImage = $stateParams.typeImage;
+    
+    vm.addService = addService;
+    // vm.typeImage = $stateParams.typeImage;
     vm.errorAdding;
     
-    vm.$onInit = function() {
+    vm.$onInit = function() {      
       getModulesImages ();
     }
     
     function getModulesImages () {
-      ImageService.findEnabledModule ()
+      ImageService.list ()
         .then ( function ( images ) {
-          vm.moduleImages = images;
-
-          if(vm.typeImage === '') {
-            angular.forEach(vm.moduleImages, function(image) {
-              if (!(vm.categorieImage.indexOf(image.prefixEnv) != -1 || image.prefixEnv == undefined)) {
-                vm.categorieImage.push(image.prefixEnv);
-              }
-            });
-          }
-        })
-        .catch ( function (response) {
-        ErrorService.handle(response);
+          vm.serviceImages = images;
         });
     }
 
-    function addModule ( applicationName, imageName ) {
-      ModuleService.addModule ( applicationName, imageName ).then(function (data) {
-        vm.errorAdding = null;
-        return data;
-      } ).catch(function(fallback) {
-        vm.errorAdding = fallback.data.message;
-      });
+    function addService ( imageName ) {
+      ModuleService.addService ( vm.app.name, imageName )
+        .then(function (data) {
+          vm.errorAdding = null;
+          console.log('OK', data);
+          return data;
+        } ).catch(function(fallback) {
+          console.error('ERRss', fallback)
+          vm.errorAdding = fallback.data.message;
+        });
     }
   }
 }) ();

@@ -27,10 +27,12 @@
     .module('webuiApp')
     .factory('ImageService', ImageService);
 
-  ImageService.$inject = ['$resource'];
+  ImageService.$inject = ['$resource', 'TraversonService'];
 
 
-  function ImageService($resource) {
+  function ImageService($resource, TraversonService) {
+
+    var imageTraversonService = new TraversonService.Instance('/images');
 
     return {
       findEnabled: findEnabled,
@@ -40,11 +42,28 @@
       enable: enable,
       disable: disable,
       remove: remove,
-      pull: pull
+      pull: pull,
+      list: list
     };
 
 
     //////////////////////////////////////////
+
+    // Liste de toutes les images
+    function list() {
+			return imageTraversonService
+				.traversonService
+				.newRequest()
+				.getResource()
+				.result
+				.then(function (res) {
+					if (res._embedded) {
+						return res._embedded.imageResourceList;
+					} else {
+						return [];
+					}
+				}).catch(function (err) { console.error(err); });
+    }
 
     // Liste de toutes les images qui sont activés quelque soit leur type
     function findEnabled() {
