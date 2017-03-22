@@ -50,6 +50,6 @@ public class DockerClientIT {
                 .flatMap(i -> i.repoTags().stream())
                 .collect(Collectors.toList());
         
-        assertThat(images, hasItem(containsString("cloudunit/base-16.04")));
+        assertThat(images, hasItem(containsString("cloudunit/base:16.04")));
     }
 }

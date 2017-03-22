@@ -91,11 +91,6 @@
         <configuration>
           <profiles>
             <profile>dev</profile>
-            <!--
-            <profile>int</profile>
-            <profile>prod</profile>
-            <profile>travis</profile>
-            -->
           </profiles>
         </configuration>
       </plugin>

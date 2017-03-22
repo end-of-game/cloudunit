@@ -66,18 +66,6 @@
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -97,24 +85,9 @@
         <configuration>
           <profiles>
             <profile>dev</profile>
-            <!--
-            <profile>int</profile>
-            <profile>prod</profile>
-            <profile>travis</profile>
-            -->
           </profiles>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>dev</id>
-      <activation><activeByDefault>true</activeByDefault></activation>
-      <properties>
-        <docker.host>192.168.50.4</docker.host>
-      </properties>
-    </profile>
-  </profiles>
 </project>
