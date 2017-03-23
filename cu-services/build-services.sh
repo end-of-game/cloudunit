@@ -110,6 +110,11 @@ echo "Building FarJar"
 fatjar
 ;;
 
+'glassfish')
+echo "Building GlassFish"
+glassfish
+;;
+
 'mongo')
 echo "Building Mongo"
 mongo
