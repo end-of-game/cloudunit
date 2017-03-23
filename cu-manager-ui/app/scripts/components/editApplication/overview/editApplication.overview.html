@@ -16,29 +16,26 @@
     <div id="{{overview.app.name}}-server" class="card medium application overview {{overview.app.status | lowercase}}">
       <div class="content">
         <div class="pull-right">
-          <!--data-ng-href="{{ '/application/' + overview.app.name + '/containers/' + overview.app.server.name + '/export' }}"-->
-          <a
-             id="preview-link"
-             class="icon-button"
-             data-ng-class="{'disabled': overview.app.status!=='START' }"
-             tooltip=""
-             data-title="Download Container"
-             data-placement="bottom"
-             
-             
-              sweetalert
-              sweet-options="{'title':'Download confirmation required',
-              'text':'Caution, you cannot get it back once operation lauch.',
-              'type':'warning',
-              'showCancelButton':true,
-              'confirmButtonText':'DOWNLOAD!',
-              'cancelButtonText':'CANCEL',
-              'closeOnConfirm':false,
-              'closeOnCancel':false,
-              'animation': 'slide-from-top'}"
-              sweet-confirm-option="{'title':'Downloading!','text':'Your container is downloading!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
-              sweet-cancel-option="{'title':'Cancelled!','text':'Your container has not been downloaded','type':'error', 'showConfirmButton': false, 'timer': 1000}"
-              sweet-on-confirm="overview.downloadContainer(overview.app.name, overview.app.server.name)">
+          <a id="preview-link"
+            class="icon-button"
+            data-ng-class="{'disabled': overview.app.status!=='START' }"
+            tooltip=""
+            data-title="Download Container"
+            data-placement="bottom"
+            
+            sweetalert
+            sweet-options="{'title':'Download confirmation required',
+            'text':'Caution, you cannot get it back once operation lauch.',
+            'type':'warning',
+            'showCancelButton':true,
+            'confirmButtonText':'DOWNLOAD!',
+            'cancelButtonText':'CANCEL',
+            'closeOnConfirm':false,
+            'closeOnCancel':false,
+            'animation': 'slide-from-top'}"
+            sweet-confirm-option="{'title':'Downloading!','text':'Your container is downloading!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+            sweet-cancel-option="{'title':'Cancelled!','text':'Your container has not been downloaded','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+            sweet-on-confirm="overview.downloadContainer(overview.app.name, overview.app.server.name)">
             <span><i class="icon-whhg download-alt"></i></span>
           </a>
           <a ng-if="overview.isZip"
@@ -51,7 +48,7 @@
              data-placement="bottom">
             <span><i class="icon-whhg circledownload"></i></span>
           </a>
-          <button ng-if="overview.isZip" class="icon-button"
+          <button ng-if="!overview.isZip" class="icon-button"
               tooltip=""
               type="button"
               data-title="Download All Image"
@@ -117,7 +114,7 @@
           </div>
 
           <div class="readonly">
-            <label for="jvm-options">JVM options: </label>
+            <label for="jvm-options">JVM configuration: </label>
             <input class="code clipboard"
                    id="jvm-options"
                    type="text"

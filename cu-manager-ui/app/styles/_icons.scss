@@ -135,10 +135,13 @@
 }
 
 .icon-tech.vertx:before {
-  content: "\e906";
+  content: "\e908";
   /*
   transform: scale(4);
   transform: scale(4);*/
+}
+.icon-tech.glassfish:before {
+  content: "\e904";
 }
 .icon-tech.activemq:before {
   content: "\e901";
