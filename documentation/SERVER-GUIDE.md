@@ -6,12 +6,16 @@ This guide aims to provide install instructions that follow the [KISS principle]
 ## Requirements
 
 A virtual or baremetal server with
-* at least 8 GB RAM (32 GB or even 64 GB will be better!)
-* Ubuntu 14.04 LTS (with a 4.x kernel with AUFS support) Or Centos 7.x (With LVM2 package installed and a lvm vg named "docker") (see FAQ if needed)
+* at least 16 GB RAM (but we recommend at least 32 GB)
+* one of the following operating systems
+  * Ubuntu 14.04 LTS with a 4.x kernel with AUFS support
+  * Or Centos 7.x with LVM2 package installed and a lvm vg named "docker" (see FAQ if needed)
+* a domain name and a DNS entries on your network or the Internet that point that domain name and all of its sub-domains to the IP of the server (this guide uses *.cloudunit.io)
+* _(for proper SSL support)_ an SSL certificate for the server's domain name and all of its sub-domains
 
 ## Install
 
-### As `root` 
+Log in to your server as `root`.
 
 Download the install script and check that all prerequisites are present.
 
