@@ -21,6 +21,7 @@ function apache {
 }
 
 function glassfish {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/glassfish2 images/servers/glassfish2s
     docker build --rm $CACHE_STRATEGY -t cloudunit/glassfish4 images/servers/glassfish4
 }
 
@@ -166,6 +167,7 @@ activemq
 apache
 elastic
 fatjar
+glassfish
 mongo
 mysql
 nginx
@@ -190,6 +192,7 @@ echo "                    all"
 echo "                    base"
 echo "                    elastic"
 echo "                    fatjar"
+echo "                    glassfish"
 echo "                    mongo"
 echo "                    mysql"
 echo "                    nginx"
