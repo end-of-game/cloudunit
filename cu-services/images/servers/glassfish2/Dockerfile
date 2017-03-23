@@ -1,4 +1,4 @@
-FROM java:6
+FROM java:8
 
 ENV GLASSFISH_HOME /opt/glassfish
 ENV PATH $PATH:$GLASSFISH_HOME/bin
@@ -12,9 +12,12 @@ RUN \
   echo A|java -jar glassfish.jar && \
   rm glassfish.jar && \
   cd /opt/glassfish && \
-  chmod -R +x lib/ant/bin && \
-  lib/ant/bin/ant -f setup.xml && \
-  chmod a+x bin/asadmin
+  chmod -R +x lib/ant/bin
+
+COPY setup.xml setup.xml
+
+RUN lib/ant/bin/ant -f setup.xml && \
+    chmod a+x bin/asadmin
 
 ## CLOUDUNIT :: START
 
