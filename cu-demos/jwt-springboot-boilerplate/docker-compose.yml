@@ -1,0 +1,16 @@
+version: '2'
+services:
+
+  frontweb:
+    build:
+      context: frontweb
+    image: jwtspringboot/frontweb
+    ports:
+      - "80"
+
+  backend:
+    build:
+      context: backend
+    image: jwtspringboot/backend
+    ports:
+      - "8080"

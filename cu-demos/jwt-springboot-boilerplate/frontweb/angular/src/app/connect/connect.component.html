@@ -1,0 +1,53 @@
+<div *ngIf="token" class="alert alert-notice">token : <span style="font-size: 0.7em;">{{ token }}</span></div>
+<div *ngIf="error" class="alert alert-error">Error : {{ error }}</div>
+<div id="connect-container">
+    <div class="connect-item">
+        <md-toolbar color="primary">Login</md-toolbar>
+        <md-card >
+            <md-card-content *ngIf="connect.authorities == undefined">
+                <form id="loginForm" #formLogin="ngForm" (ngSubmit)="login(formLogin.value)">
+                    <md-input-container class="example-full-width">
+                        <input mdInput type="text" [(ngModel)]="connect.pseudo" placeholder="username" required name="username">
+                    </md-input-container>
+                    <md-input-container class="example-full-width">
+                        <input mdInput type="password" [(ngModel)]="connect.password" placeholder="password" required name="password">
+                    </md-input-container>
+                    <p>Try one of the following logins :</p>
+                     <div>   
+                        <p>admin & admin</p>
+                        <p>user & password</p>
+                        <p>disabled & password</p>
+                     </div>
+                    <button [disabled]="!formLogin.valid" color="primary" md-raised-button type="submit">login</button>
+                </form>
+            </md-card-content>
+            
+            <md-card-content *ngIf="connect.authorities != undefined">
+                <h4>Authenticated user</h4>
+                <md-list>
+                    <md-list-item *ngFor="let authority of connect.authorities"> {{authority.authority}} </md-list-item>
+                </md-list>
+                <md-card-actions>
+                    <button type="button" color="warn" md-raised-button (click)="logout()">logout</button>
+                </md-card-actions>
+            </md-card-content>
+        </md-card>
+    </div>
+    <div class="connect-item">
+        <md-toolbar color="primary">Response</md-toolbar>
+        <md-card>
+            <md-card-actions>
+                <button md-raised-button (click)="callNoProtected()" color="primary">Call example service</button>
+                <button md-raised-button color="warn" (click)="callProtected()">Call admin protected service</button>
+            </md-card-actions>
+            <md-card-content *ngIf="callNoProtectedData.length > 0" class="console">
+                <md-list>
+                    <md-list-item *ngFor="let data of callNoProtectedData"> {{data.name}} | {{data.email}} </md-list-item>
+                </md-list>
+            </md-card-content>
+            <md-card-content *ngIf="callProtectedData != ''" class="console">
+                <p> {{callProtectedData}} </p>
+            </md-card-content>
+        </md-card>
+    </div>
+</div>
