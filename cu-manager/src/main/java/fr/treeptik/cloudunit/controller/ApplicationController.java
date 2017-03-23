@@ -18,7 +18,6 @@ package fr.treeptik.cloudunit.controller;
 import java.io.*;
 
 import java.net.URLConnection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,14 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.spotify.docker.client.exceptions.DockerException;
 import fr.treeptik.cloudunit.config.events.*;
 import fr.treeptik.cloudunit.dto.*;
-import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -51,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.treeptik.cloudunit.utils.FilesUtils;
 import fr.treeptik.cloudunit.aspects.CloudUnitSecurable;
 import fr.treeptik.cloudunit.enums.RemoteExecAction;
 import fr.treeptik.cloudunit.exception.CheckException;
@@ -463,7 +456,7 @@ public class ApplicationController implements Serializable {
             }
             File finalFile = new File(basePath + container.getName());
             try {
-                CreateTarGZ(basePath, "archive.tar.gz"); // package all sub .tar.gz in a main .tar.gz
+                FilesUtils.createTarGZ(basePath, "archive.tar.gz"); // package all sub .tar.gz in a main .tar.gz
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -497,49 +490,11 @@ public class ApplicationController implements Serializable {
 			stream.flush(); // commits response!
 			stream.close();
 		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
-
+			logger.error(applicationName, ex.getMessage());
+		}applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 	}
 
-    private void CreateTarGZ(String dirPath, String tarGzPath)
-            throws FileNotFoundException, IOException
-    {
-            FileOutputStream fOut = new FileOutputStream(new File(tarGzPath));
-            BufferedOutputStream bOut = new BufferedOutputStream(fOut);
-            GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(bOut);
-            TarArchiveOutputStream tOut = new TarArchiveOutputStream(gzOut);
-            addFileToTarGz(tOut, dirPath, "");
 
-            tOut.finish();
-            tOut.close();
-            gzOut.close();
-            bOut.close();
-            fOut.close();
-    }
-
-    private void addFileToTarGz(TarArchiveOutputStream tOut, String path, String base)
-            throws IOException
-    {
-        File f = new File(path);
-        String entryName = base + f.getName();
-        TarArchiveEntry tarEntry = new TarArchiveEntry(f, entryName);
-        tOut.putArchiveEntry(tarEntry);
-
-        if (f.isFile()) {
-            IOUtils.copyLarge(new FileInputStream(f), tOut);
-            tOut.closeArchiveEntry();
-        } else {
-            tOut.closeArchiveEntry();
-            File[] children = f.listFiles();
-            if (children != null) {
-                for (File child : children) {
-                    addFileToTarGz(tOut, child.getAbsolutePath(), entryName + "/");
-                }
-            }
-        }
-    }
 
     @RequestMapping(value = "/{applicationName}/containers/{containerName}/export", method = RequestMethod.GET)
 	@CloudUnitSecurable

@@ -4,4 +4,8 @@ WORKDIR /usr/apps/cu-manager-ui
 
 RUN npm install -g grunt grunt-cli bower
 
+COPY docker-entrypoint.sh /usr/local/bin/
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD [ "run" ]
 
