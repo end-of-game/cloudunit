@@ -4,5 +4,5 @@
 
 # RUN
 
-`docker run -p 9000:9000 -v $(pwd):/usr/apps/cu-manager-ui cloudunit/cu-manager-ui`
+`docker run --net=host -p 9000:9000 -p 35729:35729 -v $(pwd):/usr/apps/cu-manager-ui cloudunit/cu-manager-ui`
 
