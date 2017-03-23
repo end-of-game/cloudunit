@@ -48,64 +48,13 @@
 
     var vm = this;
     vm.applicationName = '';
-    vm.serverImages = [];
-    vm.serverImageChoice = {};
-    vm.serverImageSelect2 = undefined;
 
-    vm.group = [];
     vm.notValidated = true;
     vm.message = '';
     vm.isPending = false;
     vm.createApplication = createApplication;
     vm.isValid = isValid;
-   
-    vm.selectConfig = {
-      optgroupField: 'prefixId',
-      optgroupLabelField: 'title',
-      maxItems: 1,
-      valueField: 'id',
-      labelField: 'displayName',
-      searchField: 'displayName',
-      placeholder: 'Select Server',
-      render: {
-        optgroup_header: function(data, escape) {
-          return '<div class="selectize">' + escape(data.title) + '</div>';
-        }
-      },
-      onChange: function(value) {
-        vm.serverImageChoice =  vm.serverImages[vm.serverImages.map(function(x) {return x.id; }).indexOf(+value)];
-      }
-    };
-
-    vm.$onInit = function() {
-      // TODO
-      //  ImageService.findEnabledServer()
-      //   .then(success)
-      //   .catch(error);
-
-      // function success(serverImages) {
-      //   vm.serverImages = serverImages;
-      //    serverImages.forEach(function (element, index) {
-      //     var rang = vm.group.map(function(x) {return x.title; }).indexOf(serverImages[index].prefixEnv);
-      //     serverImages[index].prefixId = (serverImages[index].prefixId > 0)?serverImages[index].prefixId:-serverImages[index].prefixId;
-      //     if(rang == -1) {
-      //       vm.group.push({
-      //         id: serverImages[index].prefixId,
-      //         title: serverImages[index].prefixEnv,
-      //       });
-      //     }
-      //    });
-         
-      //   $rootScope.$broadcast('app:serverImages', {serverImages: vm.group});
-        
-      //   vm.serverImageChoice = serverImages[0];
-      // }
-
-      // function error(response) {
-      //   ErrorService.handle(response);
-      // }  
-    }
-    
+       
     function createApplication(applicationName, serverName) {
       // emit app:creating event to display a shadow app during creation process
       vm.isPending = true;

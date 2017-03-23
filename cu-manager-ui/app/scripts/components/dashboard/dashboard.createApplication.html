@@ -13,65 +13,28 @@
   ~     For any questions, contact us : contact@treeptik.fr
   -->
 
-<div id="create-application" class="form smaller"
-     ng-class="{ngdirty: createApp.createAppForm.$dirty, 'pending': createApp.isPending}">
-  <div class="content clearfix">
-
-        
-    <form id="create-application-form"
+<div>
+  <form id="create-application-form"
           name="createApp.createAppForm"
           novalidate="">
-      <div class="input-group stack">
-        <label for="name">App Name</label>
-        <input id="name"
-               name="name"
-               type="text"
-               ng-maxlength="25"
+  <div class="col-xs-2">
+    <input type="text"
+        class="input-effect"
+        ng-maxlength="25"
                data-ng-model="createApp.applicationName"
                data-ng-change="createApp.isValid(createApp.applicationName, createApp.serverImageChoice.name)"
                data-ng-disabled="createApp.isPending"
                 protectinput=""
                required>
-
-        <!-- Display errors -->
-        <p
-          data-ng-if="createApp.createAppForm.name.$error.pattern && !createApp.createAppForm.name.$pristine"
-          class="hint format error">
-          Use alphanumeric character only
-        </p>
-
-        <p
-          data-ng-if="createApp.createAppForm.name.$error.maxlength"
-          class="hint format error">
-          Application name must have less than 25 chars (only alphanumerics)
-        </p>
-
-        <p class="hint error " data-ng-if="!createApp.createAppForm.name.$pristine && createApp.message"
-           data-ng-bind="createApp.message"></p>
-      </div>
-
-      <div class="input-group stack">
-        <label for="name">App Server</label>
-        <selectize config="createApp.selectConfig" optgroups="createApp.group" options='createApp.serverImages' ng-model="createApp.serverImageSelect2"></selectize>
-      </div>
-      <button id="create-btn"
-              type="submit"
-              class="button-effect primary pull-right"
-              click-once=""
-              data-ng-disabled=" createApp.createAppForm.name.$error.maxlength || !createApp.applicationName"
-              data-ng-click="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
-        <span>Create New App</span> <!-- TODO createApp.notValidated || !createApp.serverImageSelect2 ||-->
-      </button>
-    </form>
-
-    <div class="spinner">
-      <div class="rect1"></div>
-      <div class="rect2"></div>
-      <div class="rect3"></div>
-      <div class="rect4"></div>
-      <div class="rect5"></div>
-    </div>
-              
+    <span class="bar"></span>
+    <label class="label-effect">Name</label>
   </div>
-  
+  <button class="button-effect primary"
+      style="height: 30px; margin-top: 10px"
+      data-ng-disabled=" createApp.createAppForm.name.$error.maxlength || !createApp.applicationName"
+      data-ng-click="createApp.createApplication(createApp.applicationName, createApp.serverImageChoice.name)">
+    <span>Create</span>
+  </button>
+  </form>
 </div>
+  

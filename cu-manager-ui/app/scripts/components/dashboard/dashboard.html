@@ -32,18 +32,27 @@
   <div class="page-content" id="dashboard">
     <div class="page full">
       <div class="subheader">
-        <h3 class="subhead"
-            ng-show="!dashboard.search">
-          My Applications
-        </h3>
+        <create-app  app="dashboard.applications"></create-app>
 
-        <h3 class="subhead"
-            ng-show="dashboard.search">
-          Applications
-          <mark>{{ dashboard.search | formatAppStatus| lowercase }}</mark>
-        </h3>
+        <button class="icon-button  pull-left"
+                tooltip=""
+                data-title="Grid"
+                data-placement="top"
+                data-ng-click="dashboard.selectedDisplayStyle = 'Grid';"
+                data-ng-class="{selected: dashboard.selectedDisplayStyle == 'Grid'}">
+          <i class="icon-whhg grid-th"></i>
+        </button>
 
-        <div id="status-filter" class="subheader-form">
+        <button class="icon-button  pull-left"
+                tooltip=""
+                data-title="List"
+                data-placement="top"
+                data-ng-click="dashboard.selectedDisplayStyle = 'List';"
+                data-ng-class="{selected: dashboard.selectedDisplayStyle == 'List'}">
+          <i class="icon-whhg list-th"></i>
+        </button>
+
+        <div id="status-filter" class="subheader-form pull-right">
 
           <div class="input-group inline">
             <span class="label">Filter by name:</span>
@@ -93,77 +102,10 @@
               </ul>
             </div>
           </div>
-          <div class="input-group inline">
-            <span class="label">Filter by server:</span>
-            <div class="dropdown" dropdown="">
-              <a class="dropdown-toggle"
-                 dropdown-toggle=""
-                 data-ng-bind="dashboard.selectedServerSearch">
-              </a>
-              <ul class="dropdown-menu" role="menu" aria-label="dLabel">
-                <li>
-                  <a ng-href=""
-                     data-ng-click="dashboard.selectedServer = ''; dashboard.selectedServerSearch = 'All' ">
-                    All
-                  </a>
-                </li>
-                <li data-ng-repeat="serverImage in dashboard.serverImages">
-                  <a ng-href=""
-                     data-ng-click="dashboard.selectedServer = serverImage.title; dashboard.selectedServerSearch = serverImage.title ">
-                    {{ serverImage.title }}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <!--<div class="input-group inline">
-            <span class="label">Display by :</span>
-            <div class="dropdown" dropdown="">
-              <a class="dropdown-toggle"
-                 dropdown-toggle=""
-                 data-ng-bind="dashboard.selectedDisplayStyle">
-              </a>
-              <ul class="dropdown-menu" role="menu" aria-label="dLabel">
-                <li>
-                  <a ng-href=""
-                     data-ng-click="dashboard.selectedDisplayStyle = 'Grid';">
-                    Grid
-                  </a>
-                </li>
-                <li>
-                  <a ng-href=""
-                     data-ng-click="dashboard.selectedDisplayStyle = 'List';">
-                    List
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>-->
         </div>
-        <button class="icon-button  pull-left"
-                tooltip=""
-                data-title="Grid"
-                data-placement="top"
-                data-ng-click="dashboard.selectedDisplayStyle = 'Grid';"
-                data-ng-class="{selected: dashboard.selectedDisplayStyle == 'Grid'}">
-          <i class="icon-whhg grid-th"></i>
-        </button>
-
-        <button class="icon-button  pull-left"
-                tooltip=""
-                data-title="List"
-                data-placement="top"
-                data-ng-click="dashboard.selectedDisplayStyle = 'List';"
-                data-ng-class="{selected: dashboard.selectedDisplayStyle == 'List'}">
-          <i class="icon-whhg list-th"></i>
-        </button>
 
       </div>
       <div class="cards">
-        <!--create application-->
-
-        <create-app app="dashboard.applications"></create-app>
-        
         <!--application list-->
 
         <div id='application-{{application.name}}'
@@ -171,7 +113,7 @@
              ng-class="{'card': dashboard.selectedDisplayStyle == 'Grid',
               'smaller': dashboard.selectedDisplayStyle == 'Grid',
               'list': dashboard.selectedDisplayStyle == 'List'}"
-             data-ng-repeat="application in dashboard.applications | orderBy:'id'  | filter:{displayName: searchText} | appByServerImage: dashboard.selectedServer track by $index">
+             data-ng-repeat="application in dashboard.applications | orderBy:'id'  | filter:{name: searchText} | filter:{state: dashboard.search} track by $index">
           <div class="content">
             <h3 class="title">
               {{application.name}}
