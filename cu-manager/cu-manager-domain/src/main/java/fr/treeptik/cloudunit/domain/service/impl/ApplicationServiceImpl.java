@@ -69,8 +69,8 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     @Override
     public Service addService(Application application, String imageName) {
-        Image image = imageRepository.findByName(imageName)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Image %s could not be found", imageName)));
+        Image image = imageRepository.findByName(imageName).get();
+//                .orElseThrow(() -> new IllegalArgumentException(String.format("Image %s could not be found", imageName)));
         
         Service service = application.addService(image);
         

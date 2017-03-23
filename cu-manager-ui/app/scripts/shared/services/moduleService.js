@@ -57,7 +57,7 @@ angular
                 .newRequest()
                 .follow('applicationResourceList[name:' + applicationName + ']', 'cu:services')
                 .post({
-                    name: serviceName
+                    imageName: serviceName
                 })
                 .result;
         };
