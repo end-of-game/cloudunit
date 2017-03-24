@@ -51,6 +51,8 @@ public class ContainerController {
 
         resource.add(linkTo(methodOn(VariableController.class).getVariables(name))
                 .withRel("cu:variables"));
+        resource.add(linkTo(methodOn(MountController.class).getMounts(name))
+                .withRel("cu:mounts"));
 
         if (container.getState() == ContainerState.STOPPED) {
             resource.add(linkTo(methodOn(ContainerController.class).start(name))
@@ -130,5 +132,5 @@ public class ContainerController {
         return containerRepository.findByName(name)
                 .map(mapper)
                 .orElse(ResponseEntity.notFound().build());
-    }
+    }    
 }

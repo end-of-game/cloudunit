@@ -1,6 +1,6 @@
 package fr.treeptik.cloudunit.orchestrator.docker.controller;
 
-import static org.hamcrest.Matchers.*;
+import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.*;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -14,17 +14,15 @@ import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.web.servlet.ResultActions;
 
-import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.docker.test.ContainerTemplate;
+import fr.treeptik.cloudunit.orchestrator.docker.test.VolumeTemplate;
 import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
+import fr.treeptik.cloudunit.orchestrator.resource.MountResource;
+import fr.treeptik.cloudunit.orchestrator.resource.VolumeResource;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ContainerControllerIT {
-    private static final String IMAGE_NAME = "cloudunit/tomcat:8";
-
-    private static final String CONTAINER_NAME = "mycontainer";
-
+public class MountControllerIT {
     @ClassRule
     public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
 
@@ -34,51 +32,44 @@ public class ContainerControllerIT {
     @Autowired
     private ContainerTemplate containerTemplate;
     
+    @Autowired
+    private VolumeTemplate volumeTemplate;
+    
     @Test
-    public void testCreateContainer() throws Exception {
-        ResultActions result = containerTemplate.createContainer(CONTAINER_NAME, IMAGE_NAME);
-        result.andExpect(status().isCreated());
-        
-        ContainerResource container = containerTemplate.getContainer(result);
+    public void testMountVolume() throws Exception {
+        VolumeResource volume = volumeTemplate.createAndAssumeVolume(VOLUME_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
         try {
-            assertThat(container.getState(), isOneOf(ContainerState.STOPPING, ContainerState.STOPPED));
-        } finally {
-            containerTemplate.deleteContainer(container)
-                .andExpect(status().isNoContent());
+            ResultActions result = containerTemplate.mountVolume(container, volume, "/etc");
+            result.andExpect(status().isCreated());
             
-            containerTemplate.waitForRemoval(container);
+            MountResource mount = containerTemplate.getMount(result);
+            
+            assertTrue(mount.hasLink("cu:volume"));
+            assertNull(mount.getVolume());
+        } finally {
+            containerTemplate.waitWhilePending(container);
+            containerTemplate.deleteContainerAndWait(container);
+            volumeTemplate.deleteVolume(volume);
         }
     }
     
     @Test
-    public void testStartContainer() throws Exception {
+    public void testMountUnmountVolume() throws Exception {
+        VolumeResource volume = volumeTemplate.createAndAssumeVolume(VOLUME_NAME);
         ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
-        
         try {
-            containerTemplate.startContainer(container)
-                .andExpect(status().isNoContent());            
+            ResultActions result = containerTemplate.mountVolume(container, volume, "/etc");
+            MountResource mount = containerTemplate.getMount(result);
+
+            containerTemplate.waitWhilePending(container);
+            
+            result = containerTemplate.unmountVolume(mount);
+            result.andExpect(status().isNoContent());
         } finally {
             containerTemplate.waitWhilePending(container);
             containerTemplate.deleteContainerAndWait(container);
-        }
-    }
-    
-    @Test
-    public void testStartStopContainer() throws Exception {
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
-        
-        try {
-            containerTemplate.startContainer(container)
-                .andExpect(status().isNoContent());
-            
-            containerTemplate.waitWhilePending(container);
-            
-            container = containerTemplate.refreshContainer(container);
-            containerTemplate.stopContainer(container)
-                .andExpect(status().isNoContent());
-        } finally {
-            containerTemplate.waitWhilePending(container);
-            containerTemplate.deleteContainerAndWait(container);
+            volumeTemplate.deleteVolume(volume);
         }
     }
 }

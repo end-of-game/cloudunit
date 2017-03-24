@@ -1,6 +1,11 @@
 package fr.treeptik.cloudunit.orchestrator.core;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -21,6 +26,15 @@ public class Container {
     private ContainerState state;
     private Map<String, Variable> variables;
     
+    /**
+     * Mounted volumes.
+     * 
+     * Each key is a volume name, and each value is a mount point.
+     * Consequence: a volume cannot be mounted twice on the same container,
+     * however two volumes can be mounted on the same path.
+     */
+    private Map<String, Mount> mounts;
+    
     @Version
     private Long version;
     
@@ -31,6 +45,7 @@ public class Container {
         this.imageName = image.getName();
         this.state = ContainerState.STOPPING;
         this.variables = new HashMap<>();
+        this.mounts = new HashMap<>();
     }
 
     public String getId() {
@@ -79,6 +94,56 @@ public class Container {
 
     public void removeVariable(Variable variable) {
         variables.remove(variable.getKey());
+    }
+    
+    public Collection<Mount> getMounts() {
+        return Collections.unmodifiableCollection(mounts.values());
+    }
+    
+    public boolean isMounted(Volume volume) {
+        return isMounted(volume.getName());
+    }
+
+    public boolean isMounted(String volumeName) {
+        return mounts.containsKey(volumeName);
+    }
+    
+    public Optional<Mount> getMount(Volume volume) {
+        return getMount(volume.getName());
+    }
+
+    public Optional<Mount> getMount(String volumeName) {
+        return Optional.ofNullable(mounts.get(volumeName));
+    }
+    
+    /**
+     * Mount a volume on this container.
+     * 
+     * @param volume  the name of the volume
+     * @param mountPoint  the path on which to mount it
+     * 
+     * @throws IllegalArgumentException if {@code volume} has already been mounted.
+     * @throws NullPointerException if {@code volume} or {@code mountPoint} is {@literal null}.
+     */
+    public Mount addMount(Volume volume, String mountPoint) {
+        if (volume == null || mountPoint == null) {
+            throw new NullPointerException("volumeName and mountPoint must not be null");
+        }
+        if (isMounted(volume)) {
+            throw new IllegalArgumentException("This volume has already been mounted");
+        }
+        
+        Mount mount = new Mount(volume.getName(), mountPoint);
+        mounts.put(volume.getName(), mount);
+        return mount;
+    }
+    
+    public void removeMount(Volume volume) {
+        removeMount(volume.getName());
+    }
+    
+    public void removeMount(String volumeName) {
+        mounts.remove(volumeName);
     }
     
     @Override

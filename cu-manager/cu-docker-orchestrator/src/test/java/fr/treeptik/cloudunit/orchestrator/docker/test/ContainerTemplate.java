@@ -23,7 +23,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
+import fr.treeptik.cloudunit.orchestrator.resource.MountResource;
 import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
+import fr.treeptik.cloudunit.orchestrator.resource.VolumeResource;
 
 @Component
 public class ContainerTemplate {
@@ -131,6 +133,26 @@ public class ContainerTemplate {
 
     public ResultActions deleteVariable(VariableResource variable) throws Exception {
         String uri = variable.getLink(Link.REL_SELF).getHref();
+        return mockMvc.perform(delete(uri));
+    }
+    
+    public ResultActions mountVolume(ContainerResource container, VolumeResource volume, String mountPoint) throws Exception {
+        String uri = container.getLink("cu:mounts").getHref();
+        MountResource request = new MountResource(volume, mountPoint);
+        
+        ResultActions result = mockMvc.perform(post(uri)
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON));
+        return result;
+    }
+    
+    public MountResource getMount(ResultActions result) throws IOException {
+        String content = result.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(content, MountResource.class);
+    }
+
+    public ResultActions unmountVolume(MountResource mount) throws Exception {
+        String uri = mount.getLink(Link.REL_SELF).getHref();
         return mockMvc.perform(delete(uri));
     }
 
