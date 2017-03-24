@@ -3,6 +3,7 @@ package fr.treeptik.cloudunit.orchestrator.docker.service;
 import fr.treeptik.cloudunit.orchestrator.core.Container;
 import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.core.Variable;
+import fr.treeptik.cloudunit.orchestrator.core.Volume;
 
 public interface DockerService {
     Container createContainer(String name, Image image);
@@ -19,4 +20,7 @@ public interface DockerService {
 
     void removeVariable(Container container, Variable variable);
 
+    Volume createVolume(String name);
+
+    void deleteVolume(Volume volume);
 }

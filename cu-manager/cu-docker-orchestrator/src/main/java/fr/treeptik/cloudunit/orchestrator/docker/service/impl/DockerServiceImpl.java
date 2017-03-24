@@ -26,7 +26,9 @@ import fr.treeptik.cloudunit.orchestrator.core.Container;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.core.Variable;
+import fr.treeptik.cloudunit.orchestrator.core.Volume;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
+import fr.treeptik.cloudunit.orchestrator.docker.repository.VolumeRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.service.DockerService;
 import fr.treeptik.cloudunit.orchestrator.docker.service.ServiceException;
 
@@ -40,6 +42,9 @@ public class DockerServiceImpl implements DockerService {
     
     @Autowired
     private ContainerRepository containerRepository;
+    
+    @Autowired
+    private VolumeRepository volumeRepository;
 
     @Autowired
     private DockerClient docker;
@@ -216,7 +221,9 @@ public class DockerServiceImpl implements DockerService {
 
     private void doDeleteContainer(Container container) {
         try {
-            docker.removeContainer(container.getName(), RemoveContainerParam.forceKill(true));
+            docker.removeContainer(container.getName(),
+                    RemoveContainerParam.forceKill(),
+                    RemoveContainerParam.removeVolumes());
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't delete a container", e);
             throw new ServiceException("Couldn't delete a container", e);
@@ -293,6 +300,36 @@ public class DockerServiceImpl implements DockerService {
             containerRepository.delete(container);
         } else {
             doCreateContainer(container);
+        }
+    }
+
+    @Override
+    public Volume createVolume(String name) {
+        try {
+            Map<String, String> labels = new HashMap<>();
+            labels.put(FILTER_LABEL_KEY, FILTER_LABEL_VALUE);
+            docker.createVolume(com.spotify.docker.client.messages.Volume.builder()
+                    .name(name)
+                    .labels(labels)
+                    .build());
+            Volume volume = new Volume(name);
+            
+            volume = volumeRepository.save(volume);
+            return volume;
+        } catch (DockerException | InterruptedException e) {
+            LOGGER.error("Couldn't create volume", e);
+            throw new ServiceException("Couldn't create volume", e);
+        }
+    }
+    
+    @Override
+    public void deleteVolume(Volume volume) {
+        try {
+            docker.removeVolume(volume.getName());
+            volumeRepository.delete(volume);
+        } catch (DockerException | InterruptedException e) {
+            LOGGER.error("Couldn't remove volume", e);
+            throw new ServiceException("Couldn't remove volume", e);
         }
     }
 
