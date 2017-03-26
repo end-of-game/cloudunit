@@ -68,6 +68,9 @@ public class VolumeController {
                 .map(v -> toResource(v))
                 .collect(Collectors.toList()));
         
+        resources.add(linkTo(methodOn(VolumeController.class).getVolumes())
+                .withSelfRel());
+        
         return ResponseEntity.ok(resources);
     }
     

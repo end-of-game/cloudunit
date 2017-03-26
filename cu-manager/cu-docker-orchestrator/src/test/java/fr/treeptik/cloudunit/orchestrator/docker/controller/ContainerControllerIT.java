@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.*;
+
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,10 +23,6 @@ import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ContainerControllerIT {
-    private static final String IMAGE_NAME = "cloudunit/tomcat:8";
-
-    private static final String CONTAINER_NAME = "mycontainer";
-
     @ClassRule
     public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
 
