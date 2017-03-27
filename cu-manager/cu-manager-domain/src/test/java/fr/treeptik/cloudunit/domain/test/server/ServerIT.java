@@ -1,6 +1,5 @@
 package fr.treeptik.cloudunit.domain.test.server;
 
-import static org.awaitility.Awaitility.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -8,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.awaitility.Duration;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +20,6 @@ import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.web.servlet.ResultActions;
 
-import fr.treeptik.cloudunit.domain.core.ApplicationState;
 import fr.treeptik.cloudunit.domain.resource.ApplicationResource;
 import fr.treeptik.cloudunit.domain.resource.ServiceResource;
 import fr.treeptik.cloudunit.domain.test.ApplicationTemplate;
@@ -50,15 +47,13 @@ public class ServerIT {
     
     private final String serverName;
     
-    private ApplicationResource application;
-    
     public ServerIT(String serverName) {
         this.serverName = serverName;
     }
     
     @Test
     public void testAddServer() throws Exception {
-        application = applicationTemplate.createAndAssumeApplication();
+        ApplicationResource application = applicationTemplate.createAndAssumeApplication();
         try {
             ResultActions result = applicationTemplate.addService(application, serverName);
             result.andExpect(status().isCreated());
@@ -73,8 +68,23 @@ public class ServerIT {
     }
     
     @Test
+    public void testAddRemoveServer() throws Exception {
+        ApplicationResource application = applicationTemplate.createAndAssumeApplication();
+        try {
+            ResultActions result = applicationTemplate.addService(application, serverName);
+            
+            ServiceResource service = applicationTemplate.getService(result);
+            
+            result = applicationTemplate.removeService(service);
+            result.andExpect(status().isNoContent());
+        } finally {
+            applicationTemplate.deleteApplication(application);
+        }
+    }
+    
+    @Test
     public void testStartStopServer() throws Exception {
-        application = applicationTemplate.createAndAssumeApplication();
+        ApplicationResource application = applicationTemplate.createAndAssumeApplication();
         try {
             ResultActions result = applicationTemplate.addService(application, serverName);
             result.andExpect(status().isCreated());
@@ -84,23 +94,16 @@ public class ServerIT {
             applicationTemplate.startApplication(application)
                 .andExpect(status().isNoContent());
             
-            await().atMost(Duration.TEN_SECONDS).until(() -> {
-                application = applicationTemplate.refreshApplication(application);
-                return application.getState() == ApplicationState.STARTED;
-            });
-            
+            applicationTemplate.waitWhilePending(application);
             service = applicationTemplate.refreshService(service);
             
             assertEquals(ContainerState.STARTED, service.getState());
             
+            application = applicationTemplate.refreshApplication(application);
             applicationTemplate.stopApplication(application)
                 .andExpect(status().isNoContent());
-            
-            await().atMost(Duration.TEN_SECONDS).until(() -> {
-                application = applicationTemplate.refreshApplication(application);
-                return application.getState() == ApplicationState.STOPPED;
-            });
         } finally {
+            applicationTemplate.waitWhilePending(application);
             applicationTemplate.deleteApplication(application);
         }
     }

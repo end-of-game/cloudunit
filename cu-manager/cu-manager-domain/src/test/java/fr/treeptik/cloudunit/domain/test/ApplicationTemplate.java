@@ -1,10 +1,12 @@
 package fr.treeptik.cloudunit.domain.test;
 
+import static org.awaitility.Awaitility.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import javax.json.Json;
 
+import org.awaitility.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.Link;
@@ -112,5 +114,14 @@ public class ApplicationTemplate {
     public ServiceResource refreshService(ServiceResource service) throws Exception {
         String uri = service.getLink(Link.REL_SELF).getHref();
         return getService(mockMvc.perform(get(uri)));
+    }
+
+    public ResultActions removeService(ServiceResource service) throws Exception {
+        String uri = service.getLink(Link.REL_SELF).getHref();
+        return mockMvc.perform(delete(uri));
+    }
+
+    public void waitWhilePending(ApplicationResource application) {
+        await().atMost(Duration.ONE_MINUTE).until(() -> !refreshApplication(application).getState().isPending());
     }
 }

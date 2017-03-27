@@ -24,7 +24,6 @@ public class Application {
     private String displayName;
     private AtomicReference<ApplicationState> state;
     private Map<String, Service> servicesByName;
-    private Map<String, String> serviceNamesByContainerName;
     
     @Version
     private Long version;
@@ -34,7 +33,6 @@ public class Application {
     public Application(String name) {
         this.name = name;
         this.servicesByName = new HashMap<>();
-        this.serviceNamesByContainerName = new HashMap<>();
         this.state = new AtomicReference<>(CREATED);
     }
 
@@ -110,7 +108,6 @@ public class Application {
     public Service addService(Image image) {
         Service service = Service.of(this, image);
         servicesByName.put(service.getName(), service);
-        serviceNamesByContainerName.put(service.getContainerName(), service.getName());
         return service;
     }
 
@@ -124,11 +121,6 @@ public class Application {
 
     public void removeService(String name) {
         servicesByName.remove(name);
-        serviceNamesByContainerName.remove(name);
-    }
-
-    public Service getServiceByContainerName(String containerName) {
-        return servicesByName.get(serviceNamesByContainerName.get(containerName));
     }
     
     @Override

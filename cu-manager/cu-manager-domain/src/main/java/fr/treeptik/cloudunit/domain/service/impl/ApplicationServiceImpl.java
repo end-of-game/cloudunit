@@ -86,6 +86,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         orchestratorService.deleteContainer(application, service.getContainerName());
         
         application.removeService(service.getName());
+        
+        applicationRepository.save(application);
     }
 
     @Override
@@ -116,9 +118,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
     
     @Override
-    public void updateContainerState(Application application, String containerName, ContainerState state) {
-        Service service = application.getServiceByContainerName(containerName);
-        service.setState(state);
+    public void updateContainerState(Application application, String serviceName, ContainerState state) {
+        Optional<Service> service = application.getService(serviceName);
+        
+        if (!service.isPresent()) {
+            LOGGER.warn("Tried to update an unknown service {} on application {}", serviceName, application.getName());
+            return;
+        }
+        service.get().setState(state);
         
         List<ContainerState> serviceStates = application.getServices().stream()
                 .map(s -> s.getState())

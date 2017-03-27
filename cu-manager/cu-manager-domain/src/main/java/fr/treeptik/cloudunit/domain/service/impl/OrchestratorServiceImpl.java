@@ -135,7 +135,7 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
         ContainerResource request = new ContainerResource(service.getContainerName(), service.getImageName());
         ContainerResource container = rest.postForObject(uri, request, ContainerResource.class);
         service.setContainerUrl(container.getLink(Link.REL_SELF).getHref());
-        monitorContainer(application, container);
+        monitorContainer(application, service, container);
     }
 
     @Override
@@ -168,9 +168,9 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
         rest.postForEntity(uri, null, Void.class);
     }
     
-    private void monitorContainer(Application application, ContainerResource container) {
+    private void monitorContainer(Application application, Service service, ContainerResource container) {
         ScheduledFuture<?> monitorFuture = executor.scheduleWithFixedDelay(
-                new ContainerMonitor(application, container),
+                new ContainerMonitor(application, service, container),
                 1, monitorDelay, TimeUnit.SECONDS);
         
         monitorFutures.put(container.getName(), monitorFuture);
@@ -184,10 +184,12 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
     public class ContainerMonitor implements Runnable {
         private ContainerResource container;
         private String applicationId;
+        private String serviceName;
 
-        public ContainerMonitor(Application application, ContainerResource container) {
+        public ContainerMonitor(Application application, Service service, ContainerResource container) {
             this.container = container;
             this.applicationId = application.getId();
+            this.serviceName = service.getName();
         }
 
         @Override
@@ -196,7 +198,7 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
             container = rest.getForObject(uri, ContainerResource.class);
             
             Application application = applicationRepository.findOne(applicationId).get();
-            applicationService.updateContainerState(application, container.getName(), container.getState());
+            applicationService.updateContainerState(application, serviceName, container.getState());
         }
     }
 }
