@@ -5,15 +5,17 @@ import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
 public interface ApplicationService {
-    public Application create(String name);
+    Application create(String name);
 
-    public void delete(Application application);
+    void delete(Application application);
 
-    public Service addService(Application application, String imageName);
+    Service addService(Application application, String imageName);
 
-    public void startApplication(Application application);
+    void removeService(Application application, Service service);
+
+    void startApplication(Application application);
     
-    public void stopApplication(Application application);
+    void stopApplication(Application application);
 
-    public void updateContainerState(Application application, String containerName, ContainerState state);
+    void updateContainerState(Application application, String containerName, ContainerState state);
 }

@@ -3,8 +3,8 @@ package fr.treeptik.cloudunit.domain.controller;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,52 +52,54 @@ public class ServiceController {
     
     @PostMapping
     public ResponseEntity<?> addService(@PathVariable String appId, @RequestBody ServiceResource request) {
-        Optional<Application> application = applicationRepository.findOne(appId);
-        
-        if (!application.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        Service service = applicationService.addService(application.get(), request.getImageName());
-        
-        ServiceResource resource = toResource(application.get(), service);
-        return ResponseEntity.created(URI.create(resource.getLink(Link.REL_SELF).getHref())).body(resource);
+        return withApplication(appId, application -> {
+            Service service = applicationService.addService(application, request.getImageName());
+            
+            ServiceResource resource = toResource(application, service);
+            return ResponseEntity.created(URI.create(resource.getLink(Link.REL_SELF).getHref())).body(resource);            
+        });
     }
 
     @GetMapping
     public ResponseEntity<?> getServices(@PathVariable String appId) {
-        Optional<Application> application = applicationRepository.findOne(appId);
-        
-        if (!application.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Collection<Service> services = application.get().getServices();
-        
-        Resources<ServiceResource> resources = new Resources<>(services.stream()
-                .map(s -> toResource(application.get(), s))
-                .collect(Collectors.toList()));
-        
-        resources.add(linkTo(methodOn(ServiceController.class).getServices(appId))
-                .withSelfRel());
-        
-        return ResponseEntity.ok(resources);
+        return withApplication(appId, application -> {
+            Resources<ServiceResource> resources = new Resources<>(application.getServices().stream()
+                    .map(s -> toResource(application, s))
+                    .collect(Collectors.toList()));
+            
+            resources.add(linkTo(methodOn(ServiceController.class).getServices(appId))
+                    .withSelfRel());
+            
+            return ResponseEntity.ok(resources);            
+        });
     }
     
     @GetMapping("/{name}")
     public ResponseEntity<?> getService(@PathVariable String appId, @PathVariable String name) {
-        Optional<Application> application = applicationRepository.findOne(appId);
-        
-        if (!application.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Optional<Service> service = application.get().getService(name);
-        
-        if (!service.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        return ResponseEntity.ok(toResource(application.get(), service.get()));
+        return withService(appId, name, (application, service) ->
+            ResponseEntity.ok(toResource(application, service)));
+    }
+    
+    @DeleteMapping("/{name}")
+    public ResponseEntity<?> removeService(@PathVariable String appId, @PathVariable String name) {
+        return withService(appId, name, (application, service) -> {
+            applicationService.removeService(application, service);
+            
+            return ResponseEntity.noContent().build();
+        });
+    }
+    
+    private ResponseEntity<?> withApplication(String appId, Function<Application, ResponseEntity<?>> mapper) {
+        return applicationRepository.findOne(appId)
+                .map(application -> mapper.apply(application))
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    private ResponseEntity<?> withService(String appId, String name,
+            BiFunction<Application, Service, ResponseEntity<?>> mapper) {
+        return applicationRepository.findOne(appId)
+                .flatMap(application -> application.getService(name)
+                        .map(service -> mapper.apply(application, service)))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
