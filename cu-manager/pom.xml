@@ -54,6 +54,9 @@
               <goals>
                 <goal>repackage</goal>
               </goals>
+              <configuration>
+                <classifier>boot</classifier>
+              </configuration>
             </execution>
           </executions>
         </plugin>

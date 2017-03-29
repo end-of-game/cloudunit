@@ -90,7 +90,7 @@ public class VariableControllerIT {
             containerTemplate.waitWhilePending(container);
             
             Resources<VariableResource> variables = containerTemplate.getVariables(container);
-            assertThat(variables.getContent(), empty());
+            assertThat(variables.getContent(), not(hasItem(hasProperty("key", is("KEY1")))));
         } finally {
             containerTemplate.deleteContainerAndWait(container);
         }

@@ -10,6 +10,7 @@ import org.awaitility.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
 import fr.treeptik.cloudunit.orchestrator.resource.VolumeResource;
 
 @Component
+@Lazy
 public class ContainerTemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerTemplate.class);
 

@@ -42,9 +42,11 @@ public class Container {
     
     public Container(String name, Image image) {
         this.name = name;
-        this.imageName = image.getName();
+        this.imageName = image.getRepositoryTag();
         this.state = ContainerState.STOPPING;
-        this.variables = new HashMap<>();
+        this.variables = image.getVariables().stream()
+                .map(v -> Variable.assign(this, v))
+                .collect(Collectors.toMap(v -> v.getKey(), v -> v));
         this.mounts = new HashMap<>();
     }
 

@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.treeptik.cloudunit.orchestrator.resource.VolumeResource;
 
 @Component
+@Lazy
 public class VolumeTemplate {
     @Autowired
     private MockMvc mockMvc;

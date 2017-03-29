@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ThreadFactory;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -21,7 +20,6 @@ import com.spotify.docker.client.DockerClient.RemoveContainerParam;
 import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerConfig.Builder;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.Event;
 import com.spotify.docker.client.messages.Event.Type;

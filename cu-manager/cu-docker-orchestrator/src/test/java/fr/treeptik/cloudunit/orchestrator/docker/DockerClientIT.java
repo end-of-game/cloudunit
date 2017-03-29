@@ -15,14 +15,11 @@ import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.ListContainersParam;
 import com.spotify.docker.client.DockerClient.ListImagesParam;
-import com.spotify.docker.client.messages.Container;
 
 @SpringBootTest
 public class DockerClientIT {
-    private static final String FILTER_LABEL_KEY = "origin";
-    private static final String FILTER_LABEL_VALUE = "cloudunit";
+    private static final String FILTER_LABEL_KEY = "io.cloudunit";
     
     @ClassRule
     public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
@@ -32,24 +29,14 @@ public class DockerClientIT {
     
     @Autowired
     private DockerClient docker;
-    
-    @Test
-    public void testListContainers() throws Exception {
-        List<Container> containers = docker.listContainers(
-                ListContainersParam.allContainers(),
-                ListContainersParam.withLabel(FILTER_LABEL_KEY, FILTER_LABEL_VALUE));
 
-        assertThat(containers, hasSize(1));
-    }
-    
     @Test
     public void testListImages() throws Exception {
-        List<String> images = docker.listImages(
-                ListImagesParam.withLabel(FILTER_LABEL_KEY, FILTER_LABEL_VALUE))
+        List<String> images = docker.listImages(ListImagesParam.withLabel(FILTER_LABEL_KEY))
                 .stream()
                 .flatMap(i -> i.repoTags().stream())
                 .collect(Collectors.toList());
         
-        assertThat(images, hasItem(containsString("cloudunit/base:16.04")));
+        assertThat(images, hasItem(containsString("tomcat")));
     }
 }

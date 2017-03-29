@@ -5,14 +5,27 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Variable {
+    public static Variable assign(Container container, Variable variable) {
+        if (variable.role != null) {
+            return new Variable(variable.key, variable.role.generateValue(container), variable.role);
+        }
+        return null;
+    }
+    
     private String key;
     private String value;
+    private VariableRole role;
 
     public Variable() {}
 
     public Variable(String key, String value) {
+        this(key, value, null);
+    }
+    
+    public Variable(String key, String value, VariableRole role) {
         this.key = key;
         this.value = value;
+        this.role = role;
     }
 
     public String getKey() {
@@ -25,6 +38,10 @@ public class Variable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+    
+    public VariableRole getRole() {
+        return role;
     }
     
     @Override

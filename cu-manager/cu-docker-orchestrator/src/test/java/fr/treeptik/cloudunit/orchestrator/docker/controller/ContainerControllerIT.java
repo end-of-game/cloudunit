@@ -12,13 +12,17 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.hateoas.Resources;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.docker.test.ContainerTemplate;
+import fr.treeptik.cloudunit.orchestrator.docker.test.ImageTemplate;
 import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
+import fr.treeptik.cloudunit.orchestrator.resource.ImageResource;
+import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,14 +36,29 @@ public class ContainerControllerIT {
     @Autowired
     private ContainerTemplate containerTemplate;
     
+    @Autowired
+    private ImageTemplate imageTemplate;
+    
     @Test
     public void testCreateContainer() throws Exception {
         ResultActions result = containerTemplate.createContainer(CONTAINER_NAME, IMAGE_NAME);
         result.andExpect(status().isCreated());
         
         ContainerResource container = containerTemplate.getContainer(result);
+        
         try {
             assertThat(container.getState(), isOneOf(ContainerState.STOPPING, ContainerState.STOPPED));
+            
+            ImageResource image = imageTemplate.getImage(IMAGE_NAME);
+            
+            Resources<VariableResource> expectedVariables = imageTemplate.getVariables(image);
+            
+            Resources<VariableResource> variables = containerTemplate.getVariables(container);
+            
+            for (VariableResource variable : expectedVariables.getContent()) {
+                assertThat(variables.getContent(), hasItem(hasProperty("key", is(variable.getKey()))));
+            }
+            
         } finally {
             containerTemplate.deleteContainer(container)
                 .andExpect(status().isNoContent());

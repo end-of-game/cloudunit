@@ -14,7 +14,7 @@ public class ContainerResource extends ResourceSupport {
     private String name;
 
     @NotNull
-    @Pattern(regexp = "([a-z]+/)?[a-z]([a-z0-9_.-])*(:[a-z0-9]([a-z0-9_.-])*)?")
+    @Pattern(regexp = "[a-z]([a-z0-9_.-])*(:[a-z0-9]([a-z0-9_.-])*)?")
     private String imageName;
     
     private ContainerState state;

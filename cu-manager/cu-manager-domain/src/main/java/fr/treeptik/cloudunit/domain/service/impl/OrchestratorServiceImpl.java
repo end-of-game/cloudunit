@@ -125,7 +125,7 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
                 .toObject(IMAGE_RESOURCES_TYPE);
         
         return images.getContent().stream()
-                .map(ir -> new Image(ir.getName(), ir.getType()))
+                .map(ir -> new Image(ir.getName(), ir.getServiceName(), ir.getType()))
                 .collect(Collectors.toList());
     }
 
