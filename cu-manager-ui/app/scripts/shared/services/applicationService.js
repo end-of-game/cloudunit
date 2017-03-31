@@ -31,11 +31,12 @@
 		'$resource',
 		'$http',
 		'$interval',
+		'$q',
 		'TraversonService'
 	];
 
 
-	function ApplicationService($resource, $http, $interval, TraversonService) {
+	function ApplicationService($resource, $http, $interval, $q, TraversonService) {
 		var Application;
 
 		Application = $resource('application/:id', { id: '@name' });
@@ -96,7 +97,25 @@
 				.result
 				.then(function (res) {
 					if (res._embedded) {
-						return res._embedded.applicationResourceList;
+						var q = $q.defer();
+						var promises = [];
+						res._embedded.applicationResourceList.forEach(function(elem) {
+							var intermediatePromise = $q.defer();
+
+							applicationTraversonService
+								.flatTraverson(
+								['applicationResourceList[name:' + elem.name + ']', 'self'],
+								['cu:services']
+							).then(function(res) {
+								intermediatePromise.resolve(res);
+							});
+							promises.push(intermediatePromise.promise);
+						})
+
+						$q.all(promises).then(function (finalResult) {
+							q.resolve(finalResult);
+						})
+						return q.promise;						
 					} else {
 						return [];
 					}

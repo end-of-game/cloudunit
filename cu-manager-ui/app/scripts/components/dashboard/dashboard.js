@@ -89,7 +89,6 @@
         .catch(error);
 
       function success(applications) {
-
         var newApp = _.find(applications, function(app){
           return app.name === vm.buffer.toLowerCase().replace(/[^a-z0-9]/gi,'');
         });
