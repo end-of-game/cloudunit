@@ -1,10 +1,9 @@
-colon := :
-$(colon) := :
+colon := \:
+$(colon) := \:
 
 .DEFAULT: all
 
-SERVICES := base nginx apache tomcat fatjar wildfly postgre postgis mongo mysql activemq rabbitmq elastic redis vertx
-base_VERSIONS := jessie 12.04 14.04 16.04
+SERVICES := nginx apache tomcat fatjar wildfly postgre postgis mongo mysql activemq rabbitmq elastic redis vertx
 nginx_VERSIONS := 1.10
 apache_VERSIONS := 2.2
 tomcat_VERSIONS := 6 7 8 8.5 9
@@ -20,7 +19,7 @@ elastic_VERSIONS := 2.4
 redis_VERSIONS := 3.2
 vertx_VERSIONS := 3.3-ruby 3.3-js 3.3-groovy 3.3-java
 
-DOCKER_PREFIX := cloudunit
+DOCKER_NS := cloudunit
 DOCKERFLAGS := --no-cache --rm
 
 IMAGEPATH := images
@@ -30,7 +29,7 @@ IMAGEPATH := images
 all: $(SERVICES)
 
 define IMAGE_TEMPLATE
-$(1)_NAME := $$(DOCKER_PREFIX)/$$(subst _,$:,$(1))
+$(1)_NAME = $$(DOCKER_NS)/$$(subst _,$(colon),$(1))
 ifndef PULL
 $(1): $$(IMAGEPATH)/$$(subst _,-,$(1))
 	docker build $$(DOCKERFLAGS) -t $$($(1)_NAME) $$<
@@ -53,8 +52,8 @@ clean: $(1)-clean
 endef
 
 define SERVICE_TEMPLATE
+$(1)_IMAGES = $$(patsubst %,$(1)_%,$$($(1)_VERSIONS))
 ALL_IMAGES += $$($(1)_IMAGES)
-$(1)_IMAGES := $$(patsubst %,$(1)_%,$$($(1)_VERSIONS))
 
 $(1): $$($(1)_IMAGES)
 
@@ -64,3 +63,6 @@ endef
 $(foreach service,$(SERVICES),$(eval $(call SERVICE_TEMPLATE,$(service))))
 
 $(foreach image,$(ALL_IMAGES),$(eval $(call IMAGE_TEMPLATE,$(image))))
+
+test\:8: 
+	echo $@ > $@

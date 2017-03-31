@@ -33,6 +33,5 @@ LABEL io.cloudunit="" \
       io.cloudunit.logfile=$CATALINA_HOME/logs/catalina.log \
       io.cloudunit.manager.path=manager/html \
       io.cloudunit.manager.port=8080 \
-      io.cloudunit.deploy=deploy-tomcat \
       io.cloudunit.tmp=$CATALINA_HOME/temp
 
