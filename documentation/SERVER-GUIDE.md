@@ -94,15 +94,14 @@ vgcreate docker /dev/sda
 ## How to restart the production environment without reseting data
 
 ```
-~/cloudunit/cu-compose/start-with-elk.sh
+~/cloudunit/cu-compose/cu-docker-compose.sh with-elk
 ```
 You have many start-* files for different scenarii.
 
 ## How to reset the production environment 
 
 ```
-~/cloudunit/cu-compose/reset-prod.sh
-~/cloudunit/cu-compose/start-with-elk.sh
+~/cloudunit/cu-compose/cu-docker-compose.sh reset
 ```
 
 ## How to change the MySQL password
