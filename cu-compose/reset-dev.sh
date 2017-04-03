@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
 # but CloudUnit is licensed too under a standard commercial license.
 # Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
@@ -10,8 +12,6 @@
 # Products or services derived from this software may not be called "CloudUnit"
 # nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
 # For any questions, contact us : contact@treeptik.fr
-
-#!/bin/bash
 
 source .env
 
