@@ -73,6 +73,10 @@ public class Container {
     public String getImageName() {
         return imageName;
     }
+    
+    public String getLocalDnsName() {
+        return name;
+    }
 
     public Optional<Variable> getVariable(String key) {
         return Optional.ofNullable(variables.get(key));

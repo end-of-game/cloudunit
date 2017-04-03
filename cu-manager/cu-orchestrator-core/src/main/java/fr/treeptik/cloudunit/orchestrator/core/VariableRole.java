@@ -21,7 +21,7 @@ public enum VariableRole {
     NAME {
         @Override
         public String generateValue(Container container) {
-            return container.getImageName();
+            return container.getName();
         }
     };
     

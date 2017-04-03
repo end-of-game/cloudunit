@@ -1,13 +1,9 @@
 package fr.treeptik.cloudunit.orchestrator.resource;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.hateoas.ResourceSupport;
 
 import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.core.ImageType;
-import fr.treeptik.cloudunit.orchestrator.core.Variable;
 
 public class ImageResource extends ResourceSupport {
     private String name;
@@ -15,7 +11,6 @@ public class ImageResource extends ResourceSupport {
     private String displayName;
     private String serviceName;
     private String version;
-    private List<Variable> variables;
 
     public ImageResource() {}
     
@@ -25,7 +20,6 @@ public class ImageResource extends ResourceSupport {
         this.displayName = image.getDisplayName();
         this.serviceName = image.getServiceName();
         this.version = image.getVersion();
-        this.variables = new ArrayList<>(image.getVariables());
     }
 
     public String getName() {
@@ -66,13 +60,5 @@ public class ImageResource extends ResourceSupport {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public List<Variable> getVariables() {
-        return variables;
-    }
-
-    public void setVariables(List<Variable> variables) {
-        this.variables = variables;
     }
 }
