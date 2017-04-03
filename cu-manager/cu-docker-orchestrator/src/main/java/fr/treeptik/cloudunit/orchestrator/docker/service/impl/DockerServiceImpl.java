@@ -13,6 +13,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.ImmutableList;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.EventsParam;
 import com.spotify.docker.client.DockerClient.ExecCreateParam;
@@ -20,7 +21,9 @@ import com.spotify.docker.client.DockerClient.RemoveContainerParam;
 import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerConfig.NetworkingConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
+import com.spotify.docker.client.messages.EndpointConfig;
 import com.spotify.docker.client.messages.Event;
 import com.spotify.docker.client.messages.Event.Type;
 import com.spotify.docker.client.messages.ExecCreation;
@@ -42,10 +45,11 @@ import fr.treeptik.cloudunit.orchestrator.docker.service.ServiceException;
 @Component
 public class DockerServiceImpl implements DockerService {
     private static final String CONTAINER_MDC = "container";
-    private static final String FILTER_LABEL_KEY = "origin";
-    private static final String FILTER_LABEL_VALUE = "cloudunit";
+    private static final String FILTER_LABEL_KEY = "io.cloudunit";
+    private static final String FILTER_LABEL_VALUE = "";
     
     private static final Logger LOGGER = LoggerFactory.getLogger(DockerServiceImpl.class);
+    private static final String DEFAULT_NETWORK = "skynet";
     
     @Autowired
     private ContainerRepository containerRepository;
@@ -258,9 +262,6 @@ public class DockerServiceImpl implements DockerService {
     }
 
     private void doCreateContainer(Container container) {
-        Map<String, String> labels = new HashMap<>();
-        labels.put(FILTER_LABEL_KEY, FILTER_LABEL_VALUE);
-        
         HostConfig hostConfig = HostConfig.builder()
                 .appendBinds(container.getMounts().stream()
                         .map(mount -> Bind
@@ -270,12 +271,17 @@ public class DockerServiceImpl implements DockerService {
                         .toArray(Bind[]::new))
                 .build();
         
+        Map<String, EndpointConfig> endpointsConfig = new HashMap<>();
+        endpointsConfig.put(DEFAULT_NETWORK, EndpointConfig.builder()
+                .aliases(ImmutableList.of(container.getLocalDnsName()))
+                .build());
+        
         ContainerConfig config = ContainerConfig.builder()
                 .hostname(container.getName())
                 .image(container.getImageName())
-                .labels(labels)
                 .env(container.getVariablesAsList())
                 .hostConfig(hostConfig)
+                .networkingConfig(NetworkingConfig.create(endpointsConfig))
                 .build();
         
         try {
