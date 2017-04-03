@@ -55,5 +55,8 @@ public interface ImageService {
     Long countNumberOfInstances(String moduleName, String applicationName,
                                 String userLogin, String cuInstanceName)
         throws ServiceException;
+    void delete(Integer imageId) throws ServiceException;
+
+    void pull(String imageName);
 
 }

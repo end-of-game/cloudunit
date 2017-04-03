@@ -12,9 +12,53 @@
   ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
   ~     For any questions, contact us : contact@treeptik.fr
   -->
+
+<!-- data-ng-class="{'disabled': overview.app.status!=='START' }" -->
+
 <div class="tab-pane active vertical-spacing">
     <div id="{{overview.app.name}}-server" class="card medium application overview {{overview.app.status | lowercase}}">
       <div class="content">
+        <div class="pull-right">
+          <a id="preview-link"
+            class="icon-button"
+            data-ng-class="{'disabled': true}"
+            tooltip=""
+            data-title="Download Container"
+            data-placement="bottom"
+            sweetalert
+            sweet-options="{'title':'Download confirmation required',
+            'text':'Caution, you cannot get it back once operation lauch.',
+            'type':'warning',
+            'showCancelButton':true,
+            'confirmButtonText':'DOWNLOAD!',
+            'cancelButtonText':'CANCEL',
+            'closeOnConfirm':false,
+            'closeOnCancel':false,
+            'animation': 'slide-from-top'}"
+            sweet-confirm-option="{'title':'Downloading!','text':'Your container is downloading!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+            sweet-cancel-option="{'title':'Cancelled!','text':'Your container has not been downloaded','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+            sweet-on-confirm="overview.downloadContainer(overview.app.name, overview.app.server.name)">
+            <span><i class="icon-whhg download-alt"></i></span>
+          </a>
+          <a ng-if="overview.isZip"
+             id="preview-link"
+             class="icon-button"
+             data-ng-class="{'disabled': overview.app.status!=='START' }"
+             data-ng-href="{{ '/application/' + overview.app.name + '/containers/export' }}"
+             tooltip=""
+             data-title="Download All Container"
+             data-placement="bottom">
+            <span><i class="icon-whhg circledownload"></i></span>
+          </a>
+          <button ng-if="!overview.isZip" class="icon-button"
+            tooltip=""
+            type="button"
+            data-title="Download All Image" data-ng-class="{'disabled': true}"
+            data-placement="bottom"
+            ng-click="overview.exportContainer(overview.app.name)">
+            <i class="icon-whhg zip"></i>
+          </button>
+        </div>
         <div class="status">
           <p class="headline">
             <button class="server-btn icon-button secondary power"
@@ -72,7 +116,7 @@
           </div>
 
           <div class="readonly">
-            <label for="jvm-options">JVM options: </label>
+            <label for="jvm-options">JVM configuration: </label>
             <input class="code clipboard"
                    id="jvm-options"
                    type="text"
@@ -140,8 +184,32 @@
     <div id="{{module.name}}" class="service card medium {{module.status | lowercase}}" ng-class="{ pending : overview.pendingModules}"
          data-ng-repeat="module in overview.app.modules | filter: {image: {imageType: 'module'}} track by $index">
         <!--<ng-include src="overview.getTplUrl(module.image.name)"></ng-include>-->
-
         <div class="content">
+          <div class="pull-right">
+            <!--data-ng-href="{{ 'http://localhost:9000/application/' + overview.app.name + '/containers/' + module.name + '/export' }}"-->
+            <a id="preview-link"
+              class="icon-button"
+               data-ng-class="{'disabled': true}"
+              target="_blank"
+              tooltip=""
+              data-title="Download Container"
+              data-placement="bottom"
+               sweetalert
+              sweet-options="{'title':'Download confirmation required',
+              'text':'Caution, you cannot get it back once operation lauch.',
+              'type':'warning',
+              'showCancelButton':true,
+              'confirmButtonText':'DOWNLOAD!',
+              'cancelButtonText':'CANCEL',
+              'closeOnConfirm':false,
+              'closeOnCancel':false,
+              'animation': 'slide-from-top'}"
+              sweet-confirm-option="{'title':'Downloading!','text':'Your container is downloading!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+              sweet-cancel-option="{'title':'Cancelled!','text':'Your container has not been downloaded','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+              sweet-on-confirm="overview.downloadContainer(overview.app.name, module.name)">
+              <span><i class="icon-whhg download-alt"></i></span>
+            </a>
+          </div>
           <div class="spinner">
               <div class="rect1"></div>
               <div class="rect2"></div>

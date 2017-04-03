@@ -197,6 +197,11 @@ button.button-effect {
   color: white;
 }
 
+button.button-effect.small {
+  height: 30px;
+  min-width: 95px;
+}
+
 button.button-effect:focus {
   outline: none;
 }

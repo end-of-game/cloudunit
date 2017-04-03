@@ -6,12 +6,16 @@ This guide aims to provide install instructions that follow the [KISS principle]
 ## Requirements
 
 A virtual or baremetal server with
-* at least 8 GB RAM (32 GB or even 64 GB will be better!)
-* Ubuntu 14.04 LTS (with a 4.x kernel with AUFS support) Or Centos 7.x (With LVM2 package installed and a lvm vg named "docker") (see FAQ if needed)
+* at least 16 GB RAM (but we recommend at least 32 GB)
+* one of the following operating systems
+  * Ubuntu 14.04 LTS with a 4.x kernel with AUFS support
+  * Or Centos 7.x with LVM2 package installed and a lvm vg named "docker" (see FAQ if needed)
+* a domain name and a DNS entries on your network or the Internet that point that domain name and all of its sub-domains to the IP of the server (this guide uses *.cloudunit.io)
+* _(for proper SSL support)_ an SSL certificate for the server's domain name and all of its sub-domains
 
 ## Install
 
-### As `root` 
+Log in to your server as `root`.
 
 Download the install script and check that all prerequisites are present.
 
@@ -48,18 +52,18 @@ You can use the following example as inspiration for writing your own `.env` cus
 ```
 # Set CloudUnit deployment Environment
 
-CU_DOMAIN=cloudunit.io                    # Domain for all created application ex: myapp.cloudunit.io
-CU_MANAGER_DOMAIN=cloudunit.io            # Url within Cloudunit UI will be reachable
-CU_GITLAB_DOMAIN=gitlab.cloudunit.io      # Url within Gitlab UI will be reachable
-CU_JENKINS_DOMAIN=jenkins.cloudunit.io    # Url within Jenkins UI will be reachable
-CU_KIBANA_DOMAIN=kibana.cloudunit.io      # Url within Kibana UI will be reachable
-CU_LETSCHAT_DOMAIN=letschat.cloudunit.io  # Url within Lets Chat UI will be reachable
-CU_NEXUS_DOMAIN=nexus.cloudunit.io        # Url within Nexus UI will be reachable
-CU_SONAR_DOMAIN=sonar.cloudunit.io        # Url within Sonar UI will be reachable
-ELASTICSEARCH_URL=elasticsearch           # Url of elasticsearch database default to internal one
-MYSQL_ROOT_PASSWORD=changeit              # Change Mysql Root Password
-MYSQL_DATABASE=cloudunit                  # Mysql Database name
-HOSTNAME=cloudunit-host                   #  Server hostname
+CU_DOMAIN=cloudunit.io                       # Domain for all created application ex: myapp.cloudunit.io
+CU_MANAGER_DOMAIN=cloudunit.io               # Url within Cloudunit UI will be reachable
+CU_GITLAB_DOMAIN=gitlab.cloudunit.io         # Url within Gitlab UI will be reachable
+CU_JENKINS_DOMAIN=jenkins.cloudunit.io       # Url within Jenkins UI will be reachable
+CU_KIBANA_DOMAIN=kibana.cloudunit.io         # Url within Kibana UI will be reachable
+CU_MATTERMOST_DOMAIN=mattermost.cloudunit.io # Url within Lets Chat UI will be reachable
+CU_NEXUS_DOMAIN=nexus.cloudunit.io           # Url within Nexus UI will be reachable
+CU_SONAR_DOMAIN=sonar.cloudunit.io           # Url within Sonar UI will be reachable
+ELASTICSEARCH_URL=elasticsearch              # Url of elasticsearch database default to internal one
+MYSQL_ROOT_PASSWORD=changeit                 # Change Mysql Root Password
+MYSQL_DATABASE=cloudunit                     # Mysql Database name
+HOSTNAME=cloudunit-host                      # Server hostname
 ```
 
 # FAQ
@@ -90,15 +94,14 @@ vgcreate docker /dev/sda
 ## How to restart the production environment without reseting data
 
 ```
-~/cloudunit/cu-compose/start-with-elk.sh
+~/cloudunit/cu-compose/cu-docker-compose.sh with-elk
 ```
 You have many start-* files for different scenarii.
 
 ## How to reset the production environment 
 
 ```
-~/cloudunit/cu-compose/reset-prod.sh
-~/cloudunit/cu-compose/start-with-elk.sh
+~/cloudunit/cu-compose/cu-docker-compose.sh reset
 ```
 
 ## How to change the MySQL password

@@ -55,7 +55,6 @@
                 .catch(error);
 
             function success(friends) {
-                console.log(friends);
                 vm.friends = friends;
                 return vm.friends;
             }
@@ -67,4 +66,3 @@
 
     }
 }) ();
-

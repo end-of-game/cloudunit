@@ -3,6 +3,7 @@ services:
 
   redis:
       container_name: cu-redis
+      restart: unless-stopped
       image: redis:3.0.1
       command: redis-server --appendonly yes
       environment:
@@ -14,6 +15,7 @@ services:
 
   mysql:
       container_name: cu-mysql
+      restart: unless-stopped
       image: mysql:5.7.4
       environment:
           - "TZ=${TZ}"
@@ -26,15 +28,14 @@ services:
 
   tomcat:
       container_name: cu-tomcat
+      restart: unless-stopped
       image: cloudunit/manager
-      user: "1000:999"
       volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
           - /home/$USER/.cloudunit:/opt/tomcat/.cloudunit
           - /home/$USER/.docker:/opt/certificats
       environment:
           - "TZ=${TZ}"
-          - CATALINA_OPTS="-Dspring.profiles.active=production"
+          - "CATALINA_OPTS=-Dspring.profiles.active=production"
           - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
           - "CU_JENKINS_DOMAIN=${CU_JENKINS_DOMAIN}"
           - "CU_DOMAIN=${CU_DOMAIN}"
@@ -42,7 +43,7 @@ services:
           - "CU_KIBANA_DOMAIN=${CU_KIBANA_DOMAIN}"
           - "CU_NEXUS_DOMAIN=${CU_NEXUS_DOMAIN}"
           - "CU_SONAR_DOMAIN=${CU_SONAR_DOMAIN}"
-          - "CU_LETSCHAT_DOMAIN=${CU_LETSCHAT_DOMAIN}"
+          - "CU_MATTERMOST_DOMAIN=${CU_MATTERMOST_DOMAIN}"
       labels:
           - "traefik.frontend.entryPoints=https"
           - "traefik.backend=manager"
@@ -68,6 +69,7 @@ services:
 
   gitlab:
       container_name: cu-gitlab
+      restart: unless-stopped
       image: gitlab/gitlab-ce:8.14.5-ce.0
       volumes:
           - gitlab-config:/etc/gitlab
@@ -90,6 +92,7 @@ services:
 
   jenkins:
       container_name: cu-jenkins
+      restart: unless-stopped
       build:
         context: cu-jenkins
       image: cloudunit/jenkins
@@ -105,6 +108,7 @@ services:
 
   sonarqube:
     container_name: cu-sonar
+    restart: unless-stopped
     image: 'sonarqube:6.2'
     volumes:
       - 'sonar-data:/opt/sonarqube/data'
@@ -113,10 +117,11 @@ services:
       - "traefik.frontend.entryPoints=https"
       - "traefik.backend=cu-sonar"
       - "traefik.port=9000"
-      - "traefik.frontend.rule=Host:sonar.${CU_DOMAIN}"
+      - "traefik.frontend.rule=Host:${CU_SONAR_DOMAIN}"
 
   nexus:
       container_name: cu-nexus
+      restart: unless-stopped
       image: sonatype/nexus3:3.2.0
       volumes:
         - "nexus-data:/nexus-data"
@@ -134,7 +139,8 @@ services:
 
   traefik:
       container_name: cu-traefik
-      image: traefik
+      restart: unless-stopped
+      image: traefik:1.2.0
       command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
       environment:
           - "TZ=${TZ}"
@@ -165,3 +171,4 @@ volumes:
   traefik-certs:
   redis-data:
   nexus-data:
+

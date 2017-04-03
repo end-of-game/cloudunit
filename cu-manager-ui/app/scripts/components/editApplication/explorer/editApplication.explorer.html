@@ -127,7 +127,6 @@
                   >{{item.name}} <span ng-show="item.safe">&midast;</span>
                 </a>
                 <a
-                  target="_blank"
                   ng-switch-when="false"
                   href="{{ '/file/container/' + explorer.myContainer.name + '/application/' + explorer.app.name + '?path=' + explorer.currentPath.join('/') + '&fileName=' + item.name }}"
                   class="file"

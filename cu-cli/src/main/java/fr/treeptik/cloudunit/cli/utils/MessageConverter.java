@@ -15,19 +15,21 @@
 
 package fr.treeptik.cloudunit.cli.utils;
 
-import static java.lang.System.out;
+import static java.lang.System.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.treeptik.cloudunit.dto.AboutResource;
 import fr.treeptik.cloudunit.dto.Command;
 import fr.treeptik.cloudunit.dto.ContainerUnit;
 import fr.treeptik.cloudunit.dto.FileUnit;
-import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.model.Application;
+import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.model.Message;
+import fr.treeptik.cloudunit.model.Module;
+import fr.treeptik.cloudunit.model.User;
+import fr.treeptik.cloudunit.model.Volume;
 
 public class MessageConverter {
 
@@ -35,143 +37,7 @@ public class MessageConverter {
 
     private static Logger logger = Logger.getLogger("MessageConverter");
 
-    private static Map<String, String> modulePorts = new HashMap<>();
-
-    public static void buildApplicationMessage(Application application, String dockerManagerIP) {
-        logger.log(Level.WARNING, "\n GENERAL \n");
-
-        printer.print(new String[][] {
-                new String[] { "APPLICATION NAME", "AUTHOR", "STARTING DATE", "SERVER TYPE", "STATUS", "JAVA VERSION" },
-                new String[] { application.getName(),
-                        application.getUser().getLastName() + " " + application.getUser().getFirstName(),
-                        DateUtils.formatDate(application.getDate()),
-                        application.getServer().getImage().getName().toUpperCase(), application.getStatus().toString()},
-
-        });
-
-        logger.log(Level.WARNING, "\n SERVER INFORMATION \n");
-
-        buildServerMessage(application, dockerManagerIP);
-        if (!application.getModules().isEmpty()) {
-            logger.log(Level.WARNING, "\n MODULES INFORMATION \n");
-            buildModuleMessage(application, dockerManagerIP);
-
-        }
-
-    }
-
-    public static void buildGlobalModuleMessage(Application application, String dockerManagerIP) {
-        buildServerMessage(application, dockerManagerIP);
-        if (!application.getModules().isEmpty()) {
-            logger.log(Level.WARNING, "\n AVAILABLE MODULES \n");
-            buildLightModuleMessage(application, dockerManagerIP);
-
-        }
-
-    }
-
-    public static void buildServerMessage(Application application, String dockerManagerIP) {
-
-        Server server = application.getServer();
-
-        String[][] tab = new String[2][7];
-        tab[0][0] = "TYPE";
-        tab[0][1] = "SSH PORT";
-        tab[0][2] = "STATUS";
-        tab[0][3] = "JVM OPTS";
-        tab[0][4] = "MEMORY";
-        tab[0][5] = "MANAGER LOCATION";
-
-        tab[1][0] = server.getImage().getName().toUpperCase();
-        tab[1][1] = server.getSshPort();
-        tab[1][2] = server.getStatus().toString();
-        tab[1][3] = server.getJvmOptions() != "" ? server.getJvmOptions() : "NONE";
-        tab[1][4] = server.getJvmMemory() + "";
-        tab[1][5] = server.getManagerLocation() + " ";
-
-        printer.print(tab);
-
-    }
-
-    public static void buildImageResponse(Image image) {
-        String status = "";
-        if (image.getStatus().equals(0)) {
-            status = "DISABLED";
-        } else {
-            status = "ENABLED";
-        }
-
-        printer.print(
-                new String[][] { new String[] { "IMAGE NAME", "NEW STATUS" }, new String[] { image.getName(), status },
-
-                });
-    }
-
-    public static void buildImageListResponse(List<Image> images) {
-        String[][] tab = new String[images.size() + 1][2];
-        tab[0][0] = " IMAGE NAME";
-        tab[0][1] = "STATUS";
-        int i = 0;
-        for (Image image : images) {
-            String status = image.getStatus().equals(0) ? status = "DISABLED" : "ENABLED";
-            tab[i + 1][0] = image.getName();
-            tab[i + 1][1] = status;
-            i++;
-        }
-        printer.print(tab);
-    }
-
-    public static void buildModuleMessage(Application application, String dockerManagerIP) {
-
-        modulePorts.put("mysql-5-5", "3306");
-        modulePorts.put("postgresql-9-3", "5432");
-
-        List<Module> modules = application.getModules();
-        if (modules.size() < 1) {
-            logger.log(Level.WARNING, "No modules found!");
-        } else {
-
-            for (Module module : modules) {
-
-                int moduleIndex = 0;
-
-                String[][] tab = new String[4][2];
-
-                tab[0][0] = "MODULE NAME";
-                tab[1][0] = "TYPE";
-                tab[2][0] = "DOMAIN NAME";
-                tab[3][0] = "PORTS";
-
-                if (!module.getImage().getImageType().equalsIgnoreCase(Image.MODULE)) {
-                    continue;
-                }
-
-                int indexName = module.getName().indexOf(application.getName());
-                // #POINTDROGUE
-                tab[0][moduleIndex + 1] = module.getName().substring(indexName + application.getName().length() + 1);
-                tab[1][moduleIndex + 1] = module.getImage().getName();
-                tab[2][moduleIndex + 1] = module.getInternalDNSName();
-                StringBuilder builder = new StringBuilder();
-                module.getPorts().stream().forEach(p -> {
-                    builder.append(p.getPortType())
-                            .append(" port : ")
-                            .append(p.getContainerValue())
-                            .append(p.getHostValue() == null ? " Non exposed" : String.format(" on %s", p.getHostValue()))
-                            .append(" | ");
-                });
-                tab[3][moduleIndex + 1] = builder.toString();
-                moduleIndex++;
-
-                printer.print(tab);
-
-                logger.log(Level.WARNING, " ");
-
-            }
-
-        }
-    }
-
-    public static void buildLightModuleMessage(Application application, String dockerManagerIP) {
+    public static void buildLightModuleMessage(Application application) {
 
         List<Module> modules = application.getModules();
         if (modules.size() < 1) {
@@ -207,33 +73,6 @@ public class MessageConverter {
         }
     }
 
-    public static void buildListApplications(List<Application> apps) {
-        if (apps.isEmpty()) {
-            logger.log(Level.WARNING, "No apps found!");
-        } else {
-
-            String[][] tab = new String[apps.size() + 1][5];
-            tab[0][0] = "APPLICATION NAME";
-            tab[0][1] = "AUTHOR";
-            tab[0][2] = "STARTING DATE";
-            tab[0][3] = "SERVER TYPE";
-            tab[0][4] = "STATUS";
-
-            Application application = null;
-            for (int i = 0; i < apps.size(); i++) {
-                application = apps.get(i);
-
-                tab[i + 1][0] = application.getName();
-                tab[i + 1][1] = application.getUser().getLastName() + " " + application.getUser().getFirstName();
-                tab[i + 1][2] = DateUtils.formatDate(application.getDate());
-                tab[i + 1][3] = application.getServer().getImage().getName();
-                tab[i + 1][4] = application.getStatus().name();
-            }
-            printer.print(tab);
-
-        }
-    }
-
     public static void buildListUsers(List<User> users) {
 
         if (users.isEmpty()) {
@@ -259,30 +98,6 @@ public class MessageConverter {
                 tab[i + 1][4] = user.getLastConnection() != null ? DateUtils.formatDate(user.getLastConnection())
                         : "NEVER";
                 tab[i + 1][5] = user.getRole().getDescription().substring(5);
-            }
-            printer.print(tab);
-        }
-    }
-
-    public static void buildListSnapshots(List<Snapshot> snapshots) {
-
-        if (snapshots.isEmpty()) {
-            logger.log(Level.WARNING, "No snapshots found!");
-
-        } else {
-
-            String[][] tab = new String[snapshots.size() + 1][3];
-            tab[0][0] = "TAG";
-            tab[0][1] = "DATE";
-            tab[0][2] = "APPLICATION SOURCE";
-
-            Snapshot snapshot = null;
-            for (int i = 0; i < snapshots.size(); i++) {
-                snapshot = snapshots.get(i);
-                tab[i + 1][0] = snapshot.getTag();
-                tab[i + 1][1] = DateUtils.formatDate(snapshot.getDate());
-                tab[i + 1][2] = snapshot.getApplicationName();
-
             }
             printer.print(tab);
         }
@@ -338,36 +153,6 @@ public class MessageConverter {
 
     }
 
-    public static void buildListAliases(List<String> aliases) {
-        String[][] tab = new String[aliases.size() + 1][1];
-        tab[0][0] = "CURRENT ALIASES";
-
-        if (aliases.size() == 0) {
-            logger.log(Level.INFO, "This application has not custom aliases");
-        } else {
-            for (int i = 0; i < aliases.size(); i++) {
-                tab[i + 1][0] = aliases.get(i);
-            }
-            printer.print(tab);
-        }
-    }
-
-    public static void buildListEnvironmentVariables(List<EnvironmentVariable> environmentVariables) {
-        String[][] tab = new String[environmentVariables.size() + 1][2];
-        tab[0][0] = "CURRENT ENVIRONMENT VARIABLES";
-        tab[0][1] = "VALUES";
-
-        if (environmentVariables.size() == 0) {
-            logger.log(Level.INFO, "This application has not custom environment variable");
-        } else {
-            for (int i = 0; i < environmentVariables.size(); i++) {
-                tab[i + 1][0] = environmentVariables.get(i).getKeyEnv();
-                tab[i + 1][1] = environmentVariables.get(i).getValueEnv();
-            }
-            printer.print(tab);
-        }
-    }
-
     public static String buildListVolumes(List<Volume> volumes) {
         StringBuilder builder = new StringBuilder(512);
         String[][] tab = new String[volumes.size() + 1][1];
@@ -418,32 +203,4 @@ public class MessageConverter {
             printer.print(tab);
         }
     }
-
-    public static void buildListContainers(List<String> containers) {
-        String[][] tab = new String[containers.size() + 1][1];
-        tab[0][0] = "CONTAINER NAME";
-
-        if (containers.size() == 0) {
-            logger.log(Level.INFO, "This application has not container");
-        } else {
-            for (int i = 0; i < containers.size(); i++) {
-                tab[i + 1][0] = containers.get(i);
-            }
-            printer.print(tab);
-        }
-    }
-    
-    public static String buildAbout(String version, String timestamp) {
-        return String.format("CloudUnit CLI version %s (build timestamp %s)",
-                version,
-                timestamp);
-    }
-
-    public static String buildAbout(String version, String timestamp, AboutResource aboutApi) {
-        return String.format("%s%nCloudUnit Manager API version %s (build timestamp %s)",
-                buildAbout(version, timestamp),
-                aboutApi.getVersion(),
-                aboutApi.getTimestamp());
-    }
-
 }

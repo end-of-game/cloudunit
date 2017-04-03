@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.service.impl;
 import fr.treeptik.cloudunit.dao.ImageDAO;
 import fr.treeptik.cloudunit.exception.ServiceException;
 import fr.treeptik.cloudunit.model.Image;
+import fr.treeptik.cloudunit.service.DockerService;
 import fr.treeptik.cloudunit.service.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ImageServiceImpl
@@ -35,6 +37,9 @@ public class ImageServiceImpl
 
     @Inject
     private ImageDAO imageDAO;
+
+    @Inject
+    private DockerService dockerService;
 
     public ImageDAO getImageDAO() {
         return this.imageDAO;
@@ -124,6 +129,7 @@ public class ImageServiceImpl
         try {
             logger.debug("start findAll");
             List<Image> images = imageDAO.findAll();
+            images = this.checkImagesPulled(images);
             logger.info("ImageService : All Images found ");
             return images;
         } catch (PersistenceException e) {
@@ -154,7 +160,8 @@ public class ImageServiceImpl
         Image image;
         try {
             image = this.findByName(imageName);
-            image.setStatus(Image.ENABLED);
+
+            image.setEnable(Image.ENABLED);
             image = this.update(image);
         } catch (ServiceException e) {
             throw new ServiceException(
@@ -171,7 +178,7 @@ public class ImageServiceImpl
         Image image;
         try {
             image = this.findByName(imageName);
-            image.setStatus(Image.DISABLED);
+            image.setEnable(Image.DISABLED);
             image = this.update(image);
         } catch (ServiceException e) {
             throw new ServiceException(
@@ -186,6 +193,7 @@ public class ImageServiceImpl
         try {
             logger.debug("start find enabled images");
             List<Image> images = imageDAO.findAllEnabledImages();
+            images = this.checkImagesPulled(images);
             logger.info("ImageService : enabled found ");
             return images;
         } catch (PersistenceException e) {
@@ -225,5 +233,28 @@ public class ImageServiceImpl
             throw new ServiceException(e.getLocalizedMessage(), e);
 
         }
+    }
+
+    @Override
+    public void delete(Integer imageId) throws ServiceException {
+        Image image = imageDAO.findOne(imageId);
+        dockerService.deleteImage(image.getPath());
+        this.disableImage(image.getName());
+    }
+
+    @Override
+    public void pull(String imageName) {
+        dockerService.pullImage(imageName);
+    }
+
+    private List<Image> checkImagesPulled(List<Image> images) throws ServiceException {
+        List<String> listImages = this.dockerService.listImages();
+        for (String tag: listImages) {
+            images = images.stream().map( image -> {
+                if(tag.contains(image.getPath())) image.setPull(true);
+             return image;
+            }).collect(Collectors.toList());
+        }
+        return images;
     }
 }

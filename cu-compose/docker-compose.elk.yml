@@ -61,6 +61,7 @@ networks:
   default:
     external:
       name: skynet
+
 volumes:
   elasticsearch-data:
   monitoring-agents:

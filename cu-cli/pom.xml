@@ -5,12 +5,15 @@
 	<parent>
 		<groupId>fr.treeptik</groupId>
 		<artifactId>cloudunit</artifactId>
+<<<<<<< HEAD
 		<version>1.9</version>
+=======
+		<version>1.10.0</version>
+>>>>>>> release/1.10.0
 	</parent>
 	<artifactId>cu-cli</artifactId>
 
 	<properties>
-
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.shell.version>1.1.0.RELEASE</spring.shell.version>
 		<log4j.version>1.2.17</log4j.version>
@@ -22,16 +25,9 @@
 		<spring.version>3.2.14.RELEASE</spring.version>
 		<httpcomponents.version>4.5.1</httpcomponents.version>
 		<maven.surefire.plugin.version>2.18</maven.surefire.plugin.version>
-
 		<!-- CloudUnit Properties -->
-
-		<cloudunit.ip>localhost</cloudunit.ip>
-		<cloudunit.port>8080</cloudunit.port>
-		<cloudunit.version>${project.version}</cloudunit.version>
-		<cli.version>${project.version}</cli.version>
-		<cli.timestamp>${maven.build.timestamp}</cli.timestamp>
-		<api.version>0</api.version>
-
+		<build.version>${project.version}</build.version>
+		<build.timestamp>${maven.build.timestamp}</build.timestamp>
 	</properties>
 
 	<dependencies>
@@ -251,7 +247,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<host>http://127.0.0.1:8080</host>
+				<default.host>http://127.0.0.1:8080</default.host>
 			</properties>
 		</profile>
 	</profiles>

@@ -23,13 +23,14 @@
 
   AdminService.$inject = [
     '$http',
+    '$resource',
     'moment',
     'ErrorService',
   ];
 
   //////////////////////////////////////////
 
-  function AdminService($http, moment, ErrorService) {
+  function AdminService($http, $resource, moment, ErrorService) {
     return {
       getUsers: getUsers,
       createUser: createUser,
@@ -37,6 +38,9 @@
       changeRole: changeRole,
       getUserLogs: getUserLogs,
       changePassword: changePassword,
+      getListRegistry: getListRegistry,
+      addRegistry: addRegistry,
+      deleteRegistry: deleteRegistry
     };
 
     function changePassword(oldPassword, newPassword) {
@@ -120,6 +124,30 @@
 
     function _formatSigninDate(date) {
       return moment(date).toDate();
+    }
+
+    function getListRegistry ( ) {
+      var dir = $resource ( '/registry' );
+      return dir.query ( { } ).$promise;      
+    }
+
+    function addRegistry ( endpoint, username, password, email ) {
+        var data = {
+            endpoint: endpoint,
+            username: username,
+            password: password,
+            email: email
+        };
+
+        var dir = $resource ( '/registry' );
+        return dir.save ( { }, data ).$promise;
+    }
+
+    function deleteRegistry ( registryID ) {
+        var dir = $resource ( 'registry/:id' );
+        return dir.delete ( {
+            id: registryID
+        }, {} ).$promise; 
     }
   }
 })();

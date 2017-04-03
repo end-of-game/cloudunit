@@ -76,12 +76,12 @@ function generate-env {
   else
     echo "CU_KIBANA_DOMAIN=kibana-$CU_DOMAIN" >> .env
   fi
-  echo "Enter CU Letschat domain : [ default to https://letschat-"$CU_DOMAIN" ]"
-  read CU_LETSCHAT_DOMAIN
-  if [ -n "$CU_LETSCHAT_DOMAIN" ]; then
-    echo "CU_LETSCHAT_DOMAIN=$CU_LETSCHAT_DOMAIN" >> .env
+  echo "Enter CU mattermost domain : [ default to https://mattermost-"$CU_DOMAIN" ]"
+  read CU_MATTERMOST_DOMAIN
+  if [ -n "$CU_MATTERMOST_DOMAIN" ]; then
+    echo "CU_MATTERMOST_DOMAIN=$CU_MATTERMOST_DOMAIN" >> .env
   else
-    echo "CU_LETSCHAT_DOMAIN=letschat-$CU_DOMAIN" >> .env
+    echo "CU_MATTERMOST_DOMAIN=mattermost-$CU_DOMAIN" >> .env
   fi
   echo "Enter CU Nexus domain : [ default to https://nexus-"$CU_DOMAIN" ]"
   read CU_NEXUS_DOMAIN
@@ -138,6 +138,7 @@ function with-elk {
     source .env
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.mattermost.yml \
                     -f docker-compose.yml \
     up -d
 }
@@ -145,6 +146,7 @@ function with-elk {
 function with-elk-and-selenium {
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.mattermost.yml \
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
     up -d
@@ -168,8 +170,8 @@ function reset {
       docker volume rm $container
     done
 
-    docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
-    docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
+    docker-compose  -f docker-compose.mattermost.yml -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
+    docker-compose  -f docker-compose.mattermost.yml -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
     docker volume rm cucompose_elasticsearch-data
     docker volume rm cucompose_gitlab-logs
     docker volume rm cucompose_mysqldata
@@ -190,7 +192,7 @@ with-elk
 ;;
 
 'with-elk-and-selenium')
-init && with-elk-and-selenium
+with-elk-and-selenium
 ;;
 
 'reset')

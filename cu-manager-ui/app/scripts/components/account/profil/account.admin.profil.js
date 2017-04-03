@@ -47,7 +47,6 @@
 
     // Function to change password account  
     function changePassword(oldPassword, newPassword, confirmPassword) {
-      console.log(oldPassword + '  ' + newPassword + '  ' + confirmPassword)
       if(newPassword !== confirmPassword) {
         vm.errorMsg = "Confirmation password error!";
       } else {

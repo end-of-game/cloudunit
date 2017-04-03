@@ -15,9 +15,11 @@
 
 package fr.treeptik.cloudunit.service;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import com.spotify.docker.client.exceptions.DockerException;
 import fr.treeptik.cloudunit.exception.DockerJSONException;
 import fr.treeptik.cloudunit.exception.FatalDockerJSONException;
 import fr.treeptik.cloudunit.exception.ServiceException;
@@ -52,9 +54,11 @@ DockerService {
 
 	Boolean isRunning(String containerName) throws FatalDockerJSONException;
 
+	Boolean exists(String containerName) throws FatalDockerJSONException;
+
 	Boolean isStoppedGracefully(String containerName) throws FatalDockerJSONException;
 
-	List<String> listContainers() throws FatalDockerJSONException;
+	List<List<String>> listContainers() throws FatalDockerJSONException;
 
 	String getContainerNameFromId(String id) throws FatalDockerJSONException;
 
@@ -74,4 +78,12 @@ DockerService {
 	void stopContainer(String containerName) throws DockerJSONException;
 
 	String logs(String container) throws FatalDockerJSONException;
+
+	void pullImage(String imageName) throws FatalDockerJSONException;
+
+	void deleteImage(String imageName) throws ServiceException;
+
+	List<String> listImages() throws ServiceException;
+
+	void exportContainer(String containerName, final OutputStream outputFileStream) throws FatalDockerJSONException, DockerException, InterruptedException, IOException;
 }

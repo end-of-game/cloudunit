@@ -58,7 +58,8 @@ function ApplicationService ( $resource, $http, $interval ) {
         restart: restart,
         init: init,
         state: {},
-        stopPolling: stopPolling
+        stopPolling: stopPolling,
+        exportContainer: exportContainer
     };
 
 
@@ -115,7 +116,7 @@ function restart ( applicationName ) {
     var output = {};
     output.applicationName = applicationName;
     var Application = $resource ( 'application/restart' );
-    return Application.save ( JSON.stringify ( output ) );
+    return Application.save ( JSON.stringify ( output ) ).$promise;
 }
 
 // Arrêter une application
@@ -123,7 +124,7 @@ function stop ( applicationName ) {
     var output = {};
     output.applicationName = applicationName;
     var Application = $resource ( 'application/stop' );
-    return Application.save ( JSON.stringify ( output ) );
+    return Application.save ( JSON.stringify ( output ) ).$promise;
 }
 
 // Teste la validite d'une application avant qu'on puisse la creer
@@ -134,9 +135,9 @@ function isValid ( applicationName, serverName ) {
 
 // Suppression d'une application
 function remove ( applicationName ) {
-    Application.get ( { id: applicationName }, function ( ref ) {
+    return Application.get ( { id: applicationName }, function ( ref ) {
         ref.$delete ();
-    } );
+    } ).$promise;
 }
 
 // Récupération d'une application selon son nom
@@ -234,6 +235,13 @@ function removePort ( applicationName, number ) {
     }
     );
     return dir.update( { }, data ).$promise;
+}
+
+function exportContainer(applicationName) {
+    var dir = $resource ( 'application/:applicationName/containers/export' );
+    return dir.save ( { 
+        applicationName: applicationName
+    }, {} ).$promise; 
 }
 
 }

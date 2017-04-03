@@ -26,9 +26,9 @@ import java.util.Map;
 @Entity
 public class Image implements Serializable {
 
-    public final static Integer DISABLED = 0;
+    public final static boolean DISABLED = false;
 
-    public final static Integer ENABLED = 1;
+    public final static boolean ENABLED = true;
 
     public final static String MODULE = "module";
 
@@ -53,6 +53,11 @@ public class Image implements Serializable {
     private String managerName;
 
     private String prefixEnv;
+
+    private boolean isEnable;
+
+    @Transient
+    private boolean isPull;
 
     @ElementCollection
     @MapKeyEnumerated(EnumType.STRING)
@@ -143,9 +148,7 @@ public class Image implements Serializable {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
 
     public String getPrefixEnv() {
         return prefixEnv;
@@ -162,6 +165,16 @@ public class Image implements Serializable {
     public void setPrefixEnv(String prefixEnv) {
         this.prefixEnv = prefixEnv;
     }
+
+    public boolean isEnable() {
+        return isEnable;
+    }
+
+    public void setEnable(boolean enable) { this.isEnable = enable; }
+
+    public void setPull(boolean pull) { isPull = pull; }
+
+    public boolean isPull() { return isPull; }
 
     // do not remove prefixId use for splitting server by nature
     public Integer getPrefixId() {
@@ -187,7 +200,7 @@ public class Image implements Serializable {
     @Override
     public String toString() {
         return "Image [id=" + id + ", name=" + name + ", path=" + path + ", status=" + status + ", imageType="
-                + imageType + "]";
+                + imageType + ", enable=" + isEnable + "]";
     }
 
     @Override

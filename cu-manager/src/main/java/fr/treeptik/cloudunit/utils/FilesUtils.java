@@ -15,17 +15,15 @@
 
 package fr.treeptik.cloudunit.utils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +35,7 @@ public class FilesUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(FilesUtils.class);
 
-	public static String[] suffixesDeployment = { ".war", ".ear", ".jar" };
+	public static String[] suffixesDeployment = { ".war", ".ear", ".jar", ".rb", ".js", ".java", ".groovy" };
 
 	public static String[] notAllowed = { ".docker", "init-service-ok" };
 
@@ -158,4 +156,41 @@ public class FilesUtils {
 		}
 	}
 
+	public static void createTarGZ(String dirPath, String tarGzPath)
+			throws FileNotFoundException, IOException
+	{
+		FileOutputStream fOut = new FileOutputStream(new File(tarGzPath));
+		BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+		GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(bOut);
+		TarArchiveOutputStream tOut = new TarArchiveOutputStream(gzOut);
+		addFileToTarGz(tOut, dirPath, "");
+
+		tOut.finish();
+		tOut.close();
+		gzOut.close();
+		bOut.close();
+		fOut.close();
+	}
+
+	public static void addFileToTarGz(TarArchiveOutputStream tOut, String path, String base)
+			throws IOException
+	{
+		File f = new File(path);
+		String entryName = base + f.getName();
+		TarArchiveEntry tarEntry = new TarArchiveEntry(f, entryName);
+		tOut.putArchiveEntry(tarEntry);
+
+		if (f.isFile()) {
+			IOUtils.copyLarge(new FileInputStream(f), tOut);
+			tOut.closeArchiveEntry();
+		} else {
+			tOut.closeArchiveEntry();
+			File[] children = f.listFiles();
+			if (children != null) {
+				for (File child : children) {
+					addFileToTarGz(tOut, child.getAbsolutePath(), entryName + "/");
+				}
+			}
+		}
+	}
 }

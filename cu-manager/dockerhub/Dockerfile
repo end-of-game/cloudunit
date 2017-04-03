@@ -29,7 +29,7 @@ RUN apt-get update \
     && apt-get install -y wget \
     && apt-get install -y git-core \
     && apt-get install -y unzip \
-	&& rm -r /var/lib/apt/lists/*
+        && rm -r /var/lib/apt/lists/*
 
 # Fix pour permettre de tirer correctement certaines dépendances
 RUN git config --global url."https://".insteadOf git://
@@ -57,8 +57,8 @@ RUN apt-get update && apt-get install -y nodejs
 
 # Fix npm
 RUN cd /usr/lib/node_modules/npm \
-  && npm install fs-extra \
-  && sed -i -e s/graceful-fs/fs-extra/ -e s/fs\.move/fs.rename/ ./lib/utils/rename.js
+&& npm install fs-extra \
+&& sed -i -e s/graceful-fs/fs-extra/ -e s/fs\.move/fs.rename/ ./lib/utils/rename.js
 
 RUN npm install -g grunt grunt-cli bower
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && npm install
@@ -73,28 +73,11 @@ ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/scripts
 
 # Install Tomcat
 RUN wget http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.38/bin/apache-tomcat-8.0.38.tar.gz && \
-	tar -xvf apache-tomcat-8.0.38.tar.gz && \
-	rm apache-tomcat*.tar.gz && \
-	mv apache-tomcat* ${CATALINA_HOME}
+        tar -xvf apache-tomcat-8.0.38.tar.gz && \
+        rm apache-tomcat*.tar.gz && \
+        mv apache-tomcat* ${CATALINA_HOME}
 
 RUN chmod +x ${CATALINA_HOME}/bin/*sh
-
-# Create Tomcat admin user
-ADD create_admin_user.sh $CATALINA_HOME/scripts/create_admin_user.sh
-ADD tomcat.sh $CATALINA_HOME/scripts/tomcat.sh
-RUN chmod +x $CATALINA_HOME/scripts/*.sh
-
-# Create tomcat user
-ARG user=tomcat
-ARG group=tomcat
-ARG uid=10000
-ARG gid=10000
-
-RUN groupadd -g ${gid} ${group}  && \
-	useradd -u ${uid} -g ${gid} -d ${CATALINA_HOME} tomcat && \
-	chown -R tomcat:tomcat ${CATALINA_HOME}
-
-RUN groupadd -g 999 docker && usermod -G docker -a tomcat
 
 WORKDIR /opt/tomcat
 RUN rm -rf /opt/tomcat/webapps/*
@@ -102,12 +85,8 @@ RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war /opt/tomcat/
 RUN ls -la /opt/tomcat/webapps
 RUN unzip /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war -d /opt/tomcat/webapps/ROOT
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager-ui/dist/* /opt/tomcat/webapps/ROOT
-RUN chown -R tomcat /home/cloudunit/
-RUN chown -R tomcat /opt/tomcat
-
+ADD tomcat.sh $CATALINA_HOME/scripts/tomcat.sh
+RUN chmod +x $CATALINA_HOME/scripts/*
 EXPOSE 8080
 
-USER tomcat
-
 CMD ["tomcat.sh"]
-

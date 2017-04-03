@@ -1,0 +1,27 @@
+* {
+    text-align: center;
+}
+
+#connect-container {
+    display: flex;
+}
+.connect-item {
+    margin: 10px;
+    width:100%
+}
+
+.alert {
+    color: white;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 1px;
+}
+.alert-notice {
+    background-color: #3f51b5
+}
+.alert-error {
+    background-color: #f44336;
+}
+.console {
+    background-color: gray;
+}

@@ -15,6 +15,9 @@
 package fr.treeptik.cloudunit.cli.commands;
 
 import java.io.File;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.core.CommandMarker;
@@ -22,10 +25,14 @@ import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.cli.Messages;
 import fr.treeptik.cloudunit.cli.utils.ModuleUtils;
+import fr.treeptik.cloudunit.model.Module;
 
 @Component
 public class ModuleCommands implements CommandMarker {
+    private static final String MODULE_REMOVED = Messages.getString("module.MODULE_REMOVED");
+    private static final String MODULE_ADDED = Messages.getString("module.MODULE_ADDED");
 
     private static final String HELP_MODULE_NAME =
             "Name of the module. Use show-modules command to get all modules of this application";
@@ -42,43 +49,58 @@ public class ModuleCommands implements CommandMarker {
     
     @Autowired
     private ModuleUtils moduleUtils;
+    
+    @Autowired
+    private CliFormatter formatter;
 
     @CliCommand(value = "add-module", help = "Add a new module to the current application")
     public String addModule(
             @CliOption(key = "name", mandatory = true, help = HELP_MODULE_TYPE) String moduleName) {
-        return moduleUtils.addModule(moduleName, null);
+        moduleUtils.addModule(moduleName, null);
+        
+        return formatter.unlessQuiet(MessageFormat.format(MODULE_ADDED, moduleName));
     }
 
     @CliCommand(value = "rm-module", help = "Remove a module from the current application")
     public String removeModule(
             @CliOption(key = "name", mandatory = true, help = HELP_MODULE_NAME) String moduleName) {
-        return moduleUtils.removeModule(moduleName);
+        moduleUtils.removeModule(moduleName);
+        
+        return formatter.unlessQuiet(MessageFormat.format(MODULE_REMOVED, moduleName));
     }
 
     @CliCommand(value = "expose-port", help = "Expose the default module port")
     public String exposePort(
             @CliOption(key = "name", mandatory = true, help = HELP_MODULE_NAME) String moduleName,
             @CliOption(key = "port", mandatory = true, help = "Port number") String port) {
-        return moduleUtils.managePort(moduleName, port, true);
+        moduleUtils.managePort(moduleName, port, true);
+        return null;
     }
 
     @CliCommand(value = "close-port", help = "Expose the default module port")
     public String closePort(
             @CliOption(key = "name", mandatory = true, help = HELP_MODULE_NAME) String moduleName,
-            @CliOption(key = {"port" }, mandatory = true, help = "Port number") String port) {
-        return moduleUtils.managePort(moduleName, port, false);
+            @CliOption(key = { "port" }, mandatory = true, help = "Port number") String port) {
+        moduleUtils.managePort(moduleName, port, false);
+        return null;
     }
 
     @CliCommand(value = "list-modules", help = "Display information about all modules of the current application")
     public String listModules() {
-        return moduleUtils.getListModules();
+        List<Module> modules = moduleUtils.getListModules();
+        List<String> moduleNames = modules.stream()
+                .map(m -> m.getName())
+                .collect(Collectors.toList());
+        return formatter.list(moduleNames);
     }
     
     @CliCommand(value = "run-script", help = "Run a script inside a module of the current application")
     public String runScript(
             @CliOption(key = "name", mandatory = true, help = HELP_MODULE_NAME) String moduleName,
             @CliOption(key = "path", mandatory = true, help = "Script path") File file) {
-        return moduleUtils.runScript(moduleName, file);
+        moduleUtils.runScript(moduleName, file);
+        
+        return formatter.unlessQuiet("Script run");
     }
 
 }

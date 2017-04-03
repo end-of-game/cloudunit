@@ -47,7 +47,14 @@
     vm.listEnvModule = [];
     vm.colapseModuleId;
     vm.portList = [];
+    vm.exportContainer = exportContainer;
     $scope.colapseOverview = true;
+    vm.isZip = false;
+    vm.downloadContainer = downloadContainer;
+
+    function downloadContainer (applicationName, containerName) {
+      window.location.href = '/application/' + applicationName + '/containers/' + containerName + '/export';
+    }
 
     $scope.$on ( 'application:ready', function ( e, data ) {
       vm.app = data.app;
@@ -124,6 +131,13 @@
       return ModuleService.removeModule ( applicationName, moduleName )
         .then(function() {
           refreshEnvVar();
+        });
+    }
+    
+    function exportContainer (applicationName) {
+      ApplicationService.exportContainer(applicationName)
+        .then(function() {
+          vm.isZip = true;
         });
     }
   }

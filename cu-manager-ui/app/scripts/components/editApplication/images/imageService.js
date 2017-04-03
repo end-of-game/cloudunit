@@ -36,7 +36,11 @@
       findEnabled: findEnabled,
       findEnabledServer: findEnabledServer,
       findEnabledModule: findEnabledModule,
-      findAll: findAll
+      findAll: findAll,
+      enable: enable,
+      disable: disable,
+      remove: remove,
+      pull: pull
     };
 
 
@@ -63,9 +67,62 @@
     // Liste de toutes les images
     function findAll() {
       var listImages = $resource('image/all');
-      return listImages.query();
+      return listImages.query().$promise;
     }
+    
+    // Supprime une image
+    function remove(imageID) {
+      var dir = $resource ( 'image/:imageID' );
+      return dir.delete ( { 
+            imageID: imageID
+        }, {} ).$promise; 
+    }
+
+    // Ajout d'une image
+    function pull(image) {
+      var dir = $resource ( 'image/pull' );
+      return dir.save ( {}, image ).$promise; 
+    }
+
+    // rend indisponible l'image
+    function disable(imageName) {
+      var dir = $resource ( 'image/:imageName/disabled' ,
+      { 
+          imageName: imageName
+      },
+      { 
+          'update': { 
+              method: 'PUT',
+              transformResponse: function ( data, headers ) {
+                  var response = {};
+                  return response;
+              }
+          }
+      }
+      );
+      return dir.update( { }, {} ).$promise;
+    }
+
+    // rend disponible l'image
+    function enable(imageName) {
+
+      var dir = $resource ( 'image/:imageName/enabled' ,
+      { 
+          imageName: imageName
+      },
+      { 
+          'update': { 
+              method: 'PUT',
+              transformResponse: function ( data, headers ) {
+                  var response = {};
+                  return response;
+              }
+          }
+      }
+      );
+      return dir.update( { }, {} ).$promise;
+    }
+
   }
 
 })();
-

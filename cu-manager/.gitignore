@@ -113,3 +113,5 @@ src/main/webapp/test/uploads/pizzashop-0.0.1-SNAPSHOT.war
 # Logs
 errors.log
 
+export
+archive.tar.gz

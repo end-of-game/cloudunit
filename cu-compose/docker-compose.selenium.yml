@@ -8,18 +8,16 @@ services:
           - "TZ=${TZ}"
       ports:
           - "4444:4444"
-      network_mode: bridge
 
   selenium-firefox:
       container_name: selenium-firefox
       image: selenium/node-firefox-debug:3.0.1-aluminum
       environment:
           - "TZ=${TZ}"
-          - "HUB_PORT_4444_TCP_ADDR=selenium-hub.hub.cloud.unit"
+          - "HUB_PORT_4444_TCP_ADDR=selenium-hub"
           - "HUB_PORT_4444_TCP_PORT=4444"
       ports:
           - "5900:5900"
-      network_mode: bridge
       depends_on:
           - selenium-hub
 
@@ -28,10 +26,14 @@ services:
       image: selenium/node-chrome-debug:3.0.1-aluminum
       environment:
           - "TZ=${TZ}"
-          - "HUB_PORT_4444_TCP_ADDR=selenium-hub.hub.cloud.unit"
+          - "HUB_PORT_4444_TCP_ADDR=selenium-hub"
           - "HUB_PORT_4444_TCP_PORT=4444"
       ports:
           - "5901:5900"
-      network_mode: bridge
       depends_on:
           - selenium-hub
+
+networks:
+  default:
+    external:
+      name: skynet

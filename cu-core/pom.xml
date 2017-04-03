@@ -4,7 +4,11 @@
 	<parent>
 		<artifactId>cloudunit</artifactId>
 		<groupId>fr.treeptik</groupId>
+<<<<<<< HEAD
 		<version>1.9</version>
+=======
+		<version>1.10.0</version>
+>>>>>>> release/1.10.0
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cu-core</artifactId>

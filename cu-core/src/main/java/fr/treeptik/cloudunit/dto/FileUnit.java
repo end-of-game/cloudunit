@@ -48,6 +48,11 @@ public class FileUnit {
                 .or(fileEndsWith(".config"))
                 .or(fileEndsWith(".properties"))
                 .or(fileEndsWith(".txt"))
+				.or(fileEndsWith(".java"))
+				.or(fileEndsWith(".rb"))
+				.or(fileEndsWith(".js"))
+				.or(fileEndsWith(".groovy"))
+				.or(fileEndsWith(".yaml"))
                 .test(f);
 	};
 

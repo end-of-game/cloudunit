@@ -30,12 +30,12 @@ public class HomepageController {
     @Value("#{environment.CU_SONAR_DOMAIN ?: 'sonar.cloudunit.dev'}")
     private String sonar;
 
-    @Value("#{environment.CU_LETSCHAT_DOMAIN ?: 'letschat.cloudunit.dev'}")
-    private String letschat;
+    @Value("#{environment.CU_MATTERMOST_DOMAIN ?: 'mattermost.cloudunit.dev'}")
+    private String mattermost;
 
     @RequestMapping(value = "/friends", method = RequestMethod.GET)
     public ResponseEntity<?> listFriends() {
-        HomepageResource resource = new HomepageResource(jenkins, gitlab, kibana, nexus, sonar, letschat);
+        HomepageResource resource = new HomepageResource(jenkins, gitlab, kibana, nexus, sonar, mattermost);
         return ResponseEntity.ok(resource);
     }
 

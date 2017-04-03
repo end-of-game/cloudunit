@@ -227,6 +227,13 @@ module.exports = function (grunt) {
           port: 8080,
           https: false,
           changeOrigin: false
+        },
+        {
+          context: '/registry',
+          host: 'localhost',
+          port: 8080,
+          https: false,
+          changeOrigin: false
         }
       ],
       options: {
@@ -535,7 +542,8 @@ module.exports = function (grunt) {
               'scripts/**/*.html',
               'images/{,*/}*.{webp}',
               'styles/fonts/*',
-              'styles/images/*'
+              'styles/images/*',
+              'styles/images/*/*'
             ]
           },
           {

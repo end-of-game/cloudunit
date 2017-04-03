@@ -30,20 +30,23 @@ public class ServerCommand implements CommandMarker {
     @CliCommand(value = "change-jvm-memory", help = "Change memory of the application server")
     public String changeMemory(
             @CliOption(key = {"size"}, mandatory = true, help = "Available memory size (Mo) {512, 1024, 2048, 3072}") String memorySize) {
-        return serverUtils.changeMemory(memorySize);
+        serverUtils.changeMemory(memorySize);
+        return null;
     }
 
     @CliCommand(value = "add-jvm-option", help = "Add a new java option to the application server")
     public String addOpts(
             @CliOption(key = {""}, mandatory = true, help = "Add your jvm opts (excepted memory values) between \"\"") String opts) {
-        return serverUtils.addOpts(opts);
+        serverUtils.addOpts(opts);
+        return null;
     }
 
     @CliCommand(value = "change-java-version", help = "Change java version")
     public String changeJavaVersion(
             @CliOption(key = {""}, mandatory = false, help = "Application name") String applicationName,
             @CliOption(key = {"javaVersion"}, mandatory = true, help = "Choose your java version (available : java7, java8 or java9)") String javaVersion) {
-        return serverUtils.changeJavaVersion(applicationName, javaVersion);
+        serverUtils.changeJavaVersion(applicationName, javaVersion);
+        return null;
     }
 
     @CliCommand(value = "open-port", help = "Change java version")
@@ -51,14 +54,16 @@ public class ServerCommand implements CommandMarker {
             @CliOption(key = {"", "name"}, mandatory = false, help = "Application name") String applicationName,
             @CliOption(key = {"port"}, mandatory = true, help = "Choose a port to open") String portToOpen,
             @CliOption(key = {"nature"}, mandatory = true, help = "Choose a port to open") String portNature) {
-        return serverUtils.openPort(applicationName, portToOpen, portNature);
+        serverUtils.openPort(applicationName, portToOpen, portNature);
+        return null;
     }
 
     @CliCommand(value = "remove-port", help = "Change java version")
     public String openPort(
             @CliOption(key = {"", "name"}, mandatory = false, help = "Application name") String applicationName,
             @CliOption(key = {"port"}, mandatory = true, help = "Choose a port to open") String portToOpen) {
-        return serverUtils.removePort(applicationName, portToOpen);
+        serverUtils.removePort(applicationName, portToOpen);
+        return null;
     }
 
 }

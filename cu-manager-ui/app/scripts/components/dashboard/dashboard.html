@@ -29,6 +29,7 @@
       </div>
     </div>
   </header>
+
   <div class="page-content" id="dashboard">
     <div class="page full">
       <div class="subheader">
@@ -152,6 +153,57 @@
           <i class="icon-whhg list-th"></i>
         </button>
 
+        <button class="icon-button"
+            ng-class="{'selected': (dashboard.applicationsSelectedAction.length === dashboard.applications.length && dashboard.applicationsSelectedAction.length !== 0)}"
+            ng-if="dashboard.applications.length !== 0"
+            style="margin-left: 20px;"
+            tooltip=""
+            type="button"
+            data-title="Select all App"
+            ng-click="dashboard.applicationsSelectedAction = 
+            (dashboard.applicationsSelectedAction.length === dashboard.applications.length) ? [] : dashboard.applications">
+            <i class="icon-tech"
+              style="font-size: 22px;"
+              data-ng-class="{'uncheck': !(dashboard.applicationsSelectedAction.length === dashboard.applications.length),
+              'check': (dashboard.applicationsSelectedAction.length === dashboard.applications.length) }"></i>
+        </button>
+      </div>
+      <div ng-class="{'show': dashboard.applicationsSelectedAction.length}" class="dashboard-toolbar">
+          <a ng-repeat="application in dashboard.applicationsSelectedAction"
+            id="preview-link"
+            class="icon-button"
+            tooltip="{{application.name}}"
+            data-placement="bottom"
+            ng-click="dashboard.selectForAction(application)">
+            <span><i class="icon-whhg deletefolder"></i></span>
+          </a>
+          <button class="alias-btn button-effect small primary pull-right"
+                  sweetalert
+
+                  sweet-options="{'title':'Removal confirmation required',
+                  'text':'Caution, this is a permanent action. Once you delete apps, you cannot get it back. These apps will no longer be available.',
+                  'type':'warning',
+                  'showCancelButton':true,
+                  'confirmButtonText':'PERMANENTLY DELETE!',
+                  'cancelButtonText':'CANCEL',
+                  'closeOnConfirm':false,
+                  'closeOnCancel':false,
+                  'animation': 'slide-from-top'}"
+                  sweet-confirm-option="{'title':'Deleted!','text':'Your applications has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-cancel-option="{'title':'Cancelled!','text':'Your applications is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+                  sweet-on-confirm="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.deleteApplication)">
+            <span>Delete</span>
+          </button>
+          <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.stopApplication)"
+                  ng-disabled="!dashboard.actions.stop"
+                  class="small alias-btn button-effect primary pull-right">
+            <span>Stop</span>
+          </button>
+          <button ng-click="dashboard.executeAction(dashboard.applicationsSelectedAction, dashboard.startApplication)"
+                  ng-disabled="!dashboard.actions.start"
+                  class="small alias-btn button-effect primary pull-right">
+            <span>Start</span>
+          </button>
       </div>
       <div class="cards">
         <!--create application-->
@@ -159,14 +211,15 @@
         <create-app></create-app>
 
         <!--application list-->
-
         <div id='application-{{application.name}}'
              class="application {{ application.status | lowercase}}"
              ng-class="{'card': dashboard.selectedDisplayStyle == 'Grid',
               'smaller': dashboard.selectedDisplayStyle == 'Grid',
               'list': dashboard.selectedDisplayStyle == 'List'}"
              data-ng-repeat="application in dashboard.applications | orderBy:'id'  | filter:{displayName: searchText} | appByServerImage: dashboard.selectedServer track by $index">
-          <div class="content">
+          <div class="content"
+            ng-class="{'checked': application.checked}">
+            
             <h3 class="title">
               {{application.displayName}}
               <a data-ng-href="#editApplication/{{ application.name }}/overview"
@@ -174,6 +227,14 @@
                  ripple="">
                 <span>Manage</span>
               </a>
+
+              <button class="icon-button"
+                  tooltip=""
+                  type="button"
+                  data-title="Select App"
+                  ng-click="dashboard.selectForAction(application)">
+                  <i style="margin: 0" class="icon-tech" data-ng-class="{'uncheck': !application.checked, 'check': application.checked}"></i>
+              </button>
             </h3>
 
             <div class="status">
@@ -204,7 +265,7 @@
               </div>
             </div>
 
-            <div class="features">
+            <div class="features features-icon-tech icon-tech {{application.server.image.prefixEnv}}">
               <p class="subhead">Services</p>
 
               <p>{{ application.server.image.displayName}}<!-- <span class="image icon-tech {{ application.server.image.prefixEnv | lowercase }}"></span> --></p>
@@ -238,10 +299,9 @@
                         'animation': 'slide-from-top'}"
                         sweet-confirm-option="{'title':'Deleted!','text':'Your application has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
                         sweet-cancel-option="{'title':'Cancelled!','text':'Your application is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
-                        sweet-on-confirm="dashboard.deleteApplication(application.name)">
+                        sweet-on-confirm="dashboard.deleteApplication(application)">
                   <i class="icon-whhg trash"></i>
                 </button>
-
                 <a class="icon-button secondary"
                    data-ng-hide="application.status==='STOP' || application.deploymentStatus !== 'ALREADY_DEPLOYED'"
                    data-ng-href="http://{{ application.location }}{{ application.contextPath }}"
@@ -252,14 +312,14 @@
                    data-placement="bottom">
                   <i class="icon-whhg preview"></i>
                 </a>
-                <a class="snapshot-link icon-button secondary"
+                <!--<a class="snapshot-link icon-button secondary"
                    data-ng-href="#editApplication/{{application.name}}/snapshot"
                    ripple=""
                    tooltip=""
                    data-title="Create template"
                    data-placement="bottom">
                   <i class="icon-whhg copy"></i>
-                </a>
+                </a>-->
                 <a class="logs-link icon-button secondary"
                    data-ng-href="#editApplication/{{application.name}}/logs"
                    ripple=""
@@ -269,6 +329,7 @@
                   <i class="icon-whhg rawaccesslogs"></i>
                 </a>
                 <button class="server-btn icon-button secondary"
+                        ng-if="!application.checked"
                         data-ng-click="dashboard.toggleServer(application)"
                         ripple=""
                         tooltip=""

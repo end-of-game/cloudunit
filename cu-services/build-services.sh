@@ -20,6 +20,11 @@ function apache {
     docker build --rm $CACHE_STRATEGY -t cloudunit/apache-2-2 images/servers/apache-2-2
 }
 
+function glassfish {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/glassfish2 images/servers/glassfish2s
+    docker build --rm $CACHE_STRATEGY -t cloudunit/glassfish4 images/servers/glassfish4
+}
+
 function tomcat {
     docker build --rm $CACHE_STRATEGY -t cloudunit/tomcat-6     images/servers/tomcat-6
     docker build --rm $CACHE_STRATEGY -t cloudunit/tomcat-7     images/servers/tomcat-7
@@ -71,6 +76,13 @@ function redis {
     docker build --rm $CACHE_STRATEGY -t cloudunit/redis-3-2 images/modules/redis-3-2
 }
 
+function vertx33 {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-ruby images/servers/vertx33-ruby
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-js images/servers/vertx33-js
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-groovy images/servers/vertx33-groovy
+    docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-java images/servers/vertx33-java
+}
+
 case "$1" in
 
 'activemq')
@@ -96,6 +108,11 @@ elastic
 'fatjar')
 echo "Building FarJar"
 fatjar
+;;
+
+'glassfish')
+echo "Building GlassFish"
+glassfish
 ;;
 
 'mongo')
@@ -138,6 +155,11 @@ echo "Building Tools"
 tools
 ;;
 
+'vertx33')
+echo "Building Vertx"
+vertx33
+;;
+
 'wildfly')
 echo "Building WildFly"
 wildfly
@@ -150,6 +172,7 @@ activemq
 apache
 elastic
 fatjar
+glassfish
 mongo
 mysql
 nginx
@@ -157,6 +180,7 @@ postgre
 rabbitmq
 redis
 tomcat
+vertx33
 wildfly
 ;;
 
@@ -173,6 +197,7 @@ echo "                    all"
 echo "                    base"
 echo "                    elastic"
 echo "                    fatjar"
+echo "                    glassfish"
 echo "                    mongo"
 echo "                    mysql"
 echo "                    nginx"
@@ -181,6 +206,7 @@ echo "                    rabbitmq"
 echo "                    redis"
 echo "                    tomcat"
 echo "                    tools"
+echo "                    vertx33"
 echo "                    wildfly"
 echo ""
 ;;

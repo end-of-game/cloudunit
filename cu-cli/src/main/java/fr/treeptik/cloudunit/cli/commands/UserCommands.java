@@ -27,6 +27,9 @@ import fr.treeptik.cloudunit.cli.utils.AuthenticationUtils;
 public class UserCommands implements CommandMarker {
 	@Autowired
 	private AuthenticationUtils authenticationUtils;
+	
+	@Autowired
+	private CliFormatter formatter;
 
 	@CliCommand(value = "connect", help = "Connect to CloudUnit Manager")
 	public String connect(
@@ -35,12 +38,14 @@ public class UserCommands implements CommandMarker {
 			    unspecifiedDefaultValue = "") String password,
 			@CliOption(key = "host", mandatory = false, help = "URL for Cloudunit Manager",
 			    unspecifiedDefaultValue = "") String host) {
-		return authenticationUtils.connect(login, password, host, new CliPrompter());
+	    authenticationUtils.connect(login, password, host, new CliPrompter());
+		return formatter.unlessQuiet("Connected");
 	}
 
 	@CliCommand(value = "disconnect", help = "Disconnect")
 	public String disconnect() {
-		return authenticationUtils.disconnect();
+	    authenticationUtils.disconnect();
+		return formatter.unlessQuiet("Disconnected");
 	}
 
 }

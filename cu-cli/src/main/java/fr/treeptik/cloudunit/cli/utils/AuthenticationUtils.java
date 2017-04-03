@@ -15,19 +15,17 @@
 
 package fr.treeptik.cloudunit.cli.utils;
 
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import fr.treeptik.cloudunit.cli.CloudUnitCliException;
 import fr.treeptik.cloudunit.cli.Guard;
 import fr.treeptik.cloudunit.cli.Messages;
-import fr.treeptik.cloudunit.cli.commands.ShellStatusCommand;
 import fr.treeptik.cloudunit.cli.exception.ManagerResponseException;
 import fr.treeptik.cloudunit.cli.processor.InjectLogger;
 import fr.treeptik.cloudunit.cli.rest.JsonConverter;
@@ -43,18 +41,19 @@ public class AuthenticationUtils {
 	private Logger log;
 	
 	private Map<String, Object> map = new HashMap<>();
-	@Value("${host}")
+
+	@Value("${default.host}")
 	private String defaultHost;
-	@Value("${manager.version}")
-	private String apiVersion;
+
 	@Autowired
 	private UrlLoader urlLoader;
-	@Autowired
-	private ShellStatusCommand statusCommand;
+
 	@Autowired
 	private RestUtils restUtils;
+
 	@Autowired
 	private ApplicationUtils applicationUtils;
+	
 	@Autowired
 	private FileUtils fileUtils;
 	
@@ -80,7 +79,7 @@ public class AuthenticationUtils {
 	 * @param selectedHost
 	 * @return
 	 */
-	public String connect(String login, String password, String selectedHost, Prompter prompter) {
+	public void connect(String login, String password, String selectedHost, Prompter prompter) {
 	    checkNotConnected();
 		fileUtils.checkNotInFileExplorer();
 		
@@ -99,7 +98,6 @@ public class AuthenticationUtils {
         } else {
             finalHost = selectedHost;
         }
-        log.log(Level.INFO, MessageFormat.format("Connecting to {0}...", finalHost));
 
         try {
             // trying to connect with host manager
@@ -113,21 +111,17 @@ public class AuthenticationUtils {
             String cloudunitInstance = JsonConverter.getCloudUnitInstance(response);
             currentInstanceName = cloudunitInstance != null ? cloudunitInstance : "";
 		} catch (ManagerResponseException e) {
-		    statusCommand.setExitStatut(1);
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+		    throw new CloudUnitCliException("Couldn't connect to server", e);
 		}
 
 		map.put("login", login);
 		map.put("password", finalPassword);
-
-		statusCommand.setExitStatut(0);
-		return "Connection established";
 	}
 
 	/**
 	 * Appel de l'url spring-secu pour suppression session côté serveur
 	 */
-	public String disconnect() {
+	public void disconnect() {
 	    checkConnected();
 		fileUtils.checkNotInFileExplorer();
 		
@@ -137,12 +131,10 @@ public class AuthenticationUtils {
 			applicationUtils.setCurrentApplication(null);
 			restUtils.localContext = null;
 		} catch (ManagerResponseException e) {
-			return ANSIConstants.ANSI_RED + e.getMessage() + ANSIConstants.ANSI_RESET;
+			throw new CloudUnitCliException("Couldn't disconnect from server", e);
 		}
 		
 		currentInstanceName = null;
-
-		return "Disconnected";
 	}
 
 	public Map<String, Object> getMap() {

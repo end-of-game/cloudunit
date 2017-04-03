@@ -29,6 +29,7 @@
     -ms-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+    
     footer {
       min-height: 14px;
     }
@@ -54,9 +55,10 @@
     }
     .status {
       @include clearfix();
+      margin-bottom: 15px;
     }
     .features {
-      padding: 16px 0px;
+      padding: 6px 0px 0px 0px;
       color: $color-muted;
       margin-bottom: 32px;
 
@@ -235,6 +237,12 @@
     }
   }
 
+.application {
+  .content.checked {
+    box-shadow: 2px 7px 15px 0 rgba(51, 51, 51, 0.5);
+  }
+}
+
 .application.start .status {
   color: #8bc34a;
 }
@@ -274,6 +282,16 @@
     -ms-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+    .features-icon-tech:before {
+      position: absolute;
+      /*left: 75px;
+      right: auto;*/
+      left: auto;
+      right: 160px;
+      top: 55px;
+      -webkit-transform: scale(6);
+      transform: scale(6);
+    }
     .features {
       p {
         float: left;
