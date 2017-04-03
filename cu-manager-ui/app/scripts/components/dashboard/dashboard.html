@@ -154,7 +154,7 @@
 
             <div class="features">
               <p class="subhead">Services</p>
-
+              <span ng-repeat="service in application['cu:services'] track by $index">{{service.imageName}} </span>
               <p>{{ application.server.image.displayName}}<!-- <span class="image icon-tech {{ application.server.image.prefixEnv | lowercase }}"></span> --></p>
 
               <p ng-hide="application.modules.length > 0">No modules</p>
