@@ -15,6 +15,8 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
+import java.io.File;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -376,6 +379,26 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	@Transactional
+	public Application deploy(String url, Application application) throws ServiceException, CheckException {
+		try {
+			File file = new File(url.substring(url.lastIndexOf("/")+1));
+			FileUtils.copyURLToFile(new URL(url), file);
+			// get app with all its components
+			String filename = file.getName();
+
+			String fileContextPath = NamingUtils.getContext.apply(filename);
+			String contextPath = new File(".").getAbsolutePath();
+			this.createApplication(fileContextPath, contextPath, filename, application);
+			file.delete();
+		} catch (Exception e) {
+			throw new ServiceException(e.getLocalizedMessage(), e);
+		}
+
+		return application;
+	}
+
+	@Override
+	@Transactional
 	public Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException {
 		try {
 			// get app with all its components
@@ -384,37 +407,45 @@ public class ApplicationServiceImpl implements ApplicationService {
 			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
 			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
 			String contextPath = NamingUtils.getContext.apply(filename);
-			@SuppressWarnings("serial")
-            Map<String, String> kvStore = new HashMap<String, String>() {
-				{
-					put("CU_USER", application.getUser().getLogin());
-					put("CU_PASSWORD", application.getUser().getPassword());
-                    put("CU_FILE", filename);
-					put("CU_CONTEXT_PATH", contextPath);
-				}
-			};
-			String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
-			logger.info ("Deploy command {}", result);
-			Deployment deployment = deploymentService.create(application, DeploymentType.from(filename), contextPath);
-			application.addDeployment(deployment);
-			application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
 
-			// If application is anything else than .jar or ROOT.war
-			// we need to clean for the next deployment.
-			if (!"/".equalsIgnoreCase(contextPath)) {
-				@SuppressWarnings("serial")
-				HashMap<String, String> kvStore2 = new HashMap<String, String>() {
-					{
-						put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
-					}
-				};
-				dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
-			}
+			this.createApplication(contextPath, contextPath, filename, application);
+
 		} catch (Exception e) {
 			throw new ServiceException(e.getLocalizedMessage(), e);
 		}
 
 		return application;
+	}
+
+	private void createApplication(String fileContextPath, String contextPath, String filename, Application application) throws ServiceException {
+		String containerId = application.getServer().getContainerID();
+		String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
+		@SuppressWarnings("serial")
+		Map<String, String> kvStore = new HashMap<String, String>() {
+			{
+				put("CU_USER", application.getUser().getLogin());
+				put("CU_PASSWORD", application.getUser().getPassword());
+				put("CU_FILE", filename);
+				put("CU_CONTEXT_PATH", contextPath);
+			}
+		};
+		String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
+		logger.info ("Deploy command {}", result);
+		Deployment deployment = deploymentService.create(application, DeploymentType.from(filename), fileContextPath);
+		application.addDeployment(deployment);
+		application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
+
+		// If application is anything else than .jar or ROOT.war
+		// we need to clean for the next deployment.
+		if (!"/".equalsIgnoreCase(fileContextPath)) {
+			@SuppressWarnings("serial")
+			HashMap<String, String> kvStore2 = new HashMap<String, String>() {
+				{
+					put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
+				}
+			};
+			dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
+		}
 	}
 
 	/**
