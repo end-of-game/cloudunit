@@ -11,11 +11,7 @@
     <parent>
         <groupId>fr.treeptik</groupId>
         <artifactId>cloudunit</artifactId>
-<<<<<<< HEAD
-        <version>1.9</version>
-=======
         <version>1.10.0</version>
->>>>>>> release/1.10.0
     </parent>
 
     <properties>
