@@ -45,6 +45,8 @@ public interface ApplicationService {
 
 	Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException;
 
+	Application deploy(String url, Application application) throws ServiceException, CheckException;
+
 	Application start(Application application) throws ServiceException;
 
 	Application stop(Application application) throws ServiceException;

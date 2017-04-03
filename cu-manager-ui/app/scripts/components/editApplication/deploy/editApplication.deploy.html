@@ -14,22 +14,23 @@
   -->
 
 <div class="tab-pane vertical-spacing">
-  <div class="card large">
+  <div class="deploy-card card col-lg-6"><!--large-->
     <div class="content">
-      <h3 class="title large">Deploy a web archive</h3>
+      <h3 class="title large">Deploy a web archive by Upload</h3>
 
+    <form id="deploy-application-form-upload" novalidate="">
       <div class="upload-form" data-ng-hide="uploader.queue[0].isUploading">
-        <div class="upload button raised primary" ripple="">
-          <span>Select file...</span>
-          <input type="file"
-                 id="upload-file"
-                 nv-file-select=""
-                 uploader="uploader"
-                 multiple="true"/>
+          <button class="upload button raised primary" ripple=""><!--ng-disabled="deploy.deployUrl"-->
+            <span>Select file...</span>
+            <input type="file"
+                  id="upload-file"
+                  nv-file-select=""
+                  uploader="uploader"
+                  multiple="true"/>
+          </button>
+          <p class="hint">Upload a <code>.war</code> or <code>.ear</code> archive</p>
         </div>
-        <p class="hint">Upload a <code>.war</code> or <code>.ear</code> archive</p>
-      </div>
-
+    </form>
       <div class="upload-meta" data-ng-show="uploader.queue[0] || uploader.queue[0].isUploaded">
         <p class="hint">File name</p>
 
@@ -105,6 +106,45 @@
         </button>
         <p><strong>Deployment cancelled</strong></p>
       </div>
+    </div>
+  </div>
+
+  <div class="deploy-card card col-lg-6">
+    <div class="content clearfix">
+      <h3 class="title large">Deploy a web archive by URL</h3>
+
+      <!--<form id="deploy-application-form-url" novalidate="">
+          <div class="input-group-inline">
+              <input type="text"
+                name="url"
+                data-ng-model="deploy.deployUrl"
+                required="">
+            <span class="bar"></span>
+            <label class="label-effect">Key</label>
+        </div>
+      </form>-->
+    <form id="add-env"
+          name="addEnvironmentVariable"
+          class="clearfix" novalidate=""
+          data-ng-submit="deploy.deployByUrl(deploy.deployUrl)">
+      <div class="input-group-inline col-lg-10">
+            <input type="url"
+              name="url"
+              class="input-effect" 
+              data-ng-model="deploy.deployUrl"
+              required="">
+          <span class="bar"></span>
+          <label class="label-effect">URL</label>
+      </div>
+        <div class="secondary-actions pull-right">
+          <button type="submit"
+                  class="alias-btn button-effect primary pull-right"
+                  data-ng-disabled="!deploy.deployUrl">
+            <span>Deploy</span>
+          </button>
+        </div>
+   
+    </form>
     </div>
   </div>
 </div>

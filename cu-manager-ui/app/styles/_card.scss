@@ -148,7 +148,9 @@
 .environment-card.card .content {
   min-height: 230px;
 }
-
+.deploy-card .content {
+  min-height: 150px;
+}
 .card.overview, .card.service {
   .content {
     min-height: 310px;
