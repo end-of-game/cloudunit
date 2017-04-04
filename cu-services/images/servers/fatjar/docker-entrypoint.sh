@@ -14,5 +14,3 @@ fi
 
 # As argument is not run, assume user want to run his own process, for sample a `bash` shell to explore this image
 exec "$@"
-
-#+ curl 'http://johndoe:abc2015@localhost:8080/manager/text/deploy?war=file:/opt/cloudunit/tmp/helloworld.war&path=/helloworld'

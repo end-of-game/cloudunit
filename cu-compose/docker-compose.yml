@@ -111,6 +111,7 @@ services:
     restart: unless-stopped
     image: 'sonarqube:6.2'
     volumes:
+      - "TZ=${TZ}"
       - 'sonar-data:/opt/sonarqube/data'
       - 'sonar-extensions:/opt/sonarqube/extensions'
     labels:
