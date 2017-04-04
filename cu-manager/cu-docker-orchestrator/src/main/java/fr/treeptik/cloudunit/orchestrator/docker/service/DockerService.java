@@ -28,4 +28,8 @@ public interface DockerService {
     Mount mountVolume(Container container, Volume volume, String mountPoint);
     
     void unmountVolume(Container container, Mount mount);
+
+    void addDependency(Container container, Container dependency);
+
+    void removeDependency(Container container, String dependency);
 }

@@ -53,6 +53,8 @@ public class ContainerController {
                 .withRel("cu:variables"));
         resource.add(linkTo(methodOn(MountController.class).getMounts(name))
                 .withRel("cu:mounts"));
+        resource.add(linkTo(methodOn(ContainerDependencyController.class).getDependencies(name))
+                .withRel("cu:dependencies"));
 
         if (container.getState() == ContainerState.STOPPED) {
             resource.add(linkTo(methodOn(ContainerController.class).start(name))

@@ -43,6 +43,10 @@ public class Variable {
     public VariableRole getRole() {
         return role;
     }
+
+    public Variable toImportedVariable() {
+        return new Variable(key, value, VariableRole.IMPORT);
+    }
     
     @Override
     public boolean equals(Object obj) {

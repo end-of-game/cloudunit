@@ -235,6 +235,22 @@ public class DockerServiceImpl implements DockerService {
         container = containerRepository.save(container);
         doDeleteContainer(container);
     }
+    
+    @Override
+    public void addDependency(Container container, Container dependency) {
+        container.addDependency(dependency);
+        container.setPending();
+        container = containerRepository.save(container);
+        doDeleteContainer(container);
+    }
+    
+    @Override
+    public void removeDependency(Container container, String dependency) {
+        container.removeDependency(dependency);
+        container.setPending();
+        container = containerRepository.save(container);
+        doDeleteContainer(container);
+    }
 
     private ExecutionResult execute(Container container, String... cmd) {
         try {
@@ -295,8 +311,19 @@ public class DockerServiceImpl implements DockerService {
             LOGGER.error("Couldn't create container", e);
             throw new ServiceException("Couldn't create container", e);            
         }
+        
+        updateDependants(container);
     }
     
+    private void updateDependants(Container container) {
+        containerRepository.findByDependencies(container.getName()).forEach(dependant -> {
+            dependant.importVariables(container);
+            dependant.setPending();
+            dependant = containerRepository.save(dependant);
+            doDeleteContainer(dependant);
+        });
+    }
+
     private void doStartContainer(Container container) {
         try {
             docker.startContainer(container.getName());

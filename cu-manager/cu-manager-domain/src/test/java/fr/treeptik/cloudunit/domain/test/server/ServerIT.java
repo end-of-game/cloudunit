@@ -38,7 +38,7 @@ public class ServerIT {
     @Parameters(name = "{index} {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "cloudunit/tomcat:8" },
+            { "tomcat:8" },
         });
     }
     

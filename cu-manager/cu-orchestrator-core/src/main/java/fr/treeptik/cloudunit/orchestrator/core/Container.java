@@ -3,9 +3,11 @@ package fr.treeptik.cloudunit.orchestrator.core;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -25,6 +27,7 @@ public class Container {
     private String imageName;
     private ContainerState state;
     private Map<String, Variable> variables;
+    private Set<String> dependencies;
     
     /**
      * Mounted volumes.
@@ -48,6 +51,7 @@ public class Container {
                 .map(v -> Variable.assign(this, v))
                 .collect(Collectors.toMap(v -> v.getKey(), v -> v));
         this.mounts = new HashMap<>();
+        this.dependencies = new HashSet<>();
     }
 
     public String getId() {
@@ -77,6 +81,10 @@ public class Container {
     public String getLocalDnsName() {
         return name;
     }
+    
+    public boolean hasVariable(String key) {
+        return variables.containsKey(key);
+    }
 
     public Optional<Variable> getVariable(String key) {
         return Optional.ofNullable(variables.get(key));
@@ -94,14 +102,58 @@ public class Container {
 
     public Variable addVariable(String key, String value) {
         Variable variable = new Variable(key, value);
-        variables.put(key, variable);
+        return addVariable(variable);
+    }
+
+    private Variable addVariable(Variable variable) {
+        variables.put(variable.getKey(), variable);
         return variable;
     }
 
+    /**
+     * Import variables from another container.
+     * 
+     * Existing variables that have not been imported are never overwritten.
+     * 
+     * @param container  another container.
+     */
+    public void importVariables(Container container) {
+        container.getVariables().forEach(variable -> {
+                if (hasVariable(variable.getKey())) {
+                    getVariable(variable.getKey())
+                        .filter(v -> v.getRole() == VariableRole.IMPORT)
+                        .ifPresent(v -> v.setValue(variable.getValue()));
+                } else {
+                    importVariable(variable);
+                }
+            });
+    }
+
+    private void importVariable(Variable variable) {
+        addVariable(variable.toImportedVariable());
+    }
+    
     public void removeVariable(Variable variable) {
         variables.remove(variable.getKey());
     }
+
+    public Set<String> getDependencies() {
+        return Collections.unmodifiableSet(dependencies);
+    }
+
+    public void addDependency(Container dependency) {
+        dependencies.add(dependency.getName());
+        importVariables(dependency);
+    }
+
+    public boolean hasDependency(String depName) {
+        return dependencies.contains(depName);
+    }
     
+    public void removeDependency(String depName) {
+        dependencies.remove(depName);
+    }
+
     public Collection<Mount> getMounts() {
         return Collections.unmodifiableCollection(mounts.values());
     }

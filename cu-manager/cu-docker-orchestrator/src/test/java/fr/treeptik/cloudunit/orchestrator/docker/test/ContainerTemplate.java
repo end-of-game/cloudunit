@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
+import fr.treeptik.cloudunit.orchestrator.resource.ContainerDependencyResource;
 import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
 import fr.treeptik.cloudunit.orchestrator.resource.MountResource;
 import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
@@ -158,4 +159,12 @@ public class ContainerTemplate {
         return mockMvc.perform(delete(uri));
     }
 
+    public ResultActions addDependency(ContainerResource container, ContainerResource dependency) throws Exception {
+        String uri = container.getLink("cu:dependencies").getHref();
+        String dependencyUri = dependency.getLink(Link.REL_SELF).getHref();
+        ContainerDependencyResource request = new ContainerDependencyResource(dependencyUri);
+        return mockMvc.perform(post(uri)
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON));
+    }
 }

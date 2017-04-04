@@ -23,6 +23,12 @@ public enum VariableRole {
         public String generateValue(Container container) {
             return container.getName();
         }
+    },
+    IMPORT {
+        @Override
+        public String generateValue(Container container) {
+            throw new UnsupportedOperationException("Cannot generate the value of an imported variable");
+        }
     };
     
     private static final int PASSWORD_BYTES = 8;

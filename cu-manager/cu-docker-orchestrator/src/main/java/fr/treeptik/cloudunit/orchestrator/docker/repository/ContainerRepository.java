@@ -11,6 +11,8 @@ public interface ContainerRepository extends Repository<Container, String> {
     Optional<Container> findOne(String id);
     Optional<Container> findByName(String name);
     
+    List<Container> findByDependencies(String depName);
+    
     List<Container> findAll();
     
     Container save(Container container);
