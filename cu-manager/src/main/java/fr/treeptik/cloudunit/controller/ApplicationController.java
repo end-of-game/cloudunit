@@ -343,7 +343,7 @@ public class ApplicationController implements Serializable {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/{applicationName}/deploy", method = RequestMethod.POST)
-	public JsonResponse deploy(@RequestBody JsonInput input, @PathVariable String applicationName) throws ServiceException {
+	public JsonResponse deployFromUrl(@RequestBody JsonInput input, @PathVariable String applicationName) throws ServiceException {
 
 		logger.info("applicationName = " + applicationName + " url = " + input.getDeployUrl());
 
@@ -352,7 +352,6 @@ public class ApplicationController implements Serializable {
 
 		 // We must be sure there is no running action before starting new one
 		 authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
-
 		 application = applicationService.deploy(input.getDeployUrl(), application);
 
 		 String needRestart = dockerService.getEnv(application.getServer().getContainerID(),
@@ -385,7 +384,7 @@ public class ApplicationController implements Serializable {
 	@ResponseBody
 	@RequestMapping(value = "/{applicationName}/deploy", method = RequestMethod.POST, consumes = {
 			"multipart/form-data" })
-	public JsonResponse deploy(@RequestPart("file") MultipartFile fileUpload, @PathVariable String applicationName,
+	public JsonResponse deployFromArchive(@RequestPart("file") MultipartFile fileUpload, @PathVariable String applicationName,
 			HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServiceException, CheckException {
 

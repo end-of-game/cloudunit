@@ -20,7 +20,10 @@ RUN cd /usr/lib/node_modules/npm \
 
 RUN npm install -g bower gulp
 
-RUN apt-get install maven -y
+RUN add-apt-repository -y "deb http://ppa.launchpad.net/natecarlson/maven3/ubuntu precise main"
+RUN apt-get update
+RUN apt-get install maven3 -y
+RUN ln -s /usr/bin/mvn3 /usr/bin/mvn
 RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
 
 RUN mkdir /root/.m2

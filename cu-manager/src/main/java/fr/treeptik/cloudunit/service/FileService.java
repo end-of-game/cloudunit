@@ -15,6 +15,7 @@
 
 package fr.treeptik.cloudunit.service;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -36,7 +37,9 @@ public interface FileService {
     List<SourceUnit> listLogsFilesByContainer(String containerId)
         throws ServiceException;
 
-    void sendFileToContainer(String containerId, String destination, MultipartFile fileUpload, String contentFileName, String contentFileData)
+    void sendFileToContainer(String containerId, String destination, String filename, String url) throws ServiceException, CheckException;
+
+    void sendFileToContainer(String containerId, String tempDirectory, MultipartFile fileUpload, String contentFileName, String contentFileData)
             throws ServiceException, CheckException;
 
     int getFileFromContainer(String containerId,

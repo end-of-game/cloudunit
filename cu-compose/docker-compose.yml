@@ -140,7 +140,7 @@ services:
   traefik:
       container_name: cu-traefik
       restart: unless-stopped
-      image: traefik:1.2.0
+      image: traefik:1.2.1
       command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
       environment:
           - "TZ=${TZ}"

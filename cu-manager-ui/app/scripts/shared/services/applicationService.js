@@ -165,6 +165,9 @@ function pollApp ( applicationName ) {
     var self = this;
     return $interval ( function () {
         findByName.call ( self, applicationName ).then ( function ( response ) {
+            if (response.contextPath !== '/') {
+                response.contextPath = response.contextPath + "/";
+            }
             return self.state = response;
         } );
     }, 2000 )

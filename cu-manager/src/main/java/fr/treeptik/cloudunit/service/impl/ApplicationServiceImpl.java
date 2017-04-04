@@ -15,20 +15,16 @@
 
 package fr.treeptik.cloudunit.service.impl;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.persistence.PersistenceException;
-
+import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
+import fr.treeptik.cloudunit.dao.ApplicationDAO;
+import fr.treeptik.cloudunit.dto.ContainerUnit;
+import fr.treeptik.cloudunit.enums.RemoteExecAction;
+import fr.treeptik.cloudunit.exception.CheckException;
+import fr.treeptik.cloudunit.exception.ServiceException;
+import fr.treeptik.cloudunit.model.*;
+import fr.treeptik.cloudunit.service.*;
+import fr.treeptik.cloudunit.utils.AuthentificationUtils;
+import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,157 +37,127 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import fr.treeptik.cloudunit.config.events.ApplicationStartEvent;
-import fr.treeptik.cloudunit.dao.ApplicationDAO;
-import fr.treeptik.cloudunit.dto.ContainerUnit;
-import fr.treeptik.cloudunit.enums.RemoteExecAction;
-import fr.treeptik.cloudunit.exception.CheckException;
-import fr.treeptik.cloudunit.exception.ServiceException;
-import fr.treeptik.cloudunit.model.Application;
-import fr.treeptik.cloudunit.model.Deployment;
-import fr.treeptik.cloudunit.model.DeploymentType;
-import fr.treeptik.cloudunit.model.Image;
-import fr.treeptik.cloudunit.model.Module;
-import fr.treeptik.cloudunit.model.Server;
-import fr.treeptik.cloudunit.model.Status;
-import fr.treeptik.cloudunit.model.User;
-import fr.treeptik.cloudunit.service.ApplicationService;
-import fr.treeptik.cloudunit.service.DeploymentService;
-import fr.treeptik.cloudunit.service.DockerService;
-import fr.treeptik.cloudunit.service.FileService;
-import fr.treeptik.cloudunit.service.ImageService;
-import fr.treeptik.cloudunit.service.ModuleService;
-import fr.treeptik.cloudunit.service.ServerService;
-import fr.treeptik.cloudunit.utils.AuthentificationUtils;
-import fr.treeptik.cloudunit.utils.NamingUtils;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @DependsOn({"dataSourceInitializer", "dockerConfiguration"})
 public class ApplicationServiceImpl implements ApplicationService {
 
-	Locale locale = Locale.ENGLISH;
+    protected String domain;
+    Locale locale = Locale.ENGLISH;
+    private Logger logger = LoggerFactory.getLogger(ApplicationServiceImpl.class);
+    @Inject
+    private ApplicationDAO applicationDAO;
+    @Inject
+    private ServerService serverService;
+    @Inject
+    private DeploymentService deploymentService;
+    @Inject
+    private ModuleService moduleService;
+    @Inject
+    private ImageService imageService;
+    @Inject
+    private FileService fileService;
+    @Inject
+    private DockerService dockerService;
+    @Inject
+    private AuthentificationUtils authentificationUtils;
+    @Inject
+    private ApplicationEventPublisher applicationEventPublisher;
+    @Inject
+    private MessageSource messageSource;
+    @Value("${docker.socket.location}")
+    private String dockerSocketIP;
+    @Value("#{systemEnvironment['CU_DOMAIN']}")
+    private String domainSuffix;
+    @Value("${cloudunit.instance.name}")
+    private String cuInstanceName;
 
-	private Logger logger = LoggerFactory.getLogger(ApplicationServiceImpl.class);
+    private List<String> imageNames;
 
-	@Inject
-	private ApplicationDAO applicationDAO;
-
-	@Inject
-	private ServerService serverService;
-
-	@Inject
-	private DeploymentService deploymentService;
-
-	@Inject
-	private ModuleService moduleService;
-
-	@Inject
-	private ImageService imageService;
-
-	@Inject
-	private FileService fileService;
-
-	@Inject
-	private DockerService dockerService;
-
-	@Inject
-	private AuthentificationUtils authentificationUtils;
-
-	@Inject
-	private ApplicationEventPublisher applicationEventPublisher;
-
-	@Inject
-	private MessageSource messageSource;
-
-	@Value("${docker.socket.location}")
-	private String dockerSocketIP;
-
-	@Value("#{systemEnvironment['CU_DOMAIN']}")
-	private String domainSuffix;
-
-	protected String domain;
-
-	@Value("${cloudunit.instance.name}")
-	private String cuInstanceName;
-
-	private List<String> imageNames;
-
-	@PostConstruct
-	public void init() throws ServiceException {
-		logger.info("Loading images enabled from database...");
-	    List<Image> imagesEnabled = imageService.findEnabledImages();
+    @PostConstruct
+    public void init() throws ServiceException {
+        logger.info("Loading images enabled from database...");
+        List<Image> imagesEnabled = imageService.findEnabledImages();
         imageNames = imagesEnabled.stream().map(i -> i.getName()).collect(Collectors.toList());
-		logger.info("{} images have been loaded from database", imageNames.size());
+        logger.info("{} images have been loaded from database", imageNames.size());
 
-		domain = NamingUtils.getCloudUnitDomain(domainSuffix);
+        domain = NamingUtils.getCloudUnitDomain(domainSuffix);
     }
 
     /**
-	 * Test if the user can create new applications because we limit the number
-	 * per user
-	 *
-	 * @param application
-	 * @throws CheckException
-	 * @throws ServiceException
-	 */
-	public void checkCreate(User user, String application) throws CheckException, ServiceException {
-		try {
-			if (checkAppExist(user, application)) {
-				throw new CheckException(application +" already exists !");
-			}
-			if (checkNameLength(application)) {
-				throw new CheckException("This name has length equal to zero : " + application);
-			}
-		} catch (PersistenceException e) {
-			logger.error("ApplicationService Error : Create Application" + e);
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
+     * Test if the user can create new applications because we limit the number
+     * per user
+     *
+     * @param application
+     * @throws CheckException
+     * @throws ServiceException
+     */
+    public void checkCreate(User user, String application) throws CheckException, ServiceException {
+        try {
+            if (checkAppExist(user, application)) {
+                throw new CheckException(application + " already exists !");
+            }
+            if (checkNameLength(application)) {
+                throw new CheckException("This name has length equal to zero : " + application);
+            }
+        } catch (PersistenceException e) {
+            logger.error("ApplicationService Error : Create Application" + e);
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
 
-	/**
-	 * Test if the application already exists
-	 *
-	 * @param user
-	 * @param applicationName
-	 * @return
-	 * @throws ServiceException
-	 * @throws CheckException
-	 */
-	@Override
-	public boolean checkAppExist(User user, String applicationName) throws ServiceException, CheckException {
-		logger.info("--CHECK APP EXIST--");
-		if (applicationDAO.findByNameAndUser(user.getId(), applicationName, cuInstanceName) == null) {
-			return false;
-		} else {
-			return true;
-		}
-	}
+    /**
+     * Test if the application already exists
+     *
+     * @param user
+     * @param applicationName
+     * @return
+     * @throws ServiceException
+     * @throws CheckException
+     */
+    @Override
+    public boolean checkAppExist(User user, String applicationName) throws ServiceException, CheckException {
+        logger.info("--CHECK APP EXIST--");
+        if (applicationDAO.findByNameAndUser(user.getId(), applicationName, cuInstanceName) == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-	public boolean checkNameLength(String applicationName) {
-		if (applicationName.length() == 0)
-			return true;
-		return false;
-	}
+    public boolean checkNameLength(String applicationName) {
+        if (applicationName.length() == 0)
+            return true;
+        return false;
+    }
 
-	/**
-	 * Save app in just in DB, not create container use principally to charge
-	 * status.PENDING of entity until it's really functionnal
-	 */
-	@Override
-	@Transactional
-	public Application saveInDB(Application application) throws ServiceException {
-		logger.debug("-- SAVE -- : " + application);
-		// Do not affect application with save return.
-		// You could lose the relationships.
-		applicationDAO.save(application);
-		return application;
-	}
+    /**
+     * Save app in just in DB, not create container use principally to charge
+     * status.PENDING of entity until it's really functionnal
+     */
+    @Override
+    @Transactional
+    public Application saveInDB(Application application) throws ServiceException {
+        logger.debug("-- SAVE -- : " + application);
+        // Do not affect application with save return.
+        // You could lose the relationships.
+        applicationDAO.save(application);
+        return application;
+    }
 
 
-	@Override
-	@Transactional
-	public Application create(String applicationName, String imageName)
-			throws ServiceException, CheckException {
+    @Override
+    @Transactional
+    public Application create(String applicationName, String imageName)
+            throws ServiceException, CheckException {
 
         User user = authentificationUtils.getAuthentificatedUser();
         if (!imageNames.contains(imageName)) {
@@ -199,300 +165,297 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         Image image = imageService.findByName(imageName);
-		Application application = Application.of(applicationName, image)
+        Application application = Application.of(applicationName, image)
                 .withDisplayName(applicationName)
                 .withUser(user)
                 .withCuInstanceName(cuInstanceName).build();
 
-		checkCreate(user, applicationName);
-		application = applicationDAO.save(application);
+        checkCreate(user, applicationName);
+        application = applicationDAO.save(application);
 
         Server server = application.getServer();
-		server.setApplication(application);
+        server.setApplication(application);
 
         server = serverService.create(server);
-        
+
         application = applicationDAO.save(application);
         applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
-		logger.info("ApplicationService : Application " + application.getName() + " successfully created.");
+        logger.info("ApplicationService : Application " + application.getName() + " successfully created.");
 
-		return application;
-	}
+        return application;
+    }
 
-	/**
-	 * Remove an application
-	 *
-	 * @param application
-	 * @param user
-	 * @return
-	 * @throws ServiceException
-	 */
-	@Override
-	@Transactional
-	@CacheEvict(value = "env", allEntries = true)
-	public Application remove(Application application, User user) throws ServiceException, CheckException {
+    /**
+     * Remove an application
+     *
+     * @param application
+     * @param user
+     * @return
+     * @throws ServiceException
+     */
+    @Override
+    @Transactional
+    @CacheEvict(value = "env", allEntries = true)
+    public Application remove(Application application, User user) throws ServiceException, CheckException {
 
-		try {
-			logger.info("Starting removing application " + application.getName());
+        try {
+            logger.info("Starting removing application " + application.getName());
 
-			// Delete all modules
-			List<Module> listModules = application.getModules();
-			for (Module module : listModules) {
-				try {
-					moduleService.remove(user, module, false, application.getStatus());
-				} catch (ServiceException | CheckException e) {
-					application.setStatus(Status.FAIL);
-					logger.error("ApplicationService Error : failed to remove module " + module.getName()
-							+ " for application " + application.getName() + " : " + e);
-					e.printStackTrace();
-				}
-			}
+            // Delete all modules
+            List<Module> listModules = application.getModules();
+            for (Module module : listModules) {
+                try {
+                    moduleService.remove(user, module, false, application.getStatus());
+                } catch (ServiceException | CheckException e) {
+                    application.setStatus(Status.FAIL);
+                    logger.error("ApplicationService Error : failed to remove module " + module.getName()
+                            + " for application " + application.getName() + " : " + e);
+                    e.printStackTrace();
+                }
+            }
 
-			Server server = application.getServer();
-			serverService.remove(server.getName());
+            Server server = application.getServer();
+            serverService.remove(server.getName());
 
-			application.removeServer();
-			applicationDAO.delete(application);
+            application.removeServer();
+            applicationDAO.delete(application);
 
-			logger.info("ApplicationService : Application successfully removed ");
+            logger.info("ApplicationService : Application successfully removed ");
 
-		} catch (PersistenceException e) {
-			setStatus(application, Status.FAIL);
-			logger.error("ApplicationService Error : failed to remove " + application.getName() + " : " + e);
+        } catch (PersistenceException e) {
+            setStatus(application, Status.FAIL);
+            logger.error("ApplicationService Error : failed to remove " + application.getName() + " : " + e);
 
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		} catch (ServiceException e) {
-			setStatus(application, Status.FAIL);
-			logger.error(
-					"ApplicationService Error : failed to remove application " + application.getName() + " : " + e);
-			e.printStackTrace();
-		} catch (CheckException e) {
-			e.printStackTrace();
-		}
-		return application;
-	}
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        } catch (ServiceException e) {
+            setStatus(application, Status.FAIL);
+            logger.error(
+                    "ApplicationService Error : failed to remove application " + application.getName() + " : " + e);
+            e.printStackTrace();
+        } catch (CheckException e) {
+            e.printStackTrace();
+        }
+        return application;
+    }
 
-	/**
-	 * Methode permettant de mettre l'application dans un état particulier pour
-	 * se prémunir d'éventuel problème de concurrence au niveau métier
-	 */
-	@Override
-	@Transactional
-	public void setStatus(Application application, Status status) throws ServiceException {
-		try {
-			Application _application = applicationDAO.findOne(application.getId());
-			_application.setStatus(status);
-			application.setStatus(status);
-			applicationDAO.saveAndFlush(_application);
-		} catch (PersistenceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
+    /**
+     * Methode permettant de mettre l'application dans un état particulier pour
+     * se prémunir d'éventuel problème de concurrence au niveau métier
+     */
+    @Override
+    @Transactional
+    public void setStatus(Application application, Status status) throws ServiceException {
+        try {
+            Application _application = applicationDAO.findOne(application.getId());
+            _application.setStatus(status);
+            application.setStatus(status);
+            applicationDAO.saveAndFlush(_application);
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
 
-	@Override
-	@Transactional
-	public Application start(Application application) throws ServiceException {
-		try {
-			logger.debug("start : Methods parameters : " + application);
-			application.getModules().stream().forEach(m -> {
-				try {
-					moduleService.startModule(m.getName());
-				} catch (ServiceException e) {
-					e.printStackTrace();
-				}
-			});
-			Server server = application.getServer();
-			server = serverService.startServer(server);
-			logger.info("ApplicationService : Application successfully started ");
-		} catch (PersistenceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-		return application;
-	}
+    @Override
+    @Transactional
+    public Application start(Application application) throws ServiceException {
+        try {
+            logger.debug("start : Methods parameters : " + application);
+            application.getModules().stream().forEach(m -> {
+                try {
+                    moduleService.startModule(m.getName());
+                } catch (ServiceException e) {
+                    e.printStackTrace();
+                }
+            });
+            Server server = application.getServer();
+            server = serverService.startServer(server);
+            logger.info("ApplicationService : Application successfully started ");
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+        return application;
+    }
 
-	@Override
-	@Transactional
-	public Application stop(Application application) throws ServiceException {
-		try {
-			Server server = application.getServer();
-			serverService.stopServer(server);
-			application.getModules().stream().forEach(m -> {
-				try {
-					moduleService.stopModule(m.getName());
-				} catch (ServiceException e) {
-					logger.error(application.toString(), e);
-				}
-			});
-			logger.info("ApplicationService : Application successfully stopped ");
-		} catch (PersistenceException e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-		return application;
-	}
+    @Override
+    @Transactional
+    public Application stop(Application application) throws ServiceException {
+        try {
+            Server server = application.getServer();
+            serverService.stopServer(server);
+            application.getModules().stream().forEach(m -> {
+                try {
+                    moduleService.stopModule(m.getName());
+                } catch (ServiceException e) {
+                    logger.error(application.toString(), e);
+                }
+            });
+            logger.info("ApplicationService : Application successfully stopped ");
+        } catch (PersistenceException e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+        return application;
+    }
 
-	/**
-	 * Method useful for Logs and Monitoring Management
-	 *
-	 * @return
-	 * @throws ServiceException
-	 */
-	@Override
-	public List<Application> findAll() throws ServiceException {
-		try {
-			logger.debug("start findAll");
-			List<Application> listApplications = applicationDAO.findAll();
-			for (Application application : listApplications) {
-				application.setServer(serverService.findByApp(application));
-				application.setModules(moduleService.findByAppAndUser(application.getUser(), application.getName()));
-			}
-			logger.debug("ApplicationService : All Applications found ");
-			return listApplications;
-		} catch (PersistenceException e) {
-			logger.error("Error ApplicationService : error findAll Method : " + e);
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-	}
+    /**
+     * Method useful for Logs and Monitoring Management
+     *
+     * @return
+     * @throws ServiceException
+     */
+    @Override
+    public List<Application> findAll() throws ServiceException {
+        try {
+            logger.debug("start findAll");
+            List<Application> listApplications = applicationDAO.findAll();
+            for (Application application : listApplications) {
+                application.setServer(serverService.findByApp(application));
+                application.setModules(moduleService.findByAppAndUser(application.getUser(), application.getName()));
+            }
+            logger.debug("ApplicationService : All Applications found ");
+            return listApplications;
+        } catch (PersistenceException e) {
+            logger.error("Error ApplicationService : error findAll Method : " + e);
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+    }
 
-	@Override
-	public List<Application> findAllByUser(User user) throws ServiceException {
-		try {
-			List<Application> applications = applicationDAO.findAllByUser(user.getId(), cuInstanceName);
-			logger.debug("ApplicationService : All Applications found ");
-			return applications;
-		} catch (PersistenceException e) {
-			logger.error("Error ApplicationService : error findById Method : " + user);
-			throw new ServiceException(user.toString(), e);
-		}
-	}
+    @Override
+    public List<Application> findAllByUser(User user) throws ServiceException {
+        try {
+            List<Application> applications = applicationDAO.findAllByUser(user.getId(), cuInstanceName);
+            logger.debug("ApplicationService : All Applications found ");
+            return applications;
+        } catch (PersistenceException e) {
+            logger.error("Error ApplicationService : error findById Method : " + user);
+            throw new ServiceException(user.toString(), e);
+        }
+    }
 
-	@Override
-	public Application findByNameAndUser(User user, String name) throws ServiceException {
-		try {
-			Application application = applicationDAO.findByNameAndUser(user.getId(), name, cuInstanceName);
-			return application;
-		} catch (PersistenceException e) {
-			logger.error(user.toString(), e);
-			throw new ServiceException(user.toString(), e);
-		}
-	}
+    @Override
+    public Application findByNameAndUser(User user, String name) throws ServiceException {
+        try {
+            Application application = applicationDAO.findByNameAndUser(user.getId(), name, cuInstanceName);
+            return application;
+        } catch (PersistenceException e) {
+            logger.error(user.toString(), e);
+            throw new ServiceException(user.toString(), e);
+        }
+    }
 
-	@Override
-	@Transactional
-	public Application deploy(String url, Application application) throws ServiceException, CheckException {
-		try {
-			File file = new File(url.substring(url.lastIndexOf("/")+1));
-			FileUtils.copyURLToFile(new URL(url), file);
-			// get app with all its components
-			String filename = file.getName();
+    @Override
+    @Transactional
+    public Application deploy(String url, Application application) throws ServiceException, CheckException {
+        try {
+            String containerId = application.getServer().getContainerID();
+            String filename = url.substring(url.lastIndexOf("/") + 1);
+            String fileContextPath = NamingUtils.getContext.apply(filename);
+            String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
+            fileService.sendFileToContainer(containerId, tempDirectory, filename, url);
+            this.createApplication(fileContextPath, fileContextPath, filename, application);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
 
-			String fileContextPath = NamingUtils.getContext.apply(filename);
-			String contextPath = new File(".").getAbsolutePath();
-			this.createApplication(fileContextPath, contextPath, filename, application);
-			file.delete();
-		} catch (Exception e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
+        return application;
+    }
 
-		return application;
-	}
+    @Override
+    @Transactional
+    public Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException {
+        try {
+            // get app with all its components
+            String filename = file.getOriginalFilename();
+            String containerId = application.getServer().getContainerID();
+            String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
+            fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
+            String contextPath = NamingUtils.getContext.apply(filename);
 
-	@Override
-	@Transactional
-	public Application deploy(MultipartFile file, Application application) throws ServiceException, CheckException {
-		try {
-			// get app with all its components
-		    String filename = file.getOriginalFilename();
-			String containerId = application.getServer().getContainerID();
-			String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
-			fileService.sendFileToContainer(containerId, tempDirectory, file, null, null);
-			String contextPath = NamingUtils.getContext.apply(filename);
+            this.createApplication(contextPath, contextPath, filename, application);
 
-			this.createApplication(contextPath, contextPath, filename, application);
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
 
-		} catch (Exception e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
+        return application;
+    }
 
-		return application;
-	}
+    private void createApplication(String fileContextPath, String contextPath, String filename, Application application) throws ServiceException {
+        String containerId = application.getServer().getContainerID();
+        String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
+        @SuppressWarnings("serial")
+        Map<String, String> kvStore = new HashMap<String, String>() {
+            {
+                put("CU_USER", application.getUser().getLogin());
+                put("CU_PASSWORD", application.getUser().getPassword());
+                put("CU_FILE", filename);
+                put("CU_CONTEXT_PATH", contextPath);
+            }
+        };
+        String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
+        logger.info("Deploy command {}", result);
+        Deployment deployment = deploymentService.create(application, DeploymentType.from(filename), fileContextPath);
+        application.addDeployment(deployment);
+        application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
 
-	private void createApplication(String fileContextPath, String contextPath, String filename, Application application) throws ServiceException {
-		String containerId = application.getServer().getContainerID();
-		String tempDirectory = dockerService.getEnv(containerId, "CU_TMP");
-		@SuppressWarnings("serial")
-		Map<String, String> kvStore = new HashMap<String, String>() {
-			{
-				put("CU_USER", application.getUser().getLogin());
-				put("CU_PASSWORD", application.getUser().getPassword());
-				put("CU_FILE", filename);
-				put("CU_CONTEXT_PATH", contextPath);
-			}
-		};
-		String result = dockerService.execCommand(containerId, RemoteExecAction.DEPLOY.getCommand(kvStore));
-		logger.info ("Deploy command {}", result);
-		Deployment deployment = deploymentService.create(application, DeploymentType.from(filename), fileContextPath);
-		application.addDeployment(deployment);
-		application.setDeploymentStatus(Application.ALREADY_DEPLOYED);
+        // If application is anything else than .jar or ROOT.war
+        // we need to clean for the next deployment.
+        if (!"/".equalsIgnoreCase(fileContextPath)) {
+            @SuppressWarnings("serial")
+            HashMap<String, String> kvStore2 = new HashMap<String, String>() {
+                {
+                    put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
+                }
+            };
+            dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
+        }
+    }
 
-		// If application is anything else than .jar or ROOT.war
-		// we need to clean for the next deployment.
-		if (!"/".equalsIgnoreCase(fileContextPath)) {
-			@SuppressWarnings("serial")
-			HashMap<String, String> kvStore2 = new HashMap<String, String>() {
-				{
-					put("CU_TARGET", Paths.get(tempDirectory, filename).toString());
-				}
-			};
-			dockerService.execCommand(containerId, RemoteExecAction.CLEAN_DEPLOY.getCommand(kvStore2));
-		}
-	}
+    /**
+     * Return the list of containers for an application
+     *
+     * @param applicationName
+     * @return
+     * @throws ServiceException
+     */
+    public List<ContainerUnit> listContainers(String applicationName) throws ServiceException {
+        return listContainers(applicationName, true);
+    }
 
-	/**
-	 * Return the list of containers for an application
-	 *
-	 * @param applicationName
-	 * @return
-	 * @throws ServiceException
-	 */
-	public List<ContainerUnit> listContainers(String applicationName) throws ServiceException {
-		return listContainers(applicationName, true);
-	}
+    public List<ContainerUnit> listContainers(String applicationName, boolean withModules) throws ServiceException {
+        List<ContainerUnit> containers = new ArrayList<>();
+        try {
+            User user = authentificationUtils.getAuthentificatedUser();
+            Application application = findByNameAndUser(user, applicationName);
+            if (application != null) {
+                Server server = application.getServer();
+                containers.add(new ContainerUnit(server.getName(), server.getContainerID(), "server"));
+                if (withModules) {
+                    application.getModules().stream()
+                            .forEach(m -> containers.add(new ContainerUnit(m.getName(), m.getContainerID(), "module")));
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e.getLocalizedMessage(), e);
+        }
+        return containers;
+    }
 
-	public List<ContainerUnit> listContainers(String applicationName, boolean withModules) throws ServiceException {
-		List<ContainerUnit> containers = new ArrayList<>();
-		try {
-			User user = authentificationUtils.getAuthentificatedUser();
-			Application application = findByNameAndUser(user, applicationName);
-			if (application != null) {
-				Server server = application.getServer();
-				containers.add(new ContainerUnit(server.getName(), server.getContainerID(), "server"));
-				if (withModules) {
-					application.getModules().stream()
-							.forEach(m -> containers.add(new ContainerUnit(m.getName(), m.getContainerID(), "module")));
-				}
-			}
-		} catch (Exception e) {
-			throw new ServiceException(e.getLocalizedMessage(), e);
-		}
-		return containers;
-	}
+    @Override
+    public boolean isStarted(String name) {
+        int serversNotStarted = applicationDAO.countServersNotStatus(name, Status.START);
+        int modulesNotStarted = applicationDAO.countModulesNotStatus(name, Status.START);
+        logger.debug("serversNotStarted=" + serversNotStarted);
+        logger.debug("modulesNotStarted=" + modulesNotStarted);
+        return (serversNotStarted + modulesNotStarted) == 0;
+    }
 
-	@Override
-	public boolean isStarted(String name) {
-		int serversNotStarted = applicationDAO.countServersNotStatus(name, Status.START);
-		int modulesNotStarted = applicationDAO.countModulesNotStatus(name, Status.START);
-		logger.debug("serversNotStarted=" + serversNotStarted);
-		logger.debug("modulesNotStarted=" + modulesNotStarted);
-		return (serversNotStarted + modulesNotStarted) == 0;
-	}
-
-	@Override
-	public boolean isStopped(String name) {
-		int serversNotStopped = applicationDAO.countServersNotStatus(name, Status.STOP);
-		int modulesNotStopped = applicationDAO.countModulesNotStatus(name, Status.STOP);
-		logger.debug("serversNotStarted=" + serversNotStopped);
-		logger.debug("modulesNotStarted=" + modulesNotStopped);
-		return (serversNotStopped + modulesNotStopped) == 0;
-	}
+    @Override
+    public boolean isStopped(String name) {
+        int serversNotStopped = applicationDAO.countServersNotStatus(name, Status.STOP);
+        int modulesNotStopped = applicationDAO.countModulesNotStatus(name, Status.STOP);
+        logger.debug("serversNotStarted=" + serversNotStopped);
+        logger.debug("modulesNotStarted=" + modulesNotStopped);
+        return (serversNotStopped + modulesNotStopped) == 0;
+    }
 }
