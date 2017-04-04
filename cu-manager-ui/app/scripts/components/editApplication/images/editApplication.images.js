@@ -41,22 +41,27 @@
   function ModulesCtrl ( $rootScope, ImageService, ModuleService, $stateParams, $state, ErrorService) {
     var vm = this;
     vm.serviceImages = [];
-    // vm.categorieImage = [];
-
     vm.categorieImage = [];
     
     vm.addService = addService;
-    // vm.typeImage = $stateParams.typeImage;
+    vm.typeImage = $stateParams.typeImage;
+    vm.serviceImage = $stateParams.serviceName;
     vm.errorAdding;
     
     vm.$onInit = function() {      
       getModulesImages ();
     }
-    
+
     function getModulesImages () {
       ImageService.list ()
         .then ( function ( images ) {
           vm.serviceImages = images;
+
+            angular.forEach(vm.serviceImages, function(image) {
+              if (!(vm.categorieImage.map(function(categorieImage) { return categorieImage.serviceName; }).indexOf(image.serviceName) != -1 || image.serviceName == undefined)) {
+                vm.categorieImage.push({serviceName: image.serviceName, type: image.type});
+              }
+            });
         });
     }
 

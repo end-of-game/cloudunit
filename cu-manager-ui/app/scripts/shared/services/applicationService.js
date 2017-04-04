@@ -123,10 +123,9 @@
 		}
 
 		// Creation d'une application
-		function create(applicationName, serverName) {
+		function create(applicationName) {
 			var payload = {
-				name: applicationName,
-				// serverType: serverName TODO
+				name: applicationName
 			};
 			return applicationTraversonService
 				.traversonService
@@ -196,7 +195,6 @@
 		}
 
 		function findByName(applicationName) {
-			console.log('findByName', applicationName);
 			var self = this;
 			return applicationTraversonService
 				.flatTraverson(

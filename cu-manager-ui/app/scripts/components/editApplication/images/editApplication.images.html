@@ -58,11 +58,53 @@
     </div>
   </div>-->
 
-<div class="content clearfix">
-    <h3 class="title large">Add a module</h3>
-    
+    <div ng-if="modules.typeImage !== 'SERVER'" class="content clearfix">
+    <h3 class="title large">Add a server</h3>
     <div class="tile tile-sm module animate-module"  ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
-    data-ng-repeat="image in modules.serviceImages | orderBy:'toString()' track by $index" style="animation-delay: {{ $index * 0.3 }}s" >
+    data-ng-repeat="image in modules.categorieImage | filter: {type: 'SERVER'}:true | orderBy:'toString()' track by $index"  >
+      <button
+        class="tile-content"
+        ripple=""
+        click-once=""
+        ui-sref="editApplication.addModule({ typeImage: image.type, serviceName: image.serviceName })" >
+          <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+          </div>
+          <span class="image icon-tech icon-tech-default {{ image.serviceName }}"></span>
+          <span class="text" style="text-transform: uppercase;">{{ image.serviceName }}</span>
+        </button>
+    </div>
+  </div>
+</div>
+
+<div class="tab-pane card large vertical-spacing">
+  <div ng-if="modules.typeImage === 'SERVER'" class="content clearfix">
+    <h3 class="title large">Add a server</h3>
+
+    <div class="tile tile-sm module animate-module backcard" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}">
+      <button
+        class="tile-content"
+        ripple=""
+        click-once=""
+        ui-sref="editApplication.addModule({ typeImage: '' })">
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
+        </div>
+        <span class="icon-whhg pageback image"></span>
+        <span class="text">Select other module</span>
+      </button>
+    </div>
+
+    <div class="tile tile-sm module animate-module"  ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
+    data-ng-repeat="image in modules.serviceImages | filter: {serviceName: modules.serviceImage}:true | orderBy:'toString()' track by $index" style="animation-delay: {{ $index * 0.3 }}s" >
       <button
         class="tile-content"
         ripple=""
@@ -75,8 +117,76 @@
             <div class="rect4"></div>
             <div class="rect5"></div>
           </div>
-          <span class="image icon-tech icon-tech-default"></span>
-          <span class="text" style="text-transform: uppercase;">{{ image.name }}</span>
+          <span class="image icon-tech icon-tech-default {{ image.serviceName }}"></span>
+          <span class="text" style="text-transform: uppercase;">{{ image.displayName }}</span>
+        </button>
+    </div>
+  </div>
+</div>
+
+<div class="tab-pane card large vertical-spacing">
+  <div ng-if="modules.typeImage === 'MODULE'" class="content clearfix">
+    <h3 class="title large">Add a module</h3>
+    
+    <div class="tile tile-sm module animate-module backcard" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}">
+      <button
+        class="tile-content"
+        ripple=""
+        click-once=""
+        ui-sref="editApplication.addModule({ typeImage: '' })">
+        <div class="spinner">
+          <div class="rect1"></div>
+          <div class="rect2"></div>
+          <div class="rect3"></div>
+          <div class="rect4"></div>
+          <div class="rect5"></div>
+        </div>
+        <span class="icon-whhg pageback image"></span>
+        <span class="text">Select other module</span>
+      </button>
+    </div>
+
+    <div class="tile tile-sm module animate-module"  ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
+    data-ng-repeat="image in modules.serviceImages | filter: {serviceName: modules.serviceImage}:true | orderBy:'toString()' track by $index" style="animation-delay: {{ $index * 0.3 }}s" >
+      <button
+        class="tile-content"
+        ripple=""
+        click-once=""
+        ng-click="modules.addService(image.name)" >
+          <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+          </div>
+          <span class="image icon-tech icon-tech-default {{ image.serviceName }}"></span>
+          <span class="text" style="text-transform: uppercase;">{{ image.displayName }}</span>
+        </button>
+    </div>
+  </div>
+</div>
+
+<div class="tab-pane card large vertical-spacing">
+  <div ng-if="modules.typeImage !== 'MODULE'" class="content clearfix">
+    <h3 class="title large">Add a module</h3>
+    
+    <div class="tile tile-sm module animate-module"  ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}"
+    data-ng-repeat="image in modules.categorieImage | filter: {type: 'MODULE'}:true | orderBy:'toString()' track by $index"  >
+      <button
+        class="tile-content"
+        ripple=""
+        click-once=""
+         ui-sref="editApplication.addModule({ typeImage: image.type, serviceName: image.serviceName })" >
+          <div class="spinner">
+            <div class="rect1"></div>
+            <div class="rect2"></div>
+            <div class="rect3"></div>
+            <div class="rect4"></div>
+            <div class="rect5"></div>
+          </div>
+          <span class="image icon-tech icon-tech-default {{ image.serviceName }}"></span>
+          <span class="text" style="text-transform: uppercase;">{{ image.serviceName }}</span>
         </button>
     </div>
   </div>

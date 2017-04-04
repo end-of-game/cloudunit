@@ -31,8 +31,8 @@ public abstract class Service {
     protected Service() {}
     
     public Service(Application application, Image image) {
-        this.name = image.getName();
-        this.containerName = containerName(application.getName(), image.getName());
+        this.name = image.getServiceName();
+        this.containerName = containerName(application.getName(), image.getServiceName());
         this.imageName = image.getName();
         this.state = ContainerState.STOPPED;
     }

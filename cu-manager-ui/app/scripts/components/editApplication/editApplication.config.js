@@ -41,7 +41,7 @@ angular.module('webuiApp.editApplication', [])
           })
         .state('editApplication.addModule',
           {
-            url: '/addModule/:typeImage',
+            url: '/addModule/:typeImage/:serviceName',
             template: '<edit-app-modules app="editApp.application"></edit-app-modules>',
           })
         .state('editApplication.addServer',

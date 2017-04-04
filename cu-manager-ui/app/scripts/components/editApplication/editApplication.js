@@ -56,7 +56,7 @@
     vm.quickAccessNotice = ''
     vm.monitoringRoute = false;
     vm.settingsRoute = false;
-    vm.currentServer;
+    vm.currentServer = '';
     vm.dislayJolokia = CONFIG.dislayJolokia;
     vm.applicationService = ApplicationService;
     vm.hasTomcat = false;
@@ -85,7 +85,7 @@
     
     vm.applicationService.init($stateParams.name).then(function() {
       vm.application = vm.applicationService.state;
-      vm.currentServer = vm.applicationService.state.server.image.displayName;
+      // vm.currentServer = vm.applicationService.state.server.image.displayName;
       vm.monitoringApplicationMenu();
       $rootScope.$broadcast('application:ready', {
           app: vm.application,

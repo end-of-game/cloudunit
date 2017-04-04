@@ -60,7 +60,7 @@
       vm.isPending = true;
       $rootScope.$broadcast('app:creating', applicationName);
 
-      ApplicationService.create(applicationName, serverName)
+      ApplicationService.create(applicationName)
         .then(success)
         .catch(error);
 
@@ -69,10 +69,6 @@
         vm.createAppForm.$setPristine();
         vm.applicationName = '';
         vm.isPending = false;
-        vm.serverImageSelect2 = undefined;
-        setTimeout(function() {
-          vm.serverImageChoice = vm.serverImages[0];
-        }, 1);
       }
 
       function error(response) {
