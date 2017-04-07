@@ -29,11 +29,11 @@ angular.module('webuiApp')
             if(serverImageName) {
                 var res = [];
                 input.forEach(function(element, index) {
-                    if(element.servers) {
+                    // if(element.servers) {
                         if(element.server.image.prefixEnv === serverImageName) {
                             res.push(element);
                         }
-                    }
+                    // }
                 });
                 return res;
             }

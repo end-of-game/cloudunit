@@ -33,16 +33,15 @@
   <div class="page-content" id="dashboard">
     <div class="page full">
       <div class="subheader">
-        <h3 class="subhead"
+        <!--<h3 class="subhead"
             ng-show="!dashboard.search">
           My Applications
         </h3>
-
         <h3 class="subhead"
             ng-show="dashboard.search">
           Applications
           <mark>{{ dashboard.search | formatAppStatus| lowercase }}</mark>
-        </h3>
+        </h3>-->
 
         <div id="status-filter" class="subheader-form">
 
@@ -216,7 +215,7 @@
              ng-class="{'card': dashboard.selectedDisplayStyle == 'Grid',
               'smaller': dashboard.selectedDisplayStyle == 'Grid',
               'list': dashboard.selectedDisplayStyle == 'List'}"
-             data-ng-repeat="application in dashboard.applications | orderBy:'id'  | filter:{displayName: searchText} | appByServerImage: dashboard.selectedServer track by $index">
+             data-ng-repeat="application in dashboard.applications | orderBy:'id'  | filter:{displayName: searchText} | filter:{status: dashboard.search} | appByServerImage: dashboard.selectedServer track by $index">
           <div class="content"
             ng-class="{'checked': application.checked}">
             
