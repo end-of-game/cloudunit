@@ -17,8 +17,8 @@ public class PostTemplate implements PostOperations {
 
   @Override
   public Future<Post> createPost(String teamName, String channelName, String message) {
-    return client.getTeamByName("cloudunit")
-      .compose(team -> client.getChannelByName(client.getToken(), team.getId(), "application")
+    return client.getTeamByName(teamName)
+      .compose(team -> client.getChannelByName(client.getToken(), team.getId(), channelName)
         .compose(channel -> {
           Post request = new Post(message);
           return client.createPost(client.getToken(), team.getId(), channel.getId(), request);

@@ -1,13 +1,14 @@
 package fr.treeptik.mattermost;
 
 import fr.treeptik.mattermost.model.*;
-import io.vertx.core.*;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
 import io.vertx.core.json.Json;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import rx.Observable;
 
 /**
  * Created by nicolas on 08/01/2017.

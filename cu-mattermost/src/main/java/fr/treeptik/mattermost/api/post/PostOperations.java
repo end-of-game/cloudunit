@@ -1,8 +1,6 @@
 package fr.treeptik.mattermost.api.post;
 
-import fr.treeptik.mattermost.model.Channel;
 import fr.treeptik.mattermost.model.Post;
-import fr.treeptik.mattermost.model.User;
 import io.vertx.core.Future;
 
 /**

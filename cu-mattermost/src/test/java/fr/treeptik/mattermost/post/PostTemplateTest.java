@@ -4,7 +4,6 @@ import fr.treeptik.mattermost.Client;
 import fr.treeptik.mattermost.DefaultClient;
 import fr.treeptik.mattermost.api.post.PostTemplate;
 import fr.treeptik.mattermost.api.user.UserTemplate;
-import fr.treeptik.mattermost.model.Post;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
