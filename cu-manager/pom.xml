@@ -88,6 +88,12 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>fr.treeptik.mattermost</groupId>
+			<artifactId>vertx-api-mattermost</artifactId>
+			<version>1.0-RELEASE</version>
+		</dependency>
+
+		<dependency>
 			<groupId>fr.treeptik</groupId>
 			<artifactId>cu-core</artifactId>
 			<version>${project.version}</version>

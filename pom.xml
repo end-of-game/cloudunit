@@ -12,6 +12,7 @@
 		<module>cu-docker-api</module>
 		<module>cu-manager</module>
 		<module>cu-maven</module>
+		<module>cu-mattermost</module>
 	</modules>
 
 	<dependencies>
