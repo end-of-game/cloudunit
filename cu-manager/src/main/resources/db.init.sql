@@ -1,3 +1,5 @@
+-- noinspection SqlDialectInspectionForFile
+
 INSERT IGNORE INTO `Role` (`id`, `description`) VALUES
   (1, 'ROLE_ADMIN'),
   (2, 'ROLE_USER');

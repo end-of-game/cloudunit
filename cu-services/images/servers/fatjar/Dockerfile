@@ -44,6 +44,9 @@ RUN groupadd -r cloudunit --gid=999 && useradd -r -g cloudunit --uid=999 cloudun
 RUN chown -R cloudunit:cloudunit /opt/cloudunit
 USER cloudunit
 
+RUN wget https://github.com/Treeptik/cloudunit/releases/download/1.0/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar
+COPY files/jmxtrans-agent.xml /opt/cloudunit/conf/jmxtrans-agent.xml
+
 VOLUME /opt/cloudunit
 
 ADD docker-entrypoint.sh /

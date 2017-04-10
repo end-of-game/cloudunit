@@ -7,6 +7,11 @@ if [ -f "/opt/cloudunit/tmp/boot.jar" ]; then
     ls -la /opt/cloudunit/fatjar/
 fi
 
+# if $JMX_MONITORING doesn't exist or is equals to 1
+if [ -z "$JMX_MONITORING" ] || [ "$JMX_MONITORING" -eq 1 ]; then
+    JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/cloudunit/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar=/opt/cloudunit/conf/jmxtrans-agent.xml"
+fi
+
 # if `docker run` first argument start with `--` the user is passing fatjar launcher arguments
 if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]] ; then
   eval "exec java $JAVA_OPTS -jar /opt/cloudunit/fatjar/boot.jar  \"\$@\""

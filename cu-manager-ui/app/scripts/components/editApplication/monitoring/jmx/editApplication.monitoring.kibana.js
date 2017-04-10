@@ -71,7 +71,7 @@
                             .then(function (url) {
                                 vm.isLoading = false;
                                 var str = vm.myContainer.name.split("-")
-                                  vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/jmx-tomcat?embed=true&_g=(refreshInterval:('$$hashKey':'object:573',display:'5+seconds',pause:!f,section:1,value:5000),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),panels:!((col:1,id:jmx-heapMemoryUsage,panelIndex:1,row:1,size_x:5,size_y:4,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'host.keyword:+"+ vm.myContainer.name +"')),title:jmx-tomcat,uiState:())");
+                                  vm.iframeUrl = $sce.trustAsResourceUrl(url + "/app/kibana#/dashboard/jmx-tomcat?embed=true&_g=(refreshInterval:('$$hashKey':'object:573',display:'5+seconds',pause:!f,section:1,value:5000),time:(from:now-15m,mode:quick,to:now))&_a=(filters:!(),options:(darkTheme:!f),query:(query_string:(analyze_wildcard:!t,query:'host.keyword:+"+ vm.myContainer.name +"')),title:jmx-tomcat,uiState:())");
                             })
                             .catch(function (response) {
                                 ErrorService.handle(response);
