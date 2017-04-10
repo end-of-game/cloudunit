@@ -110,8 +110,9 @@ services:
     container_name: cu-sonar
     restart: unless-stopped
     image: 'sonarqube:6.2'
-    volumes:
+    environment:
       - "TZ=${TZ}"
+    volumes:
       - 'sonar-data:/opt/sonarqube/data'
       - 'sonar-extensions:/opt/sonarqube/extensions'
     labels:
