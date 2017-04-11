@@ -35,18 +35,16 @@
         context: '='
       },
       controller: [
-        'FeedService',
         'ApplicationService',
         'VolumeService',
-        'ErrorService',
-        '$resource',
+        '$q',
         EditVolumeCtrl
       ],
       controllerAs: 'editVolume',
     };
   }
 
-  function EditVolumeCtrl (FeedService, ApplicationService, VolumeService, ErrorService, $resource) {
+  function EditVolumeCtrl (ApplicationService, VolumeService, $q) {
 
     var vm = this;
     vm.errorVolumeCreate = "";
@@ -93,18 +91,41 @@
         .then(function(response) {
           vm.volumes = response;
           angular.forEach(vm.volumes, function(volume, volumeIndex) {
-            
             VolumeService.getLinkVolumeAssociation ( volume.id )
               .then(function(response) {
-                vm.volumes[volumeIndex].applications = [];
-                angular.forEach(response, function(application, applicationIndex) { 
-                  ApplicationService.findByName( application.application ).then(function(response) {
-                      vm.volumes[volumeIndex].applications.push(response);
-                  });
-                });
-            });
+                    vm.volumes[volumeIndex].applications = [];
+                    angular.forEach(response, function(application, applicationIndex) { 
+                      vm.volumes[volumeIndex].applications.push(application.application);
+                      console.log(vm.volumes[volumeIndex].applications)
+                    });
+              });
           });
+          // plop(vm.volumes);
       });      
     }
+
+    // function plop (volumes) {
+    //   var promises = [];
+    //   angular.forEach(volumes, function(volume, volumeIndex) {
+    //       var iPromise = $q.defer();
+
+    //         VolumeService.getLinkVolumeAssociation ( volume.id )
+    //           .then(function(response) {
+    //             vm.volumes[volumeIndex].applications = [];
+    //             angular.forEach(response, function(application, applicationIndex) { 
+    //               ApplicationService.findByName( application.application )
+    //                 .then(function(response) {
+    //                   // vm.volumes[volumeIndex].applications.push(response);
+    //                   iPromise.resolve(response);
+    //               });
+    //               promises.push(iPromise.promise);  
+    //             });
+    //             $q.all(promises).then(function(finalResult) {
+    //               console.log(finalResult)
+    //               vm.volumes[volumeIndex].applications.push(finalResult);
+    //             })
+    //         });
+    //       });
+    // }
   }
 }) ();
