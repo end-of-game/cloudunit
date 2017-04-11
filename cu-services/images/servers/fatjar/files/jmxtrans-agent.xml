@@ -28,6 +28,15 @@
         <query objectName="Catalina:type=GlobalRequestProcessor,name=*" attribute="bytesReceived"
                resultAlias="tomcat.bytesReceived"/>
 
+        <!--
+        <query objectName="org.springframework.metrics:type=processors" attribute="Value" resultAlias="jvm.processors"/>
+        <query objectName="org.springframework.metrics:type=uptime" attribute="Value" resultAlias="jvm.uptime"/>
+        <query objectName="org.springframework.metrics:type=mem" attribute="Value" resultAlias="jvm.mem"/>
+        <query objectName="org.springframework.metrics:type=mem.free" attribute="Value" resultAlias="jvm.mem.free"/>
+        <query objectName="org.springframework.metrics:name=calls,type=counter,value=welcome" attribute="Value" resultAlias="calls.count.welcome"/>
+        <query objectName="org.springframework.metrics:name=calls,type=counter,value=crash" attribute="Value" resultAlias="calls.count.crash"/>
+        -->
+
         <!-- APPLICATION -->
         <query objectName="Catalina:type=Manager,context=/,host=localhost" attribute="activeSessions"
                resultAlias="application.activeSessions"/>
