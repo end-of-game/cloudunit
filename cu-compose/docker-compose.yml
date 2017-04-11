@@ -32,6 +32,7 @@ services:
       image: cloudunit/manager
       volumes:
           - /home/$USER/.cloudunit:/opt/tomcat/.cloudunit
+          - /home/$USER/.cloudunit:/root/.cloudunit
           - /home/$USER/.docker:/opt/certificats
       environment:
           - "TZ=${TZ}"

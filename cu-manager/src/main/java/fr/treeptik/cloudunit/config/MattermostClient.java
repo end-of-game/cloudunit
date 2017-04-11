@@ -25,6 +25,8 @@ public class MattermostClient {
     private Integer port;
 
     public void addMessage(String team, String channel, String message) {
+        logger.debug("userLogin={}", userLogin);
+        logger.debug("endPoint={}", endPoint);
         Client client = new DefaultClient(port, endPoint);
         UserTemplate userTemplate = new UserTemplate(client);
         userTemplate.connection(userLogin, userPassword).map(aVoid -> {
