@@ -131,13 +131,13 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 		echo 'MySQL init process done. Ready for start up.'
 		echo
+	fi
 
-		if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
+	if [[ -z "$APPLICATIVE_MONITORING" ]] || [ "$APPLICATIVE_MONITORING" -eq 1 ]; then
     		echo
 	    	echo 'Start metricbeat agent with mysql module.'
             echo
-			/opt/cloudunit/monitoring-agents/metricbeat/metricbeat -c /opt/cloudunit/monitoring-agents/metricbeat/conf.d/mysql.yml&
-		fi
+    		/opt/cloudunit/monitoring-agents/metricbeat/metricbeat -c /opt/cloudunit/monitoring-agents/metricbeat/conf.d/mysql.yml&
 	fi
 fi
 
