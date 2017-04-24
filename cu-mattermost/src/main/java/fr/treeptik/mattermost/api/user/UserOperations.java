@@ -1,8 +1,6 @@
 package fr.treeptik.mattermost.api.user;
 
-import fr.treeptik.mattermost.model.User;
 import io.vertx.core.Future;
-import rx.Observable;
 
 /**
  * Created by nicolas on 21/02/2017.

@@ -32,21 +32,28 @@
         '$scope',
         '$stateParams',
         'FileUploader',
+        'ApplicationService',
         DeployCtrl
       ],
       controllerAs: 'deploy',
     };
   }
 
-  function DeployCtrl($scope, $stateParams, FileUploader) {
+  function DeployCtrl($scope, $stateParams, FileUploader, ApplicationService) {
 
     var uploader, vm;
     
     vm = this;
     vm.uploadAll = uploadAll;
+    vm.deployUrl = '';
+    vm.deployByUrl = deployByUrl;
 
     function uploadAll () {
       uploader.uploadAll();
+      displayQuickAccessMsg();
+    }
+    
+    function displayQuickAccessMsg() {
       setTimeout(function() {
         vm.app.quickAccessNotice = 'Quick access here!';
         setTimeout(function() {        
@@ -55,6 +62,13 @@
       }, 2000);
     }
 
+    function deployByUrl (deployUrl) {
+      ApplicationService.deploy($stateParams.name, deployUrl)
+        .then(function(res) {
+          displayQuickAccessMsg();
+        })
+    }
+    
     $scope.$watch('vm.app', function(newVal){
       if(newVal){
         vm.app = newVal;

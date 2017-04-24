@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -253,6 +254,46 @@ public class FileServiceImpl implements FileService {
 	 * @Param destination
 	 * @throws ServiceException
 	 */
+	@Override
+	public void sendFileToContainer(String containerId, String destination, String filename, String url) throws ServiceException, CheckException {
+		File file = null;
+		File createTempHomeDirPerUsage = null;
+		try {
+			File homeDirectory = org.apache.commons.io.FileUtils.getUserDirectory();
+			createTempHomeDirPerUsage = new File(
+					homeDirectory.getAbsolutePath() + "/tmp" + System.currentTimeMillis());
+			if (createTempHomeDirPerUsage.mkdirs()) {
+				filename = AlphaNumericsCharactersCheckUtils.deAccent(filename);
+				filename = filename.replace(" ", "_");
+				file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + filename);
+				FileUtils.copyURLToFile(new URL(url), file);
+				dockerService.sendFileToContainer(containerId, file.getParent(), filename, destination);
+				if (destination.contains("/opt/cloudunit")) {
+					dockerService.execCommand(containerId, RemoteExecAction.CHANGE_CU_RIGHTS.getCommand(), true);
+				}
+			}
+		} catch (Exception e) {
+			StringBuilder msgError = new StringBuilder(512);
+			msgError.append(",").append("containerId=").append(containerId);
+			msgError.append(",").append("file=").append(file);
+			msgError.append(",").append("destFile=").append(destination);
+			throw new ServiceException("error in send file into the container : " + msgError, e);
+		} finally {
+			if (file != null) { file.delete(); }
+			if (createTempHomeDirPerUsage != null) { createTempHomeDirPerUsage.delete(); }
+		}
+
+	}
+
+		/**
+         * File Explorer feature
+         * <p>
+         * Send a file into a container
+         *
+         * @param containerId
+         * @Param destination
+         * @throws ServiceException
+         */
 	@Override
 	public void sendFileToContainer(String containerId, String destination, MultipartFile fileUpload,
 			String contentFileName, String contentFileData) throws ServiceException, CheckException {

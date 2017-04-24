@@ -71,8 +71,8 @@
             <p ng-bind="volume.name"></p>
           </td>
           <td>
-            <a ui-sref="editApplication.settingsVolume({ name: application.name })" ng-repeat="application in volume.applications track by $index">
-              <span>{{application.displayName}}</span>
+            <a ui-sref="editApplication.settingsVolume({ name: application })" ng-repeat="application in volume.applications track by $index">
+              <span>{{application}}</span>
             </a>
             <span ng-if="volume.applications.length === 0">
               No application linked

@@ -342,9 +342,49 @@ public class ApplicationController implements Serializable {
 	 * @throws CheckException
 	 */
 	@ResponseBody
+	@RequestMapping(value = "/{applicationName}/deploy", method = RequestMethod.POST)
+	public JsonResponse deployFromUrl(@RequestBody JsonInput input, @PathVariable String applicationName) throws ServiceException {
+
+		logger.info("applicationName = " + applicationName + " url = " + input.getDeployUrl());
+
+		 User user = authentificationUtils.getAuthentificatedUser();
+		 Application application = applicationService.findByNameAndUser(user, applicationName);
+
+		 // We must be sure there is no running action before starting new one
+		 authentificationUtils.canStartNewAction(user, application, Locale.ENGLISH);
+		 application = applicationService.deploy(input.getDeployUrl(), application);
+
+		 String needRestart = dockerService.getEnv(application.getServer().getContainerID(),
+				 "CU_SERVER_RESTART_POST_DEPLOYMENT");
+		 if ("true".equalsIgnoreCase(needRestart)){
+			 // set the application in pending mode
+			 applicationEventPublisher.publishEvent(new ApplicationPendingEvent(application));
+			 applicationService.stop(application);
+			 try {
+				 Thread.sleep(2000);
+			 } catch (InterruptedException e) {
+				 e.printStackTrace();
+			 }
+			 applicationService.start(application);
+			 // wait for modules and servers starting
+			 applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
+		 }
+
+		 logger.info("--DEPLOY APPLICATION WAR ENDED--");
+		 return new HttpOk();
+	}
+	/**
+	 * Deploy a web application
+	 *
+	 * @return
+	 * @throws IOException
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@ResponseBody
 	@RequestMapping(value = "/{applicationName}/deploy", method = RequestMethod.POST, consumes = {
 			"multipart/form-data" })
-	public JsonResponse deploy(@RequestPart("file") MultipartFile fileUpload, @PathVariable String applicationName,
+	public JsonResponse deployFromArchive(@RequestPart("file") MultipartFile fileUpload, @PathVariable String applicationName,
 			HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServiceException, CheckException {
 

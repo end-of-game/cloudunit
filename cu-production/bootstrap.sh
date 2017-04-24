@@ -202,6 +202,7 @@ pull_images_from_dockerhub() {
 }
 
 question_pull_or_build() {
+  if [[ -z "${METHOD}" ]]; then
     echo ""
     echo "Would you prefer to [build] or [pull] images (default is [pull])"
     echo "( pull / build / continue ) : "
@@ -221,6 +222,14 @@ question_pull_or_build() {
       echo "Sorry, but I didn't understand your answer :("
       question_pull_or_build
     fi
+  else
+    if [ "$METHOD" = "pull" ]; then
+      logo_pulling_dockerhub
+      pull_images_from_dockerhub
+    elif [ "$METHOD" = "build" ]; then
+      logo_building_cloudunit
+    fi
+  fi
 }
 
 logo_building_cloudunit() {

@@ -1,10 +1,5 @@
 package fr.treeptik.mattermost;
 
-import fr.treeptik.mattermost.model.Team;
-import fr.treeptik.mattermost.model.User;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

@@ -11,7 +11,7 @@
     <parent>
         <groupId>fr.treeptik</groupId>
         <artifactId>cloudunit</artifactId>
-        <version>1.10.0</version>
+        <version>1.11.0-RELEASE</version>
     </parent>
 
     <properties>
@@ -93,7 +93,7 @@
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
                         <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.10</version>
+                        <version>1.10-SNAPSHOT</version>
                     </dependency>
                 </dependencies>
             </plugin>

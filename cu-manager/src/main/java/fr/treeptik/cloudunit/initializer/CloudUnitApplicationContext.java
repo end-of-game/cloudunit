@@ -21,6 +21,7 @@ import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerClient;
 import fr.treeptik.cloudunit.config.EmailActiveCondition;
+import fr.treeptik.cloudunit.config.MattermostClient;
 import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
 import fr.treeptik.cloudunit.docker.core.SimpleDockerDriver;
 import org.slf4j.Logger;
@@ -230,6 +231,11 @@ public class CloudUnitApplicationContext
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
         multipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
         return multipartResolver;
+    }
+
+    @Bean
+    MattermostClient matterMostClient() {
+        return new MattermostClient();
     }
 
     @Bean

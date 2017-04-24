@@ -32,6 +32,7 @@ services:
       image: cloudunit/manager
       volumes:
           - /home/$USER/.cloudunit:/opt/tomcat/.cloudunit
+          - /home/$USER/.cloudunit:/root/.cloudunit
           - /home/$USER/.docker:/opt/certificats
       environment:
           - "TZ=${TZ}"
@@ -110,6 +111,8 @@ services:
     container_name: cu-sonar
     restart: unless-stopped
     image: 'sonarqube:6.2'
+    environment:
+      - "TZ=${TZ}"
     volumes:
       - 'sonar-data:/opt/sonarqube/data'
       - 'sonar-extensions:/opt/sonarqube/extensions'
@@ -140,7 +143,7 @@ services:
   traefik:
       container_name: cu-traefik
       restart: unless-stopped
-      image: traefik:1.2.0
+      image: traefik:1.2.1
       command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
       environment:
           - "TZ=${TZ}"

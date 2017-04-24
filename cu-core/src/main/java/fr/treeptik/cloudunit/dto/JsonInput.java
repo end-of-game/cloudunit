@@ -65,6 +65,8 @@ public class JsonInput implements Serializable {
 
 	private Boolean publishPort;
 
+	private String deployUrl;
+
 	public static long getSerialVersionUID() {
 		return serialVersionUID;
 	}
@@ -232,6 +234,14 @@ public class JsonInput implements Serializable {
 
 	public void setPublishPort(Boolean publishPort) {
 		this.publishPort = publishPort;
+	}
+
+	public String getDeployUrl() {
+		return deployUrl;
+	}
+
+	public void setDeployUrl(String deployUrl) {
+		this.deployUrl = deployUrl;
 	}
 
 	public void validateCreateApp() throws CheckException {

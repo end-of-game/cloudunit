@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.treeptik</groupId>
 	<artifactId>cloudunit</artifactId>
-	<version>1.10.0</version>
+	<version>1.11.0</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -12,6 +12,7 @@
 		<module>cu-docker-api</module>
 		<module>cu-manager</module>
 		<module>cu-maven</module>
+		<module>cu-mattermost</module>
 	</modules>
 
 	<dependencies>

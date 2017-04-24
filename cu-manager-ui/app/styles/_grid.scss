@@ -210,6 +210,15 @@
 	width: 190px;
 }
 
+.graylog-container:hover .graylog {
+	background-image: url('./images/homepage/gray-log-color.png');
+}
+
+.graylog {
+	background-image: url('./images/homepage/gray-log.png');
+	width: 190px;
+}
+
 .jenkins-container:hover .jenkins {
 	background-image: url('./images/homepage/jenkins-color.png');	
 }

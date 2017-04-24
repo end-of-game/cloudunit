@@ -59,7 +59,8 @@ function ApplicationService ( $resource, $http, $interval ) {
         init: init,
         state: {},
         stopPolling: stopPolling,
-        exportContainer: exportContainer
+        exportContainer: exportContainer,
+        deploy: deploy
     };
 
 
@@ -164,6 +165,9 @@ function pollApp ( applicationName ) {
     var self = this;
     return $interval ( function () {
         findByName.call ( self, applicationName ).then ( function ( response ) {
+            if (response.contextPath !== '/' && response.contextPath) {
+                response.contextPath = response.contextPath + "/";
+            }
             return self.state = response;
         } );
     }, 2000 )
@@ -242,6 +246,13 @@ function exportContainer(applicationName) {
     return dir.save ( { 
         applicationName: applicationName
     }, {} ).$promise; 
+}
+
+function deploy(applicationName, deployUrl) {
+    var dir = $resource ( 'application/:applicationName/deploy' );
+    return dir.save ( { 
+        applicationName: applicationName
+    }, {deployUrl: deployUrl} ).$promise; 
 }
 
 }

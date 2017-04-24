@@ -35,18 +35,16 @@
         context: '='
       },
       controller: [
-        'FeedService',
         'ApplicationService',
         'VolumeService',
-        'ErrorService',
-        '$resource',
+        '$q',
         EditVolumeCtrl
       ],
       controllerAs: 'editVolume',
     };
   }
 
-  function EditVolumeCtrl (FeedService, ApplicationService, VolumeService, ErrorService, $resource) {
+  function EditVolumeCtrl (ApplicationService, VolumeService, $q) {
 
     var vm = this;
     vm.errorVolumeCreate = "";
@@ -92,19 +90,18 @@
       VolumeService.getListVolume ( )
         .then(function(response) {
           vm.volumes = response;
+          // for each volumes associate app linked 
           angular.forEach(vm.volumes, function(volume, volumeIndex) {
-            
             VolumeService.getLinkVolumeAssociation ( volume.id )
               .then(function(response) {
-                vm.volumes[volumeIndex].applications = [];
-                angular.forEach(response, function(application, applicationIndex) { 
-                  ApplicationService.findByName( application.application ).then(function(response) {
-                      vm.volumes[volumeIndex].applications.push(response);
-                  });
-                });
-            });
+                    vm.volumes[volumeIndex].applications = [];
+                    angular.forEach(response, function(application, applicationIndex) { 
+                      vm.volumes[volumeIndex].applications.push(application.application);
+                    });
+              });
           });
       });      
     }
+
   }
 }) ();

@@ -24,7 +24,7 @@ import fr.treeptik.cloudunit.service.ServerService;
 @Component
 public class ServerListener {
 
-	private Logger logger = LoggerFactory.getLogger(ApplicationListener.class);
+	private Logger logger = LoggerFactory.getLogger(ServerListener.class);
 
 	@Inject
 	DockerService dockerService;

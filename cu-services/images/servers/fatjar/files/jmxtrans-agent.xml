@@ -1,0 +1,53 @@
+<jmxtrans-agent>
+    <queries>
+        <!-- OS -->
+        <query objectName="java.lang:type=OperatingSystem" attribute="SystemLoadAverage" resultAlias="os.systemLoadAverage"/>
+
+        <!-- JVM -->
+        <query objectName="java.lang:type=Memory" attribute="HeapMemoryUsage" key="used"
+               resultAlias="jvm.heapMemoryUsage.used"/>
+        <query objectName="java.lang:type=Memory" attribute="HeapMemoryUsage" key="committed"
+               resultAlias="jvm.heapMemoryUsage.committed"/>
+        <query objectName="java.lang:type=Memory" attribute="NonHeapMemoryUsage" key="used"
+               resultAlias="jvm.nonHeapMemoryUsage.used"/>
+        <query objectName="java.lang:type=Memory" attribute="NonHeapMemoryUsage" key="committed"
+               resultAlias="jvm.nonHeapMemoryUsage.committed"/>
+        <query objectName="java.lang:type=ClassLoading" attribute="LoadedClassCount" resultAlias="jvm.loadedClasses"/>
+
+        <query objectName="java.lang:type=Threading" attribute="ThreadCount" resultAlias="jvm.thread"/>
+
+        <!-- TOMCAT -->
+        <query objectName="Catalina:type=GlobalRequestProcessor,name=*" attribute="requestCount"
+               resultAlias="tomcat.requestCount"/>
+        <query objectName="Catalina:type=GlobalRequestProcessor,name=*" attribute="errorCount"
+               resultAlias="tomcat.errorCount"/>
+        <query objectName="Catalina:type=GlobalRequestProcessor,name=*" attribute="processingTime"
+               resultAlias="tomcat.processingTime"/>
+        <query objectName="Catalina:type=GlobalRequestProcessor,name=*" attribute="bytesSent"
+               resultAlias="tomcat.bytesSent"/>
+        <query objectName="Catalina:type=GlobalRequestProcessor,name=*" attribute="bytesReceived"
+               resultAlias="tomcat.bytesReceived"/>
+
+        <!--
+        <query objectName="org.springframework.metrics:type=processors" attribute="Value" resultAlias="jvm.processors"/>
+        <query objectName="org.springframework.metrics:type=uptime" attribute="Value" resultAlias="jvm.uptime"/>
+        <query objectName="org.springframework.metrics:type=mem" attribute="Value" resultAlias="jvm.mem"/>
+        <query objectName="org.springframework.metrics:type=mem.free" attribute="Value" resultAlias="jvm.mem.free"/>
+        <query objectName="org.springframework.metrics:name=calls,type=counter,value=welcome" attribute="Value" resultAlias="calls.count.welcome"/>
+        <query objectName="org.springframework.metrics:name=calls,type=counter,value=crash" attribute="Value" resultAlias="calls.count.crash"/>
+        -->
+
+        <!-- APPLICATION -->
+        <query objectName="Catalina:type=Manager,context=/,host=localhost" attribute="activeSessions"
+               resultAlias="application.activeSessions"/>
+    </queries>
+    <outputWriter class="org.jmxtrans.agent.elastic.ElasticSearchOutputWriter">
+        <elasticsearchHost>elasticsearch.skynet</elasticsearchHost>
+        <elasticsearchPort>9200</elasticsearchPort>
+        <elasticsearchClusterName>cu-mon</elasticsearchClusterName>
+        <elasticsearchIndex>jmxtrans-%{yyyy.MM.dd}</elasticsearchIndex>
+        <nodeName>fatjar</nodeName>
+        <usePrefixAsType>true</usePrefixAsType>
+    </outputWriter>
+    <collectIntervalInSeconds>2</collectIntervalInSeconds>
+</jmxtrans-agent>

@@ -2,13 +2,7 @@ package fr.treeptik.mattermost.post;
 
 import fr.treeptik.mattermost.Client;
 import fr.treeptik.mattermost.DefaultClient;
-import fr.treeptik.mattermost.model.Channel;
 import fr.treeptik.mattermost.model.Post;
-import fr.treeptik.mattermost.model.Team;
-import fr.treeptik.mattermost.model.User;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
