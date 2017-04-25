@@ -160,11 +160,6 @@ override_rights() {
     chown -R $CU_USER /home/"$CU_USER"/.cloudunit
 }
 
-add_user_to_sudoers() {
-    # Add user to sudoers group
-    cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
-}
-
 pull_images_from_dockerhub() {
   docker pull cloudunit/base-jessie
   docker pull cloudunit/base-12.04
@@ -283,7 +278,6 @@ install_cron
 question_pull_or_build
 
 override_rights
-add_user_to_sudoers
 
 if [ -n "$SILENT_INSTALL" ] || [ "$SILENT_INSTALL" = "yes" ]; then
   cp -f .env /home/${CU_USER}/cloudunit/cu-compose
