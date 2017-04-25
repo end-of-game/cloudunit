@@ -34,6 +34,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     public void setApplicationRepository(ApplicationRepository applicationRepository) {
         this.applicationRepository = applicationRepository;
     }
+    
+    public void setImageRepository(ImageRepository imageRepository) {
+        this.imageRepository = imageRepository;
+    }
+    
+    public void setOrchestratorService(OrchestratorService orchestratorService) {
+        this.orchestratorService = orchestratorService;
+    }
 
     /**
      * Create an application.
@@ -72,11 +80,15 @@ public class ApplicationServiceImpl implements ApplicationService {
         Image image = imageRepository.findByName(imageName)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Image %s could not be found", imageName)));
         
+        if (!application.pending()) {
+            throw new IllegalStateException("Cannot add service");
+        }
+        
         Service service = application.addService(image);
+
+        applicationRepository.save(application);
         
         orchestratorService.createContainer(application, service);
-        
-        applicationRepository.save(application);
         
         return service;
     }
@@ -114,7 +126,6 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.getServices().forEach(service -> {
             orchestratorService.stopContainer(service.getContainerName());
         });
-        
     }
     
     @Override
@@ -138,12 +149,19 @@ public class ApplicationServiceImpl implements ApplicationService {
                     .map(Object::toString)
                     .collect(Collectors.joining(",")));
         
-        if (serviceStates.stream().allMatch(s -> s == ContainerState.STARTED)
-                && application.started()) {
-            LOGGER.info("Application {} started", application.getName());
-        } else if (serviceStates.stream().allMatch(s -> s == ContainerState.STOPPED)
-                && application.stopped()) {
-            LOGGER.info("Application {} stopped", application.getName());
+        if (serviceStates.stream().anyMatch(s -> s.isPending())
+                && !application.isPending()) {
+            if (application.pending()) {
+                LOGGER.info("Application {} pending", application.getName());
+            }
+        } else if (serviceStates.stream().allMatch(s -> s == ContainerState.STARTED)) {
+            if (application.started()) {
+                LOGGER.info("Application {} started", application.getName());
+            }
+        } else if (serviceStates.stream().allMatch(s -> s == ContainerState.STOPPED)) {
+            if (application.stopped()) {
+                LOGGER.info("Application {} stopped", application.getName());
+            }
         }
         
         applicationRepository.save(application);

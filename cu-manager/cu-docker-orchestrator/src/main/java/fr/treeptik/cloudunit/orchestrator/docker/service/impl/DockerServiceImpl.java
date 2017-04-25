@@ -1,7 +1,9 @@
 package fr.treeptik.cloudunit.orchestrator.docker.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadFactory;
 
@@ -40,6 +42,7 @@ import fr.treeptik.cloudunit.orchestrator.core.Volume;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.VolumeRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.service.DockerService;
+import fr.treeptik.cloudunit.orchestrator.docker.service.DockerServiceListener;
 import fr.treeptik.cloudunit.orchestrator.docker.service.ServiceException;
 
 @Component
@@ -59,9 +62,16 @@ public class DockerServiceImpl implements DockerService {
 
     @Autowired
     private DockerClient docker;
+    
+    @Autowired
+    private List<DockerServiceListener> listeners;
 
     @Autowired
     private ThreadFactory threadFactory;
+    
+    public DockerServiceImpl() {
+        listeners = new ArrayList<>();
+    }
     
     private int secondsBeforeKilling = 30;
     
@@ -92,6 +102,7 @@ public class DockerServiceImpl implements DockerService {
         try {
             LOGGER.info("Creating container {}", name);
             container = containerRepository.save(container);
+            fireContainerCreated(container);
     
             doCreateContainer(container);
             return container;
@@ -394,10 +405,12 @@ public class DockerServiceImpl implements DockerService {
         if (container.getState() == ContainerState.STOPPING) {
             container.setState(ContainerState.STOPPED);
             container = containerRepository.save(container);
+            fireContainerChanged(container);
             LOGGER.debug("Container {} is up and {}", container.getName(), container.getState());
         } else if (container.getState() == ContainerState.STARTING) {
             doStartContainer(container);
             container = containerRepository.save(container);
+            fireContainerChanged(container);
         }
     }
 
@@ -407,6 +420,7 @@ public class DockerServiceImpl implements DockerService {
             container.setState(ContainerState.STARTED);
             container = containerRepository.save(container);
         }
+        fireContainerChanged(container);
     }
 
     private void onContainerStop(Container container) {
@@ -415,17 +429,31 @@ public class DockerServiceImpl implements DockerService {
             container.setState(ContainerState.STOPPED);
             container = containerRepository.save(container);
         }
+        fireContainerChanged(container);
     }
 
     private void onContainerRemove(Container container) {
         LOGGER.info("Container {} removed", container.getName());
         if (container.getState() == ContainerState.REMOVING) {
             containerRepository.delete(container);
+            fireContainerDeleted(container);
         } else {
             doCreateContainer(container);
         }
     }
     
+    private void fireContainerCreated(Container container) {
+        listeners.forEach(listener -> listener.onContainerCreated(container));
+    }
+
+    private void fireContainerChanged(Container container) {
+        listeners.forEach(listener -> listener.onContainerChanged(container));
+    }
+
+    private void fireContainerDeleted(Container container) {
+        listeners.forEach(listener -> listener.onContainerDeleted(container));
+    }
+
     private static class ExecutionResult {
         public final int exitCode;
         

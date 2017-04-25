@@ -5,7 +5,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import fr.treeptik.cloudunit.orchestrator.core.Container;
-import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ImageRepository;
@@ -41,34 +39,9 @@ public class ContainerController {
     @Autowired
     private ImageRepository imageRepository;
     
-    private ContainerResource toResource(Container container) {
-        ContainerResource resource = new ContainerResource(container);
+    @Autowired
+    private ContainerResourceAssembler containerResourceAssembler;
         
-        String name = container.getName();
-        
-        resource.add(linkTo(methodOn(ContainerController.class).getContainer(name))
-                .withSelfRel());
-
-        resource.add(linkTo(methodOn(VariableController.class).getVariables(name))
-                .withRel("cu:variables"));
-        resource.add(linkTo(methodOn(MountController.class).getMounts(name))
-                .withRel("cu:mounts"));
-        resource.add(linkTo(methodOn(ContainerDependencyController.class).getDependencies(name))
-                .withRel("cu:dependencies"));
-
-        if (container.getState() == ContainerState.STOPPED) {
-            resource.add(linkTo(methodOn(ContainerController.class).start(name))
-                    .withRel("cu:start"));
-        }
-        
-        if (container.getState() == ContainerState.STARTED) {
-            resource.add(linkTo(methodOn(ContainerController.class).stop(name))
-                    .withRel("cu:stop"));
-        }
-        
-        return resource;
-    }
-    
     @PostMapping
     public ResponseEntity<?> createContainer(@Valid @RequestBody ContainerResource request) {
         Image image = imageRepository.findByName(request.getImageName())
@@ -76,7 +49,7 @@ public class ContainerController {
         
         Container container = dockerService.createContainer(request.getName(), image);
         
-        ContainerResource resource = toResource(container);
+        ContainerResource resource = containerResourceAssembler.toResource(container);
         
         return ResponseEntity.created(URI.create(resource.getLink(Link.REL_SELF).getHref()))
                 .body(resource);
@@ -86,10 +59,7 @@ public class ContainerController {
     public ResponseEntity<?> getContainers() {
         List<Container> containers = containerRepository.findAll();
         
-        Resources<ContainerResource> resources = new Resources<>(
-                containers.stream()
-                .map(c -> toResource(c))
-                .collect(Collectors.toList()));
+        Resources<ContainerResource> resources = new Resources<>(containerResourceAssembler.toResources(containers));
         
         resources.add(linkTo(methodOn(ContainerController.class).getContainers())
                 .withSelfRel());
@@ -102,7 +72,7 @@ public class ContainerController {
     @GetMapping("/{name}")
     public ResponseEntity<?> getContainer(@PathVariable String name) {
         return withContainer(name, container -> {
-            return ResponseEntity.ok(toResource(container));
+            return ResponseEntity.ok(containerResourceAssembler.toResource(container));
         });
     }
     

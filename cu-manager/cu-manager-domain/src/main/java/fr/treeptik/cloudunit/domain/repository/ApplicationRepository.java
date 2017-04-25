@@ -11,6 +11,8 @@ public interface ApplicationRepository extends Repository<Application, String> {
     public Optional<Application> findOne(String id);
 
     public Optional<Application> findByName(String name);
+    
+    public Optional<Application> findByServicesContainerName(String containerName);
 
     public List<Application> findAll();
     
