@@ -2,10 +2,17 @@
   "name": "cu-cli",
   "version": "3.0.0-SNAPSHOT",
   "description": "CloudUnit CLI",
-  "main": "cu.js",
   "bin": {
-    "cu": "./cu.js"
+    "cu": "./cu.js",
+    "cu-app": "./cu-app.js",
+    "cu-service": "./cu-service.js"
   },
+  "files": [
+    "cu.js",
+    "cu-app.js",
+    "cu-service.js",
+    "lib"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
