@@ -10,6 +10,11 @@
   <name>CloudUnit Docker Orchestrator</name>
   
   <dependencies>
+  	<dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cu-manager-domain-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cu-orchestrator-core</artifactId>

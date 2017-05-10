@@ -44,8 +44,9 @@ public class ServiceController {
                 .withSelfRel());
         resource.add(linkTo(methodOn(ApplicationController.class).getApplication(appId))
                 .withRel("cu:application"));
-        resource.add(new Link(service.getContainerUrl(),
-                "cu:container"));
+        if(service.getContainerUrl() != null) {
+        	resource.add(new Link(service.getContainerUrl(), "cu:container"));
+        }
         
         return resource;
     }

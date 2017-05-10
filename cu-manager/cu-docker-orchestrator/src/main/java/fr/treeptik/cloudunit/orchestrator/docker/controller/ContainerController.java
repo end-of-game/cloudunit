@@ -38,8 +38,7 @@ public class ContainerController {
     
     @Autowired
     private ImageRepository imageRepository;
-    
-    @Autowired
+        @Autowired
     private ContainerResourceAssembler containerResourceAssembler;
         
     @PostMapping
