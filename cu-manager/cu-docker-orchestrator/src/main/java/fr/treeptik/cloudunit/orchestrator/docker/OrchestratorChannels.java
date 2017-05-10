@@ -6,11 +6,15 @@ import org.springframework.messaging.SubscribableChannel;
 
 public interface OrchestratorChannels {
     String APPLICATIONS = "applications";
+    String SERVICES = "services";
     String CONTAINERS = "containers";
     String IMAGES = "images";
 
     @Input(APPLICATIONS)
     SubscribableChannel applications();
+    
+    @Input(SERVICES)
+    SubscribableChannel services();
     
     @Output(CONTAINERS)
     SubscribableChannel containers();

@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,7 +16,7 @@ import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
 import fr.treeptik.cloudunit.domain.repository.ImageRepository;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
-import fr.treeptik.cloudunit.domain.service.OrchestratorService;
+import fr.treeptik.cloudunit.domain.service.ServiceListener;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
 @Component
@@ -29,7 +30,11 @@ public class ApplicationServiceImpl implements ApplicationService {
     private ImageRepository imageRepository;
     
     @Autowired
-    private OrchestratorService orchestratorService;
+    private List<ServiceListener> listeners;
+    
+    public ApplicationServiceImpl() {
+		listeners = new ArrayList<>();
+	}
     
     public void setApplicationRepository(ApplicationRepository applicationRepository) {
         this.applicationRepository = applicationRepository;
@@ -37,10 +42,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     public void setImageRepository(ImageRepository imageRepository) {
         this.imageRepository = imageRepository;
-    }
-    
-    public void setOrchestratorService(OrchestratorService orchestratorService) {
-        this.orchestratorService = orchestratorService;
     }
 
     /**
@@ -67,9 +68,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     @Override
     public void delete(Application application) {
-        // Use of stream avoids ConcurrentModificationException
+        
         application.getServices().stream().forEach(service -> {
-            removeService(application, service);
+        	fireServiceDeleted(service);
         });
         
         applicationRepository.delete(application);
@@ -88,18 +89,18 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         applicationRepository.save(application);
         
-        orchestratorService.createContainer(application, service);
+        fireServiceCreated(service);
         
         return service;
     }
     
     @Override
     public void removeService(Application application, Service service) {
-        orchestratorService.deleteContainer(application, service.getContainerName());
-        
         application.removeService(service.getName());
         
         applicationRepository.save(application);
+        
+        fireServiceDeleted(service);
     }
 
     @Override
@@ -111,7 +112,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         applicationRepository.save(application);
         
         application.getServices().forEach(service -> {
-            orchestratorService.startContainer(service.getContainerName());
+        	fireServiceStarted(service);
         });
     }
 
@@ -124,13 +125,13 @@ public class ApplicationServiceImpl implements ApplicationService {
         applicationRepository.save(application);
         
         application.getServices().forEach(service -> {
-            orchestratorService.stopContainer(service.getContainerName());
+        	fireServiceStopped(service);
         });
     }
     
     @Override
     public void updateContainerState(Application application, String serviceName, ContainerState state) {
-        Optional<Service> service = application.getService(serviceName);
+        Optional<Service> service = application.getServiceByContainerName(serviceName);
         
         if (!service.isPresent()) {
             LOGGER.warn("Tried to update an unknown service {} on application {}", serviceName, application.getName());
@@ -165,6 +166,22 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
         
         applicationRepository.save(application);
+    }
+    
+    private void fireServiceCreated(Service service) {
+        listeners.forEach(listener -> listener.onServiceCreated(service));
+    }
+
+    private void fireServiceDeleted(Service service) {
+        listeners.forEach(listener -> listener.onServiceDeleted(service));
+    }
+    
+    private void fireServiceStarted(Service service) {
+        listeners.forEach(listener -> listener.onServiceStarted(service));
+    }
+    
+    private void fireServiceStopped(Service service) {
+        listeners.forEach(listener -> listener.onServiceStopped(service));
     }
 
 }

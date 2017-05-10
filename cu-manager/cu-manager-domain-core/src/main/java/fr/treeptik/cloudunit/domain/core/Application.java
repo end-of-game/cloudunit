@@ -135,6 +135,12 @@ public class Application {
                 .filter(s -> s.getName().equals(name))
                 .findAny();
     }
+    
+    public Optional<Service> getServiceByContainerName(String name) {
+        return services.stream()
+                .filter(s -> s.getContainerName().equals(name))
+                .findAny();
+    }
 
     public void removeService(String name) {
         getService(name).ifPresent(services::remove);

@@ -82,7 +82,6 @@ public class ApplicationService_updateContainerStateTest {
         applicationService = new ApplicationServiceImpl();
         applicationService.setApplicationRepository(applicationRepository);
         applicationService.setImageRepository(imageRepository);
-        applicationService.setOrchestratorService(orchestratorService);
     }
     
     @Test

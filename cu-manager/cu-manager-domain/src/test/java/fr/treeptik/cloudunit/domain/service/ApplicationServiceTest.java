@@ -44,7 +44,6 @@ public class ApplicationServiceTest {
         applicationService = new ApplicationServiceImpl();
         applicationService.setApplicationRepository(applicationRepository);
         applicationService.setImageRepository(imageRepository);
-        applicationService.setOrchestratorService(orchestratorService);
     }
 
     @Test
