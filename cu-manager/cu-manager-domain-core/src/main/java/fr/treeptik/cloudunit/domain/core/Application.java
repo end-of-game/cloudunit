@@ -2,11 +2,11 @@ package fr.treeptik.cloudunit.domain.core;
 
 import static fr.treeptik.cloudunit.domain.core.ApplicationState.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,11 +19,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class Application {
+    private static final EnumSet<ApplicationState> STARTED_STOPPED = EnumSet.of(STARTED, STOPPED);
     private String id;
     private String name;
     private String displayName;
     private AtomicReference<ApplicationState> state;
-    private Map<String, Service> servicesByName;
+    private List<Service> services;
     
     @Version
     private Long version;
@@ -32,8 +33,8 @@ public class Application {
     
     public Application(String name) {
         this.name = name;
-        this.servicesByName = new HashMap<>();
-        this.state = new AtomicReference<>(CREATED);
+        this.services = new ArrayList<>();
+        this.state = new AtomicReference<>(STOPPED);
     }
 
     public String getId() {
@@ -62,8 +63,17 @@ public class Application {
                 .anyMatch(required -> state.compareAndSet(required, targetState)); // ! side effect }:-)
     }
     
+    /**
+     * Transition to a new state if possible.
+     * 
+     * @return {@code true} if the transition was allowed; false otherwise
+     */
     private boolean transition(ApplicationState requiredState, ApplicationState targetState) {
         return transition(EnumSet.of(requiredState), targetState);
+    }
+    
+    public boolean pending() {
+        return transition(STOPPED, STOPPING) || transition(STARTED, STARTING);
     }
     
     /**
@@ -72,7 +82,7 @@ public class Application {
      * @return {@code true} if this application can be started; false otherwise
      */
     public boolean start() {
-        return transition(EnumSet.of(CREATED, STOPPED), STARTING);
+        return transition(STARTED_STOPPED, STARTING);
     }
     
     /**
@@ -85,20 +95,25 @@ public class Application {
     }
     
     /**
+     * Transition to {@linkplain ApplicationState#STOPPED stopping} state if possible.
+     * 
+     * @return {@code true} if this application can be stopping; false otherwise
+     */
+    public boolean stop() {
+        return transition(STARTED_STOPPED, STOPPING);
+    }
+    
+    /**
      * Transition to {@linkplain ApplicationState#STOPPED stopped} state if possible.
      * 
      * @return {@code true} if this application can be stopped; false otherwise
      */
-    public boolean stop() {
-        return transition(STARTED, STOPPING);
-    }
-    
     public boolean stopped() {
         return transition(STOPPING, STOPPED);
     }
     
     public boolean remove() {
-        return transition(EnumSet.of(STARTED, STOPPED), REMOVING);
+        return transition(STARTED_STOPPED, REMOVING);
     }
     
     public boolean isPending() {
@@ -107,20 +122,28 @@ public class Application {
     
     public Service addService(Image image) {
         Service service = Service.of(this, image);
-        servicesByName.put(service.getName(), service);
+        services.add(service);
         return service;
     }
 
     public Collection<Service> getServices() {
-        return Collections.unmodifiableCollection(servicesByName.values());
+        return Collections.unmodifiableCollection(services);
     }
 
     public Optional<Service> getService(String name) {
-        return Optional.ofNullable(servicesByName.get(name));
+        return services.stream()
+                .filter(s -> s.getName().equals(name))
+                .findAny();
+    }
+    
+    public Optional<Service> getServiceByContainerName(String name) {
+        return services.stream()
+                .filter(s -> s.getContainerName().equals(name))
+                .findAny();
     }
 
     public void removeService(String name) {
-        servicesByName.remove(name);
+        getService(name).ifPresent(services::remove);
     }
     
     @Override

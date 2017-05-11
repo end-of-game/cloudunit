@@ -1,13 +1,8 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
-import static org.springframework.hateoas.client.Hop.*;
-
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -15,21 +10,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestOperations;
 
-import fr.treeptik.cloudunit.domain.core.Application;
 import fr.treeptik.cloudunit.domain.core.Image;
-import fr.treeptik.cloudunit.domain.core.Service;
-import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
 import fr.treeptik.cloudunit.domain.repository.ImageRepository;
-import fr.treeptik.cloudunit.domain.service.ApplicationService;
 import fr.treeptik.cloudunit.domain.service.OrchestratorService;
-import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
 import fr.treeptik.cloudunit.orchestrator.resource.ImageResource;
 
 @Component
@@ -38,18 +26,9 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
     private static final ParameterizedTypeReference<Resources<ImageResource>> IMAGE_RESOURCES_TYPE = new ParameterizedTypeReference<Resources<ImageResource>>() {};
 
     private static final long DEFAULT_MONITOR_DELAY = 2;
-
-    @Autowired
-    private RestOperations rest;
     
     @Autowired
     private ScheduledExecutorService executor;
-    
-    @Autowired
-    private ApplicationRepository applicationRepository;
-    
-    @Autowired
-    private ApplicationService applicationService;
     
     @Autowired
     private ImageRepository imageRepository;
@@ -60,12 +39,6 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
 
     private long monitorDelay = DEFAULT_MONITOR_DELAY;
 
-    private Map<String, ScheduledFuture<?>> monitorFutures;
-    
-    public OrchestratorServiceImpl() {
-        monitorFutures = new HashMap<>();
-    }
-    
     public ScheduledExecutorService getExecutor() {
         return executor;
     }
@@ -128,77 +101,5 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
                 .map(ir -> new Image(ir.getName(), ir.getServiceName(), ir.getType()))
                 .collect(Collectors.toList());
     }
-
-    @Override
-    public void createContainer(Application application, Service service) {
-        String uri = t.follow("cu:containers").asLink().getHref();
-        ContainerResource request = new ContainerResource(service.getContainerName(), service.getImageName());
-        ContainerResource container = rest.postForObject(uri, request, ContainerResource.class);
-        service.setContainerUrl(container.getLink(Link.REL_SELF).getHref());
-        monitorContainer(application, service, container);
-    }
-
-    @Override
-    public void deleteContainer(Application application, String containerName) {
-        unmonitorContainer(containerName);
-        String uri = t
-                .follow(rel("cu:containers"))
-                .follow(rel("cu:container").withParameter("name", containerName))
-                .asLink().getHref();
-        rest.delete(uri);
-    }
-
-    @Override
-    public void startContainer(String containerName) {
-        String uri = t
-                .follow(rel("cu:containers"))
-                .follow(rel("cu:container").withParameter("name", containerName))
-                .follow(rel("cu:start"))
-                .asLink().getHref();
-        rest.postForEntity(uri, null, Void.class);
-    }
-
-    @Override
-    public void stopContainer(String containerName) {
-        String uri = t
-                .follow(rel("cu:containers"))
-                .follow(rel("cu:container").withParameter("name", containerName))
-                .follow(rel("cu:stop"))
-                .asLink().getHref();
-        rest.postForEntity(uri, null, Void.class);
-    }
     
-    private void monitorContainer(Application application, Service service, ContainerResource container) {
-        ScheduledFuture<?> monitorFuture = executor.scheduleWithFixedDelay(
-                new ContainerMonitor(application, service, container),
-                1, monitorDelay, TimeUnit.SECONDS);
-        
-        monitorFutures.put(container.getName(), monitorFuture);
-    }
-
-    private void unmonitorContainer(String containerName) {
-        ScheduledFuture<?> monitorFuture = monitorFutures.remove(containerName);
-        monitorFuture.cancel(true);
-    }
-    
-    public class ContainerMonitor implements Runnable {
-        private ContainerResource container;
-        private String applicationId;
-        private String serviceName;
-
-        public ContainerMonitor(Application application, Service service, ContainerResource container) {
-            this.container = container;
-            this.applicationId = application.getId();
-            this.serviceName = service.getName();
-        }
-
-        @Override
-        public void run() {
-            String uri = container.getLink(Link.REL_SELF).getHref();
-            container = rest.getForObject(uri, ContainerResource.class);
-            
-            Application application = applicationRepository.findOne(applicationId).get();
-            applicationService.updateContainerState(application, serviceName, container.getState());
-        }
-    }
 }

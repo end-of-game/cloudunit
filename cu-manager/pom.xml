@@ -12,9 +12,10 @@
   <name>CloudUnit Manager Services</name>
 
   <modules>
+    <module>cu-manager-domain-core</module>
     <module>cu-manager-domain</module>
-    <module>cu-docker-orchestrator</module>
     <module>cu-orchestrator-core</module>
+    <module>cu-docker-orchestrator</module>
     <module>cu-manager-ui</module>
   </modules>
 
@@ -24,6 +25,14 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>1.5.1.RELEASE</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-parent</artifactId>
+        <version>Brixton.SR7</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

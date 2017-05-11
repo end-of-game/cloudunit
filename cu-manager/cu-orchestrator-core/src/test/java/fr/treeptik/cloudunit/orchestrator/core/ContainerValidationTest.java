@@ -24,7 +24,7 @@ public class ContainerValidationTest {
     
     @Test
     public void testValid() {
-        ContainerResource resource = new ContainerResource("mycontainer", "cloudunit/tomcat-8");
+        ContainerResource resource = new ContainerResource("mycontainer", "tomcat-8");
         
         Set<ConstraintViolation<ContainerResource>> violations = validator.validate(resource);
         

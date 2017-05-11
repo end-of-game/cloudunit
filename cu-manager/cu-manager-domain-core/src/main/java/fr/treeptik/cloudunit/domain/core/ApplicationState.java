@@ -1,7 +1,6 @@
 package fr.treeptik.cloudunit.domain.core;
 
 public enum ApplicationState {
-    CREATED,
     STARTING(true),
     STARTED,
     STOPPING(true),

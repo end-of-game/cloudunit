@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,7 +16,7 @@ import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
 import fr.treeptik.cloudunit.domain.repository.ImageRepository;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
-import fr.treeptik.cloudunit.domain.service.OrchestratorService;
+import fr.treeptik.cloudunit.domain.service.ServiceListener;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
 @Component
@@ -29,10 +30,18 @@ public class ApplicationServiceImpl implements ApplicationService {
     private ImageRepository imageRepository;
     
     @Autowired
-    private OrchestratorService orchestratorService;
+    private List<ServiceListener> listeners;
+    
+    public ApplicationServiceImpl() {
+		listeners = new ArrayList<>();
+	}
     
     public void setApplicationRepository(ApplicationRepository applicationRepository) {
         this.applicationRepository = applicationRepository;
+    }
+    
+    public void setImageRepository(ImageRepository imageRepository) {
+        this.imageRepository = imageRepository;
     }
 
     /**
@@ -59,9 +68,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     @Override
     public void delete(Application application) {
-        // Use of stream avoids ConcurrentModificationException
+        
         application.getServices().stream().forEach(service -> {
-            removeService(application, service);
+        	fireServiceDeleted(service);
         });
         
         applicationRepository.delete(application);
@@ -72,22 +81,26 @@ public class ApplicationServiceImpl implements ApplicationService {
         Image image = imageRepository.findByName(imageName)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Image %s could not be found", imageName)));
         
+        if (!application.pending()) {
+            throw new IllegalStateException("Cannot add service");
+        }
+        
         Service service = application.addService(image);
-        
-        orchestratorService.createContainer(application, service);
-        
+
         applicationRepository.save(application);
+        
+        fireServiceCreated(service);
         
         return service;
     }
     
     @Override
     public void removeService(Application application, Service service) {
-        orchestratorService.deleteContainer(application, service.getContainerName());
-        
         application.removeService(service.getName());
         
         applicationRepository.save(application);
+        
+        fireServiceDeleted(service);
     }
 
     @Override
@@ -99,7 +112,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         applicationRepository.save(application);
         
         application.getServices().forEach(service -> {
-            orchestratorService.startContainer(service.getContainerName());
+        	fireServiceStarted(service);
         });
     }
 
@@ -112,14 +125,13 @@ public class ApplicationServiceImpl implements ApplicationService {
         applicationRepository.save(application);
         
         application.getServices().forEach(service -> {
-            orchestratorService.stopContainer(service.getContainerName());
+        	fireServiceStopped(service);
         });
-        
     }
     
     @Override
     public void updateContainerState(Application application, String serviceName, ContainerState state) {
-        Optional<Service> service = application.getService(serviceName);
+        Optional<Service> service = application.getServiceByContainerName(serviceName);
         
         if (!service.isPresent()) {
             LOGGER.warn("Tried to update an unknown service {} on application {}", serviceName, application.getName());
@@ -138,15 +150,38 @@ public class ApplicationServiceImpl implements ApplicationService {
                     .map(Object::toString)
                     .collect(Collectors.joining(",")));
         
-        if (serviceStates.stream().allMatch(s -> s == ContainerState.STARTED)
-                && application.started()) {
-            LOGGER.info("Application {} started", application.getName());
-        } else if (serviceStates.stream().allMatch(s -> s == ContainerState.STOPPED)
-                && application.stopped()) {
-            LOGGER.info("Application {} stopped", application.getName());
+        if (serviceStates.stream().anyMatch(s -> s.isPending())
+                && !application.isPending()) {
+            if (application.pending()) {
+                LOGGER.info("Application {} pending", application.getName());
+            }
+        } else if (serviceStates.stream().allMatch(s -> s == ContainerState.STARTED)) {
+            if (application.started()) {
+                LOGGER.info("Application {} started", application.getName());
+            }
+        } else if (serviceStates.stream().allMatch(s -> s == ContainerState.STOPPED)) {
+            if (application.stopped()) {
+                LOGGER.info("Application {} stopped", application.getName());
+            }
         }
         
         applicationRepository.save(application);
+    }
+    
+    private void fireServiceCreated(Service service) {
+        listeners.forEach(listener -> listener.onServiceCreated(service));
+    }
+
+    private void fireServiceDeleted(Service service) {
+        listeners.forEach(listener -> listener.onServiceDeleted(service));
+    }
+    
+    private void fireServiceStarted(Service service) {
+        listeners.forEach(listener -> listener.onServiceStarted(service));
+    }
+    
+    private void fireServiceStopped(Service service) {
+        listeners.forEach(listener -> listener.onServiceStopped(service));
     }
 
 }
