@@ -29,7 +29,7 @@ ENV CU_DEFAULT_LOG_FILE system.out
 ENV CU_LOGS stdout
 ENV JAVA_OPTS "-Dfile.encoding=UTF-8 -Xms512m -Xmx512m"
 
-COPY verticle.java /opt/cloudunit/verticles
+COPY verticle.js /opt/cloudunit/verticles
 
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
