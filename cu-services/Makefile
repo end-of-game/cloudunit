@@ -44,7 +44,7 @@ $(1)-check:
 check: $(1)-check
 
 $(1)-clean:
-	docker rmi -f $(1)_NAME
+	docker rmi -f $$($(1)_NAME)
 
 clean: $(1)-clean
 
