@@ -2,17 +2,13 @@
 
 DOCKER_IMAGE_NAME=cloudunit/bootstrap
 
-all: build run
+all: clean build run
 
 clean:
     docker rm -vf cu
 
 build:
-	docker build \
-		--tag $(DOCKER_IMAGE_NAME) \
-		./
+    docker build --tag cloudunit/bootstrap .
 
 run:
-    docker run \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        cloudunit/bootstrap
+    docker run -v /var/run/docker.sock:/var/run/docker.sock cloudunit/bootstrap

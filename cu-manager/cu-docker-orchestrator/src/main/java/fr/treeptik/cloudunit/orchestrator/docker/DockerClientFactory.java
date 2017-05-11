@@ -89,7 +89,7 @@ public class DockerClientFactory implements FactoryBean<DockerClient>, Initializ
         default:
             throw new IllegalStateException();
         }
-        if (uri.getScheme().equals("https")) {
+        if (uri != null && uri.getScheme().equals("https")) {
             DockerCertificates certs = new DockerCertificates(certificatesPath);
             builder.dockerCertificates(certs);
         }

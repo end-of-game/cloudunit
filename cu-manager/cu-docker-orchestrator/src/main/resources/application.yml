@@ -1,6 +1,6 @@
 ---
 spring:
-  profiles: dev
+  profiles: vagrant
   data:
     mongodb:
       host: 192.168.50.4
@@ -13,6 +13,23 @@ docker:
   client:
     endpointMode: HTTP
     uri: http://192.168.50.4:4243
+logging:
+  level:
+    fr.treeptik: debug
+---
+spring:
+  profiles: local
+  data:
+    mongodb:
+      host: localhost
+      database: cu-docker-orchestrator
+    rabbitmq:
+      host: localhost
+server:
+  port: 8081
+docker:
+  client:
+    endpointMode: SOCKET
 logging:
   level:
     fr.treeptik: debug
