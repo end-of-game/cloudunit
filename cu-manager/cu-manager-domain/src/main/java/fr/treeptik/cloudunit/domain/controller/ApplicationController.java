@@ -3,7 +3,6 @@ package fr.treeptik.cloudunit.domain.controller;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import java.net.URI;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -49,7 +48,7 @@ public class ApplicationController {
         resource.add(linkTo(methodOn(ServiceController.class).getServices(id))
                 .withRel("cu:services"));
         
-        if (EnumSet.of(ApplicationState.CREATED, ApplicationState.STOPPED).contains(application.getState())) {
+        if (application.getState() == ApplicationState.STOPPED) {
             resource.add(linkTo(methodOn(ApplicationController.class).start(id))
                     .withRel("cu:start"));
         }

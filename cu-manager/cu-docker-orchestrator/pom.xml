@@ -10,10 +10,20 @@
   <name>CloudUnit Docker Orchestrator</name>
   
   <dependencies>
+  	<dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cu-manager-domain-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
-      <groupId>fr.treeptik</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cu-orchestrator-core</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -26,6 +36,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

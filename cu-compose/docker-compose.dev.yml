@@ -131,6 +131,16 @@ services:
       labels:
         - "traefik.enable=false"
 
+  rabbitmq:
+    container_name: cu-mq
+    image: rabbitmq:3.6.8-alpine
+    ports:
+      - "5672:5672"
+    volumes:
+      - "rabbitmq-data:/var/lib/rabbitmq"
+    labels:
+      - "traefik.enable=false"
+
 networks:
   default:
     external:
@@ -139,6 +149,7 @@ networks:
 volumes:
   mongo-data:
   mongo-config:
+  rabbitmq-data:
 #  gitlab-config:
 #  gitlab-logs:
 #  gitlab-data:

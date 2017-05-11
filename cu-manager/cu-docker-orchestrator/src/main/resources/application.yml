@@ -5,6 +5,8 @@ spring:
     mongodb:
       host: 192.168.50.4
       database: cu-docker-orchestrator
+  rabbitmq:
+    host: 192.168.50.4
 server:
   port: 8081
 docker:
