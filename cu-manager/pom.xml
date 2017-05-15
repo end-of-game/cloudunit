@@ -103,8 +103,19 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <spring.profiles.active>dev</spring.profiles.active>
-        <run.profiles>dev</run.profiles>
+        <!-- for Surefire and Failsafe -->
+        <spring.profiles.active>vagrant</spring.profiles.active>
+        <!-- for Spring Boot plugin -->
+        <run.profiles>vagrant</run.profiles>
+      </properties>
+    </profile>
+    <profile>
+      <id>local</id>
+      <properties>
+        <!-- for Surefire and Failsafe -->
+        <spring.profiles.active>local</spring.profiles.active>
+        <!-- for Spring Boot plugin -->
+        <run.profiles>local</run.profiles>
       </properties>
     </profile>
   </profiles>

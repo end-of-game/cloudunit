@@ -1,6 +1,6 @@
 ---
 spring:
-  profiles: dev
+  profiles: vagrant
   data:
     mongodb:
       host: 192.168.50.4
@@ -12,6 +12,23 @@ server:
 logging:
   level:
     org.springframework.data: debug
+cloudunit:
+  orchestrator:
+    base-uri: http://localhost:8081/
+---
+spring:
+  profiles: local
+  data:
+    mongodb:
+      host: localhost
+      database: cu-manager-domain
+    rabbitmq:
+      host: localhost
+server:
+  port: 8080
+logging:
+  level:
+    fr.treeptik: debug
 cloudunit:
   orchestrator:
     base-uri: http://localhost:8081/
