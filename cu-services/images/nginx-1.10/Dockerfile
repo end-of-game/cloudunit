@@ -4,14 +4,6 @@ RUN apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y curl netcat \
 	&& rm -rf /var/lib/apt/lists/*
 
-ENV CU_SOFTWARE /usr/share/nginx/html
-ENV CU_SERVER_MANAGER_PATH ""
-ENV CU_SERVER_MANAGER_PORT ""
-ENV CU_SERVER_PORT 80
-ENV CU_SERVER_RESTART_POST_CREDENTIALS false
-ENV CU_DEFAULT_LOG_FILE system.out
-ENV CU_LOGS stdout
-
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
@@ -25,6 +17,8 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD [ "nginx" ]
 
-LABEL origin cloudunit
-LABEL application nginx
-LABEL version $NGINX_VERSION
+LABEL io.cloudunit="" \
+      io.cloudunit.type=server \
+      io.cloudunit.name.service=nginx \
+      io.cloudunit.name.display="nginx $NGINX_VERSION" \
+      io.cloudunit.version=$NGINX_VERSION

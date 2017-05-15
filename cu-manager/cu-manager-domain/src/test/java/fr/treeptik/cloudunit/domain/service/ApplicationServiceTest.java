@@ -1,7 +1,7 @@
 package fr.treeptik.cloudunit.domain.service;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
@@ -16,7 +16,6 @@ import fr.treeptik.cloudunit.domain.core.Application;
 import fr.treeptik.cloudunit.domain.core.ApplicationState;
 import fr.treeptik.cloudunit.domain.core.Image;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
-import fr.treeptik.cloudunit.domain.repository.ImageRepository;
 import fr.treeptik.cloudunit.domain.service.impl.ApplicationServiceImpl;
 import fr.treeptik.cloudunit.orchestrator.core.ImageType;
 
@@ -32,9 +31,6 @@ public class ApplicationServiceTest {
     private ApplicationRepository applicationRepository;
     
     @Mock
-    private ImageRepository imageRepository;
-    
-    @Mock
     private OrchestratorService orchestratorService;
     
     private ApplicationServiceImpl applicationService;
@@ -43,12 +39,11 @@ public class ApplicationServiceTest {
     public void setUp() {
         applicationService = new ApplicationServiceImpl();
         applicationService.setApplicationRepository(applicationRepository);
-        applicationService.setImageRepository(imageRepository);
     }
 
     @Test
     public void testAddService() {
-        when(imageRepository.findByName(IMAGE_NAME))
+        when(orchestratorService.findImageByName(IMAGE_NAME))
         .thenReturn(Optional.of(new Image(IMAGE_NAME, SERVICE_NAME, ImageType.MODULE)));
         
         Application application = new Application(APPLICATION_NAME);

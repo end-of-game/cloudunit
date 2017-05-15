@@ -14,8 +14,8 @@ import fr.treeptik.cloudunit.domain.core.Application;
 import fr.treeptik.cloudunit.domain.core.Image;
 import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
-import fr.treeptik.cloudunit.domain.repository.ImageRepository;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
+import fr.treeptik.cloudunit.domain.service.OrchestratorService;
 import fr.treeptik.cloudunit.domain.service.ServiceListener;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
@@ -27,7 +27,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private ApplicationRepository applicationRepository;
     
     @Autowired
-    private ImageRepository imageRepository;
+    private OrchestratorService orchestratorService;
     
     @Autowired
     private List<ServiceListener> listeners;
@@ -40,10 +40,10 @@ public class ApplicationServiceImpl implements ApplicationService {
         this.applicationRepository = applicationRepository;
     }
     
-    public void setImageRepository(ImageRepository imageRepository) {
-        this.imageRepository = imageRepository;
+    public void setOrchestratorService(OrchestratorService orchestratorService) {
+    	this.orchestratorService = orchestratorService;
     }
-
+    
     /**
      * Create an application.
      * 
@@ -78,8 +78,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     @Override
     public Service addService(Application application, String imageName) {
-        Image image = imageRepository.findByName(imageName)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Image %s could not be found", imageName)));
+        
+        Image image = orchestratorService.findImageByName(imageName)
+        		.orElseThrow(() -> new IllegalArgumentException(String.format("Image %s could not be found", imageName)));
         
         if (!application.pending()) {
             throw new IllegalStateException("Cannot add service");
