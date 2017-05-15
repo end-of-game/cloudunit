@@ -1,8 +1,10 @@
 package fr.treeptik.cloudunit.domain.service;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,7 +26,6 @@ import fr.treeptik.cloudunit.domain.core.ApplicationState;
 import fr.treeptik.cloudunit.domain.core.Image;
 import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
-import fr.treeptik.cloudunit.domain.repository.ImageRepository;
 import fr.treeptik.cloudunit.domain.service.impl.ApplicationServiceImpl;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.core.ImageType;
@@ -53,9 +54,6 @@ public class ApplicationService_updateContainerStateTest {
     private ApplicationRepository applicationRepository;
     
     @Mock
-    private ImageRepository imageRepository;
-    
-    @Mock
     private OrchestratorService orchestratorService;
     
     private ApplicationServiceImpl applicationService;
@@ -81,7 +79,6 @@ public class ApplicationService_updateContainerStateTest {
     public void setUp() {
         applicationService = new ApplicationServiceImpl();
         applicationService.setApplicationRepository(applicationRepository);
-        applicationService.setImageRepository(imageRepository);
     }
     
     @Test

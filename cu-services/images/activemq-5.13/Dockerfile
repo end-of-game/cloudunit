@@ -1,28 +1,16 @@
-FROM cloudunit/base:14.04
+FROM openjdk:8u121
+
+ARG user=activemq
+ARG group=activemq
+ARG uid=1000
+ARG gid=1000
 
 ## Externalise activemq version and dir
 ENV ACTIVEMQ_VERSION "5.13.2"
+ENV ACTIVEMQ_MAJOR "5.13"
+ENV ACTIVEMQ_HOME "/opt/activemq"
 
-## java installation
-
-RUN apt-get install -y software-properties-common python-software-properties debconf-utils && \
-    add-apt-repository -y ppa:webupd8team/java && \
-    apt-get update && \
-    echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections && \
-    apt-get install -y oracle-java8-installer
-
-## CLOUDUNIT :: BEGINNING
-
-ENV ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT true
-ENV CU_MODULE_PORT 8161
-ENV CU_DEFAULT_LOG_FILE " "
-ENV CU_LOGS "/var/log/activemq"
-
-# add custom scripts
-ADD scripts /opt/cloudunit/scripts
-RUN chmod +x /opt/cloudunit/scripts/*
-
-## CLOUDUNIT :: END
+WORKDIR $ACTIVEMQ_HOME
 
 # Update distro and install some packages
 RUN apt-get update && \
@@ -42,6 +30,7 @@ COPY assets/setup/ /app/setup/
 RUN chmod +x /app/setup/install
 RUN /app/setup/install ${ACTIVEMQ_VERSION}
 
+RUN chown -R ${user}:${group} $ACTIVEMQ_HOME
 
 # Copy the app setting
 COPY assets/init.py /app/init.py
@@ -62,11 +51,14 @@ VOLUME ["/data/activemq"]
 VOLUME ["/var/log/activemq"]
 VOLUME ["/opt/activemq/conf"]
 
-WORKDIR /opt/activemq
+USER ${user}
 
 #ENTRYPOINT ["/app/init"]
 CMD ["/app/run.sh"]
 
-LABEL origin cloudunit
-LABEL application activemq
-LABEL version $ACTIVEMQ_VERSION
+LABEL io.cloudunit="" \
+      io.cloudunit.type=module \
+      io.cloudunit.name.service=activemq \
+      io.cloudunit.name.display="ActiveMQ $ACTIVEMQ_MAJOR" \
+      io.cloudunit.version=$ACTIVEMQ_MAJOR \
+      io.cloudunit.variables="{\"ACTIVEMQ_ADMIN_LOGIN\": \"USER\", \"ACTIVEMQ_ADMIN_PASSWORD\": \"PASSWORD\", \"ACTIVEMQ_NAME\": \"NAME\"}"

@@ -3,14 +3,13 @@ $(colon) := \:
 
 .DEFAULT: all
 
-SERVICES := nginx apache tomcat fatjar wildfly postgre postgis mongo mysql activemq rabbitmq elastic redis vertx
+SERVICES := nginx apache tomcat fatjar wildfly postgre mongo mysql activemq rabbitmq elastic redis vertx
 nginx_VERSIONS := 1.10
 apache_VERSIONS := 2.2
 tomcat_VERSIONS := 6 7 8 8.5 9
 fatjar_VERSIONS := 1
 wildfly_VERSIONS := 8 9 10
 postgre_VERSIONS := 9.3 9.4 9.5
-postgis_VERSIONS := 2.2
 mongo_VERSIONS := 2.6
 mysql_VERSIONS := 5.5 5.6 5.7
 activemq_VERSIONS := 5.13
@@ -44,7 +43,7 @@ $(1)-check:
 check: $(1)-check
 
 $(1)-clean:
-	docker rmi -f $(1)_NAME
+	docker rmi -f $$($(1)_NAME)
 
 clean: $(1)-clean
 
