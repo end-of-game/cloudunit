@@ -1,0 +1,259 @@
+<!--
+~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+~     but CloudUnit is licensed too under a standard commercial license.
+~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+~     If you are not sure whether the GPL is right for you,
+~     you can always test our software under the GPL and inspect the source code before you contact us
+~     about purchasing a commercial license.
+~
+~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+~     or promote products derived from this project without prior written permission from Treeptik.
+~     Products or services derived from this software may not be called "CloudUnit"
+~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+~     For any questions, contact us : contact@treeptik.fr
+-->
+
+<!-- <div class="page-header">
+	<div class="page-title">
+		<h2 class="title">
+			Configuration
+		</h2>
+	</div>
+</div> -->
+<div id="ember-view">
+	<div id="mainFrm">
+		<section class="well">
+			<h2 class="title">
+				<b>Configuration</b>
+			</h2>
+			<div>
+				Let's Go
+			</div>
+		</section>
+		<section class="well">
+			<h3>
+				1. Configure a server.
+			</h3>
+			<div class="input-group stack clearfix">
+				<div class="card large clear" id="setForm"> 
+					<div class="content">
+						<p class="help-block">
+							Please enter your username and your port.
+						</p>
+						<div class="row">
+							<div class="col-md-6">	
+								<div class="form-group">
+									<label>
+										Hostname
+									</label>
+									<input type="text" id="inOne" class="ember-view ember-text-field form-control" autocapitalize="none" 
+									placeholder="192.168.0.54">
+								</div>
+							</div>
+							<div class="col-md-6">	
+								<div class="form-group">
+									<label>
+										Port
+									</label>
+									<input type="text" id="inTwo" class="ember-view ember-text-field form-control" autocapitalize="none" inputmode="numeric" pattern="[0-9]*" min="1" placeholder="389">
+								</div>
+							</div>
+						</div>
+						<p class="help-block">
+							Please enter your Service Account Username and your Password.
+						</p>
+						<div class="row">
+							<div class="col-md-6">	
+								<div class="form-group">
+									<label>
+										Service Account Username
+									</label>
+									<input type="text" id="inThree" class="ember-view ember-text-field form-control" autocapitalize="none" style="" 
+									placeholder="John">
+								</div>
+							</div>
+							<div class="col-md-6">	
+								<div class="form-group">
+									<label>
+										Service Account Password
+									</label>
+									<input type="password" id="inFour" class="ember-view ember-text-field form-control" autocapitalize="none" placeholder="password">
+								</div>
+							</div>
+						</div>
+						<p class="help-block">
+							Please enter your Search.
+						</p>
+						<div class="row">
+							<div class="col-md-6">	
+								<div class="form-group">
+									<label>
+										Search
+									</label>
+									<input  type="text" id="inFive" class="ember-view ember-text-field form-control" autocapitalize="none" 
+									placeholder="rancherHQ">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="well">
+			<h3>
+				2. Configure your schema.
+			</h3>
+			<div class="input-group stack clearfix">
+				<div class="card large clear" id="setForm"> 
+					<div class="content">
+						<div class="row">
+							<div class="col-md-6">
+								<h4>
+									Users
+								</h4>
+								<div class="form-group">
+									<label>
+										Object Class
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inTwentyOne" autocapitalize="none"
+									placeholder="John">
+								</div>
+								
+								<div class="form-group">
+									<label>
+										Login
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inTwentyTwo" autocapitalize="none"
+									placeholder="Your login">
+								</div>
+								<div class="form-group">
+									<label>
+										Name
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inTwentyThree" autocapitalize="none"
+									placeholder="Your name">
+								</div>
+								<div class="form-group">
+									<label>
+										Search
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inTwentyFour" autocapitalize="none"
+									placeholder="Your Search">
+								</div>
+								<div class="form-group">
+									<label>
+										Status
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inTwentyFive" autocapitalize="none">
+								</div>
+								<div class="form-group">
+									<label>
+										Disabled Status
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inTwentySix" inputmode="numeric" 
+									min="1" pattern="[0-9]" autocapitalize="none" placeholder="0">
+								</div>
+								<div class="form-group">
+									<label>
+										User Attribute
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inTwentySeven" autocapitalize="none">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<h4>
+									Groups
+								</h4>
+								<div class="form-group">
+									<label>
+										Object Class
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inThirtyOne" autocapitalize="none"
+									placeholder="newGroup">
+								</div>
+								<div class="form-group">
+									<label>
+										Name
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inThirtyTwo" autocapitalize="none"
+									placeholder="Group">
+								</div>
+								<div class="form-group">
+									<label>
+										Search
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inThirtyThree" autocapitalize="none"
+									placeholder="Your Search">
+								</div>
+								<div class="form-group">
+									<label>
+										Group Member User Attribute
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inThirtyFour" autocapitalize="none" 
+									placeholder="memberAt">
+								</div>
+								<div class="form-group">
+									<label>
+										Group Member Mapping Attribute
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inThirtyFive" autocapitalize="none" 
+									placeholder="memberAt">
+								</div>
+								<div class="form-group">
+									<label>
+										Group Field
+									</label>
+									<input type="text" class="ember-view ember-text-field form-control" id="inThirtySix" autocapitalize="none" placeholder="DN">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="well">
+			<h3>
+				3. Authentificate.
+			</h3>
+			<div class="input-group stack clearfix">
+				<div class="card large clear" id="setForm"> 
+					<div class="content">
+						<p class="help-block">
+							Checkout account
+						</p>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>
+										Username
+									</label>
+									<input type="text" id="inFortyOne" class="ember-view ember-text-field form-control" autocapitalize="none" 
+									placeholder="John">
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>
+										Password
+									</label>
+									<input type="password" id="inFortyTwo" class="ember-view ember-text-field form-control" autocapitalize="none" 
+									placeholder="password">
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-group">
+									<label>&nbsp;</label>
+									<button id="inFortyThree" class="btn btn-primary" value="Validate" style="display: block; " disabled="" >
+										Authentificate
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
