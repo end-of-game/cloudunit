@@ -20,7 +20,6 @@
  	.module('webuiApp')
  	.factory('ConfService', ConfService );
 
-
  	ConfService.$inject = [
  		'$resource',
  		'$http',

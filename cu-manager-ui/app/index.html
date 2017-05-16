@@ -87,6 +87,7 @@
                     </div>
                 </li>
                 <li><a ui-sref="editVolume">Volumes</a></li>
+                <li><a ui-sref="formConfig">Configuration</a></li>
                 <li><a ui-sref="monitoring">Monitoring</a></li>
                 <li><a ui-sref="homepage">Portal</a></li>
                 <li class="app-bar-cli">
@@ -190,7 +191,6 @@
                     <div class="rect5"></div>
                 </div>
                 <h3 class="title large">System busy</h3>
-
                 <p class="body">A process is running, this dialog will close automatically.</p>
             </div>
         </div>
@@ -291,6 +291,7 @@
 <script src="scripts/shared/services/moduleService.js"></script>
 <script src="scripts/shared/services/scriptingService.js"></script>
 <script src="scripts/shared/services/volumeService.js"></script>
+<script src="scripts/shared/services/confService.js"></script>
 <script src="scripts/shared/services/environmentVariableService.js"></script>
 
 <!--Utils-->
@@ -342,6 +343,10 @@
 <!-- edit volume -->
 <script src="scripts/components/editVolume/editVolume.config.js"></script>
 <script src="scripts/components/editVolume/editVolume.js"></script>
+
+<!-- configuration -->
+<script src="scripts/components/formConfig/formConfig.config.js"></script>
+<script src="scripts/components/formConfig/formConfig.js"></script>
 
 <!-- monitoring -->
 <script src="scripts/components/monitoring/monitoring.config.js"></script>
