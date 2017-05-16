@@ -39,6 +39,7 @@ public class ApplicationServiceTest {
     public void setUp() {
         applicationService = new ApplicationServiceImpl();
         applicationService.setApplicationRepository(applicationRepository);
+        applicationService.setOrchestratorService(orchestratorService);
     }
 
     @Test

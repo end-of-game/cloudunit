@@ -5,8 +5,10 @@ zuul:
   addProxyHeaders: false
   routes:
     applications:
-      url: http://localhost:8080/applications/
+      url: http://localhost:8080/applications
     containers:
-      url: http://localhost:8081/containers/
+      url: http://localhost:8081/containers
+    images:
+      url: http://localhost:8081/images
 server:
   port: 9000

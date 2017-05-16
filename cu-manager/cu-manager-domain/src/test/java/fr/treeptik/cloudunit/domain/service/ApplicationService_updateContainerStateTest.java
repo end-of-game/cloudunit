@@ -1,10 +1,8 @@
 package fr.treeptik.cloudunit.domain.service;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
-import static org.junit.Assume.assumeTrue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -100,7 +98,7 @@ public class ApplicationService_updateContainerStateTest {
         Service service = application.getService(SERVICE_NAME)
                 .orElseThrow(() -> new AssumptionViolatedException(""));
         
-        applicationService.updateContainerState(application, SERVICE_NAME, newContainerState);
+        applicationService.updateContainerState(application, service.getContainerName(), newContainerState);
         
         assertThat(application.getState(), is(newApplicationState));
         assertThat(service.getState(), is(newContainerState));

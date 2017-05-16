@@ -78,7 +78,6 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     @Override
     public Service addService(Application application, String imageName) {
-        
         Image image = orchestratorService.findImageByName(imageName)
         		.orElseThrow(() -> new IllegalArgumentException(String.format("Image %s could not be found", imageName)));
         

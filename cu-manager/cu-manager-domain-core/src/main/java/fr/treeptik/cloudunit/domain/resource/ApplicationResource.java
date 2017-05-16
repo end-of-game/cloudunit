@@ -4,10 +4,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 import fr.treeptik.cloudunit.domain.core.Application;
 import fr.treeptik.cloudunit.domain.core.ApplicationState;
 
+@Relation(value = "cu:application", collectionRelation = "cu:applications")
 public class ApplicationResource extends ResourceSupport {
     @NotNull
     @Pattern(regexp = "[a-z]([0-9a-z-]*[0-9a-z])?")
