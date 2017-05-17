@@ -73,11 +73,13 @@ public class DockerImageServiceImpl implements InitializingBean {
                 .displayName(displayName);
         
         try {
-            Map<String, String> variableSpecMap = objectMapper.readValue(variableSpec, new TypeReference<Map<String,String>>() {});
-            
-            variableSpecMap.entrySet().stream()
-                .map(kv -> toVariable(kv))
-                .forEach(variable -> builder.variable(variable));
+        	if (variableSpec != null) {
+	            Map<String, String> variableSpecMap = objectMapper.readValue(variableSpec, new TypeReference<Map<String,String>>() {});
+	            
+	            variableSpecMap.entrySet().stream()
+	                .map(kv -> toVariable(kv))
+	                .forEach(variable -> builder.variable(variable));
+        	}
         } catch (IOException e) {
             LOGGER.warn("Couldn't parse variable specification for image {}: {}", repositoryTag, variableSpec, e);
         }
