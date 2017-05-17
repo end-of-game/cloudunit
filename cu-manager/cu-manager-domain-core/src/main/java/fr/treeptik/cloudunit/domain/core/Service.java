@@ -1,5 +1,11 @@
 package fr.treeptik.cloudunit.domain.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.core.ImageType;
 
@@ -27,6 +33,7 @@ public abstract class Service {
     private String containerName;
     private String containerUrl;
     private ContainerState state;
+    private List<Deployment> deployments;
     
     protected Service() {}
     
@@ -35,6 +42,7 @@ public abstract class Service {
         this.containerName = containerName(application.getName(), image.getServiceName());
         this.imageName = image.getName();
         this.state = ContainerState.STOPPED;
+        this.deployments = new ArrayList<>();
     }
 
     public String getImageName() {
@@ -63,6 +71,26 @@ public abstract class Service {
     
     public void setContainerUrl(String containerUrl) {
         this.containerUrl = containerUrl;
+    }
+    
+    public Deployment addDeployment(String contextPath) {
+    	Deployment deployment = new Deployment(contextPath);
+    	deployments.add(deployment);
+    	return deployment;
+    }
+    
+    public Collection<Deployment> getDeployments() {
+        return Collections.unmodifiableCollection(deployments);
+    }
+    
+    public Optional<Deployment> getDeployment(String contextPath) {
+        return deployments.stream()
+                .filter(s -> s.getContextPath().equals(contextPath))
+                .findAny();
+    }
+    
+    public void removeDeployment(String contextPath) {
+    	getDeployment(contextPath).ifPresent(deployments::remove);
     }
 
     public abstract <R> R accept(ServiceVisitor<R> visitor);

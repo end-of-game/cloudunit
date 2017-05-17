@@ -1,6 +1,7 @@
 package fr.treeptik.cloudunit.orchestrator.docker.controller;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.net.URI;
 import java.util.List;
@@ -17,14 +18,18 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.orchestrator.core.Container;
 import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ContainerRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.repository.ImageRepository;
 import fr.treeptik.cloudunit.orchestrator.docker.service.DockerService;
+import fr.treeptik.cloudunit.orchestrator.docker.service.FileService;
 import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
 
 @Controller
@@ -38,8 +43,12 @@ public class ContainerController {
     
     @Autowired
     private ImageRepository imageRepository;
-        @Autowired
+    
+    @Autowired
     private ContainerResourceAssembler containerResourceAssembler;
+    
+    @Autowired
+    private FileService fileService;
         
     @PostMapping
     public ResponseEntity<?> createContainer(@Valid @RequestBody ContainerResource request) {
@@ -95,6 +104,15 @@ public class ContainerController {
     public ResponseEntity<?> deleteContainer(@PathVariable String name) {
         return withContainer(name, container -> {
             dockerService.deleteContainer(container);
+            return ResponseEntity.noContent().build();
+        });
+    }
+    
+    @PutMapping("/{name}/deploy/{contextPath}")
+    public ResponseEntity<?> deploy(@PathVariable String name, @PathVariable String contextPath, 
+    		@RequestPart("file") MultipartFile file) {
+        return withContainer(name, container -> {
+        	fileService.deploy(container, file);
             return ResponseEntity.noContent().build();
         });
     }

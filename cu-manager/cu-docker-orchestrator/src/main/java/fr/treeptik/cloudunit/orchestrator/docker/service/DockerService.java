@@ -32,4 +32,6 @@ public interface DockerService {
     void addDependency(Container container, Container dependency);
 
     void removeDependency(Container container, String dependency);
+
+	void sendFileToContainer(String containerId, String localPathFile, String originalName, String filePath);
 }

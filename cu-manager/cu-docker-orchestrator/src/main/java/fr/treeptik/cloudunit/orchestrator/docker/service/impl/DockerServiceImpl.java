@@ -1,5 +1,7 @@
 package fr.treeptik.cloudunit.orchestrator.docker.service.impl;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -261,6 +263,19 @@ public class DockerServiceImpl implements DockerService {
         container.setPending();
         container = containerRepository.save(container);
         doDeleteContainer(container);
+    }
+    
+    @Override
+    public void sendFileToContainer(String containerId, String localPathFile, String originalName, String filePath) {
+        try {
+            Path path = Paths.get(localPathFile);
+            docker.copyToContainer(path, containerId, filePath);
+        } catch (Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append("containerId=").append(containerId);
+            msgError.append("localPathFile=").append(localPathFile);
+            throw new ServiceException(msgError.toString(), e);
+        }
     }
 
     private ExecutionResult execute(Container container, String... cmd) {

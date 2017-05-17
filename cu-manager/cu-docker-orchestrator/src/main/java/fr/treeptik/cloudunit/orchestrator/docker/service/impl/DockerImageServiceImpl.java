@@ -36,6 +36,8 @@ public class DockerImageServiceImpl implements InitializingBean {
     private static final String SERVICE_NAME_LABEL = "io.cloudunit.name.service";
 
     private static final String DISPLAY_NAME_LABEL = "io.cloudunit.name.display";
+    
+    private static final String TEMP_FOLDER_LABEL = "io.cloudunit.tmp";
 
     @Autowired
     private DockerClient docker;
@@ -68,16 +70,19 @@ public class DockerImageServiceImpl implements InitializingBean {
         String displayName = image.labels().get(DISPLAY_NAME_LABEL);
         String version = image.labels().get(VERSION_LABEL);
         String variableSpec = image.labels().get(VARIABLES_LABEL);
+        String tempFolder = image.labels().get(TEMP_FOLDER_LABEL);
         
         Image.Builder builder = Image.of(serviceName, version, type, repositoryTag)
-                .displayName(displayName);
+                .displayName(displayName).tempFolder(tempFolder);
         
         try {
-            Map<String, String> variableSpecMap = objectMapper.readValue(variableSpec, new TypeReference<Map<String,String>>() {});
-            
-            variableSpecMap.entrySet().stream()
-                .map(kv -> toVariable(kv))
-                .forEach(variable -> builder.variable(variable));
+        	if (variableSpec != null) {
+	            Map<String, String> variableSpecMap = objectMapper.readValue(variableSpec, new TypeReference<Map<String,String>>() {});
+	            
+	            variableSpecMap.entrySet().stream()
+	                .map(kv -> toVariable(kv))
+	                .forEach(variable -> builder.variable(variable));
+        	}
         } catch (IOException e) {
             LOGGER.warn("Couldn't parse variable specification for image {}: {}", repositoryTag, variableSpec, e);
         }
