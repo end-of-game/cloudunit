@@ -85,6 +85,8 @@ Otherwise your machine has 8 GB Memory
 ### Step 5 - How to build images into Vagrant
 
 ```
+[Linux Host]    cd $HOME/cloudunit/cu-vagrant 
+[Linux Host]    vagrant ssh
 [VagrantBox]    cd $HOME/cloudunit/cu-services && make
 ```
 
