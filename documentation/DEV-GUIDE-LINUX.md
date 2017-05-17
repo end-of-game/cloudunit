@@ -36,29 +36,7 @@ cloudunit/cu-services       : Docker images
 
 ## Installation 
 
-### Step 1 - Local DNS
-
-CloudUnit uses Docker and Java but others components. As pre-requisites, you need to install them to have a complete dev stack. You need to install a local DNS for entry.
-```
-Dnsmasq is a lightweight, easy to configure DNS forwarder 
-and DHCP server […] is targeted at home networks[.]
-```
-You need to add a local DNS entry pointing to the vagrant IP address.
-More precisely, any address ending with **.cloudunit.dev** should be directed to **192.168.50.4**. 
-On Ubuntu, a simple way to achieve this is to install dnsmasq:
-```
-[Linux Host]    sudo apt-get install dnsmasq
-[Linux Host]    sudo vi /etc/dnsmasq.conf
-```
-Copy the line at the end of file `address=/.cloudunit.dev/192.168.50.4`
-
-```
-[Linux Host]    sudo service dnsmasq restart
-```
-
-You should ping **foo.cloudunit.dev** to **192.168.50.4**
-
-### Step 2 - How to install Vagrant plugins
+### Step 1 - How to install Vagrant plugins
 
 ```
 [Linux Host]    sudo apt-get install ruby-dev
@@ -66,13 +44,14 @@ You should ping **foo.cloudunit.dev** to **192.168.50.4**
 [Linux Host]    sudo vagrant plugin install vagrant-vbguest
 ```
 
-### Step 3 - How to install source code
+### Step 2 - How to install source code
 
 ```
 [Linux Host]    cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
+[Linux Host]    cd $HOME/cloudunit && git checkout dev-3.x
 ```
 
-### Step 4 - How to install Angular Project dependencies 
+### Step 3 - How to install Angular Project dependencies 
 
 Follow these instructions :
 ```
@@ -87,7 +66,7 @@ Installation Node 5.x :
 [Linux Host]    cd $HOME/cloudunit/cu-manager-ui && bower install
 ```
 
-### Step 5 - How to build the vagrant box
+### Step 4 - How to build the vagrant box
 
 Warning because this step could take a long time!
 
@@ -103,6 +82,12 @@ Otherwise your machine has 8 GB Memory
 [Linux Host]    ./smallbox.sh
 ```
 
+### Step 5 - How to build images into Vagrant
+
+```
+[VagrantBox]    cd $HOME/cloudunit/cu-services && make
+```
+
 ### Step 6 - Start the application
 
 #### Start the vagrantbox and run Docker into Vagrant
@@ -112,7 +97,7 @@ Otherwise your machine has 8 GB Memory
 [Linux Host]    mvn clean install -DskipTests
 [Linux Host]    cd $HOME/cloudunit/cu-vagrant 
 [Linux Host]    vagrant ssh
-[VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh [ press y ]
+[VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh -y
 ```
 
 #### Run the IDE
@@ -120,8 +105,11 @@ Otherwise your machine has 8 GB Memory
 In your favorite IDE, select Import in File menu then **Existing Maven project** the directory `cloudunit`
 Open the project with your favorite IDE into **root** directory and add **cloudunit** as Maven Project.
 
-Create a new maven task with **working directory** as `cloudunit/cu-manager`
-Use this option with maven : `clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant`
+Create 2 new maven tasks :
+one with **working directory** as `cloudunit/cu-manager/cu-docker-orchestrator`
+and the other one with **working directory** as `cloudunit/cu-manager/cu-manager-domain`.
+
+Use this option with maven : `clean spring-boot:run -Dspring.profiles.active=vagrant`
 
 **For Eclipse :**
 
@@ -141,11 +129,7 @@ Use this option with maven : `clean compile tomcat7:run -DskipTests -Dspring.pro
 ```
 [Linux Host]    cd $HOME/cloudunit/cu-manager-ui && grunt serve
 ```
-Open http://0.0.0.0:9000 and you can use default password and login 
-```
-login: johndoe
-password: abc2015
-```
+Open http://0.0.0.0:9000 
 
 
 # FAQ
@@ -155,6 +139,7 @@ All questions and answers about dev tasks
 ## How to reset Environment Development
 
 ```
+[Linux Host]    cd $HOME/cloudunit/cu-vagrant
 [Linux Host]    vagrant ssh
 [VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh
 ```
@@ -164,9 +149,10 @@ All questions and answers about dev tasks
 Update your sources, build the images and reninit the database :
 
 ```
-[Linux Host]    vagrant ssh dev
-[VagrantBox]    cd cloudunit/cu-compose && ./build-services.sh all
-[VagrantBox]    cd cloudunit/cu-compose && ./reset-dev.sh
+[Linux Host]    cd $HOME/cloudunit/cu-vagrant
+[Linux Host]    vagrant ssh
+[VagrantBox]    cd cloudunit/cu-services && make
+[VagrantBox]    cd ../cu-compose && ./reset-dev.sh -y
 ```
 
 ## How to run e2e test (selenium & protractor)
@@ -181,11 +167,17 @@ Then, start the application ([see step 6](#step6)) in parallel.
 
 ## How to java backend without IDE
 **Outside the vagrand box** 
+
+Run the following commands into 2 different terminal.
+
 ```
-[Linux Host]    cd $HOME/cloudunit
-[Linux Host]    mvn clean install -DskipTests
 [Linux Host]    cd $HOME/cloudunit/cu-manager
-[Linux Host]    mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+[Linux Host]    mvn spring-boot:run -pl cu-docker-orchestrator -Dspring.profiles.active=vagrant
+```
+
+```
+[Linux Host]    cd $HOME/cloudunit/cu-manager
+[Linux Host]    mvn spring-boot:run -pl cu-manager-domain -Dspring.profiles.active=vagrant
 ```
 
 
