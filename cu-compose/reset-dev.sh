@@ -16,7 +16,7 @@
 source .env
 
 if [ "$CU_COMPOSE_FILES" = "" ]; then
-    CU_COMPOSE_FILES="-f docker-compose.elk.yml -f docker-compose.dev.yml"
+    CU_COMPOSE_FILES="-f docker-compose.dev.yml"
 fi
 
 if [[ $USER != "vagrant" ]]; then
@@ -52,12 +52,13 @@ echo "***************************"
 
 docker-compose $CU_COMPOSE_FILES kill
 docker-compose $CU_COMPOSE_FILES rm -f 
-docker volume rm cucompose_gitlab-logs
-docker volume rm cucompose_mysqldata
-docker volume rm cucompose_redis-data
+docker volume rm cucompose_mongo-config
+docker volume rm cucompose_mongo-data
+docker volume rm cucompose_rabbitmq-data
+docker volume rm cucompose_traefik-certs
 docker network rm skynet
 
-for container in $(docker ps -aq --format '{{.Names}}' --filter "label=origin=application"); do
+for container in $(docker ps -aq --format '{{.Names}}' --filter "label=io.cloudunit"); do
   echo "Delete applicative container "$container
   docker rm -f $container
   docker volume rm $container
