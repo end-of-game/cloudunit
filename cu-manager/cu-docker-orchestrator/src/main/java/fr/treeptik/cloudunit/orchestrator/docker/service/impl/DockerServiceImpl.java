@@ -52,7 +52,7 @@ public class DockerServiceImpl implements DockerService {
     private static final String FILTER_LABEL_VALUE = "";
     
     private static final Logger LOGGER = LoggerFactory.getLogger(DockerServiceImpl.class);
-    private static final String DEFAULT_NETWORK = "skynet";
+    public static final String DEFAULT_NETWORK = "skynet";
     
     @Autowired
     private ContainerRepository containerRepository;

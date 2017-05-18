@@ -19,11 +19,6 @@ if [ "$CU_COMPOSE_FILES" = "" ]; then
     CU_COMPOSE_FILES="-f docker-compose.dev.yml"
 fi
 
-if [[ $USER != "vagrant" ]]; then
-    echo "This script must be run as vagrant user for dev environment"
-    exit 1
-fi
-
 if [ "$1" != "-y" ]; then
     echo "All containers will be deleted. Do you want to proceed ? [y/n]"
     read PROD_ASW

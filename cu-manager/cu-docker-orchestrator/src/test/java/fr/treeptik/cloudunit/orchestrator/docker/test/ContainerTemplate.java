@@ -6,7 +6,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
 import org.awaitility.Duration;
+import org.junit.Assume;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,9 @@ public class ContainerTemplate {
     
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private DockerClient dockerClient;
 
     public ResultActions createContainer(String name, String imageName) throws Exception {
         ContainerResource request = new ContainerResource(name, imageName);
@@ -166,5 +172,11 @@ public class ContainerTemplate {
         return mockMvc.perform(post(uri)
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    public void assumeContainerDoesNotExist(String containerName) throws DockerException, InterruptedException {
+        Assume.assumeTrue(containerName + " should not exist.",
+                dockerClient.listContainers().stream()
+                        .anyMatch(container -> container.names().contains(containerName)));
     }
 }

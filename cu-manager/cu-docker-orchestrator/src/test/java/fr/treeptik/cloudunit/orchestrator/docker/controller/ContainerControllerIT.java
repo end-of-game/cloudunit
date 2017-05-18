@@ -5,6 +5,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
+import org.junit.Assume;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,9 +40,14 @@ public class ContainerControllerIT {
     
     @Autowired
     private ImageTemplate imageTemplate;
+
+    @Autowired
+    private DockerClient dockerClient;
     
     @Test
     public void testCreateContainer() throws Exception {
+        containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+
         ResultActions result = containerTemplate.createContainer(CONTAINER_NAME, IMAGE_NAME);
         result.andExpect(status().isCreated());
         
@@ -62,9 +70,11 @@ public class ContainerControllerIT {
             containerTemplate.deleteContainerAndWait(container);
         }
     }
-    
+
     @Test
     public void testCreateDeleteContainer() throws Exception {
+        containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+
         ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
         
         containerTemplate.deleteContainer(container)
@@ -73,6 +83,8 @@ public class ContainerControllerIT {
     
     @Test
     public void testStartContainer() throws Exception {
+        containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+
         ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
         
         try {
@@ -91,8 +103,10 @@ public class ContainerControllerIT {
     
     @Test
     public void testStartStopContainer() throws Exception {
+        containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+
         ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
-        
+
         try {
             containerTemplate.startContainer(container)
                 .andExpect(status().isNoContent());
