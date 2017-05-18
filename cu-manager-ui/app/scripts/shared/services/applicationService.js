@@ -99,12 +99,12 @@
 					if (res._embedded) {
 						var q = $q.defer();
 						var promises = [];
-						res._embedded.applicationResourceList.forEach(function(elem) {
+						res._embedded["cu:applications"].forEach(function(elem) {
 							var intermediatePromise = $q.defer();
 
 							applicationTraversonService
 								.flatTraverson(
-								['applicationResourceList[name:' + elem.name + ']', 'self'],
+								['cu:applications[name:' + elem.name + ']', 'self'],
 								['cu:services']
 							).then(function(res) {
 								intermediatePromise.resolve(res);
@@ -138,7 +138,7 @@
 			return applicationTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'cu:start')
+				.follow('cu:applications[name:' + applicationName + ']', 'cu:start')
 				.post()
 				.result;
 		}
@@ -148,7 +148,7 @@
 			return applicationTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'cu:restart')
+				.follow('cu:applications[name:' + applicationName + ']', 'cu:restart')
 				.post()
 				.result;
 		}
@@ -158,7 +158,7 @@
 			return applicationTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'cu:stop')
+				.follow('cu:applications[name:' + applicationName + ']', 'cu:stop')
 				.post()
 				.result;
 		}
@@ -178,7 +178,7 @@
 				.result
 				.then(function (res) {
 					if (res._embedded) {
-						return res._embedded.applicationResourceList.length;
+						return res._embedded["cu:applications"].length;
 					}
 					return false;
 				})
@@ -190,7 +190,7 @@
 			applicationTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'self')
+				.follow('cu:applications[name:' + applicationName + ']', 'self')
 				.delete();
 		}
 
@@ -198,7 +198,7 @@
 			var self = this;
 			return applicationTraversonService
 				.flatTraverson(
-				['applicationResourceList[name:' + applicationName + ']', 'self'],
+				['cu:applications[name:' + applicationName + ']', 'self'],
 				['cu:services']
 				).catch(function (err) {
 					console.error(err);
@@ -207,7 +207,7 @@
 
 			// return applicationTraversonService
 			// 	.flatTraverson(
-			// 	['applicationResourceList[name:' + applicationName + ']', 'self'],
+			// 	['cu:applications[name:' + applicationName + ']', 'self'],
 			// 	['services'],
 			// 	['server'],
 			// 	['deployments'],
@@ -249,7 +249,7 @@
 		function listContainers(applicationName) {
 			return applicationTraversonService
 				.concatTraverson(
-				['applicationResourceList[name:' + applicationName + ']', 'self'],
+				['cu:applications[name:' + applicationName + ']', 'self'],
 				['containers']
 			);
 		}

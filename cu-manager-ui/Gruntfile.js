@@ -124,7 +124,7 @@ module.exports = function (grunt) {
             changeOrigin: false
         },
         {
-          context: '/application',
+          context: '/applications',
           host: 'localhost',
           port: 8080,
           https: false,
