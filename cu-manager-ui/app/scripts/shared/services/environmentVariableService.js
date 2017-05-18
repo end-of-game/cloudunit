@@ -47,8 +47,8 @@
 		function getListSettingsEnvironmentVariable(applicationName, container) {
 			return environmentVariableTraversonService
 				.concatTraverson(
-				['applicationResourceList[name:' + applicationName + ']', 'self', 'containers', 'self'],
-				['containerResourceList[name:' + container.name + ']', 'env-vars']);
+				['cu:applications[name:' + applicationName + ']', 'self', 'containers', 'self'],
+				['cu:containers[name:' + container.name + ']', 'env-vars']);
 		}
 
 		function addEnvironmentVariable(applicationName, container, environmentVariableKey, environmentVariableValue) {
@@ -60,8 +60,8 @@
 			return environmentVariableTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'self',
-				 'containers', 'containerResourceList[name:' + container.name + ']', 'self', 'env-vars')
+				.follow('cu:applications[name:' + applicationName + ']', 'self',
+				 'containers', 'cu:containers[name:' + container.name + ']', 'self', 'env-vars')
 				.post(payload)
 				.result
 				   .then ( function(response) {
@@ -76,8 +76,8 @@
 			return environmentVariableTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'self',
-				'containers','containerResourceList[name:' + container.name + ']', 'self',
+				.follow('cu:applications[name:' + applicationName + ']', 'self',
+				'containers','cu:containers[name:' + container.name + ']', 'self',
 				'env-vars', 'environmentVariableResourceList[key:' + environmentVariableKey + ']', 'self' )
 				.delete()
 				.result;
@@ -85,11 +85,11 @@
 
 		function getVariableEnvironment(applicationName, containers) {
 			var data = [
-				['applicationResourceList[name:' + applicationName + ']', 'self', 'containers', 'self'],
+				['cu:applications[name:' + applicationName + ']', 'self', 'containers', 'self'],
 			]
 			angular.forEach(containers, function (container) {
 				data.push(
-					['containerResourceList[name:' + container.name + ']', 'env']
+					['cu:containers[name:' + container.name + ']', 'env']
 				)
 			});
 			return environmentVariableTraversonService

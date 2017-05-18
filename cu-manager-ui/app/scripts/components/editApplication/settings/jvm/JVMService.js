@@ -52,7 +52,7 @@
             return jvmTraversonService
 				.traversonService
 				.newRequest()
-				.follow('applicationResourceList[name:' + applicationName + ']', 'self', 'server')
+				.follow('cu:applications[name:' + applicationName + ']', 'self', 'server')
 				.put(server)
 				.result;
 		}

@@ -55,7 +55,7 @@ angular
 
             return traversonService
                 .newRequest()
-                .follow('applicationResourceList[name:' + applicationName + ']', 'cu:services')
+                .follow('cu:applications[name:' + applicationName + ']', 'cu:services')
                 .post({
                     imageName: serviceName
                 })
@@ -67,7 +67,7 @@ angular
 
             return traversonService
                 .newRequest()
-                .follow('applicationResourceList[name:' + applicationName + ']', 'modules')
+                .follow('cu:applications[name:' + applicationName + ']', 'modules')
                 .post({
                     name: moduleName
                 })
@@ -83,7 +83,7 @@ angular
 
             return traversonService
                 .newRequest()
-                .follow('applicationResourceList[name:' + applicationName + ']', 'modules', 'moduleResourceList[name:' + imageName + ']')
+                .follow('cu:applications[name:' + applicationName + ']', 'modules', 'moduleResourceList[name:' + imageName + ']')
                 .delete()
                 .result;
 
