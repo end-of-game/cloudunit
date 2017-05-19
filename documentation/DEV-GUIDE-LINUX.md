@@ -19,12 +19,10 @@ You are reading the wright guide, if you want to setup an environment to contrib
 
 ![dev architecture](img/plateforme-dev.png)
 
-* You have to configure a local dns (see further) to send any requests from your host to VM (IP fixed at 192.168.50.4) 
-* You use your favorite idea (intellij, Eclipse) to develop the maven project cloudunit
-* The backend is a spring application exposing a REST API
-* The frontend is an AngularJS 1.4 consuming the backend API from Spring Java
-* You run the project with an embedded tomcat via maven tasks (tomcat:run). No need to install Tomcat locally.
-* Mysql is included into vagrantbox so no need to install it locally.
+- A VagrantBox houses Docker and supporting services, such as MongoDB and RabbitMQ.
+- The backend is a collection of Spring Boot microservices exposing REST APIs
+- The frontend is an AngularJS 1.4 consuming the backend API
+- A CLI also consumes the backend API
 
 ## Projects
 
