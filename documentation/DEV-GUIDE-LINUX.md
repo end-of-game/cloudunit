@@ -17,8 +17,6 @@ You are reading the wright guide, if you want to setup an environment to contrib
 
 ## Architecture
 
-![dev architecture](img/plateforme-dev.png)
-
 - A VagrantBox houses Docker and supporting services, such as MongoDB and RabbitMQ.
 - The backend is a collection of Spring Boot microservices exposing REST APIs
 - The frontend is an AngularJS 1.4 consuming the backend API
