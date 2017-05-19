@@ -1,7 +1,7 @@
 
 # CloudUnit developement environment
 
-You are reading the wright guide, if you want to setup an environment to contribute to CloudUnit development.
+This guide explains who to set up an environment to contribute to CloudUnit development.
 
 ## Requirements
 
