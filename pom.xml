@@ -17,4 +17,10 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+  
+  <scm>
+    <url>https://github.com/Treeptik/cloudunit</url>
+    <connection>scm:git:https://github.com/Treeptik/cloudunit.git</connection>
+    <developerConnection>scm:git:git@github.com:Treeptik/cloudunit.git</developerConnection>
+  </scm>
 </project>
