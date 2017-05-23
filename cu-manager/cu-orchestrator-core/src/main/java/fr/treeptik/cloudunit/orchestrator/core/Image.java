@@ -19,7 +19,9 @@ public class Image {
         private final String repositoryTag;
         private final String serviceName;
         private final String version;
+        private String tempFolder;
         private String displayName;
+        private String deployCmd;
         private List<Variable> variables = new ArrayList<>();
         
         private Builder(String serviceName, String version, ImageType type, String repositoryTag) {
@@ -41,6 +43,16 @@ public class Image {
             return this;
         }
         
+        public Builder tempFolder(String tempFolder) {
+        	this.tempFolder = tempFolder;
+        	return this;
+        }
+        
+        public Builder deployCmd(String deployCmd) {
+        	this.deployCmd = deployCmd;
+        	return this;
+        }
+        
         public Image build() {
             return new Image(this);
         }
@@ -56,6 +68,8 @@ public class Image {
     private String serviceName;
     private String version;
     private String displayName;
+    private String tempFolder;
+    private String deployCmd;
     private Map<String, Variable> variables;
     private String repositoryTag;
     
@@ -70,6 +84,8 @@ public class Image {
         this.variables = builder.variables.stream()
                 .collect(Collectors.toMap(v -> v.getKey(), v -> v));
         this.repositoryTag = builder.repositoryTag;
+        this.tempFolder = builder.tempFolder;
+        this.deployCmd = builder.deployCmd;
     }
 
     public String getId() {
@@ -108,7 +124,23 @@ public class Image {
         return repositoryTag;
     }
     
-    @Override
+    public String getTempFolder() {
+		return tempFolder;
+	}
+
+	public void setTempFolder(String tempFolder) {
+		this.tempFolder = tempFolder;
+	}
+	
+	public String getDeployCmd() {
+		return deployCmd;
+	}
+
+	public void setDeployCmd(String deployCmd) {
+		this.deployCmd = deployCmd;
+	}
+
+	@Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Image)) return false;

@@ -1,6 +1,7 @@
 package fr.treeptik.cloudunit.domain.controller;
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.net.URI;
 import java.util.function.BiFunction;
@@ -42,6 +43,8 @@ public class ServiceController {
         
         resource.add(linkTo(methodOn(ServiceController.class).getService(appId, name))
                 .withSelfRel());
+        resource.add(linkTo(methodOn(DeploymentController.class).getDeployments(appId, name))
+                .withRel("cu:deployments"));
         resource.add(linkTo(methodOn(ApplicationController.class).getApplication(appId))
                 .withRel("cu:application"));
         if(service.getContainerUrl() != null) {

@@ -1,5 +1,7 @@
 package fr.treeptik.cloudunit.orchestrator.docker.service.impl;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -262,8 +264,23 @@ public class DockerServiceImpl implements DockerService {
         container = containerRepository.save(container);
         doDeleteContainer(container);
     }
+    
+    @Override
+    public void sendFileToContainer(String containerId, String localPathFile, String originalName, String filePath) {
+        try {
+            Path path = Paths.get(localPathFile);
+            docker.copyToContainer(path, containerId, filePath);
+        } catch (Exception e) {
+            StringBuilder msgError = new StringBuilder();
+            msgError.append("containerId=").append(containerId);
+            msgError.append("localPathFile=").append(localPathFile);
+            throw new ServiceException(msgError.toString(), e);
+        }
+    }
 
-    private ExecutionResult execute(Container container, String... cmd) {
+    @Override
+    public ExecutionResult execute(Container container, String... cmd) {
+    	
         try {
             ExecCreation exec = docker.execCreate(container.getName(), cmd,
                     ExecCreateParam.attachStdout(),
@@ -454,10 +471,9 @@ public class DockerServiceImpl implements DockerService {
         listeners.forEach(listener -> listener.onContainerDeleted(container));
     }
 
-    private static class ExecutionResult {
+    public static class ExecutionResult {
         public final int exitCode;
         
-        @SuppressWarnings("unused")
         public final String output;
         
         public ExecutionResult(int exitCode, String output) {

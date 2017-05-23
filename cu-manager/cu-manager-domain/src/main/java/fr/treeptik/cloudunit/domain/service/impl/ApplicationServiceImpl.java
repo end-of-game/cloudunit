@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,14 +10,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.domain.core.Application;
+import fr.treeptik.cloudunit.domain.core.Deployment;
 import fr.treeptik.cloudunit.domain.core.Image;
 import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
 import fr.treeptik.cloudunit.domain.service.OrchestratorService;
 import fr.treeptik.cloudunit.domain.service.ServiceListener;
+import fr.treeptik.cloudunit.domain.service.StorageService;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
 @Component
@@ -28,6 +32,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     @Autowired
     private OrchestratorService orchestratorService;
+    
+    @Autowired
+    private StorageService storageService;
     
     @Autowired
     private List<ServiceListener> listeners;
@@ -129,6 +136,24 @@ public class ApplicationServiceImpl implements ApplicationService {
         });
     }
     
+	@Override
+	public Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file) {
+		
+		if (service.getState().isPending()) {
+            throw new IllegalStateException(String.format("Cannot deploy archive with contextPath %s", contextPath));
+        }
+		
+		Deployment deployment = service.addDeployment(contextPath);
+		
+		applicationRepository.save(application);
+		
+		File newFile = storageService.store(file);
+
+		orchestratorService.deploy(service.getContainerName(), contextPath, "file://" + newFile.getAbsolutePath());
+		
+		return deployment;
+	}
+	
     @Override
     public void updateContainerState(Application application, String serviceName, ContainerState state) {
         Optional<Service> service = application.getServiceByContainerName(serviceName);

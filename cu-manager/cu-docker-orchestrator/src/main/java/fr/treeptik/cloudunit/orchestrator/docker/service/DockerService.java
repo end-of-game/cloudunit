@@ -5,6 +5,7 @@ import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.core.Mount;
 import fr.treeptik.cloudunit.orchestrator.core.Variable;
 import fr.treeptik.cloudunit.orchestrator.core.Volume;
+import fr.treeptik.cloudunit.orchestrator.docker.service.impl.DockerServiceImpl.ExecutionResult;
 
 public interface DockerService {
     Container createContainer(String name, Image image);
@@ -32,4 +33,8 @@ public interface DockerService {
     void addDependency(Container container, Container dependency);
 
     void removeDependency(Container container, String dependency);
+
+	void sendFileToContainer(String containerId, String localPathFile, String originalName, String filePath);
+
+	ExecutionResult execute(Container container, String... cmd);
 }

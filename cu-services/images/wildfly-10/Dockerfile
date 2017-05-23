@@ -8,8 +8,11 @@ WORKDIR $JBOSS_HOME
 ENV JAVA_OPTS "-Xms512m -Xmx512m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true "
 
 RUN mkdir $JBOSS_HOME/standalone/log
+RUN mkdir $JBOSS_HOME/temp
 
 VOLUME $JBOSS_HOME/standalone/log
+
+COPY scripts/deploy.sh bin/
 
 COPY docker-entrypoint.sh bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
@@ -24,5 +27,6 @@ LABEL io.cloudunit="" \
       io.cloudunit.logfile=$JBOSS_HOME/standalone/log/server.log \
       io.cloudunit.manager.path="" \
       io.cloudunit.manager.port=9990 \
-      io.cloudunit.tmp=$JBOSS_HOME/temp
+      io.cloudunit.tmp=$JBOSS_HOME/temp \
+      io.cloudunit.deploy="deploy.sh {0} {1}"
 

@@ -10,6 +10,7 @@ import fr.treeptik.cloudunit.orchestrator.core.Image;
 public interface ImageRepository extends Repository<Image, String> {
     Optional<Image> findOne(String id);
     Optional<Image> findByName(String name);
+    Optional<Image> findByRepositoryTag(String repositoryTag);
     
     List<Image> findAll();
     
