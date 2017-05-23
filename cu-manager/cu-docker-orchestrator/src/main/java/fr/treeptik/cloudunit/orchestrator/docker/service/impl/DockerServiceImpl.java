@@ -278,7 +278,9 @@ public class DockerServiceImpl implements DockerService {
         }
     }
 
-    private ExecutionResult execute(Container container, String... cmd) {
+    @Override
+    public ExecutionResult execute(Container container, String... cmd) {
+    	
         try {
             ExecCreation exec = docker.execCreate(container.getName(), cmd,
                     ExecCreateParam.attachStdout(),
@@ -469,10 +471,9 @@ public class DockerServiceImpl implements DockerService {
         listeners.forEach(listener -> listener.onContainerDeleted(container));
     }
 
-    private static class ExecutionResult {
+    public static class ExecutionResult {
         public final int exitCode;
         
-        @SuppressWarnings("unused")
         public final String output;
         
         public ExecutionResult(int exitCode, String output) {

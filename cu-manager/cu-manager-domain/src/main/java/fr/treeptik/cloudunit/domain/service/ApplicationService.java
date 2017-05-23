@@ -22,8 +22,6 @@ public interface ApplicationService {
     
     Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file);
     
-    void removeDeployment(Application application, Service service, Deployment deployment);
-
     void updateContainerState(Application application, String containerName, ContainerState state);
     
 }

@@ -1,6 +1,4 @@
-FROM tomcat:8.5.9-jre8
-
-ENV TOMCAT_MAJOR 8.5
+FROM tomcat:8.5.15-jre8
 
 ARG user=tomcat
 ARG group=tomcat
@@ -14,6 +12,7 @@ RUN wget -O lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar https://
 COPY files/web.xml conf/
 COPY files/logging.properties conf/
 COPY files/jmxtrans-agent.xml conf/
+COPY scripts/deploy.sh bin/
 
 RUN groupadd -g ${gid} ${group} \
     && useradd -d "$CATALINA_HOME" -u ${uid} -g ${gid} -m -s /bin/bash ${user}
@@ -35,5 +34,6 @@ LABEL io.cloudunit="" \
       io.cloudunit.logfile=$CATALINA_HOME/logs/catalina.log \
       io.cloudunit.manager.path=manager/html \
       io.cloudunit.manager.port=8080 \
-      io.cloudunit.tmp=$CATALINA_HOME/temp
+      io.cloudunit.tmp=$CATALINA_HOME/temp \
+      io.cloudunit.deploy="deploy.sh {0} {1}"
 

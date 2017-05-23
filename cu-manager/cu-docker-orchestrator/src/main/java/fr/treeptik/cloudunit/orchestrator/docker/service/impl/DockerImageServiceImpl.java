@@ -38,6 +38,8 @@ public class DockerImageServiceImpl implements InitializingBean {
     private static final String DISPLAY_NAME_LABEL = "io.cloudunit.name.display";
     
     private static final String TEMP_FOLDER_LABEL = "io.cloudunit.tmp";
+    
+    private static final String DEPLOY_CMD_LABEL = "io.cloudunit.deploy";
 
     @Autowired
     private DockerClient docker;
@@ -71,9 +73,10 @@ public class DockerImageServiceImpl implements InitializingBean {
         String version = image.labels().get(VERSION_LABEL);
         String variableSpec = image.labels().get(VARIABLES_LABEL);
         String tempFolder = image.labels().get(TEMP_FOLDER_LABEL);
+        String deployCmd = image.labels().get(DEPLOY_CMD_LABEL);
         
         Image.Builder builder = Image.of(serviceName, version, type, repositoryTag)
-                .displayName(displayName).tempFolder(tempFolder);
+                .displayName(displayName).tempFolder(tempFolder).deployCmd(deployCmd);
         
         try {
         	if (variableSpec != null) {

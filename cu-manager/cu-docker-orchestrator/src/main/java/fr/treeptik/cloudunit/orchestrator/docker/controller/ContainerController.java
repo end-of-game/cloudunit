@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.orchestrator.core.Container;
 import fr.treeptik.cloudunit.orchestrator.core.Image;
@@ -110,9 +108,9 @@ public class ContainerController {
     
     @PutMapping("/{name}/deploy/{contextPath}")
     public ResponseEntity<?> deploy(@PathVariable String name, @PathVariable String contextPath, 
-    		@RequestPart("file") MultipartFile file) {
+    		@RequestBody String fileUri) {
         return withContainer(name, container -> {
-        	fileService.deploy(container, file);
+        	fileService.deploy(container, fileUri, contextPath);
             return ResponseEntity.noContent().build();
         });
     }

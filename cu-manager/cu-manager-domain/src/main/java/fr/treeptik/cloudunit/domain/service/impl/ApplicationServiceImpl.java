@@ -1,5 +1,6 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
 import fr.treeptik.cloudunit.domain.service.ApplicationService;
 import fr.treeptik.cloudunit.domain.service.OrchestratorService;
 import fr.treeptik.cloudunit.domain.service.ServiceListener;
+import fr.treeptik.cloudunit.domain.service.StorageService;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
 @Component
@@ -30,6 +32,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     
     @Autowired
     private OrchestratorService orchestratorService;
+    
+    @Autowired
+    private StorageService storageService;
     
     @Autowired
     private List<ServiceListener> listeners;
@@ -143,21 +148,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 		
 		applicationRepository.save(application);
 		
-		orchestratorService.deploy(service.getContainerName(), contextPath, file);
+		File newFile = storageService.store(file);
+
+		orchestratorService.deploy(service.getContainerName(), contextPath, "file://" + newFile.getAbsolutePath());
 		
 		return deployment;
-		
 	}
 	
-	@Override
-	public void removeDeployment(Application application, Service service, Deployment deployment) {
-		service.removeDeployment(deployment.getContextPath());
-		
-		applicationRepository.save(application);
-		
-		orchestratorService.undeploy(service.getContainerName(), deployment.getContextPath());
-	}
-    
     @Override
     public void updateContainerState(Application application, String serviceName, ContainerState state) {
         Optional<Service> service = application.getServiceByContainerName(serviceName);

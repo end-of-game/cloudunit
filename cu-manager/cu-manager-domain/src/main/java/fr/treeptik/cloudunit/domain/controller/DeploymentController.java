@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -81,18 +80,6 @@ public class DeploymentController {
 		return withService(appId, name, (application, service) -> {
 			Deployment deployment = applicationService.addDeployment(application, service, contextPath, file);
 			return ResponseEntity.ok(toResource(application, service, deployment));
-        });
-	}
-
-	@DeleteMapping("/{contextPath}")
-	public ResponseEntity<?> removeDeployment(@PathVariable String appId, @PathVariable String name,
-			@PathVariable String contextPath) {
-		return withService(appId, name, (application, service) -> {
-			Optional<Deployment> deployment = service.getDeployment(contextPath);
-			if(deployment.isPresent()) {
-				applicationService.removeDeployment(application, service, deployment.get());
-			}
-            return ResponseEntity.noContent().build();
         });
 	}
 
