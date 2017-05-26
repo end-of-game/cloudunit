@@ -24,7 +24,7 @@ program
                 }
                 out.info(columnify(
                     doc._embedded['cu:volumes'],
-                    { columns: ['name', 'state'] }));
+                    { columns: ['name'] }));
             });
     });
 
