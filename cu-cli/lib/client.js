@@ -8,3 +8,9 @@ exports.applications =
   traverson.from(cuHost+'/applications')
     .jsonHal()
     .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'}})
+
+
+exports.images =
+    traverson.from(cuHost+'/images')
+        .jsonHal()
+        .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'}})
