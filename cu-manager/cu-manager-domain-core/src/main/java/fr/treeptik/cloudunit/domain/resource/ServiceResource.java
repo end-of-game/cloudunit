@@ -1,11 +1,14 @@
 package fr.treeptik.cloudunit.domain.resource;
 
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
+@Relation(value = "cu:service", collectionRelation = "cu:services")
 public class ServiceResource extends ResourceSupport {
+	private String name;
 	private String imageName;
 	private String containerName;
 	private ContainerState state;
@@ -17,6 +20,7 @@ public class ServiceResource extends ResourceSupport {
 		this.imageName = service.getImageName();
 		this.containerName = service.getContainerName();
 		this.state = service.getState();
+		this.name = service.getName();
 	}
 
 	public ServiceResource(String imageName) {
@@ -46,5 +50,15 @@ public class ServiceResource extends ResourceSupport {
 	public void setContainerName(String containerName) {
 		this.containerName = containerName;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
 
 }

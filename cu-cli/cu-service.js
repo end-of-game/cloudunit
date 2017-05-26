@@ -3,6 +3,7 @@
 const program = require('commander');
 const chalk = require('chalk');
 const columnify = require('columnify');
+const fs =  require("fs");
 
 const client = require('./lib/client');
 const out = require('./lib/out');
@@ -65,5 +66,25 @@ program
           out.info('Service '+service+' removed from '+app);
         });
     });
+
+program
+  .command('deploy <app> <service> <contextPath> <filePath>')
+  .description('deploy an archive')
+  .action(function(app, service, contextPath, filePath) {
+    var file = fs.createReadStream(filePath);
+    client.applicationsFile
+    .follow('cu:applications[name:'+app+']', 'cu:services', 'cu:services[name:'+service+']', 'cu:deployments', 'cu:deployments[contextPath:'+contextPath+']')
+    .put({ 'file': file }, function (error, response) {
+      if (error) {
+        out.error('ER Couldn\'t deploy the archive: '+error);
+        return;
+      }
+      if (response.statusCode != 201) {
+        out.error('Couldn\'t deploy the archive: '+response.body);
+        return;
+      }
+      out.info('War deployed');
+    });
+  });
 
 program.parse(process.argv);
