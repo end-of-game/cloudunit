@@ -210,7 +210,7 @@ module.exports = function (grunt) {
         {
           context: '/volume',
           host: 'localhost',
-          port: 8080,
+          port: 8081,
           https: false,
           changeOrigin: false
         },
@@ -241,6 +241,13 @@ module.exports = function (grunt) {
           port: 8081,
           https: false,
           changeOrigin: false
+        },
+        {
+            context: '/volumes',
+            host: 'localhost',
+            port: 8081,
+            https: false,
+            changeOrigin: false
         },
         {
           context: '/image',
