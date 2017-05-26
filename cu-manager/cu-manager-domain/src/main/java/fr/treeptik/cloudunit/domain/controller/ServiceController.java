@@ -50,7 +50,6 @@ public class ServiceController {
         if(service.getContainerUrl() != null) {
         	resource.add(new Link(service.getContainerUrl(), "cu:container"));
         }
-        
         return resource;
     }
     

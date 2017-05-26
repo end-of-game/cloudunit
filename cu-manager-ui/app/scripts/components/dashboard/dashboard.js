@@ -123,9 +123,9 @@
     }
 
     function toggleServer(application) {
-      if (application.state === 'STARTING') {
+      if (application.state === 'STARTED') {
         stopApplication(application.name);
-      } else if (application.state === 'STOP' || application.state === 'CREATED') {
+      } else if (application.state === 'STOPPED' || application.state === 'CREATED') {
         startApplication(application.name);
       }
     }

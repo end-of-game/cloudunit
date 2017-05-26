@@ -18,7 +18,6 @@ public class ServiceEventPublisher implements ServiceListener {
 	@Autowired
 	@Qualifier(DomainChannels.SERVICES)
 	private SubscribableChannel services;
-
 	private void onServiceEvent(ServiceEvent.Type type, Service service) {
 		ServiceEvent event = new ServiceEvent(type, new ServiceResource(service));
 		services.send(MessageBuilder.withPayload(event).build());
