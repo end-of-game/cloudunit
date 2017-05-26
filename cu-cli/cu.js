@@ -6,4 +6,5 @@ program
   .command('app', 'manage applications')
   .command('service', 'manage application services')
   .command('image', 'manage images')
+  .command('container', 'manage containers')
   .parse(process.argv);
