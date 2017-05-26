@@ -24,3 +24,8 @@ exports.containers =
     traverson.from(cuHost+'/containers')
         .jsonHal()
         .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'}})
+
+exports.volumes =
+    traverson.from('http://localhost:8081/volumes')
+        .jsonHal()
+        .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'}})
