@@ -27,7 +27,10 @@
         case 'STARTING':
           status = 'Starting';
           break;
-        case 'STOP':
+        case 'STARTED':
+          status = 'Start';
+          break;
+        case 'STOPPED':
           status = 'Stop';
           break;
         case 'CREATED':
