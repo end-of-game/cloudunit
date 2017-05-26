@@ -13,3 +13,8 @@ exports.applicationsFile =
   traverson.from(cuHost+'/applications')
     .jsonHal()
     .withRequestOptions({ headers: { 'Content-Type': 'multipart/form-data'}})
+
+exports.images =
+    traverson.from(cuHost+'/images')
+        .jsonHal()
+        .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'}})

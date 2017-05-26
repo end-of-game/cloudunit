@@ -2,9 +2,12 @@ package fr.treeptik.cloudunit.orchestrator.resource;
 
 import org.springframework.hateoas.ResourceSupport;
 
+
 import fr.treeptik.cloudunit.orchestrator.core.Image;
 import fr.treeptik.cloudunit.orchestrator.core.ImageType;
+import org.springframework.hateoas.core.Relation;
 
+@Relation(value = "cu:image", collectionRelation = "cu:images")
 public class ImageResource extends ResourceSupport {
     private String name;
     private ImageType type;
