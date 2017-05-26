@@ -7,7 +7,9 @@ import org.springframework.hateoas.ResourceSupport;
 
 import fr.treeptik.cloudunit.orchestrator.core.Container;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
+import org.springframework.hateoas.core.Relation;
 
+@Relation(value = "cu:container", collectionRelation = "cu:containers")
 public class ContainerResource extends ResourceSupport {
     @NotNull
     @Pattern(regexp = "[a-zA-Z0-9][a-zA-Z0-9_.-]*")

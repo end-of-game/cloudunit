@@ -3,7 +3,9 @@ package fr.treeptik.cloudunit.orchestrator.resource;
 import org.springframework.hateoas.ResourceSupport;
 
 import fr.treeptik.cloudunit.orchestrator.core.Volume;
+import org.springframework.hateoas.core.Relation;
 
+@Relation(value = "cu:volume", collectionRelation = "cu:volumes")
 public class VolumeResource extends ResourceSupport {
     private String name;
 
