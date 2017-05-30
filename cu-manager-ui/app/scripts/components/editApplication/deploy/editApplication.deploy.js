@@ -43,7 +43,14 @@
     var uploader, vm;
     
     vm = this;
+    vm.myService = {};
+    vm.contextPath = "";
     vm.uploadAll = uploadAll;
+    vm.updateUrl = updateUrl;
+
+    function updateUrl() {
+      uploader.url = vm.app._links.self.href + "/services/" + vm.myService.name + "/deployments/" + vm.contextPath;
+    }
 
     function uploadAll () {
       uploader.uploadAll();
@@ -68,7 +75,8 @@
     };
 
     uploader = $scope.uploader = new FileUploader({
-      url: 'application/' + $stateParams.name + '/deploy',
+      url: 'applications/' + $stateParams.name + '/deploy',
+      method: 'PUT',
       removeAfterUpload: true,
       queueLimit: 1
     });

@@ -18,6 +18,32 @@
     <div class="content">
       <h3 class="title large">Deploy a web archive</h3>
 
+      <div class="">
+        <input type="text"
+          class="input-effect"
+                data-ng-model="deploy.contextPath"
+                data-ng-change="deploy.updateUrl();"
+                  protectinput=""
+                required>
+      </div>
+
+      <div class="dropdown dropdown--small" dropdown>
+        <a class="dropdown-toggle"
+           dropdown-toggle=""
+           selectbox="">
+          {{ deploy.myService.name }}
+        </a>
+        <ul class="dropdown-menu"
+            role="menu"
+            aria-labelledby="dLabel">
+          <li data-ng-repeat="service in deploy.app['cu:services']">
+            <a ng-href="" data-ng-click="deploy.myService = service; deploy.updateUrl();">
+              {{ service.name }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
       <div class="upload-form" data-ng-hide="uploader.queue[0].isUploading">
         <div class="upload button raised primary" ripple="">
           <span>Select file...</span>
