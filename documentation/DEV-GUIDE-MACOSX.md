@@ -1,175 +1,128 @@
 
-# CloudUnit developpement environment
+# CloudUnit developement environment
 
-You are reading the wright guide, if you want to setup an environment to contribute to CloudUnit development.
+This guide explains who to set up an environment to contribute to CloudUnit development.
 
 ## Requirements
 
-* A MacOSX computer
-* Vagrant 1.8+
-* Git / Java 1.8
-* Node 5.x
-* VirtualBox 5.0.4+
-* Maven 3
- 
-## Architecture for developpment
+- MacOS X 10.11 or 10.12
+- Docker for Mac stable release (not egde)
+- Git 2.7.x
+- Java 8 JDK
+- Node 5.12.x
+- Java IDE: [IntelliJ IDEA 2017.1](https://www.jetbrains.com/idea/), or [Spring Tool Suite 3.8.4](https://spring.io/tools), [Eclipse Neon.3 (4.6.3)](http://www.eclipse.org/downloads/)
+- Node IDE: SublimeText, [Atom 1.16.x](https://atom.io/)
+- VirtualBox 5.0.x (http://www.virtualbox.org or `sudo apt install virtualbox`)
+- Maven 3.3.9
 
-![Architecture Dev](img/plateforme-dev.png "Architecture Development")    
+## Architecture
 
-### General Rules
+- Docker for Mac to provide services such as MongoDB and RabbitMQ.
+- The backend is a collection of Spring Boot microservices exposing REST APIs
+- The frontend is an AngularJS 1.4 consuming the backend API
+- A CLI also consumes the backend API
 
-* You have to configure a local dns (see further) to send any requests from your host to VM (IP fixed at 192.168.50.4) 
-* You use your favorite idea (intellij, Eclipse) to develop the maven project into 'cloudunit/cu-manager'.
-* The backend is a spring application exposing a REST API
-* The frontend is an AngularJS 1.4 consuming the backend API from Spring Java
-* You run the project with an embedded tomcat via maven tasks (tomcat:run). No need to install Tomcat locally.
-* Mysql is included into vagrantbox so no need to install it locally.
+## Projects
 
-### Architecture sources
+- `cu-manager`: CloudUnit Manager backend, Maven project
+- `cu-manager-ui`: CloudUnit Manager frontend, Node project
+- `cu-cli`: CLI, Node project
+- `cu-compose`: Shell scripts and Docker Compose files for running CloudUnit
+- `cu-services`: Docker images
 
-```
-cloudunit/cu-manager        : Maven project for backend ui
-cloudunit/cu-manager-ui     : Maven project for web ui
-cloudunit/cu-cli            : Maven project for Spring Shell CLI
-cloudunit/cu-compose        : Shell scripts for administration 
-cloudunit/cu-services       : Docker images
-```
+## Setup
 
-## Installation 
-
-### Local DNS
-
-CloudUnit uses Docker and Java but others components. 
-As pre-requisites, you need to install them to have a complete dev stack. 
-You need to install a local DNS for entry.
-```
-Dnsmasq is a lightweight, easy to configure DNS forwarder 
-and DHCP server […] is targeted at home networks[.]
-```
-You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with .cloudunit.dev shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
-
-Update your homebrew installation
-```
-brew up
-```
-
-Install dnsmasq
-```
-brew install dnsmasq
-```
-
-Copy the configuration.
-```
-mkdir /usr/local/etc
-cp /usr/local/opt/dnsmasq/dnsmasq.conf.example /usr/local/etc/dnsmasq.conf
-```
-
-Then edit the file `/usr/local/etc/dnsmasq.conf` and add the line:
-```
-address=/cloudunit.dev/192.168.50.4
-```
-
-Create the directory
-```
-sudo mkdir /etc/resolver
-```
-Then add the following file
-```
-sudo vi /etc/resolver/dev
-vi /etc/resolver/dev
-```
-Add the following line
-```
-nameserver 127.0.0.1
-```
-
-Make a link with LaunchDaemons directory and then start dnsmasq
-```
-sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons
-sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
-```
-For more information in this environment, please read this [article](http://passingcuriosity.com/2013/dnsmasq-dev-osx/)
-
-### Installation NPM
-
-Mac Users are invited to follow the instructions given by the [npm website](https://nodejs.org)
-
-### How to build Angular project
-
-Follow these instructions
+### Clone source code
 
 ```
-cd $HOME && git clone https://github.com/Treeptik/cloudUnit.git
-cd $HOME/cloudUnit/cu-manager-ui && sudo npm install grunt -g
-cd $HOME/cloudUnit/cu-manager-ui && sudo npm install grunt-cli -g
-cd $HOME/cloudUnit/cu-manager-ui && sudo npm install bower -g
-cd $HOME/cloudUnit/cu-manager-ui && sudo npm install -g n
-cd $HOME/cloudUnit/cu-manager-ui && sudo n stable
-cd $HOME/cloudUnit/cu-manager-ui && bower install
+[MacOSX]    git clone https://github.com/Treeptik/cloudunit.git
+[MacOSX]    cd cloudunit
+[MacOSX]    git checkout dev-3.x
 ```
 
-## How to install Vagrant plugins
+### Install Node Project dependencies
 
 ```
-vagrant plugin install vagrant-reload
-vagrant plugin install vagrant-vbguest
+[MacOSX]    npm install -g grunt grunt-cli bower 
+[MacOSX]    pushd cu-manager-ui && npm install && bower install && popd
+[MacOSX]    pushd cu-cli && npm install && popd
 ```
 
-## How to start Environment Developpment
-
-1 - Start the vagrantbox and run Docker into Vagrant
+### Build images
 
 ```
-cd $HOME/cloudUnit 
-vagrant up
-vagrant ssh 
-cd cloudunit/cu-compose && ./reset-dev.sh
+[MacOSX]    pushd cloudunit/cu-services && make && popd
 ```
 
-2 - Run the UI for development (http://0.0.0.0:9000) from Mac
+### Start supporting services
 
 ```
-$ cd $HOME/cloudUnit/cu-manager-ui && grunt serve
-```
->! **Issue** if you have the following issue
-```
-grunt-cli: The grunt command line interface (v1.2.0)
-Fatal error: Unable to find local grunt.
-```
-Run the following command :
-```
-sudo npm update
+[MacOSX]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
 ```
 
-3 - Start the Java Backend from Mac
+### Import Maven projects into Java IDE workspace
+
+From your favorite Java IDE, import the Maven project located at the root of the Git repository.
+
+### Import Node projects
+
+From your favorite Node IDE add `cu-cli` and `cu-manager-ui` folders to your workspace.
+
+### Run CloudUnit Manager backend
+
+#### From IntelliJ IDEA
+
+Create Spring Boot run configurations for `cu-docker-orchestrator` and `cu-manager-domain` that activate the `local` profile.
+
+#### From Spring Tool Suite
+
+From the **Boot Dashboard** view, start `cu-docker-orchestrator` and `cu-manager-domain` with the `local` profile active.
+
+#### From Eclipse
+
+Create run configurations for the main classes in `cu-docker-orchestrator` and `cu-manager-domain`.
+Before running, add the following VM argument in order to activate the `local` profile: `-Dspring.profiles.active=local`.
+
+#### From command line
+
+In two different shells (maybe using tmux, screen, or byobu) run
+```
+[MacOSX]    cd cu-manager
+[MacOSX]    mvn spring-boot:run -pl cu-docker-orchestrator -Plocal
+```
+and
+```
+[MacOSX]    cd cu-manager
+[MacOSX]    mvn spring-boot:run -pl cu-manager-domain -Plocal
+```
+
+### Run CloudUnit Manager frontend
 
 ```
-cd $HOME/cloudUnit
-mvn clean install -DskipTests
-cd $HOME/cloudUnit/cu-manager
-mvn clean compile tomcat7:run -DskipTests -Dspring.profiles.active=vagrant
+[MacOSX]    cd cu-manager-ui && grunt serve
 ```
+This will open http://0.0.0.:9000/ in your default web browser.
 
-You can use default password and login
-```
-login: johndoe
-password: abc2015
-```
+# FAQ
 
-## How to reset Environment Developpment
+## How to reset Development Environment
 
 ```
-cd $HOME/cloudUnit
-vagrant ssh dev
-cd cloudunit/cu-compose && ./reset-dev.sh
+[MacOSX]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
+```
+    
+## How to rebuild images
+
+```
+[MacOSX]    pushd cloudunit/cu-services && make && popd
+[MacOSX]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
 ```
 
 ## How to run e2e test (selenium & protractor)
 
-First of all, you have to you have to install Google Chrome.
-Then, start the application in parallel.
+First of all, you have to install Google Chrome.
+Then, start the application ([see step 6](#step6)) in parallel.
 
 ```
-cd $HOME/cloudunit/cu-manager-ui
-grunt test
+[MacOSX]    pushd cu-manager-ui && grunt test && popd
 ```
