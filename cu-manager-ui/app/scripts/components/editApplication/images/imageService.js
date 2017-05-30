@@ -58,7 +58,7 @@
 				.result
 				.then(function (res) {
 					if (res._embedded) {
-						return res._embedded.imageResourceList;
+						return res._embedded["cu:images"];
 					} else {
 						return [];
 					}
