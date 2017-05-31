@@ -15,7 +15,7 @@ FROM maven:3.5.0-jdk-8
 
 # git branch being bundled in this docker image
 ARG GIT_BRANCH
-ENV GIT_BRANCH ${GIT_BRANCH:-dev-3.x-bootstrap}
+ENV GIT_BRANCH ${GIT_BRANCH:-dev-3.x}
 RUN cd /opt && git clone https://github.com/Treeptik/CloudUnit.git -b ${GIT_BRANCH} --depth 1 cloudunit
 
 WORKDIR /opt/cloudunit
