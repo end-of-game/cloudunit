@@ -39,6 +39,11 @@ services:
     labels:
       - "traefik.enable=false"
 
+networks:
+    default:
+      external:
+        name: skynet
+
 volumes:
   mongo-data:
   mongo-config:
