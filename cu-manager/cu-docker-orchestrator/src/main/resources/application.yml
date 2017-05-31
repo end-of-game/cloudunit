@@ -33,3 +33,20 @@ docker:
 logging:
   level:
     fr.treeptik: debug
+---
+spring:
+  profiles: production
+  data:
+    mongodb:
+      host: cu-mongo
+      database: cu-docker-orchestrator
+    rabbitmq:
+      host: cu-rabbitmq
+server:
+  port: 8080
+docker:
+  client:
+    endpointMode: SOCKET
+logging:
+  level:
+    fr.treeptik: info

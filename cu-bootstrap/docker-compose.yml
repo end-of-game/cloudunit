@@ -2,7 +2,7 @@ version: '3'
 services:
 
   rabbitmq:
-    container_name: cu-mq
+    container_name: cu-rabbitmq
     image: rabbitmq:3.6.8-alpine
     environment:
       - "TZ=${TZ}"
@@ -21,17 +21,6 @@ services:
       - mongo-config:/data/configdb
     labels:
       - "traefik.enable=false"
-
-  redis:
-    container_name: cu-redis
-    image: redis:3.0.7
-    command: redis-server --appendonly yes
-    environment:
-        - "TZ=${TZ}"
-    volumes:
-        - redis-data:/data
-    labels:
-        - "traefik.enable=false"
 
   traefik:
     container_name: cu-traefik
@@ -56,9 +45,9 @@ services:
     labels:
        - "traefik.enable=false"
 
-  orchestrator:
-    container_name: cu-orchestrator
-    image: cloudunit/orchestrator:latest
+  docker-orchestrator:
+    container_name: cu-docker-orchestrator
+    image: cloudunit/docker-orchestrator:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
@@ -68,6 +57,5 @@ volumes:
   mongo-data:
   mongo-config:
   traefik-certs:
-  redis-data:
   rabbitmq-data:
 

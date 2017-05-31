@@ -32,3 +32,20 @@ logging:
 cloudunit:
   orchestrator:
     base-uri: http://localhost:8081/
+---
+spring:
+  profiles: production
+  data:
+    mongodb:
+      host: cu-mongo
+      database: cu-manager-domain
+    rabbitmq:
+      host: cu-rabbitmq
+server:
+  port: 8080
+logging:
+  level:
+    fr.treeptik: info
+cloudunit:
+  orchestrator:
+    base-uri: http://cu-docker-orchestrator:8081/

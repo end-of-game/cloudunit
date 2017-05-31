@@ -5,7 +5,7 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
-readonly COMPOSE_VERSION=1.9.0
+readonly COMPOSE_VERSION=1.13.0
 
 # PROVISION THE ENV
 apt-get install -y nmap
@@ -25,7 +25,7 @@ cp -f /home/vagrant/cloudunit/cu-vagrant/files/environment /etc/environment
 cp -f /home/vagrant/cloudunit/cu-vagrant/files/.env.template /home/vagrant/cloudunit/cu-compose/.env
 cp -f /home/vagrant/cloudunit/cu-vagrant/files/.bashrc /home/vagrant/.bashrc
 sudo apt-get install -y apt-transport-https ca-certificates
-sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo cp -f cloudunit/cu-vagrant/files/sources.list /etc/apt/sources.list
 
 sudo apt-get update
@@ -56,7 +56,7 @@ sudo rm -f \
 #
 sudo apt-get update
 sudo apt-get install -y linux-image-extra-$(uname -r)
-sudo apt-get install -y docker-engine=1.12.6-0~ubuntu-$(lsb_release -sc)
+sudo apt-get install -y docker-ce
 sudo apt-get install -y mysql-client
 
 #sudo apt-mark hold docker-engine
@@ -99,4 +99,4 @@ sudo mv docker-compose /usr/local/bin
 #sudo service docker stop
 #sudo service docker start
 
-cd /home/vagrant/cloudunit/cu-services && ./build-services.sh all
+# cd /home/vagrant/cloudunit/cu-services && ./build-services.sh all
