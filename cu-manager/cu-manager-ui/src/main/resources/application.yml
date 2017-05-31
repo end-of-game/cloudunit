@@ -12,3 +12,17 @@ zuul:
       url: http://localhost:8081/images
 server:
   port: 9000
+---
+spring:
+  profiles: production
+zuul:
+  addProxyHeaders: false
+  routes:
+    applications:
+      url: http://cu-domain:8080/applications
+    containers:
+      url: http://cu-orchestrator:8081/containers
+    images:
+      url: http://cu-orchestrator:8081/images
+server:
+  port: 9000
