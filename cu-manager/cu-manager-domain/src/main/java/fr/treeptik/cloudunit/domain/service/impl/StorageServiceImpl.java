@@ -1,7 +1,6 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -35,12 +34,12 @@ public class StorageServiceImpl implements StorageService {
 	}
 
 	@Override
-	public InputStream findById(String id) {
+	public GridFSDBFile findById(String id) {
 		GridFSDBFile file = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
 		if (file == null) {
 			throw new ServiceException(String.format("Couldn't find file with id : %s", id));
 		}
-		return file.getInputStream();
+		return file;
 	}
 
 }
