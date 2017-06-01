@@ -92,6 +92,12 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>1.5.1.RELEASE</version>
+        <configuration>
+          <jvmArguments>
+            -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=6006
+          </jvmArguments>
+        </configuration>
       </plugin>
     </plugins>
   </build>
