@@ -60,7 +60,8 @@ program
                     process.exit(1);
                 }
                 if (response.statusCode != 204) {
-                    out.error('Couldn\'t remove a volume: '+response.body);
+                    var responseJson = JSON.parse(response.body);
+                    out.error('Couldn\'t remove a volume: '+responseJson["message"]);
                     process.exit(1);
                 }
                 out.info('Volume '+name+' removed');
