@@ -48,5 +48,23 @@ program
     });
 
 
+program
+    .command('rm <name>')
+    .description('remove a volume')
+    .action(function(name) {
+        client.volumes
+            .follow('cu:volumes[name:'+name+']','self')
+            .delete(function (error, response) {
+                if (error) {
+                    out.error('Couldn\'t remove a volume: '+error);
+                    process.exit(1);
+                }
+                if (response.statusCode != 204) {
+                    out.error('Couldn\'t remove a volume: '+response.body);
+                    process.exit(1);
+                }
+                out.info('Volume '+name+' removed');
+            });
+    });
 
 program.parse(process.argv);
