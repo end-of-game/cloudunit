@@ -1,10 +1,12 @@
 package fr.treeptik.cloudunit.orchestrator.resource;
 
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 import fr.treeptik.cloudunit.orchestrator.core.Variable;
 import fr.treeptik.cloudunit.orchestrator.core.VariableRole;
 
+@Relation(value = "cu:variable", collectionRelation = "cu:variables")
 public class VariableResource extends ResourceSupport {
 
     private String key;

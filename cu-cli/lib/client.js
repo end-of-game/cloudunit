@@ -14,7 +14,17 @@ exports.applicationsFile =
     .jsonHal()
     .withRequestOptions({ headers: { 'Content-Type': 'multipart/form-data'}})
 
+exports.volumes =
+traverson.from(cuHost+'/volumes')
+  .jsonHal()
+  .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'}})
+
 exports.images =
     traverson.from(cuHost+'/images')
+        .jsonHal()
+        .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'}})
+
+exports.containers =
+    traverson.from(cuHost+'/containers')
         .jsonHal()
         .withRequestOptions({ headers: { 'Content-Type': 'application/hal+json'}})

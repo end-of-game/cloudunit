@@ -1,9 +1,11 @@
 package fr.treeptik.cloudunit.orchestrator.resource;
 
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 import fr.treeptik.cloudunit.orchestrator.core.Mount;
 
+@Relation(value = "cu:mount", collectionRelation = "cu:mounts")
 public class MountResource extends ResourceSupport {
     private VolumeResource volume;
     

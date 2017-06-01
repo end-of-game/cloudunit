@@ -208,9 +208,9 @@ module.exports = function (grunt) {
           changeOrigin: false
         },
         {
-          context: '/volume',
+          context: '/volumes',
           host: 'localhost',
-          port: 8080,
+          port: 8081,
           https: false,
           changeOrigin: false
         },

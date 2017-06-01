@@ -4,10 +4,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 import fr.treeptik.cloudunit.orchestrator.core.Container;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
+@Relation(value = "cu:container", collectionRelation = "cu:containers")
 public class ContainerResource extends ResourceSupport {
     @NotNull
     @Pattern(regexp = "[a-zA-Z0-9][a-zA-Z0-9_.-]*")

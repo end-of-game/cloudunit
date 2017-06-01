@@ -14,11 +14,11 @@ program
     client.applications
       .post({ 'name': name }, function (error, response) {
         if (error) {
-          out.error('Couldnt create an application: '+error);
+          out.error('Couldn\'t create an application: '+error);
           return;
         }
         if (response.statusCode != 201) {
-          out.error('Couldnt create an application: '+response.body);
+          out.error('Couldn\'t create an application: '+response.body);
           return;
         }
         out.info('Application '+name+' created');
@@ -33,7 +33,7 @@ program
       client.applications
         .getResource(function (error, doc) {
           if (error) {
-            out.error('Couldnt list applications: '+error);
+            out.error('Couldn\'t list applications: '+error);
             process.exit(1);
           }
           if (!doc._embedded) {
@@ -57,7 +57,7 @@ program
             process.exit(1);
           }
           if (response.statusCode != 204) {
-            out.error('Couldnt start an application: '+response.body);
+            out.error('Couldn\'t start an application: '+response.body);
             process.exit(1);
           }
           out.info('Application '+name+' started');
@@ -72,11 +72,11 @@ program
         .follow('cu:applications[name:'+name+']','cu:stop')
         .post({}, function (error, response) {
           if (error) {
-            out.error('Couldnt stop an application: '+error);
+            out.error('Couldn\'t stop an application: '+error);
             process.exit(1);
           }
           if (response.statusCode != 204) {
-            out.error('Couldnt stop an application: '+response.body);
+            out.error('Couldn\'t stop an application: '+response.body);
             process.exit(1);
           }
           out.info('Application '+name+' stopped');
@@ -91,35 +91,15 @@ program
         .follow('cu:applications[name:'+name+']','self')
         .delete(function (error, response) {
           if (error) {
-            out.error('Couldnt remove a application: '+error);
+            out.error('Couldn\'t remove a application: '+error);
             process.exit(1);
           }
           if (response.statusCode != 204) {
-            out.error('Couldnt remove a application: '+response.body);
+            out.error('Couldn\'t remove a application: '+response.body);
             process.exit(1);
           }
           out.info('Application '+name+' removed');
         });
-    });
-
-
-program
-    .command('list images')
-    .description('list all images')
-    .action(function(name) {
-        client.images
-            .getResource(function (error, doc) {
-                if (error) {
-                    out.error('Couldnt list images: '+error);
-                    process.exit(1);
-                }
-                if (!doc._embedded) {
-                    doc._embedded = { 'cu:images': [] };
-                }
-                out.info(columnify(
-                    doc._embedded['cu:images'],
-                    { columns: ['name', 'state'] }));
-            });
     });
 
 program.parse(process.argv);
