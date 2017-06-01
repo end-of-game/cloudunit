@@ -75,7 +75,7 @@
     };
 
     uploader = $scope.uploader = new FileUploader({
-      url: 'applications/' + $stateParams.name + '/deploy',
+      url: '',
       method: 'PUT',
       removeAfterUpload: true,
       queueLimit: 1

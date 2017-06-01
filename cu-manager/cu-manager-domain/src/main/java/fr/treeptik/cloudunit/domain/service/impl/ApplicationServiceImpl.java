@@ -142,14 +142,12 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new IllegalStateException(String.format("Cannot deploy archive with contextPath %s", contextPath));
         }
 		
-		Deployment deployment = service.addDeployment(contextPath);
-		
 		String fileId = storageService.store(file);
+		String fileUri = String.format("%s/files/%s", baseUrl, fileId);
 		
+		Deployment deployment = service.addDeployment(contextPath);
 		applicationRepository.save(application);
 		
-		String fileUri = String.format("%s/files/%s", baseUrl, fileId);
-
 		orchestratorService.deploy(service.getContainerName(), contextPath, fileUri);
 		
 		return deployment;
