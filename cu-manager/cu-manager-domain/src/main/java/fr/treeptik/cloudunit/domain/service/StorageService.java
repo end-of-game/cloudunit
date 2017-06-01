@@ -6,8 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface StorageService {
 
-	File store(MultipartFile file, String path);
-
 	File store(MultipartFile fileUpload);
+	
+	File findByName(String fileName);
 
 }

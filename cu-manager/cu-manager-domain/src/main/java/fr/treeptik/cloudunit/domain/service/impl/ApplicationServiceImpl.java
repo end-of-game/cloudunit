@@ -139,7 +139,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file) {
 		
-		if (service.getState().isPending()) {
+		if (service.getState().isPending() || ContainerState.STOPPED.equals(service.getState())) {
             throw new IllegalStateException(String.format("Cannot deploy archive with contextPath %s", contextPath));
         }
 		
