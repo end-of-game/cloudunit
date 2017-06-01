@@ -1,12 +1,17 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSFile;
 
 import fr.treeptik.cloudunit.domain.service.ServiceException;
 import fr.treeptik.cloudunit.domain.service.StorageService;
@@ -14,29 +19,28 @@ import fr.treeptik.cloudunit.domain.service.StorageService;
 @Component
 public class StorageServiceImpl implements StorageService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(StorageServiceImpl.class);
+	@Autowired
+	private GridFsTemplate gridFsTemplate;
 
-	public File store(MultipartFile fileUpload) {
+	@Override
+	public String store(MultipartFile file) {
+		String name = file.getOriginalFilename();
 		try {
-			String tempDirectoryPath = System.getProperty("java.io.tmpdir");
-			File file = new File(String.format("%s/%s",tempDirectoryPath, fileUpload.getOriginalFilename()));
-			fileUpload.transferTo(file);
-			return file;
-		} catch (IllegalStateException | IOException e) {
-			LOGGER.error("Couldn't store file {}", fileUpload.getOriginalFilename());
-			throw new ServiceException(e.getMessage(), e);
+			GridFSFile gridFsFile = gridFsTemplate.store(file.getInputStream(), name, file.getContentType());
+			gridFsFile.save();
+			return gridFsFile.getId().toString();
+		} catch (IOException e) {
+			throw new ServiceException(String.format("Couldn't store the file %s", name), e);
 		}
 	}
 
 	@Override
-	public File findByName(String fileName) {
-		String tempDirectoryPath = System.getProperty("java.io.tmpdir");
-		File file = new File(String.format("%s/%s",tempDirectoryPath, fileName));
-		LOGGER.info(tempDirectoryPath);
-		if (!file.exists()) {
-			throw new ServiceException(String.format("Couldn't find file %s", fileName));
+	public InputStream findById(String id) {
+		GridFSDBFile file = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
+		if (file == null) {
+			throw new ServiceException(String.format("Couldn't find file with id : %s", id));
 		}
-		return file;
+		return file.getInputStream();
 	}
 
 }

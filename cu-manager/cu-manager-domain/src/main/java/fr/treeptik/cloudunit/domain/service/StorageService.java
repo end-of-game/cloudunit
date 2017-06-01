@@ -1,13 +1,13 @@
 package fr.treeptik.cloudunit.domain.service;
 
-import java.io.File;
+import java.io.InputStream;
 
 import org.springframework.web.multipart.MultipartFile;
 
 public interface StorageService {
 
-	File store(MultipartFile fileUpload);
-	
-	File findByName(String fileName);
+	String store(MultipartFile fileUpload);
+
+	InputStream findById(String fileName);
 
 }

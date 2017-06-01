@@ -1,6 +1,5 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -137,7 +136,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
     
 	@Override
-	public Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file) {
+	public Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file, String baseUrl) {
 		
 		if (service.getState().isPending() || ContainerState.STOPPED.equals(service.getState())) {
             throw new IllegalStateException(String.format("Cannot deploy archive with contextPath %s", contextPath));
@@ -145,11 +144,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 		
 		Deployment deployment = service.addDeployment(contextPath);
 		
+		String fileId = storageService.store(file);
+		
 		applicationRepository.save(application);
 		
-		File newFile = storageService.store(file);
+		// TODO construct fileUri
+		String fileUri = String.format("/files/%s", fileId);
 
-		orchestratorService.deploy(service.getContainerName(), contextPath, "file://" + newFile.getAbsolutePath());
+		orchestratorService.deploy(service.getContainerName(), contextPath, fileUri);
 		
 		return deployment;
 	}

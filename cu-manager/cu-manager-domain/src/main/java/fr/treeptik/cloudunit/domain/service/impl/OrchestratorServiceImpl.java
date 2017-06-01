@@ -68,9 +68,8 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
 		String uri = t.follow(rel("cu:containers")).follow(rel("cu:container").withParameter("name", containerName))
 				.asLink().getHref();
 		uri += "/deploy/" + contextPath;
-
+		
 		rest.put(uri, fileUri);
-
 	}
 
 }
