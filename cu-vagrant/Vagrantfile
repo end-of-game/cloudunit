@@ -5,7 +5,7 @@ memory = ENV['MEMORY']
 
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "ubuntu/trusty64"
 
   config.vm.synced_folder "../", "/home/vagrant/cloudunit"
 
@@ -17,7 +17,7 @@ Vagrant.configure(2) do |config|
   config.vbguest.auto_update = true
   config.vbguest.no_remote = false
 
-  config.vm.network "private_network", ip: "192.168.50.5"
+  config.vm.network "private_network", ip: "192.168.50.4"
   config.vm.provision "shell", path: "boot/provision.sh"
 
 end
