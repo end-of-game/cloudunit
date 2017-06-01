@@ -29,4 +29,24 @@ program
             });
     });
 
+program
+    .command('create <name>')
+    .description('create a volume')
+    .action(function(name) {
+        client.volumes
+            .post({ 'name': name }, function (error, response) {
+                if (error) {
+                    out.error('Couldn\'t create a volume: '+error);
+                    return;
+                }
+                if (response.statusCode != 201) {
+                    out.error('Couldn\'t create a volume: '+response.body);
+                    return;
+                }
+                out.info('Volume '+name+' created');
+            });
+    });
+
+
+
 program.parse(process.argv);
