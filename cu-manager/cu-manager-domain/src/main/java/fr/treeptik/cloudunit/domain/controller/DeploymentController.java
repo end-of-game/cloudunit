@@ -80,7 +80,8 @@ public class DeploymentController {
 	public ResponseEntity<?> addDeployment(@PathVariable String appId, @PathVariable String name,
 			@PathVariable String contextPath, @RequestPart("file") MultipartFile file, HttpServletRequest request) {
 		return withService(appId, name, (application, service) -> {
-			Deployment deployment = applicationService.addDeployment(application, service, contextPath, file, request.getRequestURI());
+			String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
+			Deployment deployment = applicationService.addDeployment(application, service, contextPath, file, baseUrl);
 			return ResponseEntity.ok(toResource(application, service, deployment));
         });
 	}

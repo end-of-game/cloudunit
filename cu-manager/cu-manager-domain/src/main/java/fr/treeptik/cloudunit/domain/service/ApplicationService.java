@@ -20,7 +20,7 @@ public interface ApplicationService {
     
     void stopApplication(Application application);
     
-    Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file, String string);
+    Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file, String baseUrl);
     
     void updateContainerState(Application application, String containerName, ContainerState state);
     

@@ -148,8 +148,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		
 		applicationRepository.save(application);
 		
-		// TODO construct fileUri
-		String fileUri = String.format("/files/%s", fileId);
+		String fileUri = String.format("%s/files/%s", baseUrl, fileId);
 
 		orchestratorService.deploy(service.getContainerName(), contextPath, fileUri);
 		
