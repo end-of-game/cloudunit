@@ -53,36 +53,35 @@ public class FileServiceImpl implements FileService {
 	public String sendFileToContainer(String containerId, String fileUri, String destination) {
 		try {
 			File file = null;
-			File createTempHomeDirPerUsage = null;
+			File tempDirectory = null;
 			File homeDirectory = null;
 			try {
 				homeDirectory = FileUtils.getUserDirectory();
-				createTempHomeDirPerUsage = new File(
-						homeDirectory.getAbsolutePath() + "/tmp" + System.currentTimeMillis());
-				if (createTempHomeDirPerUsage.mkdirs()) {
+				tempDirectory = new File(String.format("%s/tmp%d", homeDirectory.getAbsolutePath(), System.currentTimeMillis()));
+				if (tempDirectory.mkdirs()) {
 					if (fileUri != null) {
 						URL url = new URL(fileUri);
 						URLConnection urlConnection = url.openConnection();
 						String header = urlConnection.getHeaderField("Content-Disposition");
 						String filename = header.split("attachment; filename=")[1];
-						file = new File(String.format("%s/%s", createTempHomeDirPerUsage.getAbsolutePath(), filename));
+						file = new File(String.format("%s/%s", tempDirectory.getAbsolutePath(), filename));
 						FileUtils.copyURLToFile(new URL(fileUri), file);
 					}
 					dockerService.sendFileToContainer(containerId, file.getParent(), file.getName(), destination);
 					return String.format("%s/%s", destination, file.getName());
 				} else {
-					throw new ServiceException("Cannot create : " + createTempHomeDirPerUsage.getAbsolutePath());
+					throw new ServiceException(String.format("Cannot create : %s", tempDirectory.getAbsolutePath()));
 				}
 			} finally {
-				if (createTempHomeDirPerUsage != null) {
+				if (tempDirectory != null) {
 					boolean deleted = file.delete();
 					LOGGER.debug(file.getAbsolutePath() + " is deleted ? " + deleted);
-					deleted = createTempHomeDirPerUsage.delete();
-					LOGGER.debug(createTempHomeDirPerUsage.getAbsolutePath() + " is deleted ? " + deleted);
+					deleted = tempDirectory.delete();
+					LOGGER.debug(tempDirectory.getAbsolutePath() + " is deleted ? " + deleted);
 				}
 			}
 		} catch (IOException e) {
-			throw new ServiceException("Cannot store the file from " + fileUri);
+			throw new ServiceException(String.format("Cannot store the file from %s", fileUri), e);
 		}
 	}
 }
