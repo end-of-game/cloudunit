@@ -29,4 +29,43 @@ program
             });
     });
 
+program
+    .command('create <name>')
+    .description('create a volume')
+    .action(function(name) {
+        client.volumes
+            .post({ 'name': name }, function (error, response) {
+                if (error) {
+                    out.error('Couldn\'t create a volume: '+error);
+                    return;
+                }
+                if (response.statusCode != 201) {
+                    out.error('Couldn\'t create a volume: '+response.body);
+                    return;
+                }
+                out.info('Volume '+name+' created');
+            });
+    });
+
+
+program
+    .command('rm <name>')
+    .description('remove a volume')
+    .action(function(name) {
+        client.volumes
+            .follow('cu:volumes[name:'+name+']','self')
+            .delete(function (error, response) {
+                if (error) {
+                    out.error('Couldn\'t remove a volume: '+error);
+                    process.exit(1);
+                }
+                if (response.statusCode != 204) {
+                    var responseJson = JSON.parse(response.body);
+                    out.error('Couldn\'t remove a volume: '+responseJson["message"]);
+                    process.exit(1);
+                }
+                out.info('Volume '+name+' removed');
+            });
+    });
+
 program.parse(process.argv);
