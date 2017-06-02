@@ -227,7 +227,7 @@ public class DockerServiceImpl implements DockerService {
             volumeRepository.delete(volume);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't remove volume", e);
-            throw new ServiceException("Couldn't remove volume", e);
+            throw new ServiceException(e.getMessage(), e);
         }
     }
 
