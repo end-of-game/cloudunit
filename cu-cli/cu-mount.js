@@ -51,13 +51,13 @@ program
                     process.exit(1);
                 }
                 client.volumes.follow('cu:volumes[name:'+volume+']').getResource(function(err, data){
-                    if(err) {
+                    if (error) {
                         out.error('Couldn\'t access mounted volumes: '+error);
                         process.exit(1);
                     }
                     client.containers
                         .follow('cu:containers[name:'+doc.containerName+']', 'cu:mounts')
-                        .post({ 'volume': data, 'mountPoint':mountpoint}, function (error, response) {
+                        .post({ 'volume': data, 'mountPoint': mountpoint }, function (error, response) {
                             if (error) {
                                 out.error('Couldn\'t mount a volume on service: '+error);
                                 return;
@@ -67,7 +67,7 @@ program
                                 out.error('Couldn\'t mount a volume on service : '+responseJson["message"]);
                                 return;
                             }
-                            out.info(volume + ' mounted on '+service+' !');
+                            out.info('Volume '+volume+' mounted on service '+service);
                         });
                 })
             });
