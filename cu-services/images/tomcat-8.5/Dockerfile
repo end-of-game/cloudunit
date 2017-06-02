@@ -1,5 +1,7 @@
 FROM tomcat:8.5.15-jre8
 
+ENV TOMCAT_MAJOR=8.5
+
 ARG user=tomcat
 ARG group=tomcat
 ARG uid=1000
