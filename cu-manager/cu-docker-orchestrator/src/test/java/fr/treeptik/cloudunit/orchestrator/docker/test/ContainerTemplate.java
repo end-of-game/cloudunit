@@ -1,13 +1,14 @@
 package fr.treeptik.cloudunit.orchestrator.docker.test;
 
-import static org.awaitility.Awaitility.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.awaitility.Awaitility.await;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
 import org.awaitility.Duration;
 import org.junit.Assume;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +24,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
 
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 import fr.treeptik.cloudunit.orchestrator.resource.ContainerDependencyResource;
@@ -72,8 +74,8 @@ public class ContainerTemplate {
     }
     
     public void deleteContainerAndWait(ContainerResource container) throws Exception {
-        deleteContainer(container);
-        
+        ResultActions result = deleteContainer(container);
+        result.andExpect(status().isNoContent());
         waitForRemoval(container);
     }
 
@@ -81,8 +83,9 @@ public class ContainerTemplate {
         await().atMost(Duration.ONE_MINUTE).until(() -> {
             String uri = container.getLink(Link.REL_SELF).getHref();
             int status = mockMvc.perform(get(uri)).andReturn().getResponse().getStatus();
+            int contentLength = mockMvc.perform(get(uri)).andReturn().getResponse().getContentLength();
             LOGGER.debug("Container {} still exists? {}", container.getName(), status);
-            return status == HttpStatus.NOT_FOUND.value();
+            return contentLength == 0;
         });
     }
 
@@ -175,8 +178,13 @@ public class ContainerTemplate {
     }
 
     public void assumeContainerDoesNotExist(String containerName) throws DockerException, InterruptedException {
-        Assume.assumeTrue(containerName + " should not exist.",
+        Assume.assumeFalse(containerName + " should not exist.",
                 dockerClient.listContainers().stream()
                         .anyMatch(container -> container.names().contains(containerName)));
+    }
+    
+    public ResultActions deployIntoContainer(ContainerResource container, String contextPath) throws Exception {
+        String uri = String.format("%s/deploy/%s", container.getLink(Link.REL_SELF).getHref(), contextPath);
+        return mockMvc.perform(put(uri));
     }
 }

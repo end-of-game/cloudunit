@@ -1,14 +1,18 @@
 package fr.treeptik.cloudunit.orchestrator.docker.controller;
 
-import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.CONTAINER_NAME;
+import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.CONTEXT_PATH;
+import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.IMAGE_NAME;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isOneOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
-import org.junit.Assume;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +44,6 @@ public class ContainerControllerIT {
     
     @Autowired
     private ImageTemplate imageTemplate;
-
-    @Autowired
-    private DockerClient dockerClient;
     
     @Test
     public void testCreateContainer() throws Exception {
@@ -67,6 +68,7 @@ public class ContainerControllerIT {
             }
             
         } finally {
+        	containerTemplate.waitWhilePending(container);
             containerTemplate.deleteContainerAndWait(container);
         }
     }
@@ -121,6 +123,32 @@ public class ContainerControllerIT {
             container = containerTemplate.refreshContainer(container);
             
             assertEquals(ContainerState.STOPPED, container.getState());
+        } finally {
+            containerTemplate.waitWhilePending(container);
+            containerTemplate.deleteContainerAndWait(container);
+        }
+    }
+    
+    @Test
+    @Ignore
+    public void testDeployIntoContainer() throws Exception {
+    	containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+
+        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        
+        try {
+        
+	        containerTemplate.startContainer(container)
+	        	.andExpect(status().isNoContent());
+	        
+	        containerTemplate.waitWhilePending(container);
+	        container = containerTemplate.refreshContainer(container);
+	        
+	        containerTemplate.deployIntoContainer(container, CONTEXT_PATH)
+	        	.andExpect(status().isNoContent());
+	        
+	        // TODO assert
+	        
         } finally {
             containerTemplate.waitWhilePending(container);
             containerTemplate.deleteContainerAndWait(container);
