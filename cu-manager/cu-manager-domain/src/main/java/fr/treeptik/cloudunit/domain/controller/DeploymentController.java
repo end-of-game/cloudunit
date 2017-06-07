@@ -7,15 +7,12 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.treeptik.cloudunit.domain.core.Application;
@@ -82,6 +79,16 @@ public class DeploymentController {
 			return ResponseEntity.ok(toResource(application, service, deployment));
         });
 	}
+
+	@PostMapping
+	public ResponseEntity<?> addDeploymentNoContextPath(@PathVariable String appId, @PathVariable String name
+			, @RequestPart("file") MultipartFile file) {
+		return withService(appId, name, (application, sxervice) -> {
+			Deployment deployment = applicationService.addDeployment(application, service, FilenameUtils.removeExtension(file.getOriginalFilename()), file);
+			return ResponseEntity.ok(toResource(application, service, deployment));
+		});
+	}
+
 
 	private ResponseEntity<?> withService(String appId, String name,
 			BiFunction<Application, Service, ResponseEntity<?>> mapper) {
