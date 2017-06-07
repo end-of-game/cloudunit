@@ -83,7 +83,7 @@ public class DeploymentController {
 	@PostMapping
 	public ResponseEntity<?> addDeploymentNoContextPath(@PathVariable String appId, @PathVariable String name
 			, @RequestPart("file") MultipartFile file) {
-		return withService(appId, name, (application, sxervice) -> {
+		return withService(appId, name, (application, service) -> {
 			Deployment deployment = applicationService.addDeployment(application, service, FilenameUtils.removeExtension(file.getOriginalFilename()), file);
 			return ResponseEntity.ok(toResource(application, service, deployment));
 		});
