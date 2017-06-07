@@ -9,12 +9,19 @@ import fr.treeptik.cloudunit.domain.core.Deployment;
 public class DeploymentResource extends ResourceSupport {
 
 	private String contextPath;
+	private String fileUri;
 	
 	protected DeploymentResource() {
 	}
 
+	public DeploymentResource(String contextPath, String fileUri) {
+		this.contextPath = contextPath;
+		this.fileUri = fileUri;
+	}
+
 	public DeploymentResource(Deployment deployment) {
 		this.contextPath = deployment.getContextPath();
+		this.fileUri = deployment.getFileUri();
 	}
 
 	public String getContextPath() {
@@ -25,4 +32,9 @@ public class DeploymentResource extends ResourceSupport {
 		this.contextPath = contextPath;
 	}
 
+	public String getFileUri() { return fileUri; }
+
+	public void setFileUri(String fileUri) { this.fileUri = fileUri; }
+
 }
+

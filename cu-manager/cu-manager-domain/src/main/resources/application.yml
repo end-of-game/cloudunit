@@ -29,6 +29,8 @@ server:
 logging:
   level:
     fr.treeptik: debug
+    org.springframework.cloud: debug
+    org.springframework.integration: debug
 cloudunit:
   orchestrator:
     base-uri: http://localhost:8081/

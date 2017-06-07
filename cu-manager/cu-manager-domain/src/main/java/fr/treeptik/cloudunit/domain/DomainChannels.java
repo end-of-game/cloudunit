@@ -9,6 +9,7 @@ public interface DomainChannels {
 	String SERVICES = "services";
 	String CONTAINERS = "containers";
 	String IMAGES = "images";
+	String DEPLOYMENTS = "deployments";
 
 	@Output(APPLICATIONS)
 	SubscribableChannel applications();
@@ -16,9 +17,13 @@ public interface DomainChannels {
 	@Output(SERVICES)
 	SubscribableChannel services();
 
+	@Output(DEPLOYMENTS)
+	SubscribableChannel deployments();
+
 	@Input(CONTAINERS)
 	SubscribableChannel containers();
 
 	@Input(IMAGES)
 	SubscribableChannel images();
+
 }

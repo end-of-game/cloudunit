@@ -148,7 +148,8 @@ public class ContainerTemplate {
         return mockMvc.perform(delete(uri));
     }
     
-    public ResultActions mountVolume(ContainerResource container, VolumeResource volume, String mountPoint) throws Exception {
+    public ResultActions mountVolume(ContainerResource container, VolumeResource volume, String mountPoint)
+            throws Exception {
         String uri = container.getLink("cu:mounts").getHref();
         MountResource request = new MountResource(volume, mountPoint);
         
@@ -183,7 +184,10 @@ public class ContainerTemplate {
                         .anyMatch(container -> container.names().contains(containerName)));
     }
     
-    public ResultActions deployIntoContainer(ContainerResource container, String contextPath) throws Exception {
+    public ResultActions deployIntoContainer(
+            ContainerResource container,
+            String artifactUrl,
+            String contextPath) throws Exception {
         String uri = String.format("%s/deploy/%s", container.getLink(Link.REL_SELF).getHref(), contextPath);
         return mockMvc.perform(put(uri));
     }
