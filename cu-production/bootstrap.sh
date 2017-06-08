@@ -213,6 +213,8 @@ question_pull_or_build() {
       echo "No action. We will use current images"
     elif [ -n "$PUSHPULL" ]; then
       logo_building_cloudunit
+      echo "image have been builded"
+      cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
     else
       echo "Sorry, but I didn't understand your answer :("
       question_pull_or_build
