@@ -138,12 +138,23 @@ function with-elk {
     source .env
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
-                    -f docker-compose.mattermost.yml \
                     -f docker-compose.yml \
     up -d
 }
 
 function with-elk-and-selenium {
+    check-env
+    source .env
+    docker network create skynet
+    docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.selenium.yml \
+                    -f docker-compose.yml \
+    up -d
+}
+
+function full-options {
+    check-env
+    source .env
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
                     -f docker-compose.mattermost.yml \
@@ -194,6 +205,11 @@ with-elk
 'with-elk-and-selenium')
 with-elk-and-selenium
 ;;
+
+'full-options')
+full-options
+;;
+
 
 'reset')
 reset
