@@ -39,6 +39,7 @@ install_docker() {
 
   else
     # documentation from https://docs.docker.com/cs-engine/1.12/
+    rpm --import "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e"
     yum install -y yum-utils
     # yum list docker-engine.x86_64  --showduplicates |sort -r
     yum-config-manager -y --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
