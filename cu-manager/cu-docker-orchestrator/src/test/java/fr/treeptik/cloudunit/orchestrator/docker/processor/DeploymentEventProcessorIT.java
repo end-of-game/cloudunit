@@ -14,12 +14,19 @@ import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+@RunWith(Parameterized.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class DeploymentEventProcessorIT {
@@ -45,9 +52,22 @@ public class DeploymentEventProcessorIT {
     @Autowired
     private CloudUnitConfiguration cloudUnitConfiguration;
 
+    @Parameters(name = "{index} {0}")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+                {"tomcat:6"}, {"tomcat:7"},{"tomcat:8"}, {"tomcat:8.5"}, {"tomcat:9"}
+        });
+    }
+
+    private final String serverName;
+
+    public DeploymentEventProcessorIT(String serverName) {
+        this.serverName = serverName;
+    }
+
     @Test
     public void deployHelloWorld() throws Exception {
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, serverName);
         try {
             containerTemplate.startContainer(container);
             DeploymentResource deploymentResource = new DeploymentResource("xxx", HELLOWORLD_ARTIFACT_URL);
