@@ -39,8 +39,8 @@ install_docker() {
 
   else
     yum install -y yum-utils
-    yum-config-manager --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
-    yum -y install docker-engine-1.12.6
+    yum-config-manager -y --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
+    yum install -y docker-engine-1.12.6.cs12
     systemctl enable docker.service
   fi
   usermod -a -G docker $CU_USER
