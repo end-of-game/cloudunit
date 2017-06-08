@@ -192,7 +192,7 @@ pull_images_from_dockerhub() {
   docker pull cloudunit/rabbitmq-3.6
   docker pull cloudunit/activemq-5.13
   docker pull cloudunit/elasticsearch-2.4
-  docker pull cloudunit/nginx-10
+  docker pull cloudunit/nginx-1.10
 }
 
 question_pull_or_build() {
