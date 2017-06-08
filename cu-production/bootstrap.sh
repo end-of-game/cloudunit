@@ -165,7 +165,6 @@ pull_images_from_dockerhub() {
   docker pull cloudunit/base-12.04
   docker pull cloudunit/base-14.04
   docker pull cloudunit/base-16.04
-  docker pull cloudunit/java
   docker pull cloudunit/redis-3-2
   docker pull cloudunit/manager
   docker pull cloudunit/elk-kibana
