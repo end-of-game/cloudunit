@@ -38,7 +38,9 @@ install_docker() {
     apt-get install -y docker-engine=1.12.6-0~ubuntu-$(lsb_release -sc)
 
   else
+    # documentation from https://docs.docker.com/cs-engine/1.12/
     yum install -y yum-utils
+    # yum list docker-engine.x86_64  --showduplicates |sort -r
     yum-config-manager -y --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
     yum install -y docker-engine-1.12.6.cs12
     systemctl enable docker.service
