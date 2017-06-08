@@ -202,17 +202,19 @@ question_pull_or_build() {
     echo "Would you prefer to [build] or [pull] images (default is [pull])"
     echo "( pull / build / continue ) : "
     read PUSHPULL
-    if [ "$PUSHPULL" = "pull" -o "$PUSHPULL" = "" ]; then
+    if [ "$PUSHPULL" = "pull" ]; then
       logo_pulling_dockerhub
       pull_images_from_dockerhub
-    elif [ "$PUSHPULL" = "build" ]; then
+    elif [ "$PUSHPULL" = "build" -o "$PUSHPULL" = "" ]; then
       logo_building_cloudunit
       echo "image have been builded"
       cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
     elif [ "$PUSHPULL" = "continue" ]; then
       echo "No action. We will use current images"
     elif [ -n "$PUSHPULL" ]; then
-      pull_images_from_dockerhub
+      logo_building_cloudunit
+      echo "image have been builded"
+      cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
     else
       echo "Sorry, but I didn't understand your answer :("
       question_pull_or_build
