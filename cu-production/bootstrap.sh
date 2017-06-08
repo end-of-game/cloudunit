@@ -199,7 +199,7 @@ pull_images_from_dockerhub() {
 question_pull_or_build() {
   if [[ -z "${METHOD}" ]]; then
     echo ""
-    echo "Would you prefer to [build] or [pull] images (default is [pull])"
+    echo "Would you prefer to [build] or [pull] images (default is [build])"
     echo "( pull / build / continue ) : "
     read PUSHPULL
     if [ "$PUSHPULL" = "pull" ]; then
