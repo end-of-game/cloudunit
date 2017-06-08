@@ -39,7 +39,7 @@ install_docker() {
 
   else
     cp $CU_INSTALL_DIR/files/docker.repo /etc/yum.repos.d/docker.repo
-    yum -y install docker-engine
+    yum -y install docker-engine-1.12.6.cs9-1.el7
     systemctl enable docker.service
   fi
   usermod -a -G docker $CU_USER
