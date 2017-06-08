@@ -51,7 +51,6 @@
     function updateUrl() {
       uploader.url = vm.app._links.self.href + "/services/" + vm.myService.name + "/deployments/" + vm.contextPath;
       if(!vm.contextPath){
-        console.log("not");
         uploader.url = vm.app._links.self.href + "/services/" + vm.myService.name + "/deployments/";
         uploader.method = 'POST';
 
