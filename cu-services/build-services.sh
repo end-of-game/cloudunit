@@ -168,20 +168,8 @@ wildfly
 'all')
 echo "Building all"
 base
-activemq
-apache
-elastic
-fatjar
-glassfish
-mongo
 mysql
-nginx
-postgre
-rabbitmq
-redis
 tomcat
-vertx33
-wildfly
 ;;
 
 *)

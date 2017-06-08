@@ -138,7 +138,6 @@ function with-elk {
     source .env
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
-                    -f docker-compose.mattermost.yml \
                     -f docker-compose.yml \
     up -d
 }
@@ -146,7 +145,6 @@ function with-elk {
 function with-elk-and-selenium {
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
-                    -f docker-compose.mattermost.yml \
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
     up -d
@@ -170,8 +168,8 @@ function reset {
       docker volume rm $container
     done
 
-    docker-compose  -f docker-compose.mattermost.yml -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
-    docker-compose  -f docker-compose.mattermost.yml -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
+    docker-compose -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
+    docker-compose -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
     docker volume rm cucompose_elasticsearch-data
     docker volume rm cucompose_gitlab-logs
     docker volume rm cucompose_mysqldata
