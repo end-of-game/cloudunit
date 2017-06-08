@@ -21,7 +21,7 @@ RUN set -ex \
 	done
 
 ARG TOMCAT_VERSION
-ENV TOMCAT_VERSION ${TOMCAT_VERSION:-7.0.70}
+ENV TOMCAT_VERSION ${TOMCAT_VERSION:-7.0.77}
 
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts

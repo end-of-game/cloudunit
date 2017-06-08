@@ -38,8 +38,12 @@ install_docker() {
     apt-get install -y docker-engine=1.12.6-0~ubuntu-$(lsb_release -sc)
 
   else
-    cp $CU_INSTALL_DIR/files/docker.repo /etc/yum.repos.d/docker.repo
-    yum -y install docker-engine
+    # documentation from https://docs.docker.com/cs-engine/1.12/
+    rpm --import "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e"
+    yum install -y yum-utils
+    # yum list docker-engine.x86_64  --showduplicates |sort -r
+    yum-config-manager -y --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
+    yum install -y docker-engine-1.12.6.cs12
     systemctl enable docker.service
   fi
   usermod -a -G docker $CU_USER
@@ -160,17 +164,11 @@ override_rights() {
     chown -R $CU_USER /home/"$CU_USER"/.cloudunit
 }
 
-add_user_to_sudoers() {
-    # Add user to sudoers group
-    cp -f $CU_INSTALL_DIR/files/sudoers /etc/sudoers
-}
-
 pull_images_from_dockerhub() {
   docker pull cloudunit/base-jessie
   docker pull cloudunit/base-12.04
   docker pull cloudunit/base-14.04
   docker pull cloudunit/base-16.04
-  docker pull cloudunit/java
   docker pull cloudunit/redis-3-2
   docker pull cloudunit/manager
   docker pull cloudunit/elk-kibana
@@ -198,26 +196,28 @@ pull_images_from_dockerhub() {
   docker pull cloudunit/rabbitmq-3.6
   docker pull cloudunit/activemq-5.13
   docker pull cloudunit/elasticsearch-2.4
-  docker pull cloudunit/nginx-10
+  docker pull cloudunit/nginx-1.10
 }
 
 question_pull_or_build() {
   if [[ -z "${METHOD}" ]]; then
     echo ""
-    echo "Would you prefer to [build] or [pull] images (default is [pull])"
+    echo "Would you prefer to [build] or [pull] images (default is [build])"
     echo "( pull / build / continue ) : "
     read PUSHPULL
-    if [ "$PUSHPULL" = "pull" -o "$PUSHPULL" = "" ]; then
+    if [ "$PUSHPULL" = "pull" ]; then
       logo_pulling_dockerhub
       pull_images_from_dockerhub
-    elif [ "$PUSHPULL" = "build" ]; then
+    elif [ "$PUSHPULL" = "build" -o "$PUSHPULL" = "" ]; then
       logo_building_cloudunit
       echo "image have been builded"
       cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
     elif [ "$PUSHPULL" = "continue" ]; then
       echo "No action. We will use current images"
     elif [ -n "$PUSHPULL" ]; then
-      pull_images_from_dockerhub
+      logo_building_cloudunit
+      echo "image have been builded"
+      cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
     else
       echo "Sorry, but I didn't understand your answer :("
       question_pull_or_build
@@ -283,7 +283,6 @@ install_cron
 question_pull_or_build
 
 override_rights
-add_user_to_sudoers
 
 if [ -n "$SILENT_INSTALL" ] || [ "$SILENT_INSTALL" = "yes" ]; then
   cp -f .env /home/${CU_USER}/cloudunit/cu-compose
