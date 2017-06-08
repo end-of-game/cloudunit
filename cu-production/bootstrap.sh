@@ -212,7 +212,7 @@ question_pull_or_build() {
     elif [ "$PUSHPULL" = "continue" ]; then
       echo "No action. We will use current images"
     elif [ -n "$PUSHPULL" ]; then
-      pull_images_from_dockerhub
+      logo_building_cloudunit
     else
       echo "Sorry, but I didn't understand your answer :("
       question_pull_or_build
