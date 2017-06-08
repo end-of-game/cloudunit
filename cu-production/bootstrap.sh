@@ -199,13 +199,13 @@ pull_images_from_dockerhub() {
 question_pull_or_build() {
   if [[ -z "${METHOD}" ]]; then
     echo ""
-    echo "Would you prefer to [build] or [pull] images (default is [pull])"
+    echo "Would you prefer to [build] or [pull] images (default is [build])"
     echo "( pull / build / continue ) : "
     read PUSHPULL
-    if [ "$PUSHPULL" = "pull" -o "$PUSHPULL" = "" ]; then
+    if [ "$PUSHPULL" = "pull"]; then
       logo_pulling_dockerhub
       pull_images_from_dockerhub
-    elif [ "$PUSHPULL" = "build" ]; then
+    elif [ "$PUSHPULL" = "build" -o "$PUSHPULL" = "" ]; then
       logo_building_cloudunit
       echo "image have been builded"
       cd /home/$CU_USER/cloudunit/cu-services && ./build-services.sh all
