@@ -98,7 +98,6 @@ lvconvert -y \
 -c 512K \
 --thinpool docker/thinpool \
 --poolmetadata docker/thinpoolmeta
-
 ```
 
 ## How to restart the production environment without reseting data
