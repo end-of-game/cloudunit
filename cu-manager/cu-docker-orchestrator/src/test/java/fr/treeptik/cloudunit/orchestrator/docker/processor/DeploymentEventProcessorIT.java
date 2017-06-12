@@ -55,7 +55,11 @@ public class DeploymentEventProcessorIT {
     @Parameters(name = "{index} {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-                {"tomcat:6"}, {"tomcat:7"},{"tomcat:8"}, {"tomcat:8.5"}, {"tomcat:9"}
+                {"tomcat:6"}, 
+                {"tomcat:7"},
+                {"tomcat:8"}, 
+                {"tomcat:8.5"}, 
+                {"tomcat:9"},
         });
     }
 
@@ -70,6 +74,7 @@ public class DeploymentEventProcessorIT {
         ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, serverName);
         try {
             containerTemplate.startContainer(container);
+            containerTemplate.waitWhilePending(container);
             DeploymentResource deploymentResource = new DeploymentResource("xxx", HELLOWORLD_ARTIFACT_URL);
             DeploymentEvent deploymentEvent = new DeploymentEvent();
             deploymentEvent.setType(DeploymentEvent.Type.DEPLOYED);
