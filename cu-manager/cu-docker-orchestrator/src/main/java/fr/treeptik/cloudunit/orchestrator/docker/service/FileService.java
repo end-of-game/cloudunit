@@ -6,6 +6,6 @@ public interface FileService {
 
 	void deploy(Container container, String fileUri, String contextPath);
 
-	void sendFileToContainer(String containerId, String fileUri, String destination);
+	String sendFileToContainer(String containerId, String fileUri, String destination);
 
 }

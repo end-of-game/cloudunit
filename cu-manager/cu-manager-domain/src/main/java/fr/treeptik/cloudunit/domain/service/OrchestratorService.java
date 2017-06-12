@@ -10,6 +10,6 @@ public interface OrchestratorService {
 
 	Optional<Image> findImageByName(String imageName);
 
-	void deploy(String containerName, String contextPath, String fileUri);
+	String deploy(String containerName, String contextPath, String fileUri);
 
 }

@@ -2,6 +2,7 @@ package fr.treeptik.cloudunit.orchestrator.docker.processor;
 
 import java.util.Optional;
 
+import fr.treeptik.cloudunit.orchestrator.docker.service.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,43 +31,51 @@ public class ServiceEventProcessor {
 	@Autowired
 	private DockerService dockerService;
 
+	@Autowired
+	private FileService fileService;
+
 	@StreamListener(OrchestratorChannels.SERVICES)
 	public void onServiceEvent(ServiceEvent event) {
 		String containerName = event.getService().getContainerName();
 		String imageName = event.getService().getImageName();
 		ServiceEvent.Type type = event.getType();
-		updateContainerState(containerName, imageName, type);
-	}
 
-	private void updateContainerState(String containerName, String imageName, ServiceEvent.Type type) {
-		if (type.equals(ServiceEvent.Type.CREATED)) {
-			Optional<Image> image = imageRepository.findByName(imageName);
-			if (!image.isPresent()) {
-				LOGGER.warn("Tried to create a container {} with an unknown image {}", containerName, imageName);
-				return;
-			}
-			dockerService.createContainer(containerName, image.get());
-		} else if (type.equals(ServiceEvent.Type.DELETED)) {
-			Optional<Container> container = containerRepository.findByName(containerName);
-			if (!container.isPresent()) {
-				LOGGER.warn("Tried to delete an unknown container {}", containerName);
-				return;
-			}
-			dockerService.deleteContainer(container.get());
-		} else if (type.equals(ServiceEvent.Type.STARTED)) {
-			Optional<Container> container = containerRepository.findByName(containerName);
-			if (!container.isPresent()) {
-				LOGGER.warn("Tried to start an unknown container {}", containerName);
-				return;
-			}
-			dockerService.startContainer(container.get());
-		} else if (type.equals(ServiceEvent.Type.STOPPED)) {
-			Optional<Container> container = containerRepository.findByName(containerName);
-			if (!container.isPresent()) {
-				LOGGER.warn("Tried to stop an unknown container {}", containerName);
-				return;
-			}
-			dockerService.stopContainer(container.get());
+		Optional<Container> container = null;
+		switch (type) {
+			case CREATED:
+				Optional<Image> image = imageRepository.findByName(imageName);
+				if (!image.isPresent()) {
+					LOGGER.error("Tried to create a container {} with an unknown image {}", containerName, imageName);
+					return;
+				}
+				dockerService.createContainer(containerName, image.get());
+				break;
+			case DELETED:
+				container = containerRepository.findByName(containerName);
+				if (!container.isPresent()) {
+					LOGGER.error("Tried to delete an unknown container {}", containerName);
+					return;
+				}
+				dockerService.deleteContainer(container.get());
+				break;
+			case STARTED:
+				container = containerRepository.findByName(containerName);
+				if (!container.isPresent()) {
+					LOGGER.error("Tried to start an unknown container {}", containerName);
+					return;
+				}
+				dockerService.startContainer(container.get());
+				break;
+			case STOPPED:
+				container = containerRepository.findByName(containerName);
+				if (!container.isPresent()) {
+					LOGGER.error("Tried to stop an unknown container {}", containerName);
+					return;
+				}
+				dockerService.stopContainer(container.get());
+				break;
+			default:
+				LOGGER.error("Type {} unknown", type);
 		}
 	}
 

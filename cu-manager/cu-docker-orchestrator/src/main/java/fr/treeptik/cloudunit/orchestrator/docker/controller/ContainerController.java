@@ -105,16 +105,7 @@ public class ContainerController {
             return ResponseEntity.noContent().build();
         });
     }
-    
-    @PutMapping("/{name}/deploy/{contextPath}")
-    public ResponseEntity<?> deploy(@PathVariable String name, @PathVariable String contextPath, 
-    		@RequestBody String fileUri) {
-        return withContainer(name, container -> {
-        	fileService.deploy(container, fileUri, contextPath);
-            return ResponseEntity.noContent().build();
-        });
-    }
-    
+
     private ResponseEntity<?> withContainer(String name, Function<Container, ResponseEntity<?>> mapper) {
         return containerRepository.findByName(name)
                 .map(mapper)

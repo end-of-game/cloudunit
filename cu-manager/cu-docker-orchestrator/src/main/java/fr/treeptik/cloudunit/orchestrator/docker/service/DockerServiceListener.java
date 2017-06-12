@@ -8,4 +8,6 @@ public interface DockerServiceListener {
     void onContainerChanged(Container container);
 
     void onContainerDeleted(Container container);
+
+    void onContainerArtifactDeployed(Container container);
 }

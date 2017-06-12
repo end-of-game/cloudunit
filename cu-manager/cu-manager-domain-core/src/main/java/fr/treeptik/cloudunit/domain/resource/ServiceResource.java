@@ -16,6 +16,13 @@ public class ServiceResource extends ResourceSupport {
 	protected ServiceResource() {
 	}
 
+	private ServiceResource(Builder builder) {
+		this.name = builder.name;
+		this.imageName = builder.imageName;
+		this.containerName = builder.containerName;
+		this.state = builder.state;
+	}
+
 	public ServiceResource(Service service) {
 		this.imageName = service.getImageName();
 		this.containerName = service.getContainerName();
@@ -58,7 +65,57 @@ public class ServiceResource extends ResourceSupport {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
 
+	public static Builder of() {
+		return new Builder();
+	}
+
+	public static class Builder {
+		private String name;
+		private String imageName;
+		private String containerName;
+		private ContainerState state;
+
+		private Builder() {}
+
+		public String name() {
+			return name;
+		}
+
+		public Builder name(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public String imageName() {
+			return imageName;
+		}
+
+		public Builder imageName(String imageName) {
+			this.imageName = imageName;
+			return this;
+		}
+
+		public String containerName() {
+			return containerName;
+		}
+
+		public Builder containerName(String containerName) {
+			this.containerName = containerName;
+			return this;
+		}
+
+		public ContainerState state() {
+			return state;
+		}
+
+		public Builder state(ContainerState state) {
+			this.state = state;
+			return this;
+		}
+
+		public ServiceResource build() {
+			return new ServiceResource(this);
+		}
+	}
 }

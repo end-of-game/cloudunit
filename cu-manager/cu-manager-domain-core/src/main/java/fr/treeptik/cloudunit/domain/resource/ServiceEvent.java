@@ -2,7 +2,7 @@ package fr.treeptik.cloudunit.domain.resource;
 
 public class ServiceEvent  {
 	public enum Type {
-		CREATED, DELETED, STARTED, STOPPED;
+		CREATED, DELETED, STARTED, STOPPED, DEPLOYED;
 	}
 
 	private Type type;

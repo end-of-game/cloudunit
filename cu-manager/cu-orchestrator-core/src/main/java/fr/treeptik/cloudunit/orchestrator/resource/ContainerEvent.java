@@ -4,7 +4,8 @@ public class ContainerEvent {
     public enum Type {
         CREATED,
         DELETED,
-        CHANGED;
+        CHANGED,
+        DEPLOYED;
     }
     
     private Type type;

@@ -1,11 +1,11 @@
 package fr.treeptik.cloudunit.domain.service.impl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import fr.treeptik.cloudunit.domain.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,6 @@ import fr.treeptik.cloudunit.domain.core.Deployment;
 import fr.treeptik.cloudunit.domain.core.Image;
 import fr.treeptik.cloudunit.domain.core.Service;
 import fr.treeptik.cloudunit.domain.repository.ApplicationRepository;
-import fr.treeptik.cloudunit.domain.service.ApplicationService;
-import fr.treeptik.cloudunit.domain.service.OrchestratorService;
-import fr.treeptik.cloudunit.domain.service.ServiceListener;
-import fr.treeptik.cloudunit.domain.service.StorageService;
 import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
 
 @Component
@@ -37,10 +33,13 @@ public class ApplicationServiceImpl implements ApplicationService {
     private StorageService storageService;
     
     @Autowired
-    private List<ServiceListener> listeners;
-    
+    private List<ServiceListener> serviceListeners;
+
+    @Autowired
+    private List<DeploymentListener> deploymentListeners;
+
     public ApplicationServiceImpl() {
-		listeners = new ArrayList<>();
+        serviceListeners = new ArrayList<>();
 	}
     
     public void setApplicationRepository(ApplicationRepository applicationRepository) {
@@ -137,20 +136,20 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
     
 	@Override
-	public Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file) {
+	public Deployment addDeployment(Application application, Service service, String contextPath, MultipartFile file, String baseUrl) {
 		
-		if (service.getState().isPending()) {
+		if (service.getState().isPending() || ContainerState.STOPPED.equals(service.getState())) {
             throw new IllegalStateException(String.format("Cannot deploy archive with contextPath %s", contextPath));
         }
 		
-		Deployment deployment = service.addDeployment(contextPath);
+		String fileId = storageService.store(file);
+		String fileUri = String.format("%s/files/%s", baseUrl, fileId);
 		
+		Deployment deployment = service.addDeployment(contextPath, fileUri);
 		applicationRepository.save(application);
-		
-		File newFile = storageService.store(file);
 
-		orchestratorService.deploy(service.getContainerName(), contextPath, "file://" + newFile.getAbsolutePath());
-		
+        fireDeployment(application, service, deployment);
+
 		return deployment;
 	}
 	
@@ -194,19 +193,22 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
     
     private void fireServiceCreated(Service service) {
-        listeners.forEach(listener -> listener.onServiceCreated(service));
+        serviceListeners.forEach(listener -> listener.onServiceCreated(service));
     }
 
     private void fireServiceDeleted(Service service) {
-        listeners.forEach(listener -> listener.onServiceDeleted(service));
+        serviceListeners.forEach(listener -> listener.onServiceDeleted(service));
     }
     
     private void fireServiceStarted(Service service) {
-        listeners.forEach(listener -> listener.onServiceStarted(service));
+        serviceListeners.forEach(listener -> listener.onServiceStarted(service));
     }
     
     private void fireServiceStopped(Service service) {
-        listeners.forEach(listener -> listener.onServiceStopped(service));
+        serviceListeners.forEach(listener -> listener.onServiceStopped(service));
     }
 
+    private void fireDeployment(Application application, Service service, Deployment deployment) {
+        deploymentListeners.forEach(listener -> listener.onDeployment(application, service, deployment));
+    }
 }

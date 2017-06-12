@@ -64,13 +64,11 @@ public class OrchestratorServiceImpl implements OrchestratorService, Initializin
 	}
 
 	@Override
-	public void deploy(String containerName, String contextPath, String fileUri) {
+	public String deploy(String containerName, String contextPath, String fileUri) {
 		String uri = t.follow(rel("cu:containers")).follow(rel("cu:container").withParameter("name", containerName))
 				.asLink().getHref();
 		uri += "/deploy/" + contextPath;
-
-		rest.put(uri, fileUri);
-
+		return uri;
 	}
 
 }

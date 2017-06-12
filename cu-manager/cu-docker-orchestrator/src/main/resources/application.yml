@@ -16,6 +16,10 @@ docker:
 logging:
   level:
     fr.treeptik: debug
+    org.springframework.cloud: debug
+    org.springframework.integration: debug
+cloudunit:
+  domain-name: 192.168.50.4.xip.io
 ---
 spring:
   profiles: local
@@ -33,6 +37,10 @@ docker:
 logging:
   level:
     fr.treeptik: debug
+    org.springframework.cloud: debug
+    org.springframework.integration: debug
+cloudunit:
+  domain-name: 127.0.0.1.xip.io
 ---
 spring:
   profiles: production

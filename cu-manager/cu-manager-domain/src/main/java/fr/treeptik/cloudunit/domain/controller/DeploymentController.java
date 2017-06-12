@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
@@ -76,9 +78,10 @@ public class DeploymentController {
 
 	@PutMapping("/{contextPath}")
 	public ResponseEntity<?> addDeployment(@PathVariable String appId, @PathVariable String name,
-			@PathVariable String contextPath, @RequestPart("file") MultipartFile file) {
+			@PathVariable String contextPath, @RequestPart("file") MultipartFile file, HttpServletRequest request) {
 		return withService(appId, name, (application, service) -> {
-			Deployment deployment = applicationService.addDeployment(application, service, contextPath, file);
+			String baseUrl = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
+			Deployment deployment = applicationService.addDeployment(application, service, contextPath, file, baseUrl);
 			return ResponseEntity.ok(toResource(application, service, deployment));
         });
 	}

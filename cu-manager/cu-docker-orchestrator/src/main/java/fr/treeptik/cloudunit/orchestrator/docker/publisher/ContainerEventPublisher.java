@@ -37,4 +37,7 @@ public class ContainerEventPublisher implements DockerServiceListener {
     public void onContainerDeleted(Container container) {
         onContainerEvent(ContainerEvent.Type.DELETED, container);
     }
+
+    @Override
+    public void onContainerArtifactDeployed(Container container) { onContainerEvent(ContainerEvent.Type.DEPLOYED, container); }
 }

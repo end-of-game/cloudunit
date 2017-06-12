@@ -5,10 +5,14 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
-import org.junit.Assume;
+import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
+import fr.treeptik.cloudunit.orchestrator.docker.test.ContainerTemplate;
+import fr.treeptik.cloudunit.orchestrator.docker.test.ImageTemplate;
+import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
+import fr.treeptik.cloudunit.orchestrator.resource.ImageResource;
+import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +23,12 @@ import org.springframework.test.context.junit4.rules.SpringClassRule;
 import org.springframework.test.context.junit4.rules.SpringMethodRule;
 import org.springframework.test.web.servlet.ResultActions;
 
-import fr.treeptik.cloudunit.orchestrator.core.ContainerState;
-import fr.treeptik.cloudunit.orchestrator.docker.test.ContainerTemplate;
-import fr.treeptik.cloudunit.orchestrator.docker.test.ImageTemplate;
-import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
-import fr.treeptik.cloudunit.orchestrator.resource.ImageResource;
-import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ContainerControllerIT {
+
+    public static final String ARTIFACT_URL = "https://github.com/Treeptik/cloudunit/releases/download/1.0/helloworld.war";
+
     @ClassRule
     public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule();
 
@@ -40,9 +40,6 @@ public class ContainerControllerIT {
     
     @Autowired
     private ImageTemplate imageTemplate;
-
-    @Autowired
-    private DockerClient dockerClient;
     
     @Test
     public void testCreateContainer() throws Exception {
@@ -67,6 +64,7 @@ public class ContainerControllerIT {
             }
             
         } finally {
+        	containerTemplate.waitWhilePending(container);
             containerTemplate.deleteContainerAndWait(container);
         }
     }
@@ -126,4 +124,5 @@ public class ContainerControllerIT {
             containerTemplate.deleteContainerAndWait(container);
         }
     }
+
 }

@@ -18,8 +18,8 @@ then
 EOF
 fi
 
-# if $JMX_MONITORING doesn't exist or is equals to 1
-if [ -z "$JMX_MONITORING" ] || [ "$JMX_MONITORING" -eq 1 ]; then
+# if $JMX_MONITORING doesn't exist or is equals to 0
+if [ "$JMX_MONITORING" -eq 0 ]; then
     JAVA_OPTS="$JAVA_OPTS -javaagent:lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar=conf/jmxtrans-agent.xml"
 fi
 

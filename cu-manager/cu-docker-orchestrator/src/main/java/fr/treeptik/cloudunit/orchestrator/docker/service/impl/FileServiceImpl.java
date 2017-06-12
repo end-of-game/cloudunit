@@ -3,11 +3,11 @@ package fr.treeptik.cloudunit.orchestrator.docker.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,49 +38,50 @@ public class FileServiceImpl implements FileService {
 		if (!image.isPresent()) {
 			throw new ServiceException(String.format("Cannot deploy archive on container %s", container.getName()));
 		}
-
+		
 		String containerId = container.getName();
 		String destination = image.get().getTempFolder();
-		String filePath = String.format("%s/%s", destination, FilenameUtils.getName(fileUri));
+		String filePath = sendFileToContainer(containerId, fileUri, destination);
+		
 		contextPath = String.format("/%s", contextPath);
 		String deployCmd = MessageFormat.format(image.get().getDeployCmd(), filePath, contextPath);
-
-		sendFileToContainer(containerId, fileUri, destination);
 		ExecutionResult execute = dockerService.execute(container, deployCmd.split(" "));
 		LOGGER.debug(execute.output);
 	}
 
 	@Override
-	public void sendFileToContainer(String containerId, String fileUri, String destination) {
+	public String sendFileToContainer(String containerId, String fileUri, String destination) {
 		try {
 			File file = null;
-			File createTempHomeDirPerUsage = null;
+			File tempDirectory = null;
 			File homeDirectory = null;
 			try {
 				homeDirectory = FileUtils.getUserDirectory();
-				createTempHomeDirPerUsage = new File(
-						homeDirectory.getAbsolutePath() + "/tmp" + System.currentTimeMillis());
-				if (createTempHomeDirPerUsage.mkdirs()) {
+				tempDirectory = new File(String.format("%s/tmp%d", homeDirectory.getAbsolutePath(), System.currentTimeMillis()));
+				if (tempDirectory.mkdirs()) {
 					if (fileUri != null) {
-						String fileName = FilenameUtils.getName(fileUri);
-						fileName = fileName.replace(" ", "_");
-						file = new File(createTempHomeDirPerUsage.getAbsolutePath() + "/" + fileName);
+						URL url = new URL(fileUri);
+						URLConnection urlConnection = url.openConnection();
+						String header = urlConnection.getHeaderField("Content-Disposition");
+						String filename = header.split("attachment; filename=")[1];
+						file = new File(String.format("%s/%s", tempDirectory.getAbsolutePath(), filename));
 						FileUtils.copyURLToFile(new URL(fileUri), file);
 					}
 					dockerService.sendFileToContainer(containerId, file.getParent(), file.getName(), destination);
+					return String.format("%s/%s", destination, file.getName());
 				} else {
-					throw new ServiceException("Cannot create : " + createTempHomeDirPerUsage.getAbsolutePath());
+					throw new ServiceException(String.format("Cannot create : %s", tempDirectory.getAbsolutePath()));
 				}
 			} finally {
-				if (createTempHomeDirPerUsage != null) {
+				if (tempDirectory != null) {
 					boolean deleted = file.delete();
 					LOGGER.debug(file.getAbsolutePath() + " is deleted ? " + deleted);
-					deleted = createTempHomeDirPerUsage.delete();
-					LOGGER.debug(createTempHomeDirPerUsage.getAbsolutePath() + " is deleted ? " + deleted);
+					deleted = tempDirectory.delete();
+					LOGGER.debug(tempDirectory.getAbsolutePath() + " is deleted ? " + deleted);
 				}
 			}
 		} catch (IOException e) {
-			throw new ServiceException("Cannot store the file from " + fileUri);
+			throw new ServiceException(String.format("Cannot store the file from %s", fileUri), e);
 		}
 	}
 }

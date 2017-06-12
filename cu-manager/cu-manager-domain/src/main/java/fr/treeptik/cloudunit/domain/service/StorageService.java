@@ -1,13 +1,13 @@
 package fr.treeptik.cloudunit.domain.service;
 
-import java.io.File;
-
 import org.springframework.web.multipart.MultipartFile;
+
+import com.mongodb.gridfs.GridFSDBFile;
 
 public interface StorageService {
 
-	File store(MultipartFile file, String path);
+	String store(MultipartFile fileUpload);
 
-	File store(MultipartFile fileUpload);
+	GridFSDBFile findById(String fileName);
 
 }

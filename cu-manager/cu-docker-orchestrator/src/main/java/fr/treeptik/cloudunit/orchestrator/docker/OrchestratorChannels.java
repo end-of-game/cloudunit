@@ -9,12 +9,16 @@ public interface OrchestratorChannels {
     String SERVICES = "services";
     String CONTAINERS = "containers";
     String IMAGES = "images";
+    String DEPLOYMENTS = "deployments";
 
     @Input(APPLICATIONS)
     SubscribableChannel applications();
     
     @Input(SERVICES)
     SubscribableChannel services();
+
+    @Input(DEPLOYMENTS)
+    SubscribableChannel deployments();
     
     @Output(CONTAINERS)
     SubscribableChannel containers();

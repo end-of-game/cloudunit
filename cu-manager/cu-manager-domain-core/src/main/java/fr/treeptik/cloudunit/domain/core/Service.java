@@ -74,8 +74,8 @@ public abstract class Service {
 		this.containerUrl = containerUrl;
 	}
 
-	public Deployment addDeployment(String contextPath) {
-		Deployment deployment = new Deployment(contextPath);
+	public Deployment addDeployment(String contextPath, String fileUri) {
+		Deployment deployment = new Deployment(contextPath, fileUri);
 		deployments.add(deployment);
 		return deployment;
 	}
