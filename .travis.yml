@@ -17,7 +17,7 @@ script:
 - cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.xip.io /home/travis/build/Treeptik/cloudunit/cu-compose/.env
 - cd /home/travis/build/Treeptik/cloudunit/cu-compose && ./reset-dev.sh -y
 - cd /home/travis/build/Treeptik/cloudunit && mvn install -DskipTests -DskipITs
-- mvn verify
+- mvn verify -Plocal
 #- cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
 #- docker ps -a
 #- cd /home/travis/build/Treeptik/cloudunit/cu-manager && mvn test "-Dtest=*Tomcat8ApplicationControllerTestIT"
