@@ -14,10 +14,10 @@ script:
 - echo $USER
 - cd cu-services && make tomcat_8
 - make tomcat_8-check
-- cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -DskipITs
+- cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.xip.io /home/travis/build/Treeptik/cloudunit/cu-compose/.env
 - cd cu-compose && ./reset-dev.sh -y
-- cd /home/travis/build/Treeptik/cloudunit && mvn verify
-#- cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.template /home/travis/build/Treeptik/cloudunit/cu-compose/.env
+- cd /home/travis/build/Treeptik/cloudunit && mvn install -DskipTests -DskipITs
+- mvn verify
 #- cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
 #- docker ps -a
 #- cd /home/travis/build/Treeptik/cloudunit/cu-manager && mvn test "-Dtest=*Tomcat8ApplicationControllerTestIT"
