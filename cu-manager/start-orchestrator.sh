@@ -1,5 +1,5 @@
 #! /bin/bash
-mvn spring-boot:run -Plocal -pl cu-docker-orchestrator
+mvn spring-boot:run -Plocal -pl cu-docker-orchestrator > /dev/null 2>&1 &
 PID=$!
 echo $PID > .pid
 
