@@ -12,7 +12,7 @@ script:
 - echo $USER
 - cd cu-services && make tomcat_8
 - make tomcat_8-check
-- cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -B
+- cd /home/travis/build/Treeptik/cloudunit &&  mvn install
 #- cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.template /home/travis/build/Treeptik/cloudunit/cu-compose/.env
 #- cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
 #- docker ps -a
