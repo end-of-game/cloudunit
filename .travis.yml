@@ -7,21 +7,13 @@ services:
 
 before_install:
   - docker version
-  # Setup a wildcard local DNS for *.dev
-  - sudo apt-get install -qq -y --force-yes dnsmasq
-  - echo "listen-address=127.0.0.1" | sudo tee -a /etc/dnsmasq.conf > /dev/null
-  - echo "bind-interfaces" | sudo tee -a /etc/dnsmasq.conf > /dev/null
-  - echo "address=/dev/127.0.0.1" | sudo tee -a /etc/dnsmasq.conf > /dev/null
-  - echo "user=root" | sudo tee -a /etc/dnsmasq.conf > /dev/null
-  - sudo service dnsmasq restart
 
 script:
 - echo $USER
-# - cd cu-services && travis_wait 60 ./build-services.sh all
-#- docker images
-# - ./check_build_images.sh
+- cd cu-services && make tomcat_8
+- make tomcat_8-check
 - cd /home/travis/build/Treeptik/cloudunit &&  mvn install -DskipTests -B
-- cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.template /home/travis/build/Treeptik/cloudunit/cu-compose/.env
-- cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
-- docker ps -a
-- cd /home/travis/build/Treeptik/cloudunit/cu-manager && mvn test "-Dtest=*Tomcat8ApplicationControllerTestIT"
+#- cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.template /home/travis/build/Treeptik/cloudunit/cu-compose/.env
+#- cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
+#- docker ps -a
+#- cd /home/travis/build/Treeptik/cloudunit/cu-manager && mvn test "-Dtest=*Tomcat8ApplicationControllerTestIT"
