@@ -15,7 +15,7 @@ script:
 - cd cu-services && make tomcat_8
 - make tomcat_8-check
 - cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.xip.io /home/travis/build/Treeptik/cloudunit/cu-compose/.env
-- cd cu-compose && ./reset-dev.sh -y
+- cd /home/travis/build/Treeptik/cloudunit/cu-compose && ./reset-dev.sh -y
 - cd /home/travis/build/Treeptik/cloudunit && mvn install -DskipTests -DskipITs
 - mvn verify
 #- cd /home/travis/build/Treeptik/cloudunit/cu-compose &&  ./cu-docker-compose.sh with-elk
