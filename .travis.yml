@@ -8,6 +8,8 @@ services:
 before_install:
   - docker version
 
+install: true
+
 script:
 - echo $USER
 - cd cu-services && make tomcat_8
