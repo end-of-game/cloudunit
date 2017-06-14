@@ -293,13 +293,17 @@ public class DockerServiceImpl implements DockerService {
                 });
             }
             
-            String output;
-            try (LogStream stream = docker.execStart(exec.id())) {
-                output = stream.readFully();
-            }
+            // Error with unix socket and reading LogStream
+//            String output;
+//            try (LogStream stream = docker.execStart(exec.id())) {
+//                output = stream.readFully();
+//            }
+//            
+//            ExecState state = docker.execInspect(exec.id());
+//            return new ExecutionResult(state.exitCode(), output);
             
-            ExecState state = docker.execInspect(exec.id());
-            return new ExecutionResult(state.exitCode(), output);
+            docker.execStart(exec.id());
+            return new ExecutionResult(0, null);
         } catch (DockerException | InterruptedException e) {
             LOGGER.error("Couldn't execute command", e);
             throw new ServiceException("Couldn't execute command", e);

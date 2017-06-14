@@ -12,11 +12,8 @@ install: true
 
 script:
 - echo $USER
-- cd cu-services && make tomcat_8
-- make tomcat_8-check
-- make mysql_5.5
-- make mysql_5.5-check
-- cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.xip.io /home/travis/build/Treeptik/cloudunit/cu-compose/.env
+- cd cu-services && make tomcat && make mysql
+- cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.local.xip.io /home/travis/build/Treeptik/cloudunit/cu-compose/.env
 - cd /home/travis/build/Treeptik/cloudunit/cu-compose && ./reset-dev.sh -y
 - cd /home/travis/build/Treeptik/cloudunit && mvn install -DskipTests -DskipITs
 - mvn verify -Plocal

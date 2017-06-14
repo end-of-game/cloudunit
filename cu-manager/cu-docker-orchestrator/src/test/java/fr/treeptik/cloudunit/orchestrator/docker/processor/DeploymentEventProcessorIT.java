@@ -1,8 +1,25 @@
 package fr.treeptik.cloudunit.orchestrator.docker.processor;
 
-import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.CONTAINER_NAME;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.awaitility.Duration;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.rules.SpringClassRule;
+import org.springframework.test.context.junit4.rules.SpringMethodRule;
 
 import fr.treeptik.cloudunit.domain.resource.DeploymentEvent;
 import fr.treeptik.cloudunit.domain.resource.DeploymentResource;
@@ -11,26 +28,10 @@ import fr.treeptik.cloudunit.orchestrator.docker.config.CloudUnitConfiguration;
 import fr.treeptik.cloudunit.orchestrator.docker.test.ContainerTemplate;
 import fr.treeptik.cloudunit.orchestrator.docker.test.HttpTemplate;
 import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-import org.junit.runners.Parameterized;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.rules.SpringClassRule;
-import org.springframework.test.context.junit4.rules.SpringMethodRule;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 @RunWith(Parameterized.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@Ignore
 public class DeploymentEventProcessorIT {
 
     public static final String HELLOWORLD_ARTIFACT_URL
@@ -77,6 +78,17 @@ public class DeploymentEventProcessorIT {
         try {
             containerTemplate.startContainer(container);
             containerTemplate.waitWhilePending(container);
+            
+            // wait until tomcat is up and running
+            await().atMost(Duration.ONE_MINUTE).until(() -> 
+            {
+            	String domainName = cloudUnitConfiguration.getDomainName();
+                String url = String.format("http://%s.%s", CONTAINER_NAME, domainName);
+
+	            	String content = httpTemplate.getContent(url);
+	            	return content.contains("Tomcat");
+            });
+            
             DeploymentResource deploymentResource = new DeploymentResource("xxx", HELLOWORLD_ARTIFACT_URL);
             DeploymentEvent deploymentEvent = new DeploymentEvent();
             deploymentEvent.setType(DeploymentEvent.Type.DEPLOYED);
@@ -86,6 +98,14 @@ public class DeploymentEventProcessorIT {
 
             String domainName = cloudUnitConfiguration.getDomainName();
             String url = String.format("http://%s.%s/%s", CONTAINER_NAME, domainName, "xxx");
+            
+            // wait until tomcat deploy app 
+            await().atMost(Duration.ONE_MINUTE).until(() -> 
+            {
+            	String content = httpTemplate.getContent(url);
+            	return content.contains("CloudUnit PaaS");
+            });
+            
             String content = httpTemplate.getContent(url);
             assertThat(content, containsString("CloudUnit PaaS"));
 
