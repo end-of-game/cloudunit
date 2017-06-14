@@ -6,13 +6,14 @@ services:
   - maven
 
 before_install:
-  - cd /home/travis/build/Treeptik/cloudunit/ && ./update-docker.sh
   - docker version
 
 install: true
 
 script:
 - echo $USER
+- cd /home/travis/build/Treeptik/cloudunit/ && ./update-docker.sh
+- docker version
 - cd cu-services && make tomcat && make mysql
 - cp /home/travis/build/Treeptik/cloudunit/cu-compose/.env.local.xip.io /home/travis/build/Treeptik/cloudunit/cu-compose/.env
 - cd /home/travis/build/Treeptik/cloudunit/cu-compose && ./reset-dev.sh -y
