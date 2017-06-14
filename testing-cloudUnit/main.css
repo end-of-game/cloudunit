@@ -28,19 +28,19 @@ container {
 	background: white;
 }
 
-h1 {
+ h1 {
 	text-align: center;
 	vertical-align: baseline;
 }
 
-h2 {
+/* h2 {
 	text-align: center;
 	vertical-align: baseline;
 }
 
 h4 {
 	text-align: center;
-}
+} */
 
 .#allpage {
 	margin-left: 50px;
@@ -71,10 +71,15 @@ h4 {
 
 /************************ Second Section ****************************/ 
 
-.theOne {
-	/* background-image: url("/assets/img/computer-bg.jpg");
+#mainHeader {
+	background-image: url("/assets/img/computer-bg.jpg");
 	background-color: black;
-	background-size: cover; */
+	background-size: cover; 
+	background-repeat: no-repeat;
+	padding-top: 0;
+	padding-bottom: 0;
+	margin-top: 0;
+	margin-bottom: 0;
 }
 
 #mainONe {
@@ -94,10 +99,6 @@ h4 {
     border: 1px solid white;
     padding-top: 2rem;
     padding: 16px; */
-}
-
-.onBlock {
-
 }
 
 
@@ -148,7 +149,7 @@ h4 {
 	margin-top:  2rem;
 }
 
-/*.blocks {
+.blocks {
 	margin-left: 50px;
 	margin-right: 50px;
 }*/
@@ -175,6 +176,7 @@ h4 {
     text-align: center;
     margin: 26px 0;
     margin: 1.625rem 0;
+    margin-left: 45px;
     background-color: transparent;
     font-weight: 400;
     font-size: 16px;
@@ -204,9 +206,14 @@ h4 {
 /*************************** Third Section ****************************/
 
 #Key_concept{
-	background-image: url("assets/img/treeptik-homepage.jpg");
-	background-color: black;
+	background-color: #33CCFF;
+	background-repeat: no-repeat;
 	background-size: cover;
+	height: auto;
+	width: 100%;
+	position: relative;
+	left: 0;
+	top: 0;
 }
 
 /* .help-block {
@@ -214,49 +221,70 @@ h4 {
 } */
 
 .concept {
-	text-align: center;
+	/* text-align: center; */
 
 }
 
 dd {
-	color: white;
+	color: black;
 }
 
 
 /*************************** Fourth Section ****************************/
 
 #Usage {
-	background-color: #f2f6f7;
+	/* background-color: #f2f6f7;
 	border: 1px solid #a6a6a6;
 	border-radius:10px;
 	margin-left: 15px;
 	margin-right: 15px;
 	margin-top: 25px;
-	margin-bottom: 25px;
-
+	margin-bottom: 25px; */
+	background-color: #33CCFF;
+	background-repeat: no-repeat;
+	background-size: cover;
+	height: auto;
+	width: 100%;
+	position: relative;
+	left: 0;
+	top: 0;
 }
 
 .usages {
 	 display: block; 
-	text-align: center;
+	/* text-align: left; */
 }
- ol {
+ /* ol {
 	display: block;
 	text-align: center;
 }
 
 li {
 	display: block;
-} 
+}  */
+ol > li {
+	list-style: none;
+    list-style-type: none;
+    list-style-image: none;
+    list-style-position: outside;
+}
 
 /***************************  Fifth Section ****************************/
 
 #Going_further {
 	 /* display: block; */
-	text-align: center;
+	/* text-align: center;
 	background-image: url("assets/img/treeptik-homepage.jpg");
 	background-color: grey;
+	background-size: cover; */
+	background-color: #33CCFF;
+	background-repeat: no-repeat;
 	background-size: cover;
+	height: auto;
+	width: 100%;
+	position: relative;
+	left: 0;
+	top: 0;
 }
 
 .formCloudunit {
@@ -267,11 +295,11 @@ li {
 	margin-right: 700px;
 	margin-bottom: 25px;
 	display: block;
-	text-align: center;
+	/* text-align: center; */
 }
 
 .setting-Form {
-	text-align: center
+	/* text-align: center */
 }
 .button {
 	display: block;
@@ -290,8 +318,8 @@ li {
 }
 
 .social_foot_bar {
-	vertical-align: baseline;
-	text-align: center
+	/* vertical-align: baseline;
+	text-align: center */
 }
  
 .social_foot_bar ul {
