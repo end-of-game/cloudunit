@@ -84,9 +84,12 @@ public class DeploymentEventProcessorIT {
             {
             	String domainName = cloudUnitConfiguration.getDomainName();
                 String url = String.format("http://%s.%s", CONTAINER_NAME, domainName);
-
+                try {
 	            	String content = httpTemplate.getContent(url);
 	            	return content.contains("Tomcat");
+                } catch(Exception e) {
+                	return false;
+                }
             });
             
             DeploymentResource deploymentResource = new DeploymentResource("xxx", HELLOWORLD_ARTIFACT_URL);
