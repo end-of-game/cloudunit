@@ -12,6 +12,7 @@ import fr.treeptik.cloudunit.orchestrator.docker.test.ContainerTemplate;
 import fr.treeptik.cloudunit.orchestrator.docker.test.HttpTemplate;
 import fr.treeptik.cloudunit.orchestrator.resource.ContainerResource;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Ignore
 public class DeploymentEventProcessorIT {
 
     public static final String HELLOWORLD_ARTIFACT_URL
