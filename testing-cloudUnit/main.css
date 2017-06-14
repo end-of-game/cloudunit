@@ -82,7 +82,7 @@ h4 {
 	margin-bottom: 0;
 }
 
-#mainONe {
+.mainONe {
 	/* background-image: url("/assets/img/computer-bg.jpg");
 	background-color: black;
 	background-size: cover;
@@ -288,17 +288,18 @@ ol > li {
 }
 
 .formCloudunit {
-	background-color: white; 
+	/* background-color: white; 
 	border: 3px outset black;
 	border-radius:10px;
-	margin-left: 150px;
-	margin-right: 700px;
+	margin-left: 250px;
+	margin-right: 400px;
 	margin-bottom: 25px;
 	display: block;
-	/* text-align: center; */
+	text-align: center; */
 }
 
 .setting-Form {
+	
 	/* text-align: center */
 }
 .button {
@@ -318,8 +319,8 @@ ol > li {
 }
 
 .social_foot_bar {
-	/* vertical-align: baseline;
-	text-align: center */
+	vertical-align: baseline;
+	text-align: center 
 }
  
 .social_foot_bar ul {
@@ -333,14 +334,14 @@ ol > li {
 }
 
 .social_foot_bar li a{
-	color: deeppink;
+	color: black;
 	padding:  8px;
 	display: inline-block;
 	transition: color: .3s;
 }
 
 .social_foot_bar li a:hover {
-	color: black;
+	color: deeppink;
 }
 
 
