@@ -87,6 +87,7 @@ h4 {
 	margin-right: 855px;
 	margin-top: 55px;
 	margin-bottom: 55px;  
+	display: inline-block;
 	/* width: 35%; */
 	/* position: relative;
     border: 1px solid white;
@@ -196,9 +197,9 @@ h4 {
 	background-size: cover;
 	height: auto;
 	width: 100%;
-	position: relative;
+	/* position: relative;
 	left: 0;
-	top: 0;
+	top: 0; */
 }
 
 .help-block {
@@ -229,6 +230,7 @@ h4 {
 
 
 dd {
+	box-sizing: border-box;
 	color: black;
 }
 
@@ -285,7 +287,7 @@ ol > li {
 	background-size: cover;
 	height: auto;
 	width: 100%;
-	position: relative;
+	position: float;
 	left: 0;
 	top: 0;
 }
@@ -302,12 +304,13 @@ ol > li {
 	margin-left: 250px;
 	margin-right: 400px;
 	margin-bottom: 25px;
-	display: block;
+	
 	text-align: center; */
-	margin-left: 150px;
-	margin-right: 725px;
+	margin-left: 350px;
+	margin-right: 900px;
 	margin-bottom: 25px;
 	text-align: center;
+	display: inline-block;
 }
 
 .setting-Form {

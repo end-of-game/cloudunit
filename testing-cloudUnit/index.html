@@ -9,11 +9,33 @@
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-  <link rel="stylesheet" href="/assets/css/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/assets/css/font-awesome/css/font-awesome.css">
   <link rel="stylesheet" href="main.css"> 
 
-    </head>
-    <body>
+</head>
+<body>
+
+ <div class="header__wrapper">
+    <header class="nav">
+    <div class="nav_brand">
+         <a href="https://www.cloudunit.io">
+          <img src="assets/img/logo-cloudunit.png" alt="CloudUnit" >
+        </a>
+      </div>
+    <aside class="social-links">
+    <ul>
+        <li><a href="https://twitter.com/treeptik" target="_blank" title="Twitter"><i class="fa-twitter"></i></a>
+        </li>
+        <li><a href="https://plus.google.com/u/0/b/101644017807219815482/+TreeptikFr/posts" target="_blank"
+               title="Google+"><i
+                class="fa-google"></i></a></li>
+        <li><a href="https://github.com/Treeptik/CloudUnit" target="_blank" title="Github"><i
+                class="fa-github"></i></a></li>
+    </ul>
+</aside>
+</header>
+</div> 
+
 <div id="mainHeader">
 <div class="mainONe">
 <div class="box__heading">
@@ -25,7 +47,6 @@
     </h5>
   <a class="cta cta--primary js-more" href="#Going_further">Give it a try</a>
   <a class="cta cta--secondary js-more" href="#Key_concept">Learn more</a>
-</div>
 </div>
 <div class="separator">
   
@@ -184,7 +205,9 @@
     <div class="formCloudunit"> 
       <form id="setting-Form" class="cta cta--primary" method="post" novalidate="">    
             <input id="configName" type="text" name="setName" required="" ng-maxlength="25" placeholder="Name" required />
+            <br>
             <input id="configType" type="email" name="setType" ng-maxlength="100" required="" placeholder="Email" required />
+            <br>
             <input type="submit" class="subClunit" value="Try online demo">
       </form>
        <small class="cta__hint">Log-in with the following credentials: 
@@ -209,7 +232,7 @@
         <ul class="social_foot_bar">
           <li>
             <a href="https://github.com/Treeptik/CloudUnit" class="github" target="blank">
-              <i class="fa-github-square fa-sgtack-2x"></i>
+              <i class="fa-github-square"></i>
               <div>
                 <strong>GitHub</strong>
               </div>
@@ -227,7 +250,7 @@
           </li>
           <li>
             <a href="https://fr-fr.facebook.com/treeptik/" class="facebook" target="blank">
-              <i class="fa-facebook-square fa-sgtack-2x"></i>
+              <i class="fa-facebook-square"></i>
               <div>
                 <strong>Facebook</strong>
               </div>
@@ -250,5 +273,6 @@
     </div>
   </section>
 </footer>
+</div>
 </body>
 </html>
