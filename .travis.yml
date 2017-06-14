@@ -1,6 +1,10 @@
 sudo: required
 language: java
 
+cache:
+  directories:
+    - $HOME/.m2
+
 services:
   - docker
   - maven
@@ -11,8 +15,8 @@ before_install:
 install: true
 
 script:
-- echo $USER
-- pushd cu-services && make tomcat && make mysql && popd
-- pushd cu-compose && cp .env.local.xip.io .env && ./reset-dev.sh -y && popd
-- docker ps -a
-- mvn install -Plocal
+  - echo $USER
+  - pushd cu-services && make tomcat && make mysql && popd
+  - pushd cu-compose && cp .env.local.xip.io .env && ./reset-dev.sh -y && popd
+  - docker ps -a
+  - mvn install -Plocal
