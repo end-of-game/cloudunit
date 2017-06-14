@@ -6,6 +6,7 @@ services:
   - maven
 
 before_install:
+  - cd /home/travis/build/Treeptik/cloudunit/ && ./update-docker.sh
   - docker version
 
 install: true
