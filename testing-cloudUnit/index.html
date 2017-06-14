@@ -217,18 +217,20 @@
      <div class="box_heading">
       <div class="input-group stack clearfix"> -->
         <!-- <div class="card large clear" id="setForm">  -->
-        <!-- <div class="content"> -->
-         <form id="setting-Form" name="settingForm" class="cta cta--primary js-more"" novalidate="">
-          <div class="input-group stack">
-            <input id="configName" type="text" name="setName" required="" ng-maxlength="25" placeholder="Name">
-            <br>
-            <input id="configType" type="text" name="setType" ng-maxlength="100" required="" placeholder="Email">
+    <div class="formCloudunit"> 
+      <form id="setting-Form" class="cta cta--primary" method="post" novalidate="">    
+            <input id="configName" type="text" name="setName" required="" ng-maxlength="25" placeholder="Name" required />
+            <input id="configType" type="email" name="setType" ng-maxlength="100" required="" placeholder="Email" required />
             <input type="submit" class="subClunit" value="Try online demo">
-          </div>  
-        </div>  
       </form>
-  <!--   </div>
-  </div> 
+       <small class="cta__hint">Log-in with the following credentials: 
+        <code class="text--primary">johndoe</code> / 
+          <code class="text--primary">abc2015</code>.
+          <br>
+          The plateform is reset every night.
+       </small>
+    </div>
+ <!--  </div> 
 </div>
 </div> 
 </div>

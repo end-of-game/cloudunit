@@ -296,15 +296,19 @@ ol > li {
 	margin-bottom: 25px;
 	display: block;
 	text-align: center; */
+	margin-left: 150px;
+	margin-right: 725px;
+	margin-bottom: 25px;
+	text-align: center;
 }
 
 .setting-Form {
-	
+
 	/* text-align: center */
 }
-.button {
-	display: block;
-	margin: 0 auto;
+
+.subClunit {
+	/* background-color: none; */
 }
 
 #Going_further a:link {
