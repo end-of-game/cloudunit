@@ -48,6 +48,7 @@ There are many installation guides
 * [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
 * [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
 * [Add new module](documentation/MODULE-GUIDE.md)
+* [Troubleshooting](documentation/TROUBLESHOOTING.md)
 
 ## Go further
     
