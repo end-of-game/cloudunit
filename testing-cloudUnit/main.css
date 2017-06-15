@@ -56,8 +56,8 @@ input {
 }
  */
 .separator {
-	background-color: #01baf2;
-	padding: 2px;
+	background-color: black;
+	padding: .5px;
 }
 
 .separator2 {
@@ -127,26 +127,25 @@ input {
 	text-align: center;
 }
 
-.box__heading {
-	border: 3px dotted black;
-	border-radius:10px;
+.mainOne .box__heading {
+	background: url("/assets/img/dotted_black_bg.png") repeat;
+	padding: 0;
+	text-align: center
+/* 	border: 3px dotted black;
+	border-radius:10px; */
 }
-/* .box .box_heading .heading {
-	background-color: blue;
+
+.mainOne .box__heading .heading {
+	background-color: black;
     color: white;
     display: inline-block;
-    position: absolute;
+    /*position: absolute;
     top: -36px;
-    left: 4px;
-}  */
+    left: 4px; */
+}  
 
 .box .intro	.box_content {
 	margin-top:  2rem;
-}
-
-.blocks {
-	margin-left: 50px;
-	margin-right: 50px;
 }
 
 .blockOne {
@@ -255,11 +254,11 @@ input {
 	margin-right: 15px;
 	margin-top: 25px;
 	margin-bottom: 25px; */
-	height: auto;
+	/* height: auto;
 	width: 100%;
 	position: relative;
 	left: 0;
-	top: 0;
+	top: 0; */
 }
 
 .usages {
@@ -343,6 +342,7 @@ ol > li {
 .row {
 	margin-top: 25px;
 	text-align: center;
+	size: 75px;
 }
 
 .social_foot_bar {
