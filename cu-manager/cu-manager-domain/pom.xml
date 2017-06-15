@@ -89,6 +89,37 @@
 
   <build>
     <plugins>
+    	<plugin>
+		    <groupId>org.codehaus.mojo</groupId>
+		    <artifactId>exec-maven-plugin</artifactId>
+		    <version>1.6.0</version>
+		    <executions>
+	          <execution>
+	          	<id>start-orchestrator</id>
+	          	<phase>pre-integration-test</phase>
+	            <goals>
+	              <goal>exec</goal>
+	            </goals>
+	            <configuration>
+	            	<skip>${skipITs}</skip>
+			    	<workingDirectory>${project.parent.basedir}</workingDirectory>
+			        <executable>./start-orchestrator.sh</executable>
+			    </configuration>
+	          </execution>
+	          <execution>
+	          	<id>stop-orchestrator</id>
+	          	<phase>post-integration-test</phase>
+	            <goals>
+	              <goal>exec</goal>
+	            </goals>
+	            <configuration>
+	            	<skip>${skipITs}</skip>
+			    	<workingDirectory>${project.parent.basedir}</workingDirectory>
+			        <executable>./stop-orchestrator.sh</executable>
+			    </configuration>
+	          </execution>
+	        </executions>
+		</plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>

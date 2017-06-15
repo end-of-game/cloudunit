@@ -14,7 +14,7 @@ public enum VariableRole {
         @Override
         public String generateValue(Container container) {
             return new SecureRandom().ints(PASSWORD_BYTES / (2 * Integer.BYTES))
-                    .mapToObj(i -> String.format("%x", i))
+                    .mapToObj(i -> String.format("%08x", i))
                     .collect(Collectors.joining());
         }
     },
