@@ -20,7 +20,7 @@ body {
 
 img {
 	margin-top:  2rem;
-	height: 50px;
+	height: 100px;
 	width: 250px
 }
 
@@ -235,7 +235,21 @@ input {
 	 margin-right: 550px; */
 	margin-bottom: 50px;
 	margin-top: 100px; 
+	display: inline-block;
 
+}
+
+.Koncept .box__heading {
+	background: url("/assets/img/dotted_transp_bg.png") repeat;
+	padding: 0;
+	text-align: center
+/* 	border: 3px dotted black;
+	border-radius:10px; */
+}
+
+.Koncept .box__heading .heading{
+	background: black;
+	color: white;
 }
 
 /* dd {
@@ -254,11 +268,11 @@ input {
 	margin-right: 15px;
 	margin-top: 25px;
 	margin-bottom: 25px; */
-	/* height: auto;
+	height: auto;
 	width: 100%;
 	position: relative;
 	left: 0;
-	top: 0; */
+	top: 0; 
 }
 
 .usages {
@@ -342,7 +356,8 @@ ol > li {
 .row {
 	margin-top: 25px;
 	text-align: center;
-	size: 75px;
+	background: white;
+	/* size: 75px; */
 }
 
 .social_foot_bar {
@@ -368,6 +383,14 @@ ol > li {
 
 .social_foot_bar li a:hover {
 	color: deeppink;
+}
+
+.partner {
+	list-style-type: none;
+}
+
+.treeptik {
+	list-style-type: none;
 }
 
 
