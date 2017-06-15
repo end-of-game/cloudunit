@@ -2,12 +2,13 @@
 /***************************** Body *********************************/
 
 body {
-/* 	background-image: url("/assets/img/computer-bg.jpg"); 
-	background-color: black; */
 	font-family: 'futura-pt', sans-serif;
     color: black;
     font-size: 1rem;
     font-weight: 400;
+    background-color: #33CCFF;
+	background-repeat: no-repeat;
+	background-size: cover;
     margin: 0;
     padding: 0;
     height: 100%;
@@ -26,6 +27,7 @@ img {
 container {
 	padding:  0 16px;
 	background: white;
+	float:left;
 }
 
  h1 {
@@ -42,6 +44,10 @@ h4 {
 	text-align: center;
 } 
 
+input {
+	width: 180px;
+	vertical-align: baseline;
+}
 /* .#allpage {
 	margin-left: 50px;
 	margin-right: 50px;
@@ -72,19 +78,22 @@ h4 {
 /************************ Second Section ****************************/ 
 
 #mainHeader {
-	background-image: url("/assets/img/computer-bg.jpg"); 
-	background-size: cover; 
-	background-repeat: no-repeat;
+	
  	margin-top: 0;
 	margin-bottom: 0;
 }
 
-.mainONe {
+.blockOne {
+	background-image: url("/assets/img/computer-bg.jpg"); 
+	background-size: 100%;
+	background-repeat: no-repeat;
+}
+.mainOne {
 	background-color: #FEFE00;
 	border: 1px solid #a6a6a6;
 	border-radius:10px;
- 	margin-left: 375px;
-	margin-right: 855px;
+ 	margin-left: 275px;
+	margin-right: 955px;
 	margin-top: 55px;
 	margin-bottom: 55px;  
 	display: inline-block;
@@ -143,7 +152,7 @@ h4 {
 .blockOne {
 	margin-left: 5px;
 	background-color: green;
-} */
+}
 
 .wpb_wrapper {
 	text-align: center;
@@ -192,47 +201,48 @@ h4 {
 /*************************** Third Section ****************************/
 
 #Key_concept{
-	background-color: #33CCFF;
-	background-repeat: no-repeat;
-	background-size: cover;
 	height: auto;
 	width: 100%;
-	/* position: relative;
+	position: relative;
 	left: 0;
-	top: 0; */
+	top: 0;
 }
 
 .help-block {
 	color: grey;
+	width: 100%;
 } 
 
 .complementary {
+	position: relative;
+    z-index: 3;
+    min-height: 675px;
+    background-image: url("/assets/img/technicians-sm.png");
+    background-size: 85%;
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    max-width: 320px;
+}
+
+.complementaries {
 	margin-left: 150px;
 	margin-right: 800px;
 	margin-bottom: 50px;
+	margin-top: 50px;
 }
 
 .Koncept {
-	margin-left: 450px;
-	margin-right: 550px;
-	margin-bottom: 50px;
-	margin-top: 0px;
-
-}
-
-.concept {
-	/* text-align: center; */
 	/* margin-left: 450px;
-	margin-right: 550px;
-	margin-bottom: 50px; */
+	 margin-right: 550px; */
+	margin-bottom: 50px;
+	margin-top: 100px; 
+
 }
 
-
-
-dd {
+/* dd {
 	box-sizing: border-box;
 	color: black;
-}
+} */
 
 
 /*************************** Fourth Section ****************************/
@@ -245,9 +255,6 @@ dd {
 	margin-right: 15px;
 	margin-top: 25px;
 	margin-bottom: 25px; */
-	background-color: #33CCFF;
-	background-repeat: no-repeat;
-	background-size: cover;
 	height: auto;
 	width: 100%;
 	position: relative;
@@ -282,14 +289,15 @@ ol > li {
 	background-image: url("assets/img/treeptik-homepage.jpg");
 	background-color: grey;
 	background-size: cover; */
-	background-color: #33CCFF;
-	background-repeat: no-repeat;
-	background-size: cover;
+	background-image: url("/assets/img/engineers.png");
+    background-size: contain;
+    background-position: 50% bottom;
+    background-repeat: no-repeat;
 	height: auto;
 	width: 100%;
-	position: float;
 	left: 0;
 	top: 0;
+	overflow:auto;
 }
 
 .further{
@@ -307,10 +315,9 @@ ol > li {
 	
 	text-align: center; */
 	margin-left: 350px;
-	margin-right: 900px;
-	margin-bottom: 25px;
+	margin-right: 650px;
 	text-align: center;
-	display: inline-block;
+	display:  inline-block;
 }
 
 .setting-Form {
@@ -333,9 +340,15 @@ ol > li {
 
 }
 
+.row {
+	margin-top: 25px;
+	text-align: center;
+}
+
 .social_foot_bar {
-	vertical-align: baseline;
-	text-align: center 
+	/* vertical-align: baseline; */
+	text-align: center;
+	display: inline-flex;
 }
  
 .social_foot_bar ul {
@@ -345,14 +358,12 @@ ol > li {
 
 .social_foot_bar li {
 	list-style: none;
-	display: block;
+	margin: 0 30px;
 }
 
-.social_foot_bar li a{
+.social_foot_bar li a {
 	color: black;
 	padding:  8px;
-	display: inline-block;
-	transition: color: .3s;
 }
 
 .social_foot_bar li a:hover {
