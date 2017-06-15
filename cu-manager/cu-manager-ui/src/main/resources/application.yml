@@ -2,7 +2,7 @@
 spring:
   profiles: dev
 zuul:
-  addProxyHeaders: false
+  addProxyHeaders: true
   routes:
     applications:
       url: http://localhost:8080/applications
@@ -16,7 +16,7 @@ server:
 spring:
   profiles: production
 zuul:
-  addProxyHeaders: false
+  addProxyHeaders: true
   routes:
     applications:
       url: http://cu-domain:8080/applications
