@@ -12,6 +12,8 @@ public class VariableRoleTest {
         
         String value = VariableRole.PASSWORD.generateValue(container);
         
+        System.out.println(value);
+        
         assertTrue(value.matches("[0-9a-f]{8}"));
     }
 }
