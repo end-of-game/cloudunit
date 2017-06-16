@@ -18,11 +18,7 @@ body {
 
 /**************************** General *********************************/
 
-img {
-	margin-top:  2rem;
-	height: 100px;
-	width: 150px
-}
+
 
 container {
 	padding:  0 16px;
@@ -65,6 +61,49 @@ input {
 	padding: 1px;
 }
 
+
+/**************************** Nav bar   ******************************/
+
+#left-nav {
+    position: fixed;
+    width: 50px;
+    height: 100%;
+	background: black;
+}
+
+#logoCL {
+	display: block;
+	height: 40px;
+	width: 245px;
+    background: black url("assets/img/logo-cloudunit.png") no-repeat;
+	background-size: 245px 40px;
+}
+
+#social-links {
+    width: 50px;
+    margin-top: 10px;
+	text-align: center;
+	font-size: 20px;
+}
+
+#social-links ul {
+    padding: 0;
+    margin: 0;
+}
+
+#social-links ul li{
+	list-style: none;
+    display: block;
+}
+
+#social-links i {
+	color: white;
+}
+
+#social-links i:hover {
+    color: deeppink;
+}
+
 /************************ First Section ******************************/
 
 .header__wrapper {
@@ -84,33 +123,37 @@ input {
 /************************ Second Section ****************************/ 
 
 #mainHeader {
-	
  	margin-top: 0;
 	margin-bottom: 0;
     text-align: center;
 }
 
-.blockOne {
+header {
 	background-image: url("/assets/img/computer-bg.jpg"); 
 	background-size: 100%;
 	background-repeat: no-repeat;
+	margin-left: 5px;
+	background-color: grey;
+	height: 800px;
 }
+
 .mainOne {
 	background-color: #FEFE00;
-	border: 1px solid #a6a6a6;
 	border-radius:10px;
- 	margin-left: 275px;
-	margin-right: 955px;
-	margin-top: 55px;
-	margin-bottom: 55px;  
-	display: inline-block;
-	min-width: 35%;
-	max-width: 40%;
-	/* width: 35%; */
-	/* position: relative;
-    border: 1px solid white;
-    padding-top: 2rem;
-    padding: 16px; */
+
+	position: absolute;
+	left: 25%;
+	top: 200px;
+
+	height:  400px;
+	width:  35%;
+	min-width: 400px;
+	max-width: 600px;
+
+	padding:  10px;
+	text-align: center;
+
+	border: 1px solid #a6a6a6;
 }
 
 /* .box_container {
@@ -132,6 +175,7 @@ input {
 } */
  
 .sub_heading {
+	margin-top: 5px;
 	font-weight: 100;
 	text-align: center;
 }
@@ -139,7 +183,7 @@ input {
 .mainOne .box__heading {
 	background: url("/assets/img/dotted_black_bg.png") repeat;
 	padding: 0;
-	text-align: center
+	text-align: center;
 /* 	border: 3px dotted black;
 	border-radius:10px; */
 }
@@ -157,36 +201,28 @@ input {
 	margin-top:  2rem;
 }
 
-.blockOne {
-	margin-left: 5px;
-	background-color: green;
-}
-
 .wpb_wrapper {
 	text-align: center;
 }
 
 .cta {
-    outline: 0;
     display: block;
     border: 1px solid !important;
     padding: 6px 26px;
-    padding: .40625rem 1.625rem;
     -webkit-transition: box-shadow .3s ease-in-out, color .3s ease-in-out, background-color .3s ease-in-out;
     transition: box-shadow .3s ease-in-out, color .3s ease-in-out, background-color .3s ease-in-out;
     text-transform: uppercase;
     text-decoration: none;
     text-align: center;
-    margin: 26px 0;
-    margin: 1.625rem 0;
-    margin-left: 45px;
     background-color: transparent;
     font-weight: 400;
     font-size: 16px;
     width: 75%;
+    margin: 10px auto;
 }
 
 .cta.cta--primary {
+	margin-top: 55px;
     color: deeppink;
     border-color: deeppink;
     border-radius:5px;
@@ -194,6 +230,7 @@ input {
 }
 
 .cta.cta--secondary {
+	margin-top: 25px;
     color: black;
     border-color: black;
     border-radius:5px;
@@ -261,6 +298,7 @@ input {
 .Koncept .box__heading .heading{
 	background: black;
 	color: white;
+	display: inline-block;
 }
 
 
@@ -281,7 +319,6 @@ input {
 	border: 1px solid #a6a6a6;
 	border-radius:10px;
 	margin-left: 15px;
-	margin-right: 15px;
 	margin-top: 25px;
 	margin-bottom: 25px; */
 	height: auto;
@@ -289,35 +326,35 @@ input {
 	position: relative;
 	left: 0;
 	top: 0; 
+	margin-left: 350px;
 }
 
 .usages {
-	 display: block; 
-	/* text-align: left; */
+	display: block; 
+	text-align: left;
 }
 
 .mainThree .box__heading {
-	background: url("/assets/img/dotted_transp_bg.png") repeat;
+	background: url("/assets/img/dotted_transp_bg.png");
 	padding: 0;
-	text-align: center
-}
-
-/* .mainThree .box__heading .heading{
-	background: black;
-	color: white;
-} */
-
-
-
-
- /* ol {
-	display: block;
 	text-align: center;
 }
 
-li {
+.mainThree .box__heading .heading{
+	background: black;
+	color: white;
+	display: inline-block;
+}
+
+ol {
+	display: block;
+	text-align: left;
+}
+
+/* li {
 	display: block;
 }  */
+
 ol > li {
 	list-style: none;
     list-style-type: none;
@@ -330,48 +367,55 @@ ol > li {
 #Going_further {
 	background-image: url("/assets/img/engineers.png");
     background-size: contain;
-    background-position: 75% bottom;
+    background-position: 35% bottom;
     background-repeat: no-repeat;
 	height: auto;
 	width: 100%;
 	left: 0;
 	top: 0;
 	overflow:auto;
+	position: relative;
+	margin-left: 350px;
+}
+
+#Going_further a:link {
+	color: white;
 }
 
 .further{
-
+	display: block; 
+	text-align: left;
 }
 
-
 .formCloudunit {
-	/* background-color: white; 
-	border: 3px outset black;
-	border-radius:10px;
-	margin-left: 250px;
-	margin-right: 400px;
-	margin-bottom: 25px;
-	
-	text-align: center; */
-	margin-left: 350px;
-	margin-right: 650px;
+	margin-right: 900px;
+	margin-left: 5px;
 	text-align: center;
 	display:  inline-block;
 	min-width: 20%;
 	max-width: 25%;
 }
 
-.setting-Form {
+/* .setting-Form {
 
-	/* text-align: center */
+	text-align: center
+} */
+
+/* .subClunit {
+	background-color: none;
+} */
+
+
+.mainFour .box__heading {
+	background: url("/assets/img/dotted_transp_bg.png");
+	padding: 0;
+	text-align: center;
 }
 
-.subClunit {
-	/* background-color: none; */
-}
-
-#Going_further a:link {
+.mainFour .box__heading .heading{
+	background: black;
 	color: white;
+	display: inline-block;
 }
 
 
@@ -382,10 +426,15 @@ ol > li {
 }
 
 .row {
-	margin-top: 25px;
+	margin-top: 15px;
 	text-align: center;
 	background: white;
 	/* size: 75px; */
+}
+
+.row img {
+	width: 200px;
+	height: 150px;
 }
 
 .social_foot_bar {
