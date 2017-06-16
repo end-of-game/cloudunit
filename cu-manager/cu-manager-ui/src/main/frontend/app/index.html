@@ -1,0 +1,413 @@
+<!doctype html>
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<html class="no-js" id="ng-app" data-ng-app="webuiApp" data-ng-cloak="" ng-strict-di>
+<head>
+    <title>CloudUnit</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/ng-table/ng-table.css" />
+    <link rel="stylesheet" href="bower_components/chartist/dist/chartist.min.css" />
+    <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css" />
+    <link rel="stylesheet" href="bower_components/textAngular/dist/textAngular.css" />
+    <link rel="stylesheet" href="bower_components/nvd3/build/nv.d3.css" />
+    <link rel="stylesheet" href="bower_components/metrics-graphics/dist/metricsgraphics.css" />
+    <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css" />
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css" />
+    <link rel="stylesheet" href="bower_components/angular-ui-switch/angular-ui-switch.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css"/>
+    <!-- endbuild -->
+</head>
+<body data-ng-controller="MainCtrl as main" ng-class="{frozen: main.isFrozen}">
+<!--[if lt IE 10]>
+<div class="upgrade-browser" data-ng-init="browserOutdated = true">
+    <div class="card">
+        <div class="content">
+            <h2>Sorry, CloudUnit currently does not support Internet Explorer under version 10</h2>
+
+            <p class="browsehappy">
+                Please <a href="http://browsehappy.com/">upgrade
+                your browser</a> to improve your experience.</p>
+        </div>
+    </div>
+</div>
+<![endif]-->
+
+<div data-ng-hide="main.browserOutdated">
+    <header id="header" class="app-bar" data-ng-show="main.isLogged()">
+        <div class="app-bar-header">
+            <h1 class="app-bar-brand">
+                <a class="brand" ui-sref="dashboard">
+                    <img class="logo" src="styles/images/logo-cloudunit.png"></a>
+                <span class="badge">{{main.CUEnv}}</span>
+            </h1>
+            <ul class="primary-links">
+                <li><a ui-sref="dashboard">Dashboard</a></li>
+                <li class="disabled"><a ui-sref="snapshots">App Templates</a></li>
+                <li><a ui-sref="mainTimeline">Messages</a></li>
+                <li>
+                    <div class="dropdown" dropdown>
+                        <a class="dropdown-toggle"
+                           dropdown-toggle> Scripting
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a ui-sref="scriptingPlay">
+                                    Play Script
+                                </a>
+                            </li>
+                            <li>
+                                <a ui-sref="scriptingManage">
+                                    Manage Script
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li><a ui-sref="editVolume">Volumes</a></li>
+                <li><a ui-sref="monitoring">Monitoring</a></li>
+                <li><a ui-sref="homepage">Portal</a></li>
+                <li class="app-bar-cli">
+                    <div class="dropdown" dropdown>
+                        <a class="dropdown-toggle"
+                           dropdown-toggle> CLI
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="/resources/CloudUnitCLI.jar" target="_blank">
+                                    Download Jar
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/Treeptik/cloudunit-cli" target="_blank">
+                                    Documentation on Github
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="app-bar-icons">
+            <ul class="icon-bar">
+                <li class="button-container">
+                    <a data-ng-if="main.isAdmin" id="account-link" href="#account/registry" class="icon-button secondary"
+                       ripple=""
+                       tooltip="" data-title="Registry" data-placement="bottom">
+                        <i class="icon-whhg cloudaltprivate"></i>
+                    </a>
+                </li>
+                <li class="button-container">
+                    <a data-ng-if="main.isAdmin" id="account-link" href="#account/image" class="icon-button secondary"
+                       ripple=""
+                       tooltip="" data-title="Images" data-placement="bottom">
+                        <i class="icon-whhg rocket-launch"></i>
+                    </a>
+                </li>
+                <li class="button-container">
+                    <a data-ng-if="main.isAdmin" id="account-link" href="#account/admin" class="icon-button secondary"
+                       ripple=""
+                       tooltip="" data-title="Admin" data-placement="bottom">
+                        <i class="icon-whhg groups-friends"></i>
+                    </a>
+                </li>
+                <li class="button-container">
+                    <a id="account-link" ng-href="#/account/profil" class="icon-button secondary" ripple=""
+                       tooltip="" data-title="Account" data-placement="bottom">
+                        <i class="icon-whhg useralt"></i>
+                    </a>
+                </li>
+                <li class="button-container">
+                    <button id="about-btn" class="icon-button secondary" data-toggle="modal" data-target="#about"
+                            ripple="" tooltip=""
+                            data-title="About" data-placement="bottom">
+                        <i class="icon-whhg info-sign"></i>
+                    </button>
+                </li>
+                <li>
+                    <button id="logout-btn" class="icon-button secondary" data-ng-click="main.logout()" ripple=""
+                            tooltip=""
+                            data-title="Logout" data-placement="bottom">
+                        <i class="icon-whhg exit"></i>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="modal" id="about">
+        <div class="modal-inner">
+            <div class="content clearfix">
+                <h3>About CloudUnit Manager</h3>
+                <div class="readonly">
+                    <label for="about-version">API Version</label>
+                    <input id="about-version" type="text" value="{{ main.about.version }}" readonly/>
+                </div>
+                <div class="readonly">
+                    <label for="about-timestamp">API Build Timestamp</label>
+                    <input id="about-timestamp" type="text" value="{{ main.about.timestamp }}" readonly/>
+                </div>
+                <div class="actions pull-right">
+                    <button type="button" class="button secondary" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <div data-ui-view></div>
+    </div>
+    <div class="lockscreen">
+        <div class="card">
+            <div class="alert alert-info">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+                <h3 class="title large">System busy</h3>
+
+                <p class="body">A process is running, this dialog will close automatically.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- build:js(.) scripts/oldieshim.js -->
+<!--[if lt IE 9]>
+<script src="../bower_components/es5-shim/es5-shim.js"></script>
+<script src="../bower_components/json3/lib/json3.min.js"></script>
+<![endif]-->
+<!-- endbuild -->
+
+<!-- build:js(.) scripts/vendor.js -->
+<!-- bower:js -->
+<script src="bower_components/modernizr/modernizr.js"></script>
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/es5-shim/es5-shim.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/json3/lib/json3.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
+<script src="bower_components/angular-cookies/angular-cookies.js"></script>
+<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-animate/angular-animate.js"></script>
+<script src="bower_components/angular-touch/angular-touch.js"></script>
+<script src="bower_components/ng-table/ng-table.js"></script>
+<script src="bower_components/moment/moment.js"></script>
+<script src="bower_components/angular-gravatar/build/md5.js"></script>
+<script src="bower_components/angular-gravatar/build/angular-gravatar.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/affix.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/alert.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/button.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/carousel.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/collapse.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/dropdown.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tab.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/transition.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/scrollspy.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/modal.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/tooltip.js"></script>
+<script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap/popover.js"></script>
+<script src="bower_components/angular-utils-pagination/dirPagination.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="bower_components/angular-timeline/src/angular-timeline.js"></script>
+<script src="bower_components/angular-filter/dist/angular-filter.js"></script>
+<script src="bower_components/FileSaver/FileSaver.js"></script>
+<script src="bower_components/lodash/lodash.js"></script>
+<script src="bower_components/chartist/dist/chartist.min.js"></script>
+<script src="bower_components/sifter/sifter.js"></script>
+<script src="bower_components/microplugin/src/microplugin.js"></script>
+<script src="bower_components/selectize/dist/js/selectize.js"></script>
+<script src="bower_components/angular-chartist.js/dist/angular-chartist.js"></script>
+<script src="bower_components/chartist-plugin-legend/chartist-plugin-legend.js"></script>
+<script src="bower_components/angular-file-upload/dist/angular-file-upload.min.js"></script>
+<script src="bower_components/rangy/rangy-core.js"></script>
+<script src="bower_components/rangy/rangy-classapplier.js"></script>
+<script src="bower_components/rangy/rangy-highlighter.js"></script>
+<script src="bower_components/rangy/rangy-selectionsaverestore.js"></script>
+<script src="bower_components/rangy/rangy-serializer.js"></script>
+<script src="bower_components/rangy/rangy-textrange.js"></script>
+<script src="bower_components/textAngular/dist/textAngular.js"></script>
+<script src="bower_components/textAngular/dist/textAngular-sanitize.js"></script>
+<script src="bower_components/textAngular/dist/textAngularSetup.js"></script>
+<script src="bower_components/d3/d3.js"></script>
+<script src="bower_components/nvd3/build/nv.d3.js"></script>
+<script src="bower_components/angular-nvd3/dist/angular-nvd3.js"></script>
+<script src="bower_components/metrics-graphics/dist/metricsgraphics.js"></script>
+<script src="bower_components/angular-metrics-graphics/dist/angular-metrics-graphics.js"></script>
+<script src="bower_components/codemirror/lib/codemirror.js"></script>
+<script src="bower_components/angular-ui-codemirror/ui-codemirror.js"></script>
+<script src="bower_components/clipboard/dist/clipboard.js"></script>
+<script src="bower_components/ngclipboard/dist/ngclipboard.js"></script>
+<script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
+<script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+<script src="bower_components/ng-sweet-alert/ng-sweet-alert.js"></script>
+<script src="bower_components/angular-ui-switch/angular-ui-switch.js"></script>
+<script src="bower_components/traverson-angular/browser/dist/traverson-angular.js"></script>
+<script src="bower_components/traverson-hal/browser/dist/traverson-hal.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
+<!-- build:js({.tmp,app}) scripts/scripts.js -->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.20.0/codemirror.js"></script>-->
+<!-- code color -->
+<script src="bower_components/codemirror/mode/properties/properties.js"></script>
+
+<!--Application configuration-->
+<script src="scripts/app.js"></script>
+<script src="scripts/config/cache.js"></script>
+<script src="scripts/config/gravatar-config.js"></script>
+
+<!--shared-->
+
+<!--Services-->
+<script src="scripts/shared/services/userService.js"></script>
+<script src="scripts/shared/services/applicationService.js"></script>
+<script src="scripts/shared/services/homepageService.js"></script>
+<script src="scripts/shared/services/snapshotService.js"></script>
+<script src="scripts/shared/services/moduleService.js"></script>
+<script src="scripts/shared/services/scriptingService.js"></script>
+<script src="scripts/shared/services/volumeService.js"></script>
+<script src="scripts/shared/services/environmentVariableService.js"></script>
+<script src="scripts/shared/services/traversonService.js"></script>
+
+<!--Utils-->
+<script src="scripts/shared/directives/directives.module.js"></script>
+<script src="scripts/shared/directives/showtabDirective.js"></script>
+<script src="scripts/shared/directives/modalDismissDirective.js"></script>
+<script src="scripts/shared/directives/tooltipDirective.js"></script>
+<script src="scripts/shared/directives/freezeDirective.js"></script>
+<script src="scripts/shared/directives/oneClickSelectDirective.js"></script>
+<script src="scripts/shared/directives/selectBoxDirective.js"></script>
+<script src="scripts/shared/directives/rippleDirective.js"></script>
+<script src="scripts/shared/directives/clickOnceDirective.js"></script>
+<script src="scripts/shared/directives/autocompleteFixDirective.js"></script>
+<script src="scripts/shared/directives/closeModalDirective.js"></script>
+<script src="scripts/shared/directives/revealPasswordDirective.js"></script>
+<script src="scripts/shared/directives/reloadChartDirective.js"></script>
+<script src="scripts/shared/directives/protectInputDirective.js"></script>
+<script src="scripts/shared/directives/selectizeDirective.js"></script>
+
+<script src="scripts/shared/filters/filters.module.js"></script>
+<script src="scripts/shared/filters/formatAppStatusFilter.js"></script>
+<script src="scripts/shared/filters/truncateStringFilter.js"></script>
+<script src="scripts/shared/filters/stringToBooleanFilter.js"></script>
+<script src="scripts/shared/filters/formatDateCalendarFilter.js"></script>
+<script src="scripts/shared/filters/uniqueFilter.js"></script>
+<script src="scripts/shared/filters/formatUserRolesFilter.js"></script>
+<script src="scripts/shared/filters/cleanPathFilter.js"></script>
+<script src="scripts/shared/filters/appByServerImage.js"></script>
+<script src="scripts/shared/filters/displayNumeric.js"></script>
+<script src="scripts/shared/filters/isEmpty.js"></script>
+<script src="scripts/shared/filters/cleanEscapeSlashAndReverse.js"></script>
+
+<!--UI-->
+<script src="scripts/shared/tags/tags.js"></script>
+<script src="scripts/shared/tags/tag.js"></script>
+<script src="scripts/shared/tags/tagsInput.js"></script>
+
+<!--Components-->
+
+<!--main-->
+<script src="scripts/components/main.js"></script>
+<!--common-->
+<script src="scripts/components/common/feed/feed.js"></script>
+<script src="scripts/components/common/feed/feedService.js"></script>
+<!--login-->
+<script src="scripts/components/login/login.config.js"></script>
+<script src="scripts/components/login/login.js"></script>
+
+<!-- edit volume -->
+<script src="scripts/components/editVolume/editVolume.config.js"></script>
+<script src="scripts/components/editVolume/editVolume.js"></script>
+
+<!-- monitoring -->
+<script src="scripts/components/monitoring/monitoring.config.js"></script>
+<script src="scripts/components/monitoring/monitoring.js"></script>
+
+<!--dashboard-->
+<script src="scripts/components/dashboard/dashboard.config.js"></script>
+<script src="scripts/components/dashboard/dashboard.js"></script>
+<script src="scripts/components/dashboard/dashboard.createApplication.js"></script>
+<!--edit application-->
+<script src="scripts/components/editApplication/editApplication.config.js"></script>
+<script src="scripts/components/editApplication/editApplication.js"></script>
+<script src="scripts/components/editApplication/deploy/editApplication.deploy.js"></script>
+<script src="scripts/components/editApplication/explorer/editApplication.explorer.js"></script>
+<script src="scripts/components/editApplication/explorer/explorerService.js"></script>
+<script src="scripts/components/editApplication/logs/editApplication.logs.js"></script>
+<script src="scripts/components/editApplication/logs/logService.js"></script>
+<script src="scripts/components/editApplication/images/editApplication.images.js"></script>
+<script src="scripts/components/editApplication/images/imageService.js"></script>
+<script src="scripts/components/editApplication/monitoring/containers/editApplication.monitoring.containers.js"></script>
+<script src="scripts/components/editApplication/monitoring/kibana/editApplication.monitoring.kibana.js"></script>
+<script src="scripts/components/editApplication/monitoring/jmx/editApplication.monitoring.kibana.js"></script>
+<script src="scripts/components/editApplication/monitoring/monitoringService.js"></script>
+<script src="scripts/components/editApplication/servers/editApplication.servers.js"></script>
+
+<script src="scripts/components/editApplication/overview/editApplication.overview.js"></script>
+<script src="scripts/components/editApplication/snapshots/editApplication.snapshot.js"></script>
+<script src="scripts/components/editApplication/settings/volume/editApplication.settings.volume.js"></script>
+<script src="scripts/components/editApplication/settings/environment/editApplication.settings.environment.js"></script>
+<script src="scripts/components/editApplication/settings/alias/editApplication.settings.alias.js"></script>
+<script src="scripts/components/editApplication/settings/jvm/editApplication.settings.configJVM.js"></script>
+<script src="scripts/components/editApplication/settings/jvm/JVMService.js"></script>
+<script src="scripts/components/editApplication/settings/ports/editApplication.settings.ports.js"></script>
+<script src="scripts/components/editApplication/settings/command/editApplication.settings.command.js"></script>
+
+<!--snapshots-->
+<script src="scripts/components/snapshots/snapshots.config.js"></script>
+<script src="scripts/components/snapshots/snapshots.js"></script>
+<!--scripting-->
+<script src="scripts/components/scripting/scripting.config.js"></script>
+<script src="scripts/components/scripting/scripting.manage.js"></script>
+<script src="scripts/components/scripting/scripting.create.js"></script>
+<script src="scripts/components/scripting/scripting.play.js"></script>
+<!--timeline-->
+<script src="scripts/components/mainTimeline/mainTimeline.config.js"></script>
+<script src="scripts/components/mainTimeline/mainTimeline.js"></script>
+<!--homepage-->
+<script src="scripts/components/homepage/homepage.config.js"></script>
+<script src="scripts/components/homepage/homepage.js"></script>
+<!--account-->
+<script src="scripts/components/account/account.config.js"></script>
+<script src="scripts/components/account/account.admin.js"></script>
+<script src="scripts/components/account/list/account.admin.list.js"></script>
+<script src="scripts/components/account/logs/account.admin.logs.js"></script>
+<script src="scripts/components/account/profil/account.admin.profil.js"></script>
+<script src="scripts/components/account/image/account.admin.image.js"></script>
+<script src="scripts/components/account/registry/account.admin.registry.js"></script>
+<script src="scripts/components/account/user/account.user.js"></script>
+<script src="scripts/components/account/adminService.js"></script>
+<!--error-->
+<script src="scripts/components/error/error.js"></script>
+<script src="scripts/components/error/errorService.js"></script>
+
+<!-- endbuild -->
+</body>
+</html>

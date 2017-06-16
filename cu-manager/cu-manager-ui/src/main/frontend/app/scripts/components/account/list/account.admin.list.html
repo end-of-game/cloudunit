@@ -1,0 +1,144 @@
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+
+<table class="table">
+  <thead>
+  <tr>
+    <th class="has-input">Login
+      <div class="input-group inline">
+        <input type="text" ng-model="search.login" class="filter-input" placeholder="Search login">
+      </div>
+    </th>
+    <th>Signin date</th>
+    <th>Last Connection</th>
+    <th class="has-input">
+      Activity
+      <div class="dropdown" dropdown="">
+        <a class="dropdown-toggle"
+           dropdown-toggle=""
+           data-ng_bind="accountAdminList.selectedStatus.name"
+           data-ng-init="search.activity = accountAdminList.selectedStatus.value">
+        </a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+          <li data-ng-repeat="status in accountAdminList.statuses">
+            <a ng-href=""
+               data-ng-click="search.activity = status.value; accountAdminList.selectedStatus = status"
+               data-ng-bind="status.name">
+            </a>
+          </li>
+        </ul>
+      </div>
+    </th>
+    <th>Firstname</th>
+    <th>Lastname</th>
+    <th>Organization</th>
+    <th>Email</th>
+    <th>Role</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr
+    dir-paginate="user in accountAdminList.users | orderBy:'-signin' | filter:search:strict | filter:search.activity  | itemsPerPage: accountAdminList.pageSize track by user.id"
+    data-current-page="accountAdminList.currentPage">
+    <td>{{user.login}}</td>
+    <td>{{user.signin | date:"mediumDate"}}</td>
+    <td>{{user.lastConnection | formatdatecalendar}}</td>
+    <td class="activity {{user.activity}}"><span
+      class="badge circular empty"></span></td>
+    <td>{{user.firstName}}</td>
+    <td>{{user.lastName}}</td>
+    <td>{{user.organization}}</td>
+    <td>{{user.email}}</td>
+    <td>
+      <div class="input-group stack">
+        <div class="dropdown" dropdown="">
+          <a class="dropdown-toggle"
+             dropdown-toggle=""
+             data-ng_bind="user.role.description | formatUserRoles">
+          </a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+            <li data-ng-repeat="role in accountAdminList.roles">
+              <a ng-href=""
+                 data-toggle="modal"
+                 data-target="#change-role-{{user.login}}"
+                 data-ng-click="accountAdminList.selectedRole = accountAdminList.roles[$index]"
+                 data-ng-bind="accountAdminList.roles[$index]">
+              </a>
+            </li>
+          </ul>
+          <div class="modal"
+               id="change-role-{{user.login}}"
+               modaldismiss="">
+            <div class="modal-inner">
+              <div class="content clearfix">
+                <h3 class="title">Change role to <strong>{{accountAdminList.selectedRole}}</strong> for user {{user.login}}
+                </h3>
+
+                <div class="actions pull-right">
+                  <button type="button" class="button secondary" data-dismiss="modal">Cancel
+                  </button>
+                  <button type="button"
+                          data-dismiss="modal"
+                          class="change-role-btn button primary"
+                          data-ng-click="accountAdminList.handleChangeRole(user, accountAdminList.selectedRole)">
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </td>
+    <td>
+      <button class="icon-button danger"
+              ripple=""
+              tooltip=""
+              data-title="Delete"
+              data-placement="bottom"
+              data-title="Delete"
+              sweetalert
+              sweet-options="{'title':'Removal confirmation required for user {{user.login}}',
+              'text':'Caution, this is a permanent action.',
+              'type':'warning',
+              'showCancelButton':true,
+              'confirmButtonText':'DELETE USER!',
+              'cancelButtonText':'CANCEL',
+              'closeOnConfirm':false,
+              'closeOnCancel':false,
+              'animation': 'slide-from-top'}"
+              sweet-confirm-option="{'title':'Deleted!','text':'The user has been deleted!','type':'success', 'showConfirmButton': false, 'timer': 1000}"
+              sweet-cancel-option="{'title':'Cancelled!','text':'The user is safe','type':'error', 'showConfirmButton': false, 'timer': 1000}"
+              sweet-on-confirm="accountAdminList.handleDeleteUser(user)"
+              >
+        <i class="icon-whhg removeuseralt"></i>
+      </button>
+      <a class="icon-button primary"
+         data-ng-hide="user.lastConnection === null"
+         ripple=""
+         tooltip=""
+         data-title="Activity"
+         data-placement="bottom"
+         ui-sref="account.logs({login: user.login})">
+        <i class="icon-whhg rawaccesslogs"></i>
+      </a>
+
+    </td>
+  </tr>
+  </tbody>
+</table>
+<dir-pagination-controls></dir-pagination-controls>

@@ -1,0 +1,128 @@
+
+<!--
+  ~ LICENCE : CloudUnit is available under the Affero Gnu Public License GPL V3 : https://www.gnu.org/licenses/agpl-3.0.html
+  ~     but CloudUnit is licensed too under a standard commercial license.
+  ~     Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
+  ~     If you are not sure whether the GPL is right for you,
+  ~     you can always test our software under the GPL and inspect the source code before you contact us
+  ~     about purchasing a commercial license.
+  ~
+  ~     LEGAL TERMS : "CloudUnit" is a registered trademark of Treeptik and can't be used to endorse
+  ~     or promote products derived from this project without prior written permission from Treeptik.
+  ~     Products or services derived from this software may not be called "CloudUnit"
+  ~     nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
+  ~     For any questions, contact us : contact@treeptik.fr
+  -->
+
+<div class="card large">
+  <div class="content clearfix">
+    <div class="ports-form">
+
+      <h3 class="title large">Add new port</h3>
+
+      <form id="add-ports"
+            name="addPortsForm"
+            class="clearfix" novalidate=""
+            data-ng-submit="ports.createPort(ports.application.name, ports.number, ports.myNature.value, ports.isQuickAccess)">
+
+        <div class="input-group-inline col-lg-3">
+          <input type="number"
+              min="0"
+              name="port"
+              class="input-effect col-xs-12" 
+              data-ng-model="ports.number"
+              required="">
+          <span class="bar"></span>
+          <label class="label-effect">Port number</label>
+        </div>
+        <div class="input-group-inline align-margin col-lg-5">
+          <div class="dropdown" dropdown="">
+            <a class="dropdown-toggle"
+               dropdown-toggle=""
+               selectbox="">
+              {{ ports.myNature.value }}
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+              <li data-ng-repeat="nature in ports.natures">
+                <a ng-href=""
+                   data-ng-click="ports.myNature = nature">
+                  {{nature.value}}
+                </a>
+              </li>
+            </ul>
+          </div> 
+        </div>
+        <div data-ng-click="ports.isQuickAccess = (ports.isQuickAccess) ? false : true" class="input-group-inline align-margin col-lg-3">
+          <label>
+              Quick Access
+              <button class="icon-button"
+                  tooltip=""
+                  type="button"
+                  data-title="Quick access"
+                  data-placement="top">
+                  <i class="icon-whhg" data-ng-class="{'rectangle': ports.isQuickAccess === false, 'check': ports.isQuickAccess === true}"></i>
+              </button>
+          </label>
+        </div>
+        <div class="actions">
+          <div class="secondary-actions pull-right">
+            <button type="submit"
+                    class="ports-btn button-effect primary pull-right"
+                    data-ng-disabled="!ports.number">
+              <span>Add a port</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="alert alert-danger" data-ng-show="ports.errorMsg">
+        <button type="button"
+                class="close"
+                ng-click="ports.errorMsg = ''">
+          <span>&times;</span>
+        </button>
+        <p>{{ports.errorMsg}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card large">
+  <div class="content clearfix">
+    <div class="ports-list">
+      <h3 class="title large">Registered ports</h3>
+
+      <p class="no-ports text-muted" data-ng-if="!ports.application.portsToOpen.length">No registered ports</p>
+      <ul data-ng-if="ports.application.portsToOpen.length">
+        <li data-ng-repeat="url in ports.application.portsToOpen track by $index">
+
+          <p>
+            {{ports.application.portsToOpen[$index].port}} ::
+            <a class="body-2"
+               data-ng-href="http://{{ports.application.portsToOpen[$index].alias}}"
+               data-ng-if="ports.application.portsToOpen[$index].nature == 'web'"
+               target="_blank">
+              <!-- TODO : en fonction de http ou external, activer _blank -->
+              {{ports.application.portsToOpen[$index].alias}}
+            </a>
+            <span class="body-2"
+               data-ng-href="{{ports.application.portsToOpen[$index].alias}}"
+               data-ng-if="ports.application.portsToOpen[$index].nature == 'other'"
+               target="_blank">
+              <!-- TODO : en fonction de http ou external, activer _blank -->
+              {{ports.application.portsToOpen[$index].alias}}
+            </span>
+            <!-- if alias is not defined and nature is http -->
+            <button class="remove-ports-btn icon-button secondary"
+                    ripple=""
+                    tooltip=""
+                    data-title="Remove"
+                    data-placement="bottom"
+                    data-ng-click="ports.removePort(ports.application.name, ports.application.portsToOpen[$index].port)">
+              <span class="icon-whhg circledelete"></span>
+            </button>
+          </p>
+        </li>
+      </ul>
+    </div>
+</div>

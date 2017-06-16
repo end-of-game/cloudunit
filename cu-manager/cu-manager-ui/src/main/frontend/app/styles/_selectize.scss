@@ -1,0 +1,22 @@
+/* MODULE SCSS => ./scss2/_selectize.scss
+*/.selectize {
+  color: white;
+  font-size: 1.3em;
+  border-radius: 0px;
+  background-color: $color-primary;
+  min-width:100%;
+  padding-left: 7px;
+  font-weight: bold;
+}
+
+.selectize-small {
+  margin-bottom: 13px;
+}
+
+.selectize:first-letter {
+  text-transform:capitalize;
+}
+
+.selectize-dropdown-content {
+  max-height: 300px;
+}
