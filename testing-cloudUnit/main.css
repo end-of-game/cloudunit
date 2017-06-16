@@ -4,8 +4,8 @@
 body {
 	font-family: 'futura-pt', sans-serif;
     color: black;
-    /* font-size: 1rem;
-    font-weight: 400; */
+   	font-size: 2rem;
+    font-weight: 400;
     background-color: #33CCFF;
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -13,7 +13,6 @@ body {
     padding: 0;
     height: 100%;
     overflow-x: hidden; 
-    alignment-baseline: center;
 } 
 
 
@@ -67,6 +66,12 @@ input {
 }
 
 /************************ First Section ******************************/
+
+.header__wrapper {
+	margin-left: 0px;
+
+}
+
 .top_bar {
 	margin-top: 0;
 	background-color: #3b3e46;
@@ -82,6 +87,7 @@ input {
 	
  	margin-top: 0;
 	margin-bottom: 0;
+    text-align: center;
 }
 
 .blockOne {
@@ -205,9 +211,10 @@ input {
 #Key_concept{
 	height: auto;
 	width: 100%;
-	position: relative;
+	/* position: relative; */
 	left: 0;
 	top: 0;
+	text-align: center;
 }
 
 .help-block {
@@ -300,14 +307,9 @@ ol > li {
 /***************************  Fifth Section ****************************/
 
 #Going_further {
-	 /* display: block; */
-	/* text-align: center;
-	background-image: url("assets/img/treeptik-homepage.jpg");
-	background-color: grey;
-	background-size: cover; */
 	background-image: url("/assets/img/engineers.png");
     background-size: contain;
-    background-position: 50% bottom;
+    background-position: 75% bottom;
     background-repeat: no-repeat;
 	height: auto;
 	width: 100%;
