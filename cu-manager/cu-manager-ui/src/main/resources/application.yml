@@ -5,11 +5,17 @@ zuul:
   addProxyHeaders: true
   routes:
     applications:
-      url: http://localhost:8080/applications
+      url: http://localhost:8080
+      path: /applications/**
+      strip-prefix: false
     containers:
-      url: http://localhost:8081/containers
+      url: http://localhost:8081
+      path: /containers/**
+      strip-prefix: false
     images:
-      url: http://localhost:8081/images
+      url: http://localhost:8081
+      path: /images/**
+      strip-prefix: false
 server:
   port: 9000
 ---
@@ -19,10 +25,16 @@ zuul:
   addProxyHeaders: true
   routes:
     applications:
-      url: http://cu-domain:8080/applications
+      url: http://cu-domain:8080
+      path: /applications/**
+      strip-prefix: false
     containers:
-      url: http://cu-orchestrator:8081/containers
+      url: http://cu-orchestrator:8081
+      path: /containers/**
+      strip-prefix: false
     images:
-      url: http://cu-orchestrator:8081/images
+      url: http://cu-orchestrator:8081
+      path: /images/**
+      strip-prefix: false
 server:
   port: 9000

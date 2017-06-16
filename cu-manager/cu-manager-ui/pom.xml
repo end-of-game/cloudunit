@@ -122,10 +122,33 @@
             <configuration>
               <installDirectory>target</installDirectory>
               <workingDirectory>src/main/frontend</workingDirectory>
-              <arguments>build</arguments>
+              <arguments>run build</arguments>
             </configuration>
           </execution>
           
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.2</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>src/main/resources/static</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>src/main/frontend/dist</directory>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
         </executions>
       </plugin>
 
