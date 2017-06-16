@@ -4,8 +4,8 @@
 body {
 	font-family: 'futura-pt', sans-serif;
     color: black;
-    font-size: 1rem;
-    font-weight: 400;
+    /* font-size: 1rem;
+    font-weight: 400; */
     background-color: #33CCFF;
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -13,6 +13,7 @@ body {
     padding: 0;
     height: 100%;
     overflow-x: hidden; 
+    alignment-baseline: center;
 } 
 
 
@@ -97,6 +98,8 @@ input {
 	margin-top: 55px;
 	margin-bottom: 55px;  
 	display: inline-block;
+	min-width: 35%;
+	max-width: 40%;
 	/* width: 35%; */
 	/* position: relative;
     border: 1px solid white;
@@ -331,6 +334,8 @@ ol > li {
 	margin-right: 650px;
 	text-align: center;
 	display:  inline-block;
+	min-width: 20%;
+	max-width: 25%;
 }
 
 .setting-Form {
