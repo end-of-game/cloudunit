@@ -4,7 +4,7 @@
 body {
 	font-family: 'futura-pt', sans-serif;
     color: black;
-   	font-size: 2rem;
+   	font-size: 1.5rem;
     font-weight: 400;
     background-color: #33CCFF;
 	background-repeat: no-repeat;
@@ -21,7 +21,7 @@ body {
 img {
 	margin-top:  2rem;
 	height: 100px;
-	width: 250px
+	width: 150px
 }
 
 container {
@@ -57,7 +57,7 @@ input {
  */
 .separator {
 	background-color: black;
-	padding: .5px;
+	padding: 1px;
 }
 
 .separator2 {
@@ -211,10 +211,9 @@ input {
 #Key_concept{
 	height: auto;
 	width: 100%;
-	/* position: relative; */
+	position: relative;
 	left: 0;
 	top: 0;
-	text-align: center;
 }
 
 .help-block {
@@ -229,8 +228,9 @@ input {
     background-image: url("/assets/img/technicians-sm.png");
     background-size: 85%;
     background-position: right bottom;
-    background-repeat: no-repeat;
-    max-width: 320px;
+   	background-repeat: no-repeat;
+    max-width: 320px; 
+    margin-left: 250px;
 }
 
 .complementaries {
@@ -246,6 +246,7 @@ input {
 	margin-bottom: 50px;
 	margin-top: 100px; 
 	display: inline-block;
+    margin-left: 150px;
 
 }
 
@@ -260,6 +261,11 @@ input {
 .Koncept .box__heading .heading{
 	background: black;
 	color: white;
+}
+
+
+.text--primary {
+    color: deeppink;
 }
 
 /* dd {
@@ -289,6 +295,21 @@ input {
 	 display: block; 
 	/* text-align: left; */
 }
+
+.mainThree .box__heading {
+	background: url("/assets/img/dotted_transp_bg.png") repeat;
+	padding: 0;
+	text-align: center
+}
+
+/* .mainThree .box__heading .heading{
+	background: black;
+	color: white;
+} */
+
+
+
+
  /* ol {
 	display: block;
 	text-align: center;
