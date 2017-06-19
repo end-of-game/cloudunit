@@ -248,7 +248,7 @@ header {
 #Key_concept{
 	height: auto;
 	width: 100%;
-	position: relative;
+	/* position: relative; */
 	left: 0;
 	top: 0;
 }
@@ -260,7 +260,7 @@ header {
 
 .complementary {
 	position: relative;
-    z-index: 3;
+/*     z-index: 3; */
     min-height: 675px;
     background-image: url("/assets/img/technicians-sm.png");
     background-size: 85%;
@@ -277,7 +277,7 @@ header {
 	margin-top: 50px;
 }
 
-#Koncept {
+.Koncept {
 	/* margin-left: 450px;
 	 margin-right: 550px; */
 	margin-bottom: 50px;
@@ -287,7 +287,7 @@ header {
 
 }
 
-#Koncept .box__heading {
+.Koncept .box__heading {
 	background: url("/assets/img/dotted_transp_bg.png") repeat;
 	padding: 0;
 	text-align: center
@@ -295,14 +295,14 @@ header {
 	border-radius:10px; */
 }
 
-#Koncept .box__heading .heading{
+.Koncept .box__heading .heading{
 	background: black;
 	color: white;
 	display: inline-block;
 }
 
 
-.text--primary {
+.mainFour .text--primary {
     color: deeppink;
 }
 
@@ -323,7 +323,7 @@ header {
 	margin-bottom: 25px; */
 	height: auto;
 	width: 100%;
-	position: relative;
+	/* position: relative; */
 	left: 0;
 	top: 0; 
 	margin-left: 350px;
@@ -359,7 +359,7 @@ ol > li {
 	list-style: none;
     list-style-type: none;
     list-style-image: none;
-    list-style-position: outside;
+    /* list-style-position: outside; */
 }
 
 /***************************  Fifth Section ****************************/
@@ -367,19 +367,19 @@ ol > li {
 #Going_further {
 	background-image: url("/assets/img/engineers.png");
     background-size: contain;
-    background-position: 35% bottom;
+    background-position: 25% bottom;
     background-repeat: no-repeat;
 	height: auto;
 	width: 100%;
 	left: 0;
 	top: 0;
-	overflow:auto;
-	position: relative;
-	margin-left: 350px;
+	margin-left: 350px; 
+ /* overflow:auto;
+	position: relative; */
 }
 
 #Going_further a:link {
-	color: white;
+	color: deeppink;
 }
 
 .further{
