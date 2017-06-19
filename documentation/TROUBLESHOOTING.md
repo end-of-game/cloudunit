@@ -42,3 +42,17 @@ Log in as *admincu*
 ```
 ~/cloudunit/cu-compose/cu-docker-compose.sh with-elk
 ```
+
+# Kibana dasboard error reduce_search_phase_exception
+
+This problem occurs when reponse time of elasticsearch query is to slow, usually it come from the indexes of elasticsearch that have not been purged.
+
+Play this command line on the host where :
+${elasticsearch-container-ip} = elasticsearch container ip given by "docker inspect cu-elasticsearch"
+${month} and ${day} = index are daily dated, in order to purge elasticsearch insert old index or list indexes with curl '${elasticsearch-container-ip}:9200/_cat/indices?v'
+```
+curl -X DELETE '${elasticsearch-container-ip}:9200/metricbeat-2017.${month}.${day}'
+curl -X DELETE '${elasticsearch-container-ip}:9200/jmxtrans-2017.${month}.${day}'
+```
+
+
