@@ -1,6 +1,6 @@
 ---
 spring:
-  profiles: dev
+  profiles: local,vagrant
 zuul:
   addProxyHeaders: true
   routes:
