@@ -15,7 +15,7 @@
 # in the templates via {{ site.myvariable }}.
 title: CloudUnit
 email: contact@treeptik.fr
-description: Let's admit. Managing applications environments is shitty. CloudUnit is an open-source project developped and maintained by Treeptik
+description: Based on our R&D, CloudUnit is a DevOps services platform that enables deployment and management of Java, Php, Python, or NodeJS applications.
 baseurl: /testing-cloudUnit
 url: cloudunit.io
 twitter_username: treeptik
