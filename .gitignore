@@ -349,6 +349,8 @@ hs_err_pid*
 .sass-cache/
 *.css.map
 
+### Jekyll ###
+.jekyll-metadata
 
 ### Maven ###
 target/
