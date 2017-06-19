@@ -277,7 +277,7 @@ header {
 	margin-top: 50px;
 }
 
-.Koncept {
+#Koncept {
 	/* margin-left: 450px;
 	 margin-right: 550px; */
 	margin-bottom: 50px;
@@ -287,7 +287,7 @@ header {
 
 }
 
-.Koncept .box__heading {
+#Koncept .box__heading {
 	background: url("/assets/img/dotted_transp_bg.png") repeat;
 	padding: 0;
 	text-align: center
@@ -295,7 +295,7 @@ header {
 	border-radius:10px; */
 }
 
-.Koncept .box__heading .heading{
+#Koncept .box__heading .heading{
 	background: black;
 	color: white;
 	display: inline-block;
