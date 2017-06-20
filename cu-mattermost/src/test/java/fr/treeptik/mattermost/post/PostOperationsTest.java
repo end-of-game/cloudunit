@@ -18,7 +18,7 @@ public class PostOperationsTest {
 
     Client client = new DefaultClient(8065, "localhost");
     client.connection("nicolas", "mypassword")
-      .compose(user -> {
+      .<Post>compose(user -> {
           return client.getTeamByName("cloudunit")
             .compose(team -> client.getChannelByName(user.getToken(), team.getId(), "application")
               .compose(channel -> {
