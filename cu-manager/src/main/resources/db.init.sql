@@ -34,7 +34,8 @@ INSERT IGNORE INTO `Image`
   (132, 'vertx33-groovy', 'cloudunit/vertx33-groovy', 'Vertx 3.3 Groovy', 'vertx', 'server', '', 'STANDALONE', true),
   (133, 'vertx33-java', 'cloudunit/vertx33-java', 'Vertx 3.3 Java', 'vertx', 'server', '', 'STANDALONE', true),
   (140, 'glassfish2', 'cloudunit/glassfish2', 'Glassfish 2.1.1', 'glassfish', 'server', '', 'APPSERVER', true),
-  (141, 'glassfish4', 'cloudunit/glassfish4', 'Glassfish 4.1', 'glassfish', 'server', '', 'APPSERVER', true);
+  (141, 'glassfish4', 'cloudunit/glassfish4', 'Glassfish 4.1', 'glassfish', 'server', '', 'APPSERVER', true),
+  (200, 'liferay701', 'cloudunit/liferay701', 'Liferay 7.0 GA1', 'liferay', 'server', '', 'APPSERVER', true);
 
 INSERT IGNORE INTO `Image_moduleEnvironmentVariables` (`moduleEnvironmentVariables`,`moduleEnvironmentVariables_KEY`,`Image_id`)
 VALUES

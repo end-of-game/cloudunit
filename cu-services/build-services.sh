@@ -83,6 +83,10 @@ function vertx33 {
     docker build --rm $CACHE_STRATEGY -t cloudunit/vertx33-java images/servers/vertx33-java
 }
 
+function liferay {
+    docker build --rm $CACHE_STRATEGY -t cloudunit/liferay701 images/servers/liferay701
+}
+
 case "$1" in
 
 'activemq')
@@ -113,6 +117,11 @@ fatjar
 'glassfish')
 echo "Building GlassFish"
 glassfish
+;;
+
+'liferay')
+echo "Building Liferay"
+liferay
 ;;
 
 'mongo')

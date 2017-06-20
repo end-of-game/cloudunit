@@ -53,6 +53,8 @@ public class FileUnit {
 				.or(fileEndsWith(".js"))
 				.or(fileEndsWith(".groovy"))
 				.or(fileEndsWith(".yaml"))
+				.or(fileEndsWith(".log"))
+				.or(fileEndsWith(".logs"))
                 .test(f);
 	};
 
