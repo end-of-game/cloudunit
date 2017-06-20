@@ -21,7 +21,7 @@ done
 
 check_prerequisite() {
 	# Check memory
-	if [ $(free -m | awk '/^Mem:/{print $2}') -ge 7000 ]; then
+	if [ $(free -m | awk '/^Mem:/{print $2}') -ge 2000 ]; then
 		printf "\033[1;32m[OK]\033[0m Memory Size \n"
 	else
 		printf "\033[1;31m[KO]\033[0m Memory Size \n"

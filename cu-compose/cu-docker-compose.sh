@@ -137,8 +137,7 @@ function with-elk {
     check-env
     source .env
     docker network create skynet
-    docker-compose  -f docker-compose.elk.yml \
-                    -f docker-compose.yml \
+    docker-compose  -f docker-compose.yml \
     up -d
 }
 
