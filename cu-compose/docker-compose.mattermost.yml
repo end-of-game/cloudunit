@@ -4,8 +4,10 @@ services:
 
 
   db:
+    container_name: cu-mattermost-db
     build:
       context: ./cu-mattermost/db
+    image: cu-mattermost-db
     restart: unless-stopped
     volumes:
       - mattermost-dbdata:/var/lib/postgresql/data
@@ -14,10 +16,14 @@ services:
       - POSTGRES_USER=mmuser
       - POSTGRES_PASSWORD=mmuser_password
       - POSTGRES_DB=mattermost
+    labels:
+      - "traefik.enable=false"
 
   app:
+    container_name: cu-mattermost
     build:
       context: ./cu-mattermost/app
+    image: cu-mattermost-app
     restart: unless-stopped
     volumes:
       - mattermost-appconfig:/mattermost/config:rw
@@ -28,23 +34,13 @@ services:
       - MM_USERNAME=mmuser
       - MM_PASSWORD=mmuser_password
       - MM_DBNAME=mattermost
-    depends_on:
-      - db
-
-  web:
-    build:
-      context: ./cu-mattermost/web
-    restart: unless-stopped
-    environment:
-      - ./volumes/web/cert:/cert:ro
-      - /etc/localtime:/etc/localtime:ro
     labels:
       - "traefik.frontend.entryPoints=https"
       - "traefik.backend=cu-mattermost"
       - "traefik.port=80"
       - "traefik.frontend.rule=Host:${CU_MATTERMOST_DOMAIN}"
     depends_on:
-      - app
+      - db
 
 networks:
   default:
