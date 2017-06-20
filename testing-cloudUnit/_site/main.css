@@ -30,11 +30,6 @@ container {
 	vertical-align: baseline;
 }
 
-/* h2 {
-	text-align: center;
-	vertical-align: baseline;
-} */
-
 h4 {
 	text-align: center;
 } 
@@ -120,7 +115,7 @@ input {
  */
 
 
-/************************ Second Section ****************************/ 
+/************************ First Section ****************************/ 
 
 #mainPage {
  	margin-top: 0;
@@ -155,24 +150,6 @@ header {
 
 	border: 1px solid #a6a6a6;
 }
-
-/* .box_container {
-	background-color: #f2f6f7;
-	border: 2px ridge #a6a6a6;
-	display: inline-block;
-	margin-bottom: 25px; 
-	margin-left: 20px;
-	margin-top: 100px;
-	position: relative;
-    max-width: 400px;
-	padding-top: 2rem;
-	padding: 0;
-}*/
-
-/* .box .intro .box_container {
-	
-	
-} */
  
 .sub_heading {
 	margin-top: 5px;
@@ -192,14 +169,7 @@ header {
 	background-color: black;
     color: white;
     display: inline-block;
-    /*position: absolute;
-    top: -36px;
-    left: 4px; */
 }  
-
-/* .box .intro	.box_content {
-	margin-top:  2rem;
-} */
 
 .wpb_wrapper {
 	text-align: center;
@@ -243,7 +213,7 @@ header {
 }
 
 
-/*************************** Third Section ****************************/
+/*************************** Second Section ****************************/
 
 #Key_concept{
 	height: auto;
@@ -312,7 +282,7 @@ header {
 } */
 
 
-/*************************** Fourth Section ****************************/
+/*************************** Third Section ****************************/
 
 #Usage {
 	/* background-color: #f2f6f7;
@@ -320,13 +290,18 @@ header {
 	border-radius:10px;
 	margin-left: 15px;
 	margin-top: 25px;
-	margin-bottom: 25px; */
+	margin-bottom: 25px; 
 	height: auto;
 	width: 100%;
-	/* position: relative; */
+	position: relative; 
 	left: 0;
 	top: 0; 
+	margin-left: 350px;*/
 	margin-left: 350px;
+	position: relative;
+	height: auto;
+	left: 0;
+	top: 0; 
 }
 
 .usages {
@@ -362,18 +337,18 @@ ol > li {
     /* list-style-position: outside; */
 }
 
-/***************************  Fifth Section ****************************/
+/***************************  Fourth Section  ****************************/
 
 #Going_further {
 	background-image: url("/assets/img/engineers.png");
     background-size: contain;
-    background-position: 25% bottom;
+    background-position: 35% bottom;
     background-repeat: no-repeat;
 	height: auto;
-	width: 100%;
 	left: 0;
 	top: 0;
 	margin-left: 350px; 
+	position: relative;
  /* overflow:auto;
 	position: relative; */
 }
@@ -385,15 +360,23 @@ ol > li {
 .further{
 	display: block; 
 	text-align: left;
-}
+} 
 
 .formCloudunit {
-	margin-right: 900px;
+	margin-right: 700px;
 	margin-left: 5px;
 	text-align: center;
 	display:  inline-block;
-	min-width: 20%;
-	max-width: 25%;
+	/* min-width: 25%;
+	max-width: 35%; */
+	width:  35%;
+	min-width: 250px;
+	max-width: 350px;
+
+	position: relative;
+	/* left: 25%; */
+	/* top: 200px; */
+
 }
 
 /* .setting-Form {
@@ -418,6 +401,22 @@ ol > li {
 	display: inline-block;
 }
 
+.forminput {
+   
+  	padding: 1px 26px; 
+  /*  display: block;
+    text-decoration: none;
+   text-align: center;
+    font-weight: 400;
+    width: 65%;
+    margin: 10px auto;*/
+} 
+
+.formsubmit {
+    background-color: transparent;
+    text-decoration: none;
+    border: none;
+}
 
 /***************************** Social Section ********************************/
 
@@ -426,15 +425,18 @@ ol > li {
 }
 
 .row {
-	margin-top: 15px;
+	/*  margin-top: 15px;
 	text-align: center;
 	background: white;
-	size: 75px; 
+	size: 75px; */
+	text-align: center;
+	size: 75px;
+	margin-bottom: 15px;
 }
 
 .row img {
-	width: 200px;
-	height: 150px;
+	width: 100px;
+	height: 100px;
 }
 
 .social_foot_bar {
