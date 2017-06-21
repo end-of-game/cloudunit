@@ -407,19 +407,25 @@ ol > li {
 	top: 0; 
 }
 
+#mainFooter .box p {
+	text-align: left: 
+}
+
 .row {
 	/*  margin-top: 15px;
 	text-align: center;
 	background: white;
 	size: 75px; */
+	margin-top: 15px;
+	margin-bottom: 15px;
 	text-align: center;
-	size: 75px;
+	size: 50px;
 	background: white;
 }
 
 .row img {
-	width: 100px;
-	height: 100px;
+	width: 150px;
+	height: 150px;
 }
 
 .social_foot_bar {
@@ -455,6 +461,8 @@ ol > li {
 .treeptik {
 	list-style-type: none;
 }
+
+
 
 
 /****************************** Footer Section ********************************/
