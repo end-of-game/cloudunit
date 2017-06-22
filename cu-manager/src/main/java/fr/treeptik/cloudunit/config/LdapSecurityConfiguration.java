@@ -2,6 +2,8 @@ package fr.treeptik.cloudunit.config;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,7 @@ import org.springframework.ldap.core.support.BaseLdapPathContextSource;
 import org.springframework.security.authentication.encoding.LdapShaPasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
+import org.springframework.security.ldap.userdetails.InetOrgPersonContextMapper;
 
 @Configuration
 @Profile("ldap")
@@ -40,10 +43,10 @@ public class LdapSecurityConfiguration extends AbstractSecurityConfiguration {
 
     @Value("${security.ldap.user.login-field:uid}")
     private String userLoginField;
-
+    
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.ldapAuthentication()
+        auth.ldapAuthentication().userDetailsContextMapper(new InetOrgPersonContextMapper())
         .userSearchFilter(String.format("(&(objectclass=%s)(%s={0}))", userObjectClass, userLoginField))
         .groupSearchBase(groupSearchBase)
         .groupSearchFilter(String.format("(&(objectclass=%s)(member={0}))", groupObjectClass))

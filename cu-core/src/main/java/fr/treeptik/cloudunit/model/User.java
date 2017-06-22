@@ -42,7 +42,7 @@ public class User implements Serializable {
 	public static final Integer STATUS_INACTIF = 2;
 
 	public static final Integer STATUS_NOT_ALLOWED = 3;
-
+	
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -100,6 +100,18 @@ public class User implements Serializable {
 		this.status = status;
 		this.role = role;
 		this.applications = applications;
+	}
+	
+	public User(String firstName, String lastName, String login, String password, Date signin, String email, 
+			Integer status, Role role) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.login = login;
+		this.password = password;
+		this.signin = signin;
+		this.email = email;
+		this.status = status;
+		this.role = role;
 	}
 
 	public User(String login, String firstName, String lastName, String organization, String email, String password) {

@@ -333,5 +333,22 @@ public class UserServiceImpl
             throw new ServiceException("Error : change UserRights", e);
         }
     }
+    
+    @Override
+    @Transactional
+    public User createLdapUserIfNotExists(String firstName, String lastName, String login, 
+    		String password, String email) throws ServiceException {
+    	
+    	User user = findByLogin(login);
+		if (user == null) {
+			if (email == null) {
+				email = "un.known@unknown.fr";
+			}
+			Role role = roleDAO.findByRole(Role.ROLE_USER);
+			user = new User(firstName, lastName, login, password, new Date(), email, User.STATUS_ACTIF, role);
+			user = userDAO.save(user);
+		}
+		return user;
+    }
 
 }
