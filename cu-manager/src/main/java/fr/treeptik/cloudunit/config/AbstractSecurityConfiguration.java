@@ -35,6 +35,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -52,7 +53,7 @@ public abstract class AbstractSecurityConfiguration extends WebSecurityConfigure
 	private Logger logger = LoggerFactory.getLogger(AbstractSecurityConfiguration.class);
 
 	@Inject
-	private UserAjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
+	private SimpleUrlAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
 
 	@Inject
 	private UserAjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
