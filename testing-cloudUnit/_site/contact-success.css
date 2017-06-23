@@ -30,11 +30,11 @@ p {
 }
 
 a {
-    color: white;
+    color: deeppink;
 }
 
 a:hover {
-    color: deeppink;
+    color: deepskyblue;
 }
 
 .goto {
@@ -87,3 +87,32 @@ a:hover {
     color: deeppink;
 }
 
+
+/**************************** First div *********************************/
+
+#confirm {
+    /* background-color: #ececec; */
+    border-radius: 10px;
+
+    position: absolute;
+    left: 30%;
+    top: 150px;
+
+    height: 400px;
+    width: 35%;
+    min-width: 400px;
+    max-width: 600px;
+
+    padding: 10px;
+    text-align: center;
+
+    border: 1px solid #a6a6a6;
+}
+
+header {
+    /* background-image: url("/assets/img/computer-bg.jpg");  */
+    background-size: 100%;
+    background-repeat: no-repeat;
+    margin-left: 5px;
+    height: 800px;
+}
