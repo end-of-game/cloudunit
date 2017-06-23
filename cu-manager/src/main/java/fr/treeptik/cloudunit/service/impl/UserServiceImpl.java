@@ -123,7 +123,7 @@ public class UserServiceImpl
                         "There is already a account registered with this email");
             }
             Role role = new Role();
-            role.setDescription("ROLE_USER");
+            role.setDescription(Role.ROLE_USER);
             role = roleDAO.findByRole(role.getDescription());
             user.setRole(role);
             user.setStatus(User.STATUS_MAIL_NOT_CONFIRMED);

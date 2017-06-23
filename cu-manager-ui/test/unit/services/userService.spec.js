@@ -113,7 +113,7 @@ describe('Unit Test: UserService', function () {
         "status": 1,
         "role": {
           "id": 1,
-          "description": "ROLE_ADMIN"
+          "description": "ROLE_CLOUDUNIT_ADMIN"
         }
       };
 

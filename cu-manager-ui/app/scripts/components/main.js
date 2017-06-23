@@ -106,7 +106,7 @@
     function getUserRole() {
       if (isLogged()) {
         UserService.profile().then(function(user) {
-          vm.isAdmin = user.data.role.description === 'ROLE_ADMIN';
+          vm.isAdmin = user.data.role.description === 'ROLE_CLOUDUNIT_ADMIN';
         });
       }
     }

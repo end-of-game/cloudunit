@@ -24,10 +24,10 @@
     return function (input) {
       var role = '';
       switch (input) {
-        case 'ROLE_ADMIN':
+        case 'ROLE_CLOUDUNIT_ADMIN':
           role = 'Admin';
           break;
-        case 'ROLE_USER':
+        case 'ROLE_CLOUDUNIT':
           role = 'User';
           break;
         default :
