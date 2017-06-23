@@ -1,5 +1,5 @@
 /*
- Date: 21th June
+ Date: 22th June
  Author: IsmaStormZ
  */
 
@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({
     extended:true
 }));
 
-app.use('/pages', express.static(__dirname));
+app.use('/', express.static(__dirname));
 
 //Home page
 
@@ -57,7 +57,7 @@ sendmail(mailOptions, (err, reply) => {
 /*
 res.render('contact-success', {data: req.body});
 */
-res.redirect("pages/contact-success.html");
+res.redirect("contact-success.html");
 });
 
 //Starting server
