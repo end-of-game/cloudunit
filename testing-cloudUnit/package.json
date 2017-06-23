@@ -14,6 +14,7 @@
     "body-parser": "1.17.2",
     "express": "4.15.3",
     "nodemailer": "4.0.1",
+    "nodemon": "1.11.0",
     "sendmail": "1.1.1"
   }
 }

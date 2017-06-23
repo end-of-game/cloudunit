@@ -29,7 +29,7 @@ app.use('/pages', express.static(__dirname));
 
 app.get('/', (req,res) => {
     res.redirect('index.html');
-console.log('CloudUnit reading console log ...' + req.url);
+    console.log('CloudUnit reading console log ...' + req.url);
 });
 
 // Create reusable transporter object using the default SMTP transport and sending mail function
@@ -50,7 +50,7 @@ let mailOptions = {
 
 sendmail(mailOptions, (err, reply) => {
     console.log(err);
-console.dir(reply);
+    console.dir(reply);
 });
 res.end();
 });
@@ -60,4 +60,3 @@ res.end();
 const server = http.createServer(app).listen(port, () => {
         console.log("Server Running on 127.0.0.1 : " + port);
 });
-
