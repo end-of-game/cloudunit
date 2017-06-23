@@ -100,24 +100,6 @@ input {
     color: deeppink;
 }
 
-/************************ First Section ******************************/
-/* 
-.header__wrapper {
-	margin-left: 0px;
-
-}
-
-.top_bar {
-	margin-top: 0;
-	background-color: #3b3e46;
-}
-
-.nav_brand {
-	margin-left: 15px;
-} 
- */
-
-
 /************************ First Section ****************************/ 
 
 #mainPage {
@@ -142,8 +124,6 @@ header {
 	position: absolute;
 	left: 15%;
 	top: 150px;
-	/* left: 25%;
-	top: 200px; */
 
 	height:  400px;
 	width:  35%;
@@ -166,8 +146,6 @@ header {
 	background: url("/assets/img/dotted_black_bg.png") repeat;
 	padding: 0;
 	text-align: center;
-/* 	border: 3px dotted black;
-	border-radius:10px; */
 }
 
 #mainOne .box__heading .heading {
@@ -184,7 +162,7 @@ header {
     display: block;
     border: 1px solid !important;
     padding: 6px 26px;
-    -webkit-transition: box-shadow .3s ease-in-out, color .3s ease-in-out, background-color .3s ease-in-out;
+    /* -webkit-transition: box-shadow .3s ease-in-out, color .3s ease-in-out, background-color .3s ease-in-out; */
     transition: box-shadow .3s ease-in-out, color .3s ease-in-out, background-color .3s ease-in-out;
     text-transform: uppercase;
     text-decoration: none;
@@ -196,7 +174,7 @@ header {
     margin: 10px auto;
 }
 
-.cta.cta--primary {
+.cta .cta--primary {
 	margin-top: 55px;
     color: deeppink;
     border-color: deeppink;
@@ -204,7 +182,7 @@ header {
     box-shadow: 4px 4px 0 deeppink;
 }
 
-.cta.cta--secondary {
+.cta .cta--secondary {
 	margin-top: 25px;
     color: black;
     border-color: black;
@@ -245,10 +223,7 @@ header {
 }
 
 .complementaries {
-	margin-left: 150px;
-	margin-right: 800px;
-	margin-bottom: 50px;
-	margin-top: 50px;
+	margin:  50px 800px 50px 150px;
 }
 
 .Koncept {
@@ -279,18 +254,6 @@ header {
 /*************************** Third Section ****************************/
 
 #Usage {
-	/* background-color: #f2f6f7;
-	border: 1px solid #a6a6a6;
-	border-radius:10px;
-	margin-left: 15px;
-	margin-top: 25px;
-	margin-bottom: 25px; 
-	height: auto;
-	width: 100%;
-	position: relative; 
-	left: 0;
-	top: 0; 
-	margin-left: 350px;*/
 	margin-left: 350px;
 	position: relative;
 	height: auto;
@@ -320,15 +283,11 @@ ol {
 	text-align: left;
 }
 
-/* li {
-	display: block;
-}  */
 
 ol > li {
 	list-style: none;
     list-style-type: none;
     list-style-image: none;
-    /* list-style-position: outside; */
 }
 
 /***************************  Fourth Section  ****************************/
@@ -342,13 +301,6 @@ ol > li {
 	left: 0;
 	top: 0;
 	margin-left: 350px; 
-	/* height: auto;
-	left: 0;
-	top: 0;
-	margin-left: 350px; 
-	position: relative;*/
- /* overflow:auto;
-	position: relative; */
 }
 
 #Going_further a:link {
@@ -368,8 +320,6 @@ ol > li {
 	width:  55%;
 	min-width: 250px;
 	max-width: 350px;
-	/* left: 25%; */
-	/* top: 200px; */
 
 }
 
@@ -408,18 +358,14 @@ ol > li {
 }
 
 #mainFooter .box p {
-	text-align: left: 
+	text-align: left;
 }
 
 .row {
-	/*  margin-top: 15px;
-	text-align: center;
-	background: white;
-	size: 75px; */
 	margin-top: 15px;
 	margin-bottom: 15px;
 	text-align: center;
-	size: 50px;
+	/* size: 50px; */
 	background: white;
 }
 
@@ -429,7 +375,6 @@ ol > li {
 }
 
 .social_foot_bar {
-	/* vertical-align: baseline; */
 	text-align: center;
 	display: inline-flex;
 }
@@ -461,8 +406,6 @@ ol > li {
 .treeptik {
 	list-style-type: none;
 }
-
-
 
 
 /****************************** Footer Section ********************************/
