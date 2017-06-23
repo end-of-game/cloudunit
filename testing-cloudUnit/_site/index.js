@@ -28,22 +28,23 @@ app.use('/pages', express.static(__dirname));
 //Home page
 
 app.get('/', (req,res) => {
-    res.redirect('index.html');
+    res.sendfile('index.html');
     console.log('CloudUnit reading console log ...' + req.url);
 });
 
 // Create reusable transporter object using the default SMTP transport and sending mail function
 
 app.post('/contact', (req, res) => {
+    console.log(JSON.stringify(req.body));
     if(req.body.setName == "" || req.body.setEmail == "") {     //check that the requested fields are filled in.
-    res.send("Error: Name & Email should not be blank");    //Message if issue in field
+    res.send("Error: Name & Email should not be blank");        //Message if issue in field
     return false;
 }
 
 // setup email data
 let mailOptions = {
-    from: "cloudunit@treeptik.com",                           // sender address
-    to: "Treeptik mail - <onifuerte@gmail.com>",        // list of receivers
+    from: "cloudunit@treeptik.com",                         // sender address
+    to: "Treeptik mail - <onifuerte@gmail.com>",            // list of receivers
     subject: 'Cloudunit new test.',
     html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
 };
@@ -52,7 +53,11 @@ sendmail(mailOptions, (err, reply) => {
     console.log(err);
     console.dir(reply);
 });
-res.end();
+
+/*
+res.render('contact-success', {data: req.body});
+*/
+res.redirect("pages/contact-success.html");
 });
 
 //Starting server
