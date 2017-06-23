@@ -1,6 +1,6 @@
 INSERT IGNORE INTO `Role` (`id`, `description`) VALUES
-  (1, 'ROLE_ADMIN'),
-  (2, 'ROLE_USER');
+  (1, 'ROLE_CLOUDUNIT_ADMIN'),
+  (2, 'ROLE_CLOUDUNIT');
 
 INSERT IGNORE INTO `Image`
     (`id`, `name`, `path`, `displayName`, `prefixEnv`, `imageType`, `managerName`, `imageSubType`, `isEnable`) VALUES

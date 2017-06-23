@@ -66,7 +66,7 @@ public class User implements Serializable {
 	@JsonFormat(pattern = "YYYY-MM-dd HH:mm")
 	private Date lastConnection;
 
-	@Column(unique = true, nullable = false)
+
 	private String email;
 
 	@JsonIgnore
