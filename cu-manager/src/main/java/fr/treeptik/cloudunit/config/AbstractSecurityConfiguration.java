@@ -15,25 +15,7 @@
 
 package fr.treeptik.cloudunit.config;
 
-import fr.treeptik.cloudunit.utils.CustomPasswordEncoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.WebUtils;
+import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -42,24 +24,36 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 
 /**
  * Class for Security Rules with
  */
-@Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public abstract class AbstractSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	private Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
-
-	@Inject
-	private DataSource dataSource;
+	private Logger logger = LoggerFactory.getLogger(AbstractSecurityConfiguration.class);
 
 	@Inject
-	private UserAjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
+	private SimpleUrlAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
 
 	@Inject
 	private UserAjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
@@ -85,17 +79,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication().passwordEncoder(passwordEncoder()).dataSource(dataSource)
-				.usersByUsernameQuery("Select login, password, 'true' as enabled from User where login=? and status!=0")
-				.authoritiesByUsernameQuery(
-						"Select u.login, r.description From Role r join User u on u.role_id=r.id where u.login=?");
-
-		// auth.inMemoryAuthentication().withUser("john").password("doe").roles("ADMIN,
-		// USER");
-	}
-
-	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
 		// Login Form
@@ -116,7 +99,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		// Routes security
 		http.authorizeRequests()
 				.antMatchers("/gitlab/**").permitAll()
-				.antMatchers("/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+				.antMatchers("/**").hasAnyAuthority("ROLE_CLOUDUNIT", "ROLE_CLOUDUNIT_ADMIN")
 				.and().exceptionHandling()
 				.authenticationEntryPoint(authenticationEntryPoint);
 		if ("true".equals(System.getProperty("httpsOnly"))) {
@@ -179,15 +162,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
 		repository.setHeaderName("X-XSRF-TOKEN");
 		return repository;
-	}
-
-	/**
-	 * Bijectiv Custome encoder
-	 *
-	 * @return
-	 */
-	@Bean
-	public CustomPasswordEncoder passwordEncoder() {
-		return new CustomPasswordEncoder();
 	}
 }

@@ -56,4 +56,7 @@ public interface UserService {
     void changeUserRights(String login, String roleValue)
         throws ServiceException, CheckException;
 
+	User createLdapUserIfNotExists(String firstName, String lastName, 
+			String login, String password, String email) throws ServiceException;
+
 }

@@ -15,5 +15,5 @@
   -->
 
 <configuration>
-    <include resource="logback-${spring.profiles.active}.xml"/>
+    <include resource="logback-${env}.xml"/>
 </configuration>

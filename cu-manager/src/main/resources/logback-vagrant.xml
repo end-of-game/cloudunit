@@ -29,6 +29,7 @@
 	<logger name="fr.treeptik.cloudunit.service.impl.HookServiceImpl" level="debug" />
 
 	<logger name="org.springframework" level="info" />
+    <logger name="org.springframework.security" level="debug" />
 	<!--
 	<logger name="org.springframework.orm.jpa.JpaTransactionManager" level="debug" />
 	<logger name="org.hibernate.SQL" level="debug" />
