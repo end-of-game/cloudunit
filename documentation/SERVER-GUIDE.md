@@ -132,6 +132,19 @@ docker cp /path/to/your-private-key.pem cu-traefik:/certs/traefik.key
 docker restart cu-traefik
 ``` 
 
+## How to configure local domain search and DNS servers
+
+Docker doesn't cascade all of the host machine's network configuration to containers.
+
+Any local DNS servers must be configured explicitly as options in `/etc/default/docker`.
+In order for changes to be taken into account, the Docker daemon must be restarted using the shell command `sudo service docker restart`.
+
+The following is an example of `/etc/default/docker` that configures several DNS servers, including Google's servers.
+
+```
+DOCKER_OPTS="--dns 192.168.2.249 --dns 8.8.8.8 --dns 8.8.4.4"
+```
+
 ## How to activate and configure LDAP authentication for the CloudUnit Manager
 
 Two steps are required:
