@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 services:
 
   redis:
@@ -36,7 +36,7 @@ services:
           - /home/$USER/.docker:/opt/certificats
       environment:
           - "TZ=${TZ}"
-          - "CATALINA_OPTS=-Dspring.profiles.active=production"
+          - "CATALINA_OPTS=-Dspring.profiles.active=production,${CU_SECURITY:-jdbc} -Dproduction"
           - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
           - "CU_JENKINS_DOMAIN=${CU_JENKINS_DOMAIN}"
           - "CU_DOMAIN=${CU_DOMAIN}"
