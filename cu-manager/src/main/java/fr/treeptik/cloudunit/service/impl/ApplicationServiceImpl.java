@@ -333,9 +333,12 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public Application findByNameAndUser(User user, String name) throws ServiceException {
         try {
             Application application = applicationDAO.findByNameAndUser(user.getId(), name, cuInstanceName);
+            // CU-358 : Load deployments after initial query to avoid duplicated items (duplicated ports in modules)
+            application.getDeployments();
             return application;
         } catch (PersistenceException e) {
             logger.error(user.toString(), e);
