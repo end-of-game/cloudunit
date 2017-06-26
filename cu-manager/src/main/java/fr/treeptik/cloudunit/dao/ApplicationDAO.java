@@ -27,9 +27,10 @@ import java.util.List;
 public interface ApplicationDAO extends JpaRepository<Application, Integer> {
 
 	@Query("Select distinct a from Application a " + "left join fetch a.server s "
-			+ "left join fetch a.modules m left join fetch a.deployments " + "left join fetch a.aliases "
-			+ "left join fetch a.portsToOpen "
+			+ "left join fetch a.modules m "
 			+ "left join fetch m.ports "
+			// CU-358 : Remove join to avoid duplicated ports in modules
+			// + "left join fetch a.deployments "
 			+ "where a.user.id=:userId and a.name=:name and a.cuInstanceName=:cuInstanceName")
 	Application findByNameAndUser(@Param("userId") Integer userId, @Param("name") String name,
 			@Param("cuInstanceName") String cuInstanceName) throws DataAccessException;
