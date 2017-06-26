@@ -105,7 +105,6 @@ lvconvert -y \
 ```
 ~/cloudunit/cu-compose/cu-docker-compose.sh with-elk
 ```
-You have many start-* files for different scenarii.
 
 ## How to reset the production environment 
 
@@ -125,10 +124,37 @@ To do so, you have to change the value in the following files
 In order to customize your CloudUnit installation with your own domain name and SSL certificates,
 please follow these instructions.
 
-Execute the following commands to copy you certificates into the traefik and restart the container :
+Execute the following commands to copy you certificates into the traefik and restart the container:
 
 ```
 docker cp /path/to/your-public-key.crt cu-traefik:/certs/traefik.crt 
 docker cp /path/to/your-private-key.pem cu-traefik:/certs/traefik.key
 docker restart cu-traefik
 ``` 
+
+## How to activate and configure LDAP authentication for the CloudUnit Manager
+
+Two steps are required:
+* Set `CU_SECURITY=ldap` in the `.env` file mentioned above.
+* Add a configuration file at `~admincu/.cloudunit.properties`, if it doesn't already exist, and set the following properties:
+  * `security.ldap.urls`: a list of URLs referencing the primary and secondary LDAP servers to bind to
+  * `security.ldap.basedn`: the Base DN to bind to
+  * `security.ldap.manager.user` and `security.ldap.manager.password`: username and password for the service account to use to bind to any of the LDAP servers given. The user need only have read access.
+  * `security.ldap.user.login-field`: the attribute that will be searched in order to find a username
+  * `security.ldap.user.objectclass`: the object class that users must have (defaults to `*`, meaning any class)
+  * `security.ldap.group.search-base`: the DN under which all user roles can be found
+  * `security.ldap.group.objectclass`: the object class that groups must have (same default as for users)
+
+The following file is an example that works with an Active Directory.
+
+```
+security.ldap.urls=ldap://ldap.your-company.com
+security.ldap.basedn=dc=your-company,dc=com
+security.ldap.manager.user=sa
+security.ldap.manager.password=changeit13!!
+security.ldap.user.login-field=sAMAccountName
+security.ldap.user.objectclass=person
+security.ldap.group.search-base=cn=Users
+security.ldap.group.objectclass=group
+```
+
