@@ -8,6 +8,9 @@ services:
       command: redis-server --appendonly yes
       environment:
           - "TZ=${TZ}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
       volumes:
           - redis-data:/data
       labels:
@@ -21,6 +24,9 @@ services:
           - "TZ=${TZ}"
           - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
           - MYSQL_DATABASE=${MYSQL_DATABASE}
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
       volumes:
             - mysqldata:/var/lib/mysql
       labels:
@@ -45,6 +51,9 @@ services:
           - "CU_NEXUS_DOMAIN=${CU_NEXUS_DOMAIN}"
           - "CU_SONAR_DOMAIN=${CU_SONAR_DOMAIN}"
           - "CU_MATTERMOST_DOMAIN=${CU_MATTERMOST_DOMAIN}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
       labels:
           - "traefik.frontend.entryPoints=https"
           - "traefik.backend=manager"
@@ -59,6 +68,9 @@ services:
           - DB_USER=root
           - DB_PASS=root
           - DB_NAME=cadvisor
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
       volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:rw
@@ -81,13 +93,38 @@ services:
       ports:
           - "1212:22"
       environment:
-        GITLAB_OMNIBUS_CONFIG: |
-               external_url 'https://${CU_GITLAB_DOMAIN}'
+          - "TZ=${TZ}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "GITLAB_OMNIBUS_CONFIG: |
+               external_url 'https://${CU_GITLAB_DOMAIN}'"
       labels:
           - "traefik.frontend.entryPoints=https"
           - "traefik.backend=gitlab"
           - "traefik.port=443"
           - "traefik.frontend.rule=Host:${CU_GITLAB_DOMAIN}"
+
+  jenkins:
+      container_name: cu-jenkins
+      restart: unless-stopped
+      build:
+        context: cu-jenkins
+      image: cloudunit/jenkins
+      volumes:
+          - jenkins-home:/var/jenkins_home
+      environment:
+          - "TZ=${TZ}"
+          - "JAVA_ARGS=-Xmx2048m -XX:MaxPermSize=512m -Djava.awt.headless=true"
+          - "MAVEN_OPTS=-Xmx512m -XX:MaxPermSize=128m"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+      labels:
+          - "traefik.frontend.entryPoints=https"
+          - "traefik.backend=jenkins"
+          - "traefik.port=8080"
+          - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
 
   sonarqube:
     container_name: cu-sonar
@@ -95,6 +132,9 @@ services:
     image: 'sonarqube:6.2'
     environment:
       - "TZ=${TZ}"
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
+      - "ftp_proxy=${ftp_proxy}"
     volumes:
       - 'sonar-data:/opt/sonarqube/data'
       - 'sonar-extensions:/opt/sonarqube/extensions'
@@ -116,6 +156,9 @@ services:
         - "TZ=${TZ}"
         - "JAVA_MIN_MEM=1024m"
         - "JAVA_MAX_MEM=1024m"
+        - "http_proxy=${http_proxy}"
+        - "https_proxy=${https_proxy}"
+        - "ftp_proxy=${ftp_proxy}"
       labels:
         - "traefik.frontend.entryPoints=https"
         - "traefik.backend=cu-nexus"
@@ -129,6 +172,9 @@ services:
       command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
       environment:
           - "TZ=${TZ}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
       ports:
           - "80:80"
           - "443:443"

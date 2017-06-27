@@ -303,6 +303,31 @@ logo_pulling_dockerhub() {
 echo "Pulling CloudUnit..."
 }
 
+question_proxy() {
+	echo ""
+	echo "Configure proxy (default is [no])"
+	echo "( yes / no ) : "
+	read USE_PROXY
+	if [ "$USE_PROXY" = "yes" ]; then
+	  set_proxy
+	else
+	  echo "No configured proxy."
+	fi
+}
+
+set_proxy() {
+	echo ""
+	echo "Enter proxy address : "
+	read PROXY
+	if [ -n "$PROXY" ]; then
+		export http_proxy=$PROXY
+		export https_proxy=$http_proxy
+		export ftp_proxy=$http_proxy
+	else
+		echo "No configured proxy."
+	fi
+}
+
 #
 #
 # MAIN
@@ -316,6 +341,8 @@ if [ -f /etc/redhat-release ]; then
 else
   distribution=$(cat /etc/issue | cut -c1-6)
 fi
+
+question_proxy
 
 check_git_branch
 
