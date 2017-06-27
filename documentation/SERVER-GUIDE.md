@@ -12,6 +12,7 @@ A virtual or baremetal server with
   * Or Centos 7.x with LVM2 package installed and a lvm vg named "docker" (see FAQ if needed)
 * a domain name and a DNS entries on your network or the Internet that point that domain name and all of its sub-domains to the IP of the server (this guide uses *.cloudunit.io)
 * _(for proper SSL support)_ an SSL certificate for the server's domain name and all of its sub-domains
+* SE Linux disabled on Centos operating system
 
 ## Install
 
@@ -98,6 +99,16 @@ lvconvert -y \
 -c 512K \
 --thinpool docker/thinpool \
 --poolmetadata docker/thinpoolmeta
+```
+
+## How to disable SELinux on CentOS
+
+```
+sudo vim /etc/selinux/config
+
+change SELINUX=disabled
+
+reboot
 ```
 
 ## How to restart the production environment without reseting data
