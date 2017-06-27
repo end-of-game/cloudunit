@@ -20,6 +20,7 @@ import com.spotify.docker.client.messages.Image;
 import fr.treeptik.cloudunit.config.DockerConfiguration;
 import fr.treeptik.cloudunit.utils.NamingUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +61,9 @@ public class DockerServiceImpl implements DockerService {
 
     @Value("#{systemEnvironment['CU_DOMAIN']}")
     private String domainSuffix;
+    
+    @Value("#{systemEnvironment['http_proxy']}")
+    private String httpProxy;
 
     protected String domain;
 
@@ -94,6 +98,14 @@ public class DockerServiceImpl implements DockerService {
             args.add("run");
             args.add(user.getLogin());
             args.add(user.getPassword());
+        }
+        if (StringUtils.isNotEmpty(httpProxy)) {
+        	if (envs == null) {
+        		envs = new ArrayList<>();
+        	}
+        	envs.add(String.format("http_proxy=%s", httpProxy));
+        	envs.add(String.format("https_proxy=%s", httpProxy));
+        	envs.add(String.format("ftp_proxy=%s", httpProxy));
         }
         //Map<String, String> ports = new HashMap<>();
         //ports.put("8000/tcp", "");
@@ -356,6 +368,15 @@ public class DockerServiceImpl implements DockerService {
                 .collect(Collectors.toMap(
                         p -> String.format("%s/tcp", p.getContainerValue()),
                         p -> p.getHostValue()));
+        
+        if (StringUtils.isNotEmpty(httpProxy)) {
+        	if (envs == null) {
+        		envs = new ArrayList<>();
+        	}
+        	envs.add(String.format("http_proxy=%s", httpProxy));
+        	envs.add(String.format("https_proxy=%s", httpProxy));
+        	envs.add(String.format("ftp_proxy=%s", httpProxy));
+        }
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, volumesFrom, null, volumes,
                 envs, ports, "skynet", domain);
         dockerCloudUnitClient.createContainer(container);
