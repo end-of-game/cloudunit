@@ -23,6 +23,7 @@ public enum RemoteExecAction {
     CLONE_POST_ACTION("After restoring an application", "/opt/cloudunit/hooks/clone-post-action.sh"),
     GATHER_CU_ENV("Gather CU env variables", "/opt/cloudunit/scripts/env.sh");
 
+
     private final String label;
     private String command;
 

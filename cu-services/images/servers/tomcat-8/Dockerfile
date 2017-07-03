@@ -48,6 +48,7 @@ RUN mkdir -p /opt/cloudunit/backup &&  \
 
 WORKDIR /opt/cloudunit
 
+
 # Environment variables
 ENV CU_BACKUP /opt/cloudunit/backup
 ENV CU_HOOKS /opt/cloudunit/hooks
