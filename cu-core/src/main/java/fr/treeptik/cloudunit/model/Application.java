@@ -70,7 +70,7 @@ public class Application implements Serializable {
 	@OneToOne(mappedBy = "application", fetch = FetchType.LAZY)
 	private Server server;
 
-	@OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@OneToMany(mappedBy = "application", fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
 	private Set<Deployment> deployments;
 
 	@ElementCollection
