@@ -18,6 +18,7 @@ package fr.treeptik.cloudunit.controller;
 import java.io.*;
 
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -460,6 +461,28 @@ public class ApplicationController implements Serializable {
 		}
 		return envUnits;
 	}
+
+	@CloudUnitSecurable
+	@ResponseBody
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/jvm", method = RequestMethod.GET)
+	public List<String> displayJvmOptions(@PathVariable String applicationName, @PathVariable String containerName)
+			throws ServiceException, CheckException {
+		List<String> output;
+		try {
+			User user = this.authentificationUtils.getAuthentificatedUser();
+			String content = dockerService.execCommand(containerName,
+					RemoteExecAction.GATHER_JVM_OPTIONS.getCommand());
+			logger.debug(content);
+
+			String[] jvm_options = content.split(" ");
+			output = Arrays.asList(jvm_options);
+
+		} catch (FatalDockerJSONException e) {
+			throw new ServiceException(applicationName + ", " + containerName, e);
+		}
+		return output;
+	}
+
 
 	@RequestMapping(value = "/{applicationName}/containers/export", method = RequestMethod.POST)
 	@CloudUnitSecurable
