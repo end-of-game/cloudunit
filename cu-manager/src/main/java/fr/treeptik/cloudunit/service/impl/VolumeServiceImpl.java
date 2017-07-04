@@ -74,7 +74,7 @@ public class VolumeServiceImpl implements VolumeService {
 		Volume volume = null;
 		try {
 			volume = loadVolume(id);
-			if(volume.getVolumeAssociations().size() != 0) {
+			if(volume != null && volume.getVolumeAssociations().size() != 0) {
 				throw new CheckException("Volume couldn't be remove because it's currently linked whith application");
 			}
 			volumeDAO.delete(id);
