@@ -83,7 +83,7 @@ public class CloudUnitApplicationContext
     private static final int READ_TIMEOUT_MILLIS = 1 * 60 * 1000;
 
     // Max file size
-    private static final int MAX_UPLOAD_SIZE = 300 * 1000 * 1000;
+    private static final int MAX_UPLOAD_SIZE = 2000 * 1024 * 1024;
 
     private final static Logger logger = LoggerFactory.getLogger(CloudUnitApplicationContext.class);
 
