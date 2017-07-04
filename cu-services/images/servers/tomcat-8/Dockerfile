@@ -48,7 +48,6 @@ RUN mkdir -p /opt/cloudunit/backup &&  \
 
 WORKDIR /opt/cloudunit
 
-
 # Environment variables
 ENV CU_BACKUP /opt/cloudunit/backup
 ENV CU_HOOKS /opt/cloudunit/hooks
@@ -102,3 +101,5 @@ LABEL origin application
 LABEL application-type tomcat
 LABEL application-version tomcat-$TOMCAT_VERSION
 ## CLOUDUNIT :: END
+
+
