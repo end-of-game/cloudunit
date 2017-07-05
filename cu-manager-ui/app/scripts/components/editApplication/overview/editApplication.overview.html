@@ -168,6 +168,25 @@
             </div>
           </div>
 
+          <div class="readonly" ng-if="overview.app.runtime">
+            <label>
+              <button class="server-btn icon-button secondary power"
+                      data-ng-click="colapseOverview = !colapseOverview;"
+                      tooltip="">
+                <i class="icon-whhg" ng-class="{'minus-sign': !colapseOverview, 'plus-sign': colapseOverview}"></i>
+              </button>
+              Runtime Environment:
+            </label>
+            <div class="colapse-reduct" ng-class="{'colapse-on' : colapseOverview}">
+              <li class="label-like col-xs-12" ng-repeat="option in overview.app.runtime track by $index">
+                <span class="clipboard" id="runtime-key-{{$index}}" data-title="Copy to clipboard" tooltip="" ngclipboard data-clipboard-target="#runtime-key-{{$index}}">
+                  {{ option }}
+                </span>
+              </li>
+            </div>
+          </div>
+
+
           <div class="readonly" ng-if="overview.app.jvm">
             <label>
               <button class="server-btn icon-button secondary power"
