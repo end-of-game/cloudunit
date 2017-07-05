@@ -1,6 +1,12 @@
 #Instruction initializes a new build stage and sets the Base Image for subsequent instructions
 FROM node:6.11
 
+#Indication person to contact
+MAINTAINER Ismaël Charifou <contact@treeptik.fr>
+
+#Create a folder where we will work
+RUN mkdir /testing-cloudUnit
+
 #Redirect to folder
 WORKDIR /testing-cloudUnit
 
@@ -19,7 +25,12 @@ RUN npm install
 #Copy
 COPY index.js /testing-cloudUnit
 
-EXPOSE 5000
+#Port allocation
+ENV PORT 3000
 
-CMD ["npm", "start"]
+#Opening port to external
+EXPOSE $PORT
+
+#Command to execute when build is completed
+CMD ["nodemon", "index.js"]
 

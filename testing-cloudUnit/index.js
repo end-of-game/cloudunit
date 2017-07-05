@@ -16,7 +16,7 @@ const sendmail = require('sendmail')({      //Send mail without SMTP server
     }});
 
 const app = express();
-const port = Number(process.env.PORT || 5000);
+const port = Number(process.env.PORT || 3000);
 
 //Parsed the text as JSON
 app.use(bodyParser.json());

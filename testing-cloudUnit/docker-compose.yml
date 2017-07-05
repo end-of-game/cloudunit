@@ -1,0 +1,17 @@
+version: '2'
+services:
+db:
+  image: mongo
+  ports:
+    -"27017-27017"
+  command: "--smallfiles --logpath=/dev/null"
+web:
+  build: .
+  command: nodemon index.js
+  volumes:
+    - .:/testing-cloudUnit
+  ports:
+    - "3000:3000"
+  link:
+    - db
+  environment: 3000
