@@ -472,7 +472,12 @@ public class ApplicationController implements Serializable {
 			User user = this.authentificationUtils.getAuthentificatedUser();
 			String content = dockerService.execCommand(containerName,
 					RemoteExecAction.GATHER_JVM_OPTIONS.getCommand());
-			logger.debug(content);
+
+			if(content.contains("/opt/cloudunit/scripts/grep_java.sh")) {
+				logger.warn("Missing /opt/cloudunit/scripts/grep_java.sh");
+				return Arrays.asList("Chaine vide");
+			}
+
 
 			String[] jvm_options = content.split(" ");
 			output = Arrays.asList(jvm_options);

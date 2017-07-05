@@ -74,7 +74,10 @@
 
     function initializeEnvVar() {
       EnvironmentVariableService.getJvmOptions(vm.app.name, vm.app.server.name).then(function (data) {
-        vm.app.jvm = data;
+          if(data != "Chaine vide") {
+              vm.app.jvm = data;
+          }
+
       });
       EnvironmentVariableService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
         vm.app.env = data;
