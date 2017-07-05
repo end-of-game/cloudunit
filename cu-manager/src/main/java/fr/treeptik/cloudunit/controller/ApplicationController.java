@@ -17,6 +17,7 @@ package fr.treeptik.cloudunit.controller;
 
 import java.io.*;
 
+import java.lang.reflect.Array;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
@@ -464,12 +465,26 @@ public class ApplicationController implements Serializable {
 
 	@CloudUnitSecurable
 	@ResponseBody
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/runtime", method = RequestMethod.GET)
+	public List<String> displayRuntime(@PathVariable String applicationName, @PathVariable String containerName)
+			throws ServiceException, CheckException {
+		String output;
+		try {
+			output = dockerService.execCommand(containerName,
+					RemoteExecAction.GATHER_RUNTIME.getCommand());
+		} catch (FatalDockerJSONException e) {
+			throw new ServiceException(applicationName + ", " + containerName, e);
+		}
+		return Arrays.asList(output);
+	}
+
+	@CloudUnitSecurable
+	@ResponseBody
 	@RequestMapping(value = "/{applicationName}/container/{containerName}/jvm", method = RequestMethod.GET)
 	public List<String> displayJvmOptions(@PathVariable String applicationName, @PathVariable String containerName)
 			throws ServiceException, CheckException {
 		List<String> output;
 		try {
-			User user = this.authentificationUtils.getAuthentificatedUser();
 			String content = dockerService.execCommand(containerName,
 					RemoteExecAction.GATHER_JVM_OPTIONS.getCommand());
 

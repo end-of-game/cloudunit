@@ -22,7 +22,8 @@ public enum RemoteExecAction {
     CLONE_PRE_ACTION("Before restoring an application", "/opt/cloudunit/hooks/clone-pre-action.sh"),
     CLONE_POST_ACTION("After restoring an application", "/opt/cloudunit/hooks/clone-post-action.sh"),
     GATHER_CU_ENV("Gather CU env variables", "/opt/cloudunit/scripts/env.sh"),
-    GATHER_JVM_OPTIONS("Gather JVM Options","/opt/cloudunit/scripts/grep_java.sh");
+    GATHER_JVM_OPTIONS("Gather JVM Options","/opt/cloudunit/scripts/grep_java.sh"),
+    GATHER_RUNTIME("Gather runtime in container", "/opt/cloudunit/scripts/runtime.sh");
 
 
     private final String label;
