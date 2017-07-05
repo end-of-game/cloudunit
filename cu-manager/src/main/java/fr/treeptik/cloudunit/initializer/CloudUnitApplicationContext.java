@@ -24,6 +24,7 @@ import fr.treeptik.cloudunit.config.EmailActiveCondition;
 import fr.treeptik.cloudunit.config.MattermostClient;
 import fr.treeptik.cloudunit.docker.core.DockerCloudUnitClient;
 import fr.treeptik.cloudunit.docker.core.SimpleDockerDriver;
+import org.hibernate.boot.jaxb.SourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -139,8 +140,8 @@ public class CloudUnitApplicationContext
     public static PropertySourcesPlaceholderConfigurer propertiesForIntegration()
             throws Exception {
         String file = "application-integration-local.properties";
-
         String envIntegration = System.getenv("CLOUDUNIT_JENKINS_CI");
+        System.out.println("CLOUDUNIT_JENKINS_CI="+envIntegration);
         if ("true".equalsIgnoreCase(envIntegration)) {
             file = "application-integration.properties";
         }
@@ -243,7 +244,7 @@ public class CloudUnitApplicationContext
                                                        @Value("${docker.socket.location}") String dockerSocketLocation,
                                                        @Value("${docker.certs.dir.path:}") String certPathDirectory) {
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
-        logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
+        System.out.println("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
         DockerCloudUnitClient dockerCloudUnitClient = new DockerCloudUnitClient();
         if (useUnixSocket) {
             dockerCloudUnitClient.setDriver(new SimpleDockerDriver(true, endpoint, dockerSocketLocation, null));
@@ -260,8 +261,8 @@ public class CloudUnitApplicationContext
         com.spotify.docker.client.DockerClient dockerClient = null;
         boolean useUnixSocket = endpoint.equalsIgnoreCase("unix");
         boolean useTLS = endpoint.equalsIgnoreCase("https");
-        logger.info("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
-        logger.info("Socket TLS : " + (useTLS ? "yes" : "no"));
+        System.out.println("Socket mode : " + (useUnixSocket ? "unix" : "tcp"));
+        System.out.println("Socket TLS : " + (useTLS ? "yes" : "no"));
         try {
             if (useUnixSocket) {
                 dockerClient = DefaultDockerClient.fromEnv().build();
