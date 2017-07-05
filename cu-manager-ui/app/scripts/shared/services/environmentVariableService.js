@@ -39,7 +39,8 @@
         getListSettingsEnvironmentVariable: getListSettingsEnvironmentVariable,
         addEnvironmentVariable: addEnvironmentVariable,
         deleteEnvironmentVariable: deleteEnvironmentVariable,
-        getJvmOptions: getJvmOptions
+        getContainerOptions: getContainerOptions
+
     };
 
     function getListSettingsEnvironmentVariable ( applicationName, containerName ) {
@@ -72,21 +73,21 @@
         }, {} ).$promise; 
     }
 
+    function getContainerOptions(applicationName, containerName, infoName) {
+        var dir = $resource ( 'application/:applicationName/container/:containerName/'+infoName );
+        return dir.query ( {
+            applicationName: applicationName,
+            containerName: containerName
+        } ).$promise;
+    }
+
     function getVariableEnvironment ( applicationName, containerName ) {
-        var dir = $resource ( 'application/:applicationName/container/:containerName/env' );
+        var dir = $resource ( 'application/:applicationName/container/:containerName/env');
         return dir.query ( {
             applicationName: applicationName,
             containerName: containerName
         } ).$promise;      
     }
-
-      function getJvmOptions ( applicationName, containerName ) {
-          var dir = $resource ( 'application/:applicationName/container/:containerName/jvm' );
-          return dir.query ( {
-              applicationName: applicationName,
-              containerName: containerName
-          } ).$promise;
-      }
 
   }
 }) ();
