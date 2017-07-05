@@ -176,7 +176,7 @@ public class VolumeControllerTestIT {
     public void deleteMissingVolume()
             throws Exception {
         // delete the volume
-        deleteVolume(Integer.MIN_VALUE, HttpStatus.BAD_REQUEST);
+        deleteVolume(Integer.MIN_VALUE, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private void existVolume(VolumeResource volumeResource) throws Exception {
