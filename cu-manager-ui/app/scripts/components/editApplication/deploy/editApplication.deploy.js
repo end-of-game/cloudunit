@@ -102,7 +102,7 @@
     uploader.filters.push({
       name: 'sizeFilter',
       fn: function (item /*{File|FileLikeObject}*/) {
-        return item.size < 300000000;
+        return item.size < 2000*1024*1024; // 2Go
       }
     });
 
