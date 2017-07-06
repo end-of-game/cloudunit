@@ -9,5 +9,5 @@ docker network create skynet
 cd $CLOUDUNIT_HOME/cu-compose && docker-compose -f docker-compose.elk.yml up -d
 cd $CLOUDUNIT_HOME/integration-tests && docker-compose kill && docker-compose rm -f && docker-compose up -d
 cd $CLOUDUNIT_HOME && /home/admincu/software/maven/bin/mvn clean install -DskipTests
-cd $CLOUDUNIT_HOME/cu-manager && /home/admincu/software/maven/bin/mvn test "-Dtest=*IT"
+cd $CLOUDUNIT_HOME/cu-manager && /home/admincu/software/maven/bin/mvn test "-Dtest=Tomcat*DeploymentControllerTestIT"
 
