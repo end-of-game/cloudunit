@@ -1,4 +1,4 @@
-FROM mdelapenya/liferay-portal:7-ce-ga1-tomcat-hsql
+FROM openjdk:8
 
 MAINTAINER Nicolas Muller <n.muller@treeptik.fr>
 
@@ -13,6 +13,9 @@ ENV CU_DEFAULT_LOG_FILE liferay.2017-06-19.log
 # add custom scripts
 ADD scripts /opt/cloudunit/scripts
 RUN chmod +x /opt/cloudunit/scripts/*
+
+COPY files/liferay-dxp-digital-enterprise-tomcat-7.0-sp3.zip /opt
+RUN unzip /opt/liferay-dxp-digital-enterprise-tomcat-7.0-sp3.zip
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
