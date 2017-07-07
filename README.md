@@ -7,7 +7,6 @@ Thanks to CloudUnit PaaS's powerful provisioning and execution capabilities, cla
 CloudUnit takes care of the plumbing.
 
 A complete plaform for devops featuring
-* Docker with its friends : Compose, Machine and soon Swarm
 * CI/CD with Gitlab or Jenkins2 (dedicated plugin :))
 * EKL Stack for monitoring users containers
 * Prometheus for monitoring platform
@@ -56,61 +55,6 @@ There are many installation guides
     
 * [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit/blob/dev/documentation/CLI-GUIDE.md)
 * [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit/tree/dev/cu-maven/README.md)
-
-## Browsers Support
-
-<table>
-	<thead>
-		<th></th>
-		<th>Windows</th>
-		<th>MacOS</th>
-		<th>Linux</th>
-	</thead>
-	<tbody>
-		<!-- Chrome -->
-		<tr>
-			<td>Chrome</td>
-			<td>✓</td>
-			<td>✓</td>
-			<td>✓</td>
-		</tr>
-		<!-- Firefox -->
-		<tr>
-			<td>Firefox<sup>33</sup></td>
-			<td>✓</td>
-			<td>✓</td>
-			<td>✓</td>
-		</tr>
-		<!-- Opera -->
-		<tr>
-			<td>Opera</td>
-			<td>✓</td>
-			<td>?</td>
-			<td>✓</td>
-		</tr>
-		<!-- Safari -->
-		<tr>
-			<td>Safari</td>
-			<td>?</td>
-			<td>✓</td>
-			<td>-</td>
-		</tr>
-		<!-- Edge -->
-		<tr>
-			<td>Edge</td>
-			<td>✓</td>
-			<td>-</td>
-			<td>-</td>
-		</tr>
-		<!-- IE -->
-		<tr>
-			<td>IE<sup>11</sup></td>
-			<td>✓</td>
-			<td>-</td>
-			<td>-</td>
-		</tr>
-	</tbody>
-</table>
 
 # Licensing
 
