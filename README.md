@@ -2,6 +2,9 @@
 
 ![Homepage](documentation/img/homepage.png "Devops Platform")
 
+How to manage an application
+![Overview](documentation/img/overview-application.png "Overview")
+
 Thanks to CloudUnit PaaS's powerful provisioning and execution capabilities, classical servers as Tomcat and JBoss, developers can build secure and scalable Java Web applications. So deploy your Java applications in the cloud almost instantly without changing your code.
 
 CloudUnit takes care of the plumbing.
@@ -59,7 +62,7 @@ There are many installation guides
 # Licensing
 
 All the source code is licensed under GNU AFFERO GENERAL PUBLIC LICENSE. License is available [here](/LICENSE)
-but CloudUnit is licensed too under a standard commercial license.
+but `CloudUnit` is licensed too under a standard commercial license.
 Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
 If you are not sure whether the AGPL is right for you,
 you can always test our software under the AGPL and inspect the source code before you contact us
