@@ -3,11 +3,10 @@
  Author: IsmaStormZ
  */
 
-const http = require('http');
-const express = require('express');
-const nodemailer = require('nodemailer');
-const bodyParser = require('body-parser');
-const sendmail = require('sendmail')({
+const http = require('http');               //To use the HTTP server and client one must require('http')
+const express = require('express');         // express is a minimalist framework for node
+const bodyParser = require('body-parser');  // body-parser extracts entire body portion of an request stream and exposes it on req.body
+const sendmail = require('sendmail')({      //Send mail without SMTP serverœ
     logger: {
         debug: console.log,
         info: console.info,
@@ -16,12 +15,17 @@ const sendmail = require('sendmail')({
     }});
 
 const app = express();
-const port = Number(process.env.PORT || 5000);
+const port = Number(process.env.PORT || 3000);
 
+//Parsed the text as JSON
 app.use(bodyParser.json());
+
+//Parses the text as URL encoded data
 app.use(bodyParser.urlencoded({
     extended:true
 }));
+
+//express.static permit to use any static files(js, html, css) related to the static directory
 
 app.use('/', express.static(__dirname));
 
@@ -37,31 +41,29 @@ app.get('/', (req,res) => {
 app.post('/contact', (req, res) => {
     console.log(JSON.stringify(req.body));
     if(req.body.setName == "" || req.body.setEmail == "") {     //check that the requested fields are filled in.
-    res.send("Error: Name & Email should not be blank");        //Message if issue in field
-    return false;
-}
+        res.send("Error: Name & Email should not be blank");        //Message if issue in field
+        return false;
+    }
 
-// setup email data
-let mailOptions = {
-    from: "cloudunit@treeptik.com",                         // sender address
-    to: "Treeptik mail - <onifuerte@gmail.com>",            // list of receivers
-    subject: 'Cloudunit new test.',
-    html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
-};
+//setup email data
+    let mailOptions = {
+        from: "cloudunit@treeptik.com",                         // sender address
+        to: "Treeptik mail - <onifuerte@gmail.com>",            // list of receivers
+        subject: 'Cloudunit new test.',
+        html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
+    };
 
-sendmail(mailOptions, (err, reply) => {
-    console.log(err);
-    console.dir(reply);
-});
+//In case of error
+    sendmail(mailOptions, (err, reply) => {
+        console.log(err);
+        console.dir(reply);
+    });
 
-/*
-res.render('contact-success', {data: req.body});
-*/
-res.redirect("contact-success.html");
+//redirect to confirm page
+    res.redirect("contact-success.html");
 });
 
 //Starting server
-
 const server = http.createServer(app).listen(port, () => {
-        console.log("Server Running on 127.0.0.1 : " + port);
+    console.log("Server Running on 127.0.0.1 : " + port);
 });

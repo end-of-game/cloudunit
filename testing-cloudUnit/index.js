@@ -5,9 +5,8 @@
 
 const http = require('http');               //To use the HTTP server and client one must require('http')
 const express = require('express');         // express is a minimalist framework for node
-//const nodemailer = require('nodemailer');   // nodemailer permit to send e-mail from Node.js
 const bodyParser = require('body-parser');  // body-parser extracts entire body portion of an request stream and exposes it on req.body
-const sendmail = require('sendmail')({      //Send mail without SMTP server
+const sendmail = require('sendmail')({      //Send mail without SMTP serverœ
     logger: {
         debug: console.log,
         info: console.info,
@@ -46,7 +45,7 @@ app.post('/contact', (req, res) => {
         return false;
     }
 
-// setup email data
+//setup email data
     let mailOptions = {
         from: "cloudunit@treeptik.com",                         // sender address
         to: "Treeptik mail - <onifuerte@gmail.com>",            // list of receivers
@@ -54,18 +53,17 @@ app.post('/contact', (req, res) => {
         html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
     };
 
-    //In case of error
+//In case of error
     sendmail(mailOptions, (err, reply) => {
         console.log(err);
         console.dir(reply);
     });
 
-    //redirect to confirm page
+//redirect to confirm page
     res.redirect("contact-success.html");
 });
 
 //Starting server
-
 const server = http.createServer(app).listen(port, () => {
     console.log("Server Running on 127.0.0.1 : " + port);
 });

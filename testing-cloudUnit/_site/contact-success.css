@@ -5,12 +5,18 @@ body {
     color: black;
    	font-size: 1.5rem;
     font-weight: 400;
-    background-color: #33CCFF;
+    /*background-color: #33CCFF;*/
 	background-repeat: no-repeat;
 	background-size: cover;
     margin: 0;
     padding: 0;
     height: 100%;
+
+    background-image: url("/assets/img/computer-bg.jpg");
+    /*background-size: 100%;*/
+    /*background-repeat: no-repeat;*/
+    margin-left: 5px;
+    /*height: 800px;*/
 } 
 
 
@@ -110,9 +116,9 @@ a:hover {
 }
 
 header {
-    background-image: url("/assets/img/computer-bg.jpg"); 
-    background-size: 100%;
-    background-repeat: no-repeat;
-    margin-left: 5px;
-    height: 800px;
+    /*background-image: url("/assets/img/computer-bg.jpg"); */
+    /*background-size: 100%;*/
+    /*background-repeat: no-repeat;*/
+    /*margin-left: 5px;*/
+    /*height: 800px;*/
 }
