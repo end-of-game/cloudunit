@@ -55,4 +55,58 @@ curl -X DELETE '${elasticsearch-container-ip}:9200/metricbeat-2017.${month}.${da
 curl -X DELETE '${elasticsearch-container-ip}:9200/jmxtrans-2017.${month}.${day}'
 ```
 
+## Browsers Support
+
+<table>
+	<thead>
+		<th></th>
+		<th>Windows</th>
+		<th>MacOS</th>
+		<th>Linux</th>
+	</thead>
+	<tbody>
+		<!-- Chrome -->
+		<tr>
+			<td>Chrome</td>
+			<td>✓</td>
+			<td>✓</td>
+			<td>✓</td>
+		</tr>
+		<!-- Firefox -->
+		<tr>
+			<td>Firefox<sup>33</sup></td>
+			<td>✓</td>
+			<td>✓</td>
+			<td>✓</td>
+		</tr>
+		<!-- Opera -->
+		<tr>
+			<td>Opera</td>
+			<td>✓</td>
+			<td>?</td>
+			<td>✓</td>
+		</tr>
+		<!-- Safari -->
+		<tr>
+			<td>Safari</td>
+			<td>?</td>
+			<td>✓</td>
+			<td>-</td>
+		</tr>
+		<!-- Edge -->
+		<tr>
+			<td>Edge</td>
+			<td>✓</td>
+			<td>-</td>
+			<td>-</td>
+		</tr>
+		<!-- IE -->
+		<tr>
+			<td>IE<sup>11</sup></td>
+			<td>✓</td>
+			<td>-</td>
+			<td>-</td>
+		</tr>
+	</tbody>
+</table>
 

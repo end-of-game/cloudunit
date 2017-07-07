@@ -380,3 +380,4 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+/cu-services/images/servers/liferay701/files/liferay-dxp-digital-enterprise-tomcat-7.0-sp3.zip
