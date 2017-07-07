@@ -1,4 +1,0 @@
-FROM openjdk:latest
-
-
-
