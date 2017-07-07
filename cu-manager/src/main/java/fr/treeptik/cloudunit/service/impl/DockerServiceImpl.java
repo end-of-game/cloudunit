@@ -64,6 +64,9 @@ public class DockerServiceImpl implements DockerService {
     
     @Value("#{systemEnvironment['http_proxy']}")
     private String httpProxy;
+    
+    @Value("#{systemEnvironment['no_proxy']}")
+    private String noProxy;
 
     protected String domain;
 
@@ -106,6 +109,7 @@ public class DockerServiceImpl implements DockerService {
         	envs.add(String.format("http_proxy=%s", httpProxy));
         	envs.add(String.format("https_proxy=%s", httpProxy));
         	envs.add(String.format("ftp_proxy=%s", httpProxy));
+        	envs.add(String.format("no_proxy=%s", noProxy));
         }
         //Map<String, String> ports = new HashMap<>();
         //ports.put("8000/tcp", "");
@@ -376,6 +380,7 @@ public class DockerServiceImpl implements DockerService {
         	envs.add(String.format("http_proxy=%s", httpProxy));
         	envs.add(String.format("https_proxy=%s", httpProxy));
         	envs.add(String.format("ftp_proxy=%s", httpProxy));
+        	envs.add(String.format("no_proxy=%s", noProxy));
         }
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, volumesFrom, null, volumes,
                 envs, ports, "skynet", domain);
