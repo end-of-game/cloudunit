@@ -6,7 +6,7 @@
 const http = require('http');               //To use the HTTP server and client one must require('http')
 const express = require('express');         // express is a minimalist framework for node
 const bodyParser = require('body-parser');  // body-parser extracts entire body portion of an request stream and exposes it on req.body
-const sendmail = require('sendmail')({      //Send mail without SMTP serverœ
+const sendmail = require('sendmail')({      //Send mail without SMTP server
     logger: {
         debug: console.log,
         info: console.info,
@@ -15,7 +15,7 @@ const sendmail = require('sendmail')({      //Send mail without SMTP serverœ
     }});
 
 const app = express();
-const port = Number(process.env.PORT || 3000);
+const port = Number(process.env.PORT || 3000); // set the environment variable PORT to tell your web server what port to listen on, whatever is in the environment variable PORT, or 3000 if there's nothing there.
 
 //Parsed the text as JSON
 app.use(bodyParser.json());
@@ -32,6 +32,7 @@ app.use('/', express.static(__dirname));
 //Home page
 
 app.get('/', (req,res) => {
+    res.send('Hello from Docker\n');
     res.sendfile('index.html');
     console.log('CloudUnit reading console log ...' + req.url);
 });
