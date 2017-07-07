@@ -1,5 +1,6 @@
 ![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
 
+![Homepage](documentation/img/homepage.png "Devops Platform")
 
 # The Turnkey Java Devops Plaform - [![Build Status](https://travis-ci.org/Treeptik/cloudunit.svg?branch=master)](https://travis-ci.org/Treeptik/cloudunit)
 
@@ -28,7 +29,7 @@ And for modules :
 
 Each module in different major releases.
 
-![Homepage](documentation/img/homepage.png "Devops Platform")
+![Homepage](documentation/img/cloudunitv2.png "Devops Platform")
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
