@@ -12,6 +12,4 @@ web:
     - .:/testing-cloudUnit
   ports:
     - "3000:3000"
-  link:
-    - db
   environment: 3000

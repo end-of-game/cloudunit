@@ -13,14 +13,17 @@ WORKDIR /testing-cloudUnit
 #Run updates and install deps
 RUN apt-get update
 
+#Run to install npm
+RUN npm install
+
 #Run command install nodemon
 RUN npm install nodemon -g
 
 #Copy a package.json to the file to build
 COPY package.json /testing-cloudUnit/package.json
 
-#Run to install npm
-RUN npm install
+#Run to install mongodb
+RUN npm install mongodb
 
 #Copy
 COPY index.js /testing-cloudUnit
