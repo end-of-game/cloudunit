@@ -41,7 +41,10 @@ You can find more informations there : [CloudUnit Website](http://www.cloudunit.
 You can test the common platform online here (reseted all night)
 * https://cu01.cloudunit.io :: [ johndoe / abc2015 ]
 
+To monitor User's applications 
 ![Elastic](documentation/img/elastic-kibana.png "Elastic")
+
+To monitor global platform with alerting
 ![Prometheus](documentation/img/prometheus-docker.png "Prometheus")
 
 ## Getting started
