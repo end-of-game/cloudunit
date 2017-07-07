@@ -28,7 +28,7 @@ And for modules :
 
 Each module in different major releases.
 
-![Jenkins2 Logo](documentation/img/cloudunitv2.png "Devops Plateforme")
+![Homepage](documentation/img/homepage.png "Devops Platform")
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
@@ -54,11 +54,6 @@ There are many installation guides
     
 * [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit/blob/dev/documentation/CLI-GUIDE.md)
 * [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit/tree/dev/cu-maven/README.md)
-
-## Examples
-
-* [MongoDB](documentation/MONGO_GUIDE.md) 
-* [WordPress](documentation/WORDPRESS_GUIDE.md)
 
 ## Browsers Support
 
