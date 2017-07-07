@@ -31,7 +31,7 @@ services:
         - "traefik.enable=false"
 
   cadvisor:
-      container_name: cuplatform_cadvisor_1
+      container_name: cu-advisor
       image: google/cadvisor:0.14.0
       environment:
         - DB_USER=root
@@ -71,22 +71,6 @@ services:
         - "traefik.backend=cu-gitlab"
         - "traefik.port=80"
         - "traefik.frontend.rule=Host:gitlab.${CU_DOMAIN}"
-
-  jenkins:
-      container_name: cu-jenkins
-      user: root
-      build:
-        context: cu-jenkins
-      image: cloudunit/jenkins
-      environment:
-         - "JAVA_OPTS=-Xmx512m"
-      volumes:
-        - jenkins-home:/var/jenkins_home
-      labels:
-        - "traefik.frontend.entryPoints=http"
-        - "traefik.backend=cu-jenkins"
-        - "traefik.port=8080"
-        - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
 
   nexus:
       container_name: cu-nexus
