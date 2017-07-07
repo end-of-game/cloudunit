@@ -1,4 +1,4 @@
-# The Turnkey Java Devops Plaform
+# The Turnkey {Java} Devops Plaform
 
 ![Homepage](documentation/img/homepage.png "Devops Platform")
 
