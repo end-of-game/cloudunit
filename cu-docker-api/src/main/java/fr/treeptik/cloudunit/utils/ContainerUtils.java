@@ -38,8 +38,6 @@ public class ContainerUtils {
         labels.put("traefik.backend", name);
         labels.put("traefik.frontend.rule", "Host:" + name + domain);
         config.setLabels(labels);
-        // CU-348
-        name = name + ".skynet";
         DockerContainer container = ContainerBuilder.aContainer().withName(name).withConfig(config).build();
         return container;
     }
