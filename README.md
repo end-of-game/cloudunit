@@ -1,34 +1,34 @@
-![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
+# The Turnkey {Java} Devops Plaform
 
+![Homepage](documentation/img/homepage.png "Devops Platform")
 
-# The Turnkey Java Devops Plaform - [![Build Status](https://travis-ci.org/Treeptik/cloudunit.svg?branch=master)](https://travis-ci.org/Treeptik/cloudunit)
+How to manage an application
+![Overview](documentation/img/overview-application.png "Overview")
 
 Thanks to CloudUnit PaaS's powerful provisioning and execution capabilities, classical servers as Tomcat and JBoss, developers can build secure and scalable Java Web applications. So deploy your Java applications in the cloud almost instantly without changing your code.
 
 CloudUnit takes care of the plumbing.
 
 A complete plaform for devops featuring
-* Docker with its friends : Compose, Machine and soon Swarm
-* Jenkins 2 for CI/CD
-* GitLab CE 
-* EKL Stack for monitoring resources in a near future
+* CI/CD with Gitlab or Jenkins2 (dedicated plugin :))
+* EKL Stack for monitoring users containers
+* Prometheus for monitoring platform
 * Sonar to analyse and reports in the future
+* Mattermost chat
 
 Today we have many servers :
-* Tomcat(s)
-* JBoss / WildFly 10 in progress
+* Tomcat / WildFly / GlassFish
 * FatJar for SpringBoot, Vertx, PlayFramework...
+* Support PHP for Apache Httpd and Nginx
 
 And for modules :
 
-* SQL databases : Mysql, PostGreSQL, PostGis.
+* SQL databases : Mysql, PostGreSQL, PostGis
 * NoSQL databases : MongoDB
 * Datagrids : Redis
 * Message brokers : ActiveMQ, RabbitMQ
 
 Each module in different major releases.
-
-![Jenkins2 Logo](documentation/img/cloudunitv2.png "Devops Plateforme")
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
@@ -39,7 +39,20 @@ You can find more informations there : [CloudUnit Website](http://www.cloudunit.
 You can test the common platform online here (reseted all night)
 * https://cu01.cloudunit.io :: [ johndoe / abc2015 ]
 
-![CloudUnit Gif](documentation/img/cloudunitGif.gif "CloudUnit Gif")
+To monitor User's applications 
+![Elastic](documentation/img/elastic-kibana.png "Elastic")
+
+To monitor global platform with alerting
+![Prometheus](documentation/img/prometheus-docker.png "Prometheus")
+
+# Showcases
+
+Previously :
+* LavaJUG, Clermont-Ferrand 2017
+* Paris Container Day 2016 : https://www.youtube.com/watch?v=n-EtG2wcI-o
+* MontpellierJUG 2016, CloudUnit, un PaaS Docker pour nous développeur Java : https://www.jug-montpellier.org/events/41
+* AlpesJUG Grenoble 2016
+* SophiaConf TelecomValley Nice,  2016
 
 ## Getting started
 
@@ -55,70 +68,10 @@ There are many installation guides
 * [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit/blob/dev/documentation/CLI-GUIDE.md)
 * [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit/tree/dev/cu-maven/README.md)
 
-## Examples
-
-* [MongoDB](documentation/MONGO_GUIDE.md) 
-* [WordPress](documentation/WORDPRESS_GUIDE.md)
-
-## Browsers Support
-
-<table>
-	<thead>
-		<th></th>
-		<th>Windows</th>
-		<th>MacOS</th>
-		<th>Linux</th>
-	</thead>
-	<tbody>
-		<!-- Chrome -->
-		<tr>
-			<td>Chrome</td>
-			<td>✓</td>
-			<td>✓</td>
-			<td>✓</td>
-		</tr>
-		<!-- Firefox -->
-		<tr>
-			<td>Firefox<sup>33</sup></td>
-			<td>✓</td>
-			<td>✓</td>
-			<td>✓</td>
-		</tr>
-		<!-- Opera -->
-		<tr>
-			<td>Opera</td>
-			<td>✓</td>
-			<td>?</td>
-			<td>✓</td>
-		</tr>
-		<!-- Safari -->
-		<tr>
-			<td>Safari</td>
-			<td>?</td>
-			<td>✓</td>
-			<td>-</td>
-		</tr>
-		<!-- Edge -->
-		<tr>
-			<td>Edge</td>
-			<td>✓</td>
-			<td>-</td>
-			<td>-</td>
-		</tr>
-		<!-- IE -->
-		<tr>
-			<td>IE<sup>11</sup></td>
-			<td>✓</td>
-			<td>-</td>
-			<td>-</td>
-		</tr>
-	</tbody>
-</table>
-
 # Licensing
 
 All the source code is licensed under GNU AFFERO GENERAL PUBLIC LICENSE. License is available [here](/LICENSE)
-but CloudUnit is licensed too under a standard commercial license.
+but `CloudUnit` is licensed too under a standard commercial license.
 Please contact our sales team if you would like to discuss the specifics of our Enterprise license.
 If you are not sure whether the AGPL is right for you,
 you can always test our software under the AGPL and inspect the source code before you contact us
@@ -143,7 +96,7 @@ For any questions, contact us : contact@treeptik.fr
 
 Else ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
 
-Copyright 2016 Treeptik
+Copyright 2017 Treeptik
 
 ![Github downloads](https://img.shields.io/github/downloads/Treeptik/cloudunit/total.svg?style=flat-square)
 ![Github contributors](https://img.shields.io/github/contributors/Treeptik/cloudunit.svg?style=flat-square)
@@ -155,4 +108,5 @@ Copyright 2016 Treeptik
 ![Github pr opened](https://img.shields.io/github/issues-pr/Treeptik/cloudunit.svg?style=flat-square)
 ![Github pr closed](https://img.shields.io/github/issues-pr-closed/Treeptik/cloudunit.svg?style=flat-square)
 
+![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
 
