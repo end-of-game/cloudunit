@@ -9,15 +9,15 @@ Clair is an open source project for the static analysis of vulnerabilities in ap
 4. When updates to vulnerability metadata occur, a webhook containg the affected images can be configured to page or block deployments.
 Our goal is to enable a more transparent view of the security of container-based infrastructure. Thus, the project was named Clair after the French term which translates to clear, bright, transparent.
 
-![](https://cloud.githubusercontent.com/assets/343539/21630809/c1adfbd2-d202-11e6-9dfe-9024139d0a28.png)
-var init = require('../Stage_DocumentationCloudUnit/cu-packer/virtualbox_ubuntu/provisioners/init.sh');
+`var init = require('../Stage_DocumentationCloudUnit/cu-packer/virtualbox_ubuntu/provisioners/init.sh');`
 
 # Requirement CoreOs Clair in CloudUnit
-1. Make sure that you have installed well CloudUnit, if not go ![](https://github.com/Treeptik/cloudunit/blob/dev/documentation/DEV-GUIDE-LINUX.md)
+1. Make sure that you have installed well CloudUnit
 2. CoreOS Clair required:
     - Docker
     - Docker-compose 
-Warning: if docker-compose is not istaller ![here for ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04)  
+
+`Warning`: if docker-compose is not istaller.
 
 # Installing CoreOS Clair into vagrant/Cloudunit
 Install Clairctl:
@@ -29,47 +29,46 @@ mkdir clair_config
 curl -L https://raw.githubusercontent.com/coreos/clair/master/config.example.yaml -o clair_config/config.yaml
 $EDITOR clair_config/config.yaml
 docker-compose -f docker-compose.yml up -d
-
 ```
 
-run clair: docker-compose start clair
+run clair: `docker-compose start clair`
 
 # Installing Clairctl into vagrant/CloudUnit
+
 Run this command: "make sure that you are root user before start or have privileged to install clairctl".
 
 ```
 sudo curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.sh | sh
-
 ```
 
-# Requirement
+## Analyse, report to html Cloudunit images automatically
+
+launch the script bash to get cloudunit containers vulnerability.
+
+    analyze_CU.sh
+
+## Requirement
 
     - docker daemon 1.17 minimum (tested)
     - docker API client and server should be the same version
     - make sure that your docker register is running
 
-# Analyse,report to html Cloudunit images: 
-
-launch the script bash to get cloudunit containers vulnerability.
-    - analyze_CU.sh
-
-# Update docker engine: 
+## Update docker engine 
 
 ```
 docker-machine upgrade default
-
 ```
 
-# Using Clairctl
+## Using Clairctl
+
 After build, pull, commit an image, you should analyze this. In local environement the analyze is not automatic and require to use clairctl.
 
 ```
 clairctl push -l myImageName
 clairctl analyze -l myImageName
-
 ```
 
-# configuration clairctl file
+# Configuration clairctl file
 After build, pull, commit an image, you should analyze this. In local environement the analyze is not automatic and require to use clairctl.
 
 # Analyze report (HTML or JSON)
@@ -78,6 +77,5 @@ Reports containers contains a list of sercurity failure (name, type, description
 
 ```
 clairctl report -l myImageName
-
 ```
 
