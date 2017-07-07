@@ -1,4 +1,3 @@
-![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
 
 ![Homepage](documentation/img/homepage.png "Devops Platform")
 
@@ -12,13 +11,15 @@ A complete plaform for devops featuring
 * Docker with its friends : Compose, Machine and soon Swarm
 * Jenkins 2 for CI/CD
 * GitLab CE 
-* EKL Stack for monitoring resources in a near future
+* EKL Stack for monitoring users containers
+* Prometheus for monitoring platform
 * Sonar to analyse and reports in the future
+* Mattermost
 
 Today we have many servers :
-* Tomcat(s)
-* JBoss / WildFly 10 in progress
+* Tomcat / WildFly / GlassFish
 * FatJar for SpringBoot, Vertx, PlayFramework...
+* Support PHP for Apache Httpd and Nginx
 
 And for modules :
 
@@ -139,7 +140,7 @@ For any questions, contact us : contact@treeptik.fr
 
 Else ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
 
-Copyright 2016 Treeptik
+Copyright 2017 Treeptik
 
 ![Github downloads](https://img.shields.io/github/downloads/Treeptik/cloudunit/total.svg?style=flat-square)
 ![Github contributors](https://img.shields.io/github/contributors/Treeptik/cloudunit.svg?style=flat-square)
@@ -151,4 +152,5 @@ Copyright 2016 Treeptik
 ![Github pr opened](https://img.shields.io/github/issues-pr/Treeptik/cloudunit.svg?style=flat-square)
 ![Github pr closed](https://img.shields.io/github/issues-pr-closed/Treeptik/cloudunit.svg?style=flat-square)
 
+![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
 
