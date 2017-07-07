@@ -17,8 +17,6 @@ Our goal is to enable a more transparent view of the security of container-based
     - Docker
     - Docker-compose 
 
-`Warning`: if docker-compose is not istaller.
-
 # Installing CoreOS Clair into vagrant/Cloudunit
 Install Clairctl:
 
