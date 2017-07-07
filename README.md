@@ -9,12 +9,11 @@ CloudUnit takes care of the plumbing.
 
 A complete plaform for devops featuring
 * Docker with its friends : Compose, Machine and soon Swarm
-* Jenkins 2 for CI/CD
-* GitLab CE 
+* CI/CD with Gitlab or Jenkins2 (dedicated plugin :))
 * EKL Stack for monitoring users containers
 * Prometheus for monitoring platform
 * Sonar to analyse and reports in the future
-* Mattermost
+* Mattermost chat
 
 Today we have many servers :
 * Tomcat / WildFly / GlassFish
@@ -23,14 +22,12 @@ Today we have many servers :
 
 And for modules :
 
-* SQL databases : Mysql, PostGreSQL, PostGis.
+* SQL databases : Mysql, PostGreSQL, PostGis
 * NoSQL databases : MongoDB
 * Datagrids : Redis
 * Message brokers : ActiveMQ, RabbitMQ
 
 Each module in different major releases.
-
-![Homepage](documentation/img/cloudunitv2.png "Devops Platform")
 
 It is available in one edition for all major platforms which offers numerous extensions to fit the needs of all developers.
 
