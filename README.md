@@ -45,6 +45,14 @@ To monitor User's applications
 To monitor global platform with alerting
 ![Prometheus](documentation/img/prometheus-docker.png "Prometheus")
 
+# Showcases
+
+Previously :
+* LavaJUG, Clermont-Ferrand 2017
+* Paris Container Day 2016 : https://www.youtube.com/watch?v=n-EtG2wcI-o
+* MontpellierJUG 2016, CloudUnit, un PaaS Docker pour nous développeur Java : https://www.jug-montpellier.org/events/41
+* AlpesJUG Grenoble 2016
+
 ## Getting started
 
 There are many installation guides
