@@ -180,10 +180,6 @@ services:
       command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
       environment:
           - "TZ=${TZ}"
-          - "http_proxy=${http_proxy}"
-          - "https_proxy=${https_proxy}"
-          - "ftp_proxy=${ftp_proxy}"
-          - no_proxy="localhost,127.0.0.1,172.18.0.0,*.skynet"
       ports:
           - "80:80"
           - "443:443"
