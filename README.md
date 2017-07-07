@@ -52,6 +52,7 @@ Previously :
 * Paris Container Day 2016 : https://www.youtube.com/watch?v=n-EtG2wcI-o
 * MontpellierJUG 2016, CloudUnit, un PaaS Docker pour nous développeur Java : https://www.jug-montpellier.org/events/41
 * AlpesJUG Grenoble 2016
+* SophiaConf TelecomValley Nice,  2016
 
 ## Getting started
 
