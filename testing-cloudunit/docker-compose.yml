@@ -4,12 +4,12 @@ db:
   image: mongo
   ports:
     -"27017-27017"
-  command: "--smallfiles --logpath=/dev/null"
+#  command: "--smallfiles --logpath=/dev/null"
 web:
   build: .
   command: nodemon index.js
   volumes:
-    - .:/testing-cloudUnit
+    - .:/testing-cloudunit
   ports:
     - "3000:3000"
   environment: 3000
