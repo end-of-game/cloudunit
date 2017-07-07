@@ -39,12 +39,6 @@ Run this command: "make sure that you are root user before start or have privile
 sudo curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.sh | sh
 ```
 
-## Analyse, report to html Cloudunit images automatically
-
-launch the script bash to get cloudunit containers vulnerability.
-
-    analyze_CU.sh
-
 ## Requirement
 
     - docker daemon 1.17 minimum (tested)
@@ -57,19 +51,23 @@ launch the script bash to get cloudunit containers vulnerability.
 docker-machine upgrade default
 ```
 
-## Using Clairctl
+## Analyse, report to html Cloudunit images automatically
 
-After build, pull, commit an image, you should analyze this. In local environement the analyze is not automatic and require to use clairctl.
+Just launch the script bash to get cloudunit containers vulnerability.
+
+    analyze_CU.sh
+
+# Using Clairctl manually
+
+After build, pull image in a registry, you could analyze and report to html or json file.
 
 ```
 clairctl push -l myImageName
+clairctl pull -l myImageName
 clairctl analyze -l myImageName
 ```
 
-# Configuration clairctl file
-After build, pull, commit an image, you should analyze this. In local environement the analyze is not automatic and require to use clairctl.
-
-# Analyze report (HTML or JSON)
+# Report (HTML or JSON)
 To report analysis, you should launch this command. You have two formats of reporting an analyse JSON or Html. 
 Reports containers contains a list of sercurity failure (name, type, description link) for each layers.
 
