@@ -64,9 +64,10 @@ app.post('/contact', (req, res) => {
         console.dir(reply);
     });
 
-// redirect to confirm page
+// redirect to cloudunit site to try
 
-    res.redirect("contact-success.html");
+    // res.redirect("contact-success.html");
+    res.redirect("https://cu01.cloudunit.io/#/login");
 });
 
 // Starting server
