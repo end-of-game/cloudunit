@@ -12,12 +12,9 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-} 
-
+}
 
 /**************************** General *********************************/
-
-
 
 container {
 	padding:  0 16px;
@@ -32,7 +29,7 @@ container {
 
 h4 {
 	text-align: center;
-} 
+}
 
 input {
 	width: 180px;
@@ -100,7 +97,7 @@ input {
     color: deeppink;
 }
 
-/************************ First Section ****************************/ 
+/************************ First Section ****************************/
 
 #mainBody {
  	margin-top: 0;
@@ -109,7 +106,7 @@ input {
 }
 
 header {
-	background-image: url("/assets/img/computer-bg.jpg"); 
+	background-image: url("/assets/img/computer-bg.jpg");
 	background-size: 100%;
 	background-repeat: no-repeat;
 	margin-left: 5px;
@@ -135,7 +132,7 @@ header {
 
 	border: 1px solid #a6a6a6;
 }
- 
+
 .sub_heading {
 	margin-top: 5px;
 	font-weight: 100;
@@ -152,7 +149,7 @@ header {
 	background-color: black;
     color: white;
     display: inline-block;
-}  
+}
 
 .wpb_wrapper {
 	text-align: center;
@@ -209,7 +206,7 @@ header {
 .help-block {
 	color: grey;
 	width: 100%;
-} 
+}
 
 .complementary {
 	position: relative;
@@ -218,7 +215,7 @@ header {
     background-size: 85%;
     background-position: right bottom;
    	background-repeat: no-repeat;
-    max-width: 320px; 
+    max-width: 320px;
     margin-left: 250px;
 }
 
@@ -228,7 +225,7 @@ header {
 
 .Koncept {
 	margin-bottom: 50px;
-	margin-top: 100px; 
+	margin-top: 100px;
 	display: inline-block;
     margin-left: 150px;
 
@@ -258,11 +255,11 @@ header {
 	position: relative;
 	height: auto;
 	left: 0;
-	top: 0; 
+	top: 0;
 }
 
 .usages {
-	display: block; 
+	display: block;
 	text-align: left;
 }
 
@@ -300,7 +297,7 @@ ol > li {
 	height: auto;
 	left: 0;
 	top: 0;
-	margin-left: 350px; 
+	margin-left: 350px;
 }
 
 #Going_further a:link {
@@ -308,9 +305,9 @@ ol > li {
 }
 
 .further{
-	/* display: block; 
+	/* display: block;
 	text-align: left; */
-} 
+}
 
 .formCloudunit {
 	margin-right: 700px;
@@ -336,9 +333,9 @@ ol > li {
 }
 
 .forminput {
-   
-  	padding: 1px 26px; 
-} 
+
+  	padding: 1px 26px;
+}
 
 .formsubmit {
     background-color: transparent;
@@ -354,7 +351,7 @@ ol > li {
 	position: relative;
 	height: auto;
 	left: 0;
-	top: 0; 
+	top: 0;
 }
 
 #mainFooter .box p {
@@ -378,7 +375,7 @@ ol > li {
 	text-align: center;
 	display: inline-flex;
 }
- 
+
 .social_foot_bar ul {
 	padding: 0;
 	margin: 0;

@@ -1,5 +1,5 @@
 #Instruction initializes a new build stage and sets the Base Image for subsequent instructions
-FROM node:6.11
+FROM node:latest
 
 #Indication person to contact
 MAINTAINER Ismaël Charifou <contact@treeptik.fr>
@@ -36,4 +36,3 @@ EXPOSE $PORT
 
 #Command to execute when build is completed
 CMD ["nodemon", "index.js"]
-
