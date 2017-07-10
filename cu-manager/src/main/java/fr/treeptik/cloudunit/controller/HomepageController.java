@@ -32,8 +32,8 @@ public class HomepageController {
 
     @Value("#{environment.CU_MATTERMOST_DOMAIN ?: 'mattermost.cloudunit.dev'}")
     private String mattermost;
-    
-    @Value("#{environment.CU_PROMETHEUS_DOMAIN ?: 'prometheus.cloudunit.dev'}")
+
+    @Value("#{environment.CU_PROMETHEUS_DOMAIN ?: 'prometheus.192.168.50.4.xip.io'}")
     private String prometheus;
 
     @RequestMapping(value = "/friends", method = RequestMethod.GET)

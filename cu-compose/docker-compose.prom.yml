@@ -25,11 +25,11 @@ services:
       - "traefik.backend=prometheus"
       - "traefik.port=9090"
       - "traefik.frontend.rule=Host:${CU_PROMETHEUS_DOMAIN}"
-  
+
   alertmanager:
     image: prom/alertmanager
     container_name: alertmanager
-    volumes: 
+    volumes:
       - ./cu-prometheus/alertmanager/:/etc/alertmanager/
     command:
       - '-config.file=/etc/alertmanager/config.yml'
@@ -41,7 +41,7 @@ services:
       - "traefik.backend=alertmanager"
       - "traefik.port=9093"
       - "traefik.frontend.rule=Host:${CU_ALERTMANAGER_DOMAIN}"
-  
+
   grafana:
     image: grafana/grafana
     container_name: grafana
@@ -56,6 +56,19 @@ services:
       - "traefik.backend=grafana"
       - "traefik.port=3000"
       - "traefik.frontend.rule=Host:${CU_GRAFANA_DOMAIN}"
+  cadvisor2:
+    image: google/cadvisor:v0.26.1
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+    expose:
+      - 8080
+    labels:
+      - "org.label-schema.group=monitoring"
 
 networks:
   default:
