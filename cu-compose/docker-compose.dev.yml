@@ -13,6 +13,11 @@ services:
         - redis-data:/data
       labels:
         - "traefik.enable=false"
+      environment:
+        - "http_proxy=${http_proxy}"
+        - "https_proxy=${https_proxy}"
+        - "ftp_proxy=${ftp_proxy}"
+        - "no_proxy=${no_proxy}"
 
   mysql:
       container_name: cu-mysql
@@ -23,6 +28,10 @@ services:
       environment:
         - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - "http_proxy=${http_proxy}"
+        - "https_proxy=${https_proxy}"
+        - "ftp_proxy=${ftp_proxy}"
+        - "no_proxy=${no_proxy}"
       volumes:
         - mysqldata:/var/lib/mysql
         - /etc/localtime:/etc/localtime:ro
@@ -37,6 +46,10 @@ services:
         - DB_USER=root
         - DB_PASS=root
         - DB_NAME=cadvisor
+        - "http_proxy=${http_proxy}"
+        - "https_proxy=${https_proxy}"
+        - "ftp_proxy=${ftp_proxy}"
+        - "no_proxy=${no_proxy}"
       ports:
         - "8081:8080"
       volumes:
@@ -66,11 +79,35 @@ services:
       environment:
           GITLAB_OMNIBUS_CONFIG: |
               external_url 'http://${CU_GITLAB_DOMAIN}'
+        - "http_proxy=${http_proxy}"
+        - "https_proxy=${https_proxy}"
+        - "ftp_proxy=${ftp_proxy}"
+        - "no_proxy=${no_proxy}"
       labels:
         - "traefik.frontend.entryPoints=http"
         - "traefik.backend=cu-gitlab"
         - "traefik.port=80"
         - "traefik.frontend.rule=Host:gitlab.${CU_DOMAIN}"
+
+  jenkins:
+      container_name: cu-jenkins
+      user: root
+      build:
+        context: cu-jenkins
+      image: cloudunit/jenkins
+      environment:
+        - "JAVA_OPTS=-Xmx512m"
+        - "http_proxy=${http_proxy}"
+        - "https_proxy=${https_proxy}"
+        - "ftp_proxy=${ftp_proxy}"
+        - "no_proxy=${no_proxy}"
+      volumes:
+        - jenkins-home:/var/jenkins_home
+      labels:
+        - "traefik.frontend.entryPoints=http"
+        - "traefik.backend=cu-jenkins"
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=Host:jenkins.${CU_DOMAIN}"
 
   nexus:
       container_name: cu-nexus
@@ -83,6 +120,10 @@ services:
       environment:
         - "JAVA_MIN_MEM=512m"
         - "JAVA_MAX_MEM=512m"
+        - "http_proxy=${http_proxy}"
+        - "https_proxy=${https_proxy}"
+        - "ftp_proxy=${ftp_proxy}"
+        - "no_proxy=${no_proxy}"
       labels:
         - "traefik.frontend.entryPoints=http"
         - "traefik.backend=cu-nexus"
@@ -100,6 +141,11 @@ services:
       - "traefik.backend=cu-sonar"
       - "traefik.port=9000"
       - "traefik.frontend.rule=Host:sonar.${CU_DOMAIN}"
+    environment:
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
+      - "ftp_proxy=${ftp_proxy}"
+      - "no_proxy=${no_proxy}"
 
   traefik:
       container_name: cu-traefik

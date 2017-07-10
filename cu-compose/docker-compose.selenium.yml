@@ -6,6 +6,10 @@ services:
       image: selenium/hub:3.0.1-aluminum
       environment:
           - "TZ=${TZ}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       ports:
           - "4444:4444"
 
@@ -16,6 +20,10 @@ services:
           - "TZ=${TZ}"
           - "HUB_PORT_4444_TCP_ADDR=selenium-hub"
           - "HUB_PORT_4444_TCP_PORT=4444"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       ports:
           - "5900:5900"
       depends_on:
@@ -28,6 +36,10 @@ services:
           - "TZ=${TZ}"
           - "HUB_PORT_4444_TCP_ADDR=selenium-hub"
           - "HUB_PORT_4444_TCP_PORT=4444"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       ports:
           - "5901:5900"
       depends_on:

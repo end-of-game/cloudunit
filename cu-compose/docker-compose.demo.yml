@@ -7,6 +7,10 @@ services:
       command: redis-server --appendonly yes
       environment:
           - "TZ=${TZ}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       volumes:
           - redis-data:/data
       labels:
@@ -19,6 +23,10 @@ services:
           - "TZ=${TZ}"
           - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
           - MYSQL_DATABASE=${MYSQL_DATABASE}
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       volumes:
             - mysqldata:/var/lib/mysql
       labels:
@@ -40,6 +48,10 @@ services:
           - "CU_NEXUS_DOMAIN=${CU_NEXUS_DOMAIN}"
           - "CU_SONAR_DOMAIN=${CU_SONAR_DOMAIN}"
           - "CU_MATTERMOST_DOMAIN=${CU_MATTERMOST_DOMAIN}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       labels:
           - "traefik.frontend.entryPoints=https"
           - "traefik.backend=manager"
@@ -54,6 +66,10 @@ services:
           - DB_USER=root
           - DB_PASS=root
           - DB_NAME=cadvisor
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       volumes:
           - /:/rootfs:ro
           - /var/run:/var/run:rw
@@ -76,6 +92,10 @@ services:
           - "1212:22"
       environment:
           - "TZ=${TZ}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       environment:
         GITLAB_OMNIBUS_CONFIG: |
                external_url 'https://${CU_GITLAB_DOMAIN}'
@@ -94,6 +114,10 @@ services:
           - jenkins-home:/var/jenkins_home
       environment:
           - "TZ=${TZ}"
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       labels:
           - "traefik.frontend.entryPoints=https"
           - "traefik.backend=jenkins"
