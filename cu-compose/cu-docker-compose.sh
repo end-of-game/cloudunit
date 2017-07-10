@@ -162,6 +162,15 @@ function generate-env {
     echo "TZ=$(cat /etc/timezone)" >> .env
   fi
 
+  if [ -n "$http_proxy" ]; then
+    echo "http_proxy=$http_proxy" >> .env 
+  else
+  if [ -n "$https_proxy" ]; then
+    echo "https_proxy=$https_proxy" >> .env 
+  else
+  if [ -n "$ftp_proxy" ]; then
+    echo "ftp_proxy=$ftp_proxy" >> .env 
+  else
 }
 
 function with-elk {
