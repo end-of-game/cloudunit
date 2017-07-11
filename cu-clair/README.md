@@ -1,4 +1,4 @@
-# CoreOs Clair for Cloudunit
+# CoreOs Clair for CloudUnit
 The Clair project is an open source engine that powers Quay Security Scanner to detect vulnerabilities in all images within Quay Enterprise, and notify developers as those issues are discovered.
 
 # What is CoreOs Clair
@@ -9,14 +9,14 @@ Clair is an open source project for the static analysis of vulnerabilities in ap
 4. When updates to vulnerability metadata occur, a webhook containg the affected images can be configured to page or block deployments.
 Our goal is to enable a more transparent view of the security of container-based infrastructure. Thus, the project was named Clair after the French term which translates to clear, bright, transparent.
 
-# CoreOs clair in CloudUnit
+# CoreOs Clair in CloudUnit
 
-CoreOS Clair required:
+In CloudUnit, CoreOS Clair requires:
 
     - Docker
     - Docker-compose 
 
-# Installing CoreOS Clair into Cloudunit
+# Installing CoreOS Clair into CloudUnit
 
 Install Clair using docker-compose.yml file.
 
@@ -24,7 +24,7 @@ Install Clair using docker-compose.yml file.
     docker-compose up -d
 ```
 
-If Clair is not running: `docker-compose start clair`
+If Clair is not running: `docker-compose start Clair`
 
 # Installing Clairctl into vagrant/CloudUnit
 
@@ -32,17 +32,17 @@ Install Clairctl using curl.
 
 ```
 sudo su 
-curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.sh | sh
+curl -L https://raw.GitHubusercontent.com/jgsqware/Clairctl/master/install.sh | sh
 ```
 
 
 # Analyse and HTML report
 
-Analyse Cloudunit containers vulnerabilities using analyze_CU.sh file.
+Analyse CloudUnit containers vulnerabilities using analyze_CU.sh file.
 
     ./analyze_CU.sh
 
-# How to use clairctl
+# How to use Clairctl
 
 ## Requirements
 
@@ -61,20 +61,20 @@ docker-machine upgrade default
 After build, pull image in a registry, you could analyze and report to html or json file.
 
 ```
-clairctl push -l myImageName
-clairctl pull -l myImageName
-clairctl analyze -l myImageName
+Clairctl push -l myImageName
+Clairctl pull -l myImageName
+Clairctl analyze -l myImageName
 ```
 
 ## Reports
 You have two formats JSON or Html(default). Reports containers contains a list of sercurity failure (name, type, description link) for each layers.
 
 ```
-clairctl report -l myImageName 
+Clairctl report -l myImageName 
 ```
 
 # Sources
 
-[CoreOS Clair github](https://github.com/coreos/clair)
+[CoreOS Clair GitHub](https://GitHub.com/coreos/Clair)
 
-[Clairctl github](https://github.com/jgsqware/clairctl)
+[Clairctl GitHub](https://GitHub.com/jgsqware/Clairctl)
