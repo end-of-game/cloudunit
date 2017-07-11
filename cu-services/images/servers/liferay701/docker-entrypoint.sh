@@ -1,7 +1,9 @@
 #!/bin/bash
 
+env
+
 if [[ $1 == "run" ]]; then
-  exec catalina.sh "run"
+  exec $CATALINA_HOME/bin/catalina.sh "run"
 fi
 
 exec "$@"
