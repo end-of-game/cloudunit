@@ -58,7 +58,7 @@ Launch the script to get cloudunit containers vulnerability.
 docker-machine upgrade default
 ```
 
-# Using Clairctl manually
+## CLI Clairctl
 
 After build, pull image in a registry, you could analyze and report to html or json file.
 
@@ -68,7 +68,7 @@ clairctl pull -l myImageName
 clairctl analyze -l myImageName
 ```
 
-# Report (HTML or JSON)
+## Report
 You have two formats JSON or Html(default). Reports containers contains a list of sercurity failure (name, type, description link) for each layers.
 
 ```
