@@ -4,7 +4,7 @@
 docker run -d -p 5000:5000 --name registry registry:2
 
 # get all docker images name
-NAME=$(docker images | grep cloudunit | awk "{print \$1}")
+NAME=$(docker images | grep cloudunit | awk 'BEGIN { OFS = ":" }{ print $1, $2 }')
 printf "$NAME"
 printf ""
 
@@ -13,10 +13,11 @@ clairctl version
 # to hide debug mode, remove --log-level debug 
 for arg in $NAME ; do
 	sudo clairctl push -l $arg --log-level debug; 
-	sudo clairctl pull -l $arg --log-level debug;   
+	sudo clairctl pull -l $arg    
+	echo " "
 	sudo clairctl analyze -l $arg;   
+	echo " "
 	sudo clairctl report -l $arg;   
+	echo "***********************"
 done
-# clean temp
-
 exit 0

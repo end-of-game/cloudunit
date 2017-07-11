@@ -11,33 +11,40 @@ Our goal is to enable a more transparent view of the security of container-based
 
 `var init = require('../Stage_DocumentationCloudUnit/cu-packer/virtualbox_ubuntu/provisioners/init.sh');`
 
-# Requirement CoreOs Clair in CloudUnit
-1. Make sure that you have installed well CloudUnit
-2. CoreOS Clair required:
-    - Docker
-    - Docker-compose 
+# CoreOs Clair in CloudUnit
 
-# Installing CoreOS Clair into vagrant/Cloudunit
-Install Clairctl:
+    - make sure that you have CloudUnit,
+    - CoreOS Clair required:
+        - Docker
+        - Docker-compose 
 
- Docker-compose 
+# Installing CoreOS Clair into Cloudunit
+
+Install clair by docker compose file,
+
 ```
-curl -L https://raw.githubusercontent.com/coreos/clair/master/docker-compose.yml -o docker-compose.yml
-mkdir clair_config
-curl -L https://raw.githubusercontent.com/coreos/clair/master/config.example.yaml -o clair_config/config.yaml
-$EDITOR clair_config/config.yaml
-docker-compose -f docker-compose.yml up -d
+    docker-compose up -d
 ```
 
-run clair: `docker-compose start clair`
+If clair is not running: `docker-compose start clair`
 
 # Installing Clairctl into vagrant/CloudUnit
 
-Run this command: "make sure that you are root user before start or have privileged to install clairctl".
+Make sure that you are root user to install clairctl.
 
 ```
-sudo curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.sh | sh
+sudo su 
+curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.sh | sh
 ```
+
+
+# Analyse, report to html Cloudunit images automatically
+
+Launch the script to get cloudunit containers vulnerability.
+
+    analyze_CU.sh
+
+# How to use clairctl
 
 ## Requirement
 
@@ -51,12 +58,6 @@ sudo curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.
 docker-machine upgrade default
 ```
 
-## Analyse, report to html Cloudunit images automatically
-
-Just launch the script bash to get cloudunit containers vulnerability.
-
-    analyze_CU.sh
-
 # Using Clairctl manually
 
 After build, pull image in a registry, you could analyze and report to html or json file.
@@ -68,10 +69,9 @@ clairctl analyze -l myImageName
 ```
 
 # Report (HTML or JSON)
-To report analysis, you should launch this command. You have two formats of reporting an analyse JSON or Html. 
-Reports containers contains a list of sercurity failure (name, type, description link) for each layers.
+You have two formats JSON or Html(default). Reports containers contains a list of sercurity failure (name, type, description link) for each layers.
 
 ```
-clairctl report -l myImageName
+clairctl report -l myImageName 
 ```
 
