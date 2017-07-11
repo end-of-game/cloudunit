@@ -12,6 +12,7 @@ Our goal is to enable a more transparent view of the security of container-based
 # CoreOs clair in CloudUnit
 
 CoreOS clair required:
+
     - Docker
     - Docker-compose 
 
@@ -55,7 +56,7 @@ Analyse cloudunit containers vulnerability by analyze_CU.sh file.
 docker-machine upgrade default
 ```
 
-## CLI to use Clairctl
+## CLI for Clairctl
 
 After build, pull image in a registry, you could analyze and report to html or json file.
 
