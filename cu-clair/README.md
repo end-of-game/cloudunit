@@ -33,7 +33,7 @@ Install Clairctl using curl.
 
 ```
 sudo su 
-curl -L https://raw.GitHubusercontent.com/jgsqware/Clairctl/master/install.sh | sh
+curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.sh | sh
 ```
 
 
