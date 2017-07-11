@@ -11,24 +11,24 @@ Our goal is to enable a more transparent view of the security of container-based
 
 # CoreOs clair in CloudUnit
 
-CoreOS clair required:
+CoreOS Clair required:
 
     - Docker
     - Docker-compose 
 
 # Installing CoreOS Clair into Cloudunit
 
-Install clair by docker-compose.yml file.
+Install Clair using docker-compose.yml file.
 
 ```
     docker-compose up -d
 ```
 
-If clair is not running: `docker-compose start clair`
+If Clair is not running: `docker-compose start clair`
 
 # Installing Clairctl into vagrant/CloudUnit
 
-Install clairctl by curl.
+Install Clairctl using curl.
 
 ```
 sudo su 
@@ -36,15 +36,15 @@ curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.sh | 
 ```
 
 
-# Analyse, report to html Cloudunit images automatically
+# Analyse and HTML report
 
-Analyse cloudunit containers vulnerability by analyze_CU.sh file.
+Analyse Cloudunit containers vulnerabilities using analyze_CU.sh file.
 
     ./analyze_CU.sh
 
 # How to use clairctl
 
-## Requirement
+## Requirements
 
     - docker daemon 1.17 minimum (tested)
     - docker API client and server should be the same version
