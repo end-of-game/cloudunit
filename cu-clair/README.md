@@ -75,5 +75,6 @@ clairctl report -l myImageName
 
 # Sources:
 
-    - [CoreOS Clair github](https://github.com/coreos/clair)
-    - [Clairctl](https://github.com/jgsqware/clairctl)
+[CoreOS Clair github](https://github.com/coreos/clair)
+
+[Clairctl github](https://github.com/jgsqware/clairctl)
