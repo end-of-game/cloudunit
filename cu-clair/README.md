@@ -1,4 +1,4 @@
-# CoreOs Clair
+# CoreOs Clair for Cloudunit
 The Clair project is an open source engine that powers Quay Security Scanner to detect vulnerabilities in all images within Quay Enterprise, and notify developers as those issues are discovered.
 
 # What is CoreOs Clair
@@ -73,3 +73,7 @@ You have two formats JSON or Html(default). Reports containers contains a list o
 clairctl report -l myImageName 
 ```
 
+# Sources:
+
+    - [CoreOS Clair github](https://github.com/coreos/clair)
+    - [Clairctl](https://github.com/jgsqware/clairctl)
