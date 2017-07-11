@@ -21,6 +21,7 @@ In CloudUnit, CoreOS Clair requires:
 Install Clair using docker-compose.yml file.
 
 ```
+    go to your ~/cloudunit/cu-clair/
     docker-compose up -d
 ```
 
@@ -42,6 +43,8 @@ Analyse CloudUnit containers vulnerabilities using analyze_CU.sh file.
 
     ./analyze_CU.sh
 
+Reports dir: ~/cloudunit/cu-clair/report/html
+ 
 # How to use Clairctl
 
 ## Requirements
