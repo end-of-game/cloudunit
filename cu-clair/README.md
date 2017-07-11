@@ -73,7 +73,7 @@ You have two formats JSON or Html(default). Reports containers contains a list o
 clairctl report -l myImageName 
 ```
 
-# Sources:
+# Sources
 
 [CoreOS Clair github](https://github.com/coreos/clair)
 
