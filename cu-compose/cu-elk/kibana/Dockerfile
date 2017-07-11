@@ -12,7 +12,7 @@ RUN set -x \
 	&& perl -pi -e 's/fields/stored_fields/' /usr/share/kibana/node/lib/node_modules/elasticdump/elasticdump.js \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& sed -ri "s!^(\#\s*)?(elasticsearch\.url:).*!\2 'http://elasticsearch.skynet:9200'!" /etc/kibana/kibana.yml \
-	&& grep -q 'elasticsearch:9200' /etc/kibana/kibana.yml \
+	&& grep -q 'elasticsearch.skynet:9200' /etc/kibana/kibana.yml \
     && sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/' /etc/kibana/kibana.yml \
     && sed -i 's/#logging.quiet: false/logging.quiet: true/' /etc/kibana/kibana.yml
 
