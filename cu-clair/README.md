@@ -9,18 +9,15 @@ Clair is an open source project for the static analysis of vulnerabilities in ap
 4. When updates to vulnerability metadata occur, a webhook containg the affected images can be configured to page or block deployments.
 Our goal is to enable a more transparent view of the security of container-based infrastructure. Thus, the project was named Clair after the French term which translates to clear, bright, transparent.
 
-`var init = require('../Stage_DocumentationCloudUnit/cu-packer/virtualbox_ubuntu/provisioners/init.sh');`
+# CoreOs clair in CloudUnit
 
-# CoreOs Clair in CloudUnit
-
-    - make sure that you have CloudUnit,
-    - CoreOS Clair required:
-        - Docker
-        - Docker-compose 
+CoreOS clair required:
+    - Docker
+    - Docker-compose 
 
 # Installing CoreOS Clair into Cloudunit
 
-Install clair by docker compose file,
+Install clair by docker-compose.yml file.
 
 ```
     docker-compose up -d
@@ -30,7 +27,7 @@ If clair is not running: `docker-compose start clair`
 
 # Installing Clairctl into vagrant/CloudUnit
 
-Make sure that you are root user to install clairctl.
+Install clairctl by curl.
 
 ```
 sudo su 
@@ -40,9 +37,9 @@ curl -L https://raw.githubusercontent.com/jgsqware/clairctl/master/install.sh | 
 
 # Analyse, report to html Cloudunit images automatically
 
-Launch the script to get cloudunit containers vulnerability.
+Analyse cloudunit containers vulnerability by analyze_CU.sh file.
 
-    analyze_CU.sh
+    ./analyze_CU.sh
 
 # How to use clairctl
 
@@ -58,7 +55,7 @@ Launch the script to get cloudunit containers vulnerability.
 docker-machine upgrade default
 ```
 
-## CLI Clairctl
+## CLI to use Clairctl
 
 After build, pull image in a registry, you could analyze and report to html or json file.
 
@@ -68,7 +65,7 @@ clairctl pull -l myImageName
 clairctl analyze -l myImageName
 ```
 
-## Report
+## Reports
 You have two formats JSON or Html(default). Reports containers contains a list of sercurity failure (name, type, description link) for each layers.
 
 ```
