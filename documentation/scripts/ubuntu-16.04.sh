@@ -98,13 +98,6 @@ function install_vagrant {
 	fi
 }
 
-function install_dnsmasq {
-	sudo apt-get -y install dnsmasq
-	ADDRESS="address=/.cloudunit.dev/192.168.50.4"
-	sudo bash -c "echo $ADDRESS >> /etc/dnsmasq.conf"
-	sudo service dnsmasq restart
-}
-
 function install_vagrant_plugin {
 	vagrant plugin install vagrant-reload
 	vagrant plugin install vagrant-vbguest
@@ -151,7 +144,6 @@ install_node
 install_maven
 install_virtualbox
 install_vagrant
-install_dnsmasq
 install_vagrant_plugin
 install_cloudunit
 
