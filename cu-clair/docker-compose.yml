@@ -1,15 +1,16 @@
 version: '2'
 services:
+
   postgres:
-    container_name: clair_postgres
+    container_name: clair-postgres
     image: postgres:latest
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: password
 
   clair:
-    container_name: clair_clair
-    image: quay.io/coreos/clair-git:latest
+    container_name: clair-core
+    image: quay.io/coreos/clair:latest
     restart: unless-stopped
     depends_on:
       - postgres
@@ -18,6 +19,20 @@ services:
     links:
       - postgres
     volumes:
-      - /tmp:/tmp
+      - clair_tmp:/tmp
       - ./clair_config:/config
     command: [-config, /config/config.yaml]
+
+  registry:
+    container_name: registry
+    image: registry:2
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+
+volumes:
+  clair_tmp:
+  clair_config:
+  registry_data:
