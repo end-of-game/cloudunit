@@ -100,9 +100,9 @@ RUN echo "<Location /server-status>" >> /usr/local/apache2/conf/httpd.conf \
 	&& echo "		Allow from 127.0.0.1" >> /usr/local/apache2/conf/httpd.conf \
 	&& echo "</Location>" >> /usr/local/apache2/conf/httpd.conf
 
-
 RUN apt-get -y update && apt-get install -y \
 apache2 \
+unzip \
 php5 \
 libapache2-mod-php5 \
 php5-gd \
