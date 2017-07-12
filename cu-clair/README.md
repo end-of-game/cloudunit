@@ -22,7 +22,11 @@ Install automatically clair and clairctl using `install.sh`.
 
 ```
     go to your ~/cloudunit/cu-clair/
+<<<<<<< HEAD
     sudo ./install.sh
+=======
+    sudo ./install.sh" 
+>>>>>>> fdb58217a6f7d4512b562c2b3e72595da604a13c
 ```
 
 If Clair is not running: `docker-compose start Clair`
