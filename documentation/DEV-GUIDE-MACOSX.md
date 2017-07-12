@@ -37,59 +37,6 @@ cloudunit/cu-services       : Docker images
 
 ## Installation 
 
-### Local DNS
-
-CloudUnit uses Docker and Java but others components. 
-As pre-requisites, you need to install them to have a complete dev stack. 
-You need to install a local DNS for entry.
-```
-Dnsmasq is a lightweight, easy to configure DNS forwarder 
-and DHCP server […] is targeted at home networks[.]
-```
-You need to add a local DNS entry pointing to the vagrant IP address. More precisely, any address ending with .cloudunit.dev shoud point to `192.168.50.4`. On Ubuntu, a simple way to achieve this is to install dnsmasq:
-
-Update your homebrew installation
-```
-brew up
-```
-
-Install dnsmasq
-```
-brew install dnsmasq
-```
-
-Copy the configuration.
-```
-mkdir /usr/local/etc
-cp /usr/local/opt/dnsmasq/dnsmasq.conf.example /usr/local/etc/dnsmasq.conf
-```
-
-Then edit the file `/usr/local/etc/dnsmasq.conf` and add the line:
-```
-address=/cloudunit.dev/192.168.50.4
-```
-
-Create the directory
-```
-sudo mkdir /etc/resolver
-```
-Then add the following file
-```
-sudo vi /etc/resolver/dev
-vi /etc/resolver/dev
-```
-Add the following line
-```
-nameserver 127.0.0.1
-```
-
-Make a link with LaunchDaemons directory and then start dnsmasq
-```
-sudo cp -v $(brew --prefix dnsmasq)/homebrew.mxcl.dnsmasq.plist /Library/LaunchDaemons
-sudo launchctl load -w /Library/LaunchDaemons/homebrew.mxcl.dnsmasq.plist
-```
-For more information in this environment, please read this [article](http://passingcuriosity.com/2013/dnsmasq-dev-osx/)
-
 ### Installation NPM
 
 Mac Users are invited to follow the instructions given by the [npm website](https://nodejs.org)
