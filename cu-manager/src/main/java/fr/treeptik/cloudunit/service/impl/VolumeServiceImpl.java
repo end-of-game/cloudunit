@@ -82,7 +82,9 @@ public class VolumeServiceImpl implements VolumeService {
 			volumeDAO.delete(id);
 			dockerCloudUnitClient.removeVolume(volume.getName());
 		} catch (CheckException e) {
-			throw new CheckException(volume.toString(), e);
+			StringBuilder msgError = new StringBuilder(128);
+			msgError.append("deletion:"+id+", volume:"+volume);
+			throw new CheckException(msgError.toString(), e);
 		}
 	}
 
