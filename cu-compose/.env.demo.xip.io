@@ -10,6 +10,9 @@ CU_KIBANA_DOMAIN=kibana.192.168.50.4.xip.io
 CU_MATTERMOST_DOMAIN=mattermost.192.168.50.4.xip.io
 CU_NEXUS_DOMAIN=nexus.192.168.50.4.xip.io
 CU_SONAR_DOMAIN=sonar.192.168.50.4.xip.io
+CU_PROMETHEUS_DOMAIN=prometheus.192.168.50.4.xip.io
+CU_ALERTMANAGER_DOMAIN=alertmanager.192.168.50.4.xip.io
+CU_GRAFANA_DOMAIN=grafana.192.168.50.4.xip.io
 TZ=Europe/Paris
 
 ELASTICSEARCH_URL=elasticsearch

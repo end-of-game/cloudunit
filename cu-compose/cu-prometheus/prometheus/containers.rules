@@ -7,25 +7,6 @@ ALERT cu_jenkins_down
     description = "Jenkins has been down for more than 5 secondes",
   }
 
-
- ALERT jenkins_high_cpu
-  IF sum(rate(container_cpu_usage_seconds_total{name="jenkins"}[1m])) / count(node_cpu{mode="system"}) * 100 > 10
-  FOR 30s
-  LABELS { severity = "warning" }
-  ANNOTATIONS {
-    summary= "Jenkins high CPU usage",
-    description= "Jenkins CPU usage is {{ humanize $value}}%."
-  }
-
-ALERT jenkins_high_memory
-  IF sum(container_memory_usage_bytes{name="jenkins"}) > 1200000000
-  FOR 30s
-  LABELS { severity = "warning" }
-  ANNOTATIONS {
-      summary = "Jenkins high memory usage",
-      description = "Jenkins memory consumption is at {{ humanize $value}}.",
-  }
-
 ALERT cu_gitlab_down
   IF absent(container_memory_usage_bytes{name="cu-gitlab"})
   FOR 5s
@@ -40,7 +21,7 @@ ALERT cu_traefik_down
   FOR 5s
   LABELS { severity = "critical" }
   ANNOTATIONS {
-    summary = "cu-traefik_down",
+    summary = "cu-traefik_down", 
     description = "cu-traefik has been down for more than 5 secondes",
 }
 
@@ -60,5 +41,32 @@ ALERT cu_kibana_down
   ANNOTATIONS {
     summary = "cu-kibana",
     description = "cu-kibana has been down for more than 5 secondes",
+}
+
+ALERT cu_tomcat_down
+  IF absent(container_memory_usage_bytes{name="cu-tomcat"})
+  FOR 5s
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    summary = "cu-tomcat",
+    description = "cu-tomcat has been down for more than 5 secondes",
+}
+
+ALERT cu_redis_down
+  IF absent (container_memory_usage_bytes{name="cu-redis"})
+  FOR 5s
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    summary = "cu-redis",
+    description = "cu-redis has been down for more than 5 secondes",
+}
+
+ALERT cu_nexus_down
+  IF absent (container_memory_usage_bytes{name="cu-nexus"})
+  FOR 5s
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    summary = "cu-nexus",
+    description = "cu-nexus has been down for more 5 secondes",
 }
 

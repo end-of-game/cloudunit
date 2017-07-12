@@ -91,24 +91,6 @@ services:
           - "traefik.port=443"
           - "traefik.frontend.rule=Host:${CU_GITLAB_DOMAIN}"
 
-  jenkins:
-      container_name: cu-jenkins
-      restart: unless-stopped
-      build:
-        context: cu-jenkins
-      image: cloudunit/jenkins
-      volumes:
-          - jenkins-home:/var/jenkins_home
-      environment:
-          - "TZ=${TZ}"
-          - "JAVA_ARGS=-Xmx2048m -XX:MaxPermSize=512m -Djava.awt.headless=true"
-          - "MAVEN_OPTS=-Xmx512m -XX:MaxPermSize=128m"
-      labels:
-          - "traefik.frontend.entryPoints=https"
-          - "traefik.backend=jenkins"
-          - "traefik.port=8080"
-          - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
-
   sonarqube:
     container_name: cu-sonar
     restart: unless-stopped
