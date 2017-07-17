@@ -55,7 +55,7 @@ app.post('/contact', (req, res) => {
         from: "cloudunit@treeptik.com",                         // sender address
         // to: "Treeptik mail - <onifuerte@gmail.com>",         // list of receivers
         to: userMail,                                               // list of receivers
-        subject: 'Cloudunit new test part2',
+        subject: 'Cloudunit new test part3',
         html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
     };
 
