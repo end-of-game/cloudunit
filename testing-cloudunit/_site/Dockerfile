@@ -2,7 +2,6 @@
 FROM node:latest
 
 #Indication person to contact
-MAINTAINER Ismaël Charifou <contact@treeptik.fr>
 LABEL MAINTAINER="Ismaël Charifou <contact@treeptik.fr>"
 
 #Create a directory where we will work
