@@ -44,7 +44,7 @@ app.get('/', (req,res) => {
 
 app.post('/contact', (req, res) => {
     console.log(JSON.stringify(req.body));
-    if(req.body.setName == "" || req.body.setEmail == "") {     // check that the requested fields are filled in.
+    if(req.body.setName == "" || req.body.setEmail == "") {         // check that the requested fields are filled in.
         res.send("Error: Name & Email should not be blank");        // Message if issue in field
         return false;
     }
