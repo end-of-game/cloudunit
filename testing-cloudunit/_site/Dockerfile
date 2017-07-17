@@ -1,7 +1,7 @@
 #Instruction initializes a new build stage and sets the Base Image for subsequent instructions
 FROM node:latest
 
-#Indication person to contact
+#Indication person to contact if issues
 LABEL MAINTAINER="Ismaël Charifou <contact@treeptik.fr>"
 
 #Create a directory where we will work
