@@ -87,7 +87,7 @@ services:
   gitlab:
       container_name: cu-gitlab
       restart: unless-stopped
-      image: gitlab/gitlab-ce:8.14.5-ce.0
+      image: gitlab/gitlab-ce:9.3.4-ce.0
       volumes:
           - gitlab-config:/etc/gitlab
           - gitlab-logs:/var/log/gitlab
