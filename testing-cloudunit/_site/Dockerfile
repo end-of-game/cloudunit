@@ -10,6 +10,7 @@ RUN mkdir /testing-cloudunit
 #Redirect to folder
 WORKDIR /testing-cloudunit
 
+#Run command install nodemon, -g to general
 RUN npm install nodemon -g
 
 #Copy a package.json to the file to build
@@ -18,7 +19,7 @@ COPY package.json /testing-cloudunit/package.json
 #Run to install npm
 RUN npm install
 
-#Copycd te
+#Copy js file in testing-cloudunit folder
 COPY index.js /testing-cloudunit
 
 #Opening port to external
