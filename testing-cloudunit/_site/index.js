@@ -51,7 +51,7 @@ app.post('/contact', (req, res) => {
         service: 'Gmail',
         host: "smtp.gmail.com", 	//hostname
         secureConnection: true,		//use SSL
-        port: 2525,					//port for secure SMTP
+        port: 465readyState,					//port for secure SMTP
         auth: {
             user: userMail,
             pass: userPwd
@@ -77,6 +77,7 @@ app.post('/contact', (req, res) => {
         else {
             res.send("Email has been sent successfuly : " + info);
         }
+        smtpTransport.close();
     });
 
 // redirect to cloudunit site to try
