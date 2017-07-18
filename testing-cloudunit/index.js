@@ -1,22 +1,19 @@
 /*
  Date: 22th June
  Author: IsmaStormZ
+ Version: v2
  */
 
 const http = require('http');               // To use the HTTP server and client one must require('http')
 const express = require('express');         // express is a minimalist framework for node
+const nodemailer = require('nodemailer');   // Send e-mails from Node.js
 const bodyParser = require('body-parser');  // body-parser extracts entire body portion of an request stream and exposes it on req.body
-const sendmail = require('sendmail')({      // Send mail without SMTP server
-    logger: {
-        debug: console.log,
-        info: console.info,
-        warn: console.warn,
-        error: console.error
-    }});
+
 
 const app = express();
 const port = Number(process.env.PORT || 3000); // set the environment variable PORT to tell your web server what port to listen on, whatever is in the environment variable PORT, or 3000 if there's nothing there.
-const userMail = String(process.env.USER_MAIL);
+const userMail = String(process.env.USER_MAIL); // set the environment variable to mailbox receiver
+const userPwd  = String(process.env.USER_PWD);  // set the environment variable Password of mailbox
 
 //Parsed the text as JSON
 
@@ -49,21 +46,37 @@ app.post('/contact', (req, res) => {
         return false;
     }
 
+    //sending Email with SMTP, Configuring SMTP setting
+    let smtpTransport = nodemailer.createTransport({
+        service: 'Gmail',
+        host: "smtp.gmail.com", 	//hostname
+        secureConnection: true,		//use SSL
+        port: 2525,					//port for secure SMTP
+        auth: {
+            user: userMail,
+            pass: userPwd
+        }
+    });
+
 // setup email data
 
     let mailOptions = {
         from: "cloudunit@treeptik.com",                         // sender address
         // to: "Treeptik mail - <onifuerte@gmail.com>",         // list of receivers
         to: userMail,                                               // list of receivers
-        subject: 'Cloudunit new test part3',
+        subject: 'Completed form from Cloudunit.io v3',
         html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
     };
 
 // In case of error
 
-    sendmail(mailOptions, (err, reply) => {
-        console.log(err);
-        console.dir(reply);
+    smtpTransport.sendMail(mailOptions,(error, info)=> {
+        if (error){
+            res.send("Email could not send due to error : " + error);
+        }
+        else {
+            res.send("Email has been sent successfuly : " + info);
+        }
     });
 
 // redirect to cloudunit site to try
