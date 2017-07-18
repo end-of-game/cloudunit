@@ -70,7 +70,7 @@ app.post('/contact', (req, res) => {
         html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
     };
 
-// In case of error
+    // In case of error
 
     smtpTransport.sendMail(mailOptions,(error, info)=> {
         if (error){
