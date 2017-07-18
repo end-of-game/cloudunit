@@ -47,23 +47,24 @@ app.post('/contact', (req, res) => {
     }
 
     //sending Email with SMTP, Configuring SMTP setting
+
     let smtpTransport = nodemailer.createTransport({
         service: 'Gmail',
-        host: "smtp.gmail.com", 	//hostname
-        secureConnection: true,		//use SSL
-        port: 465,					//port for secure SMTP
-        auth: {
+        host: "smtp.gmail.com", 	// hostname
+        secureConnection: true,		// use SSL
+        port: 465,					// port for secure SMTP
+        auth: {                     // authentication to mailbox
             user: userMail,
             pass: userPwd
         }
     });
 
-// setup email data
+    // setup email data
 
     let mailOptions = {
         from: "cloudunit@treeptik.com",                         // sender address
         to: userMail,                                           // list of receivers
-        subject: 'Completed form from Cloudunit.io v.3',
+        subject: 'Completed form from Cloudunit.io v3',
         html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
     };
 
@@ -76,7 +77,7 @@ app.post('/contact', (req, res) => {
         else {
             res.send("Email has been sent successfuly : " + info);
         }
-        smtpTransport.close();
+        smtpTransport.close();              // close connection after the send
     });
 
 // redirect to cloudunit site to try
