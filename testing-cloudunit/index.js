@@ -53,6 +53,8 @@ app.post('/contact', (req, res) => {
         host: "smtp.gmail.com", 	// hostname
         secureConnection: true,		// use SSL
         port: 465,					// port for secure SMTP
+        ssl: true,
+        use_authentication: true,
         auth: {                     // authentication to mailbox
             user: userMail,
             pass: userPwd
@@ -62,7 +64,7 @@ app.post('/contact', (req, res) => {
     // setup email data
 
     let mailOptions = {
-        from: "cloudunit@treeptik.com",                         // sender address
+        from: "contact@treeptik.fr",                         // sender address
         to: userMail,                                           // list of receivers
         subject: 'Completed form from Cloudunit.io v3',
         html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
