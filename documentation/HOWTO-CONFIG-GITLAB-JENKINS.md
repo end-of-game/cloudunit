@@ -13,7 +13,6 @@ This document is a step by step configuration in order to activate automatique b
 
 # GitLab configuration
 ## Create a GitLab key
-![alt text](./img/Portal_GitLab.jpg "Logo Title Text 1")
 
 Jenkins need the access token to listen to GitLab behaviors.
 1. go to Profile Settings
@@ -37,7 +36,9 @@ Jenkins need the access token to listen to GitLab behaviors.
 1. in your project, make sure that you have Jenkins file,
 
 ![alt text](./img/Portal_GitLab_JenkinsFile.jpg "Logo Title Text 1")
+
 2. open your Jenkinsfile,
+
 3. add GitLab Jenkins plugin properties line named `cloudunit` . `cloudunit` is the gitlab connection name,
 
     `properties([gitLabConnection('cloudunit')])`
@@ -58,9 +59,9 @@ Jenkins need the access token to listen to GitLab behaviors.
 
 ![alt text](./img/Portal_Jenkins_Admin.jpg "Logo Title Text 1")
 
-    1. system configuration
+2. system configuration,
 
-    2. go to Gitlab panel
+3. and scroll to the Gitlab panel and configure it,
 
 ![alt text](./img/Portal_Jenkins_GitlabPanel.jpg "Logo Title Text 1")
 
@@ -71,12 +72,12 @@ Jenkins need the access token to listen to GitLab behaviors.
     
 4. Save button
 
-Go to `Identities` and make sure that you have generated credentials token.
+> Go to `Identities` and make sure that you have generated credentials token.
 
 ![alt text](./img/Portal_Jenkins_credentials.jpg "Logo Title Text 1")
 
 ## How to add credentials
-In the Jenkins Credentials Provider: Jenkins,
+In the Jenkins Credentials Provider pannel.
 
 ![alt text](./img/Portal_Jenkins_Credentials.jpg "Logo Title Text 1")
 
