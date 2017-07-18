@@ -8,7 +8,7 @@ This document is a step by step configuration in order to activate automatique b
     
     `pwd: abc2015`
 2. choose Portal
-3. Configure GitLab and Jenkins
+3. configure GitLab and Jenkins
 ![alt text](./img/Portal.jpg "Logo Title Text 1")
 
 # GitLab configuration
@@ -16,15 +16,15 @@ This document is a step by step configuration in order to activate automatique b
 
 Jenkins need the access token to listen to GitLab behaviors.
 1. go to Profile Settings
-2. Access Tokens
+2. access Tokens
 ![alt text](./img/Portal_GitLab_token.jpg "Logo Title Text 1")
-1. Add a Personnal Access Token
+1. add a Personnal Access Token
 
     `name: cloudunit`
     
     `Expire at: xxx`
     
-2. Create button
+2. create button
  
 `xxx` : leave it blanc to set it never or give expiration date.
 
@@ -70,7 +70,7 @@ Jenkins need the access token to listen to GitLab behaviors.
     `3. Credentials: Jenkins`  after, go to "How to add credentials"
     `4. Add button`
     
-4. Save button
+4. save button
 
 > Go to `Identities` and make sure that you have generated credentials token.
 
