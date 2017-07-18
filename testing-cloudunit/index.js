@@ -51,7 +51,7 @@ app.post('/contact', (req, res) => {
         service: 'Gmail',
         host: "smtp.gmail.com", 	//hostname
         secureConnection: true,		//use SSL
-        port: 465readyState,					//port for secure SMTP
+        port: 465,					//port for secure SMTP
         auth: {
             user: userMail,
             pass: userPwd
@@ -62,8 +62,7 @@ app.post('/contact', (req, res) => {
 
     let mailOptions = {
         from: "cloudunit@treeptik.com",                         // sender address
-        // to: "Treeptik mail - <onifuerte@gmail.com>",         // list of receivers
-        to: userMail,                                               // list of receivers
+        to: userMail,                                           // list of receivers
         subject: 'Completed form from Cloudunit.io v.3',
         html: "<b>" + "Name : " + req.body.setName + "<b>" + "<br>" + "Mail : " + req.body.setEmail   // name to form in index.html
     };
