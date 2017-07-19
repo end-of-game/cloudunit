@@ -53,18 +53,21 @@ You can use the following example as inspiration for writing your own `.env` cus
 ```
 # Set CloudUnit deployment Environment
 
-CU_DOMAIN=cloudunit.io                       # Domain for all created application ex: myapp.cloudunit.io
-CU_MANAGER_DOMAIN=cloudunit.io               # Url within Cloudunit UI will be reachable
-CU_GITLAB_DOMAIN=gitlab.cloudunit.io         # Url within Gitlab UI will be reachable
-CU_JENKINS_DOMAIN=jenkins.cloudunit.io       # Url within Jenkins UI will be reachable
-CU_KIBANA_DOMAIN=kibana.cloudunit.io         # Url within Kibana UI will be reachable
-CU_MATTERMOST_DOMAIN=mattermost.cloudunit.io # Url within Lets Chat UI will be reachable
-CU_NEXUS_DOMAIN=nexus.cloudunit.io           # Url within Nexus UI will be reachable
-CU_SONAR_DOMAIN=sonar.cloudunit.io           # Url within Sonar UI will be reachable
-ELASTICSEARCH_URL=elasticsearch              # Url of elasticsearch database default to internal one
-MYSQL_ROOT_PASSWORD=changeit                 # Change Mysql Root Password
-MYSQL_DATABASE=cloudunit                     # Mysql Database name
-HOSTNAME=cloudunit-host                      # Server hostname
+CU_DOMAIN=cloudunit.io                              # Domain for all created application ex: myapp.cloudunit.io
+CU_MANAGER_DOMAIN=cloudunit.io                      # Url within Cloudunit UI will be reachable
+CU_GITLAB_DOMAIN=gitlab.cloudunit.io                # Url within Gitlab UI will be reachable
+CU_JENKINS_DOMAIN=jenkins.cloudunit.io              # Url within Jenkins UI will be reachable
+CU_KIBANA_DOMAIN=kibana.cloudunit.io                # Url within Kibana UI will be reachable
+CU_MATTERMOST_DOMAIN=mattermost.cloudunit.io        # Url within Lets Chat UI will be reachable
+CU_NEXUS_DOMAIN=nexus.cloudunit.io                  # Url within Nexus UI will be reachable
+CU_SONAR_DOMAIN=sonar.cloudunit.io                  # Url within Sonar UI will be reachable
+CU_GRAFANA_DOMAIN=grafana.cloudunit.io              # Url within Grafana UI will be reachable
+CU_PROMETHEUS_DOMAIN=prometheus.cloudunit.io        # Url within Prometheus UI will be reachable
+CU_ALERTMANAGER_DOMAIN=alertmanager.cloudunit.io    # Url within AlertManager UI will be reachable
+ELASTICSEARCH_URL=elasticsearch                     # Url of elasticsearch database default to internal one
+MYSQL_ROOT_PASSWORD=changeit                        # Change Mysql Root Password
+MYSQL_DATABASE=cloudunit                            # Mysql Database name
+HOSTNAME=cloudunit-host                             # Server hostname
 ```
 
 # FAQ
