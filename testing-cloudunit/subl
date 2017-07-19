@@ -1,0 +1,2005 @@
+    1  subl .zsh
+    2  subl .zshrc
+    3  source .zshrc
+    4  cd v/tmp
+    5  cd /tmp
+    6  # clone\ngit clone https://github.com/powerline/fonts.git\n# install\ncd fonts\n./install.sh\n# clean-up a bit\ncd ..\nrm -rf fonts
+    7  source .zshrc
+    8  cd*
+    9  cd
+   10  source .zshrc
+   11  *
+   12  reboot
+   13  ls
+   14  sudo su
+   15  cd /tmp
+   16  ls
+   17  sudo chown treeptik: -R fonts
+   18  cd fonts
+   19  ./install.sh
+   20  reboot
+   21  3
+   22  ls
+   23  cd .oh-my-zsh/themes
+   24  ls
+   25  git pull
+   26  ls agnoster.zsh-theme
+   27  ls -l agnoster.zsh-theme
+   28  ~/.config/fontconfig/conf.d
+   29  fc-cache -vf
+   30  xkill
+   31  /fonts/truetype/takao-gothic: caching, new cache contents: 1 fonts, 0 dirs\n/usr/share
+   32  echo -e "\ue0a0\ue0a1\ue0a2\ue0b0\ue0b1\ue0b2"
+   33  cd /tmp
+   34  cd firefox_treeptik
+   35  cd ..
+   36  cd firefox_treeptik
+   37  ls
+   38  cd 
+   39  ls
+   40  cd cloudunit
+   41  git status
+   42  docker run c64195b3f4c9
+   43  7
+   44  docker run c64195b3f4c9
+   45  docker stop c64195b3f4c9
+   46  docker image prune
+   47  clear
+   48  cd ..
+   49  ls
+   50  cd isma
+   51  ls
+   52  cd clunitStar
+   53  cd ..
+   54  ls
+   55  ll
+   56  docker volume ls
+   57  cd isma/dockerTest
+   58  docker volume create --name dVolume
+   59  ls
+   60  docker volume ls
+   61  docker run -v
+   62  docker volume inspect 06d
+   63  docker volume inspect 06d3
+   64  docker exec -it 06d
+   65  docker exec -it 06d bash
+   66  docker inspect 06d3
+   67  docker volume inspect
+   68  docker volume inspect --help
+   69  docker volume inspect -f 06d3 
+   70  docker volume inspect -f volume 06d3 
+   71  docker volume inspect -f volume 06d353e098f1861746099bb1c8e7a669e61757cce3aa7341dc3b402b0e20b82a
+   72  docker volume inspect 06d353e098f1861746099bb1c8e7a669e61757cce3aa7341dc3b402b0e20b82a
+   73  docker run -it -v dVolume:/www/dVolume ubuntu:14.04 bash
+   74  docker run -d -v dVolume:/www/dVolume -v dVolume2:/www/dVolume2 nginx
+   75  docker volume ls
+   76  docker volume create name vol1
+   77  docker volume create --name vol1
+   78  docker volume ls
+   79  docker run -it -v vol1:/www/website ubuntu:14.04 bash
+   80  docker ls
+   81  docker images
+   82  docker commit 78136a19046 vol1:1.0
+   83  docker commit cc395c826cf0 vol1:1.0
+   84  docker run -it -v vol1:/www/website ubuntu:14.04 bash
+   85  docker inspect
+   86  docker inspect 7c46cf9047ef
+   87  docker attach 7c46cf9047ef
+   88  docker commit 7c46cf9047ef
+   89  docker commit 7c46cf9047ef vol1:1.0
+   90  docker run -it vol1:1.0 bash
+   91  docker ps
+   92  docker volume inspect 7c46
+   93  docker volume inspect 06d353e098f1861746099bb1c8e7a669e61757cce3aa7341dc3b402b0e20b82a
+   94  docker volume inspect 2623c6ccc1300a3109e2f027f9891a2addb76e1882aa5e01f6f4ae8037f441e9
+   95  docker volume inspect dVolume2
+   96  docker ps --filter=volume=dVolume2
+   97  docker volume inspect dVolume2
+   98  docker inspect
+   99  docker volume inspect dVolume2
+  100  docker image
+  101  docker images
+  102  docker inspect 47cc27759ebe
+  103  docker volume inspect vol1
+  104  sudo su
+  105  docker exec -it 7c46cf9047ef bash
+  106  docker volume rm dVolume
+  107  docker volume rm dVolume2
+  108  docker rm 7c46cf9047ef
+  109  docker stop 7c46cf9047ef
+  110  docker inspect
+  111  docker ps
+  112  docker ps -a
+  113  docker rm 7c46cf9047ef
+  114  docker volume ls
+  115  sudo su
+  116  docker volume rm vol1
+  117  docker stop e78136a190467c529450a90e31cbe53919bb4e4ce2352c6748dfc985821a6465
+  118  docker volume rm vol1
+  119  docker inspect e78136a190467c529450a90e31cbe53919bb4e4ce2352c6748dfc985821a6465
+  120  docker rm e78136a190467c529450a90e31cbe53919bb4e4ce2352c6748dfc985821a6465
+  121  docker volume rm vol1
+  122  docker volume ls
+  123  docker volume ls -f dangling=true
+  124  top
+  125  docker images
+  126  ls home/user/public_html
+  127  docker run -d -v /home/user/public_html:/data/www
+  128  mkdir public_html
+  129  cd public_html
+  130  touch index.html
+  131  docker run --it -v home/isma/dockerTest/public:/data/www ubuntu:14.04
+  132  docker run -it -v home/isma/dockerTest/public:/data/www ubuntu:14.04
+  133  docker run -it -v home/isma/dockerTest/public_html:/data/www ubuntu:14.04
+  134  docker run -it -v /home/isma/dockerTest/public_html:/data/www ubuntu:14.04
+  135  ls
+  136  ls public_html
+  137  cd ..
+  138  docker run -it -v /home/isma/dockerTest/public_html:/data/www ubuntu:14.04
+  139  clear
+  140  docker run -it -v /home/isma/dockerTest/public_html:/data/www ubuntu:14.04
+  141  subl public_html/index.html
+  142  docker attach 609e83bdad68
+  143  docker images
+  144  cd ..
+  145  ls
+  146  cd ..
+  147  ls
+  148  cd cloudunit
+  149  git status
+  150  docker  ps
+  151  docker volume create --name nginx_logs
+  152  docker run -d -P --name nginx_server -v ~/public_html:/usr/share/nginx/html -v nginx_logs:/var/log/nginx trainingteam/nginx
+  153  docker exec -it nginx_server bash
+  154  docker ps
+  155  docker run -d -P --name nginx_server -v ~/public_html:/usr/share/nginx/html -v nginx_logs:/var/log/nginx trainingteam/nginx
+  156  docker exec -it nginx_server bash
+  157  docker run -d -P -v ~/public_html:/usr/share/nginx/html/ -v nginx_logs:/var/log/nginx trainingteam/nginx
+  158  docker exec -it 0f31441a9e1797481cadf9f4d68c1835722bf29c5d86691f58228c84161af162 bash
+  159  ls
+  160  cd public_html
+  161  ls
+  162  cd ~/public_html
+  163  ls
+  164  docker run -d -P -v ~/isma/dockerTest/public_html:/usr/share/nginx/html -v nginx_logs:/var/log/nginx trainingteam/nginx
+  165  docker exec -it a5506a4b587eb70a8284dc6b70c61921a6039a8ad5fa867a7b4ae4ada7907b78 bash
+  166  docker p
+  167  docker ps
+  168  docker stop elated_cori
+  169  docker rm elated_cori
+  170  cd ..
+  171  ls
+  172  cd isma
+  173  cd dockerTest
+  174  docker exec -it focused_thompson bash
+  175  docker volume inspect nginx_logs
+  176  sudo su
+  177  docker ps
+  178  docker run -it -v nginx_logs:/data/mylogs:ro ubuntu:14.04 bash
+  179  clear
+  180  ls
+  181  ls myimg
+  182  cd myimg
+  183  subl Dockerfile
+  184  cd ..
+  185  docker build -t myimg:1.1
+  186  docker build -t myimg:1.1 .
+  187  cd myimg
+  188  docker build -t myimg:1.1 .
+  189  docker run -it myimg:1.1 bash
+  190  exit
+  191  exit
+  192  poweroff
+  193  cd isma/dockerTest
+  194  cd .
+  195  cd ..
+  196  cd clunitStar
+  197  brctl
+  198  sudo apt-get update
+  199  apt-get install bridge-utils
+  200  sudo apt-get install bridge-utils
+  201  bridge-utils -v
+  202  bridge -v
+  203  bridge version
+  204  bridge -version
+  205  bridge --version
+  206  clera
+  207  clear
+  208  brctl show docker0
+  209  docker run -d -it ubuntu:14.04
+  210  brctl show docker0
+  211  ip -a
+  212  ip a
+  213  brctl show docker0
+  214  docker inspect
+  215  docker inspect NetworkSettings
+  216  docker inspect docker0
+  217  docker ps
+  218  docker inspect 42fbdd6fa1c8
+  219  brctl show docker0
+  220  docker inspect vertth484fa56
+  221  docker inspect 42fbdd6fa1c8
+  222  brctl show docker0
+  223  docker inpect docker0
+  224  docker inspect docker0
+  225  docker inspect 0242a3b2ce7e
+  226  docker network inspect
+  227  docker network inspect bridge
+  228  docker ps
+  229  docker network ls
+  230  docker ls
+  231  docker run -d --net=host nginx
+  232  docker network inspect bridge
+  233  docker stop $(docker pa -aq)
+  234  docker stop $(docker ps -aq)
+  235  docker ps
+  236  docker ps -a
+  237  clear
+  238  docker run --name=ubuntu1 -d -it ubuntu:14.04
+  239  docker ps -a
+  240  clear
+  241  docker ps
+  242  docker network inspect bridge
+  243  docker run --name=ubuntu2 -it ubuntu:14.04 bash
+  244  cd ..
+  245  ls
+  246  cd cloudunit
+  247  git status
+  248  git add .
+  249  cd testing-cloudUnit
+  250  git status
+  251  git commit -m "new changes"
+  252  git config --global user.email "charifou.ismael@gmail.com"
+  253  git config --global user.name "IsmaStormZ"
+  254  git commit -m "new changes"
+  255  git status
+  256  docker network create --driver bridge my_bridge
+  257  docker network ls
+  258  docker run -d -it --net=my_brigdge --name ubuntu3 ubuntu:14.04
+  259  docker run -d -it --net=my_bridge --name ubuntu3 ubuntu:14.04
+  260  docker ps
+  261  docker ps -a
+  262  docker rm ubuntu3
+  263  docker ps -a
+  264  clear
+  265  docker run -d -it --net=my_bridge --name ubuntu3 ubuntu:14.04
+  266  docker run -d -it --net=my_bridge --name ubuntu4 ubuntu:14.04
+  267  docker ps
+  268  ping ubuntu3
+  269  docker rm ubuntu4
+  270  docker stop ubuntu4
+  271  docker rm ubuntu4
+  272  docker run -d -it --net=my_bridge --name ubuntu4 ubuntu:14.04 bash
+  273  docker ps
+  274  docker run -it ubuntu4 bash
+  275  docker run -it 3881 bash
+  276  docker stop ubuntu4
+  277  docker rm ubuntu4
+  278  docker run -d -it --net=my_bridge --name=ubuntu4 ubuntu:14.04 bash
+  279  docker run -it 7626d95dafc48350f0d4658328474d357440a6865db2a85d3c1e772f1d74d11a
+  280  docker run -it 7626d95
+  281  docker ps
+  282  docker rm ubuntu4
+  283  docker stop ubuntu4
+  284  docker rm ubuntu4
+  285  docker stop ubuntu2
+  286  docker rm ubuntu2
+  287  docker run --name=ubuntu2 -it ubuntu:14.04 bash
+  288  docker run -it --net=my_bridge --name ubuntu3 ubuntu:14.04 bash
+  289  docker run -it --net=my_bridge --name ubuntu4 ubuntu:14.04 bash
+  290  docker network connect my_bridge ubuntu2
+  291  docker exec ubuntu2 ping ubuntu3
+  292  docker exec ubuntu2 ping ubuntu4
+  293  docker exec ubuntu3 ping ubuntu2
+  294  docker network ls
+  295  docker network inspect my_bridge
+  296  docker inspect ubuntu2
+  297  docker ps
+  298  docker run -d -P --name nginx_server -v ~/public_html:/usr/share/nginx/html -v nginx_logs:/var/log/nginx trainingteam/nginx
+  299  docker ps -a
+  300  docker start gallant_perlman
+  301  docker start nginx_server
+  302  docker start focused_jang
+  303  docker run -d -P --name nginx_server -v ~/public_html:/usr/share/nginx/html -v nginx_logs:/var/log/nginx trainingteam/nginx
+  304  docker ps
+  305  docker run -d -p 80:8080 tomcat
+  306  docker run -d -p 80:80 -p 81:8080 nginx
+  307  docker port nginx_server
+  308  docker run -d -p 80:80 -p 90:8080 nginx
+  309  docker ps
+  310  docker stop gallant_bardeen
+  311  docker run -d -p 80:80 -p 90:8080 nginx
+  312  docker port nginx_server
+  313  docker port nginx
+  314  docker ps
+  315  docker port keen_pare
+  316  docker run -d -P myimg
+  317  docker ps -a
+  318  docker start myimg:1.1
+  319  docker ps
+  320  docker run -d -P focused_jang
+  321  docker run -d -P myimg:1.1
+  322  docker port myimg:1.1
+  323  docker port focused_jang
+  324  docker build -t myimg:1.1
+  325  ls
+  326  cd myimg
+  327  docker build -t myimg:1.1 .
+  328  docker run -d -P focused_jang:1.7
+  329  docker run -d -P focused_jang
+  330  docker run -d -P myimg:1.1
+  331  docker port focused_jang
+  332  cd ..
+  333  cd isma
+  334  tar -C /home/treeptik/Downloads/sofware/deb-gz -xzf go1.8.3.linux-amd64.tar.gz
+  335  tar -C /usr/local -xzf go1.8.3.linux-amd64.tar.gz
+  336  cd ..
+  337  ls
+  338  cd Downloads/sofware/deb-gz
+  339  tar -C /usr/local -xzf go1.8.3.linux-amd64.tar.gz
+  340  sudo tar -C /usr/local -xzf go1.8.3.linux-amd64.tar.gz
+  341  cd /usr/local
+  342  ls
+  343  cd go
+  344  ls
+  345  cd myimg
+  346  docker -t myimg
+  347  docker build -t myimg
+  348  docker build -t myimg .
+  349  docker run -d -P myimg
+  350  docker port be99
+  351  docker port myimg:1.1
+  352  docker port keen_pare
+  353  docker ps
+  354  docker ps -a
+  355  docker run -d -it myimg
+  356  docker ps
+  357  docker port boring_kalam
+  358  docker port nginx_server
+  359  docker run -d -it myimg
+  360  docker ps
+  361  docker port quizzical_khorana
+  362  docker stop quizzical_khorana
+  363  docker rm quizzical_khorana
+  364  cd ..
+  365  mkdir testingHub
+  366  cd testingHub
+  367  git init
+  368  git add README.md
+  369  echo # javahelloworld >> README.md
+  370  git add README.md
+  371  touch README.md
+  372  echo # javahelloworld >> README.md
+  373  git add README.md
+  374  git commit -m "first commit"
+  375  git remote add origin https://github.com/IsmaStormZ/javahelloworld.git
+  376  git push -u origin master
+  377  git status
+  378  touch toto.txt
+  379  git status
+  380  git push -u origin master
+  381  git status
+  382  git push --help
+  383  git remote add origin https://github.com/IsmaStormZ/javahelloworld.git
+  384  git branch
+  385  git status
+  386  git add README.md
+  387  git commit -m "first commit"
+  388  git commit -m "second commit"
+  389  git add .
+  390  git commit -m "second commit"
+  391  git push -u origin master
+  392  git remote add origin https://github.com/IsmaStormZ/javahelloworld
+  393  git push -u origin master
+  394  git push
+  395  git push --set-upstream origin master
+  396  git clone https://github.com/IsmaStormZ/javahelloworld.git
+  397  git status
+  398  ls
+  399  cd ..
+  400  ls
+  401  rm testingHub
+  402  cd javahelloworld
+  403  git init
+  404  git add README.md
+  405  echo # javahelloworld >> README.md
+  406  git add README.md
+  407  git commit -m "first commit"
+  408  git remote add origin https://github.com/IsmaStormZ/javahelloworld
+  409  ls
+  410  git push -u origin master
+  411  git status
+  412  git add .
+  413  git push -u origin master
+  414  git commit -m "first commit"
+  415  git push -u origin master
+  416  git push -f origin master
+  417  git status
+  418  cd ..
+  419  cd javahelloworld
+  420  git status
+  421  echo # javahelloworld >> README.md
+  422  git init
+  423  git add README.md
+  424  touch README.md
+  425  git add README.md
+  426  git commit -m "first commit"
+  427  git remote add origin https://github.com/IsmaStormZ/javahelloworld.git
+  428  git push -u origin master
+  429  git status
+  430  git push -f origin master
+  431  git status
+  432  git pull
+  433  git status
+  434  ls
+  435  subl README.md
+  436  git pull origin master
+  437  subl README.md
+  438  git add src/HelloWorld.java
+  439  git commit -m "second commit"
+  440  git remote add origin https://github.com/IsmaStormZ/javahelloworld.git
+  441  git push origin master
+  442  ls
+  443  cd src
+  444  ls
+  445  git init
+  446  git add src/HelloWorld.java Dockerfile
+  447  cd ..
+  448  git add src/HelloWorld.java Dockerfile
+  449  git remote add origin  https://github.com/IsmaStormZ/javahelloworld.git
+  450  git push origin master
+  451  poweroff
+  452  cd isma/dockerTest
+  453  ls
+  454  cd ..
+  455  cd cloudunit
+  456  cd ..
+  457  mkdir projectManhattan
+  458  cd projectManhattan
+  459  cd ..
+  460  cd projectManhattan
+  461  cd ..
+  462  cd cloudunit
+  463  ls
+  464  mkdir projectManhattan
+  465  cd projectManhattan
+  466  git status
+  467  git add .
+  468  touch Dockerfile
+  469  docker-machine -v
+  470  cd ..
+  471  ls
+  472  sudo apt-get update
+  473  touch .dockerignore
+  474  cd testing-cloudUnit
+  475  nodemon index2.js
+  476  nodemon index.js
+  477  nodemon index2.js
+  478  clear
+  479  node index2.js
+  480  ls
+  481  cd .
+  482  cd ..
+  483  cd testing-cloudUnit
+  484  nodemon index2.js
+  485  exit
+  486  exit
+  487  cd cloudunit/testing-cloudUnit
+  488  nodemon index2.js
+  489  exit
+  490  cd testing-cloudUnit
+  491  nodemon index.js
+  492  cd ..
+  493  cd cloudunit/testing-cloudUnit
+  494  git status
+  495  vagrant -v
+  496  git add .
+  497  git commit -m "add projectManhattan folder and modified index.js"
+  498  cd ..
+  499  cd isma
+  500  ls
+  501  mkdir markdownTest
+  502  cd markdownTest/
+  503  npm install --save breakdance
+  504  touch example.js
+  505  subl example.js
+  506  nodemon example.js
+  507  npm install --global breakdance-cli
+  508  npm i -g npm
+  509  sudo npm i -g npm
+  510  npm install --global breakdance-cli
+  511  sudo npm install --global breakdance-cli
+  512  clear
+  513  bd
+  514  breakdance
+  515  bd index.html
+  516  ls
+  517  git status
+  518  git add .
+  519  git commit -m "delete index2.js"
+  520  cd ..
+  521  apt-get dist-upgrade
+  522  sudo apt-get dist-upgrade
+  523  apt-get upgrade
+  524  sudo apt-get upgrade
+  525  clear
+  526  man apt-get
+  527  clear
+  528  git status
+  529  git push
+  530  git status
+  531  docker-compose up
+  532  cd ..
+  533  cd dockerTest
+  534  ls 
+  535  cd myimg
+  536  docker run -it myimg
+  537  brctl show docker0
+  538  docker ps
+  539  docker ps -a
+  540  docker port nginx_server
+  541  docker start nginx_server
+  542  docker ps
+  543  docker run -d -it myimg
+  544  docker ps
+  545  docker stop xenodochial_easley
+  546  docker rm xenodochial_easley
+  547  docker ps
+  548  docker network inspect bridge
+  549  docker ps -a
+  550  docker start ubuntu1 ubuntu2 ubuntu3 ubuntu4
+  551  docker ps
+  552  docker run -it ubuntu2
+  553  docker run -it ubuntu2 bash
+  554  docker run -it c0d9 bash
+  555  docker run --help
+  556  clear
+  557  docker ps
+  558  docker run --name=ubuntu2 -it bash
+  559  docker run 2d8709ddfca3407d1f46ae38debea679e1c857c603e46d76f726d80e77fbd64a -it bash
+  560  docker run 2d8709ddfca3 -it bash
+  561  docker run ubuntu:14.04 -it bash
+  562  docker stop $(docker ps -aq)
+  563  docker ps
+  564  docker ps -a
+  565  docker run --name=ubuntu2 -it bash
+  566  docker ps
+  567  docker start copwordpress_db_1
+  568  docker start copwordpress_wordpress_1
+  569  clear
+  570  docker network ls
+  571  docker run -d --net=my_bridge nginx
+  572  docker ps
+  573  docker inspect elastic_murdock
+  574  ping ubuntu 3
+  575  docker run -it ubuntu4 bash
+  576  docker ps
+  577  docker start ubuntu1 ubuntu2 ubuntu3 ubuntu4
+  578  docker run -it ubuntu4 bash
+  579  docker run -d -it ubuntu4 bash
+  580  docker ps
+  581  docker exec -it 2d87 bvash
+  582  docker exec -it 2d87 bash
+  583  docker exec ubuntu3 ping ubuntu2
+  584  docker run -d -p 80:80 -p 90:8080 nginx
+  585  docker ps
+  586  docker port determined_wright
+  587  ls
+  588  subl Dockerfile
+  589  git status
+  590  touch test.txt
+  591  git status
+  592  git add .
+  593  git commit -m "add file test"
+  594  git status
+  595  git push
+  596  cd ..
+  597  git pull
+  598  cd testing-cloudUnit
+  599  docker run -d -P myimg
+  600  docker ps
+  601  docker build -t myimg
+  602  ls
+  603  docker run -d -P myimg
+  604  docker ps
+  605  docker build -t myimg
+  606  docker build -t myimg .
+  607  docker run -d -P myimg
+  608  docker port myimg
+  609  docker port d28a
+  610  docker ps
+  611  docker ps -a
+  612  docker start clever_jennings
+  613  docker ps
+  614  docker ps -a
+  615  docker start vibrant_agnesi
+  616  docker ps
+  617  docker ps -a
+  618  docker run -d -P myimg:1.1
+  619  docker ps
+  620  docker start 0522343336ac
+  621  docker ps
+  622  docker port 0522343336ac
+  623  docker build -t myimg:1.1
+  624  docker build -t myimg:1.1 .
+  625  docker run -d -P myimg:1.1
+  626  docker port myimg:1.1
+  627  docker ps
+  628  docker ps -a
+  629  docker run myimg:1.1
+  630  docker ps
+  631  docker logs myimg:1.1
+  632  docker inspect 998c10135499
+  633  docker inspect 998c10135499 | grep volume
+  634  docker ps
+  635  docker ps -a
+  636  docker logs myimg:1.1 
+  637  docker run -it myimg:1.1 bash
+  638  docker ps
+  639  shutdown
+  640  cd cloudunit
+  641  cu-vagrant
+  642  vagrant up
+  643  clear
+  644  cd ..
+  645  cd isma
+  646  ls
+  647  cd ..
+  648  cd testing-cloudUnit/
+  649  ls
+  650  docker-compose -v
+  651  docker-compose images
+  652  cd dockerTest
+  653  service docker stop
+  654  sudo service docker stop
+  655  docker version
+  656  sudo dockerd &
+  657  docker version
+  658  exit
+  659  docker version
+  660  sudo kill $(pidof dockerd)
+  661  sudo service docker start
+  662  docker version
+  663  sudo service docker stop
+  664  sudo dockerd -D &
+  665  docker ps
+  666  docker ps -a
+  667  docker rmi $(docker images | grep "^<none>" | awk "{print $3"})
+  668  docker rmi $(docker images | grep <\none\> | awk '{print $3'})
+  669  docker rmi $(docker images|grep "^<none>"|awk "{print \$3}")
+  670  docker ps -a
+  671  docker ps --filter=‘status=exited’
+  672  docker ps --filter=status=exited
+  673  docker stop
+  674  docker stop $(docker ps -aq)
+  675  docker ps
+  676  docker ps -a
+  677  docker start vertxvotingapp_worker_1 vertxvotingapp_vote_1 vertxvotingapp_result_1 copwordpress_db_1 copwordpress_wordpress_1 epic_booth gallant_bardeen
+  678  docker ps
+  679  docker start ubuntu
+  680  docker start ubuntu1 ubuntu2 ubuntu3 ubuntu4
+  681  docker ps
+  682  docker start elastic_murdock
+  683  docker ps
+  684  docker ps --filter=‘status=exited’
+  685  docker rm $(docker ps -a|grep "Exited"|awk "{print \$1}")
+  686  docker ps -a
+  687  clear
+  688  docker ps
+  689  docker ps -a
+  690  docker run --name ubuntuX ubuntu
+  691  docker ps
+  692  docker run --name=ubuntuX ubuntu
+  693  docker ps
+  694  docker ps -a
+  695  docker start ubuntuX
+  696  docker ps
+  697  docker build -t ubuntu
+  698  docker logs ubuntuX
+  699  docker run ubuntuX
+  700  docker start ubuntuX
+  701  docker ps
+  702  docker start ubuntuX bash
+  703  docker run -d ubuntuX bash
+  704  docker run -it -d ubuntuX bash
+  705  docker ps
+  706  docker ps -a
+  707  docker run -it 43c6a0af2a00 bash
+  708  docker run -it ubuntu  bash
+  709  docker run -it ubuntuX  bash
+  710  docker run -it epic_booth  bash
+  711  docker ps
+  712  sudo dockerd --log-level=info &
+  713  sudo kill $(pidof dockerd)
+  714  sudo dockerd --log-level=info &
+  715  sudo kill $(pidof dockerd)
+  716  subl /etc/default/docker
+  717  sudo dockerd --log-level=info &
+  718  sudo kill $(pidof dockerd)
+  719  sudo service docker restart
+  720  docker version
+  721  docker ps
+  722  docker ps -a
+  723  docker start ubuntu1 ubuntu2 ubuntu3 ubuntu4
+  724  docker start epic_booth
+  725  dockerd --hellp
+  726  dockerd --help
+  727  dockerd --version
+  728  clear
+  729  git add .
+  730  git commit -m "add docker-compose.yml file and modified Dockerfile"
+  731  mongodb -v
+  732  mmongo --version
+  733  mongo --version
+  734  sudo apt-get update
+  735  sudo apt-get install mongodb
+  736  mongo --version
+  737  mongodb -v
+  738  mongo -v
+  739  mongo --help
+  740  mongo --version
+  741  clear
+  742  hot
+  743  top
+  744  clear
+  745  git status
+  746  git add .
+  747  git commit -m "modified files"
+  748  history
+  749  subl history
+  750  history --help
+  751  history -help
+  752  history subl
+  753  subl history
+  754  subl > history
+  755  man history
+  756  subl .history
+  757  subl .bash_history
+  758  history > histo.txt
+  759  subl histo.txt
+  760  git status
+  761  git add .
+  762  git commit -m "modified docker-compose.yml"
+  763  git push
+  764  git status
+  765  exit
+  766  cd isma/dockerTest
+  767  ls
+  768  cd cloudunit/testing-cloudUnit
+  769  git status
+  770  docker pull mongo
+  771  docker images
+  772  docker pull mongo:latest
+  773  docker rmi $(docker images|grep "^<none>"|awk "{print \$3}")
+  774  docker images
+  775  docker stop c2c634dbb3cc
+  776  docker stop 93125f37d1cb
+  777  docker rmi $(docker images|grep "^<none>"|awk "{print \$3}")
+  778  docker kill 93125f37d1cb
+  779  docker stop e188daf6c026
+  780  docker ps -a
+  781  docker ps
+  782  docker run -it ubuntuX  bash
+  783  docker rename ubuntuX ubuntux
+  784  docker ps
+  785  docker ps -a
+  786  docker run -it ubuntux bash
+  787  docker run -it loving_crazy bash
+  788  docker run -it ubuntux
+  789  docker start ubuntux
+  790  docker ps
+  791  docker ps -a
+  792  docker start ubuntu1 ubuntu2 ubuntu3 ubuntu4
+  793  docker ps
+  794  docker run -it ubuntux bash
+  795  docker run -it ubuntux /bin/bash
+  796  docker run -it ubuntux bin/bash
+  797  docker rm ubuntux
+  798  docker ps
+  799  docker ps -a
+  800  docker rm loving_cray
+  801  docker start elastic_murdock
+  802  docker ps
+  803  docker start myimg:1.1
+  804  docker run -it ubuntu4 bash
+  805  cd ..
+  806  choco install intellijidea-ultimate
+  807  cd isma/
+  808  docker-compose --version
+  809  git status
+  810  nodemon indexjs
+  811  nodemon index.js
+  812  cd testing-cloudUnit
+  813  nodemon index.js
+  814  ls
+  815  cd idea-IC-171.4694.70/bin
+  816  ls
+  817  ./idea.sh
+  818  ls
+  819  mkdir newNodeProject
+  820  cd newNodeProject
+  821  sudo apt-get install nodejs
+  822  npm -v
+  823  apt-get update
+  824  sudo apt-get update
+  825  clear
+  826  git clone https://github.com/johnny-tu/inventory-service.git
+  827  ls
+  828  cd inventory-service
+  829  npm install mongo
+  830  ls
+  831  subl inventoryService.js
+  832  docker run -d -p 27017:27017 --name mongodb mongo
+  833  cd ..
+  834  docker ps
+  835  docker ps -a
+  836  docker ps
+  837  docker port 77507a98208cab5826834834b5b1f64824525d6556fab97a6dd3faf48a9c417e
+  838  docker port mongodb
+  839  docker port mongo
+  840  sudo docker rm -f 
+  841  docker rm -f b066a9c453a5
+  842  docker ps
+  843  docker ps -a
+  844  docker container prune
+  845  docker ps -a
+  846  docker run -d -p 27017:27017 --name mongodb mongo
+  847  docker ps 
+  848  ls
+  849  nodemon index.js
+  850  git add .
+  851  git status
+  852  cd isma/dockerTest
+  853  ls
+  854  cd newNodeProject
+  855  docker run -d -p 27017:27017 --name mongodb mongo
+  856  docker ps -a
+  857  docker rm mongodb
+  858  docker ps -a
+  859  docker run -d -p 27017:27017 --name mongodb mongo
+  860  docker ps -a
+  861  docker rm mongodb
+  862  docker run -d -p 6379:6379 --name mongodb mongo
+  863  docker ps -a
+  864  ls
+  865  cd inventory-service
+  866  ls
+  867  nodejs inventoryService.js
+  868  cd newNodeProject/inventory-service
+  869  nodemon inventoryService.js
+  870  npm update
+  871  npm ugrade
+  872  cd ..
+  873  cd isma
+  874  cd ./isma
+  875  cd ..
+  876  cd isma
+  877  cd dockerTest
+  878  cd newNodeProject
+  879  git clone https://github.com/johnny-tu/inventory-service.git
+  880  ls
+  881  cd inventory-service
+  882  ls
+  883  npm install redis
+  884  redis -v
+  885  redis version
+  886  docker run -d -p 6379:6379 --name redisdb redis
+  887  docker ps -a
+  888  docker rm mongodb
+  889  docker stop mongodb
+  890  docker rm mongodb
+  891  docker ps -a
+  892  docker rm redisdb
+  893  docker run -d -p 6379:6379 --name redisdb redis
+  894  nodemon inventoryService.js
+  895  nodejs inventoryService.js
+  896  docker build -t inventory-service .
+  897  ls
+  898  docker build -t inventory-service .
+  899  docker network create nodeapp
+  900  docker stop redisdb
+  901  docker ps -a
+  902  docker rm redisdb
+  903  docker network ls
+  904  docker run -d -it --net=nodeapp -p 6379:6379 --name redisdb redis
+  905  docker run --net nodeapp inventory-service
+  906  docker run --net nodeapp inventory-service .
+  907  docker run --net nodeapp inventory-service
+  908  shutdown
+  909  cd cloudunit/testing-cloudUnit
+  910  git status
+  911  git add .
+  912  git commit -m "modified docker-compose.yml"
+  913  cd testing-cloudUnit
+  914  nodemon index.js
+  915  jekyll serve 
+  916  nodemon index.js
+  917  cd ..
+  918  cd .
+  919  cd ..
+  920  cd Downloads
+  921  ls
+  922  cd software/deb-gz
+  923  git status
+  924  git add .
+  925  git commit -m "modified files"
+  926  sudo dpkg -i atom-amd64.deb
+  927  sudo apt-get -f install
+  928  apt install atom-beautify
+  929  sudo apt install atom-beautify
+  930  ls
+  931  cd testing-cloudUnit
+  932  ls
+  933  cd ..
+  934  cd cloudunit
+  935  cd testing-cloudUnit
+  936  dockerps
+  937  docker ps
+  938  ls
+  939  docker build -t testing-cloudUnit .
+  940  docker run -d -it 
+  941  docker ps -a
+  942  docker build -t testing-cloudUnit 
+  943  docker build -t testing-cloudUnit .
+  944  cd ..
+  945  cd testing-cloudunit
+  946  jekyll serve
+  947  cd ..
+  948  cd testing-cloudunit
+  949  nodemon index.js
+  950  docker run -d p 3000:3000 --name appnode node
+  951  docker run -d -p 3000:3000 --name appnode node
+  952  docker run -d -p 3000:3000 --name appnode nodejs
+  953  docker run -d -p 3000:3000 --name appnode node
+  954  nodemon index.js
+  955  ls
+  956  docker build -t testing-cloudunit .
+  957  docker ps
+  958  docker ps -a
+  959  docker rm appnode
+  960  docker ps -a
+  961  clear
+  962  docker build -t testing-cloudunit .
+  963  docker images
+  964  docker run -d -it -P 0aee9def5195
+  965  docker ps
+  966  ls
+  967  sh test.sh
+  968  cd testing-cloudunit
+  969  docker stop unbetz_shaw
+  970  docker stop unbeat_shaw
+  971  docker rm unbeat_shaw
+  972  docker ps
+  973  docker rm 0aee9def5195
+  974  docker stop 0aee9def5195
+  975  docker stop 0004eea8c7e8
+  976  docker rm 0004eea8c7e8
+  977  docker build -t testing-cloudunit .
+  978  docker images
+  979  docker run -d -it -P --name=testing-cloudunit 0aee9def5195
+  980  docker ps
+  981  docker ps -a
+  982  git add .
+  983  git commit -m "change port in index.html"
+  984  clear
+  985  cd testing-cloudunit
+  986  mvn spring-boot:run
+  987  git status
+  988  docker images
+  989  docker ps
+  990  docker restart testing-cloudunit
+  991  docker ps
+  992  docker exec -it 58add68f023b  bash
+  993  docker logs -f 58add68f023b
+  994  docker ps
+  995  docker ps -a
+  996  docker stop 58add68f023b
+  997  docker rm 58add68f023b
+  998  docker ps -a
+  999  docker run -d -it -P 32770:3000 --name=testing-cloudunit 0aee9def5195
+ 1000  docker run -p 32770:3000 -d testing-cloudunit
+ 1001  docker ps -a
+ 1002  curl http://192.168.50.4:32770
+ 1003  docker-machine ip default
+ 1004  git add .
+ 1005  docker-machine ip
+ 1006  clear
+ 1007  ip
+ 1008  ip addr
+ 1009  docker port
+ 1010  docker port upbeat_shockley
+ 1011  ipconfig
+ 1012  ifconfig
+ 1013  curl 172.17.0.1:32770
+ 1014  docker exec -it 58add68f023b  bash
+ 1015  docker ps
+ 1016  docker exec -it ae234b389af7 bash
+ 1017  curl 172.17.0.1:80
+ 1018  curl 172.17.0.1:3000
+ 1019  curl 172.17.0.2:3000
+ 1020  curl 172.17.0.1:3000
+ 1021  curl 172.17.0.1:32770
+ 1022  curl 172.17.0.2:32770
+ 1023  brctl show docker0
+ 1024  docker run -d -it testing-cloudunit
+ 1025  brctl show docker0
+ 1026  docker ps
+ 1027  docker inspect
+ 1028  docker inspect upbeat_shockley
+ 1029  docker network ls
+ 1030  clear
+ 1031  git status
+ 1032  git add .
+ 1033  git commit -m "new changes"
+ 1034  git push
+ 1035  cd cloudunit
+ 1036  cd testing-cloudunit
+ 1037  git status
+ 1038  cd ..
+ 1039  cd isma/dockerTest
+ 1040  cd ..
+ 1041  ls
+ 1042  docker-machine ip
+ 1043  docker-machine ip default
+ 1044  docker ps
+ 1045  docker ps -a
+ 1046  docker images
+ 1047  clear
+ 1048  docker ps -a
+ 1049  docker start upbeat_khorana
+ 1050  docker ps
+ 1051  pwd
+ 1052  docker ps
+ 1053  docker run -it -v /home/treeptik/cloudunit/testing-cloudunit:/host -p 32770:3000 testing-cloudunit:latest ./bin/bash
+ 1054  docker run -it -v /home/treeptik/cloudunit/testing-cloudunit:/host -p 32770:3000 testing-cloudunit:latest bash
+ 1055  docke ps
+ 1056  docker ps
+ 1057  docker images
+ 1058  boot2docker ip
+ 1059  docker ip
+ 1060  docker port
+ 1061  docker port upbeat_shockley
+ 1062  docker ps
+ 1063  docker port upbeat_shockley -p 3000:3000
+ 1064  docker rm -f 209af55aead4
+ 1065  docker images
+ 1066  docker run --names cu_node -p 3000:3000 testing-cloudunit
+ 1067  docker run -p 3000:3000 testing-cloudunit
+ 1068  docker build
+ 1069  docker build .
+ 1070  docker ps
+ 1071  docker ps -a
+ 1072  sh test.sh
+ 1073  nano test.sh
+ 1074  ll
+ 1075  nano Docker
+ 1076  nano Dockerfile
+ 1077  docker build . 
+ 1078  docker ps
+ 1079  docker ps -a
+ 1080  docker exec -it 74a1fde6d838 bahs
+ 1081  docker exec -it 74a1fde6d838 bash
+ 1082  docker rm -f 74a1fde6d838
+ 1083  docker run -p 127.0.0.1:8080:3000 testing-cloudunit
+ 1084  docker build . 
+ 1085  docker kill . 
+ 1086  l
+ 1087  docker images
+ 1088  docker rmi -f testing-cloudunit 78313b62d709
+ 1089  docker images
+ 1090  docker rmi -f acc983af0fd8
+ 1091  l
+ 1092  docker build .
+ 1093  docker ps
+ 1094  docker ps -a
+ 1095  docker rmi 0aee9def5195
+ 1096  docker rmi 5c37ee86eaf7
+ 1097  docker rmi cxc
+ 1098  docker rmi 5c37ee86eaf7
+ 1099  docker stop 5c37ee86eaf7
+ 1100  docker rmi 5c37ee86eaf7
+ 1101  docker ps -a
+ 1102  docker rm 5c37ee86eaf7
+ 1103  docker rm f2190c0eef0f
+ 1104  docker rm 8d9a0dfcff72
+ 1105  docker ps -a
+ 1106  docker rm d8710f04737f
+ 1107  docker rm d3b714cafb0b
+ 1108  docker ps -a
+ 1109  docker rm fba27f1b8f62
+ 1110  docker ps -a
+ 1111  docker images
+ 1112  docker rmi a21a5ec8f7fc
+ 1113  docker build -t testing-cloudunit .
+ 1114  docker images
+ 1115  docker run -p 32770:3000 -d testing-cloudunit
+ 1116  docker ps
+ 1117  docker logs b9bea09f74cd
+ 1118  docker exec -it b9bea09f74cd bash
+ 1119  curl -i localhost:32770
+ 1120  docker ps
+ 1121  git add .
+ 1122  docker ps
+ 1123  docker stop b9bea09f74cd
+ 1124  docker rm b9bea09f74cd
+ 1125  docker ps -a
+ 1126  docker rmi ae234b389af7
+ 1127  docker rmi 0aee9def5195
+ 1128  docker rmi upbeat_shockley
+ 1129  docker ps -a
+ 1130  docker rm ae234b389af7
+ 1131  docker ps -a
+ 1132  docker build -t testing-cloudunit .
+ 1133  docker images
+ 1134  docker run -p 32770:3000 -d testing-cloudunit
+ 1135  docker ps
+ 1136  docker logs b9bea09f74cd
+ 1137  docker exec -it b9bea09f74cd bash
+ 1138  docker logs 6d4b5ce546dc
+ 1139  docker exec -it 6d4b5ce546dc bash
+ 1140  docker ps
+ 1141  curl -i localhost:32770
+ 1142  docker0 
+ 1143  brctl show docker0
+ 1144  docker port frosty_banach
+ 1145  git add .
+ 1146  git commit -m "change order instruction in Dockerfile to build without problems"
+ 1147  clear
+ 1148  git status
+ 1149  clear
+ 1150  docker port frosty_banach
+ 1151  ls
+ 1152  sh test.sh
+ 1153  jekyll serve --watch
+ 1154  docker port frosty_banach
+ 1155  curl -i localhost:32770
+ 1156  echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+ 1157  jekyll serve --watch
+ 1158  sh test.sh
+ 1159  cd ..
+ 1160  ls
+ 1161  cd nodeProject
+ 1162  git clone https://github.com/IsmaStormZ/nodeProject.git
+ 1163  ls
+ 1164  cd nodeProject
+ 1165  ls
+ 1166  git add .
+ 1167  git commit -m "add some files"
+ 1168  git push 
+ 1169  git status
+ 1170  cd ..
+ 1171  sudo mkdir -p /opt/mongodb/db
+ 1172  cd /opt/mongodb/db
+ 1173  ls
+ 1174  cd ..
+ 1175  ls
+ 1176  cd opt
+ 1177  ls
+ 1178  cd ..
+ 1179  cd Treeptik/
+ 1180  ls
+ 1181  cd ..
+ 1182  cd usr
+ 1183  ls
+ 1184  cd isma
+ 1185  cd hom
+ 1186  cd home
+ 1187  cd ..
+ 1188  cd home
+ 1189  ls
+ 1190  cd isma
+ 1191  ls
+ 1192  sudo mkdir -p isma/test/opt/mongodb/db
+ 1193  cls
+ 1194  ls
+ 1195  cd isma/test/opt/mongodb
+ 1196  cd ..
+ 1197  ls
+ 1198  man nautilus
+ 1199  nautilus isma/test/opt/mongodb
+ 1200  cd ..
+ 1201  ls
+ 1202  cd Treeptik
+ 1203  ls
+ 1204  cd ..
+ 1205  cd home
+ 1206  ls
+ 1207  cd is
+ 1208  cd isma
+ 1209  cd isma/test/opt/mongodb 
+ 1210  cd ..
+ 1211  ls
+ 1212  cd ..
+ 1213  rm isma
+ 1214  man rm
+ 1215  man rmdir
+ 1216  rm isma
+ 1217  rmdir isma
+ 1218  ll isma
+ 1219  sudo chown -R treeptik: isma
+ 1220  ll
+ 1221  rm -Rv isma
+ 1222  sudo rm -Rv isma
+ 1223  ls -la
+ 1224  cd treeptik
+ 1225  cd is
+ 1226  sudo chown -R treeptik: isma/test
+ 1227  groups
+ 1228  sudo /etc/passwd
+ 1229  sudo cat /etc/passwd
+ 1230  cd isma/test/opt/mongodb/db
+ 1231  cd ..
+ 1232  cd -
+ 1233  cd ../../../
+ 1234  cd -
+ 1235  cd
+ 1236  cd ~
+ 1237  sudo root
+ 1238  sudo su
+ 1239  cd isma/test/opt/mongodb/db/$
+ 1240  cd isma/test/opt/mongodb/db/
+ 1241  cd -
+ 1242  ..
+ 1243  ...
+ 1244  cd -
+ 1245  cd db
+ 1246  ......
+ 1247  cd -9
+ 1248  cd nodeProject/nodeProject
+ 1249  git status
+ 1250  git add .
+ 1251  git commit -m "modified index.html to connection with node app"
+ 1252  git status
+ 1253  docker port frosty_banach
+ 1254  docker ps -a
+ 1255  docker ps
+ 1256  docker stop frosty_banach
+ 1257  docker run -p 32770:3000 -d testing-cloudunit
+ 1258  docker ps
+ 1259  docker logs b9bea09f74cd
+ 1260  docker logs a8603f2f64b7
+ 1261  docker exec -it a8603f2f64b7 bash
+ 1262  docker stop youthful_payne
+ 1263  docker images
+ 1264  docker rmi testing-cloudunit
+ 1265  docker rmi 3ddbd501e9b2
+ 1266  docker ps -a
+ 1267  docker rm youthful_payne
+ 1268  docker rm frosty_banach
+ 1269  docker rmi testing-cloudunit
+ 1270  docker images
+ 1271  docker rmi 2ea3199fda6e
+ 1272  docker images
+ 1273  docker build -t testing-cloudunit .
+ 1274  docker images
+ 1275  docker run -p 32770:3000 -d testing-cloudunit:latest
+ 1276  docker ps
+ 1277  docker rename stoic_jepsen testing-cloudunit
+ 1278  docker ps
+ 1279  docker logs 641d6e8d499b
+ 1280  curl -i localhost:32770
+ 1281  git add .
+ 1282  git commit -m "new modifications to redirect to cu01.cloudunit.io with app node"
+ 1283  git push
+ 1284  git status
+ 1285  iotop
+ 1286  man iotop
+ 1287  egrep '(CONFIG_VM_EVENT_COUNTERS|TASK_IO_ACCOUNTING|CONFIG_TASKSTATS|TASK_DELAY_ACCT)' /boot/config-$(uname -r)
+ 1288  iotop
+ 1289  apt-get update
+ 1290  sudo apt-get update
+ 1291  sudo apt-get install iotop
+ 1292  iotop
+ 1293  sudo iotop
+ 1294  iotop
+ 1295  sudo iotop -a
+ 1296  git status
+ 1297  cd cloudunit/testing-cloudunit
+ 1298  git status
+ 1299  ..
+ 1300  ls
+ 1301  cd isma
+ 1302  ls
+ 1303  cd nodeProject/nodeProject
+ 1304  git staus
+ 1305  git status
+ 1306  ../..
+ 1307  docker images
+ 1308  docker run -p 32770:3000 -d testing-cloudunit:latest
+ 1309  subl > history
+ 1310  subl .bash_history
+ 1311  history subl
+ 1312  docker ps
+ 1313  docker rename inspiring_hamilton testing_cloudunit
+ 1314  docker ps
+ 1315  docker logs 164a723b6d96
+ 1316  sh test.sh
+ 1317  curl -i localhost:32770
+ 1318  docker exec -it 164a723b6d96 bash
+ 1319  curl -i localhost:32770
+ 1320  docker logs 164a723b6d96
+ 1321  docker stop 164a723b6d96
+ 1322  curl -i localhost:32770
+ 1323  cd testing-cloudunit
+ 1324  git status
+ 1325  docker ps
+ 1326  docker images
+ 1327  docker run -p 32770:3000 -d testing-cloudunit:latest 
+ 1328  docker ps
+ 1329  docker rename reverent_shaw testing_clooudunit
+ 1330  docker ps
+ 1331  docker logs d7fd101a7886
+ 1332  curl -i localhost:32770
+ 1333  docker logs d7fd101a7886
+ 1334  docker restart d7fd101a7886
+ 1335  docker ps -a
+ 1336  docker rm 641d6e8d499b
+ 1337  docker rm 164a723b6d96
+ 1338  docker ps -a
+ 1339  docker images
+ 1340  docker volume
+ 1341  docker volume inspect
+ 1342  docker volume ls
+ 1343  docker volume create --name nodeVolume
+ 1344  docker volume inspect 0260309a4442ff23da800506cf93bc367566a377d8afba73245e9c71c99d8218
+ 1345  docker ps --filter=volume=0260309a4442ff23da800506cf93bc367566a377d8afba73245e9c71c99d8218
+ 1346  docker volume prune
+ 1347  docker volume ls
+ 1348  docker ps 
+ 1349  docker ps -a
+ 1350  docker ls
+ 1351  docker container ls
+ 1352  docker container stats
+ 1353  docker ls
+ 1354  docker ps
+ 1355  docker ps -a
+ 1356  docker start nh=ginx
+ 1357  docker start nginx
+ 1358  docker run -it nginx
+ 1359  docker run -d -P nginx
+ 1360  docker ps -a
+ 1361  docker run -it nginx
+ 1362  docker run -d -it nginx
+ 1363  docker ps -a
+ 1364  docker attach 9790f8bef085
+ 1365  docker stop 4ef6733c5393_
+ 1366  docker rm 4ef6733c5393
+ 1367  docker rm serene_bose
+ 1368  docker ps -a
+ 1369  docker rm vibrant_almeida
+ 1370  docker run -d -it nginx ping 127.0.0.1 -c 50
+ 1371  docker attach 5b3185a76dbb4742c8d091c1bd88646a61c2ac1b68136e1e7cb802a601667d70
+ 1372  docker ps -a
+ 1373  docker rm 5b3185a76dbb
+ 1374  ../../..
+ 1375  cd isma
+ 1376  ls
+ 1377  git clone https://github.com/IsmaStormZ/cloudunitMardownJekyll.git
+ 1378  ls
+ 1379  cd cloudunitMardownJekyll
+ 1380  ls
+ 1381  mkdir docs
+ 1382  ls
+ 1383  git status
+ 1384  touch index.md
+ 1385  git status
+ 1386  git add .
+ 1387  git commit -m "My first commit"
+ 1388  git push
+ 1389  git status
+ 1390  ..
+ 1391  docker-compose up -d
+ 1392  ls
+ 1393  git branch
+ 1394  docker-compose up -d
+ 1395  docker-compose start Clair
+ 1396  ls
+ 1397  cd cu-clair
+ 1398  ls
+ 1399  docker-compose up -d
+ 1400  sudo su
+ 1401  clear
+ 1402  git status
+ 1403  git add .
+ 1404  git commit -m "new add files"
+ 1405  git branch
+ 1406  git checkout gh-pages
+ 1407  git branch
+ 1408  ..
+ 1409  cd ..
+ 1410  ls
+ 1411  cd testing-cloudunit
+ 1412  ls
+ 1413  git status
+ 1414  git add .
+ 1415  git commit -m "add css folder and html files"
+ 1416  git status
+ 1417  git push
+ 1418  git status
+ 1419  poweroff
+ 1420  cd cloudunit/testing-cloudunit
+ 1421  ../..
+ 1422  cd isma
+ 1423  ls
+ 1424  cd cloudunitMardownJekyll
+ 1425  git status
+ 1426  ls
+ 1427  git status
+ 1428  git add .
+ 1429  git commit -m "move file into docs folder"
+ 1430  git push
+ 1431  jekyll serve
+ 1432  cd docs
+ 1433  jekyll serve
+ 1434  gem install
+ 1435  gem build install
+ 1436  gem build
+ 1437  gem instal jekyll
+ 1438  gem install jekyll
+ 1439  sudo gem install jekyll
+ 1440  jekyll new .
+ 1441  jekyll serve
+ 1442  sudo gem install pygments
+ 1443  sudo gem install pygments.rb
+ 1444  jekyll serve
+ 1445  git status
+ 1446  git add .
+ 1447  git push
+ 1448  git commit -m "changes in gemfile"
+ 1449  git push
+ 1450  git push origin master
+ 1451  git push --help
+ 1452  git push --force origin origin/master
+ 1453  git status
+ 1454  git branch
+ 1455  git add .
+ 1456  git commit -m "new changes"
+ 1457  git add .
+ 1458  git commit -m "new changes"
+ 1459  git push
+ 1460  git add .
+ 1461  git commit -m "new changes and add files"
+ 1462  git push
+ 1463  git pull 
+ 1464  git commit
+ 1465  git commit -m
+ 1466  git commit -a
+ 1467  git commit -m "new changes and add files"
+ 1468  git pus
+ 1469  git push
+ 1470  git status
+ 1471  clear
+ 1472  jekyll serve
+ 1473  git add .
+ 1474  jekyll serve
+ 1475  git add .
+ 1476  git commit -m "add link css into head.html"
+ 1477  git push
+ 1478  jekyll serve
+ 1479  bundle exec jekyll server
+ 1480  jekyll serve
+ 1481  ..
+ 1482  jekyll serve
+ 1483  sh test.sh
+ 1484  git add .
+ 1485  git commit -m "somes changes"
+ 1486  ls
+ 1487  _cd_options
+ 1488  cd _site
+ 1489  ls
+ 1490  ..
+ 1491  git push
+ 1492  git add .
+ 1493  git commit -m "somes changes in index.md"
+ 1494  git push
+ 1495  git add .
+ 1496  git push
+ 1497  git commit -m "delete folder"
+ 1498  git push
+ 1499  git add .
+ 1500  git commit -m "change inlude in default html"
+ 1501  git push
+ 1502  git add .
+ 1503  git commit -m "add assets folder with images"
+ 1504  git push
+ 1505  git add .
+ 1506  git commit -m "add assets folder with images v2"
+ 1507  git push
+ 1508  git add .
+ 1509  git commit -m "add assets folder with images v3"
+ 1510  git push
+ 1511  sh test.sh
+ 1512  git status
+ 1513  git add .
+ 1514  git commit -m "changes assets folder"
+ 1515  git push
+ 1516  git status
+ 1517  git add .
+ 1518  git commit -m "changes assets folder v2"
+ 1519  git push
+ 1520  git add .
+ 1521  git commit -m "changes in main.css"
+ 1522  git push
+ 1523  git status
+ 1524  git add .
+ 1525  git commit -m "changes in page-footer.html"
+ 1526  git push
+ 1527  ../..
+ 1528  cd cloudunit
+ 1529  cd testing-cloudunit
+ 1530  docker ps
+ 1531  docker kill b49fefa0269a
+ 1532  docker kill 25938b382c4c
+ 1533  docker ps
+ 1534  docker build -t testing-cloudunit .
+ 1535  docker run -p 32770:3000 -d testing-cloudunit:latest
+ 1536  docker ps
+ 1537  docker rename romantic_williams testing_cloudunit
+ 1538  docker images
+ 1539  docker ps -a
+ 1540  docker start testing_cloudunit
+ 1541  docker kill romantic_williams
+ 1542  docker start testing_cloudunit
+ 1543  docker ps
+ 1544  docker logs d7fd101a7886
+ 1545  curl -i localhost:32770
+ 1546  git status
+ 1547  poweroff
+ 1548  cd cloudunit/testing-cloudunit
+ 1549  ls
+ 1550  docker ps
+ 1551  docker kill clair_clair
+ 1552  docker ps -a
+ 1553  docker rm clair_clair clair_postgres
+ 1554  ls
+ 1555  sh test.sh
+ 1556  ../..
+ 1557  cd isma/cloudunitMardownJekyll
+ 1558  ls
+ 1559  sh test.sh
+ 1560  ../..
+ 1561  cd cloudunit/testing-cloudunit 
+ 1562  docker start testing_cloudunit
+ 1563  docker ps
+ 1564  git add .
+ 1565  git commit -m "test resolve css issue"
+ 1566  git push
+ 1567  git add .
+ 1568  git push
+ 1569  git commit -m "test 2 resolve css issue"
+ 1570  git push
+ 1571  git add .
+ 1572  git commit -m "test 3 resolve css issue"
+ 1573  git push
+ 1574  git add .
+ 1575  git commit -m "test 4 resolve css issue"
+ 1576  git push
+ 1577  git add .
+ 1578  git commit -m "test 5 resolve css issue"
+ 1579  git push
+ 1580  git add .
+ 1581  git commit -m "test 6 resolve css issue"
+ 1582  git push
+ 1583  jekyll serve
+ 1584  git add .
+ 1585  git commit -m "test 7 resolve css issue"
+ 1586  git add .
+ 1587  git commit -m "test 7 resolve css issue"
+ 1588  git push
+ 1589  sh test.sh
+ 1590  ..
+ 1591  ls
+ 1592  cd test
+ 1593  docker pull kjullien/tp-deploy
+ 1594  ls
+ 1595  htop
+ 1596  git clone https://github.com/Roybaka/wiki.wiki.git
+ 1597  cd wiki.wiki
+ 1598  ls
+ 1599  git add .
+ 1600  git commit -m "test 8 resolve css issue"
+ 1601  git push
+ 1602  git add .
+ 1603  git commit -m "test 9 resolve css issue"
+ 1604  git push
+ 1605  git add .
+ 1606  git commit -m "test 10 resolve css issue"
+ 1607  git push
+ 1608  git add .
+ 1609  git commit -m "test 11 resolve css issue"
+ 1610  git push
+ 1611  git add .
+ 1612  git commit -m "test 12 resolve css issue"
+ 1613  git push
+ 1614  git add .
+ 1615  git commit -m "test 13 resolve css issue"
+ 1616  git push
+ 1617  git add .
+ 1618  git commit -m "new changes"
+ 1619  git push
+ 1620  git add .
+ 1621  git commit -m "new changes in about.html"
+ 1622  git push
+ 1623  git add .
+ 1624  git commit -m "new changes in page-header.html"
+ 1625  git push
+ 1626  htop
+ 1627  docker pull mongo-express
+ 1628  docker images
+ 1629  docker rmi 5224c7d72fa2
+ 1630  docker run -it 93cbf61df79f bash
+ 1631  docker run -it 93cbf61df79f
+ 1632  docker run -d -it 93cbf61df79f
+ 1633  docker ps
+ 1634  docker run -it 93cbf61df79f npm start
+ 1635  poweroff
+ 1636  clear
+ 1637  cd cloudunit/testing-cloudunit
+ 1638  ../..
+ 1639  cd isma/cloudunitMardownJekyll
+ 1640  git status
+ 1641  ls
+ 1642  sh test.sh
+ 1643  history
+ 1644  docker ps
+ 1645  docker ps -a
+ 1646  docker start testing_cloudunit
+ 1647  docker logs testing_cloudunit
+ 1648  docker push testing-cloudunit
+ 1649  sudo  docker testing-cloudunit
+ 1650  docker ps
+ 1651  sudo docker testing_cloudunit
+ 1652  sudo docker push testing_cloudunit
+ 1653  sudo docker push testing-cloudunit:latest
+ 1654  docker login
+ 1655  docker build -t test .
+ 1656  ls
+ 1657  cd testing-cloudunit
+ 1658  ls
+ 1659  docker build -t test .
+ 1660  docker run -it test
+ 1661  docker build -t test .
+ 1662  docker run -it test
+ 1663  docker build -t test .
+ 1664  docker run -it test
+ 1665  docker build -t test .
+ 1666  docker images
+ 1667  docker images | grep test
+ 1668  docker image prune
+ 1669  docker images
+ 1670  docker container ls
+ 1671  docker container ls -a
+ 1672  docker container rm b39c696f2d9f c475c865e181 f6d965a495ce 680430fac954 ab154da38675 9ee841b7199c 0fb7ebedfd19
+ 1673  docker image prune
+ 1674  docker container ls -a
+ 1675  docker container rm 4fa0e74fa730
+ 1676  docker image prune
+ 1677  docker image ls
+ 1678  docker build -t ismastormz/nodeproject .
+ 1679  git status
+ 1680  git logs
+ 1681  git log
+ 1682  docker push ismastormz/nodeproject
+ 1683  docker build -t ismastormz/nodeproject:1.0 .
+ 1684  docker push ismastormz/nodeproject:1.0
+ 1685  git add Dockerfile
+ 1686  git add _site/Dockerfile _site
+ 1687  git commit -m "Change Dockerfile"
+ 1688  git push
+ 1689  ../..
+ 1690  cd isma/nodeProject
+ 1691  ls
+ 1692  cd nodeProject
+ 1693  git status
+ 1694  ../../..
+ 1695  cd cloudunit/testing-cloudunit
+ 1696  ls
+ 1697  cp -R * ~/isma/nodeProject/nodeProject/
+ 1698  cd  ~/isma/nodeProject/nodeProject/ 
+ 1699  ll7
+ 1700  ll
+ 1701  cp -Rv * ~/isma/nodeProject/nodeProject/
+ 1702  cd -
+ 1703  ll
+ 1704  git add .
+ 1705  git status
+ 1706  git add .
+ 1707  git commit -m "new changes"
+ 1708  git push
+ 1709  git add .
+ 1710  git commit -m "new address"
+ 1711  git push
+ 1712  git add .
+ 1713  git commit -m "new address"
+ 1714  git add .
+ 1715  git commit -m "new address"
+ 1716  git push
+ 1717  git status
+ 1718  git add .
+ 1719  git commit -m "new changes in Dockerfile and index.js"
+ 1720  git push
+ 1721  git status
+ 1722  git add .
+ 1723  git commit -m "new changes in Dockerfile"
+ 1724  git push
+ 1725  git status
+ 1726  clear
+ 1727  docker ps -a
+ 1728  docker stop testing_cloudunit
+ 1729  docker rm testing_cloudunit
+ 1730  docker ps -a
+ 1731  docker build -t testing-cloudunit .
+ 1732  docker images
+ 1733  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" testing-cloudunit:latest
+ 1734  docker ps
+ 1735  docker rename awesome_poitras testing_cloudunit:latest
+ 1736  docker rename awesome_poitras testing_cloudunit
+ 1737  docker ps
+ 1738  docker logs 2a2571a755ed
+ 1739  git add index.js
+ 1740  git add _site/
+ 1741  git commit -m "test part 2 with environnement variable"
+ 1742  git push
+ 1743  ls
+ 1744  docker ps
+ 1745  docker stop testing_cloudunit
+ 1746  docker rm testing_cloudunit
+ 1747  docker build -t testing-cloudunit .
+ 1748  git add .
+ 1749  git commit -m "test part 2 with environnement variable"
+ 1750  git push
+ 1751  docker ps -a
+ 1752  docker build -t testing-cloudunit .
+ 1753  docker images
+ 1754  docker rmi testing-cloudunit:latest
+ 1755  docker images
+ 1756  docker build -t testing-cloudunit .
+ 1757  docker images
+ 1758  docker rmi testing-cloudunit:latest
+ 1759  docker images
+ 1760  docker rmi aa26daafe935
+ 1761  docker images
+ 1762  docker build -t testing-cloudunit .
+ 1763  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" testing-cloudunit:latest
+ 1764  docker ps
+ 1765  docker rename romantic_turing testing_cloudunit
+ 1766  docker logs a3f3c83a5333
+ 1767  git status
+ 1768  git add .
+ 1769  git commit -m "changes in .gitignore"
+ 1770  git push
+ 1771  git add index.js
+ 1772  git commit -m "test part 2"
+ 1773  git push
+ 1774  git add index.js
+ 1775  git commit -m "test part 3"
+ 1776  git push
+ 1777  git status
+ 1778  cd bin
+ 1779  ls
+ 1780  ./webstorm.sh
+ 1781  ls
+ 1782  ..
+ 1783  ls
+ 1784  cd old
+ 1785  pwd
+ 1786  mv * /media/treeptik/RED/Stage/ProjectManhattan
+ 1787  pwd
+ 1788  cd ..
+ 1789  mv old /media/treeptik/RED/Stage/ProjectManhattan
+ 1790  sudo mv old /media/treeptik/RED/Stage/ProjectManhattan
+ 1791  cd old
+ 1792  sudo mv * /media/treeptik/RED/Stage/ProjectManhattan
+ 1793  git status
+ 1794  git add .
+ 1795  git commit -m "new changes"
+ 1796  git push
+ 1797  docker ps -a
+ 1798  docker rm 89a89f4ac0fe
+ 1799  docker ps -a
+ 1800  docker stop a3f3c83a5333
+ 1801  docker rm a3f3c83a5333
+ 1802  docker images
+ 1803  docker rmi testing-cloudunit
+ 1804  docker images
+ 1805  docker build -t testing-cloudunit .
+ 1806  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" testing-cloudunit:latest
+ 1807  docker ps
+ 1808  docker rename wonderful_noyce testing_cloudunit
+ 1809  docker logs 191684bf3b7f
+ 1810  curl -i localhost:32770
+ 1811  git add .
+ 1812  git commit -m "new changes in index.js"
+ 1813  git push
+ 1814  git add .
+ 1815  git commit -m "new changes in index.js"
+ 1816  git push
+ 1817  git add .
+ 1818  git commit -m "new changes in index.js"
+ 1819  git push
+ 1820  ..
+ 1821  cd ..
+ 1822  cd /home/
+ 1823  ls
+ 1824  cd treeptik/isma/nodeProject
+ 1825  ls
+ 1826  cd nodeProject
+ 1827  git add .
+ 1828  git commit -m "new changes in index.js"
+ 1829  git push
+ 1830  git status
+ 1831  git add .
+ 1832  git commit -m "new changes"
+ 1833  git push
+ 1834  docker stop 191684bf3b7f
+ 1835  docker rm 191684bf3b7f
+ 1836  docker images
+ 1837  docker rmi testing-cloudunit
+ 1838  docker build -t testing_cloudunit
+ 1839  docker build -t testing_cloudunit .
+ 1840  git status
+ 1841  docker images
+ 1842  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" testing-cloudunit:latest
+ 1843  docker images
+ 1844  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" testing_cloudunit:latest
+ 1845  docker ps
+ 1846  docker rename serene_hawking testing_cloudunit
+ 1847  docker logs 7245de2fb92a
+ 1848  git status
+ 1849  git add .
+ 1850  git commit -m "new changes"
+ 1851  git push
+ 1852  sh test.sh
+ 1853  docker ps
+ 1854  docker stop testing_cloudunit
+ 1855  docker rm testing_cloudunit
+ 1856  docker rmi testing_cloudunit:latest
+ 1857  docker build -t testing-cloudunit .
+ 1858  docker run -p 32770:3000 -d -e "USER_MAIL=creaven@hotmail.fr" testing-cloudunit:latest
+ 1859  docker ps
+ 1860  docker rename mystifying_goldwasser testing_cloudunit
+ 1861  docker logs 232844d7f393
+ 1862  sh test.sh
+ 1863  docker logs 232844d7f393
+ 1864  git status
+ 1865  git add .
+ 1866  git commit -m "new changes in index.js"
+ 1867  git push
+ 1868  htop
+ 1869  git status
+ 1870  poweroff
+ 1871  cd isma/nodeProject
+ 1872  ..
+ 1873  cd cloudunitMardownJekyll
+ 1874  ../..
+ 1875  cd cloudunit
+ 1876  cd testing-cloudunit
+ 1877  sh test.sh
+ 1878  htop
+ 1879  ../..
+ 1880  cd cloudunit
+ 1881  cd testing-cloudunit
+ 1882  cp * /media/treeptik/RED/Stage/testing-cloudunit
+ 1883  ..
+ 1884  cd testing-cloudunit
+ 1885  cp * /media/treeptik/RED/Stage/testing-cloudunit -R
+ 1886* cd testing-cloudunit
+ 1887* npm install nodemailer --save
+ 1888* nodemon index.js
+ 1889  docker ps -a
+ 1890  docker rm testing_cloudunit
+ 1891  docker images
+ 1892  docker rmi testing-cloudunit:latest
+ 1893  git add .
+ 1894  git commit -m "new changes in index.js to work in compute engine test 1"
+ 1895  docker build -t testing-cloudunit .
+ 1896  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" -e "USER_PWD=1jack00@" testing-cloudunit:latest
+ 1897  docker ps
+ 1898  docker rename silly_mahavira testing-cloudunit
+ 1899  docker logs 2b732d211ecc
+ 1900* nodemon index.js
+ 1901* node index.js
+ 1902  docker logs 2b732d211ecc
+ 1903* nodemon index.js
+ 1904  docker logs 2b732d211ecc
+ 1905* nodemon index.js
+ 1906  docker logs 2b732d211ecc
+ 1907  docker ps
+ 1908  docker stop testing-cloudunit
+ 1909  docker logs 2b732d211ecc
+ 1910  docker ps
+ 1911* docker logs 2b732d211ecc
+ 1912* nodemon index.js
+ 1913* git add .
+ 1914* git commit -m "new changes in index.js to work in compute engine test 2"
+ 1915* nodemon index.js
+ 1916  docker ps
+ 1917  docker ps -a
+ 1918  docker start testing-cloudunit
+ 1919  docker ps
+ 1920  docker logs 2b732d211ecc
+ 1921  docker build -t testing-cloudunit .
+ 1922  docker images
+ 1923  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" -e "USER_PWD=1jack00@" testing-cloudunit:latest
+ 1924  docker stop testing-cloudunit
+ 1925  docker ps -a
+ 1926  docker rm testing-cloudunit
+ 1927  docker rm 9200071c1848
+ 1928  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" -e "USER_PWD=1jack00@" testing-cloudunit:latest
+ 1929  docker ps -a
+ 1930  docker rename vibrant_goldstine testing-cloudunit
+ 1931  docker logs testing-cloudunit
+ 1932  docker build -t testing-cloudunit .
+ 1933  docker ps -a
+ 1934  docker images
+ 1935  clear
+ 1936  docker ps -a
+ 1937  docker stop testing-cloudunit
+ 1938  docker rm testing-cloudunit
+ 1939  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" -e "USER_PWD=1jack00@" testing-cloudunit:latest
+ 1940  docker ps
+ 1941  docker rename confident_yalow testing-cloudunit
+ 1942  docker logs testing-cloudunit
+ 1943  docker images
+ 1944  docker rmi e64c5609c814 efa719da4522
+ 1945  docker images
+ 1946  docker logs testing-cloudunit
+ 1947  rs
+ 1948  clear
+ 1949  git add .
+ 1950  git commit -m "new changes in index.js to work in compute engine test 3"
+ 1951* nodemon index.js
+ 1952* sh test.sh
+ 1953* nodemon index.js
+ 1954  docker logs testing-cloudunit
+ 1955* nodemon index.js
+ 1956  docker logs testing-cloudunit
+ 1957  docker stop testing-cloudunit
+ 1958  docker logs testing-cloudunit
+ 1959  git add .
+ 1960  git commit -m "new changes in index.js to work in compute engine test 4"
+ 1961* nodemon index.js
+ 1962  docker logs testing-cloudunit
+ 1963* sh test.sh
+ 1964  docker ps -a
+ 1965  docker rm testing-cloudunit
+ 1966  docker build -t testing-cloudunit .
+ 1967  git add .
+ 1968  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" -e "USER_PWD=1jack00@" testing-cloudunit:latest
+ 1969  docker ps
+ 1970  docker rename agitated_sammet testing-cloudunit
+ 1971  docker logs testing-cloudunit
+ 1972  git add .
+ 1973  git commit -m "new changes in index.js to work in compute engine test 5"
+ 1974* cd nodeProject
+ 1975* git add .
+ 1976* git commit -m "new changes in index.js"
+ 1977* git push
+ 1978* git status
+ 1979* git push --force origin origin/master
+ 1980* git status
+ 1981* git push
+ 1982* git pull
+ 1983* git commit
+ 1984* git commit -m "changes"
+ 1985* git push
+ 1986* htop
+ 1987  docker ps -a
+ 1988  docker stop testing-cloudunit
+ 1989  docker rm testing-cloudunit
+ 1990  docker build -t testing-cloudunit .
+ 1991  docker run -p 32770:3000 -d -e "USER_MAIL=onifuerte@gmail.com" -e "USER_PWD=1jack00@" testing-cloudunit:latest
+ 1992  docker ps
+ 1993  docker rename loving_babbage testing-cloudunit
+ 1994  docker logs testing-cloudunit
+ 1995  git add .
+ 1996  git commit -m "new testing connection with smtp"
+ 1997* nodemon index.js
+ 1998  docker logs testing-cloudunit
+ 1999  git add .
+ 2000  git commit -m "new testing connection with smtp part 2"
+ 2001* sh test.sh
+ 2002  clear
+ 2003  history subl
+ 2004  history
+ 2005  subl > history
