@@ -36,9 +36,17 @@ public class HomepageController {
     @Value("#{environment.CU_PROMETHEUS_DOMAIN ?: 'prometheus.192.168.50.4.xip.io'}")
     private String prometheus;
 
+    @Value("#{environment.CU_GRAFANA_DOMAIN ?: 'grafana.192.168.50.4.xip.io'}")
+    private String grafana;
+
+    @Value("#{environment.CU_ALERTMANAGER_DOMAIN ?: 'alertmanager.192.168.50.4.xip.io'}")
+    private String alertmanager;
+
     @RequestMapping(value = "/friends", method = RequestMethod.GET)
     public ResponseEntity<?> listFriends() {
-        HomepageResource resource = new HomepageResource(jenkins, gitlab, kibana, nexus, sonar, mattermost, prometheus);
+        HomepageResource resource = new HomepageResource(jenkins, gitlab, kibana
+                , nexus, sonar, mattermost,
+                prometheus, grafana, alertmanager);
         return ResponseEntity.ok(resource);
     }
 

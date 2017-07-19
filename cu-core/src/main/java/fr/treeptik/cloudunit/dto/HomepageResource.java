@@ -11,11 +11,15 @@ public class HomepageResource {
     private String sonar;
     private String mattermost;
     private String prometheus;
+    private String grafana;
+    private String alertmanager;
 
     public HomepageResource() {
     }
 
-    public HomepageResource(String jenkins, String gitlab, String kibana, String nexus, String sonar, String mattermost, String prometheus) {
+    public HomepageResource(String jenkins, String gitlab, String kibana,
+                            String nexus, String sonar, String mattermost,
+                            String prometheus, String grafana, String alertmanager) {
         this.jenkins = jenkins;
         this.gitlab = gitlab;
         this.kibana = kibana;
@@ -23,6 +27,8 @@ public class HomepageResource {
         this.sonar = sonar;
         this.mattermost = mattermost;
         this.prometheus = prometheus;
+        this.grafana = grafana;
+        this.alertmanager = alertmanager;
     }
 
     public String getJenkins() {
@@ -52,5 +58,12 @@ public class HomepageResource {
     public String getPrometheus() {
         return prometheus;
     }
-    
+
+    public String getGrafana() {
+        return grafana;
+    }
+
+    public String getAlertmanager() {
+        return alertmanager;
+    }
 }
