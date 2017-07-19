@@ -40,7 +40,7 @@ install_docker() {
        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
        $(lsb_release -cs) \
        stable"
-    sudo apt-get update
+    sudo apt-get -y update
     sudo apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
   else
     # documentation from https://docs.docker.com/cs-engine/1.12/
@@ -187,78 +187,78 @@ pull_images_from_dockerhub() {
   docker tag cloudunit/elk-kibana:stable cloudunit/elk-kibana:latest
 
   docker pull cloudunit/elk-elasticsearch:stable
-  docker tag cloudunit/elk-elasticsearch:stable
+  docker tag cloudunit/elk-elasticsearch:stable cloudunit/elk-elasticsearch:stable
 
   docker pull cloudunit/jenkins:stable
-  docker tag cloudunit/jenkins:stable
+  docker tag cloudunit/jenkins:stable cloudunit/jenkins:latest
 
   docker pull traefik:latest
 
   docker pull cloudunit/elk-monitoring-agents:stable
-  docker tag cloudunit/elk-monitoring-agents:stable
+  docker tag cloudunit/elk-monitoring-agents:stable cloudunit/elk-monitoring-agents:stable
 
   docker pull cloudunit/tomcat-6:stable
-  docker tag cloudunit/tomcat-6:stable
+  docker tag cloudunit/tomcat-6:stable cloudunit/tomcat-6:latest
 
   docker pull cloudunit/tomcat-7:stable
-  docker tag cloudunit/tomcat-7:stable
+  docker tag cloudunit/tomcat-7:stable cloudunit/tomcat-7:latest
 
   docker pull cloudunit/tomcat-8:stable
-  docker tag cloudunit/tomcat-8:stable
+  docker tag cloudunit/tomcat-8:stable cloudunit/tomcat-8:latest
 
   docker pull cloudunit/tomcat-85:stable
-  docker tag cloudunit/tomcat-85:stable
+  docker tag cloudunit/tomcat-85:stable cloudunit/tomcat-85:latest
 
   docker pull cloudunit/tomcat-9:stable
-  docker tag cloudunit/tomcat-9:stable
+  docker tag cloudunit/tomcat-9:stable cloudunit/tomcat-9:latest
 
   docker pull cloudunit/postgresql-9-3:stable
-  docker tag cloudunit/postgresql-9-3:stable
+  docker tag cloudunit/postgresql-9-3:stable cloudunit/postgresql-9-3:latest
 
   docker pull cloudunit/postgresql-9-4:stable
-  docker tag cloudunit/postgresql-9-4:stable
+  docker tag cloudunit/postgresql-9-4:stable cloudunit/postgresql-9-4:latest
 
   docker pull cloudunit/postgresql-9-5:stable
-  docker tag cloudunit/postgresql-9-5:stable
+  docker tag cloudunit/postgresql-9-5:stable cloudunit/postgresql-9-5:stable
 
   docker pull cloudunit/fatjar:stable
-  docker tag cloudunit/fatjar:stable
+  docker tag cloudunit/fatjar:stable cloudunit/fatjar:latest
 
   docker pull cloudunit/wildfly-8:stable
-  docker tag cloudunit/wildfly-8:stable
+  docker tag cloudunit/wildfly-8:stable cloudunit/wildfly-8:latest
 
   docker pull cloudunit/wildfly-9:stable
-  docker tag cloudunit/wildfly-9:stable
+  docker tag cloudunit/wildfly-9:stable cloudunit/wildfly-9:latest
 
   docker pull cloudunit/wildfly-10:stable
-  docker tag cloudunit/wildfly-10:stable
+  docker tag cloudunit/wildfly-10:stable cloudunit/wildfly-10:latest
 
   docker pull cloudunit/apache-2-2:stable
-  docker tag cloudunit/apache-2-2:stable
+  docker tag cloudunit/apache-2-2:stable cloudunit/apache-2-2:latest
 
   docker pull cloudunit/mysql-5-5:stable
-  docker tag cloudunit/mysql-5-5:stable
+  docker tag cloudunit/mysql-5-5:stable cloudunit/mysql-5-5:latest
 
   docker pull cloudunit/mysql-5-6:stable
-  docker tag cloudunit/mysql-5-6:stable
+  docker tag cloudunit/mysql-5-6:stable cloudunit/mysql-5-6:latest
 
   docker pull cloudunit/mysql-5-7:stable
-  docker tag cloudunit/mysql-5-7:stable
+  docker tag cloudunit/mysql-5-7:stable cloudunit/mysql-5-7:latest
 
   docker pull cloudunit/postgis-2-2:stable
-  docker tag cloudunit/postgis-2-2:stable
+  docker tag cloudunit/postgis-2-2:stable cloudunit/postgis-2-2:latest
 
   docker pull cloudunit/rabbitmq-3.6:stable
-  docker tag cloudunit/rabbitmq-3.6:stable
+  docker tag cloudunit/rabbitmq-3.6:stable cloudunit/rabbitmq-3.6:latest
 
   docker pull cloudunit/activemq-5.13:stable
-  docker tag cloudunit/activemq-5.13:stable
+  docker tag cloudunit/activemq-5.13:stable cloudunit/activemq-5.13:latest
 
   docker pull cloudunit/elasticsearch-2.4:stable
-  docker tag cloudunit/elasticsearch-2.4:stable
+  docker tag cloudunit/elasticsearch-2.4:stable cloudunit/elasticsearch-2.4:latest
 
   docker pull cloudunit/nginx-1.10:stable
-  docker tag cloudunit/nginx-1.10:stable
+  docker tag cloudunit/nginx-1.10:stable cloudunit/nginx-1.10:latest
 
 }
 
