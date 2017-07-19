@@ -82,7 +82,7 @@ public class NamingUtils {
      */
     public static String getCloudUnitDomain(String input) {
         if (input == null || input.isEmpty()) {
-            return ".cloudunit.dev";
+            return ".192.168.50.4.xip.io";
         } else {
             if (!input.startsWith(".")) {
                 input = "." + input;

@@ -41,13 +41,16 @@ function check-env {
 }
 
 function generate-env {
+
   echo "# Set CloudUnit deployment Environment" > .env
   echo "" >> .env
+
   echo "Enter CU Domain :"
   read CU_DOMAIN
   echo "CU_DOMAIN=$CU_DOMAIN" >> .env
   echo "Enter CU Sub Domain : [ no default ]"
   source .env
+
   echo "Enter CU Manager domain : [ default to https://"$CU_DOMAIN" ]"
   read CU_MANAGER_DOMAIN
   if [ -n "$CU_MANAGER_DOMAIN" ]; then
@@ -55,6 +58,7 @@ function generate-env {
   else
     echo "CU_MANAGER_DOMAIN=$CU_DOMAIN" >> .env
   fi
+
   echo "Enter CU Gitlab domain : [ default to https://gitlab-"$CU_DOMAIN" ]"
   read CU_GITLAB_DOMAIN
   if [ -n "$CU_GITLAB_DOMAIN" ]; then
@@ -62,6 +66,7 @@ function generate-env {
   else
     echo "CU_GITLAB_DOMAIN=gitlab-$CU_DOMAIN" >> .env
   fi
+
   echo "Enter CU Jenkins domain : [ default to https://jenkins-"$CU_DOMAIN" ]"
   read CU_JENKINS_DOMAIN
   if [ -n "$CU_JENKINS_DOMAIN" ]; then
@@ -69,6 +74,7 @@ function generate-env {
   else
     echo "CU_JENKINS_DOMAIN=jenkins-$CU_DOMAIN" >> .env
   fi
+
   echo "Enter CU Kibana domain : [ default to https://kibana-"$CU_DOMAIN" ]"
   read CU_KIBANA_DOMAIN
   if [ -n "$CU_KIBANA_DOMAIN" ]; then
@@ -76,6 +82,7 @@ function generate-env {
   else
     echo "CU_KIBANA_DOMAIN=kibana-$CU_DOMAIN" >> .env
   fi
+
   echo "Enter CU mattermost domain : [ default to https://mattermost-"$CU_DOMAIN" ]"
   read CU_MATTERMOST_DOMAIN
   if [ -n "$CU_MATTERMOST_DOMAIN" ]; then
@@ -83,6 +90,7 @@ function generate-env {
   else
     echo "CU_MATTERMOST_DOMAIN=mattermost-$CU_DOMAIN" >> .env
   fi
+
   echo "Enter CU Nexus domain : [ default to https://nexus-"$CU_DOMAIN" ]"
   read CU_NEXUS_DOMAIN
   if [ -n "$CU_NEXUS_DOMAIN" ]; then
@@ -90,6 +98,7 @@ function generate-env {
   else
     echo "CU_NEXUS_DOMAIN=nexus-$CU_DOMAIN" >> .env
   fi
+
   echo "Enter CU Sonar domain : [ default to https://sonar-"$CU_DOMAIN" ]"
   read CU_SONAR_DOMAIN
   if [ -n "$CU_SONAR_DOMAIN" ]; then
@@ -97,6 +106,31 @@ function generate-env {
   else
     echo "CU_SONAR_DOMAIN=sonar-$CU_DOMAIN" >> .env
   fi
+
+  echo "Enter CU Prometheus domain : [ default to https://prometheus-"$CU_DOMAIN" ]"
+  read CU_PROMETHEUS_DOMAIN
+  if [ -n "$CU_PROMETHEUS_DOMAIN" ]; then
+    echo "CU_PROMETHEUS_DOMAIN=$CU_PROMETHEUS_DOMAIN" >> .env
+  else
+    echo "CU_PROMETHEUS_DOMAIN=prometheus-$CU_DOMAIN" >> .env
+  fi
+
+  echo "Enter CU Alertmanager domain : [ default to https://alertmanager-"$CU_DOMAIN" ]"
+  read CU_ALERTMANAGER_DOMAIN
+  if [ -n "$CU_ALERTMANAGER_DOMAIN" ]; then
+     echo "CU_ALERTMANAGER_DOMAIN=$CU_ALERTMANAGER_DOMAIN" >> .env
+  else
+    echo "CU_ALERTMANAGER_DOMAIN=alertmanager-$CU_DOMAIN" >> .env
+  fi
+
+  echo "Enter CU Grafana domain : [ default to https://grafana-"$CU_DOMAIN" ]"
+  read CU_GRAFANA_DOMAIN
+  if [ -n "$CU_GRAFANA_DOMAIN" ]; then
+    echo "CU_GRAFANA_DOMAIN=$CU_GRAFANA_DOMAIN" >> .env
+  else
+    echo "CU_GRAFANA_DOMAIN=grafana-$CU_DOMAIN" >> .env
+  fi
+
   echo "Enter Elasticsearch rest API URL if you want to use external database : [ default to internal elasticsearch ]"
   read ELASTICSEARCH_URL
   if [ -n "$ELASTICSEARCH_URL" ]; then
@@ -104,6 +138,7 @@ function generate-env {
   else
     echo "ELASTICSEARCH_URL=elasticsearch" >> .env
   fi
+
   echo "Enter mysql root password : [ default to 'changeit' ]"
   read MYSQL_ROOT_PASSWORD
   if [ -n "$MYSQL_ROOT_PASSWORD" ]; then
@@ -111,6 +146,7 @@ function generate-env {
   else
     echo "MYSQL_ROOT_PASSWORD=changeit" >> .env
   fi
+
   echo "Enter mysql root database name : [ default to 'cloudunit' ]"
   read MYSQL_DATABASE
   if [ -n "$MYSQL_DATABSE" ]; then
@@ -118,19 +154,14 @@ function generate-env {
   else
     echo "MYSQL_DATABASE=cloudunit" >> .env
   fi
-  #echo "Which git branch would you want to deploy : [ default to 'dev' ]"
-  #read MYSQL_DATABASE
-  #if [ -n "$BRANCH" ]; then
-  #  echo "BRANCH=$BRANCH" >> .env
-  #else
-  #  echo "BRANCH=dev" >> .env
-  #fi
+
   echo "HOSTNAME=$HOSTNAME" >> .env
   if [ -f /etc/redhat-release ]; then
-    echo "TZ=$(sed -n 2p /etc/localtime)" >> .env     
+    echo "TZ=$(sed -n 2p /etc/localtime)" >> .env
   else
-    echo "TZ=$(cat /etc/timezone)" >> .env 
+    echo "TZ=$(cat /etc/timezone)" >> .env
   fi
+
 }
 
 function with-elk {
@@ -138,6 +169,16 @@ function with-elk {
     source .env
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.yml \
+    up -d
+}
+
+function with-elk-and-prometheus {
+    check-env
+    source .env
+    docker network create skynet
+    docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.prometheus.yml \
                     -f docker-compose.yml \
     up -d
 }
@@ -158,6 +199,7 @@ function full-options {
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
                     -f docker-compose.mattermost.yml \
+                    -f docker-compose.prometheus.yml \
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
     up -d
@@ -181,8 +223,8 @@ function reset {
       docker volume rm $container
     done
 
-    docker-compose  -f docker-compose.mattermost.yml -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
-    docker-compose  -f docker-compose.mattermost.yml -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
+    docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml kill
+    docker-compose  -f docker-compose.elk.yml -f docker-compose.selenium.yml -f docker-compose.yml rm -f
     docker volume rm cucompose_elasticsearch-data
     docker volume rm cucompose_gitlab-logs
     docker volume rm cucompose_mysqldata
@@ -200,6 +242,10 @@ case "$1" in
 
 'with-elk')
 with-elk
+;;
+
+'with-elk-and-prometheus')
+with-elk-and-prometheus
 ;;
 
 'with-elk-and-selenium')
@@ -222,7 +268,9 @@ echo "Usage $0 "
 echo "Example : $0 with-elk"
 echo "Choice between : "
 echo "                    with-elk"
+echo "                    with-elk-and-prometheus"
 echo "                    with-elk-and-selenium"
+echo "                    full-options"
 echo "                    reset"
 echo ""
 ;;

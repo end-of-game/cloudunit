@@ -22,6 +22,10 @@ import java.io.Serializable;
 @Entity
 public class Role
     implements Serializable {
+	
+	public static final String ROLE_ADMIN = "ROLE_CLOUDUNIT_ADMIN";
+	
+	public static final String ROLE_USER = "ROLE_CLOUDUNIT";
 
     private static final long serialVersionUID = 1L;
 

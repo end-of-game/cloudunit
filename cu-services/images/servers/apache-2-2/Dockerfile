@@ -28,8 +28,8 @@ RUN apt-get update \
         && apt-get install -y --no-install-recommends --no-install-suggests netcat \
 	    && rm -r /var/lib/apt/lists/*
 
-ENV HTTPD_VERSION 2.2.32
-ENV HTTPD_SHA1 36dc7f2ac97627192dcff0a121408b897f91b121
+ENV HTTPD_VERSION 2.2.34
+ENV HTTPD_SHA1 829206394e238af0b800fc78d19c74ee466ecb23
 ENV HTTPD_BZ2_URL https://www.apache.org/dist/httpd/httpd-$HTTPD_VERSION.tar.bz2
 
 RUN set -x \
@@ -100,10 +100,25 @@ RUN echo "<Location /server-status>" >> /usr/local/apache2/conf/httpd.conf \
 	&& echo "		Allow from 127.0.0.1" >> /usr/local/apache2/conf/httpd.conf \
 	&& echo "</Location>" >> /usr/local/apache2/conf/httpd.conf
 
+RUN apt-get -y update && apt-get install -y \
+apache2 \
+unzip \
+php5 \
+libapache2-mod-php5 \
+php5-gd \
+php5-json \
+php5-sqlite \
+php5-mysql \
+php5-mcrypt \
+mcrypt
+
+# on veut une machine de dev qui affiche toutes les erreurs PHP
+RUN sed -i -e 's/^error_reporting\s*=.*/error_reporting = E_ALL/' /etc/php5/apache2/php.ini
+RUN sed -i -e 's/^display_errors\s*=.*/display_errors = On/' /etc/php5/apache2/php.ini
 ## CLOUDUNIT :: END
 
 EXPOSE 80
-CMD ["httpd-foreground"]
+CMD ["/usr/sbin/apache2ctl","-DFOREGROUND"]
 
 LABEL origin application
 LABEL application-type apache

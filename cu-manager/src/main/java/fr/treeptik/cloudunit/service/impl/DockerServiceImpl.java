@@ -413,9 +413,11 @@ public class DockerServiceImpl implements DockerService {
             List<Image> images = dockerClient.listImages(DockerClient.ListImagesFilterParam.withLabel("origin", "application"));
             ImmutableList<String> currentTags = null;
             for (Image image: images) {
-                currentTags = image.repoTags().asList();
-                for (String tag: currentTags) {
-                    imagesId.add(tag);
+                if (image.repoTags() != null ) {
+                    currentTags = image.repoTags().asList();
+                    for (String tag : currentTags) {
+                        imagesId.add(tag);
+                    }
                 }
             }
         } catch (DockerException | InterruptedException e) {

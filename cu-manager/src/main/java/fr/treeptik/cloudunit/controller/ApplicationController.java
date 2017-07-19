@@ -17,7 +17,9 @@ package fr.treeptik.cloudunit.controller;
 
 import java.io.*;
 
+import java.lang.reflect.Array;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -460,6 +462,47 @@ public class ApplicationController implements Serializable {
 		}
 		return envUnits;
 	}
+
+	@CloudUnitSecurable
+	@ResponseBody
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/runtime", method = RequestMethod.GET)
+	public List<String> displayRuntime(@PathVariable String applicationName, @PathVariable String containerName)
+			throws ServiceException, CheckException {
+		String output;
+		try {
+			output = dockerService.execCommand(containerName,
+					RemoteExecAction.GATHER_RUNTIME.getCommand());
+		} catch (FatalDockerJSONException e) {
+			throw new ServiceException(applicationName + ", " + containerName, e);
+		}
+		return Arrays.asList(output);
+	}
+
+	@CloudUnitSecurable
+	@ResponseBody
+	@RequestMapping(value = "/{applicationName}/container/{containerName}/jvm", method = RequestMethod.GET)
+	public List<String> displayJvmOptions(@PathVariable String applicationName, @PathVariable String containerName)
+			throws ServiceException, CheckException {
+		List<String> output;
+		try {
+			String content = dockerService.execCommand(containerName,
+					RemoteExecAction.GATHER_JVM_OPTIONS.getCommand());
+
+			if(content.contains("/opt/cloudunit/scripts/grep_java.sh")) {
+				logger.warn("Missing /opt/cloudunit/scripts/grep_java.sh");
+				return Arrays.asList("Chaine vide");
+			}
+
+
+			String[] jvm_options = content.split(" ");
+			output = Arrays.asList(jvm_options);
+
+		} catch (FatalDockerJSONException e) {
+			throw new ServiceException(applicationName + ", " + containerName, e);
+		}
+		return output;
+	}
+
 
 	@RequestMapping(value = "/{applicationName}/containers/export", method = RequestMethod.POST)
 	@CloudUnitSecurable

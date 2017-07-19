@@ -73,6 +73,11 @@
 
 
     function initializeEnvVar() {
+      EnvironmentVariableService.getContainerOptions(vm.app.name, vm.app.server.name, "jvm").then(function (data) {
+          if(data != "Chaine vide") {
+              vm.app.jvm = data;
+          }
+      });
       EnvironmentVariableService.getVariableEnvironment(vm.app.name, vm.app.server.name).then(function (data) {
         vm.app.env = data;
 
@@ -84,6 +89,11 @@
             });
         });
       });
+
+        EnvironmentVariableService.getContainerOptions(vm.app.name, vm.app.server.name, "runtime").then(function (data) {
+            vm.app.runtime = data;
+        });
+
     }
 
     function refreshEnvVar () {

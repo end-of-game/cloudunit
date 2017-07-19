@@ -1,6 +1,10 @@
 sudo: required
 language: java
 
+branches:
+  except:
+    - dev
+
 services:
   - docker
   - maven

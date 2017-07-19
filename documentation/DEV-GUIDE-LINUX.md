@@ -36,29 +36,7 @@ cloudunit/cu-services       : Docker images
 
 ## Installation 
 
-### Step 1 - Local DNS
-
-CloudUnit uses Docker and Java but others components. As pre-requisites, you need to install them to have a complete dev stack. You need to install a local DNS for entry.
-```
-Dnsmasq is a lightweight, easy to configure DNS forwarder 
-and DHCP server […] is targeted at home networks[.]
-```
-You need to add a local DNS entry pointing to the vagrant IP address.
-More precisely, any address ending with **.cloudunit.dev** should be directed to **192.168.50.4**. 
-On Ubuntu, a simple way to achieve this is to install dnsmasq:
-```
-[Linux Host]    sudo apt-get install dnsmasq
-[Linux Host]    sudo vi /etc/dnsmasq.conf
-```
-Copy the line at the end of file `address=/.cloudunit.dev/192.168.50.4`
-
-```
-[Linux Host]    sudo service dnsmasq restart
-```
-
-You should ping **foo.cloudunit.dev** to **192.168.50.4**
-
-### Step 2 - How to install Vagrant plugins
+### Step 1 - How to install Vagrant plugins
 
 ```
 [Linux Host]    sudo apt-get install ruby-dev
@@ -66,13 +44,13 @@ You should ping **foo.cloudunit.dev** to **192.168.50.4**
 [Linux Host]    sudo vagrant plugin install vagrant-vbguest
 ```
 
-### Step 3 - How to install source code
+### Step 2 - How to install source code
 
 ```
 [Linux Host]    cd $HOME && git clone https://github.com/Treeptik/cloudunit.git
 ```
 
-### Step 4 - How to install Angular Project dependencies 
+### Step 3 - How to install Angular Project dependencies 
 
 Follow these instructions :
 ```
@@ -87,7 +65,7 @@ Installation Node 5.x :
 [Linux Host]    cd $HOME/cloudunit/cu-manager-ui && bower install
 ```
 
-### Step 5 - How to build the vagrant box
+### Step 4 - How to build the vagrant box
 
 Warning because this step could take a long time!
 

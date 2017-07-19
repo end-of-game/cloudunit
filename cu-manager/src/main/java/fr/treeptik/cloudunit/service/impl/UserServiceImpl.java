@@ -123,7 +123,7 @@ public class UserServiceImpl
                         "There is already a account registered with this email");
             }
             Role role = new Role();
-            role.setDescription("ROLE_USER");
+            role.setDescription(Role.ROLE_USER);
             role = roleDAO.findByRole(role.getDescription());
             user.setRole(role);
             user.setStatus(User.STATUS_MAIL_NOT_CONFIRMED);
@@ -332,6 +332,23 @@ public class UserServiceImpl
         } catch (ServiceException e) {
             throw new ServiceException("Error : change UserRights", e);
         }
+    }
+    
+    @Override
+    @Transactional
+    public User createLdapUserIfNotExists(String firstName, String lastName, String login, 
+    		String password, String email) throws ServiceException {
+    	
+    	User user = findByLogin(login);
+		if (user == null) {
+			if (email == null) {
+				email = "un.known@unknown.fr";
+			}
+			Role role = roleDAO.findByRole(Role.ROLE_USER);
+			user = new User(firstName, lastName, login, password, new Date(), email, User.STATUS_ACTIF, role);
+			user = userDAO.save(user);
+		}
+		return user;
     }
 
 }

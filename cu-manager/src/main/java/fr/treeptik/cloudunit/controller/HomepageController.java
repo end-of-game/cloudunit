@@ -15,27 +15,38 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/homepage")
 public class HomepageController {
 
-    @Value("#{environment.CU_JENKINS_DOMAIN ?: 'jenkins.cloudunit.dev'}")
+    @Value("#{environment.CU_JENKINS_DOMAIN ?: 'jenkins.192.168.50.4.xip.io'}")
     private String jenkins;
 
-    @Value("#{environment.CU_GITLAB_DOMAIN ?: 'gitlab.cloudunit.dev'}")
+    @Value("#{environment.CU_GITLAB_DOMAIN ?: 'gitlab.192.168.50.4.xip.io'}")
     private String gitlab;
 
-    @Value("#{environment.CU_NEXUS_DOMAIN ?: 'nexus.cloudunit.dev'}")
+    @Value("#{environment.CU_NEXUS_DOMAIN ?: 'nexus.192.168.50.4.xip.io'}")
     private String nexus;
 
-    @Value("#{environment.CU_KIBANA_DOMAIN ?: 'kibana.cloudunit.dev'}")
+    @Value("#{environment.CU_KIBANA_DOMAIN ?: 'kibana.192.168.50.4.xip.io'}")
     private String kibana;
 
-    @Value("#{environment.CU_SONAR_DOMAIN ?: 'sonar.cloudunit.dev'}")
+    @Value("#{environment.CU_SONAR_DOMAIN ?: 'sonar.192.168.50.4.xip.io'}")
     private String sonar;
 
-    @Value("#{environment.CU_MATTERMOST_DOMAIN ?: 'mattermost.cloudunit.dev'}")
+    @Value("#{environment.CU_MATTERMOST_DOMAIN ?: 'mattermost.192.168.50.4.xip.io'}")
     private String mattermost;
+
+    @Value("#{environment.CU_PROMETHEUS_DOMAIN ?: 'prometheus.192.168.50.4.xip.io'}")
+    private String prometheus;
+
+    @Value("#{environment.CU_GRAFANA_DOMAIN ?: 'grafana.192.168.50.4.xip.io'}")
+    private String grafana;
+
+    @Value("#{environment.CU_ALERTMANAGER_DOMAIN ?: 'alertmanager.192.168.50.4.xip.io'}")
+    private String alertmanager;
 
     @RequestMapping(value = "/friends", method = RequestMethod.GET)
     public ResponseEntity<?> listFriends() {
-        HomepageResource resource = new HomepageResource(jenkins, gitlab, kibana, nexus, sonar, mattermost);
+        HomepageResource resource = new HomepageResource(jenkins, gitlab, kibana
+                , nexus, sonar, mattermost,
+                prometheus, grafana, alertmanager);
         return ResponseEntity.ok(resource);
     }
 
