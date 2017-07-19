@@ -33,9 +33,12 @@ public class HomepageController {
     @Value("#{environment.CU_MATTERMOST_DOMAIN ?: 'mattermost.192.168.50.4.xip.io'}")
     private String mattermost;
 
+    @Value("#{environment.CU_PROMETHEUS_DOMAIN ?: 'prometheus.192.168.50.4.xip.io'}")
+    private String prometheus;
+
     @RequestMapping(value = "/friends", method = RequestMethod.GET)
     public ResponseEntity<?> listFriends() {
-        HomepageResource resource = new HomepageResource(jenkins, gitlab, kibana, nexus, sonar, mattermost);
+        HomepageResource resource = new HomepageResource(jenkins, gitlab, kibana, nexus, sonar, mattermost, prometheus);
         return ResponseEntity.ok(resource);
     }
 

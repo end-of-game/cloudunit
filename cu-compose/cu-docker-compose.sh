@@ -97,6 +97,27 @@ function generate-env {
   else
     echo "CU_SONAR_DOMAIN=sonar-$CU_DOMAIN" >> .env
   fi
+  echo "Enter CU Prometheus domain : [ default to https://prometheus-"$CU_DOMAIN" ]"
+  read CU_PROMETHEUS_DOMAIN
+  if [ -n "$CU_PROMETHEUS_DOMAIN" ]; then
+    echo "CU_PROMETHEUS_DOMAIN=$CU_PROMETHEUS_DOMAIN" >> .env
+  else
+    echo "CU_PROMETHEUS_DOMAIN=gitlab-$CU_DOMAIN" >> .env
+  fi
+  echo "Enter CU Alertmanager domain : [ default to https://alertmanager-"$CU_DOMAIN" ]"
+  read CU_ALERTMANAGER_DOMAIN
+  if [ -n "$CU_ALERTMANAGER_DOMAIN" ]; then
+     echo "CU_ALERTMANAGER_DOMAIN=$CU_ALERTMANAGER_DOMAIN" >> .env
+  else
+    echo "CU_ALERTMANAGER_DOMAIN=gitlab-$CU_DOMAIN" >> .env
+  fi
+  echo "Enter CU Grafana domain : [ default to https://grafana-"$CU_DOMAIN" ]"
+  read CU_GRAFANA_DOMAIN
+  if [ -n "$CU_GRAFANA_DOMAIN" ]; then
+    echo "CU_GRAFANA_DOMAIN=$CU_GRAFANA_DOMAIN" >> .env
+  else
+    echo "CU_GRAFANA_DOMAIN=gitlab-$CU_DOMAIN" >> .env
+  fi
   echo "Enter Elasticsearch rest API URL if you want to use external database : [ default to internal elasticsearch ]"
   read ELASTICSEARCH_URL
   if [ -n "$ELASTICSEARCH_URL" ]; then
@@ -127,9 +148,9 @@ function generate-env {
   #fi
   echo "HOSTNAME=$HOSTNAME" >> .env
   if [ -f /etc/redhat-release ]; then
-    echo "TZ=$(sed -n 2p /etc/localtime)" >> .env     
+    echo "TZ=$(sed -n 2p /etc/localtime)" >> .env
   else
-    echo "TZ=$(cat /etc/timezone)" >> .env 
+    echo "TZ=$(cat /etc/timezone)" >> .env
   fi
 }
 
@@ -138,6 +159,16 @@ function with-elk {
     source .env
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.yml \
+    up -d
+}
+
+function with-elk-and-prometheus {
+    check-env
+    source .env
+    docker network create skynet
+    docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.prometheus.yml \
                     -f docker-compose.yml \
     up -d
 }
@@ -158,6 +189,7 @@ function full-options {
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
                     -f docker-compose.mattermost.yml \
+                    -f docker-compose.prometheus.yml \
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
     up -d
@@ -202,6 +234,10 @@ case "$1" in
 with-elk
 ;;
 
+'with-elk-and-prometheus')
+with-elk-and-prometheus
+;;
+
 'with-elk-and-selenium')
 with-elk-and-selenium
 ;;
@@ -222,7 +258,9 @@ echo "Usage $0 "
 echo "Example : $0 with-elk"
 echo "Choice between : "
 echo "                    with-elk"
+echo "                    with-elk-and-prometheus"
 echo "                    with-elk-and-selenium"
+echo "                    full-options"
 echo "                    reset"
 echo ""
 ;;

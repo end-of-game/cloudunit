@@ -1,0 +1,76 @@
+version: '2.1'
+
+services:
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./cu-prometheus/prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '-config.file=/etc/prometheus/prometheus.yml'
+      - '-storage.local.path=/prometheus'
+      - '-alertmanager.url=http://alertmanager:9093'
+      - '-storage.local.memory-chunks=100000'
+    restart: unless-stopped
+    labels:
+      - "org.label-schema.group=monitoring"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.backend=prometheus"
+      - "traefik.port=9090"
+      - "traefik.frontend.rule=Host:${CU_PROMETHEUS_DOMAIN}"
+
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    volumes:
+      - ./cu-prometheus/alertmanager/:/etc/alertmanager/
+    command:
+      - '-config.file=/etc/alertmanager/config.yml'
+      - '-storage.path=/alertmanager'
+    restart: unless-stopped
+    labels:
+      - "org.label-schema.group=monitoring"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.backend=alertmanager"
+      - "traefik.port=9093"
+      - "traefik.frontend.rule=Host:${CU_ALERTMANAGER_DOMAIN}"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    env_file:
+      - cu-prometheus/user.config
+    restart: unless-stopped
+    labels:
+      - "org.label-schema.group=monitoring"
+      - "traefik.frontend.entryPoints=https"
+      - "traefik.backend=grafana"
+      - "traefik.port=3000"
+      - "traefik.frontend.rule=Host:${CU_GRAFANA_DOMAIN}"
+  cadvisor2:
+    image: google/cadvisor:v0.26.1
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+    expose:
+      - 8080
+    labels:
+      - "org.label-schema.group=monitoring"
+
+networks:
+  default:
+    external:
+      name: skynet
+
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
