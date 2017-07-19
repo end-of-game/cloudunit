@@ -34,9 +34,14 @@ install_docker() {
     cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
     apt-get install -y apt-transport-https ca-certificates
     apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    apt-get -y update
-    apt-get install -y docker-engine=1.12.6-0~ubuntu-$(lsb_release -sc)
-
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo apt-key fingerprint 0EBFCD88
+    sudo add-apt-repository \
+       "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+       $(lsb_release -cs) \
+       stable"
+    sudo apt-get update
+    sudo apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
   else
     # documentation from https://docs.docker.com/cs-engine/1.12/
     rpm --import "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e"
@@ -162,38 +167,99 @@ override_rights() {
 }
 
 pull_images_from_dockerhub() {
-  docker pull cloudunit/base-jessie
-  docker pull cloudunit/base-12.04
-  docker pull cloudunit/base-14.04
-  docker pull cloudunit/base-16.04
-  docker pull cloudunit/redis-3-2
-  docker pull cloudunit/manager
-  docker pull cloudunit/elk-kibana
-  docker pull cloudunit/elk-elasticsearch
-  docker pull cloudunit/jenkins
-  docker pull traefik
-  docker pull cloudunit/elk-monitoring-agents
-  docker pull cloudunit/tomcat-6
-  docker pull cloudunit/tomcat-7
-  docker pull cloudunit/tomcat-8
-  docker pull cloudunit/tomcat-85
-  docker pull cloudunit/tomcat-9
-  docker pull cloudunit/postgresql-9-3
-  docker pull cloudunit/postgresql-9-4
-  docker pull cloudunit/postgresql-9-5
-  docker pull cloudunit/fatjar
-  docker pull cloudunit/wildfly-8
-  docker pull cloudunit/wildfly-9
-  docker pull cloudunit/wildfly-10
-  docker pull cloudunit/apache-2-2
-  docker pull cloudunit/mysql-5-5
-  docker pull cloudunit/mysql-5-6
-  docker pull cloudunit/mysql-5-7
-  docker pull cloudunit/postgis-2-2
-  docker pull cloudunit/rabbitmq-3.6
-  docker pull cloudunit/activemq-5.13
-  docker pull cloudunit/elasticsearch-2.4
-  docker pull cloudunit/nginx-1.10
+
+  docker pull cloudunit/base-jessie:stable
+  docker tag cloudunit/base-jessie:stable cloudunit/base-jessie:latest
+
+  docker pull cloudunit/base-12.04:stable
+  docker tag cloudunit/base-12.04:stable cloudunit/base-12.04:latest
+
+  docker pull cloudunit/base-14.04:stable
+  docker tag cloudunit/base-14.04:stable cloudunit/base-16.04:latest
+
+  docker pull cloudunit/redis-3-2:stable
+  docker tag cloudunit/redis-3-2:stable cloudunit/redis-3-2:latest
+
+  docker pull cloudunit/manager:stable
+  docker tag cloudunit/manager:stable cloudunit/manager:latest
+
+  docker pull cloudunit/elk-kibana:stable
+  docker tag cloudunit/elk-kibana:stable cloudunit/elk-kibana:latest
+
+  docker pull cloudunit/elk-elasticsearch:stable
+  docker tag cloudunit/elk-elasticsearch:stable
+
+  docker pull cloudunit/jenkins:stable
+  docker tag cloudunit/jenkins:stable
+
+  docker pull traefik:latest
+
+  docker pull cloudunit/elk-monitoring-agents:stable
+  docker tag cloudunit/elk-monitoring-agents:stable
+
+  docker pull cloudunit/tomcat-6:stable
+  docker tag cloudunit/tomcat-6:stable
+
+  docker pull cloudunit/tomcat-7:stable
+  docker tag cloudunit/tomcat-7:stable
+
+  docker pull cloudunit/tomcat-8:stable
+  docker tag cloudunit/tomcat-8:stable
+
+  docker pull cloudunit/tomcat-85:stable
+  docker tag cloudunit/tomcat-85:stable
+
+  docker pull cloudunit/tomcat-9:stable
+  docker tag cloudunit/tomcat-9:stable
+
+  docker pull cloudunit/postgresql-9-3:stable
+  docker tag cloudunit/postgresql-9-3:stable
+
+  docker pull cloudunit/postgresql-9-4:stable
+  docker tag cloudunit/postgresql-9-4:stable
+
+  docker pull cloudunit/postgresql-9-5:stable
+  docker tag cloudunit/postgresql-9-5:stable
+
+  docker pull cloudunit/fatjar:stable
+  docker tag cloudunit/fatjar:stable
+
+  docker pull cloudunit/wildfly-8:stable
+  docker tag cloudunit/wildfly-8:stable
+
+  docker pull cloudunit/wildfly-9:stable
+  docker tag cloudunit/wildfly-9:stable
+
+  docker pull cloudunit/wildfly-10:stable
+  docker tag cloudunit/wildfly-10:stable
+
+  docker pull cloudunit/apache-2-2:stable
+  docker tag cloudunit/apache-2-2:stable
+
+  docker pull cloudunit/mysql-5-5:stable
+  docker tag cloudunit/mysql-5-5:stable
+
+  docker pull cloudunit/mysql-5-6:stable
+  docker tag cloudunit/mysql-5-6:stable
+
+  docker pull cloudunit/mysql-5-7:stable
+  docker tag cloudunit/mysql-5-7:stable
+
+  docker pull cloudunit/postgis-2-2:stable
+  docker tag cloudunit/postgis-2-2:stable
+
+  docker pull cloudunit/rabbitmq-3.6:stable
+  docker tag cloudunit/rabbitmq-3.6:stable
+
+  docker pull cloudunit/activemq-5.13:stable
+  docker tag cloudunit/activemq-5.13:stable
+
+  docker pull cloudunit/elasticsearch-2.4:stable
+  docker tag cloudunit/elasticsearch-2.4:stable
+
+  docker pull cloudunit/nginx-1.10:stable
+  docker tag cloudunit/nginx-1.10:stable
+
 }
 
 question_pull_or_build() {
