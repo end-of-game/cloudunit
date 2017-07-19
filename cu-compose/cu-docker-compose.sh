@@ -234,6 +234,10 @@ case "$1" in
 with-elk
 ;;
 
+'with-elk-and-prometheus')
+with-elk-and-prometheus
+;;
+
 'with-elk-and-selenium')
 with-elk-and-selenium
 ;;
@@ -254,7 +258,9 @@ echo "Usage $0 "
 echo "Example : $0 with-elk"
 echo "Choice between : "
 echo "                    with-elk"
+echo "                    with-elk-and-prometheus"
 echo "                    with-elk-and-selenium"
+echo "                    full-options"
 echo "                    reset"
 echo ""
 ;;
