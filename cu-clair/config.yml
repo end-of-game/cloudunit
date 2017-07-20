@@ -1,0 +1,7 @@
+clair:
+  port: 6060
+  healthPort: 6061
+  uri: http://localhost
+  report:
+    path: ./CU_reports
+    format: html

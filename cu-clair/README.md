@@ -18,9 +18,9 @@ Our goal is to enable a more transparent view of the security of container-based
 
 # 2. Configurations
 
-  - Clair config.yml should spécify in order to avoid bugs
-  - image name should be `[nameImage]` but not `[myImageName/namespace]`, if not Clair will looking for a registry
-  - Dockercompose file: use clair-git repo to avoid bugs
+    - Clair config.yml should spécify in order to avoid bugs
+    - image name should be `[nameImage]` but not `[myImageName/namespace]`, if not Clair will looking for a registry
+    - Dockercompose file: use clair-git repo to avoid bugs
   
 If it's necessary, update your docker machine with `docker-machine upgrade`.
 
