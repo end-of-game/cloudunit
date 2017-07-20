@@ -43,7 +43,7 @@ Analyse automatically CloudUnit containers vulnerabilities using `analyze_CU.sh`
 
 Reports dir: `~/cloudunit/cu-clair/CU_reports/html`
 
-# Using CoreOS Clair
+# Using CoreOS Clair with clairctl
 
 ## CLI to use clairctl manually
 
