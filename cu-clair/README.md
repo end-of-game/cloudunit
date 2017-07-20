@@ -39,7 +39,7 @@ If Clair is not running: `docker-compose start Clair`
 
 Analyse automatically CloudUnit containers vulnerabilities using `analyze_CU.sh`.
 
-    ./analyze_CU.sh
+    ./CU_analyze.sh
 
 Reports dir: `~/cloudunit/cu-clair/CU_reports/html`
 
