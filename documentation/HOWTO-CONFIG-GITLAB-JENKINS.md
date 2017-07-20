@@ -1,33 +1,29 @@
 
 
 # Jenkins and GitLab configurations trigger build 
-This document is a step by step configuration in order to activate automatique build on all behavior of GitLab. This setting is a trigger to multibranch job configuration, all modication on GitLab implies automatic build in CloudUni/Jenkins.
-1. launch CloudUnit: https://cu02.cloudunit.io/#/dashboard
+This document is a step by step configuration in order to detect changes in Gitlab and trigger Jenkins build automatically. Each modication on GitLab implies automatic build.
 
-    `id: johndoe`
-    
-    `pwd: abc2015`
-2. choose Portal
-3. configure GitLab and Jenkins
+1. Go to your cloudunit dashboard and log in
+2. Click on Portal
+3. Open tab for GitLab and Jenkins
+
 ![alt text](./img/Portal.jpg "Logo Title Text 1")
 
 # GitLab configuration
 ## Create a GitLab key
 
-Jenkins need the access token to listen to GitLab behaviors.
-1. go to Profile Settings
-2. access Tokens
+Jenkins need the access token to access to GitLab.
+1. Go to Profile Settings
+2. Access Tokens
 ![alt text](./img/Portal_GitLab_token.jpg "Logo Title Text 1")
 1. add a Personnal Access Token
 
     `name: cloudunit`
     
-    `Expire at: xxx`
+ Leave `Expires at` blank .
     
 2. create button
  
-`xxx` : leave it blanc to set it never or give expiration date.
-
 `[important]`: don't forget to save the token ID.
 
 ![alt text](./img/Portal_Jenkins_ApiToken.jpg "Logo Title Text 1")
@@ -48,12 +44,10 @@ Jenkins need the access token to listen to GitLab behaviors.
  - Jenkins version 2.46.1 (Tested).
 
 ## GitLab Jenkinsfile 
-![alt text](./img/Portal_Jenkins.jpg "Logo Title Text 1")
 
-    login:
-     
-      `id: root`
-      `pwd: nausicaa`
+Open your Jenkins tab from your Portal then log in.
+
+![alt text](./img/Portal_Jenkins.jpg "Logo Title Text 1")
     
 1. go to Jenkins management,
 
@@ -66,7 +60,7 @@ Jenkins need the access token to listen to GitLab behaviors.
 ![alt text](./img/Portal_Jenkins_GitlabPanel.jpg "Logo Title Text 1")
 
     `1. Connection name: cloudunit`
-    `2. Gitlab host URL: https://gitlab-cu02.cloudunit.io/`
+    `2. Gitlab host URL: https://gitlab-yourcloudunitdomain`
     `3. Credentials: Jenkins`  after, go to "How to add credentials"
     `4. Add button`
     
