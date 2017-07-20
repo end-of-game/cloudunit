@@ -28,16 +28,20 @@ done
 # launch clairctl push, pull, analyze, report to html to docker registry with debug mode 
 # to hide debug mode, remove --log-level debug 
 for arg in $subName ; do
-	sudo clairctl push -l $arg --config config.yml
-echo "---------------------------------------------------------------------------------"
-	sudo clairctl pull -l $arg  --config config.yml 
-echo "---------------------------------------------------------------------------------"
-	sudo clairctl analyze -l $arg  --config config.yml --log-level debug 
-echo "---------------------------------------------------------------------------------"
-	sudo clairctl report -l $arg --config config.yml --log-level debug 
+    echo "clairctl push -l $arg --config config.yml"
+	clairctl push -l $arg --config config.yml
+    echo ""
+    echo "clairctl pull -l $arg  --config config.yml"
+    clairctl pull -l $arg  --config config.yml
+    echo ""
+    echo "clairctl analyze -l $arg  --config config.yml --log-level debug"
+    clairctl analyze -l $arg  --config config.yml --log-level debug
+    echo ""
+    echo "clairctl report -l $arg --config config.yml --log-level debug"
+	clairctl report -l $arg --config config.yml --log-level debug
 done
 
-sudo chown $(whoami) -R CU_reports
+chown $(whoami) -R CU_reports
 echo "---------------------------------------------------------------------------------"
 echo "> Results: ./CU_reports/html"
 echo "---------------------------------------------------------------------------------"

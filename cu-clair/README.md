@@ -15,7 +15,6 @@ Our goal is to enable a more transparent view of the security of container-based
     - make sure that your docker register is running
     - clairctl version 1.2.8 minimum
 
-
 # 2. Configurations
 
     - Clair config.yml should spécify in order to avoid bugs
@@ -37,9 +36,9 @@ If Clair is not running: `docker-compose start Clair`
 
 # 4. Analyser and HTML report
 
-Analyse automatically CloudUnit containers vulnerabilities using `analyze_CU.sh`.
+Analyse automatically CloudUnit containers vulnerabilities using `analyze.sh`.
 
-    ./CU_analyze.sh
+    ./analyze.sh
 
 Reports dir: `~/cloudunit/cu-clair/CU_reports/html`
 

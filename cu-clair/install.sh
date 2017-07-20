@@ -3,7 +3,7 @@
 
 ## CoreOS Clair
 echo ">>> Installing CoreOS Clair and clairctl"
-docker-compose -f docker-compose.yml up -d
+docker-compose up -d
 
 ## clairctl 
 echo ">>> Installing clairctl"
