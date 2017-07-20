@@ -9,7 +9,7 @@ This document is a step by step configuration in order to detect changes in Gitl
 
 ![alt text](./img/Portal.jpg "Logo Title Text 1")
 
-# GitLab configuration
+# 1. GitLab configuration
 ## Create a GitLab key
 
 Jenkins need the access token to access to GitLab.
@@ -22,24 +22,23 @@ Jenkins need the access token to access to GitLab.
     
  Leave `Expires at` blank .
     
-2. create button
  
 `[important]`: don't forget to save the token ID.
 
 ![alt text](./img/Portal_Jenkins_ApiToken.jpg "Logo Title Text 1")
 
-## Jenkins file configuration
+## Jenkinsfile configuration
 1. in your project, make sure that you have Jenkins file,
 
 ![alt text](./img/Portal_GitLab_JenkinsFile.jpg "Logo Title Text 1")
 
 2. open your Jenkinsfile,
 
-3. add GitLab Jenkins plugin properties line named `cloudunit` . `cloudunit` is the gitlab connection name,
+3. add GitLab Jenkins plugin properties line named `cloudunit` . `cloudunit` is the gitlab connection name on top up of Jenkinsfile.
 
     `properties([gitLabConnection('cloudunit')])`
 
-# Jenkins configuration
+# 2. Jenkins configuration
 ## Requirement
  - Jenkins version 2.46.1 (Tested).
 
@@ -61,10 +60,11 @@ Open your Jenkins tab from your Portal then log in.
 
     `1. Connection name: cloudunit`
     `2. Gitlab host URL: https://gitlab-yourcloudunitdomain`
-    `3. Credentials: Jenkins`  after, go to "How to add credentials"
+    `3. Credentials: Jenkins`
+    A window will pop , to configure creddentials go to [How to add credentials](#How to add credentials)
     `4. Add button`
     
-4. save button
+4. validate with save button
 
 > Go to `Identities` and make sure that you have generated credentials token.
 
@@ -75,16 +75,15 @@ In the Jenkins Credentials Provider pannel.
 
 ![alt text](./img/Portal_Jenkins_Credentials.jpg "Logo Title Text 1")
 
-1. Domain: Global identity
+
+`Domain: Global identity`
   
-2. Domain: GitLab API token
+`Type: GitLab API token`
   
-3. Scope: Global
+`Scope: Global`
   
-4. API token: Paste TOKEN ID HERE
+`API token: Paste TOKEN ID HERE`
   
-5. ID: cloudunit
+`ID: cloudunit`
   
-6. Description: My cloudunit GitLab/Jenkins
-  
-7. Add
+
