@@ -13,14 +13,14 @@ Our goal is to enable a more transparent view of the security of container-based
     - docker-compose 
     - docker API client and server should be the same version
     - make sure that your docker register is running
-    - clairctl version 1.2 minimum
+    - clairctl version 1.2.8 minimum
 
 
 # 2. Configurations
 
     - Clair config.yml should spécify in order to avoid bugs
     - Image name should be `[nameImage]` but not `[myImageName/namespace]`, if not Clair will looking for a registry
-    - Dockercompose file: use clair-git repo to avoid bugs
+    - Dockercompose file: use clair-git repository to avoid bugs
   
 If it's necessary, update your docker machine with `docker-machine upgrade`.
 
