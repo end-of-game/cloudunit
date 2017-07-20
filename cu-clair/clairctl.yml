@@ -1,7 +1,0 @@
-clair:
-  port: 6060
-  healthPort: 6061
-  uri: localhost
-  report:
-    path: ./reports
-    format: html

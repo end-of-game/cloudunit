@@ -1,4 +1,4 @@
-# CoreOs Clair for CloudUnit images
+# CloudUnit image vulnerability with CoreOS Clair
 
 Clair is an open source project for the static analysis of vulnerabilities in application containers (currently including appc and docker).
 1. In regular intervals, Clair ingests vulnerability metadata from a configured set of sources and stores it in the database.
@@ -7,16 +7,24 @@ Clair is an open source project for the static analysis of vulnerabilities in ap
 4. When updates to vulnerability metadata occur, a webhook containg the affected images can be configured to page or block deployments.
 Our goal is to enable a more transparent view of the security of container-based infrastructure. Thus, the project was named Clair after the French term which translates to clear, bright, transparent.
 
-# Requirements
+# 1. Requirements
 
     - docker daemon 1.17 minimum (tested)
     - docker-compose 
     - docker API client and server should be the same version
-    - make sure that your docker register is running 
+    - make sure that your docker register is running
+    - clairctl version 1.2 minimum
 
+
+# 2. Configurations
+
+  - Clair config.yml should spécify in order to avoid bugs
+  - image name should be `[nameImage]` but not `[myImageName/namespace]`, if not Clair will looking for a registry
+  - Dockercompose file: use clair-git repo to avoid bugs
+  
 If it's necessary, update your docker machine with `docker-machine upgrade`.
 
-# Automatic installer Clair and clairctl
+# 3. Installer for Clair/clairctl
 
 Install automatically clair and clairctl using `install.sh`.
 
@@ -27,13 +35,15 @@ Install automatically clair and clairctl using `install.sh`.
 
 If Clair is not running: `docker-compose start Clair`
 
-# Automatic analyser and HTML report
+# 4. Analyser and HTML report
 
 Analyse automatically CloudUnit containers vulnerabilities using `analyze_CU.sh`.
 
     ./analyze_CU.sh
 
-Reports dir: `~/cloudunit/cu-clair/report/html`
+Reports dir: `~/cloudunit/cu-clair/CU_reports/html`
+
+# Using CoreOS Clair
 
 ## CLI to use clairctl manually
 
