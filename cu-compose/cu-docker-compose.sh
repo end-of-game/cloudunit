@@ -163,6 +163,16 @@ function with-elk {
     up -d
 }
 
+function with-elk-and-prometheus {
+    check-env
+    source .env
+    docker network create skynet
+    docker-compose  -f docker-compose.elk.yml \
+                    -f docker-compose.prometheus.yml \
+                    -f docker-compose.yml \
+    up -d
+}
+
 function with-elk-and-selenium {
     check-env
     source .env
@@ -179,6 +189,7 @@ function full-options {
     docker network create skynet
     docker-compose  -f docker-compose.elk.yml \
                     -f docker-compose.mattermost.yml \
+                    -f docker-compose.prometheus.yml \
                     -f docker-compose.selenium.yml \
                     -f docker-compose.yml \
     up -d
@@ -223,6 +234,10 @@ case "$1" in
 with-elk
 ;;
 
+'with-elk-and-prometheus')
+with-elk-and-prometheus
+;;
+
 'with-elk-and-selenium')
 with-elk-and-selenium
 ;;
@@ -243,7 +258,9 @@ echo "Usage $0 "
 echo "Example : $0 with-elk"
 echo "Choice between : "
 echo "                    with-elk"
+echo "                    with-elk-and-prometheus"
 echo "                    with-elk-and-selenium"
+echo "                    full-options"
 echo "                    reset"
 echo ""
 ;;

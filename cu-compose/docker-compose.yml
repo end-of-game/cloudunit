@@ -81,8 +81,6 @@ services:
       ports:
           - "1212:22"
       environment:
-          - "TZ=${TZ}"
-      environment:
         GITLAB_OMNIBUS_CONFIG: |
                external_url 'https://${CU_GITLAB_DOMAIN}'
       labels:
