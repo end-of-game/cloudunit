@@ -1,0 +1,13 @@
+route:
+    receiver: 'slack'
+    group_wait: 5s
+    group_interval: 5s
+
+receivers:
+    - name: 'slack'
+      slack_configs:
+          - send_resolved: true
+            text: "{{ .CommonAnnotations.description }}"
+            username: 'Prometheus'
+            channel: '@channel-name'
+            api_url: 'https://hooks.slack.com/services/API_KEY'
