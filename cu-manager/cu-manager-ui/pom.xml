@@ -68,6 +68,8 @@
             <configuration>
               <nodeVersion>v6.2.1</nodeVersion>
               <npmVersion>4.0.5</npmVersion>
+              <installDirectory>target</installDirectory>
+              <workingDirectory>src/main/resources/static</workingDirectory>
             </configuration>
           </execution>
           
