@@ -1,0 +1,48 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html"/>
+<link rel="import" href="shared-styles.html"/>
+
+<link rel="import" href="../bower_components/paper-card/paper-card.html"/>
+<link rel="import" href="../bower_components/traverson-traversal/traverson-traversal.html"/>
+
+<dom-module id="cu-apps">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+
+    <traverson-traversal auto from="/applications" last-response="{{applications}}"></traverson-traversal>
+
+    <template is="dom-repeat" items="{{ _getEmbedded(applications, 'cu:applications') }}" as="application">
+      <paper-card heading="{{application.name}}">
+        <div class="card-content">
+          Content
+        </div>
+        <div class="card-actions">
+        </div>
+      </paper-card>
+    </template>
+
+  </template>
+
+  <script>
+    class CloudUnitAppsElement extends Polymer.Element {
+      static get is() { return 'cu-apps'; }
+      
+      static get properties() {
+    	return {
+          applications: Object
+    	}
+      }
+      
+      _getEmbedded(model, rel) {
+    	return model._embedded[rel];
+      }
+    }
+
+    window.customElements.define(CloudUnitAppsElement.is, CloudUnitAppsElement);
+  </script>
+</dom-module>
