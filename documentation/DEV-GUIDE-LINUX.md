@@ -121,9 +121,10 @@ and
 ### Run CloudUnit Manager frontend
 
 ```
-[Linux Host]    cd cu-manager-ui && grunt serve
+[Linux Host]    cd cu-manager-ui
+[Linux Host]	mvn spring-boot:run -pl cu-manager-ui -Pvagrant
 ```
-This will open http://0.0.0.:9000/ in your default web browser.
+Then open http://0.0.0.:9000/ in your favorite web browser.
 
 # FAQ
 
@@ -140,11 +141,3 @@ This will open http://0.0.0.:9000/ in your default web browser.
 [VagrantBox]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
 ```
 
-## How to run e2e test (selenium & protractor)
-
-First of all, you have to install Google Chrome.
-Then, start the application ([see step 6](#step6)) in parallel.
-
-```
-[Linux Host]    pushd cu-manager-ui && grunt test && popd
-```

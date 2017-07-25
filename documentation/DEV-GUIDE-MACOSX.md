@@ -99,7 +99,8 @@ and
 ### Run CloudUnit Manager frontend
 
 ```
-[MacOSX]    cd cu-manager-ui && grunt serve
+[MacOSX]    cd cu-manager-ui
+[MacOSX]    mvn spring-boot:run -pl cu-manager-ui -Plocal
 ```
 This will open http://0.0.0.:9000/ in your default web browser.
 
@@ -118,11 +119,3 @@ This will open http://0.0.0.:9000/ in your default web browser.
 [MacOSX]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
 ```
 
-## How to run e2e test (selenium & protractor)
-
-First of all, you have to install Google Chrome.
-Then, start the application ([see step 6](#step6)) in parallel.
-
-```
-[MacOSX]    pushd cu-manager-ui && grunt test && popd
-```
