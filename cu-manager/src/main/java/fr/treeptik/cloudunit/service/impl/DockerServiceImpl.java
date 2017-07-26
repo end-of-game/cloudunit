@@ -64,7 +64,13 @@ public class DockerServiceImpl implements DockerService {
     
     @Value("#{systemEnvironment['http_proxy']}")
     private String httpProxy;
-    
+
+    @Value("#{systemEnvironment['https_proxy']}")
+    private String httpsProxy;
+
+    @Value("#{systemEnvironment['ftp_proxy']}")
+    private String ftpProxy;
+
     @Value("#{systemEnvironment['no_proxy']}")
     private String noProxy;
 
@@ -102,17 +108,7 @@ public class DockerServiceImpl implements DockerService {
             args.add(user.getLogin());
             args.add(user.getPassword());
         }
-        if (StringUtils.isNotEmpty(httpProxy)) {
-        	if (envs == null) {
-        		envs = new ArrayList<>();
-        	}
-        	envs.add(String.format("http_proxy=%s", httpProxy));
-        	envs.add(String.format("https_proxy=%s", httpProxy));
-        	envs.add(String.format("ftp_proxy=%s", httpProxy));
-        	envs.add(String.format("no_proxy=%s", noProxy));
-        }
-        //Map<String, String> ports = new HashMap<>();
-        //ports.put("8000/tcp", "");
+        envs = fillUpProxyVariableEnvironment(envs);
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, imageSubType, volumesFrom, args,
                 volumes, envs, null, "skynet", domain);
         dockerCloudUnitClient.createContainer(container);
@@ -373,15 +369,7 @@ public class DockerServiceImpl implements DockerService {
                         p -> String.format("%s/tcp", p.getContainerValue()),
                         p -> p.getHostValue()));
         
-        if (StringUtils.isNotEmpty(httpProxy)) {
-        	if (envs == null) {
-        		envs = new ArrayList<>();
-        	}
-        	envs.add(String.format("http_proxy=%s", httpProxy));
-        	envs.add(String.format("https_proxy=%s", httpProxy));
-        	envs.add(String.format("ftp_proxy=%s", httpProxy));
-        	envs.add(String.format("no_proxy=%s", noProxy));
-        }
+        envs = fillUpProxyVariableEnvironment(envs);
         DockerContainer container = ContainerUtils.newCreateInstance(containerName, imagePath, null, volumesFrom, null, volumes,
                 envs, ports, "skynet", domain);
         dockerCloudUnitClient.createContainer(container);
@@ -453,4 +441,20 @@ public class DockerServiceImpl implements DockerService {
         return imagesId;
     }
 
+    private List<String> fillUpProxyVariableEnvironment(List<String> envs) {
+        if (envs == null) { envs = new ArrayList<>(); }
+        if (StringUtils.isNotEmpty(httpProxy)) {
+            envs.add(String.format("http_proxy=%s", httpProxy));
+        }
+        if (StringUtils.isNotEmpty(httpsProxy)) {
+            envs.add(String.format("https_proxy=%s", httpsProxy));
+        }
+        if (StringUtils.isNotEmpty(ftpProxy)) {
+            envs.add(String.format("ftp_proxy=%s", ftpProxy));
+        }
+        if (StringUtils.isNotEmpty(noProxy)) {
+            envs.add(String.format("no_proxy=%s", noProxy));
+        }
+        return envs;
+    }
 }

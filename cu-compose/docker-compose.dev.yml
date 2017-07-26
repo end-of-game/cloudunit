@@ -77,8 +77,8 @@ services:
       # Define the CU_GITLAB_DOMAIN into /etc/environment
       hostname: '${CU_GITLAB_DOMAIN}'
       environment:
-          GITLAB_OMNIBUS_CONFIG: |
-              external_url 'http://${CU_GITLAB_DOMAIN}'
+        - "GITLAB_OMNIBUS_CONFIG: |
+              external_url 'http://${CU_GITLAB_DOMAIN}'"
         - "http_proxy=${http_proxy}"
         - "https_proxy=${https_proxy}"
         - "ftp_proxy=${ftp_proxy}"
