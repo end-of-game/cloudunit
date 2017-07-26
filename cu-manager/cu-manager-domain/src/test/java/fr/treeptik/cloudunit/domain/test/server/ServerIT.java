@@ -65,6 +65,7 @@ public class ServerIT {
             // TODO : Services don't know the container at the moment
             // assertTrue(service.hasLink("cu:container"));
         } finally {
+            applicationTemplate.waitWhilePending(application);
             applicationTemplate.deleteApplication(application);
         }
     }
@@ -77,9 +78,12 @@ public class ServerIT {
             
             ServiceResource service = applicationTemplate.getService(result);
             
+            applicationTemplate.waitWhilePending(application);
+            
             result = applicationTemplate.removeService(service);
             result.andExpect(status().isNoContent());
         } finally {
+            applicationTemplate.waitWhilePending(application);
             applicationTemplate.deleteApplication(application);
         }
     }

@@ -12,10 +12,10 @@
   <name>CloudUnit Manager Services</name>
 
   <modules>
-    <module>cu-manager-domain-core</module>
-    <module>cu-manager-domain</module>
     <module>cu-orchestrator-core</module>
     <module>cu-docker-orchestrator</module>
+    <module>cu-manager-domain-core</module>
+    <module>cu-manager-domain</module>
     <module>cu-manager-ui</module>
   </modules>
 
