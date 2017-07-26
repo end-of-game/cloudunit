@@ -20,19 +20,7 @@
       <paper-card heading="{{application.name}}">
         <div class="card-content">
           {{ application.state }}
-          
-          <template is="dom-if" if="{{_isEqualTo(application.state, 'STOPPED')}}">
-            <paper-icon-button style="color: red;" icon="cu-icons:circle" drawer-toggle></paper-icon-button>
-          </template>
-
-          <template is="dom-if" if="{{_isEqualTo(application.state, 'STARTING')}}">
-            <paper-icon-button style="color: yellow;" icon="cu-icons:circle" drawer-toggle></paper-icon-button>
-          </template>
-
-          <template is="dom-if" if="{{_isEqualTo(application.state, 'STARTED')}}">
-            <paper-icon-button style="color: green;" icon="cu-icons:circle" drawer-toggle></paper-icon-button>
-          </template>
-
+          <iron-icon style="color: {{ getColorFromState(application.state) }};" icon="cu-icons:circle" ></iron-icon>
         </div>
         <div class="card-actions">
         </div>
@@ -45,10 +33,19 @@
     class CloudUnitAppsElement extends Polymer.Element {
       static get is() { return 'cu-apps'; }
 
-        _isEqualTo(title, string) {
-        return title == string;
-    }
+      getColorFromState(state) {
+          switch(state) {
+              case 'STOPPED':
+                  return 'red';
+              case 'STARTING':
+                  return 'yellow';
+              case 'STARTED' :
+                  return 'green';
 
+              default:
+                  return "";
+          }
+      }
 
         static get properties() {
     	return {
