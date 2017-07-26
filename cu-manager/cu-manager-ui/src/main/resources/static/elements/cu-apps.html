@@ -19,7 +19,20 @@
     <template is="dom-repeat" items="{{ _getEmbedded(applications, 'cu:applications') }}" as="application">
       <paper-card heading="{{application.name}}">
         <div class="card-content">
-          Content
+          {{ application.state }}
+          
+          <template is="dom-if" if="{{_isEqualTo(application.state, 'STOPPED')}}">
+            <paper-icon-button style="color: red;" icon="cu-icons:circle" drawer-toggle></paper-icon-button>
+          </template>
+
+          <template is="dom-if" if="{{_isEqualTo(application.state, 'STARTING')}}">
+            <paper-icon-button style="color: yellow;" icon="cu-icons:circle" drawer-toggle></paper-icon-button>
+          </template>
+
+          <template is="dom-if" if="{{_isEqualTo(application.state, 'STARTED')}}">
+            <paper-icon-button style="color: green;" icon="cu-icons:circle" drawer-toggle></paper-icon-button>
+          </template>
+
         </div>
         <div class="card-actions">
         </div>
@@ -31,8 +44,13 @@
   <script>
     class CloudUnitAppsElement extends Polymer.Element {
       static get is() { return 'cu-apps'; }
-      
-      static get properties() {
+
+        _isEqualTo(title, string) {
+        return title == string;
+    }
+
+
+        static get properties() {
     	return {
           applications: Object
     	}
@@ -41,6 +59,7 @@
       _getEmbedded(model, rel) {
     	return model._embedded[rel];
       }
+
     }
 
     window.customElements.define(CloudUnitAppsElement.is, CloudUnitAppsElement);
