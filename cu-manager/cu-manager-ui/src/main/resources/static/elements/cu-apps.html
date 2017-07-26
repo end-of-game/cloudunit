@@ -19,7 +19,8 @@
     <template is="dom-repeat" items="{{ _getEmbedded(applications, 'cu:applications') }}" as="application">
       <paper-card heading="{{application.name}}">
         <div class="card-content">
-          Content
+          {{ application.state }}
+          <iron-icon style="color: {{ getColorFromState(application.state) }};" icon="cu-icons:circle" ></iron-icon>
         </div>
         <div class="card-actions">
         </div>
@@ -31,8 +32,22 @@
   <script>
     class CloudUnitAppsElement extends Polymer.Element {
       static get is() { return 'cu-apps'; }
-      
-      static get properties() {
+
+      getColorFromState(state) {
+          switch(state) {
+              case 'STOPPED':
+                  return 'red';
+              case 'STARTING':
+                  return 'yellow';
+              case 'STARTED' :
+                  return 'green';
+
+              default:
+                  return "";
+          }
+      }
+
+        static get properties() {
     	return {
           applications: Object
     	}
@@ -41,6 +56,7 @@
       _getEmbedded(model, rel) {
     	return model._embedded[rel];
       }
+
     }
 
     window.customElements.define(CloudUnitAppsElement.is, CloudUnitAppsElement);
