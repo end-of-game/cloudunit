@@ -48,6 +48,8 @@ WORKDIR /home/cloudunit/app
 
 # import git repository
 COPY . /home/cloudunit/app/CloudUnit/
+#DEBUG
+RUN ls /home/cloudunit/app/CloudUnit/
 
 # Add nodesource PPA for specific version of node and install
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
