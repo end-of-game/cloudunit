@@ -1,23 +1,20 @@
 sudo: required
 language: java
-
 cache:
   directories:
-    - $HOME/.m2
-
+  - "$HOME/.m2"
 services:
-  - docker
-  - maven
-
+- docker
+- maven
 before_install:
-  - docker version
-
-#https://docs.travis-ci.com/user/customizing-the-build/#Skipping-the-Installation-Step
+- docker version
 install: true
-
 script:
-  - echo $USER
-  - pushd cu-services && make tomcat && make mysql && popd
-  - pushd cu-compose && cp .env.local.xip.io .env && ./reset-dev.sh -y && popd
-  - docker ps -a
-  - mvn install -Plocal
+- echo $USER
+- pushd cu-services && make tomcat && make mysql && popd
+- pushd cu-compose && cp .env.local.xip.io .env && ./reset-dev.sh -y && popd
+- docker ps -a
+- mvn install -Plocal
+notifications:
+  slack:
+    secure: kQoC4FDNFpaepisKCaLf82XnOndXopTKhfzldkGquwbD0gkBUt72tjSmiWNuNCya9Z8J/22SP+rnTmDWmZh7wTulGHUaMVQNwDt6hogrz0UuRj5WurI/cEZC2cs9caA8aCNyNJwvV7rwCbfvd+bnrGE6cO5ze0ODCcO/u5r5zS7F0RsmCx/7UQ0FDQl1Qd/BxL2TxGgh3TkHSPQvzsJ5wgzZCwu4W+/Lp9K4qK8H4PaE98/1koU8lfXzi/WG/fHDNbws6ifsaEMarE14FB1omk+3DpxaTTT8hqcAv8XDkODEH85A5LdKaxw13AEiM09pve7haGjHE7QMD0uw/6LB0deBvxkn++BE1FrC2qpVn2u8LIeMZJ6PzqUEhwyoR9qGWuxjaI8dE0vOwuZEKq4SLxRB2VBALExGZv8U/1VNcf5UkPrS1pD0YRbNleRdjxrKBwsYdhTCDTB0/d8ubXV5w3y+cCy5KmdXHwuKdA7ZohWkO71DhBZPUbFMggwFPU4cW7vXkb9XJa7FfSLeiYsU2LbSzLKPkjhZ+UxZrMhUKRUoLmE8prIY6mWhig2Axr5M3TsSzOQsMG9TV4i2dnWd0CAkcoaV/04JA4t7U7N6cgUYFVXqRCgix7SBf10H6dxEIFIxq9yVqqN0n/i33DhXS6l4FOMCrDJobGlO6oKClDY=
