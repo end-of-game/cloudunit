@@ -42,14 +42,12 @@ RUN mkdir -p /cloudunit/java && wget https://github.com/Treeptik/cloudunit/relea
 RUN tar -xvf /tmp/jdk-8u25-linux-x64.tar.gz -C /cloudunit/java
 RUN rm /tmp/jdk-*
 
-RUN mkdir -p /home/cloudunit/app
+RUN mkdir -p /home/cloudunit/app/CloudUnit
 
 WORKDIR /home/cloudunit/app
 
-# git branch being bundled in this docker image
-ARG GIT_BRANCH
-ENV GIT_BRANCH ${GIT_BRANCH:-dev}
-RUN cd /home/cloudunit/app && git clone https://github.com/Treeptik/CloudUnit.git -b ${GIT_BRANCH} --depth 1
+# import git repository
+COPY . /home/cloudunit/app/CloudUnit/
 
 # Add nodesource PPA for specific version of node and install
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
