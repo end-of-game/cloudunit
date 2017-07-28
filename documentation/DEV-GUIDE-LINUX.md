@@ -118,13 +118,13 @@ and
 [Linux Host]    mvn spring-boot:run -pl cu-manager-domain -Pvagrant
 ```
 
-### Run CloudUnit Manager frontend
-
+### Run CloudUnit Manager frontend  
+Open another shell and run
 ```
 [Linux Host]    cd cu-manager-ui
-[Linux Host]	mvn spring-boot:run -pl cu-manager-ui -Pvagrant
+[Linux Host]    mvn spring-boot:run -Pvagrant
 ```
-Then open http://0.0.0.:9000/ in your favorite web browser.
+Then open http://localhost:9000/ in your favorite web browser.
 
 # FAQ
 
