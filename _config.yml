@@ -1,0 +1,25 @@
+#Setup
+title: CloudUnit
+email: contact@treeptik.fr
+description: > # CloudUnit provides an automated and standardized platform
+                  for devs to build and run Java applications and ops to
+                  provision and orchestrate environments.
+baseurl: "/cloudunit" # the subpath of your site
+url: "https://treeptik.github.io" # the base hostname & protocol for your site
+twitter_username: Treeptik
+github_username:  Treeptik
+
+# About/contact
+author:
+  name:       Charifou Ismaël
+  url:        https://treeptik.github.io
+
+# Build settings
+markdown: kramdown
+
+plugins:
+  - jekyll-paginate
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
