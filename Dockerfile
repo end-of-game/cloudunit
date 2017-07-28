@@ -11,6 +11,8 @@
 # nor may "Treeptik" or similar confusing terms appear in their names without prior written permission.
 # For any questions, contact us : contact@treeptik.fr
 
+#CU-MANAGER Dockerfile
+
 FROM ubuntu:14.04
 
 # Passage du système en UTF-8
@@ -48,8 +50,6 @@ WORKDIR /home/cloudunit/app
 
 # import git repository
 COPY . /home/cloudunit/app/CloudUnit/
-#DEBUG
-RUN ls /home/cloudunit/app/CloudUnit/
 
 # Add nodesource PPA for specific version of node and install
 RUN curl -sL https://deb.nodesource.com/setup_5.x | bash -
@@ -85,7 +85,7 @@ RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war /opt/tomcat/
 RUN ls -la /opt/tomcat/webapps
 RUN unzip /home/cloudunit/app/CloudUnit/cu-manager/target/ROOT.war -d /opt/tomcat/webapps/ROOT
 RUN cp -rf /home/cloudunit/app/CloudUnit/cu-manager-ui/dist/* /opt/tomcat/webapps/ROOT
-ADD tomcat.sh $CATALINA_HOME/scripts/tomcat.sh
+ADD ./cu-manager/dockerhub/tomcat.sh $CATALINA_HOME/scripts/tomcat.sh
 RUN chmod +x $CATALINA_HOME/scripts/*
 EXPOSE 8080
 
