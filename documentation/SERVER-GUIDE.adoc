@@ -16,6 +16,7 @@ This guide aims to provide install instructions that follow the https://en.wikip
 === Requirements
 
 A virtual or baremetal server with
+
 * at least 16 GB RAM (but we recommend at least 32 GB)
 * one of the following operating systems
   * Ubuntu 14.04 LTS with a 4.x kernel with AUFS support
