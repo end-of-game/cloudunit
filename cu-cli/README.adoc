@@ -1,0 +1,80 @@
+= CU-CLI
+:toc:
+:icons: font
+
+== Introduction
+
+The CLI allows you to use features directly on a shell instead of using UI.
+
+== How to use it
+
+When you are in your cloudunit folder :
+
+....
+cd cu-cli
+./cu.js <command>
+....
+
+Example : Create a application
+
+....
+./cu.js app create myApplication
+....
+
+output :
+
+....
+Application myapplication created
+....
+
+== Commands
+
+You can find all the available commands with
+....
+./cu.js --help
+....
+
+=== Application commands
+....
+create <name>  create an application
+list|ls        list all applications
+start <name>   start an application
+stop <name>    stop an application
+rm <name>      remove an application
+
+....
+
+
+=== Service commands
+
+add <app> <service>                              add a service
+    list|ls <app>                                    list all services
+    rm <app> <service>                               remove a service
+    deploy <app> <service> <contextPath> <filePath>  deploy an archive
+
+
+=== Image commands
+....
+list | ls   list all images
+....
+=== Volume commands
+....
+list | ls        list all volumes
+create <name>  create a volume
+rm <name>      remove a volume
+....
+
+=== Environment commands
+....
+list | ls <app> <service>  list all environnement variables for a service
+....
+=== Mount commands
+....
+list | ls <app> <service>                    list mounted volumes
+add <app> <service> <volume> <mountpoint>  mount a volume on a service
+....
+
+=== Help commands
+....
+./cu.js help <command>      list all commands available contaning your command
+....
