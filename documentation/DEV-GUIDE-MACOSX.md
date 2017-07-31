@@ -72,15 +72,15 @@ From your favorite Node IDE add `cu-cli` and `cu-manager-ui` folders to your wor
 
 #### From IntelliJ IDEA
 
-Create Spring Boot run configurations for `cu-docker-orchestrator` and `cu-manager-domain` that activate the `local` profile.
+Create Spring Boot run configurations for `cu-docker-orchestrator`, `cu-manager-domain` and `cu-manager-ui` that activate the `local` profile.
 
 #### From Spring Tool Suite
 
-From the **Boot Dashboard** view, start `cu-docker-orchestrator` and `cu-manager-domain` with the `local` profile active.
+From the **Boot Dashboard** view, start `cu-docker-orchestrator`, `cu-manager-domain` and `cu-manager-ui` with the `local` profile active.
 
 #### From Eclipse
 
-Create run configurations for the main classes in `cu-docker-orchestrator` and `cu-manager-domain`.
+Create run configurations for the main classes in `cu-docker-orchestrator`, `cu-manager-domain` and `cu-manager-ui`.
 Before running, add the following VM argument in order to activate the `local` profile: `-Dspring.profiles.active=local`.
 
 #### From command line
@@ -98,8 +98,10 @@ and
 
 ### Run CloudUnit Manager frontend
 
+Open another shell and run
+
 ```
-[MacOSX]    cd cu-manager-ui
+[MacOSX]    cd cu-manage
 [MacOSX]    mvn spring-boot:run -pl cu-manager-ui -Plocal
 ```
 This will open http://0.0.0.:9000/ in your default web browser.
