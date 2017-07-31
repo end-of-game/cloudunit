@@ -17,7 +17,10 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.7",
     "traverson-traversal": "^0.0.3",
     "polymer-expressions": "Polymer/polymer-expressions#2.0-preview",
-    "paper-input": "PolymerElements/paper-input#^2.0.1"
+    "paper-input": "PolymerElements/paper-input#^2.0.1",
+    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^2.1.0",
+    "paper-dialog": "PolymerElements/paper-dialog#^2.0.0",
+    "paper-button": "PolymerElements/paper-button#^2.0.0"
   },
   "resolutions": {
     "polymer": "^2.0.0-rc.1",

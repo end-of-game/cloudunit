@@ -4,7 +4,8 @@
   "fragments": [
     "elements/cu-apps.html",
     "elements/cu-volumes.html",
-    "elements/cu-view404.html"
+    "elements/cu-view404.html",
+    "elements/cu-createapp.html"
   ],
   "sources": [
     "elements/**/*",
