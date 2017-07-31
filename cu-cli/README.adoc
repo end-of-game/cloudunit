@@ -1,63 +1,82 @@
-= CU-CLI
+= CloudUnit Manager Command Line Interface (CLI)
 :toc:
 :icons: font
 
 == Introduction
 
-The CLI allows you to use features directly on a shell instead of using UI.
+The CLI allows you to use features directly on a shell instead of using UI. This can be useful for scripting actions as
+part of a continuous integration pipeline.
+
+== Requirements
+
+The CLI requires NodeJS version 5 minimum.
+
+== Install
+
+The CLI can be installed using `npm`.
+
+----
+npm install -g cu-cli
+----
 
 == How to use it
 
-When you are in your cloudunit folder :
+----
+cu <command>
+----
 
-....
-cd cu-cli
-./cu.js <command>
-....
+Example: To create an application, type
 
-Example : Create a application
+----
+cu app create myApplication
+----
 
-....
-./cu.js app create myApplication
-....
-
-output :
+If all goes well, this should respond
 
 ....
 Application myapplication created
 ....
 
+== Connecting to an instance of CloudUnit Manager
+
+By default, the CLI will try to connect to an instance of CloudUnit Manager running on `http://localhost:9000/`.
+To chose a different instance, set the `CU_HOST` environment variable to the URI of the instance before running commands.
+
 == Commands
 
 You can find all the available commands with
-....
-./cu.js --help
-....
+
+----
+cu --help
+----
 
 === Application commands
+
 ....
 create <name>  create an application
 list|ls        list all applications
 start <name>   start an application
 stop <name>    stop an application
 rm <name>      remove an application
-
 ....
-
 
 === Service commands
 
+....
 add <app> <service>                              add a service
-    list|ls <app>                                    list all services
-    rm <app> <service>                               remove a service
-    deploy <app> <service> <contextPath> <filePath>  deploy an archive
-
+list|ls <app>                                    list all services
+rm <app> <service>                               remove a service
+deploy <app> <service> <contextPath> <filePath>  deploy an archive
+....
 
 === Image commands
+
 ....
 list | ls   list all images
 ....
+
 === Volume commands
+
 ....
 list | ls        list all volumes
 create <name>  create a volume
@@ -65,16 +84,21 @@ rm <name>      remove a volume
 ....
 
 === Environment commands
+
 ....
 list | ls <app> <service>  list all environnement variables for a service
 ....
+
 === Mount commands
+
 ....
 list | ls <app> <service>                    list mounted volumes
 add <app> <service> <volume> <mountpoint>  mount a volume on a service
 ....
 
 === Help commands
+
 ....
-./cu.js help <command>      list all commands available contaning your command
+cu help <command>      list all commands available contaning your command
 ....
+
