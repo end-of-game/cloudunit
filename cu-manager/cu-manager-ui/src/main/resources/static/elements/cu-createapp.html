@@ -2,146 +2,172 @@
 <link rel="import" href="shared-styles.html"/>
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-<link rel="import" href="../bower_components/paper-input/paper-input.html" />
-<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../bower_components/paper-input/paper-input.html"/>
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html"/>
 <link rel="import" href="cu-icons.html">
 
 
-
-
-<dom-module id="cu-createapp" >
+<dom-module id="cu-createapp">
     <template>
 
-    <style>
+        <style>
 
-        /* The Modal (background) */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            padding-top: 100px; /* Location of the box */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                padding-top: 100px; /* Location of the box */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgb(0, 0, 0); /* Fallback color */
+                background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+            }
 
-        /* Modal Content */
-        .modal-content {
-            position: relative;
-            background-color: #fefefe;
-            margin: auto;
-            padding: 0;
-            border: 1px solid #888;
-            width: 80%;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
-            -webkit-animation-name: animatetop;
-            -webkit-animation-duration: 0.4s;
-            animation-name: animatetop;
-            animation-duration: 0.4s
-        }
+            /* Modal Content */
+            .modal-content {
+                position: relative;
+                background-color: #fefefe;
+                margin: auto;
+                padding: 0;
+                border: 1px solid #888;
+                width: 80%;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                -webkit-animation-name: animatetop;
+                -webkit-animation-duration: 0.4s;
+                animation-name: animatetop;
+                animation-duration: 0.4s
+            }
 
-        /* Add Animation */
-        @-webkit-keyframes animatetop {
-            from {top:-300px; opacity:0}
-            to {top:0; opacity:1}
-        }
+            /* Add Animation */
+            @-webkit-keyframes animatetop {
+                from {
+                    top: -300px;
+                    opacity: 0
+                }
+                to {
+                    top: 0;
+                    opacity: 1
+                }
+            }
 
-        @keyframes animatetop {
-            from {top:-300px; opacity:0}
-            to {top:0; opacity:1}
-        }
+            @keyframes animatetop {
+                from {
+                    top: -300px;
+                    opacity: 0
+                }
+                to {
+                    top: 0;
+                    opacity: 1
+                }
+            }
 
-        /* The Close Button */
-        .close {
-            color: white;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
+            /* The Close Button */
+            .close {
+                color: white;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
 
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-        }
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+            }
 
-        .modal-header {
-            padding: 2px 16px;
-            background-color: #0027b8;
-            color: white;
-        }
+            .modal-header {
+                padding: 2px 16px;
+                background-color: #0027b8;
+                color: white;
+            }
 
-        .modal-body {padding: 2px 16px;}
+            .modal-body {
+                padding: 2px 16px;
+            }
 
-        .modal-footer {
-            padding: 2px 16px;
-            background-color: #0027b8;
-            color: white;
-        }
-    </style>
+            .modal-footer {
+                padding: 2px 16px;
+                background-color: #0027b8;
+                color: white;
+            }
+        </style>
+
+        <traverson-traversal id="createApp" handle-as="jsonHal" method="POST" from="/applications"
+                             request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
 
 
-<paper-icon-button  icon="cu-icons:plus" id="button-create" on-click="_displayModal"></paper-icon-button>
 
-<!-- The Modal -->
-<div id="myModal" class="modal">
+        <paper-icon-button icon="cu-icons:plus" id="button-create" on-click="_displayModal"></paper-icon-button>
 
-    <!-- Modal content -->
-    <div class="modal-content">
-        <div class="modal-header">
-            <span id="closeButton" class="close" on-click="_closeModal">&times;</span>
-            <h2>Create an application</h2>
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span id="closeButton" class="close" on-click="_closeModal">&times;</span>
+                    <h2>Create an application</h2>
+                </div>
+                <div class="modal-body">
+                    <paper-input value={{applicationName}} type="text" placeholder="Application name"></paper-input>
+                    <paper-button on-click="createApp">OK</paper-button>
+                    <paper-button on-click="_closeModal">Cancel</paper-button>
+                </div>
+
+            </div>
+
         </div>
-        <div class="modal-body">
-            <paper-input type="text" id="applicationName" placeholder="Application name"> </paper-input>
-            <paper-icon-button  icon="cu-icons:plus" id="button-create" on-click="createApp"></paper-icon-button>
-        </div>
-
-    </div>
-
-    </div>
     </template>
 
-<script>
+    <script>
 
-    class CloudUnitCreateApp extends Polymer.Element {
-        static get is() { return 'cu-createapp'; }
-
-        static get properties() {
-            return {
-                applications: Object
+        class CloudUnitCreateApp extends Polymer.Element {
+            static get is() {
+                return 'cu-createapp';
             }
+
+            static get properties() {
+                return {
+                    applicationName: String
+                }
+            }
+
+            _getEmbedded(model, rel) {
+                return model._embedded[rel];
+            }
+
+            _displayModal() {
+                var modal = this.$.myModal;
+                modal.style.display = "block";
+
+            }
+
+            _closeModal() {
+                var modal = this.$.myModal;
+                modal.style.display = "none";
+                this.$.applicationName.value = null;  // Reset the text in the input
+
+
+            }
+
+
+            createApp(){
+                var creationRequest = this.$.createApp;
+                creationRequest.body = {name : this.applicationName};
+
+                creationRequest.generateTraversal();
+            }
+
         }
 
-        _getEmbedded(model, rel) {
-            return model._embedded[rel];
-        }
-
-        _displayModal(){
-            var modal= this.$.myModal;
-            modal.style.display = "block";
-
-        }
-
-        _closeModal() {
-            var modal= this.$.myModal;
-            modal.style.display = "none";
-        }
+        window.customElements.define(CloudUnitCreateApp.is, CloudUnitCreateApp);
 
 
-    }
-
-    window.customElements.define(CloudUnitCreateApp.is, CloudUnitCreateApp);
-
-
-
-
-
-</script>
+    </script>
 
 </dom-module>

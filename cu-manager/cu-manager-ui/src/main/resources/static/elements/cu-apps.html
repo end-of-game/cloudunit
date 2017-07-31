@@ -30,8 +30,6 @@
     <traverson-traversal auto from="/applications" last-response="{{applications}}"></traverson-traversal>
 
 
-    <!--<traverson-traversal id="createApp"  handle-as="json" method="POST" from="/applications" request-options="{ header: { 'Content-Type': 'application/json' }}" body="{name: 'tete'}" ></traverson-traversal>
--->
     <cu-createapp></cu-createapp>
 
     <template is="dom-repeat" items="{{ _getEmbedded(applications, 'cu:applications') }}" as="application">
@@ -79,9 +77,6 @@
     	return model._embedded[rel];
       }
 
-      createApp(){
-          this.$.createApp.generateTraversal();
-      }
 
     }
 
