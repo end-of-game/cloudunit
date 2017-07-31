@@ -94,15 +94,15 @@ From your favorite Node IDE add `cu-cli` and `cu-manager-ui` folders to your wor
 
 #### From IntelliJ IDEA
 
-Create Spring Boot run configurations for `cu-docker-orchestrator` and `cu-manager-domain` that activate the `vagrant` profile.
+Create Spring Boot run configurations for `cu-docker-orchestrator`, `cu-manager-domain` and `cu-manager-ui` that activate the `vagrant` profile.
 
 #### From Spring Tool Suite
 
-From the **Boot Dashboard** view, start `cu-docker-orchestrator` and `cu-manager-domain` with the `vagrant` profile active.
+From the **Boot Dashboard** view, start `cu-docker-orchestrator`, `cu-manager-domain` and `cu-manager-ui` with the `vagrant` profile active.
 
 #### From Eclipse
 
-Create run configurations for the main classes in `cu-docker-orchestrator` and `cu-manager-domain`.
+Create run configurations for the main classes in `cu-docker-orchestrator`, `cu-manager-domain` and `cu-manager-ui`.
 Before running, add the following VM argument in order to activate the `vagrant` profile: `-Dspring.profiles.active=vagrant`.
 
 #### From command line
@@ -119,12 +119,13 @@ and
 ```
 
 ### Run CloudUnit Manager frontend
-
+  
+Open another shell and run
 ```
-[Linux Host]    cd cu-manager-ui
-[Linux Host]	mvn spring-boot:run -pl cu-manager-ui -Pvagrant
+[Linux Host]    cd cu-manager
+[Linux Host]    mvn spring-boot:runi -pl cu-manager-ui -Pvagrant
 ```
-Then open http://0.0.0.:9000/ in your favorite web browser.
+Then open http://localhost:9000/ in your favorite web browser.
 
 # FAQ
 
