@@ -20,19 +20,28 @@
     "paper-input": "PolymerElements/paper-input#^2.0.1",
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^2.1.0",
     "paper-dialog": "PolymerElements/paper-dialog#^2.0.0",
-    "paper-button": "PolymerElements/paper-button#^2.0.0"
+    "paper-button": "PolymerElements/paper-button#^2.0.0",
+    "iron-icons": "PolymerElements/iron-icons#^2.0.1",
+    "paper-behaviors": "PolymerElements/paper-behaviors#^2.0.0"
+
   },
   "resolutions": {
     "polymer": "^2.0.0-rc.1",
     "webcomponentsjs": "^v1.0.2",
     "iron-flex-layout": "2.0-preview",
     "iron-meta": "2.0-preview",
+    "iron-iconset-svg": "2.0-preview",
+    "iron-icon": "2.0-preview",
+    "paper-icon-button": "2.0-preview",
+    "paper-behaviors": "2.0-preview",
     "iron-behaviors": "2.0-preview",
     "iron-a11y-keys-behavior": "2.0-preview",
     "iron-checked-element-behavior": "2.0-preview",
     "iron-validatable-behavior": "2.0-preview",
     "iron-form-element-behavior": "2.0-preview",
-    "paper-ripple": "2.0-preview"
+    "paper-ripple": "2.0-preview",
+    "paper-styles": "2.0-preview",
+    "iron-selector": "2.0-preview"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0-prerelease.7"

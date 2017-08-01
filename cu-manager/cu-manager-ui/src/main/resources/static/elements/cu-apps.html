@@ -13,19 +13,17 @@
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="cu-createapp.html">
+<link rel="import" href="cu-icons.html">
 
 
 <dom-module id="cu-apps">
   <template>
-
-
     <style include="shared-styles">
       :host {
         display: block;
 
         padding: 10px;
       }
-
     </style>
 
     <traverson-traversal auto from="/applications" last-response="{{applications}}"></traverson-traversal>
@@ -35,6 +33,10 @@
 
 
 
+    <traverson-traversal id="deleteApplication" handle-as="jsonHal" method="DELETE" from="/applications"
+                         follow="['cu:applications[name:toto]','self']"
+                         request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
+
     <template is="dom-repeat" items="{{ _getEmbedded(applications, 'cu:applications') }}" as="application">
       <paper-card heading="{{application.name}}">
         <div class="card-content">
@@ -42,6 +44,7 @@
           <iron-icon style="color: {{ getColorFromState(application.state) }};" icon="cu-icons:circle" ></iron-icon>
         </div>
         <div class="card-actions">
+          <paper-icon-button on-click="_deleteApp" data-args="{{application.name}}" icon="icons:delete"></paper-icon-button>
         </div>
       </paper-card>
     </template>
@@ -49,10 +52,17 @@
   </template>
 
   <script>
-
     class CloudUnitAppsElement extends Polymer.Element {
       static get is() { return 'cu-apps'; }
 
+        _deleteApp(e) {
+        var model = e.model;
+        var applicationName = model.application.name;
+        var deletionRequest = this.$.deleteApplication;
+        deletionRequest.follow = ["cu:applications[name:" + applicationName + "]", "self"];
+        deletionRequest.body = {name: applicationName};
+        deletionRequest.generateTraversal();
+    }
       getColorFromState(state) {
           switch(state) {
               case 'STOPPED':
@@ -67,19 +77,15 @@
           }
       }
 
-
-
-
         static get properties() {
     	return {
           applications: Object
     	}
       }
-
+      
       _getEmbedded(model, rel) {
     	return model._embedded[rel];
       }
-
 
     }
 
