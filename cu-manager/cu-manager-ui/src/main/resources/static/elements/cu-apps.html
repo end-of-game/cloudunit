@@ -18,15 +18,12 @@
 
 <dom-module id="cu-apps">
   <template>
-
-
     <style include="shared-styles">
       :host {
         display: block;
 
         padding: 10px;
       }
-
     </style>
 
     <traverson-traversal auto from="/applications" last-response="{{applications}}"></traverson-traversal>
@@ -47,7 +44,7 @@
           <iron-icon style="color: {{ getColorFromState(application.state) }};" icon="cu-icons:circle" ></iron-icon>
         </div>
         <div class="card-actions">
-          <paper-icon-button on-click="deleteApp" data-args="{{application.name}}" icon="cu-icons:delete"></paper-icon-button>
+          <paper-icon-button on-click="_deleteApp" data-args="{{application.name}}" icon="cu-icons:delete"></paper-icon-button>
         </div>
       </paper-card>
     </template>
@@ -55,51 +52,18 @@
   </template>
 
   <script>
-
-<<<<<<< 1a63149f8da72ce7ee8ce23b4fd76952613fa4b6
-=======
-      Polymer({
-          is: 'cu-apps',
-          deleteApp : function(e) {
-              var model = e.model;
-
-              console.log(model.application.name);
-              var deletionRequest = this.$.deleteApplication;
-              deletionRequest.body = {name : model.application.name};
-              deletionRequest.generateTraversal();
-          },
-          getColorFromState : function(state) {
-              switch(state) {
-                  case 'STOPPED':
-                      return 'red';
-                  case 'STARTING':
-                      return 'yellow';
-                  case 'STARTED' :
-                      return 'green';
-
-                  default:
-                      return "";
-              }
-          },
-
-           get_properties : function() {
-              return {
-                  applications: Object
-              }
-          },
-
-          _getEmbedded: function(model, rel) {
-              return model._embedded[rel];
-          }
-
-      });
-
-
->>>>>>> Intermediate commit
     class CloudUnitAppsElement extends Polymer.Element {
       static get is() { return 'cu-apps'; }
 
-
+        _deleteApp(e) {
+        var model = e.model;
+        var applicationName = model.application.name;
+        console.log(applicationName);
+        var deletionRequest = this.$.deleteApplication;
+        deletionRequest.follow = ["cu:applications[name:" + applicationName + "]", "self"];
+        deletionRequest.body = {name: applicationName};
+        deletionRequest.generateTraversal();
+    }
       getColorFromState(state) {
           switch(state) {
               case 'STOPPED':
@@ -114,33 +78,18 @@
           }
       }
 
-
-
-
         static get properties() {
     	return {
           applications: Object
     	}
       }
-
+      
       _getEmbedded(model, rel) {
     	return model._embedded[rel];
       }
 
-
-<<<<<<< 1a63149f8da72ce7ee8ce23b4fd76952613fa4b6
-=======
-
-    /*    deleteApp(){
-            console.log("Oh fuck");
-            var deletionRequest = this.$.deleteApplication;
-            deletionRequest.body = {name : appName};
-            deletionRequest.generateTraversal();
-        }*/
-
->>>>>>> Intermediate commit
     }
 
-    //window.customElements.define(CloudUnitAppsElement.is, CloudUnitAppsElement);
+    window.customElements.define(CloudUnitAppsElement.is, CloudUnitAppsElement);
   </script>
 </dom-module>
