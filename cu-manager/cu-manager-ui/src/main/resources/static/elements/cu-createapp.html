@@ -1,0 +1,73 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html"/>
+<link rel="import" href="shared-styles.html"/>
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../bower_components/paper-input/paper-input.html"/>
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html"/>
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html"/>
+<link rel="import" href="cu-icons.html">
+
+
+<dom-module id="cu-createapp">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+        </style>
+
+        <traverson-traversal id="createApp" handle-as="jsonHal" method="POST" from="/applications"
+            request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
+
+
+        <paper-icon-button icon="cu-icons:plus" id="button-create" on-click="openModal"></paper-icon-button>
+
+        <!-- The Modal -->
+        <paper-dialog id="myModal">
+            <h2>Create an application</h2>
+            <paper-input value={{applicationName}} type="text" placeholder="Application name"></paper-input>
+            <div class="buttons">
+                <paper-button on-click="createApp" dialog-confirm>OK</paper-button>
+                <paper-button dialog-dismiss>Cancel</paper-button>
+            </div>
+
+        </paper-dialog>
+    </template>
+
+    <script>
+
+        class CloudUnitCreateApp extends Polymer.Element {
+            static get is() {
+                return 'cu-createapp';
+            }
+
+            static get properties() {
+                return {
+                    applicationName: String
+                }
+            }
+
+            _getEmbedded(model, rel) {
+                return model._embedded[rel];
+            }
+
+            openModal() {
+                this.$.myModal.open();
+            }
+
+            createApp() {
+                var creationRequest = this.$.createApp;
+                creationRequest.body = {name: this.applicationName};
+
+                creationRequest.generateTraversal();
+            }
+
+        }
+
+        window.customElements.define(CloudUnitCreateApp.is, CloudUnitCreateApp);
+
+
+    </script>
+
+</dom-module>
