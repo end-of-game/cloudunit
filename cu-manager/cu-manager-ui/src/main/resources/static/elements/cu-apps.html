@@ -58,7 +58,6 @@
         _deleteApp(e) {
         var model = e.model;
         var applicationName = model.application.name;
-        console.log(applicationName);
         var deletionRequest = this.$.deleteApplication;
         deletionRequest.follow = ["cu:applications[name:" + applicationName + "]", "self"];
         deletionRequest.body = {name: applicationName};
