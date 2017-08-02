@@ -32,19 +32,25 @@
     </app-toolbar>
 
 
-
+<!--
     <traverson-traversal id="deleteApplication" handle-as="jsonHal" method="DELETE" from="/applications"
-                         follow="['cu:applications[name:toto]','self']"
+                         request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
+-->
+
+
+    <traverson-traversal id="manageApplication" handle-as="jsonHal" method="POST" from="/applications"
                          request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
 
     <template is="dom-repeat" items="{{ _getEmbedded(applications, 'cu:applications') }}" as="application">
       <paper-card heading="{{application.name}}">
         <div class="card-content">
           {{ application.state }}
-          <iron-icon style="color: {{ getColorFromState(application.state) }};" icon="cu-icons:circle" ></iron-icon>
+          <iron-icon style="color:{{ getColorFromState(application.state) }};" icon="cu-icons:circle" ></iron-icon>
         </div>
         <div class="card-actions">
-          <paper-icon-button on-click="_deleteApp" data-args="{{application.name}}" icon="icons:delete"></paper-icon-button>
+          <paper-icon-button on-click="_manageApp" data-item$="{{application.name}},delete" icon="icons:delete"></paper-icon-button>
+          <paper-icon-button on-click="_manageApp" data-item$="{{ application.name }},start" icon="icons:settings-power"></paper-icon-button>
+          <paper-icon-button on-click="_manageApp" data-item$="{{ application.name }},stop" icon="icons:stop"></paper-icon-button>
         </div>
       </paper-card>
     </template>
@@ -63,6 +69,33 @@
         deletionRequest.body = {name: applicationName};
         deletionRequest.generateTraversal();
     }
+
+        _manageApp(e) {
+            var args = e.target.dataset.item.split(','); // get data-items
+            var action = args[1];
+            var applicationName = e.model.application.name;
+            var request = this.$.manageApplication; // traverson-traversal  element
+            switch (action){
+                case 'start':
+                    request.method = "POST";
+                    request.follow = ["cu:applications[name:" + applicationName + "]", "cu:start"];
+                    break;
+                case 'stop':
+                    request.method = "POST";
+                    request.follow = ["cu:applications[name:" + applicationName + "]", "cu:stop"];
+                    break;
+                case 'delete':
+                    request.method = "DELETE";
+                    request.follow =  ["cu:applications[name:"+applicationName+"]","self"];
+                    break;
+
+            }
+
+            request.body = {name: applicationName};
+            request.generateTraversal();
+        }
+
+
       getColorFromState(state) {
           switch(state) {
               case 'STOPPED':
