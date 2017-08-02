@@ -1,6 +1,5 @@
 package fr.treeptik.cloudunit.orchestrator.docker.processor;
 
-import static fr.treeptik.cloudunit.orchestrator.docker.test.TestCaseConstants.CONTAINER_NAME;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -16,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -55,6 +55,15 @@ public class DeploymentEventProcessorIT {
     @Autowired
     private CloudUnitConfiguration cloudUnitConfiguration;
 
+
+    @Autowired
+    @Qualifier("testContainerName")
+    private String containerName;
+
+    @Autowired
+    @Qualifier("testVolumeName")
+    private String volumeName;
+
     @Parameters(name = "{index} {0}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
@@ -75,7 +84,7 @@ public class DeploymentEventProcessorIT {
 
     @Test
     public void deployHelloWorld() throws Exception {
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, serverName);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, serverName);
         try {
             containerTemplate.startContainer(container);
             containerTemplate.waitWhilePending(container);
@@ -84,7 +93,7 @@ public class DeploymentEventProcessorIT {
             await().atMost(Duration.ONE_MINUTE).until(() -> 
             {
             	String domainName = cloudUnitConfiguration.getDomainName();
-                String url = String.format("http://%s.%s", CONTAINER_NAME, domainName);
+                String url = String.format("http://%s.%s", containerName, domainName);
                 try {
 	            	String content = httpTemplate.getContent(url);
 	            	return content.contains("Tomcat");
@@ -97,11 +106,11 @@ public class DeploymentEventProcessorIT {
             DeploymentEvent deploymentEvent = new DeploymentEvent();
             deploymentEvent.setType(DeploymentEvent.Type.DEPLOYED);
             deploymentEvent.setDeployment(deploymentResource);
-            deploymentEvent.setService(ServiceResource.of().containerName(CONTAINER_NAME).build());
+            deploymentEvent.setService(ServiceResource.of().containerName(containerName).build());
             deploymentEventProcessor.onDeploymentEvent(deploymentEvent);
 
             String domainName = cloudUnitConfiguration.getDomainName();
-            String url = String.format("http://%s.%s/%s", CONTAINER_NAME, domainName, "xxx");
+            String url = String.format("http://%s.%s/%s", containerName, domainName, "xxx");
             
             // wait until tomcat deploy app 
             await().atMost(Duration.ONE_MINUTE).until(() -> 

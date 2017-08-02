@@ -28,7 +28,7 @@ public class ApplicationControllerIT {
     
     @Autowired
     private ApplicationTemplate applicationTemplate;
-    
+
     @Autowired
     @Qualifier("testApplicationName")
     private String applicationName;

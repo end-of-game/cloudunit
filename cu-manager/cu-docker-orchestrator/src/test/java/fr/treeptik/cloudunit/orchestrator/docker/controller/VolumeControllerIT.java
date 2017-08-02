@@ -6,6 +6,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -26,10 +27,15 @@ public class VolumeControllerIT {
 
     @Autowired
     private VolumeTemplate volumeTemplate;
-    
+
+    @Autowired
+    @Qualifier("testVolumeName")
+    private String volumeName;
+
+
     @Test
     public void testCreateRemoveVolume() throws Exception {
-        ResultActions result = volumeTemplate.createVolume("myvolume");
+        ResultActions result = volumeTemplate.createVolume(volumeName);
         result.andExpect(status().isCreated());
         
         VolumeResource volume = volumeTemplate.getVolume(result);

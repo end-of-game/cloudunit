@@ -16,6 +16,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.Resources;
@@ -40,12 +41,17 @@ public class ContainerControllerIT {
     
     @Autowired
     private ImageTemplate imageTemplate;
+
+    @Autowired
+    @Qualifier("testContainerName")
+    private String containerName;
+
     
     @Test
     public void testCreateContainer() throws Exception {
-        containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+        containerTemplate.assumeContainerDoesNotExist(containerName);
 
-        ResultActions result = containerTemplate.createContainer(CONTAINER_NAME, IMAGE_NAME);
+        ResultActions result = containerTemplate.createContainer(containerName, IMAGE_NAME);
         result.andExpect(status().isCreated());
         
         ContainerResource container = containerTemplate.getContainer(result);
@@ -71,9 +77,9 @@ public class ContainerControllerIT {
 
     @Test
     public void testCreateDeleteContainer() throws Exception {
-        containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+        containerTemplate.assumeContainerDoesNotExist(containerName);
 
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, IMAGE_NAME);
         
         containerTemplate.deleteContainer(container)
             .andExpect(status().isNoContent());
@@ -81,9 +87,9 @@ public class ContainerControllerIT {
     
     @Test
     public void testStartContainer() throws Exception {
-        containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+        containerTemplate.assumeContainerDoesNotExist(containerName);
 
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, IMAGE_NAME);
         
         try {
             containerTemplate.startContainer(container)
@@ -101,9 +107,9 @@ public class ContainerControllerIT {
     
     @Test
     public void testStartStopContainer() throws Exception {
-        containerTemplate.assumeContainerDoesNotExist(CONTAINER_NAME);
+        containerTemplate.assumeContainerDoesNotExist(containerName);
 
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, IMAGE_NAME);
 
         try {
             containerTemplate.startContainer(container)

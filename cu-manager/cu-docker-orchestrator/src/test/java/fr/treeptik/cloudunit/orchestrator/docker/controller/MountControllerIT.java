@@ -8,6 +8,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -34,11 +35,20 @@ public class MountControllerIT {
     
     @Autowired
     private VolumeTemplate volumeTemplate;
+
+    @Autowired
+    @Qualifier("testContainerName")
+    private String containerName;
+
+    @Autowired
+    @Qualifier("testVolumeName")
+    private String volumeName;
+
     
     @Test
     public void testMountVolume() throws Exception {
-        VolumeResource volume = volumeTemplate.createAndAssumeVolume(VOLUME_NAME);
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        VolumeResource volume = volumeTemplate.createAndAssumeVolume(volumeName);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, IMAGE_NAME);
         try {
             ResultActions result = containerTemplate.mountVolume(container, volume, "/etc");
             result.andExpect(status().isCreated());
@@ -56,8 +66,8 @@ public class MountControllerIT {
     
     @Test
     public void testMountUnmountVolume() throws Exception {
-        VolumeResource volume = volumeTemplate.createAndAssumeVolume(VOLUME_NAME);
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        VolumeResource volume = volumeTemplate.createAndAssumeVolume(volumeName);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, IMAGE_NAME);
         try {
             ResultActions result = containerTemplate.mountVolume(container, volume, "/etc");
             MountResource mount = containerTemplate.getMount(result);

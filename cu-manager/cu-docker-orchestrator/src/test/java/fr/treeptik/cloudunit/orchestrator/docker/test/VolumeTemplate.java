@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
@@ -18,13 +19,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.treeptik.cloudunit.orchestrator.resource.VolumeResource;
 
 @Component
-@Lazy
 public class VolumeTemplate {
     @Autowired
     private MockMvc mockMvc;
     
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired(required = false)
+    @Qualifier("testVolumeName")
+    private String testVolumeName;
     
     public ResultActions createVolume(String name) throws Exception {
         VolumeResource request = new VolumeResource(name);

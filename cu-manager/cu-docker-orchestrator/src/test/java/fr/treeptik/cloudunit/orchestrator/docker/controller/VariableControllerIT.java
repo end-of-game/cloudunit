@@ -10,6 +10,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.Resources;
@@ -33,9 +34,13 @@ public class VariableControllerIT {
     @Autowired
     private ContainerTemplate containerTemplate;
 
+    @Autowired
+    @Qualifier("testContainerName")
+    private String containerName;
+
     @Test
     public void testAddVariable() throws Exception {
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, IMAGE_NAME);
         try {
             ResultActions result = containerTemplate.addVariable(container, "KEY1", "VALUE1");
             result.andExpect(status().isCreated());
@@ -53,7 +58,7 @@ public class VariableControllerIT {
     
     @Test
     public void testUpdateVariable() throws Exception {
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, IMAGE_NAME);
         try {
             ResultActions result = containerTemplate.addVariable(container, "KEY1", "VALUE1");
             
@@ -76,7 +81,7 @@ public class VariableControllerIT {
 
     @Test
     public void testDeleteVariable() throws Exception {
-        ContainerResource container = containerTemplate.createAndAssumeContainer(CONTAINER_NAME, IMAGE_NAME);
+        ContainerResource container = containerTemplate.createAndAssumeContainer(containerName, IMAGE_NAME);
         try {
             ResultActions result = containerTemplate.addVariable(container, "KEY1", "VALUE1");
             

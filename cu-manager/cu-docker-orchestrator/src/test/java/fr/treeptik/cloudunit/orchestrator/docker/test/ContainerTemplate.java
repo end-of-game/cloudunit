@@ -14,6 +14,7 @@ import org.junit.Assume;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resources;
@@ -35,7 +36,6 @@ import fr.treeptik.cloudunit.orchestrator.resource.VariableResource;
 import fr.treeptik.cloudunit.orchestrator.resource.VolumeResource;
 
 @Component
-@Lazy
 public class ContainerTemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(ContainerTemplate.class);
 
@@ -47,6 +47,10 @@ public class ContainerTemplate {
 
     @Autowired
     private DockerClient dockerClient;
+
+    @Autowired(required = false)
+    @Qualifier("testContainerName")
+    private String testContainerName;
 
     public ResultActions createContainer(String name, String imageName) throws Exception {
         ContainerResource request = new ContainerResource(name, imageName);
