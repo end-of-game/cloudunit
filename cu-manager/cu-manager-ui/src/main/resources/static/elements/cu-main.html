@@ -58,7 +58,7 @@
       }
     </style>
 
-    <app-location route="{{route}}"  use-hash-as-path></app-location>
+    <app-location route="{{route}}" use-hash-as-path></app-location>
     <app-route
         route="{{route}}"
         pattern="[[rootPattern]]:page"
@@ -138,7 +138,7 @@
         }
 
         // If no page was found in the route data, page will be an empty string.
-        // Deault to 'view1' in that case.
+        // Default to 'apps' in that case.
         this.page = page || 'apps';
 
         // Close a non-persistent drawer when the page & route are changed.
