@@ -42,7 +42,22 @@
                          request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
 
     <template is="dom-repeat" items="{{ _getEmbedded(applications, 'cu:applications') }}" as="application">
+      <traverson-traversal auto
+                           handle-as="jsonHal"
+                           from="/applications"
+                           follow='{{ _follow("cu:applications", application.name, "cu:services") }}'
+                           last-response="{{services}}"
+                           request-options="{ header: { 'Content-Type': 'application/hal+json' }}">
+      </traverson-traversal>
+
       <paper-card heading="{{application.name}}">
+        <div class="services">
+          <ul>
+            <template is="dom-repeat" items="{{ _getEmbedded(services, 'cu:services') }}" as="service">
+              <li> {{ service.name }} </li>
+            </template>
+          </ul>
+        </div>
         <div class="card-content">
           {{ application.state }}
           <iron-icon style="color:{{ getColorFromState(application.state) }};" icon="cu-icons:circle" ></iron-icon>
@@ -120,6 +135,9 @@
     	return model._embedded[rel];
       }
 
+      _follow(model, name, rel) {
+          return [model+"[name:"+name+"]", rel];
+      }
     }
 
     window.customElements.define(CloudUnitAppsElement.is, CloudUnitAppsElement);
