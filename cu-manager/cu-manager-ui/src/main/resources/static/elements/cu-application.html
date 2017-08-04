@@ -1,0 +1,128 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html"/>
+<link rel="import" href="shared-styles.html"/>
+
+<link rel="import" href="../bower_components/paper-card/paper-card.html"/>
+<link rel="import" href="../bower_components/traverson-traversal/traverson-traversal.html"/>
+<link rel="import" href="../bower_components/paper-input/paper-input.html"/>
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html"/>
+<link rel="import" href="cu-icons.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html"/>
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"/>
+<link rel="import" href="../bower_components/paper-dialog-behavior/paper-dialog-behavior.html"/>
+<link rel="import" href="../bower_components/paper-button/paper-button.html"/>
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="cu-createapp.html">
+<link rel="import" href="cu-icons.html">
+
+<dom-module id="cu-application">
+    <template>
+        <style include="shared-styles">
+            :host {
+                padding: 10px;
+            }
+        </style>
+
+        <traverson-traversal id="manageApplication" handle-as="jsonHal" method="POST" from="/applications"
+                             request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
+
+        <traverson-traversal auto
+                             handle-as="jsonHal"
+                             from="/applications"
+                             follow='{{ _follow("cu:applications", name, "cu:services") }}'
+                             last-response="{{services}}"
+                             request-options="{ header: { 'Content-Type': 'application/hal+json' }}">
+        </traverson-traversal>
+
+        <paper-card heading="{{name}}">
+            <div class="services">
+                <ul>
+                    <template is="dom-repeat" items="{{ _getEmbedded(services, 'cu:services') }}" as="service">
+                        <li> {{ service.name }}</li>
+                    </template>
+                </ul>
+            </div>
+            <div class="card-content">
+                {{state}}
+                <iron-icon style="color:{{ getColorFromState(state) }};" icon="cu-icons:circle"></iron-icon>
+            </div>
+            <div class="card-actions">
+                <paper-icon-button on-click="_manageApp" data-item$="{{name}},delete"
+                                   icon="icons:delete"></paper-icon-button>
+                <paper-icon-button on-click="_manageApp" data-item$="{{name}},start"
+                                   icon="av:play-arrow"></paper-icon-button>
+                <paper-icon-button on-click="_manageApp" data-item$="{{name}},stop"
+                                   icon="av:stop"></paper-icon-button>
+            </div>
+        </paper-card>
+    </template>
+
+    <script>
+        class CloudUnitApplicationView extends Polymer.Element {
+            static get is() {
+                return 'cu-application';
+            }
+
+            _manageApp(e) {
+                var args = e.target.dataset.item.split(','); // get data-items
+                var action = args[1];
+                var applicationName = args[0];
+                var request = this.$.manageApplication; // traverson-traversal  element
+                switch (action){
+                    case 'start':
+                        request.method = "POST";
+                        request.follow = ["cu:applications[name:" + applicationName + "]", "cu:start"];
+                        break;
+                    case 'stop':
+                        request.method = "POST";
+                        request.follow = ["cu:applications[name:" + applicationName + "]", "cu:stop"];
+                        break;
+                    case 'delete':
+                        request.method = "DELETE";
+                        request.follow =  ["cu:applications[name:"+applicationName+"]","self"];
+                        break;
+
+                }
+
+                request.body = {name: applicationName};
+                request.generateTraversal();
+            }
+
+            getColorFromState(state) {
+                switch(state) {
+                    case 'STOPPED':
+                        return 'red';
+                    case 'STARTING':
+                        return 'yellow';
+                    case 'STARTED' :
+                        return 'green';
+
+                    default:
+                        return "";
+                }
+            }
+
+            static get properties() {
+                return {
+                    applications: Object
+                }
+            }
+
+            _getEmbedded(model, rel) {
+                return model._embedded[rel];
+            }
+
+            _follow(model, name, rel) {
+                return [model+"[name:"+name+"]", rel];
+            }
+
+            manageApplication(e) {
+                var appName = e.model.application.name;
+                location.href = '/#/manager/'+appName;
+                console.log( e.model.application.name);
+            }
+        }
+
+        window.customElements.define(CloudUnitApplicationView.is, CloudUnitApplicationView);
+    </script>
+</dom-module>

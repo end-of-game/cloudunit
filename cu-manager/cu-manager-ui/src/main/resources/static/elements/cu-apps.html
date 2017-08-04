@@ -13,6 +13,7 @@
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="cu-createapp.html">
+<link rel="import" href="cu-application.html">
 <link rel="import" href="cu-icons.html">
 
 
@@ -21,7 +22,6 @@
     <style include="shared-styles">
       :host {
         display: block;
-
         padding: 10px;
       }
     </style>
@@ -31,115 +31,20 @@
       <cu-createapp></cu-createapp>
     </app-toolbar>
 
-
-<!--
-    <traverson-traversal id="deleteApplication" handle-as="jsonHal" method="DELETE" from="/applications"
-                         request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
--->
-
-
-    <traverson-traversal id="manageApplication" handle-as="jsonHal" method="POST" from="/applications"
-                         request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>
-
     <template is="dom-repeat" items="{{ _getEmbedded(applications, 'cu:applications') }}" as="application">
-      <traverson-traversal auto
-                           handle-as="jsonHal"
-                           from="/applications"
-                           follow='{{ _follow("cu:applications", application.name, "cu:services") }}'
-                           last-response="{{services}}"
-                           request-options="{ header: { 'Content-Type': 'application/hal+json' }}">
-      </traverson-traversal>
-
-      <paper-card heading="{{application.name}}">
-        <div class="services">
-          <ul>
-            <template is="dom-repeat" items="{{ _getEmbedded(services, 'cu:services') }}" as="service">
-              <li> {{ service.name }} </li>
-            </template>
-          </ul>
-        </div>
-        <div class="card-content">
-          {{ application.state }}
-          <iron-icon style="color:{{ getColorFromState(application.state) }};" icon="cu-icons:circle" ></iron-icon>
-        </div>
-        <div class="card-actions">
-          <paper-icon-button on-click="_manageApp" data-item$="{{application.name}},delete" icon="icons:delete"></paper-icon-button>
-          <paper-icon-button on-click="_manageApp" data-item$="{{ application.name }},start" icon="av:play-arrow"></paper-icon-button>
-          <paper-icon-button on-click="_manageApp" data-item$="{{ application.name }},stop" icon="av:stop"></paper-icon-button>
-        </div>
-      </paper-card>
+      <cu-application name="{{ application.name }}" state="{{ application.state }}"></cu-application>
     </template>
-
   </template>
+    <script>
+        class CloudUnitAppsElement extends Polymer.Element {
 
-  <script>
-    class CloudUnitAppsElement extends Polymer.Element {
-      static get is() { return 'cu-apps'; }
+            static get is() { return 'cu-apps'; }
 
-        _deleteApp(e) {
-        var model = e.model;
-        var applicationName = model.application.name;
-        var deletionRequest = this.$.deleteApplication;
-        deletionRequest.follow = ["cu:applications[name:" + applicationName + "]", "self"];
-        deletionRequest.body = {name: applicationName};
-        deletionRequest.generateTraversal();
-    }
-
-        _manageApp(e) {
-            var args = e.target.dataset.item.split(','); // get data-items
-            var action = args[1];
-            var applicationName = e.model.application.name;
-            var request = this.$.manageApplication; // traverson-traversal  element
-            switch (action){
-                case 'start':
-                    request.method = "POST";
-                    request.follow = ["cu:applications[name:" + applicationName + "]", "cu:start"];
-                    break;
-                case 'stop':
-                    request.method = "POST";
-                    request.follow = ["cu:applications[name:" + applicationName + "]", "cu:stop"];
-                    break;
-                case 'delete':
-                    request.method = "DELETE";
-                    request.follow =  ["cu:applications[name:"+applicationName+"]","self"];
-                    break;
-
+            _getEmbedded(model, rel) {
+                return model._embedded[rel];
             }
-
-            request.body = {name: applicationName};
-            request.generateTraversal();
         }
 
-
-      getColorFromState(state) {
-          switch(state) {
-              case 'STOPPED':
-                  return 'red';
-              case 'STARTING':
-                  return 'yellow';
-              case 'STARTED' :
-                  return 'green';
-
-              default:
-                  return "";
-          }
-      }
-
-        static get properties() {
-    	return {
-          applications: Object
-    	}
-      }
-      
-      _getEmbedded(model, rel) {
-    	return model._embedded[rel];
-      }
-
-      _follow(model, name, rel) {
-          return [model+"[name:"+name+"]", rel];
-      }
-    }
-
-    window.customElements.define(CloudUnitAppsElement.is, CloudUnitAppsElement);
-  </script>
+        window.customElements.define(CloudUnitAppsElement.is, CloudUnitAppsElement);
+    </script>
 </dom-module>

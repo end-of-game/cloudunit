@@ -3,6 +3,7 @@
   "shell": "elements/my-app.html",
   "fragments": [
     "elements/cu-apps.html",
+    "elements/cu-application.html",
     "elements/cu-volumes.html",
     "elements/cu-view404.html",
     "elements/cu-createapp.html"
