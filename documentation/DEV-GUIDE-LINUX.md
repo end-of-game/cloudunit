@@ -51,8 +51,7 @@ This guide explains who to set up an environment to contribute to CloudUnit deve
 ### Install Node Project dependencies
 
 ```
-[Linux Host]    sudo npm install -g grunt grunt-cli bower 
-[Linux Host]    pushd cu-manager-ui && npm install && bower install && popd
+[Linux Host]    sudo npm install -g bower 
 [Linux Host]    pushd cu-cli && npm install && popd
 ```
 
@@ -73,13 +72,13 @@ Or, if your machine has 8 GB RAM
 ### Build images
 
 ```
-[VagrantBox]    pushd cloudunit/cu-services && make && popd
+[VagrantBox]    pushd cu-services && make && popd
 ```
 
 ### Start supporting services
 
 ```
-[VagrantBox]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
+[VagrantBox]    pushd cu-compose && ./reset-dev.sh -y && popd
 ```
 
 ### Import Maven projects into Java IDE workspace
@@ -123,7 +122,7 @@ and
 Open another shell and run
 ```
 [Linux Host]    cd cu-manager
-[Linux Host]    mvn spring-boot:runi -pl cu-manager-ui -Pvagrant
+[Linux Host]    mvn spring-boot:run -pl cu-manager-ui -Pvagrant
 ```
 Then open http://localhost:9000/ in your favorite web browser.
 
@@ -132,13 +131,13 @@ Then open http://localhost:9000/ in your favorite web browser.
 ## How to reset Development Environment
 
 ```
-[VagrantBox]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
+[VagrantBox]    pushd cu-compose && ./reset-dev.sh -y && popd
 ```
     
 ## How to rebuild images
 
 ```
-[VagrantBox]    pushd cloudunit/cu-services && make && popd
-[VagrantBox]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
+[VagrantBox]    pushd cu-services && make && popd
+[VagrantBox]    pushd cu-compose && ./reset-dev.sh -y && popd
 ```
 
