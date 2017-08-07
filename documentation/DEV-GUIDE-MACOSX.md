@@ -43,21 +43,20 @@ This guide explains who to set up an environment to contribute to CloudUnit deve
 ### Install Node Project dependencies
 
 ```
-[MacOSX]    npm install -g grunt grunt-cli bower 
-[MacOSX]    pushd cu-manager-ui && npm install && bower install && popd
+[MacOSX]    npm install -g bower
 [MacOSX]    pushd cu-cli && npm install && popd
 ```
 
 ### Build images
 
 ```
-[MacOSX]    pushd cloudunit/cu-services && make && popd
+[MacOSX]    pushd cu-services && make && popd
 ```
 
 ### Start supporting services
 
 ```
-[MacOSX]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
+[MacOSX]    pushd cu-compose && ./reset-dev.sh -y && popd
 ```
 
 ### Import Maven projects into Java IDE workspace
@@ -104,20 +103,20 @@ Open another shell and run
 [MacOSX]    cd cu-manage
 [MacOSX]    mvn spring-boot:run -pl cu-manager-ui -Plocal
 ```
-This will open http://0.0.0.:9000/ in your default web browser.
+This will open http://localhost:9000/ in your default web browser.
 
 # FAQ
 
 ## How to reset Development Environment
 
 ```
-[MacOSX]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
+[MacOSX]    pushd cu-compose && ./reset-dev.sh -y && popd
 ```
     
 ## How to rebuild images
 
 ```
-[MacOSX]    pushd cloudunit/cu-services && make && popd
-[MacOSX]    pushd cloudunit/cu-compose && ./reset-dev.sh -y && popd
+[MacOSX]    pushd cu-services && make && popd
+[MacOSX]    pushd cu-compose && ./reset-dev.sh -y && popd
 ```
 
