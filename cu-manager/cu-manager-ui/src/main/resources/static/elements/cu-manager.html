@@ -1,0 +1,65 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="cu-manager">
+    <template id="manager">
+        <style include="shared-styles">
+            :host {
+                display: block;
+
+                padding: 10px;
+            }
+        </style>
+
+       <!-- <traverson-traversal id="manageApp"
+                             handle-as="jsonHal"
+                             from="/applications/{{ name }}"
+                             last-response="{{application}}"
+                             request-options="{ header: { 'Content-Type': 'application/hal+json' }}"></traverson-traversal>-->
+
+        <div class="card">
+            <h1>Application - {{ data.name }}</h1>
+            <cu-application name="{{ data.name }}" state="{{ data.state }}"></cu-application>
+        </div>
+    </template>
+
+    <script>
+        class CloudUnitManagerView extends Polymer.Element {
+            static get is() { return 'cu-manager'; }
+
+            static get properties() { return {
+                data: {
+                    type: Object,
+                    value: function() {
+                        return {
+                            name: 'TO-DO',
+                            //request: this.$.manageApplication
+                        };
+                    }
+                },
+
+                visible: {
+                    type: Boolean,
+                    observer: '_visibleChanged'
+                }
+            }}
+
+            _visibleChanged(visible) {
+                if (visible) {
+                    var n = this.getAppName();
+                    console.log("b " + n);
+                    this.set('data.name', n);
+                }
+            }
+
+            getAppName () {
+                let url = location.href;
+                console.log(url);
+                let splitted = url.split('/');
+                return splitted[splitted.length-1];
+            }
+        }
+
+        window.customElements.define(CloudUnitManagerView.is, CloudUnitManagerView);
+    </script>
+</dom-module>

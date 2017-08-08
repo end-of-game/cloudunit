@@ -14,6 +14,7 @@
 
 <link rel="lazy-import" href="cu-apps.html">
 <link rel="lazy-import" href="cu-volumes.html">
+<link rel="lazy-import" href="cu-manager.html">
 <link rel="lazy-import" href="cu-view404.html">
 
 <dom-module id="cu-main">
@@ -89,9 +90,11 @@
             selected="[[page]]"
             attr-for-selected="name"
             fallback-selection="view404"
+            selected-attribute="visible"
             role="main">
           <cu-apps name="apps"></cu-apps>
-          <cu-volumes name="volumes"></cu-volume>
+          <cu-volumes name="volumes"></cu-volumes>
+          <cu-manager name="manager"></cu-manager>
           <cu-view404 name="view404"></cu-view404>
         </iron-pages>
       </app-header-layout>

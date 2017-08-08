@@ -38,7 +38,7 @@
             <div class="services">
                 <ul>
                     <template is="dom-repeat" items="{{ _getEmbedded(services, 'cu:services') }}" as="service">
-                        <li> {{ service.name }}</li>
+                        <li><iron-icon style="color:{{ getColorFromState(service.state) }}" icon="cu-icons:circle"></iron-icon> {{ service.name }}</li>
                     </template>
                 </ul>
             </div>
@@ -53,6 +53,9 @@
                                    icon="av:play-arrow"></paper-icon-button>
                 <paper-icon-button on-click="_manageApp" data-item$="{{name}},stop"
                                    icon="av:stop"></paper-icon-button>
+                <a href="#/manager/{{name}}">
+                    <paper-icon-button icon="icons:dashboard"></paper-icon-button>
+                </a>
             </div>
         </paper-card>
     </template>
@@ -116,10 +119,8 @@
                 return [model+"[name:"+name+"]", rel];
             }
 
-            manageApplication(e) {
-                var appName = e.model.application.name;
-                location.href = '/#/manager/'+appName;
-                console.log( e.model.application.name);
+            manageApplication() {
+                /*location.href = '/#/manager';*/
             }
         }
 
