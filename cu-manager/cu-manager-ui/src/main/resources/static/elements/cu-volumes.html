@@ -12,14 +12,21 @@
     </style>
 
     <div class="card">
-      <div class="circle">2</div>
       <h1>Volumes</h1>
+      <traverson-traversal auto from="/volumes" last-response="{{volumes}}"></traverson-traversal>
+      <template is="dom-repeat" items="{{ _getEmbedded(volumes, 'cu:volumes') }}" as="volume">
+        <p>{{ volume.name }}</p>
+      </template>
     </div>
   </template>
 
   <script>
     class CloudUnitVolumesView extends Polymer.Element {
       static get is() { return 'cu-volumes'; }
+
+      _getEmbedded(model, rel) {
+          return model._embedded[rel];
+      }
     }
 
     window.customElements.define(CloudUnitVolumesView.is, CloudUnitVolumesView);
