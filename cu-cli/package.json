@@ -10,7 +10,11 @@
   "files": [
     "cu.js",
     "cu-app.js",
+    "cu-env.js",
+    "cu-image.js",
+    "cu-mount.js",
     "cu-service.js",
+    "cu-volume.js",
     "lib"
   ],
   "scripts": {
