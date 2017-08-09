@@ -54,19 +54,27 @@ Previously :
 * AlpesJUG Grenoble 2016
 * SophiaConf TelecomValley Nice,  2016
 
+# Documentation
+
 ## Getting started
 
-There are many installation guides
-* [Server installation guide](documentation/SERVER-GUIDE.md)
+* [User guide](documentation/USER-GUIDE.adoc)
+
+## Installing
+
+* [Server installation guide](documentation/SERVER-GUIDE.adoc)
+
+## Going further
+    
+* [Troubleshooting](documentation/TROUBLESHOOTING.md)
+* [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit/blob/dev/documentation/CLI-GUIDE.md)
+* [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit/tree/dev/cu-maven/README.md)
+
+## Contributing and customizing
+
 * [Development guide Linux](documentation/DEV-GUIDE-LINUX.md)
 * [Development guide MacOSX](documentation/DEV-GUIDE-MACOSX.md)
 * [Add new module](documentation/MODULE-GUIDE.md)
-* [Troubleshooting](documentation/TROUBLESHOOTING.md)
-
-## Go further
-    
-* [CloudUnit CLI guide](https://github.com/Treeptik/cloudunit/blob/dev/documentation/CLI-GUIDE.md)
-* [CloudUnit Maven Plugin](https://github.com/Treeptik/cloudunit/tree/dev/cu-maven/README.md)
 
 # Licensing
 
@@ -85,16 +93,16 @@ limitations under the License.**
   
 # Legal terms
 
-`CloudUnit` is a registered trademark of Treeptik and can't be used to endorse
+`CloudUnit` is a registered trademark of Treeptik and cannot be used to endorse
 or promote products derived from this project without prior written permission from `Treeptik`.
 Products or services derived from this software may not be called `CloudUnit` nor may `Treeptik` 
 or similar confusing terms appear in their names without prior written permission.
 
 # Contact
 
-For any questions, contact us : contact@treeptik.fr
+For any questions, contact us at contact@treeptik.fr
 
-Else ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
+Or you can ask your questions on [CloudUnit Google group](https://groups.google.com/forum/#!forum/cloudunit)
 
 Copyright 2017 Treeptik
 
@@ -102,11 +110,6 @@ Copyright 2017 Treeptik
 ![Github contributors](https://img.shields.io/github/contributors/Treeptik/cloudunit.svg?style=flat-square)
 ![Github stars](https://img.shields.io/github/stars/Treeptik/cloudunit.svg?style=flat-square)
 ![Github forks](https://img.shields.io/github/forks/Treeptik/cloudunit.svg?style=flat-square)
-
-![Github issues opened](https://img.shields.io/github/issues/Treeptik/cloudunit.svg?style=flat-square)
-![Github issues closed](https://img.shields.io/github/issues-closed/Treeptik/cloudunit.svg?style=flat-square)
-![Github pr opened](https://img.shields.io/github/issues-pr/Treeptik/cloudunit.svg?style=flat-square)
-![Github pr closed](https://img.shields.io/github/issues-pr-closed/Treeptik/cloudunit.svg?style=flat-square)
 
 ![CloudUnit Logo](documentation/img/Cloudunit_by_Treeptik.png "CloudUnit By Treeptik")
 
