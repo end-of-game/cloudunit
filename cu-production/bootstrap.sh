@@ -52,6 +52,32 @@ install_docker() {
     systemctl enable docker.service
   fi
   usermod -a -G docker $CU_USER
+
+  if [ -n "$http_proxy" ]; then
+    echo "Install HTTP proxy in docker daemon"
+    echo "export http_proxy="$http_proxy >> /etc/default/docker
+  fi
+
+  if [ -n "$https_proxy" ]; then
+    echo "Install HTTPS proxy in docker daemon"
+    echo "export https_proxy="$https_proxy >> /etc/default/docker
+  fi
+
+  if [ -n "$ftp_proxy" ]; then
+    echo "Install FTP proxy in docker daemon"
+    echo "export ftp_proxy="$ftp_proxy >> /etc/default/docker
+  fi
+
+  if [ -n "$no_proxy" ]; then
+    echo "Install no proxy in docker daemon"
+    echo "export no_proxy="$no_proxy >> /etc/default/docker
+  fi
+
+  if [ "$distribution" = "Ubuntu" ]; then
+    /etc/init.d/docker restart
+  else
+    systemctl restart docker.service
+  fi
 }
 
 generate_certs() {
@@ -309,6 +335,7 @@ question_proxy() {
 	echo "( yes / no ) : "
 	read USE_PROXY
 	if [ "$USE_PROXY" = "yes" ]; then
+    export USE_PROXY = $USE_PROXY
 	  set_proxy
 	else
 	  echo "No configured proxy."
@@ -323,6 +350,11 @@ set_proxy() {
 		export http_proxy=$PROXY
 		export https_proxy=$http_proxy
 		export ftp_proxy=$http_proxy
+    echo "Enter no proxy : "
+    read PROXY_NO
+    if [ -n "$PROXY_NO" ]; then
+      export no_proxy=$PROXY_NO
+    fi
 	else
 		echo "No configured proxy."
 	fi
@@ -342,7 +374,11 @@ else
   distribution=$(cat /etc/issue | cut -c1-6)
 fi
 
-question_proxy
+if [ -n $http_proxy ] || [ -n $https_proxy ] || [ -n $ftp_proxy ] || [ -n $no_proxy ]; then
+  echo "Proxy detected !"
+else
+  question_proxy
+fi
 
 check_git_branch
 
