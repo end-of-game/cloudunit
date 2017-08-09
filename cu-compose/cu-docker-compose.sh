@@ -200,6 +200,14 @@ function generate-env {
   fi
 }
 
+function small {
+    check-env
+    source .env
+    docker network create skynet
+    docker-compose -f docker-compose.yml \
+    up -d
+}
+
 function with-elk {
     check-env
     source .env
@@ -276,6 +284,10 @@ function reset {
 
 case "$1" in
 
+'small')
+small
+;;
+
 'with-elk')
 with-elk
 ;;
@@ -303,6 +315,7 @@ echo ""
 echo "Usage $0 "
 echo "Example : $0 with-elk"
 echo "Choice between : "
+echo "                    small"
 echo "                    with-elk"
 echo "                    with-elk-and-prometheus"
 echo "                    with-elk-and-selenium"
