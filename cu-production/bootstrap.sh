@@ -34,14 +34,14 @@ install_docker() {
     cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
     apt-get install -y apt-transport-https ca-certificates
     apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo apt-key fingerprint 0EBFCD88
-    sudo add-apt-repository \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    apt-key fingerprint 0EBFCD88
+    add-apt-repository \
        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
        $(lsb_release -cs) \
        stable"
-    sudo apt-get -y update
-    sudo apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
+    apt-get -y update
+    apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
   else
     # documentation from https://docs.docker.com/cs-engine/1.12/
     rpm --import "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e"
