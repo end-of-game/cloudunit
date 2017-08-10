@@ -13,6 +13,10 @@ services:
     environment:
       - "TZ=${TZ}"
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
+      - "ftp_proxy=${ftp_proxy}"
+      - "no_proxy=${no_proxy}"
     privileged: true
     command: -E cluster.name="cu-mon" -E node.master=true -E node.data=true
     labels:
@@ -30,6 +34,10 @@ services:
     environment:
       - "TZ=${TZ}"
       - "ELASTICSEARCH_URL=http://$ELASTICSEARCH_URL:9200"
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
+      - "ftp_proxy=${ftp_proxy}"
+      - "no_proxy=${no_proxy}"
     depends_on:
       - elasticsearch
     labels:
@@ -52,6 +60,10 @@ services:
       - "TZ=${TZ}"
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
       - "HOSTNAME=${HOSTNAME}"
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
+      - "ftp_proxy=${ftp_proxy}"
+      - "no_proxy=${no_proxy}"
     labels:
       - "traefik.enable=false"
     depends_on:

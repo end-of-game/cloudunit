@@ -21,6 +21,23 @@ if [ -z "$JMX_MONITORING" ] || [ "$JMX_MONITORING" -eq 1 ]; then
     JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/cloudunit/tomcat/lib/jmxtrans-agent-1.2.5-SNAPSHOT-jar-with-dependencies.jar=/opt/cloudunit/conf/jmxtrans-agent.xml"
 fi
 
+if [ -n "$http_proxy" ]; then
+  JAVA_OPTS=$JAVA_OPTS" -Dhttp.proxyHost="$(echo $http_proxy | cut -d'/' -f 3 | cut -d':' -f 1)
+  JAVA_OPTS=$JAVA_OPTS" -Dhttp.proxyPort="$(echo $http_proxy | cut -d':' -f 3)
+fi
+if [ -n "$https_proxy" ]; then
+  JAVA_OPTS=$JAVA_OPTS" -Dhttps.proxyHost="$(echo $https_proxy | cut -d'/' -f 3 | cut -d':' -f 1)
+  JAVA_OPTS=$JAVA_OPTS" -Dhttps.proxyPort="$(echo $https_proxy | cut -d':' -f 3)
+fi
+if [ -n "$ftp_proxy" ]; then
+  JAVA_OPTS=$JAVA_OPTS" -Dftp.proxyHost="$(echo $ftp_proxy | cut -d'/' -f 3 | cut -d':' -f 1)
+  JAVA_OPTS=$JAVA_OPTS" -Dftp.proxyPort="$(echo $ftp_proxy | cut -d':' -f 3)
+fi
+if [ -n "$no_proxy" ]; then
+  JAVA_OPTS=$JAVA_OPTS" -Dhttp.nonProxyHost="$no_proxy
+  JAVA_OPTS=$JAVA_OPTS" -Dftp.nonProxyHost="$no_proxy
+fi
+
 # JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 
 if [[ $1 == "run" ]]; then
