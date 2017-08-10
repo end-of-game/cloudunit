@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DB_HOST=${DB_HOST:-db}
+DB_HOST=${DB_HOST:-db.skynet}
 DB_PORT_NUMBER=${DB_PORT_NUMBER:-5432}
 MM_USERNAME=${MM_USERNAME:-mmuser}
 MM_PASSWORD=${MM_PASSWORD:-mmuser_password}

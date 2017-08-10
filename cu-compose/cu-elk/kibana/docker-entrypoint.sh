@@ -16,19 +16,19 @@ if [ "$1" = 'kibana' ]; then
 fi
 
 echo 'Waiting for elasticsearch Up and Running'
-until $(curl --output /dev/null --silent --head --fail http://elasticsearch:9200); do
+until $(curl --output /dev/null --silent --head --fail http://elasticsearch.skynet:9200); do
   sleep 2s
 done
 
 sleep 1s
 
-if $(curl --output /dev/null --silent --head --fail http://elasticsearch:9200/.kibana)
+if $(curl --output /dev/null --silent --head --fail http://elasticsearch.skynet:9200/.kibana)
 then
   echo "Kibana index already exist"
 else
 	echo "Load Kibana index"
-	elasticdump --input=file/kibana-index-mapping.json --output=http://elasticsearch:9200/.kibana --type=mapping
-	elasticdump --input=file/kibana-index.json --output=http://elasticsearch:9200/.kibana --type=data
+	elasticdump --input=file/kibana-index-mapping.json --output=http://elasticsearch.skynet:9200/.kibana --type=mapping
+	elasticdump --input=file/kibana-index.json --output=http://elasticsearch.skynet:9200/.kibana --type=data
 fi
 
 exec "$@"

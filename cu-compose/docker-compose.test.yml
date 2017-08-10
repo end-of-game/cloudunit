@@ -11,6 +11,10 @@ services:
       environment:
           - MYSQL_ROOT_PASSWORD
           - MYSQL_DATABASE=cloudunit
+          - "http_proxy=${http_proxy}"
+          - "https_proxy=${https_proxy}"
+          - "ftp_proxy=${ftp_proxy}"
+          - "no_proxy=${no_proxy}"
       volumes_from:
            - testmysqldata
       volumes:

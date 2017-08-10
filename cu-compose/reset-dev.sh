@@ -21,7 +21,7 @@ if [[ $USER != "vagrant" ]]; then
 fi
 
 if [ "$CU_COMPOSE_FILES" = "" ]; then
-    CU_COMPOSE_FILES="-f docker-compose.mattermost.yml -f docker-compose.elk.yml -f docker-compose.dev.yml"
+    CU_COMPOSE_FILES=" -f docker-compose.dev.yml"
     #CU_COMPOSE_FILES="-f docker-compose.elk.yml -f docker-compose.dev.yml"
 fi
 

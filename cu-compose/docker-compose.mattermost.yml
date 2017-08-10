@@ -16,6 +16,10 @@ services:
       - POSTGRES_USER=mmuser
       - POSTGRES_PASSWORD=mmuser_password
       - POSTGRES_DB=mattermost
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
+      - "ftp_proxy=${ftp_proxy}"
+      - "no_proxy=${no_proxy}"
     labels:
       - "traefik.enable=false"
 
@@ -34,6 +38,10 @@ services:
       - MM_USERNAME=mmuser
       - MM_PASSWORD=mmuser_password
       - MM_DBNAME=mattermost
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
+      - "ftp_proxy=${ftp_proxy}"
+      - "no_proxy=${no_proxy}"
     labels:
       - "traefik.frontend.entryPoints=https"
       - "traefik.backend=cu-mattermost"

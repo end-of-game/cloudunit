@@ -162,6 +162,50 @@ function generate-env {
     echo "TZ=$(cat /etc/timezone)" >> .env
   fi
 
+  proxy_gitlab="gitlab_rails['env'] = {"
+
+  if [ -n "$http_proxy" ]; then
+    echo "http_proxy=$http_proxy" >> .env 
+    proxy_gitlab=$proxy_gitlab"\"http_proxy\" => \"$http_proxy\""
+    proxy_info=1
+  fi
+  if [ -n "$https_proxy" ]; then
+    echo "https_proxy=$https_proxy" >> .env 
+    if [ -n "$proxy_info" ]; then
+        proxy_gitlab=$proxy_gitlab", "
+    fi
+    proxy_gitlab=$proxy_gitlab"\"https_proxy\" => \"$https_proxy\""
+    proxy_info=1
+  fi
+  if [ -n "$ftp_proxy" ]; then
+    echo "ftp_proxy=$ftp_proxy" >> .env
+    if [ -n "$proxy_info" ]; then
+        proxy_gitlab=$proxy_gitlab", "
+    fi
+    proxy_gitlab=$proxy_gitlab"\"ftp_proxy\" => \"$ftp_proxy\""
+    proxy_info=1
+  fi
+  if [ -n "$no_proxy" ]; then
+    echo "no_proxy=$no_proxy,.skynet" >> .env
+    if [ -n "$proxy_info" ]; then
+        proxy_gitlab=$proxy_gitlab", "
+    fi
+    proxy_gitlab=$proxy_gitlab"\"no_proxy\" => \"$no_proxy,.skynet\""
+    proxy_info=1
+  fi
+  proxy_gitlab=$proxy_gitlab"}"
+
+  if [ -n "$proxy_info" ]; then
+    echo "$proxy_gitlab" >> cu-gitlab-ce/gitlab.rb
+  fi
+}
+
+function small {
+    check-env
+    source .env
+    docker network create skynet
+    docker-compose -f docker-compose.yml \
+    up -d
 }
 
 function with-elk {
@@ -240,6 +284,10 @@ function reset {
 
 case "$1" in
 
+'small')
+small
+;;
+
 'with-elk')
 with-elk
 ;;
@@ -267,6 +315,7 @@ echo ""
 echo "Usage $0 "
 echo "Example : $0 with-elk"
 echo "Choice between : "
+echo "                    small"
 echo "                    with-elk"
 echo "                    with-elk-and-prometheus"
 echo "                    with-elk-and-selenium"

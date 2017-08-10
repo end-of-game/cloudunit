@@ -34,14 +34,14 @@ install_docker() {
     cp $CU_INSTALL_DIR/files/sources.list /etc/apt/sources.list
     apt-get install -y apt-transport-https ca-certificates
     apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo apt-key fingerprint 0EBFCD88
-    sudo add-apt-repository \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    apt-key fingerprint 0EBFCD88
+    add-apt-repository \
        "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
        $(lsb_release -cs) \
        stable"
-    sudo apt-get -y update
-    sudo apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
+    apt-get -y update
+    apt-get install -y docker-ce=17.06.0~ce-0~ubuntu
   else
     # documentation from https://docs.docker.com/cs-engine/1.12/
     rpm --import "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc86e2d7d56f59a178ac6c6238f52e"
@@ -52,6 +52,32 @@ install_docker() {
     systemctl enable docker.service
   fi
   usermod -a -G docker $CU_USER
+
+  if [ -n "$http_proxy" ]; then
+    echo "Install HTTP proxy in docker daemon"
+    echo "export http_proxy="$http_proxy >> /etc/default/docker
+  fi
+
+  if [ -n "$https_proxy" ]; then
+    echo "Install HTTPS proxy in docker daemon"
+    echo "export https_proxy="$https_proxy >> /etc/default/docker
+  fi
+
+  if [ -n "$ftp_proxy" ]; then
+    echo "Install FTP proxy in docker daemon"
+    echo "export ftp_proxy="$ftp_proxy >> /etc/default/docker
+  fi
+
+  if [ -n "$no_proxy" ]; then
+    echo "Install no proxy in docker daemon"
+    echo "export no_proxy="$no_proxy >> /etc/default/docker
+  fi
+
+  if [ "$distribution" = "Ubuntu" ]; then
+    /etc/init.d/docker restart
+  else
+    systemctl restart docker.service
+  fi
 }
 
 generate_certs() {
@@ -303,6 +329,37 @@ logo_pulling_dockerhub() {
 echo "Pulling CloudUnit..."
 }
 
+question_proxy() {
+	echo ""
+	echo "Configure proxy (default is [no])"
+	echo "( yes / no ) : "
+	read USE_PROXY
+	if [ "$USE_PROXY" = "yes" ]; then
+    export USE_PROXY = $USE_PROXY
+	  set_proxy
+	else
+	  echo "No configured proxy."
+	fi
+}
+
+set_proxy() {
+	echo ""
+	echo "Enter proxy address : "
+	read PROXY
+	if [ -n "$PROXY" ]; then
+		export http_proxy=$PROXY
+		export https_proxy=$http_proxy
+		export ftp_proxy=$http_proxy
+    echo "Enter no proxy : "
+    read PROXY_NO
+    if [ -n "$PROXY_NO" ]; then
+      export no_proxy=$PROXY_NO
+    fi
+	else
+		echo "No configured proxy."
+	fi
+}
+
 #
 #
 # MAIN
@@ -315,6 +372,12 @@ if [ -f /etc/redhat-release ]; then
   distribution=$(cat /etc/redhat-release | cut -c1-6)
 else
   distribution=$(cat /etc/issue | cut -c1-6)
+fi
+
+if [ -n $http_proxy ] || [ -n $https_proxy ] || [ -n $ftp_proxy ] || [ -n $no_proxy ]; then
+  echo "Proxy detected !"
+else
+  question_proxy
 fi
 
 check_git_branch
