@@ -124,7 +124,7 @@
                   class="folder"
                   ng-class="item.safe ? 'safe' : 'unsafe'"
                   data-ng-click="explorer.folderClick(item)"
-                  >{{item.name}} <span ng-show="item.safe">&midast;</span>
+                  >{{item.name}}<span ng-show="item.safe">&midast;</span>
                 </a>
                 <a
                   ng-switch-when="false"
@@ -163,6 +163,15 @@
                         data-title="Edit"
                         data-placement="bottom"
                         data-keyboard="true"><i class="icon-whhg edit"></i></button>
+                <button class="action icon-button"
+                        ng-if="item.dir"
+                        ng-click="explorer.zipFile(explorer.myContainer.id, explorer.currentPath, item)"
+                        data-toggle="modal"
+                        ripple=""
+                        tooltip=""
+                        data-title="Download as zip"
+                        data-placement="bottom"
+                        data-keyboard="true"><i class="icon-whhg download"></i></button>
                <button class="action icon-button"
                         ng-if="item.zipable"
                         ripple=""

@@ -70,6 +70,7 @@
     vm.folderClick = folderClick;
     vm.deleteFile = deleteFile;
     vm.unzipFile = unzipFile;
+    vm.zipFile = zipFile;
     vm.editFile = editFile;
     vm.fileContent = "";
     vm.getFile = getFile;
@@ -150,7 +151,6 @@
     }
 
     function unzipFile ( containerId, path, item ) {
-
       var slug = '/' + path.join ( '/' );
 
       ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
@@ -161,6 +161,16 @@
         } )
     }
 
+      function zipFile ( containerId, path, item ) {
+          var slug = '/' + path.join ( '/' );
+
+          ExplorerService.zipFile ( containerId, $stateParams.name, slug, item.name )
+              .then ( function onFileZip (data) {
+                  $timeout ( function () {
+                      buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
+                  }, 1000 );
+              } )
+      }
     function getFile ( containerId, path, item ) {
 
       var slug = '/' + path.join ( '/' );
@@ -170,6 +180,8 @@
           vm.fileContent = res.data;
         } )
     }
+
+
 
     function editFile ( containerId, path, item, fileContent) {
       var slug = '/' + path.join ( '/' );
