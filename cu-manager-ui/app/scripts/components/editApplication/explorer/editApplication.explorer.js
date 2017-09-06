@@ -70,8 +70,8 @@
     vm.folderClick = folderClick;
     vm.deleteFile = deleteFile;
     vm.unzipFile = unzipFile;
-    vm.zipFile = zipFile;
     vm.editFile = editFile;
+    vm.downloadCompressedFolder = downloadCompressedFolder;
     vm.fileContent = "";
     vm.getFile = getFile;
     vm.addNewDirectory = addNewDirectory;
@@ -136,7 +136,6 @@
     function deleteFile ( containerId, path, item ) {
 
       var slug = '/' + path.join ( '/' ) + '/' + item.name;
-
       ExplorerService.deleteFile ( containerId, $stateParams.name, slug )
         .then ( function onFileDelete () {
           $timeout ( function () {
@@ -161,18 +160,24 @@
         } )
     }
 
-      function zipFile ( containerId, path, item ) {
+      function downloadCompressedFolder ( containerId, path, item ) {
           var slug = '/' + path.join ( '/' );
-
           ExplorerService.zipFile ( containerId, $stateParams.name, slug, item.name )
-              .then ( function onFileZip (data) {
+              .then (function onFolderDownload (data) {
                   $timeout ( function () {
-                      buildTree ( vm.currentPath.join ( '/' ), 'subFolder' );
+                      downloadFile(containerId, path, item.name+".tar");
                   }, 1000 );
-              } )
-      }
-    function getFile ( containerId, path, item ) {
+              }).then(function onFolderDownload(data) {
+                $timeout(function() {
+                  item.name = item.name+".tar";
+                  deleteFile(containerId, path, item);
+                }, 3000);
+          })
 
+      }
+
+
+    function getFile ( containerId, path, item ) {
       var slug = '/' + path.join ( '/' );
 
       ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
@@ -181,6 +186,10 @@
         } )
     }
 
+      function downloadFile ( containerId, path, itemName ) {
+          var url = '/file/container/'+containerId+'/application/'+$stateParams.name+'?path='+path.join('/')+'&fileName='+itemName;
+          window.location.assign(url);
+      }
 
 
     function editFile ( containerId, path, item, fileContent) {

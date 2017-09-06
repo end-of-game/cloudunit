@@ -334,7 +334,6 @@ public class FileController {
 			String commandExec = dockerService.execCommand(containerId, command);
 			if (commandExec != null) {
 				logger.debug(commandExec);
-				System.out.println("Command done !");
 			} else {
 				logger.error("No folder found : " + command);
 			}
