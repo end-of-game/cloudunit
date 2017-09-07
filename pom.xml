@@ -8,7 +8,7 @@
 
 	<modules>
 		<module>cu-core</module>
-        <module>cu-cli</module>
+		<module>cu-cli</module>
 		<module>cu-docker-api</module>
 		<module>cu-manager</module>
 		<module>cu-maven</module>

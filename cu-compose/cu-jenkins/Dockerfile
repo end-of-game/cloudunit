@@ -1,4 +1,4 @@
-FROM jenkins:2.46.1
+FROM jenkins:2.60.1
 
 USER root
 
@@ -6,7 +6,7 @@ RUN apt-get update \
 	&& apt-get install --no-install-recommends --no-install-suggests -y \
                         curl \
 						ca-certificates \
-						software-properties-common python-software-properties \
+						software-properties-common \
 						vim
 
 # Add nodesource PPA for specific version of node and install
@@ -22,7 +22,7 @@ RUN npm install -g bower gulp
 
 RUN add-apt-repository -y "deb http://ppa.launchpad.net/natecarlson/maven3/ubuntu precise main"
 RUN apt-get update
-RUN apt-get install maven3 -y
+RUN apt-get install maven3 -y --allow-unauthenticated
 RUN ln -s /usr/bin/mvn3 /usr/bin/mvn
 RUN update-java-alternatives -s java-1.8.0-openjdk-amd64
 

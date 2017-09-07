@@ -97,5 +97,5 @@ services:
   elk-dockbeat:
     image: cloudunit/elk-dockbeat
 
-  jenkins:
-    image: cloudunit/cu-jenkins
+  nginx-1.10:
+    image: cloudunit/nginx-1.10
