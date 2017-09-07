@@ -31,6 +31,7 @@
       deleteFile: deleteFile,
       addDirectory: addDirectory,
       unzipFile: unzipFile,
+      zipFile: zipFile,
       editFile: editFile,
       getFile: getFile
     };
@@ -60,6 +61,7 @@
       },
       { 'update': { method: 'PUT',
           transformResponse: function ( data, headers ) {
+
             var response = {};
             response.data = data;
             response.headers = headers ();
@@ -69,6 +71,26 @@
 
       return file.update ().$promise;
     }
+
+      function zipFile ( containerId, applicationName, path, item) {
+          var file = $resource ( 'file/zip/container/:containerId/application/:applicationName',
+              {
+                  containerId: containerId,
+                  applicationName: applicationName,
+                  path: path,
+                  fileName: item
+              },
+              { 'update': { method: 'PUT',
+                  transformResponse: function ( data, headers ) {
+                      var response = {};
+                      response.data = data;
+                      response.headers = headers ();
+                      return response;
+                  } }
+              });
+
+          return file.update ().$promise;
+      }
 
     function getFile ( containerId, applicationName, path, fileName ) {
       var file = $resource ( '/file/content/container/:containerId/application/:applicationName', {

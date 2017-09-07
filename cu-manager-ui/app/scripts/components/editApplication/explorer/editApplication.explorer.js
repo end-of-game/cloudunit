@@ -71,6 +71,7 @@
     vm.deleteFile = deleteFile;
     vm.unzipFile = unzipFile;
     vm.editFile = editFile;
+    vm.downloadCompressedFolder = downloadCompressedFolder;
     vm.fileContent = "";
     vm.getFile = getFile;
     vm.addNewDirectory = addNewDirectory;
@@ -135,7 +136,6 @@
     function deleteFile ( containerId, path, item ) {
 
       var slug = '/' + path.join ( '/' ) + '/' + item.name;
-
       ExplorerService.deleteFile ( containerId, $stateParams.name, slug )
         .then ( function onFileDelete () {
           $timeout ( function () {
@@ -150,7 +150,6 @@
     }
 
     function unzipFile ( containerId, path, item ) {
-
       var slug = '/' + path.join ( '/' );
 
       ExplorerService.unzipFile ( containerId, $stateParams.name, slug, item.name )
@@ -161,8 +160,24 @@
         } )
     }
 
-    function getFile ( containerId, path, item ) {
+      function downloadCompressedFolder ( containerId, path, item ) {
+          var slug = '/' + path.join ( '/' );
+          ExplorerService.zipFile ( containerId, $stateParams.name, slug, item.name )
+              .then (function onFolderDownload (data) {
+                  $timeout ( function () {
+                      downloadFile(containerId, path, item.name+".tar");
+                  }, 1000 );
+              }).then(function onFolderDownload(data) {
+                $timeout(function() {
+                  item.name = item.name+".tar";
+                  deleteFile(containerId, path, item);
+                }, 3000);
+          })
 
+      }
+
+
+    function getFile ( containerId, path, item ) {
       var slug = '/' + path.join ( '/' );
 
       ExplorerService.getFile ( containerId, $stateParams.name, slug, item.name )
@@ -170,6 +185,12 @@
           vm.fileContent = res.data;
         } )
     }
+
+      function downloadFile ( containerId, path, itemName ) {
+          var url = '/file/container/'+containerId+'/application/'+$stateParams.name+'?path='+path.join('/')+'&fileName='+itemName;
+          window.location.assign(url);
+      }
+
 
     function editFile ( containerId, path, item, fileContent) {
       var slug = '/' + path.join ( '/' );

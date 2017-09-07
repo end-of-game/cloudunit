@@ -301,6 +301,50 @@ public class FileController {
 	}
 
 	/**
+	 * Compress content folder into Container
+	 *
+	 * @param containerId
+	 * @param applicationName
+	 * @param path
+	 * @param fileName
+	 * @param request
+	 * @param response
+	 * @throws ServiceException
+	 * @throws CheckException
+	 * @throws IOException
+	 * @returnoriginalName
+	 */
+	@RequestMapping(value = "/zip/container/{containerId}/application/{applicationName}", method = RequestMethod.PUT)
+	public void compressFolder(@PathVariable final String containerId, @PathVariable final String applicationName,
+							   @RequestParam("path") final String path, @RequestParam("fileName") final String fileName,
+							   HttpServletRequest request, HttpServletResponse response)
+			throws ServiceException, CheckException, IOException {
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("containerId:" + containerId);
+			logger.debug("applicationName:" + applicationName);
+			logger.debug("fileName:" + fileName);
+		}
+
+		String realPath = path + "/" + fileName;
+		String command = "tar cvf "+ realPath+".tar -C " + path +" "+ fileName;
+
+		logger.info(command);
+		try {
+			String commandExec = dockerService.execCommand(containerId, command);
+			if (commandExec != null) {
+				logger.debug(commandExec);
+			} else {
+				logger.error("No folder found : " + command);
+			}
+		} catch (FatalDockerJSONException e) {
+			logger.error(e.getMessage());
+		}
+	}
+
+
+
+	/**
 	 * Display content file from a container
 	 *
 	 * @param containerId
