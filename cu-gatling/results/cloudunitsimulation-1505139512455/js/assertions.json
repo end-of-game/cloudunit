@@ -1,0 +1,10 @@
+{
+  "simulation": "cloudunit.CloudUnitSimulation",
+  "simulationId": "cloudunitsimulation",
+  "start": 1505139512455,
+  "description": "",
+  "scenarios": ["DeployApplication"],
+  "assertions": [
+
+  ]
+}
