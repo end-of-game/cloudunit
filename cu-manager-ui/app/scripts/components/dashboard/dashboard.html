@@ -14,21 +14,28 @@
   -->
 
 <section id="applications" freeze="">
-  <header>
-    <div class="page-header">
-      <div class="page-title">
-        <h2 class="title">Dashboard</h2>
+    <header data-ng-controller="MainCtrl as main">
+      <div class="page-header">
+        <div class="page-title">
+          <h2 class="title">Dashboard</h2>
+        </div>
+        <div class="alert alert-danger" data-ng-show="main.systemError" id="system-alert">
+          <button type="button"
+                  class="close"
+                  ng-click="main.systemError = false">
+            <span>&times;</span>
+          </button>
+          <p>{{main.systemError}}</p>
+        </div>
+
+
+        <div class="alert alert-danger" ng-show="main.memoryFull" id="memory-alert">
+          <p>Not enough memory to create new applications. </p>
+        </div>
+
+
       </div>
-      <div class="alert alert-danger" data-ng-show="main.systemError" id="system-alert">
-        <button type="button"
-                class="close"
-                ng-click="main.systemError = false">
-          <span>&times;</span>
-        </button>
-        <p>{{main.systemError}}</p>
-      </div>
-    </div>
-  </header>
+    </header>
 
   <div class="page-content" id="dashboard">
     <div class="page full">

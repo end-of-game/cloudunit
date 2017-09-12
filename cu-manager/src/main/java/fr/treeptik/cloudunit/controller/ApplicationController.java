@@ -17,7 +17,6 @@ package fr.treeptik.cloudunit.controller;
 
 import java.io.*;
 
-import java.lang.reflect.Array;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +32,7 @@ import fr.treeptik.cloudunit.dto.*;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
@@ -85,6 +85,9 @@ public class ApplicationController implements Serializable {
 	@Inject
 	private ApplicationEventPublisher applicationEventPublisher;
 
+	@Value("${cloudunit.memory.limit}")
+	private String memoryLimit;
+
 	private Locale locale = Locale.ENGLISH;
 
 	/**
@@ -114,6 +117,49 @@ public class ApplicationController implements Serializable {
 
 		return new HttpOk();
 	}
+
+	/**
+	 * Used to check if there is enough memory left.
+	 * @return
+	 * @throws ServiceException
+	 * @throws CheckException
+	 */
+	@CloudUnitSecurable
+	@ResponseBody
+	@RequestMapping(value = "/verify/memory", method = RequestMethod.GET)
+	public Boolean checkEnoughMemory()
+			throws ServiceException, CheckException {
+		System.out.println("Ah");
+		System.out.println("Limit : "+memoryLimit);
+
+		try {
+			String command = "free -m";
+			Runtime rt = Runtime.getRuntime();
+			Process proc = rt.exec(command);
+			proc.waitFor();
+			String output = "";
+			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			String line = "";
+			while ((line = reader.readLine())!= null) {
+				if(line.contains("Mem:"))
+					output = line;
+			}
+			String[] memory = output.split(" {8}");
+
+			// Memory is :  total, used, free, shared, buff/cache,  available
+			Integer freeMemory =  Integer.parseInt(memory[3].replace(" ",""));
+			System.out.println("Free memory:"+freeMemory);
+			System.out.println("Lol");
+
+			return freeMemory > Integer.parseInt(memoryLimit);
+
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		System.out.println("Whatever");
+	return false;
+	}
+
 
 	/**
 	 * CREATE AN APPLICATION

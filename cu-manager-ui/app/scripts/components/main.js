@@ -39,13 +39,16 @@
     vm.systemError = null;
     vm.isLogged = isLogged;
     vm.logout = logout;
+    vm.checkMemory = checkMemory;
     vm.browserOutdated = false;
     vm.CUEnv = '';
     vm.about = '';
+    vm.memoryFull = false;
 
     getUserRole();
     getCUEnv();
     getAbout();
+    checkMemory();
 
     $rootScope.$on(':loginSuccess', function() {
       //reset error message
@@ -136,6 +139,23 @@
     function isLogged() {
       return UserService.isLogged();
     }
+
+
+      function checkMemory(){
+          return $interval(function(){
+            console.log("MemoryFull:"+vm.memoryFull);
+              if(UserService.getMemory() == "true"){
+                  console.log("TRUE") ;
+                  vm.memoryFull = false; // Don't show the panel
+              }
+              else {
+                vm.memoryFull = true; // Show the panel
+                  console.log("FALSE");
+              }
+
+          }, 10000);
+      }
+
   }
 })();
 
