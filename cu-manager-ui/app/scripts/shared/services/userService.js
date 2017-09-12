@@ -76,7 +76,7 @@
 
       function enoughMemory() {
           return $http.get('/application/verify/memory', {})
-              .success(function(data, status) {
+              .success(function(data) {
               return data;
           });
       }

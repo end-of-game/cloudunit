@@ -143,8 +143,10 @@
 
       function checkMemory(){
           return $interval(function(){
-            vm.memoryFull = !UserService.enoughMemory();
-          }, 5000); // Check every 30 seconds
+            UserService.enoughMemory().then(function (data) {
+                vm.memoryFull = !data.data;
+            });
+          }, 30000); // Check every 30 seconds
       }
 
   }
