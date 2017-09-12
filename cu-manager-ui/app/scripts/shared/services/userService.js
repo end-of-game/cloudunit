@@ -49,7 +49,7 @@
     user.isLogged = isLogged;
     user.getRole = getRole;
     user.checkUserStatus = checkUserStatus;
-    user.getMemory = getMemory;
+    user.enoughMemory = enoughMemory;
     user.getCUEnv = getCUEnv;
 
     return user;
@@ -74,11 +74,9 @@
       return $http.get('/user/status', {});
     }
 
-      function getMemory() {
-          console.log("Lol");
+      function enoughMemory() {
           return $http.get('/application/verify/memory', {})
               .success(function(data, status) {
-              console.log(data); //Within the proper scope; displays the data array
               return data;
           });
       }

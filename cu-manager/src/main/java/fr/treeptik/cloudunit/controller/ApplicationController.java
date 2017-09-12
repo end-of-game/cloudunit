@@ -129,8 +129,6 @@ public class ApplicationController implements Serializable {
 	@RequestMapping(value = "/verify/memory", method = RequestMethod.GET)
 	public Boolean checkEnoughMemory()
 			throws ServiceException, CheckException {
-		System.out.println("Ah");
-		System.out.println("Limit : "+memoryLimit);
 
 		try {
 			String command = "free -m";
@@ -148,15 +146,12 @@ public class ApplicationController implements Serializable {
 
 			// Memory is :  total, used, free, shared, buff/cache,  available
 			Integer freeMemory =  Integer.parseInt(memory[3].replace(" ",""));
-			System.out.println("Free memory:"+freeMemory);
-			System.out.println("Lol");
 
 			return freeMemory > Integer.parseInt(memoryLimit);
 
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-		System.out.println("Whatever");
 	return false;
 	}
 

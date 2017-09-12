@@ -143,17 +143,8 @@
 
       function checkMemory(){
           return $interval(function(){
-            console.log("MemoryFull:"+vm.memoryFull);
-              if(UserService.getMemory() == "true"){
-                  console.log("TRUE") ;
-                  vm.memoryFull = false; // Don't show the panel
-              }
-              else {
-                vm.memoryFull = true; // Show the panel
-                  console.log("FALSE");
-              }
-
-          }, 10000);
+            vm.memoryFull = !UserService.enoughMemory();
+          }, 5000); // Check every 30 seconds
       }
 
   }
