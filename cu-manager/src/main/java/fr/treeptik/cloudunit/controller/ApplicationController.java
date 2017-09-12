@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.codahale.metrics.annotation.Timed;
 import com.spotify.docker.client.exceptions.DockerException;
 import fr.treeptik.cloudunit.config.events.*;
 import fr.treeptik.cloudunit.dto.*;
@@ -124,6 +125,7 @@ public class ApplicationController implements Serializable {
 	 * @throws CheckException
 	 * @throws InterruptedException
 	 */
+	@Timed
 	@ResponseBody
 	@Transactional
 	@RequestMapping(method = RequestMethod.POST)
