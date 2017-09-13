@@ -30,6 +30,12 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
+  - job_name: 'cloudunit'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['192.168.50.1:8080']
+    metrics_path: '/prometheus'
+
 #  - job_name: 'nginx'
 #    scrape_interval: 10s
 #    static_configs:
