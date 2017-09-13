@@ -46,6 +46,10 @@ public class ApplicationConfig
         dispatcher.addMapping(DISPATCHER_SERVLET_MAPPING);
         dispatcher.setAsyncSupported(true);
 
+        servletContext
+                .addServlet("prometheus", new io.prometheus.client.exporter.MetricsServlet())
+                .addMapping("/prometheus");
+
         FilterRegistration.Dynamic security =
             servletContext.addFilter("springSecurityFilterChain", new DelegatingFilterProxy());
         EnumSet<DispatcherType> securityDispatcherTypes =

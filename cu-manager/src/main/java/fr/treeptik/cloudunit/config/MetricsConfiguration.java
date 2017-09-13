@@ -12,6 +12,8 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.Timer;
 import fr.treeptik.cloudunit.service.ApplicationService;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.dropwizard.DropwizardExports;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -78,7 +80,11 @@ public class MetricsConfiguration {
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
-        reporter.start(1, TimeUnit.SECONDS);
+
+        CollectorRegistry.defaultRegistry.register(new DropwizardExports(metricRegistry));
+
+        reporter.start(1, TimeUnit.MINUTES);
     }
+
 
 }
