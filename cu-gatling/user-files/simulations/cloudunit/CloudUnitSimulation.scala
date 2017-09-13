@@ -23,6 +23,25 @@ class CloudUnitSimulation extends Simulation {
 
   val cuHost = "http://localhost:8080"
 
+  val cu_username = "johndoe"
+  val cu_password = "abc2015"
+  val applicationName = "gatling"// don't change this because there's still some parameter hard coded with "gatling"
+  val repeatScenario = 100
+
+
+  val url_authentification = "/user/authentication"
+  val url_application = "/application"
+  val url_volume = "/volume"
+  val url_module = "/module"
+  val url_mount_volume = "/server/volume"
+  val url_jvm_options = "/server/configuration/jvm"
+  val url_application_stop = "/application/stop"
+  val url_application_start = "/application/start"
+  val url_deploy_war = "/application/"+applicationName+"/deploy"
+  var url_deployed_war = "http://"+applicationName+"-"+cu_username+".192.168.50.4.xip.io/pizzashop-postgres/"
+
+
+
   val httpConf = http
     .baseURL(cuHost)
     .acceptHeader("application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -31,118 +50,115 @@ class CloudUnitSimulation extends Simulation {
     .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
 
 
-
-	val headers_215 = Map(
-		"Accept" -> "application/json, text/plain, */*",
-		"Content-Type" -> "application/json;charset=utf-8")
-
-
   val scn = scenario("DeployApplication")
-        .exec(http("request_1")
-			.post("/user/authentication")
-			.formParam("j_username", "johndoe")
-			.formParam("j_password", "abc2015"))
+  .repeat(repeatScenario){ 
+        exec(http("request_1")
+			.post(url_authentification)
+			.formParam("j_username", cu_username)
+			.formParam("j_password", cu_password))
 			.pause(1)
 		
 		.exec(http("request_2")
-			.post("/application")
+			.post(url_application)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "applicationName": "gatling", "serverName": "tomcat-8" }""")).asJSON)
 			.pause(3)
 
 			.exec(http("request_3")
-			.post("/volume")
+			.post(url_volume)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "name": "gatling-v1" }""")).asJSON)
 			.pause(3)
 		
 			.exec(http("request_4")
-			.post("/volume")
+			.post(url_volume)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "name": "gatling-v2" }""")).asJSON)
 			.pause(3)
 		
 			.exec(http("request_5")
-			.post("/volume")
+			.post(url_volume)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "name": "gatling-v3" }""")).asJSON)
 			.pause(3)
 		
 			.exec(http("request_6")
-			.post("/volume")
+			.post(url_volume)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "name": "gatling-v4" }""")).asJSON)
 			.pause(3)
 
 			.exec(http("request_7")
-			.post("/module")
+			.post(url_module)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "imageName": "postgresql-9-3", "applicationName": "gatling" }""")).asJSON)
 			.pause(3)
 		
 
 			.exec(http("request_8")
-			.put("/server/volume")
+			.put(url_mount_volume)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ 	"containerName": "gatling-johndoe", "path": "/opt1" , "deferedRestart": "true" , "mode": "ro", "volumeName": "gatling-v1","applicationName": "gatling" } """)).asJSON)
 			.pause(3)
 		
 				.exec(http("request_9")
-			.put("/server/volume")
+			.put(url_mount_volume)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ 	"containerName": "gatling-johndoe", "path": "/opt2" , "deferedRestart": "true" , "mode": "ro", "volumeName": "gatling-v2","applicationName": "gatling" } """)).asJSON)
 			.pause(3)
 		
 
 				.exec(http("request_10")
-			.put("/server/volume")
+			.put(url_mount_volume)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ 	"containerName": "gatling-johndoe", "path": "/opt3" , "deferedRestart": "true" , "mode": "ro", "volumeName": "gatling-v3","applicationName": "gatling" } """)).asJSON)
 			.pause(3)
 		
 
 			.exec(http("request_11")
-			.put("/server/volume")
+			.put(url_mount_volume)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ 	"containerName": "gatling-johndoe", "path": "/opt4" , "deferedRestart": "true" , "mode": "ro", "volumeName": "gatling-v4","applicationName": "gatling" } """)).asJSON)
 			.pause(3)
 			
 
 			.exec(http("request_12")
-			.put("/server/configuration/jvm")
+			.put(url_jvm_options)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "applicationName": "gatling" ,"jvmOptions": "-Dgatlingtest=true","jvmMemory": "512"} """)).asJSON)
 			.pause(20)
 		
 			.exec(http("request_13")
-			.post("/application/stop")
+			.post(url_application_stop)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "applicationName": "gatling"} """)).asJSON)
 			.pause(5)
 
 
 			.exec(http("request_14")
-			.post("/application/start")
+			.post(url_application_start)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{ "applicationName": "gatling"} """)).asJSON)
 			.pause(5)
 
 			.exec(http("request_15")
-			.post("/application/gatling/deploy")
+			.post(url_deploy_war)
 			.header("Content-Type", "application/json")
 			.body(StringBody("""{"deployUrl":"https://github.com/Treeptik/cloudunit/releases/download/1.0/pizzashop-postgres.war"} """)).asJSON)
 			.pause(15)
 
 			.exec(http("request_16")
-			.get("http://gatling-johndoe.192.168.50.4.xip.io/pizzashop-postgres/"))
+			.get(url_deployed_war))
 			.pause(10)
 
 			.exec(http("request_17")
 			.delete("/application/gatling"))
-			.pause(2)
+			.pause(5,15)
 
 
+  }
 
+	  setUp(scn.inject(atOnceUsers(1)).protocols(httpConf))
 
-  setUp(scn.inject(atOnceUsers(1)).protocols(httpConf))
 }
+
