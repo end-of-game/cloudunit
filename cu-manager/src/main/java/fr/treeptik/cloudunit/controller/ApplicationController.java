@@ -129,32 +129,33 @@ public class ApplicationController implements Serializable {
 	@RequestMapping(value = "/verify/memory", method = RequestMethod.GET)
 	public Boolean checkEnoughMemory()
 			throws ServiceException, CheckException {
-
+		BufferedReader reader = null;
 		try {
 			String command = "free -m";
 			Runtime rt = Runtime.getRuntime();
 			Process proc = rt.exec(command);
 			proc.waitFor();
 			String output = "";
-			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 			String line = "";
 			while ((line = reader.readLine())!= null) {
 				if(line.contains("Mem:"))
 					output = line;
 			}
 			String[] memory = output.split(" {8}");
-
+			logger.debug("free memory {}", memory[3]);
 			// Memory is :  total, used, free, shared, buff/cache,  available
 			Integer freeMemory =  Integer.parseInt(memory[3].replace(" ",""));
-
 			return freeMemory > Integer.parseInt(memoryLimit);
-
 		} catch (Throwable t) {
-			t.printStackTrace();
+			logger.error(t.getMessage());
+		} finally {
+			try {
+				if (reader != null) { reader.close();}
+			} catch (Exception e) {}
 		}
-	return false;
+		return false;
 	}
-
 
 	/**
 	 * CREATE AN APPLICATION
