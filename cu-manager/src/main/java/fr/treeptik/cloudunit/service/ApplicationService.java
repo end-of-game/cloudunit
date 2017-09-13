@@ -31,11 +31,15 @@ public interface ApplicationService {
 
 	Application findByNameAndUser(User user, String applicationName) throws ServiceException, CheckException;
 
+	Long countAllApplications();
+
+	Long countAllRunningApplications();
+
 	List<Application> findAll() throws ServiceException;
 
 	List<Application> findAllByUser(User user) throws ServiceException;
 
-	public void checkCreate(User user, String application) throws CheckException, ServiceException;
+	void checkCreate(User user, String application) throws CheckException, ServiceException;
 
 	Application saveInDB(Application application) throws ServiceException;
 
