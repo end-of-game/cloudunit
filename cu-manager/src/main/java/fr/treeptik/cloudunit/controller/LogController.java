@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.codahale.metrics.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ public class LogController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+	private Counter logsDisplayCalls;
+
 	/**
 	 * Returns the n-last lines for an application / container
 	 *
@@ -76,7 +80,9 @@ public class LogController {
 			logger.debug("nbRows:" + nbRows);
 		}
 
-        // We could expect stdout as strategy
+		logsDisplayCalls.inc();
+
+		// We could expect stdout as strategy
         GatheringStrategy gatheringStrategy =
                 gatheringStrategies.getOrDefault(source, gatheringStrategies.get("tail"));
 

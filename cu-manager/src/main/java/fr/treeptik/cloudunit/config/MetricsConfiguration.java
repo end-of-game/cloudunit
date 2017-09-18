@@ -12,6 +12,8 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.Timer;
 import fr.treeptik.cloudunit.service.ApplicationService;
+import fr.treeptik.cloudunit.service.VolumeAssociationService;
+import fr.treeptik.cloudunit.service.VolumeService;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Configuration
 public class MetricsConfiguration {
@@ -31,23 +34,21 @@ public class MetricsConfiguration {
     @Autowired
     private ApplicationService applicationService;
 
+    @Autowired
+    private VolumeService volumeService;
+
     @Bean(name = "metricRegistry")
     MetricRegistry provideMetricsRegistry(){
         return metricRegistry;
     }
 
     @Bean
-    Counter applicationsStarted() {
+    Counter applicationsStartedCalls() {
         return metricRegistry.counter("applications-started");
     }
 
     @Bean
-    Counter applicationsStopped() {
-        return metricRegistry.counter("applications-stopped");
-    }
-
-    @Bean
-    Counter applicationsDeleted() {
+    Counter applicationsDeletedCalls() {
         return metricRegistry.counter("applications-deleted");
     }
 
@@ -57,14 +58,30 @@ public class MetricsConfiguration {
     }
 
     @Bean
+    Timer volumesCreation() {
+        return metricRegistry.timer("volumes-creation");
+    }
+
+    @Bean
     Counter findAllApplicationCalls() {
         return findAppApplicationsCalls;
+    }
+
+    @Bean
+    Counter fileExplorerCalls() {
+        return metricRegistry.counter("file-explorer-call");
+    }
+
+    @Bean
+    Counter logsDisplayCalls() {
+        return metricRegistry.counter("logs-display-call");
     }
 
     @PostConstruct
     public void init() {
         configureReporters();
         evaluateCounters();
+        metricRegistry.meter("cloudunit-start").mark();
     }
 
     private void evaluateCounters() {
@@ -73,6 +90,9 @@ public class MetricsConfiguration {
 
         metricRegistry.register("applicationsRunningSize",
                 (Gauge<Long>) () -> applicationService.countAllRunningApplications());
+
+        metricRegistry.register("volumesSize",
+                (Gauge<Integer>) () -> volumeService.count());
     }
 
     private void configureReporters() {

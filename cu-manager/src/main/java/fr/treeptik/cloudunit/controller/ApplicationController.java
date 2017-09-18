@@ -96,13 +96,10 @@ public class ApplicationController implements Serializable {
 	private Counter findAllApplicationCalls;
 
 	@Inject
-	private Counter applicationsStopped;
+	private Counter applicationsDeletedCalls;
 
 	@Inject
-	private Counter applicationsStarted;
-
-	@Inject
-	private Counter applicationsDeleted;
+	private Counter applicationsStartedCalls;
 
 	@Inject
 	private Timer applicationsCreation;
@@ -205,8 +202,7 @@ public class ApplicationController implements Serializable {
 			applicationService.start(application);
 		}
 
-		applicationsStopped.inc();
-		applicationsStarted.inc();
+		applicationsStartedCalls.inc();
 
 		return new HttpOk();
 	}
@@ -250,8 +246,6 @@ public class ApplicationController implements Serializable {
 		// wait for modules and servers starting
 		applicationEventPublisher.publishEvent(new ApplicationStartEvent(application));
 
-		applicationsStarted.inc();
-
 		return new HttpOk();
 	}
 
@@ -287,7 +281,7 @@ public class ApplicationController implements Serializable {
 
 		applicationEventPublisher.publishEvent(new ApplicationStopEvent(application));
 
-		applicationsStopped.inc();
+		applicationsStartedCalls.inc();
 
 		return new HttpOk();
 	}
@@ -322,7 +316,7 @@ public class ApplicationController implements Serializable {
 			logger.info("delete application :" + applicationName);
 			applicationService.remove(application, user);
 
-			applicationsDeleted.inc();
+			applicationsDeletedCalls.inc();
 
 		} catch (ServiceException e) {
 			// set the application in pending mode

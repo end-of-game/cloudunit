@@ -10,6 +10,8 @@ import fr.treeptik.cloudunit.model.VolumeAssociation;
 
 public interface VolumeService {
 
+	Integer count();
+
 	Volume loadVolume(int id) throws ServiceException, CheckException;
 
 	Volume findByName(String name);
