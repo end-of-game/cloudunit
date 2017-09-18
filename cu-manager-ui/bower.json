@@ -38,6 +38,7 @@
     "angular-ui-codemirror": "^0.3.0",
     "ngclipboard": "^1.1.1",
     "angular-xeditable": "^0.2.0",
+    "sweetalert": "^1.1.3",
     "ng-sweet-alert": "^1.0.8",
     "angular-ui-switch": "^0.1.1"
   },
