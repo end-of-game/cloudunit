@@ -58,6 +58,12 @@ public interface ApplicationDAO extends JpaRepository<Application, Integer> {
 	Long countApp(@Param("userId") Integer userId, @Param("cuInstanceName") String cuInstanceName)
 			throws DataAccessException;
 
+	@Query("Select count(a) from Application a")
+	Long countAll() throws DataAccessException;
+
+	@Query("Select count(a) from Application a where a.status = 'START'")
+	Long countRunning() throws DataAccessException;
+
 	@Query("select count(s) from Application a join a.server s where a.name=:name and s.status <> :status")
 	Integer countServersNotStatus(@Param("name") String name, @Param("status") Status status)
 			throws DataAccessException;

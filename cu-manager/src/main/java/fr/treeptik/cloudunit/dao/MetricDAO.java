@@ -13,9 +13,7 @@ import java.util.List;
  */
 public interface MetricDAO extends JpaRepository<Metric, Integer> {
 
-
     @Query("select m from Metric m where m.serverName=:serverName or serverName='all'")
     List<Metric> findAllByServer(@Param("serverName") String serverName) throws DataAccessException;
-
 
 }

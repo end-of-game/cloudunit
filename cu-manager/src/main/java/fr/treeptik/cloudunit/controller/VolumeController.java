@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.codahale.metrics.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,9 @@ public class VolumeController implements Serializable {
 	@Inject
 	private VolumeService volumeService;
 
+	@Inject
+	private Timer volumesCreation;
+
 	@RequestMapping(method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<List<VolumeResource>> loadAllVolumes()
 			throws ServiceException, JsonProcessingException, CheckException {
@@ -70,8 +74,10 @@ public class VolumeController implements Serializable {
 	@RequestMapping(method = RequestMethod.POST)
 	public @ResponseBody
 	ResponseEntity<VolumeResource> addVolume(@RequestBody VolumeResource request) throws ServiceException, CheckException {
+		final Timer.Context context = volumesCreation.time();
 		Volume volume = volumeService.createNewVolume(request.getName());
 		VolumeResource volumeResource = new VolumeResource(volume);
+		context.close();
 		return ResponseEntity.status(HttpStatus.CREATED).body(volumeResource);
 	}
 

@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.codahale.metrics.Counter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -82,6 +83,9 @@ public class FileController {
 
 	private Locale locale = Locale.ENGLISH;
 
+	@Inject
+	private Counter fileExplorerCalls;
+
 	/**
 	 * @param containerId
 	 * @param path
@@ -97,6 +101,7 @@ public class FileController {
 			logger.debug("containerId:" + containerId);
 			logger.debug("path:" + path);
 		}
+		fileExplorerCalls.inc();
 		List<FileUnit> fichiers = fileService.listByContainerIdAndPath(containerId, path);
 		return ResponseEntity.status(HttpStatus.OK).body(fichiers);
 	}

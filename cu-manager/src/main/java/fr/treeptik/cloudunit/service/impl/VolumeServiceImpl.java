@@ -30,6 +30,11 @@ public class VolumeServiceImpl implements VolumeService {
 	private DockerCloudUnitClient dockerCloudUnitClient;
 
 	@Override
+	public Integer count() {
+		return volumeDAO.findAll().size();
+	}
+
+	@Override
 	@Transactional
 	public Volume createNewVolume(String name) {
 		try {

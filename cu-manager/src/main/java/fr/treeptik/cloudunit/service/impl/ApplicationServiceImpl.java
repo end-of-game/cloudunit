@@ -298,6 +298,34 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     /**
+     * Count all applications for all users
+     */
+    public Long countAllApplications() {
+        try {
+            Long applicationsCount = applicationDAO.countAll();
+            logger.debug("applicationsCount : {} ", applicationsCount);
+            return applicationsCount;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return Long.MIN_VALUE;
+        }
+    }
+
+    /**
+     * Count all running applications for all users
+     */
+    public Long countAllRunningApplications() {
+        try {
+            Long applicationsRunningCount = applicationDAO.countRunning();
+            logger.debug("applicationsRunningCount : {} ", applicationsRunningCount);
+            return applicationsRunningCount;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return Long.MIN_VALUE;
+        }
+    }
+
+    /**
      * Method useful for Logs and Monitoring Management
      *
      * @return

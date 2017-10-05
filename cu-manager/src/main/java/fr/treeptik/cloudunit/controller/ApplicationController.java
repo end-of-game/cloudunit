@@ -27,6 +27,11 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.spotify.docker.client.exceptions.DockerException;
 import fr.treeptik.cloudunit.config.events.*;
 import fr.treeptik.cloudunit.dto.*;
@@ -87,6 +92,18 @@ public class ApplicationController implements Serializable {
 
 	private Locale locale = Locale.ENGLISH;
 
+	@Inject
+	private Counter findAllApplicationCalls;
+
+	@Inject
+	private Counter applicationsDeletedCalls;
+
+	@Inject
+	private Counter applicationsStartedCalls;
+
+	@Inject
+	private Timer applicationsCreation;
+
 	/**
 	 * To verify if an application exists or not.
 	 *
@@ -130,6 +147,8 @@ public class ApplicationController implements Serializable {
 	public JsonResponse createApplication(@RequestBody JsonInput input)
 			throws ServiceException, CheckException, InterruptedException {
 
+		final Timer.Context context = applicationsCreation.time();
+
 		// validate the input
 		input.validateCreateApp();
 
@@ -139,6 +158,8 @@ public class ApplicationController implements Serializable {
 
 		// CREATE AN APP
 		applicationService.create(input.getApplicationName(), input.getServerName());
+
+		context.close();
 
 		return new HttpOk();
 	}
@@ -180,6 +201,8 @@ public class ApplicationController implements Serializable {
 		} else if (application.getStatus().equals(Status.STOP)) {
 			applicationService.start(application);
 		}
+
+		applicationsStartedCalls.inc();
 
 		return new HttpOk();
 	}
@@ -258,6 +281,8 @@ public class ApplicationController implements Serializable {
 
 		applicationEventPublisher.publishEvent(new ApplicationStopEvent(application));
 
+		applicationsStartedCalls.inc();
+
 		return new HttpOk();
 	}
 
@@ -290,6 +315,8 @@ public class ApplicationController implements Serializable {
 
 			logger.info("delete application :" + applicationName);
 			applicationService.remove(application, user);
+
+			applicationsDeletedCalls.inc();
 
 		} catch (ServiceException e) {
 			// set the application in pending mode
@@ -332,6 +359,7 @@ public class ApplicationController implements Serializable {
 		List<Application> applications = applicationService.findAllByUser(user);
 
 		logger.debug("Number of applications " + applications.size());
+		findAllApplicationCalls.inc();
 		return applications;
 	}
 
