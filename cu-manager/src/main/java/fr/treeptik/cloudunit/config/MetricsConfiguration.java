@@ -81,7 +81,6 @@ public class MetricsConfiguration {
     public void init() {
         configureReporters();
         evaluateCounters();
-        metricRegistry.meter("cloudunit-start").mark();
     }
 
     private void evaluateCounters() {
