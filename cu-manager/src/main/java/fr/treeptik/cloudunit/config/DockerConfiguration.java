@@ -19,8 +19,7 @@ public class DockerConfiguration {
 
     @PostConstruct
     public void checkEnvironmentDocker() {
-        System.out.println("TEST");
-        isAgentPresent = false;
+        isAgentPresent = dockerService.exists("cu-monitoring-agents");
     }
 
     public Boolean isAgentPresent() {
