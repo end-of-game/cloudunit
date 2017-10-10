@@ -221,7 +221,11 @@ public class DockerServiceImpl implements DockerService {
             if (!containerName.startsWith("/")) containerName = "/" + containerName;
             final String realName = containerName;
             List<List<String>> containers = listContainers();
-            return containers.stream().anyMatch(c -> c.contains(realName));
+            if (containers != null) {
+                return containers.stream().anyMatch(c -> c.contains(realName));
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             StringBuilder msgError = new StringBuilder();
             msgError.append("containerName=").append(containerName);

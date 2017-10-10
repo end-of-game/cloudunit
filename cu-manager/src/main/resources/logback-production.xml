@@ -42,7 +42,7 @@
         </encoder>
     </appender>
 
-    <logger name="fr.treeptik" level="info"/>
+    <logger name="fr.treeptik" level="debug"/>
     <logger name="org.springframework.security" level="warn"/>
     <logger name="net.sf.ehcache" level="warn"/>
 
