@@ -67,7 +67,7 @@ RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && bower --allow-root install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && grunt build -f
 
 # Build Maven with profiles
-RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault -Dmaven.repo.local=/opt/maven/.m2 &&
+RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault -Dmaven.repo.local=/opt/maven/.m2
 RUN rm -rf /opt/maven/.m2 /home/cloudunit/app/CloudUnit/cu-manager-ui/node_modules /home/cloudunit/app/CloudUnit/cu-manager-ui/bower_components
 
 ENV CATALINA_HOME /opt/tomcat
