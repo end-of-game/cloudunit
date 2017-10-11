@@ -30,6 +30,7 @@ RUN apt-get update \
     && apt-get install -y git \
     && apt-get install -y wget \
     && apt-get install -y git-core \
+    && apt-get install -y libltdl7 \
     && apt-get install -y unzip \
         && rm -r /var/lib/apt/lists/*
 
@@ -66,7 +67,8 @@ RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && bower --allow-root install
 RUN cd /home/cloudunit/app/CloudUnit/cu-manager-ui && grunt build -f
 
 # Build Maven with profiles
-RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault -Dmaven.repo.local=/opt/maven/.m2 && rm -rf /opt/maven/.m2
+RUN cd /home/cloudunit/app/CloudUnit/ && mvn clean install -DskipTests -Pdefault -Dmaven.repo.local=/opt/maven/.m2 &&
+RUN rm -rf /opt/maven/.m2 /home/cloudunit/app/CloudUnit/cu-manager-ui/node_modules /home/cloudunit/app/CloudUnit/cu-manager-ui/bower_components
 
 ENV CATALINA_HOME /opt/tomcat
 ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/bin:$CATALINA_HOME/scripts
