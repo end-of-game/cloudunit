@@ -102,7 +102,7 @@ public class MetricsConfiguration {
 
         CollectorRegistry.defaultRegistry.register(new DropwizardExports(metricRegistry));
 
-        reporter.start(1, TimeUnit.MINUTES);
+        reporter.start(5, TimeUnit.MINUTES);
     }
 
 
