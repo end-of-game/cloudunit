@@ -1,0 +1,123 @@
+version: '2.1'
+services:
+
+  redis:
+      container_name: cu-redis
+      restart: unless-stopped
+      image: redis:3.0.1
+      command: redis-server --appendonly yes
+      environment:
+          - "TZ=${TZ}"
+      volumes:
+          - redis-data:/data
+      labels:
+          - "traefik.enable=false"
+
+  mysql:
+      container_name: cu-mysql
+      restart: unless-stopped
+      image: mysql:5.7.4
+      environment:
+          - "TZ=${TZ}"
+          - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+          - MYSQL_DATABASE=${MYSQL_DATABASE}
+      volumes:
+            - mysqldata:/var/lib/mysql
+      labels:
+            - "traefik.enable=false"
+
+  tomcat:
+      container_name: cu-tomcat
+      restart: unless-stopped
+      image: cloudunit/manager
+      volumes:
+          - /home/$USER/.cloudunit:/opt/tomcat/.cloudunit
+          - /home/$USER/.cloudunit:/root/.cloudunit
+          - /home/$USER/.docker:/opt/certificats
+      environment:
+          - "TZ=${TZ}"
+          - "CATALINA_OPTS=-Dspring.profiles.active=production,${CU_SECURITY:-jdbc} -Dproduction"
+          - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+          - "CU_JENKINS_DOMAIN=${CU_JENKINS_DOMAIN}"
+          - "CU_DOMAIN=${CU_DOMAIN}"
+          - "CU_GITLAB_DOMAIN=${CU_GITLAB_DOMAIN}"
+          - "CU_KIBANA_DOMAIN=${CU_KIBANA_DOMAIN}"
+          - "CU_NEXUS_DOMAIN=${CU_NEXUS_DOMAIN}"
+          - "CU_SONAR_DOMAIN=${CU_SONAR_DOMAIN}"
+          - "CU_MATTERMOST_DOMAIN=${CU_MATTERMOST_DOMAIN}"
+      labels:
+          - "traefik.frontend.entryPoints=http"
+          - "traefik.backend=manager"
+          - "traefik.port=8080"
+          - "traefik.frontend.rule=Host:${CU_MANAGER_DOMAIN}"
+
+  cadvisor:
+      container_name: cu-advisor
+      image: google/cadvisor:0.14.0
+      environment:
+          - "TZ=${TZ}"
+          - DB_USER=root
+          - DB_PASS=root
+          - DB_NAME=cadvisor
+      volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:rw
+          - /sys:/sys:ro
+          - /var/lib/docker:/var/lib/docker:ro
+      command: --housekeeping_interval=5s
+      labels:
+          - "traefik.enable=false"
+
+  jenkins:
+      container_name: cu-jenkins
+      restart: unless-stopped
+      build:
+        context: cu-jenkins
+      image: cloudunit/jenkins
+      volumes:
+          - jenkins-home:/var/jenkins_home
+      environment:
+          - "TZ=${TZ}"
+          - "JAVA_ARGS=-Xmx2048m -XX:MaxPermSize=512m -Djava.awt.headless=true"
+          - "MAVEN_OPTS=-Xmx512m -XX:MaxPermSize=128m"
+      labels:
+          - "traefik.frontend.entryPoints=http"
+          - "traefik.backend=jenkins"
+          - "traefik.port=8080"
+          - "traefik.frontend.rule=Host:${CU_JENKINS_DOMAIN}"
+
+  traefik:
+      container_name: cu-traefik
+      restart: unless-stopped
+      image: traefik:1.3.0
+      command: --web --docker --docker.domain=${CU_DOMAIN} --logLevel=DEBUG --docker.exposedbydefault=true --docker.watch=true
+      environment:
+          - "TZ=${TZ}"
+      ports:
+          - "80:80"
+          - "443:443"
+          - "9090:8080"
+      volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - ./cu-traefik/traefik.toml:/traefik.toml
+          # - ./cu-traefik/certs:/certs
+      labels:
+        - "traefik.enable=false"
+
+networks:
+  default:
+    external:
+      name: skynet
+
+volumes:
+  mysqldata:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  sonar-data:
+  sonar-extensions:
+  jenkins-home:
+  traefik-certs:
+  redis-data:
+  nexus-data:
+
