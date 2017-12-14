@@ -118,7 +118,7 @@ RUN sed -i -e 's/^display_errors\s*=.*/display_errors = On/' /etc/php5/apache2/p
 ## CLOUDUNIT :: END
 
 EXPOSE 80
-CMD ["/usr/sbin/apache2ctl","-DFOREGROUND"]
+CMD ["httpd-foreground"]
 
 LABEL origin application
 LABEL application-type apache
